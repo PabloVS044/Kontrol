@@ -1,0 +1,9 @@
+# Build output
+dist/
+dist-ssr/
+
+# Vite cache
+.vite/
+
+# TypeScript
+*.tsbuildinfo

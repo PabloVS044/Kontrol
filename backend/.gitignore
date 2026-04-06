@@ -1,0 +1,6 @@
+# Environment (real values, not the example)
+.env
+
+# Build output
+dist/
+build/
