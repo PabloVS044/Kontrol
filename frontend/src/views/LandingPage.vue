@@ -52,9 +52,48 @@
       </div>
     </section>
 
-    <section id="problem"></section>
+    <section id="problem">
+      <div class="problem-container">
+        <h2 class="sub-title">Stop juggling tools to <span class="marked">run your business</span></h2>
 
-    <section id="solution"></section>
+        <div class="cards">
+          <Card
+            title="The Chaos"
+            subtitle="Disjointed systems that slow you down."
+            :icon="LayoutGrid"
+            :iconSize="100"
+            iconColor="var(--Background3)"
+            :listIcon="CircleX"
+            :listIconSize="24"
+            listIconColor="var(--Error)"
+            :characteristics="chaosCharacteristics"
+            back="var(--Tertiary)"
+            borderColor="var(--Border)"
+            titleColor="var(--Text)"
+          />
+
+          <Card
+            title="The Order"
+            subtitle="Unified ecosystem designed for scale."
+            :icon="Sparkles"
+            :iconSize="100"
+            iconColor="var(--Primary2)"
+            :listIcon="CircleCheck"
+            :listIconSize="24"
+            listIconColor="var(--Success)"
+            :characteristics="orderCharacteristics"
+            back="var(--Background2)"
+            borderColor="var(--Border)"
+            titleColor="var(--Primary2)"
+            shadowColor="var(--Border)"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      
+    </section>
   </main>
 </template>
 
@@ -65,4 +104,22 @@ import AnimatedText from "../components/UI/TextEffects/AnimatedText.vue";
 import Pill from "../components/UI/Pill/Pill.vue";
 import Anchor from "../components/UI/Button/Anchor.vue";
 import arrowRightIcon from "../assets/img/arrow-right.png";
+import Card from "../components/UI/Card/Card.vue";
+import { LayoutGrid, Sparkles, CircleX, CircleCheck } from "lucide-vue-next";
+const chaosIcon = arrowRightIcon;
+const orderIcon = arrowRightIcon;
+
+const chaosCharacteristics = [
+  { title: "WhatsApp threads for project updates" },
+  { title: "Scattered Excel spreadsheets" },
+  { title: "Physical notebooks and sticky notes" },
+  { title: "Missing invoices and late payments" },
+];
+
+const orderCharacteristics = [
+  { title: "Centralized Project Command" },
+  { title: "Automated Financial Intelligence" },
+  { title: "Unified Marketing Hub" },
+  { title: "AI-Powered Data Analysis" },
+];
 </script>

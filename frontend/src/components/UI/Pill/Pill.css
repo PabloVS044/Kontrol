@@ -1,14 +1,16 @@
 .pill {
   width: auto;
-  padding: 1px 15px 1px 15px;
+  min-width: max-content;
+  padding: 1px 15px;
   height: 40px;
   background-color: var(--color);
   border-radius: 50px;
   border: 2px solid var(--Border);
   z-index: 20;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .dot {
@@ -17,8 +19,14 @@
   border-radius: 50%;
   background-color: var(--dot-color);
   margin-right: 13px;
+  flex-shrink: 0;
 }
 
 .pill-text {
   color: var(--text);
+  font-family: 'Bungee';
+  font-size: 1em;
+  line-height: 1;
+  width: auto;
 }
+
