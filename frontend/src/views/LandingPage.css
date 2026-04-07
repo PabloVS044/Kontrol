@@ -50,11 +50,32 @@ p {
 }
 
 .cards {
-    display: flex;
-    
+  display: flex;
 }
 
 .marked {
-    color: var(--Primary2);
+  color: var(--Primary2);
 }
 
+#features {
+  width: 100%;
+  height: 100vh;
+  z-index: 20;
+}
+
+.feature-container {
+  width: 100%;
+  height: 100vh;
+  background-color: var(--Background);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 0 0;
+  box-sizing: border-box;
+}
+
+.magic-circles-wrapper {
+  width: 100%;
+  flex: 1;
+}
