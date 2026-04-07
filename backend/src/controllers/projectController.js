@@ -1,31 +1,25 @@
 import pool from '../db/pool.js'
 
-const VALID_ESTADOS = ['PLANIFICADO', 'EN_PROGRESO', 'PAUSADO', 'COMPLETADO', 'CANCELADO']
-
 const PROJECT_SELECT = `
   id_proyecto, nombre, descripcion, fecha_inicio, fecha_fin_planificada,
   presupuesto_total, estado, id_empresa, id_encargado
 `
 
-// GET /api/projects
+// GET /api/projects (query validada por Zod)
 export const getProjects = async (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page) || 1)
-  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20))
+  const { page, limit, estado, id_empresa } = req.query
   const offset = (page - 1) * limit
 
   const filters = []
   const values = []
 
-  if (req.query.estado) {
-    if (!VALID_ESTADOS.includes(req.query.estado)) {
-      return res.status(400).json({ success: false, message: `estado inválido. Valores: ${VALID_ESTADOS.join(', ')}.` })
-    }
-    values.push(req.query.estado)
+  if (estado) {
+    values.push(estado)
     filters.push(`estado = $${values.length}`)
   }
 
-  if (req.query.id_empresa) {
-    values.push(parseInt(req.query.id_empresa))
+  if (id_empresa) {
+    values.push(id_empresa)
     filters.push(`id_empresa = $${values.length}`)
   }
 
@@ -62,25 +56,9 @@ export const getProjectById = async (req, res) => {
   return res.json({ success: true, data: result.rows[0] })
 }
 
-// POST /api/projects
-// Body: { nombre, descripcion?, fecha_inicio, fecha_fin_planificada?, presupuesto_total, estado?, id_empresa, id_encargado }
+// POST /api/projects (body validado por Zod)
 export const createProject = async (req, res) => {
   const { nombre, descripcion, fecha_inicio, fecha_fin_planificada, presupuesto_total, estado, id_empresa, id_encargado } = req.body
-
-  if (!nombre || !fecha_inicio || presupuesto_total === undefined || !id_empresa || !id_encargado) {
-    return res.status(400).json({
-      success: false,
-      message: 'nombre, fecha_inicio, presupuesto_total, id_empresa e id_encargado son requeridos.',
-    })
-  }
-
-  if (presupuesto_total < 0) {
-    return res.status(400).json({ success: false, message: 'presupuesto_total no puede ser negativo.' })
-  }
-
-  if (estado && !VALID_ESTADOS.includes(estado)) {
-    return res.status(400).json({ success: false, message: `estado inválido. Valores: ${VALID_ESTADOS.join(', ')}.` })
-  }
 
   const result = await pool.query(
     `INSERT INTO public.proyecto
@@ -89,11 +67,11 @@ export const createProject = async (req, res) => {
      RETURNING ${PROJECT_SELECT}`,
     [
       nombre,
-      descripcion || null,
+      descripcion ?? null,
       fecha_inicio,
-      fecha_fin_planificada || null,
+      fecha_fin_planificada ?? null,
       presupuesto_total,
-      estado || 'PLANIFICADO',
+      estado ?? 'PLANIFICADO',
       id_empresa,
       id_encargado,
     ]
@@ -102,18 +80,10 @@ export const createProject = async (req, res) => {
   return res.status(201).json({ success: true, data: result.rows[0] })
 }
 
-// PUT /api/projects/:id
+// PUT /api/projects/:id (body validado por Zod)
 export const updateProject = async (req, res) => {
   const { id } = req.params
   const { nombre, descripcion, fecha_inicio, fecha_fin_planificada, presupuesto_total, estado, id_empresa, id_encargado } = req.body
-
-  if (estado && !VALID_ESTADOS.includes(estado)) {
-    return res.status(400).json({ success: false, message: `estado inválido. Valores: ${VALID_ESTADOS.join(', ')}.` })
-  }
-
-  if (presupuesto_total !== undefined && presupuesto_total < 0) {
-    return res.status(400).json({ success: false, message: 'presupuesto_total no puede ser negativo.' })
-  }
 
   const existing = await pool.query('SELECT id_proyecto FROM public.proyecto WHERE id_proyecto = $1', [id])
   if (!existing.rows.length) {
@@ -132,10 +102,6 @@ export const updateProject = async (req, res) => {
   if (id_empresa !== undefined)           { values.push(id_empresa);           setClauses.push(`id_empresa = $${values.length}`) }
   if (id_encargado !== undefined)         { values.push(id_encargado);         setClauses.push(`id_encargado = $${values.length}`) }
 
-  if (!setClauses.length) {
-    return res.status(400).json({ success: false, message: 'No se proporcionaron campos para actualizar.' })
-  }
-
   values.push(id)
   const result = await pool.query(
     `UPDATE public.proyecto SET ${setClauses.join(', ')} WHERE id_proyecto = $${values.length}
@@ -146,7 +112,7 @@ export const updateProject = async (req, res) => {
   return res.json({ success: true, data: result.rows[0] })
 }
 
-// DELETE /api/projects/:id - eliminación física
+// DELETE /api/projects/:id
 export const deleteProject = async (req, res) => {
   const result = await pool.query(
     'DELETE FROM public.proyecto WHERE id_proyecto = $1 RETURNING id_proyecto',
