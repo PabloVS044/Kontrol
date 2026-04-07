@@ -10,7 +10,7 @@
         :rotation="-45"
         :edgeFadeWidth="0"
         :colorCycleSpeed="1"
-        :brightness="0.05"
+        :brightness="0.08"
         color1="var(--Text)"
         color2="var(--Text)"
         color3="var(--Text)"
