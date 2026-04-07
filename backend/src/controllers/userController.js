@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt'
 import pool from '../db/pool.js'
 
 const SALT_ROUNDS = 10
-const VALID_ROLES = ['admin', 'manager', 'collaborator']
 
 // Columns returned in every user response (password_hash excluded)
 const USER_SELECT = `
@@ -18,26 +17,22 @@ const USER_SELECT = `
 
 /**
  * GET /api/users
- * Query params: page (default 1), limit (default 20), role, activo
+ * Query params: page, limit, role, activo  (validated + coerced by Zod middleware)
  */
 export const getUsers = async (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page) || 1)
-  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20))
+  const { page, limit, role, activo } = req.query
   const offset = (page - 1) * limit
 
   const filters = []
   const values = []
 
-  if (req.query.role) {
-    if (!VALID_ROLES.includes(req.query.role)) {
-      return res.status(400).json({ success: false, message: 'Rol inválido.' })
-    }
-    values.push(req.query.role)
+  if (role) {
+    values.push(role)
     filters.push(`r.nombre_rol = $${values.length}`)
   }
 
-  if (req.query.activo !== undefined) {
-    values.push(req.query.activo !== 'false')
+  if (activo !== undefined) {
+    values.push(activo !== 'false')
     filters.push(`u.activo = $${values.length}`)
   }
 
@@ -94,31 +89,14 @@ export const getUserById = async (req, res) => {
 
 /**
  * POST /api/users
- * Body: { nombre, apellido, email, password, role, telefono?, id_empresa? }
+ * Body: { nombre, apellido, email, password, role, telefono?, id_empresa? }  (validated by Zod)
  */
 export const createUser = async (req, res) => {
   const { nombre, apellido, email, password, role, telefono, id_empresa } = req.body
 
-  // Validation
-  if (!nombre || !apellido || !email || !password || !role) {
-    return res.status(400).json({
-      success: false,
-      message: 'nombre, apellido, email, password y role son requeridos.',
-    })
-  }
-
-  if (!VALID_ROLES.includes(role)) {
-    return res.status(400).json({ success: false, message: `role debe ser uno de: ${VALID_ROLES.join(', ')}.` })
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ success: false, message: 'Formato de email inválido.' })
-  }
-
   const client = await pool.connect()
   try {
-    // Check duplicate email
+    // Business-rule checks that require DB state
     const duplicate = await client.query(
       'SELECT id_usuario FROM public.usuario WHERE email = $1',
       [email]
@@ -127,7 +105,6 @@ export const createUser = async (req, res) => {
       return res.status(409).json({ success: false, message: 'El email ya está registrado.' })
     }
 
-    // Resolve role id
     const rolRow = await client.query(
       'SELECT id_rol FROM public.rol WHERE nombre_rol = $1',
       [role]
@@ -144,7 +121,7 @@ export const createUser = async (req, res) => {
          (nombre, apellido, email, password_hash, telefono, id_empresa, id_rol)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id_usuario`,
-      [nombre, apellido, email, password_hash, telefono || null, id_empresa || null, id_rol]
+      [nombre, apellido, email, password_hash, telefono ?? null, id_empresa ?? null, id_rol]
     )
 
     const newUser = await client.query(
@@ -163,22 +140,11 @@ export const createUser = async (req, res) => {
 
 /**
  * PUT /api/users/:id
- * Body: { nombre?, apellido?, email?, role?, telefono?, id_empresa? }
+ * Body: { nombre?, apellido?, email?, role?, telefono?, id_empresa? }  (validated by Zod)
  */
 export const updateUser = async (req, res) => {
   const { id } = req.params
   const { nombre, apellido, email, role, telefono, id_empresa } = req.body
-
-  if (email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ success: false, message: 'Formato de email inválido.' })
-    }
-  }
-
-  if (role && !VALID_ROLES.includes(role)) {
-    return res.status(400).json({ success: false, message: `role debe ser uno de: ${VALID_ROLES.join(', ')}.` })
-  }
 
   const client = await pool.connect()
   try {
@@ -221,10 +187,6 @@ export const updateUser = async (req, res) => {
     if (telefono !== undefined)   { values.push(telefono);   setClauses.push(`telefono = $${values.length}`) }
     if (id_empresa !== undefined) { values.push(id_empresa); setClauses.push(`id_empresa = $${values.length}`) }
     if (id_rol !== undefined)     { values.push(id_rol);     setClauses.push(`id_rol = $${values.length}`) }
-
-    if (!setClauses.length) {
-      return res.status(400).json({ success: false, message: 'No se proporcionaron campos para actualizar.' })
-    }
 
     values.push(id)
     await client.query(
