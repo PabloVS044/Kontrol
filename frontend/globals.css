@@ -1,0 +1,20 @@
+:root {
+    --Primary: #caa860;
+    --Secondary: #886911;
+    --Tertiary: #12120e;
+    --Border: #312713;
+    --Text: #ffffff;
+    --Background: #000000;
+}
+
+.hero-title {
+    color: var(--Text);
+    font-family: 'Bungee';
+    font-size: 7em;
+}
+
+@media screen and (max-width: 500px) {
+    .hero-title {
+        font-size: 2em;
+    }
+}

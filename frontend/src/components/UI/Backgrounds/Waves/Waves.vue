@@ -24,8 +24,26 @@ const props = defineProps({
 
 const containerRef = ref(null)
 
-function hexToVec3(hex) {
-  const h = hex.replace('#', '')
+function resolveColorString(color) {
+  if (!color) return '#ffffff'
+  const trimmed = color.trim()
+  if (trimmed.startsWith('var(') && containerRef.value) {
+    const varName = trimmed.slice(4, -1).trim()
+    const resolved = getComputedStyle(containerRef.value).getPropertyValue(varName).trim()
+    return resolved || '#ffffff'
+  }
+  return trimmed
+}
+
+function hexToVec3(color) {
+  const resolved = resolveColorString(color)
+  let h = resolved.replace('#', '').trim()
+  if (h.length === 3) {
+    h = h.split('').map((c) => c + c).join('')
+  }
+  if (h.length !== 6) {
+    return [1, 1, 1]
+  }
   return [
     parseInt(h.slice(0, 2), 16) / 255,
     parseInt(h.slice(2, 4), 16) / 255,
