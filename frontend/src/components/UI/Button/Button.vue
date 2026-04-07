@@ -30,4 +30,4 @@ export default {
 }
 </script>
 
-<style src="./Button.css" scoped></style>
+<style src="./button.css" scoped></style>
