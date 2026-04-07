@@ -54,7 +54,9 @@
 
     <section id="problem">
       <div class="problem-container">
-        <h2 class="sub-title">Stop juggling tools to <span class="marked">run your business</span></h2>
+        <h2 class="sub-title">
+          Stop juggling tools to <span class="marked">run your business</span>
+        </h2>
 
         <div class="cards">
           <Card
@@ -92,7 +94,41 @@
     </section>
 
     <section id="features">
-      
+      <div class="feature-container">
+        <h2 class="sub-title">The Comand Center</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Delectus,
+          voluptatem officiis libero laboriosam, ex animi ut reprehenderit
+          similique necessitatibus vel dignissimos sed! Voluptas, iusto animi.
+          Beatae, dicta! Error, eos quaerat.
+        </p>
+        <div class="magic-circles-wrapper">
+          <MagicCircles
+            color="var(--Primary2)"
+            color-two="var(--Primary)"
+            :ring-count="6"
+            :speed="1"
+            :attenuation="10"
+            :line-thickness="2"
+            :base-radius="0.35"
+            :radius-step="0.1"
+            :scale-rate="0.1"
+            :opacity="1"
+            :blur="0"
+            :noise-amount="0.1"
+            :rotation="0"
+            :ring-gap="1.5"
+            :fade-in="0.7"
+            :fade-out="0.5"
+            :follow-mouse="false"
+            :mouse-influence="0.2"
+            :hover-scale="1.2"
+            :parallax="0.05"
+            :click-burst="false"
+            background="var(--Background)"
+          />
+        </div>
+      </div>
     </section>
   </main>
 </template>
@@ -106,6 +142,7 @@ import Anchor from "../components/UI/Button/Anchor.vue";
 import arrowRightIcon from "../assets/img/arrow-right.png";
 import Card from "../components/UI/Card/Card.vue";
 import { LayoutGrid, Sparkles, CircleX, CircleCheck } from "lucide-vue-next";
+import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
 const chaosIcon = arrowRightIcon;
 const orderIcon = arrowRightIcon;
 
