@@ -2,37 +2,28 @@
   <div class="nav-container">
     <nav>
       <div class="icon">
-        <img :src="logo" alt="Logo">
+        <img :src="logo" alt="Logo" />
         <h3>Kontrol</h3>
       </div>
-      <ul>
-        <li><a href="#header">Home</a></li>
-        <li><a href="/features">Features</a></li>
-        <li><a href="/how-it-works">How it works?</a></li>
-        <li><a href="/pricing">Pricing</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/contact">Contact</a></li>
+      <ul class="navigation">
+        <li><Anchor label="Home" link="#header" /></li>
+        <li><Anchor label="Features" link="#features" /></li>
+        <li><Anchor label="How it works?" link="#how" /></li>
+        <li><Anchor label="Pricing" link="#pricing" /></li>
+        <li><Anchor label="About" link="#about" /></li>
+        <li><Anchor label="Contact" link="#contact" /></li>
       </ul>
 
       <div class="actions">
-        <a to="/login">Login</a>
-        <a href="">GetStarted</a>
+        <Anchor label="Login" link="/login" />
+        <Anchor label="Get Started" link="/register"  backColor="var(--Secondary)" hoverColor="var(--Background)"/>
       </div>
     </nav>
   </div>
 </template>
 
-<script>
+<script setup>
 import "./navbar.css";
 import logo from "../assets/img/kontrol.png";
-
-export default {
-  name: "Navbar",
-  data() {
-    return {
-      logo: logo
-    };
-  }
-
-};
+import Anchor from "../components/UI/Button/Anchor.vue";
 </script>

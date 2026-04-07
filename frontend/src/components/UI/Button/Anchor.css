@@ -1,0 +1,15 @@
+.anchor {
+    text-decoration: none;
+    color: var(--color);
+    width: auto;
+    height: auto;
+    background-color: var(--background);
+    border-radius: 50px;
+    padding: 10px 15px 10px 15px;
+    transition: all 0.8s;
+    font-family: 'DM Sans';
+}
+
+a:hover {
+    background-color: var(--hover);
+}

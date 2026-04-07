@@ -18,7 +18,7 @@ nav {
   border-radius: 50px;
   justify-content: space-between;
   width: 80%;
-  height: 100px;
+  height: 80px;
   border: 3px solid var(--Border);
   background-color: var(--Tertiary);
   padding-left: 40px;
@@ -55,8 +55,9 @@ ul {
   gap: 10px;
 }
 
-a {
-  font-style: none;
-  text-decoration: none;
-  color: var(--Text);
+h3 {
+  font-family: 'Bungee';
+  letter-spacing: 1px;
 }
+
+
