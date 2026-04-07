@@ -19,6 +19,66 @@
       </button>
     </div>
 
+    <!-- Modal: nuevo producto -->
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal">
+          <div class="modal-header">
+            <span class="modal-title">New product</span>
+            <button class="modal-close" @click="closeModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </div>
+
+          <form class="modal-form" @submit.prevent="submitProduct">
+
+            <div class="form-field">
+              <label>Name <span class="req">*</span></label>
+              <input v-model="form.nombre" type="text" placeholder="Product name" required />
+            </div>
+
+            <div class="form-field">
+              <label>Description</label>
+              <textarea v-model="form.descripcion" placeholder="Optional description" rows="2"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label>Sale price <span class="req">*</span></label>
+                <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
+              </div>
+              <div class="form-field">
+                <label>Cost price <span class="req">*</span></label>
+                <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" required />
+              </div>
+            </div>
+
+            <div class="form-field" style="max-width:160px">
+              <label>Min. stock</label>
+              <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
+            </div>
+
+            <p v-if="modalError" class="modal-error">{{ modalError }}</p>
+
+            <div class="modal-actions">
+              <button type="button" class="ctx-btn-secondary" @click="closeModal">
+                <span>Cancel</span>
+              </button>
+              <button type="submit" class="btn-primary" :disabled="modalLoading">
+                <svg v-if="!modalLoading" class="icon16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                </svg>
+                <span>{{ modalLoading ? 'Saving…' : 'Save product' }}</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
     <template v-else>
 
       <!-- Panel principal -->
@@ -361,8 +421,49 @@ function stockNumClass(p) {
   return ''
 }
 
+/* ── modal nuevo producto ── */
+const showModal    = ref(false)
+const modalLoading = ref(false)
+const modalError   = ref(null)
+const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0 })
+
 function openNewProduct() {
-  // TODO: abrir modal/form para nuevo producto
+  form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0 }
+  modalError.value = null
+  showModal.value  = true
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+async function submitProduct() {
+  modalLoading.value = true
+  modalError.value   = null
+  try {
+    const res = await fetch('/api/productos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({
+        nombre:       form.value.nombre,
+        descripcion:  form.value.descripcion || undefined,
+        precio_venta: form.value.precio_venta,
+        precio_costo: form.value.precio_costo,
+        stock_minimo: form.value.stock_minimo ?? 0,
+      }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      modalError.value = data.message || `Error ${res.status}`
+      return
+    }
+    closeModal()
+    await loadData()
+  } catch {
+    modalError.value = 'Network error, try again.'
+  } finally {
+    modalLoading.value = false
+  }
 }
 
 function exportInventory() {
