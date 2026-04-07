@@ -1,0 +1,24 @@
+.pill {
+  width: auto;
+  padding: 1px 15px 1px 15px;
+  height: 40px;
+  background-color: var(--color);
+  border-radius: 50px;
+  border: 2px solid var(--Border);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background-color: var(--dot-color);
+  margin-right: 13px;
+}
+
+.pill-text {
+  color: var(--text);
+}
