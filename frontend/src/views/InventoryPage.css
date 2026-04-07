@@ -183,6 +183,56 @@
 .red   { color: #f87171; }
 .gold  { color: #c9a962; }
 
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 16px;
+}
+
+.modal {
+  background: #0a0a0a; border: 1px solid #1f1f1f;
+  width: 100%; max-width: 480px;
+  display: flex; flex-direction: column;
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid #1f1f1f;
+}
+
+.modal-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #faf8f5; }
+
+.modal-close {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+
+.form-field label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+
+.form-field input,
+.form-field textarea {
+  background: #0f0f0f; border: 1px solid #1f1f1f; color: #faf8f5;
+  font-family: 'Manrope', sans-serif; font-size: 13px;
+  padding: 10px 12px; outline: none; resize: none;
+  transition: border-color .15s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus { border-color: #c9a962; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.req { color: #c9a962; }
+
+.modal-error { font-size: 12px; color: #f87171; }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+
 /* Estado vacío */
 .empty-state {
   grid-column: 1 / -1; padding: 48px; text-align: center; color: #555; font-size: 14px;
