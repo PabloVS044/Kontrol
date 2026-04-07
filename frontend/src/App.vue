@@ -3,17 +3,17 @@
 
     <div class="background">
       <LineWaves
-        :speed="0.3"
+        :speed="0.2"
         :innerLineCount="32"
         :outerLineCount="36"
         :warpIntensity="1"
         :rotation="-45"
         :edgeFadeWidth="0"
         :colorCycleSpeed="1"
-        :brightness="0.2"
-        color1="#998100"
-        color2="#ffffff"
-        color3="#978949"
+        :brightness="0.05"
+        color1="var(--Text)"
+        color2="var(--Text)"
+        color3="var(--Text)"
         :enableMouseInteraction="true"
         :mouseInfluence="2"
       />
