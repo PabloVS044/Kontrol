@@ -7,8 +7,8 @@
       '--hover': hoverColor,
       '--color': textColor,
     }"
-    >{{ label }}</a
-  >
+    >{{ label }} <img v-if="icon" :src="icon" :alt="icon"
+  /></a>
 </template>
 <script setup>
 import "./Anchor.css";
@@ -19,5 +19,6 @@ const props = defineProps({
   backColor: { type: String, default: "" },
   hoverColor: { type: String, default: "var(--Primary)" },
   textColor: { type: String, default: "var(--Text)" },
+  icon: { type: String, default: "" },
 });
 </script>
