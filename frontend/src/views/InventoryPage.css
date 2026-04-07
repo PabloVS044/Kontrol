@@ -246,6 +246,43 @@
 .state-title { font-family: 'Playfair Display', serif; font-size: 28px; color: #faf8f5; }
 .state-msg   { font-size: 14px; color: #666; }
 
+/* ── Responsive ── */
+
+/* Tablet (≤1200px): grid 3 col, panel lateral más estrecho */
+@media (max-width: 1200px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
+  .context-panel { width: 320px; }
+  .main-panel { padding: 32px 32px; }
+}
+
+/* Tablet pequeño (≤900px): grid 2 col, panel debajo */
+@media (max-width: 900px) {
+  .inventory-layout { flex-direction: column; }
+  .main-panel { padding: 24px 24px; gap: 20px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .context-panel {
+    width: 100%; min-height: auto;
+    border-left: none; border-top: 1px solid #1f1f1f;
+    padding: 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .ctx-title, .data-source { grid-column: 1 / -1; }
+  .data-source { margin-top: 0; }
+}
+
+/* Mobile (≤600px): grid 1 col, padding reducido */
+@media (max-width: 600px) {
+  .main-panel { padding: 16px; gap: 16px; }
+  .product-grid { grid-template-columns: 1fr; }
+  .inv-title { font-size: 32px; }
+  .inv-header { flex-direction: column; gap: 12px; }
+  .inv-header-actions { align-self: flex-start; }
+  .context-panel { grid-template-columns: 1fr; padding: 16px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .filter-row { flex-wrap: wrap; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
 /* Skeleton loader */
 @keyframes shimmer {
   0%   { background-position: -400px 0; }
