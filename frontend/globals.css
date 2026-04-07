@@ -1,0 +1,49 @@
+:root {
+  --Primary: #caa860;
+  --Primary2: #b27f2a;
+  --Secondary: #886911;
+  --Tertiary: #12120e;
+  --Border: #312713;
+  --PillBack: #120f07;
+  --Text: #ffffff;
+  --Background: #000000;
+  --Background2: #120f07;
+  --Background3: #282825;
+  --Success: rgb(15, 77, 15);
+  --Error: rgb(128, 13, 13);
+}
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero-title {
+  color: var(--Text);
+  font-family: "Alfa Slab One";
+  letter-spacing: 5px;
+  font-size: 7em;
+  margin-bottom: 20px;
+}
+
+p {
+  font-family: "DM Sans";
+  font-size: 1.5em;
+  color: var(--Text);
+  z-index: 20;
+}
+
+.sub-title {
+  font-family: "Alfa Slab One";
+  letter-spacing: 2px;
+  font-size: 3em;
+  text-align: center;
+  color: var(--Text);
+}
+@media screen and (max-width: 500px) {
+  .hero-title {
+    font-size: 2em;
+  }
+}
