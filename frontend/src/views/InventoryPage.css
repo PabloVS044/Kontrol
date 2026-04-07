@@ -2,11 +2,16 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.inventory-layout {
+.inventory-root {
   background: #0f0f0f;
+  min-height: 100vh;
+}
+
+.inventory-layout {
   font-family: 'Manrope', sans-serif;
   color: #faf8f5;
-  min-height: 100vh;
+  min-height: calc(100vh - 56px);
+  margin-top: 56px; /* altura de AppNavbar */
   display: flex;
   overflow-x: hidden;
 }

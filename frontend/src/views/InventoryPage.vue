@@ -1,5 +1,8 @@
 <template>
-  <div class="inventory-layout">
+  <div class="inventory-root">
+    <AppNavbar />
+
+    <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
     <div v-if="authError" class="state-screen">
@@ -242,11 +245,13 @@
       </aside>
 
     </template>
-  </div>
+  </div><!-- /.inventory-layout -->
+  </div><!-- /.inventory-root -->
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
 
