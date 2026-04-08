@@ -83,8 +83,8 @@ const stats = [
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap');
 
-.dashboard-layout { display: flex; background: var(--Background); min-height: 100vh; }
-.content { flex: 1; padding: 80px 100px; color: var(--Text); }
+.dashboard-layout { display: flex; flex-direction: column; background: transparent; min-height: 100vh; }
+.content { flex: 1; padding: 80px 100px; color: var(--Text); background: rgba(10,10,10,0.82); margin-top: 56px; }
 .title { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; font-size: 3rem; color: var(--Text); margin-bottom: 10px; }
 .subtitle, p, span, label { font-family: 'DM Sans', sans-serif; }
 .subtitle { color: #666; margin-bottom: 40px; }
