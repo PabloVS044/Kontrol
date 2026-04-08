@@ -47,13 +47,13 @@ const userInitial = computed(() => {
   -webkit-backdrop-filter: blur(12px);
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .appnav-inner {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   padding: 0 32px;
   gap: 40px;
 }
@@ -80,28 +80,43 @@ const userInitial = computed(() => {
 
 .appnav-links {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 0;
   flex: 1;
 }
 
 .appnav-link {
+  position: relative;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   text-decoration: none;
-  padding: 6px 12px;
-  border: 1px solid transparent;
-  transition: color .15s, border-color .15s;
-  letter-spacing: 0.02em;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: color .2s;
+  letter-spacing: 0.03em;
+}
+
+.appnav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: #c9a962;
+  transform: scaleX(0);
+  transition: transform .2s ease;
 }
 
 .appnav-link:hover { color: #faf8f5; }
 
 .appnav-link.router-link-active {
   color: #c9a962;
-  border-color: #1f1f1f;
+}
+
+.appnav-link.router-link-active::after {
+  transform: scaleX(1);
 }
 
 .appnav-end {
