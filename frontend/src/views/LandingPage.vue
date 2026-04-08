@@ -41,12 +41,14 @@
             backColor="var(--Primary)"
             hoverColor="var(--Tertiary)"
             :icon="arrowRightIcon"
+            link="/register"
           />
           <Anchor
-            label="Start managing your business"
+            label="See How it works"
             backColor="var(--Tertiary)"
             hoverColor="var(--Secondary)"
             :icon="arrowRightIcon"
+            link="#features"
           />
         </div>
       </div>
@@ -395,6 +397,7 @@
         backColor="var(--Primary2)"
         hoverColor="var(--Tertiary)"
         :icon="Rocket"
+        link = "/register"
       />
     </section>
     <Footer />
