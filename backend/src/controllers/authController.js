@@ -1,13 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
-
-const oauth2Client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_CALLBACK_URL
-)
 
 const SALT_ROUNDS = 10
 
@@ -95,12 +88,15 @@ export const login = async (req, res) => {
  * Redirects the browser to Google's consent screen.
  */
 export const googleAuth = (req, res) => {
-  const url = oauth2Client.generateAuthUrl({
-    scope: ['openid', 'email', 'profile'],
-    access_type: 'offline',
-    prompt: 'select_account',
+  const params = new URLSearchParams({
+    client_id:     process.env.GOOGLE_CLIENT_ID,
+    redirect_uri:  process.env.GOOGLE_CALLBACK_URL,
+    response_type: 'code',
+    scope:         'openid email profile',
+    access_type:   'offline',
+    prompt:        'select_account',
   })
-  res.redirect(url)
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 }
 
 /**
@@ -125,15 +121,27 @@ export const googleCallback = async (req, res) => {
   }
 
   try {
-    // Exchange authorization code for tokens
-    const { tokens } = await oauth2Client.getToken(code)
-
-    // Verify and decode the ID token
-    const ticket = await oauth2Client.verifyIdToken({
-      idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+    // Exchange authorization code for tokens using native fetch (Node 18+)
+    // — avoids node-fetch inside google-auth-library which ignores DNS settings
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id:     process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri:  process.env.GOOGLE_CALLBACK_URL,
+        grant_type:    'authorization_code',
+      }),
     })
-    const { sub: google_id, email, given_name, family_name } = ticket.getPayload()
+
+    const tokens = await tokenRes.json()
+    if (!tokenRes.ok || !tokens.id_token) {
+      console.error('[Google OAuth] token exchange failed:', tokens)
+      return res.redirect(`${FRONTEND_URL}/login?error=google_error`)
+    }
+
+    const { sub: google_id, email, given_name, family_name } = jwt.decode(tokens.id_token)
     const nombre   = given_name  || email.split('@')[0]
     const apellido = family_name || ''
 
