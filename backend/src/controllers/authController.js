@@ -236,22 +236,3 @@ export const googleCallback = async (req, res) => {
     return res.redirect(`${FRONTEND_URL}/login?error=google_error`)
   }
 }
-
-// GET /api/auth/me — returns the authenticated user's profile
-export const getMe = async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.id_empresa, r.nombre_rol
-       FROM public.usuario u JOIN public.rol r ON r.id_rol = u.id_rol
-       WHERE u.id_usuario = $1`,
-      [req.user.id_usuario]
-    )
-    if (!result.rows.length) {
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
-    }
-    return res.json({ success: true, data: result.rows[0] })
-  } catch (err) {
-    console.error('[getMe]', err)
-    return res.status(500).json({ success: false, message: 'Error interno.' })
-  }
-}
