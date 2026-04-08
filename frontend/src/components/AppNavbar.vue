@@ -8,22 +8,10 @@
       </RouterLink>
 
       <nav class="appnav-links">
-        <RouterLink
-          v-for="link in navLinks"
-          :key="link.to"
-          :to="link.to"
-          custom
-          v-slot="{ href, isActive, navigate }"
-        >
-          <Anchor
-            :label="link.label"
-            :link="href"
-            :textColor="isActive ? '#0a0a0a' : 'var(--Text)'"
-            :backColor="isActive ? '#c9a962' : 'transparent'"
-            hoverColor="rgba(201,169,98,0.12)"
-            @click.prevent="navigate"
-          />
-        </RouterLink>
+        <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
+        <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
+        <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
+        <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
       </nav>
 
       <div class="appnav-end">
@@ -39,7 +27,6 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
-import Anchor from './UI/Button/Anchor.vue'
 
 const authStore = useAuthStore()
 
@@ -47,13 +34,6 @@ const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
-
-const navLinks = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/inventory',  label: 'Inventory'  },
-  { to: '/projects',   label: 'Projects'   },
-  { to: '/finance',    label: 'Finance'    },
-]
 </script>
 
 <style scoped>
@@ -61,9 +41,10 @@ const navLinks = [
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: rgba(10,10,10,0.92);
+  background: rgba(10, 10, 10, 0.95);
   border-bottom: 1px solid #1f1f1f;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -74,7 +55,7 @@ const navLinks = [
   display: flex;
   align-items: center;
   padding: 0 32px;
-  gap: 32px;
+  gap: 40px;
 }
 
 .appnav-brand {
@@ -104,14 +85,23 @@ const navLinks = [
   flex: 1;
 }
 
-/* override anchor pill size to fit the navbar height */
-.appnav-links :deep(.anchor) {
-  padding: 5px 14px;
-  border-radius: 50px;
+.appnav-link {
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  font-family: 'Manrope', sans-serif;
-  transition: background-color 0.2s, color 0.2s;
+  color: #666;
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  transition: color .15s, border-color .15s;
+  letter-spacing: 0.02em;
+}
+
+.appnav-link:hover { color: #faf8f5; }
+
+.appnav-link.router-link-active {
+  color: #c9a962;
+  border-color: #1f1f1f;
 }
 
 .appnav-end {
@@ -124,7 +114,6 @@ const navLinks = [
   height: 32px;
   background: #1f1f1f;
   border: 1px solid #2e2e2e;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
