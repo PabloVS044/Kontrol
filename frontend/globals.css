@@ -11,6 +11,20 @@
   --Background3: #282825;
   --Success: rgb(15, 77, 15);
   --Error: rgb(128, 13, 13);
+
+  /* Texto secundario */
+  --TextMuted: #8a8070;
+  --TextDim: #5a5040;
+  --TextPlaceholder: #4a4030;
+
+  /* Estados visuales */
+  --ErrorText: #e05252;
+  --SuccessText: #48c774;
+
+  /* Formularios */
+  --InputBg: rgba(255, 255, 255, 0.04);
+  --InputFocusBg: rgba(202, 168, 96, 0.05);
+  --BtnText: #0e0c08;
 }
 html,
 body,
