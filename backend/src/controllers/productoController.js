@@ -113,15 +113,15 @@ export const getProductoById = async (req, res) => {
  * POST /api/productos
  */
 export const createProducto = async (req, res) => {
-  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, id_categoria } = req.body
+  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria } = req.body
   const id_empresa = await getIdEmpresa(req.user.id_usuario)
 
   const inserted = await pool.query(
     `INSERT INTO public.producto
-       (nombre, descripcion, precio_venta, precio_costo, stock_minimo, id_categoria, id_empresa)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+       (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_empresa)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING id_producto`,
-    [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, id_categoria ?? null, id_empresa]
+    [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, id_categoria ?? null, id_empresa]
   )
 
   const newProducto = await pool.query(
