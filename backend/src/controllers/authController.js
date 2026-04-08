@@ -81,6 +81,21 @@ export const login = async (req, res) => {
   return res.json({ success: true, token, data: userData })
 }
 
+// GET /api/auth/me
+export const getMe = async (req, res) => {
+  const result = await pool.query(
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.id_empresa, u.activo, r.nombre_rol
+     FROM public.usuario u
+     JOIN public.rol r ON r.id_rol = u.id_rol
+     WHERE u.id_usuario = $1`,
+    [req.user.id_usuario]
+  )
+  if (!result.rows.length) {
+    return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
+  }
+  return res.json({ success: true, data: result.rows[0] })
+}
+
 // ─── Google OAuth ─────────────────────────────────────────────────────────────
 
 /**
