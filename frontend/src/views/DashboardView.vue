@@ -30,9 +30,11 @@ const stats = [
 
       <!-- IA ASSISTANT SECTION (Luxury Box) -->
       <section class="ai-box">
-        <h3 class="ai-title">KONTROL AI ANALYSIS</h3>
-        <p class="ai-message">"Ana, the 'Math Series 2026' stock is critical. I recommend restocking 40 units based on next week's projections."</p>
-        <button class="ai-btn">OPTIMIZE NOW</button>
+        <div class="ai-content">
+            <h3 class="ai-title">KONTROL AI ANALYSIS</h3>
+            <p class="ai-message">"Ana, the 'Math Series 2026' stock is critical. I recommend restocking 40 units based on next week's projections."</p>
+        </div>
+        <button class="ai-btn">GENERATE ORDER</button>
       </section>
 
       <!-- CHARTS SECTION -->
@@ -89,10 +91,10 @@ const stats = [
 
 /* KPIs */
 .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-.kpi-card { background: var(--Background2); border: 1px solid var(--Border); padding: 24px; border-radius: 4px; }
+.kpi-card { background: var(--Background2); border: 1px solid var(--Border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s ease; padding: 24px; border-radius: 4px; }
 
 /* AI BOX */
-.ai-box { background: var(--Background); border: 1px dashed var(--Primary); padding: 30px; margin-bottom: 40px; position: relative; }
+.ai-box { display: flex; justify-content: space-between; align-items: center; background: linear-gradiente(90deg, var(--Background) 0%, #12120e 100%); border: 1px dashed var(--Primary); padding: 40px; margin-bottom: 40px; position: relative; }
 .ai-title { color: var(--Primary); font-size: 12px; margin-bottom: 15px; }
 .ai-message { font-style: italic; font-size: 1.1rem; margin-bottom: 20px; max-width: 800px; }
 .ai-btn { background: var(--Primary); color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; }
