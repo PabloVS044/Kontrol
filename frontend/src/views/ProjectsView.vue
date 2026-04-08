@@ -23,7 +23,7 @@ const projects = [
             <p class="subtitle">Projects you are enrolled in as admin or member</p>
           </div>
           <div class="header-actions">
-            <Anchor href="#" class="btn-gold">
+            <Anchor href="#" class="btn-gold" label="+ New Project">
               + New project
             </Anchor>
           </div>
@@ -89,6 +89,13 @@ const projects = [
 </template>
 
 <style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+}
+
 .projects-layout {
   display: flex;
   flex-direction: column;
@@ -99,20 +106,22 @@ const projects = [
 
 .main-container {
   display: flex;
-  flex: 1;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
 }
 
 .content {
   flex: 3;
-  padding: 40px;
+  padding: 60px;
 }
 
 .context-panel {
   flex: 1;
   background-color: var(--Background2);
   border-left: 1px solid var(--Border);
-  padding: 32px;
-  min-width: 300px;
+  padding: 80px 40px;
+  min-width: 100vh;
 }
 
 /* Estilos de Tarjetas */
@@ -139,8 +148,10 @@ const projects = [
 
 .card-desc { font-size: 0.8rem; color: #888; margin-bottom: 15px; }
 
+.card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+
 /* Tabs */
-.tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--Border); margin-bottom: 20px; }
+.tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--Border); margin-bottom: 50px; padding-bottom: 10px; }
 .tab { padding-bottom: 10px; cursor: pointer; color: #666; font-size: 0.9rem; }
 .tab.active { color: var(--Primary); border-bottom: 2px solid var(--Primary); }
 
@@ -164,4 +175,10 @@ const projects = [
 }
 .s-value { font-size: 1.5rem; font-weight: bold; display: block; }
 .s-label { font-size: 0.7rem; color: #666; }
+
+.ctx-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
 </style>
