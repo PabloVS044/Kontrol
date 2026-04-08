@@ -127,6 +127,14 @@
             :click-burst="false"
             background="var(--Background)"
           />
+          <CircleRounded
+            :size="300"
+            color="var(--Primary)"
+            roundedColor="var(--Primary2)"
+            :animationDuration="3"
+            :icon="NetworkIcon"
+          />
+
         </div>
       </div>
     </section>
@@ -141,8 +149,10 @@ import Pill from "../components/UI/Pill/Pill.vue";
 import Anchor from "../components/UI/Button/Anchor.vue";
 import arrowRightIcon from "../assets/img/arrow-right.png";
 import Card from "../components/UI/Card/Card.vue";
-import { LayoutGrid, Sparkles, CircleX, CircleCheck } from "lucide-vue-next";
+import { LayoutGrid, Sparkles, CircleX, CircleCheck, NetworkIcon } from "lucide-vue-next";
 import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
+import CircleRounded from "../components/UI/CircleRounded/CircleRounded.vue";
+
 const chaosIcon = arrowRightIcon;
 const orderIcon = arrowRightIcon;
 

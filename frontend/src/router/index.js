@@ -22,7 +22,6 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView
-      component: HomeView
     },
     {
       path: '/inventory',
