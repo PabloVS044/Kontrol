@@ -20,7 +20,7 @@
         />
       </div>
     </div>
-    <ul class="card-list">
+    <ul class="card-list" v-if="characteristics.length">
       <li v-for="characteristic in characteristics" :key="characteristic.title">
         <component
           :is="listIcon"
