@@ -1,5 +1,9 @@
 <template>
-  <div :class="['scroll-stack-scroller', className]" ref="scrollerRef">
+  <div
+    :class="['scroll-stack-scroller', className]"
+    :style="useWindowScroll ? { overflow: 'visible' } : {}"
+    ref="scrollerRef"
+  >
     <div class="scroll-stack-inner">
       <slot />
       <div class="scroll-stack-end" />
@@ -135,8 +139,9 @@ function updateCardTransforms() {
       || Math.abs(last.opacity    - next.opacity)     > 0.01;
 
     if (hasChanged) {
-      card.style.transform = `translate3d(0, ${next.translateY}px, 0) scale(${next.scale}) rotate(${next.rotation}deg)`;
-      card.style.filter    = next.blur > 0 ? `blur(${next.blur}px)` : '';
+      const rotate = next.rotation !== 0 ? ` rotate(${next.rotation}deg)` : '';
+      card.style.transform = `translateY(${next.translateY}px) scale(${next.scale})${rotate}`;
+      card.style.filter    = next.blur > 0 ? `blur(${next.blur}px)` : 'none';
       card.style.opacity   = next.opacity;
       lastTransforms.set(i, next);
     }
@@ -200,12 +205,10 @@ onMounted(() => {
 
   cards.forEach((card, i) => {
     if (i < cards.length - 1) card.style.marginBottom = `${props.itemDistance}px`;
-    card.style.willChange         = 'transform, filter, opacity';
-    card.style.transformOrigin    = 'top center';
-    card.style.backfaceVisibility = 'hidden';
-    card.style.transform          = 'translateZ(0)';
-    card.style.perspective        = '1000px';
-    card.style.opacity            = '0'; // hidden by default
+    card.style.willChange      = 'transform, opacity';
+    card.style.transformOrigin = 'top center';
+    card.style.transform       = 'none';
+    card.style.opacity         = '0'; // hidden by default
   });
 
   setupLenis();
@@ -238,6 +241,14 @@ onUnmounted(() => {
 .scroll-stack-inner {
   padding: 0 5rem 50rem;
   min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .scroll-stack-inner { padding: 0 1.25rem 50rem; }
+}
+
+@media (max-width: 480px) {
+  .scroll-stack-inner { padding: 0 0.5rem 50rem; }
 }
 
 .scroll-stack-end {
