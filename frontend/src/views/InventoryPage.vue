@@ -46,15 +46,12 @@
             <p v-if="modalError" class="modal-error">{{ modalError }}</p>
 
             <div class="modal-actions">
-              <button type="button" class="ctx-btn-secondary" @click="closeModal">
-                <span>Cancel</span>
-              </button>
-              <button type="submit" class="btn-primary" :disabled="modalLoading">
-                <svg v-if="!modalLoading" class="icon16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
-                </svg>
-                <span>{{ modalLoading ? 'Saving…' : 'Save product' }}</span>
-              </button>
+              <Button label="Cancel" type="button" @click="closeModal" />
+              <Button
+                :label="modalLoading ? 'Saving…' : 'Save product'"
+                type="submit"
+                :disabled="modalLoading"
+              />
             </div>
 
           </form>
@@ -180,9 +177,12 @@
                 </svg>
                 <span>image</span>
               </div>
-              <span class="stock-badge" :class="stockBadgeClass(product)">
-                {{ stockLabel(product) }}
-              </span>
+              <Pill
+                :label="stockLabel(product)"
+                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(201,169,98,0.12)' : 'rgba(52,211,153,0.12)'"
+                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
+                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
+              />
             </div>
 
             <div class="card-body">
@@ -283,18 +283,8 @@
         <!-- Acciones rápidas -->
         <div>
           <p class="ctx-label">Quick Actions</p>
-          <button class="ctx-btn-primary" @click="openNewProduct">
-            <svg class="icon16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
-            </svg>
-            <span>Add product</span>
-          </button>
-          <button class="ctx-btn-secondary" @click="exportInventory">
-            <svg class="icon16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 12h10M8 3v7M5 7l3 3 3-3" stroke="#faf8f5" stroke-width="1.4" stroke-linecap="square"/>
-            </svg>
-            <span>Export inventory</span>
-          </button>
+          <Button label="+ Add product" @click="openNewProduct" />
+          <Button label="↓ Export inventory" @click="exportInventory" />
         </div>
 
         <div class="data-source">
@@ -314,6 +304,8 @@ import { ref, computed, onMounted } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
+import Pill from '../components/UI/Pill/Pill.vue'
+import Button from '../components/UI/Button/Button.vue'
 
 const products    = ref([])
 const stockAlerts = ref([])
