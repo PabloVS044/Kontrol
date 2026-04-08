@@ -1,11 +1,14 @@
 import { Router } from 'express'
 import validate from '../middleware/validate.js'
 import { registerSchema, loginSchema } from '../schemas/authSchemas.js'
-import { login, register } from '../controllers/authController.js'
+import { login, register, googleAuth, googleCallback } from '../controllers/authController.js'
 
 const router = Router()
 
 router.post('/register', validate(registerSchema), register)
-router.post('/login', validate(loginSchema), login)
+router.post('/login',    validate(loginSchema),    login)
+
+router.get('/google',          googleAuth)
+router.get('/google/callback', googleCallback)
 
 export default router
