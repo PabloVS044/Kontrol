@@ -1,6 +1,13 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
+
+const oauth2Client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_CALLBACK_URL
+)
 
 const SALT_ROUNDS = 10
 
@@ -79,4 +86,130 @@ export const login = async (req, res) => {
   const token = signToken(user)
   const { password_hash, activo, ...userData } = user
   return res.json({ success: true, token, data: userData })
+}
+
+// ─── Google OAuth ─────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/auth/google
+ * Redirects the browser to Google's consent screen.
+ */
+export const googleAuth = (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    scope: ['openid', 'email', 'profile'],
+    access_type: 'offline',
+    prompt: 'select_account',
+  })
+  res.redirect(url)
+}
+
+/**
+ * GET /api/auth/google/callback
+ * Google redirects here after the user grants (or denies) access.
+ *
+ * Happy path:
+ *   1. Exchange authorization code for tokens
+ *   2. Verify ID token and extract profile
+ *   3. Find user by google_id → link → or create (find-or-create)
+ *   4. Issue our own JWT and redirect to the frontend
+ *
+ * On any error the browser is redirected to /login?error=<reason>
+ * so the frontend always receives a meaningful signal.
+ */
+export const googleCallback = async (req, res) => {
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
+  const { code, error } = req.query
+
+  if (error) {
+    return res.redirect(`${FRONTEND_URL}/login?error=google_cancelado`)
+  }
+
+  try {
+    // Exchange authorization code for tokens
+    const { tokens } = await oauth2Client.getToken(code)
+
+    // Verify and decode the ID token
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    const { sub: google_id, email, given_name, family_name } = ticket.getPayload()
+    const nombre   = given_name  || email.split('@')[0]
+    const apellido = family_name || ''
+
+    const client = await pool.connect()
+    try {
+      // 1. Look up by google_id
+      let userRow = await client.query(
+        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+         FROM public.usuario u
+         JOIN public.rol r ON r.id_rol = u.id_rol
+         WHERE u.google_id = $1`,
+        [google_id]
+      )
+
+      // 2. Look up by email and link the Google account
+      if (!userRow.rows.length) {
+        const byEmail = await client.query(
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+           FROM public.usuario u
+           JOIN public.rol r ON r.id_rol = u.id_rol
+           WHERE u.email = $1`,
+          [email]
+        )
+
+        if (byEmail.rows.length) {
+          await client.query(
+            'UPDATE public.usuario SET google_id = $1 WHERE id_usuario = $2',
+            [google_id, byEmail.rows[0].id_usuario]
+          )
+          userRow = byEmail
+        }
+      }
+
+      // 3. Create a new user (first-time Google sign-up)
+      if (!userRow.rows.length) {
+        const rolRow = await client.query(
+          "SELECT id_rol FROM public.rol WHERE nombre_rol = 'admin' LIMIT 1"
+        )
+        if (!rolRow.rows.length) {
+          return res.redirect(`${FRONTEND_URL}/login?error=rol_no_encontrado`)
+        }
+
+        const inserted = await client.query(
+          `INSERT INTO public.usuario (nombre, apellido, email, password_hash, google_id, id_rol)
+           VALUES ($1, $2, $3, NULL, $4, $5)
+           RETURNING id_usuario`,
+          [nombre, apellido, email, google_id, rolRow.rows[0].id_rol]
+        )
+
+        userRow = await client.query(
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+           FROM public.usuario u
+           JOIN public.rol r ON r.id_rol = u.id_rol
+           WHERE u.id_usuario = $1`,
+          [inserted.rows[0].id_usuario]
+        )
+      }
+
+      const user = userRow.rows[0]
+
+      if (!user.activo) {
+        return res.redirect(`${FRONTEND_URL}/login?error=cuenta_desactivada`)
+      }
+
+      const token = signToken(user)
+
+      // onboarding=true signals the frontend that this user has no empresa yet
+      const onboarding = !user.id_empresa
+      return res.redirect(
+        `${FRONTEND_URL}/auth/callback?token=${token}&onboarding=${onboarding}`
+      )
+    } finally {
+      client.release()
+    }
+  } catch (err) {
+    console.error('[Google OAuth]', err)
+    return res.redirect(`${FRONTEND_URL}/login?error=google_error`)
+  }
 }
