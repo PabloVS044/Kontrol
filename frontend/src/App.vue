@@ -18,7 +18,9 @@
       />
     </div>
 
-    <RouterView />
+    <div class="content">
+      <RouterView />
+    </div>
   </div>
 </template>
 
@@ -35,13 +37,12 @@ import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
 }
 
 .background {
-  position: fixed; /* fijo para que cubra toda la pantalla al hacer scroll */
-  inset: 0; /* top:0 right:0 bottom:0 left:0 */
+  position: fixed;
+  inset: 0;
   z-index: 0;
 }
 
-/* El RouterView va encima del fondo */
-:deep(.router-view) {
+.content {
   position: relative;
   z-index: 1;
 }
