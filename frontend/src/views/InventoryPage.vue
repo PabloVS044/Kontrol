@@ -2,24 +2,7 @@
   <div class="inventory-root">
     <AppNavbar />
 
-    <div class="inventory-layout">
-
-    <!-- Estado: no autenticado -->
-    <div v-if="authError" class="state-screen">
-      <p class="state-title">Session required</p>
-      <p class="state-msg">You must be logged in to view the inventory.</p>
-    </div>
-
-    <!-- Estado: error genérico -->
-    <div v-else-if="fetchError" class="state-screen">
-      <p class="state-title">Could not load inventory</p>
-      <p class="state-msg">{{ fetchError }}</p>
-      <button class="btn-primary" style="margin-top:16px" @click="loadData">
-        <span>Retry</span>
-      </button>
-    </div>
-
-    <!-- Modal: nuevo producto -->
+    <!-- Modal: nuevo producto (fuera del v-if/v-else) -->
     <Teleport to="body">
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal">
@@ -78,6 +61,23 @@
         </div>
       </div>
     </Teleport>
+
+    <div class="inventory-layout">
+
+    <!-- Estado: no autenticado -->
+    <div v-if="authError" class="state-screen">
+      <p class="state-title">Session required</p>
+      <p class="state-msg">You must be logged in to view the inventory.</p>
+    </div>
+
+    <!-- Estado: error genérico -->
+    <div v-else-if="fetchError" class="state-screen">
+      <p class="state-title">Could not load inventory</p>
+      <p class="state-msg">{{ fetchError }}</p>
+      <button class="btn-primary" style="margin-top:16px" @click="loadData">
+        <span>Retry</span>
+      </button>
+    </div>
 
     <template v-else>
 
