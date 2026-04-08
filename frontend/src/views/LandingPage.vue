@@ -123,7 +123,7 @@
             :hover-scale="1.2"
             :parallax="0.05"
             :click-burst="false"
-            background="var(--Background)"
+            :background="`linear-gradient(color-mix(in srgb, var(--Background) 80%, transparent), color-mix(in srgb, var(--Tertiary) 50%, transparent))`"
           />
           <div class="graph">
             <CircleRounded
