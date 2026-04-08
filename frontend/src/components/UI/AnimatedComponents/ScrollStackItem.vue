@@ -28,9 +28,7 @@ defineProps({
 <style scoped>
 .scroll-stack-card {
   transform-origin: top center;
-  will-change: transform, filter, opacity;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
+  will-change: transform, opacity;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
   min-height: 20rem;
   width: 100%;
@@ -38,7 +36,6 @@ defineProps({
   padding: 3rem;
   border-radius: 40px;
   box-sizing: border-box;
-  transform: translateZ(0);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -62,7 +59,7 @@ defineProps({
   height: 3rem;
   padding: 0 1rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--Text) 12%, transparent);
   color: var(--Text);
   font-weight: 700;
   font-size: 0.95rem;
@@ -77,7 +74,7 @@ defineProps({
 
 .scroll-stack-card-description {
   margin: 1rem 0 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--Text) 75%, transparent);
   font-size: 1rem;
   line-height: 1.6;
   max-width: 40rem;
@@ -106,13 +103,13 @@ defineProps({
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--Text) 15%, transparent);
   color: var(--Text);
   font-weight: 700;
 }
 
 .process-item-text {
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--Text) 85%, transparent);
   line-height: 1.6;
 }
 </style>

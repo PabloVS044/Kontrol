@@ -547,9 +547,9 @@ onUnmounted(() => {
 @media (max-width: 599px) {
   .card-grid {
     grid-template-columns: 1fr;
-    width: 90%;
-    margin: 0 auto;
-    padding: 0.5em;
+    width: 100%;
+    margin: 0;
+    padding: 0.25em;
   }
   .magic-bento-card { min-height: 180px; }
 }

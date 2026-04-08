@@ -288,13 +288,125 @@
         />
       </ScrollStack>
     </section>
+
+    <section id="companies">
+      <div class="companies-wrapper">
+        <div class="steps-header">
+          <h2 class="sub-title">Built for every modern merchant</h2>
+          <p>
+            Designed to adapt to any business, from small shops to large-scale
+            operations, providing the tools needed to manage, grow, and scale
+            effortlessly
+          </p>
+        </div>
+        <div class="companies-swap">
+        <CardSwap
+          :width="cardSwapWidth"
+          :height="cardSwapHeight"
+          :card-distance="cardDistance"
+          :vertical-distance="verticalDistance"
+          :delay="5000"
+          easing="elastic"
+        >
+          <CarSwapItem
+            class="card-inner"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--Tertiary),
+                var(--Background)
+              );
+            "
+          >
+            <div class="swap-card-content">
+              <span class="swap-card-tag">Store Owners</span>
+              <h3 class="swap-card-title">Full control of your business</h3>
+              <p class="swap-card-description">
+                Manage operations, track performance, and optimize your store
+                with tools designed to simplify daily workflows.
+              </p>
+              <ul class="swap-card-list">
+                <li>Real-time sales tracking</li>
+                <li>Inventory management</li>
+                <li>Customer insights & reports</li>
+              </ul>
+            </div>
+          </CarSwapItem>
+          <CarSwapItem
+            class="card-inner"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--Tertiary),
+                var(--Background)
+              );
+            "
+          >
+            <div class="swap-card-content">
+              <span class="swap-card-tag">Automotive</span>
+              <h3 class="swap-card-title">Built for high-demand operations</h3>
+              <p class="swap-card-description">
+                Handle complex workflows, service tracking, and inventory with
+                precision tailored for automotive businesses.
+              </p>
+              <ul class="swap-card-list">
+                <li>Service & repair tracking</li>
+                <li>Parts inventory control</li>
+                <li>Workflow automation</li>
+              </ul>
+            </div>
+          </CarSwapItem>
+          <CarSwapItem
+            class="card-inner"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--Tertiary),
+                var(--Background)
+              );
+            "
+          >
+            <div class="swap-card-content">
+              <span class="swap-card-tag">Food Vendors</span>
+              <h3 class="swap-card-title">Fast, reliable, always ready</h3>
+              <p class="swap-card-description">
+                Keep orders moving and customers satisfied with tools designed
+                for speed, efficiency, and peak hours.
+              </p>
+              <ul class="swap-card-list">
+                <li>Order management system</li>
+                <li>Real-time menu updates</li>
+                <li>Peak-hour performance optimization</li>
+              </ul>
+            </div>
+          </CarSwapItem>
+        </CardSwap>
+        </div>
+      </div>
+    </section>
+    <section id="start">
+      <h2 class="sub-title">Start controlling your business today.</h2>
+      <p>
+        Join 50,000+ businesses using Kontrol to eliminate chaos and drive
+        growth.
+      </p>
+      <Anchor
+        label="Enter the command center"
+        backColor="var(--Primary2)"
+        hoverColor="var(--Tertiary)"
+        :icon="Rocket"
+      />
+    </section>
+    <Footer />
   </main>
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
 import "./LandingPage.css";
 import MagicBento from "../components/UI/AnimatedComponents/MagicBento.vue";
 import Navbar from "../components/Navbar.vue";
+import Footer from "../components/Footer.vue";
 import AnimatedText from "../components/UI/TextEffects/AnimatedText.vue";
 import Pill from "../components/UI/Pill/Pill.vue";
 import Anchor from "../components/UI/Button/Anchor.vue";
@@ -316,12 +428,55 @@ import {
   Zap,
   Puzzle,
   ShieldCheck,
+  Rocket,
 } from "lucide-vue-next";
 
 import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
 import CircleRounded from "../components/UI/CircleRounded/CircleRounded.vue";
 import ScrollStack from "../components/UI/AnimatedComponents/ScrollStack.vue";
 import ScrollStackItem from "../components/UI/AnimatedComponents/ScrollStackItem.vue";
+import CardSwap from "../components/UI/AnimatedComponents/CardsSwap.vue";
+import CarSwapItem from "../components/UI/AnimatedComponents/CarSwapItem.vue";
+
+// ─── Responsive CardSwap sizing ───────────────────────────────────────────────
+const cardSwapWidth = ref(860);
+const cardSwapHeight = ref(620);
+const cardDistance = ref(60);
+const verticalDistance = ref(70);
+
+function updateCardSwapSize() {
+  const vw = window.innerWidth;
+  if (vw < 480) {
+    cardSwapWidth.value = Math.min(340, vw - 40);
+    cardSwapHeight.value = 300;
+    cardDistance.value = 25;
+    verticalDistance.value = 35;
+  } else if (vw < 768) {
+    cardSwapWidth.value = Math.min(480, vw - 60);
+    cardSwapHeight.value = 380;
+    cardDistance.value = 35;
+    verticalDistance.value = 45;
+  } else if (vw < 1024) {
+    cardSwapWidth.value = 620;
+    cardSwapHeight.value = 480;
+    cardDistance.value = 50;
+    verticalDistance.value = 60;
+  } else {
+    cardSwapWidth.value = 860;
+    cardSwapHeight.value = 620;
+    cardDistance.value = 65;
+    verticalDistance.value = 75;
+  }
+}
+
+onMounted(() => {
+  updateCardSwapSize();
+  window.addEventListener("resize", updateCardSwapSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateCardSwapSize);
+});
 
 const chaosCharacteristics = [
   { title: "WhatsApp threads for project updates" },
