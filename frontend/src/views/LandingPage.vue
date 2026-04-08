@@ -93,10 +93,10 @@
       </div>
     </section>
 
-    <section id="features">
-      <div class="feature-container">
+    <section id="solution">
+      <div class="solution-container">
         <h2 class="sub-title">The Comand Center</h2>
-        <p>
+        <p class="description">
           Every facet of your operation, unified in a high-fidelity dashboard
           that anticipates your next move.
         </p>
@@ -123,7 +123,7 @@
             :hover-scale="1.2"
             :parallax="0.05"
             :click-burst="false"
-            :background="`linear-gradient(color-mix(in srgb, var(--Background) 80%, transparent), color-mix(in srgb, var(--Tertiary) 50%, transparent))`"
+            :background="`linear-gradient(color-mix(in srgb, var(--Background) 90%, transparent), color-mix(in srgb, var(--Tertiary) 80%, transparent))`"
           />
           <div class="graph">
             <CircleRounded
@@ -182,11 +182,118 @@
         </div>
       </div>
     </section>
+
+    <section id="features">
+      <h2 class="sub-title">How it works?</h2>
+      <MagicBento
+        :text-auto-hide="true"
+        enable-stars
+        enable-spotlight
+        :enable-border-glow="true"
+        :enable-tilt="false"
+        :enable-magnetism="false"
+        click-effect
+        :spotlight-radius="400"
+        :particle-count="12"
+        :disable-animations="false"
+        card-background="var(--Background2)"
+        card-border="var(--Border)"
+        label-color="var(--Primary)"
+        title-color="var(--Text)"
+        description-color="var(--Text)"
+        glow-color="var(--Primary)"
+        :cards="[
+          {
+            label: 'Insights',
+            title: 'Analytics',
+            description: 'Track user behavior',
+            icon: BarChart2,
+          },
+          {
+            label: 'Overview',
+            title: 'Dashboard',
+            description: 'Centralized data view',
+            icon: LayoutDashboard,
+          },
+          {
+            label: 'Teamwork',
+            title: 'Collaboration',
+            description: 'Work together seamlessly',
+            icon: Users,
+          },
+          {
+            label: 'Efficiency',
+            title: 'Automation',
+            description: 'Streamline workflows',
+            icon: Zap,
+          },
+          {
+            label: 'Connectivity',
+            title: 'Integration',
+            description: 'Connect favorite tools',
+            icon: Puzzle,
+          },
+          {
+            label: 'Protection',
+            title: 'Security',
+            description: 'Enterprise-grade protection',
+            icon: ShieldCheck,
+          },
+        ]"
+      />
+    </section>
+
+    <section id="steps">
+      <h2 class="sub-title">Steps to get full control</h2>
+      <ScrollStack
+        :use-window-scroll="true"
+        :item-distance="50"
+        :item-stack-distance="30"
+        stack-position="50%"
+        scale-end-position="30%"
+        :base-scale="0.85"
+      >
+        <ScrollStackItem
+          style="background: var(--Background2)"
+          :step="1"
+          title="Connect your ecosystem"
+          description="Bring your tools together with one central command center."
+          :process="[
+            'Link sales, finance and operations in one place',
+            'Import workflows and standardize handoffs',
+            'Enable automated alerts across teams',
+          ]"
+        />
+        <ScrollStackItem
+          style="background: var(--Background2)"
+          :step="2"
+          title="Automate your workflow"
+          description="Turn manual handoffs into automated processes that move work forward."
+          :process="[
+            'Define automation triggers and conditions',
+            'Route tasks to the right teams instantly',
+            'Monitor every step with full visibility',
+          ]"
+        />
+        <ScrollStackItem
+          style="background: var(--Background2)"
+          :step="3"
+          title="Optimize outcomes"
+          description="Use live performance data to refine processes and improve business results."
+          :process="[
+            'Track key metrics in real time',
+            'Identify bottlenecks and fix them fast',
+            'Scale the system as your team grows',
+          ]"
+        />
+      </ScrollStack>
+    </section>
   </main>
 </template>
 
 <script setup>
 import "./LandingPage.css";
+import MagicBento from "../components/UI/AnimatedComponents/MagicBento.vue";
 import Navbar from "../components/Navbar.vue";
 import AnimatedText from "../components/UI/TextEffects/AnimatedText.vue";
 import Pill from "../components/UI/Pill/Pill.vue";
@@ -203,12 +310,18 @@ import {
   UsersRound,
   Megaphone,
   Box,
+  BarChart2,
+  LayoutDashboard,
+  Users,
+  Zap,
+  Puzzle,
+  ShieldCheck,
 } from "lucide-vue-next";
+
 import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
 import CircleRounded from "../components/UI/CircleRounded/CircleRounded.vue";
-
-const chaosIcon = arrowRightIcon;
-const orderIcon = arrowRightIcon;
+import ScrollStack from "../components/UI/AnimatedComponents/ScrollStack.vue";
+import ScrollStackItem from "../components/UI/AnimatedComponents/ScrollStackItem.vue";
 
 const chaosCharacteristics = [
   { title: "WhatsApp threads for project updates" },
