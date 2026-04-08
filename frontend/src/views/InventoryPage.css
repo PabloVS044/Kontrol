@@ -23,6 +23,7 @@
   flex-direction: column;
   gap: 32px;
   padding: 48px 56px;
+  background: rgba(10, 10, 10, 0.82);
 }
 
 /* Header */
@@ -51,7 +52,7 @@
 
 /* Barra de búsqueda */
 .search-bar {
-  border: 1px solid #1f1f1f; display: flex; align-items: center; gap: 12px;
+  border: 1px solid #1f1f1f; background: rgba(10, 10, 10, 0.6); display: flex; align-items: center; gap: 12px;
   padding: 16px 20px; width: 100%;
 }
 .search-input {
@@ -85,7 +86,7 @@
 
 /* Tarjeta de producto */
 .product-card {
-  border: 1px solid #1f1f1f; display: flex; flex-direction: column;
+  border: 1px solid #1f1f1f; background: rgba(10, 10, 10, 0.75); display: flex; flex-direction: column;
   cursor: pointer; transition: border-color .15s;
 }
 .product-card:hover { border-color: #2e2e2e; }
