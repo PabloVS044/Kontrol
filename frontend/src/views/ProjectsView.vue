@@ -1,133 +1,167 @@
 <script setup>
 import AppNavbar from '../components/AppNavbar.vue'
 import Anchor from '../components/UI/Button/Anchor.vue'
+
+// Simulaciód de datos de proyectos
+const projects = [
+  { id: 1, name: 'Restock Math 2026', desc: 'Annual textbook purchase.', progress: 62, status: 'On Track', color: 'var(--Primary)' },
+  { id: 2, name: 'Website Redesign', desc: 'Full corporate site overhaul.', progress: 40, status: 'At Risk', color: 'var(--Error)' },
+  { id: 3, name: 'Mobile App Launch', desc: 'iOS/Android release QA.', progress: 81, status: 'Critical', color: 'var(--Error)' }
+]
 </script>
 
 <template>
   <div class="projects-layout">
     <AppNavbar />
 
-    <main class="content">
-      <header class="header">
-        <div class="header-left">
-          <h1 class="title">My Projects</h1>
-          <p class="subtitle">Ana's Library Management</p>
-        </div>
-        <div class="header-actions">
-          <Anchor href="#" class="btn-primary">
-            <span>+ NEW PROJECT</span>
-          </Anchor>
-        </div>
-      </header>
+    <div class="main-container">
+      <!-- PANEL IZQUIERDO: PROYECTOS -->
+      <main class="content">
+        <header class="header">
+          <div class="header-left">
+            <h1 class="title">My Projects</h1>
+            <p class="subtitle">Projects you are enrolled in as admin or member</p>
+          </div>
+          <div class="header-actions">
+            <Anchor href="#" class="btn-gold">
+              + New project
+            </Anchor>
+          </div>
+        </header>
 
-      <section class="project-grid">
-        <!-- Tarjeta de Ejemplo: Restock Matemáticas -->
-        <div class="project-card">
-          <div class="card-accent"></div>
-          <div class="card-header">
-            <span class="card-name">Restock Math 2026</span>
-            <span class="role-badge role-admin">Admin</span>
-          </div>
-          <div class="card-body">
-            <p class="card-desc">Annual textbook purchase for the season.</p>
-            <div class="progress-row">
-              <div class="progress-bg">
-                <div class="progress-fill" style="width: 62%"></div>
+        <!-- TABS DE FILTRO -->
+        <div class="tabs">
+          <span class="tab active">All (11)</span>
+          <span class="tab">As Admin (4)</span>
+          <span class="tab">At Risk (2)</span>
+        </div>
+
+        <section class="project-grid">
+          <div v-for="project in projects" :key="project.id" class="project-card">
+            <div class="card-accent" :style="{ backgroundColor: project.color }"></div>
+            <div class="card-header">
+              <span class="card-name">{{ project.name }}</span>
+              <span class="role-badge">Admin</span>
+            </div>
+            <div class="card-body">
+              <p class="card-desc">{{ project.desc }}</p>
+              <div class="progress-container">
+                <div class="progress-bg">
+                  <div class="progress-fill" :style="{ width: project.progress + '%', backgroundColor: project.color }"></div>
+                </div>
+                <span class="progress-value">{{ project.progress }}%</span>
               </div>
-              <span class="progress-value">62%</span>
+              <div class="card-bottom">
+                <span :style="{ color: project.color }" class="status-text">● {{ project.status }}</span>
+                <span class="due-date">Due Jan 28</span>
+              </div>
             </div>
-            <div class="card-bottom">
-              <span class="status-active">● On Track</span>
-              <span class="due-date">Due Jan 28</span>
-            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- PANEL DERECHO: OVERVIEW -->
+      <aside class="context-panel">
+        <h2 class="ctx-title">Overview</h2>
+        <p class="ctx-subtitle">Your project summary</p>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="s-value">11</span>
+            <span class="s-label">Total projects</span>
+          </div>
+          <div class="summary-card">
+            <span class="s-value" style="color: var(--Error)">2</span>
+            <span class="s-label">At risk</span>
           </div>
         </div>
-      </section>
-    </main>
+
+        <div class="activity-section">
+          <h3 class="ctx-label">RECENT ACTIVITY</h3>
+          <div class="activity-item">
+            <p><strong>Marcus Wade</strong> opened 3 issues</p>
+            <span>1 hour ago</span>
+          </div>
+        </div>
+      </aside>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .projects-layout {
   display: flex;
+  flex-direction: column;
   background-color: var(--Background);
   min-height: 100vh;
-  width: 100%;
-}
-
-.content {
-  flex: 1;
-  padding: 48px 56px;
-}
-
-.title {
-  font-family: 'Playfair Display', serif;
-  font-size: 48px;
   color: var(--Text);
 }
 
-.subtitle {
-  color: #888;
-  font-size: 14px;
+.main-container {
+  display: flex;
+  flex: 1;
 }
 
+.content {
+  flex: 3;
+  padding: 40px;
+}
+
+.context-panel {
+  flex: 1;
+  background-color: var(--Background2);
+  border-left: 1px solid var(--Border);
+  padding: 32px;
+  min-width: 300px;
+}
+
+/* Estilos de Tarjetas */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  margin-top: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .project-card {
-  background-color: var(--Background2);
+  background-color: var(--Background3);
   border: 1px solid var(--Border);
-  display: flex;
-  flex-direction: column;
+  border-radius: 4px;
 }
 
-.card-accent {
-  height: 3px;
+.card-accent { height: 3px; }
+
+.card-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+.card-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+
+.card-body { padding: 0 15px 15px; }
+
+.card-desc { font-size: 0.8rem; color: #888; margin-bottom: 15px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--Border); margin-bottom: 20px; }
+.tab { padding-bottom: 10px; cursor: pointer; color: #666; font-size: 0.9rem; }
+.tab.active { color: var(--Primary); border-bottom: 2px solid var(--Primary); }
+
+/* Botón Dorado */
+.btn-gold {
   background-color: var(--Primary);
-}
-
-.card-header {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.card-name {
-  font-size: 18px;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 4px;
   font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.role-badge {
-  font-size: 10px;
-  background: rgba(202, 168, 96, 0.1);
-  color: var(--Primary);
-  padding: 4px 8px;
-  border: 1px solid rgba(202, 168, 96, 0.2);
+/* Stats */
+.summary-card {
+  background: #111;
+  padding: 15px;
+  border: 1px solid var(--Border);
+  margin-bottom: 10px;
 }
-
-.card-body {
-  padding: 0 20px 20px;
-}
-
-.progress-bg {
-  background: #1f1f1f;
-  height: 4px;
-  width: 100%;
-  margin: 10px 0;
-}
-
-.progress-fill {
-  background-color: var(--Primary);
-  height: 100%;
-}
-
-.status-active {
-  color: var(--Success);
-  font-size: 12px;
-  font-weight: bold;
-}
+.s-value { font-size: 1.5rem; font-weight: bold; display: block; }
+.s-label { font-size: 0.7rem; color: #666; }
 </style>
