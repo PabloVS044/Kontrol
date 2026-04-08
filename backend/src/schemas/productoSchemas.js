@@ -15,12 +15,13 @@ export const productoProveedorParamsSchema = z.object({
 })
 
 export const createProductoSchema = z.object({
-  nombre:       z.string().min(1, 'nombre es requerido.').max(255),
-  descripcion:  z.string().optional(),
-  precio_venta: z.number().min(0, 'precio_venta debe ser >= 0.'),
-  precio_costo: z.number().min(0, 'precio_costo debe ser >= 0.'),
-  stock_minimo: z.number().int().min(0).optional().default(0),
-  id_categoria: z.number().int().positive().optional(),
+  nombre:        z.string().min(1, 'nombre es requerido.').max(255),
+  descripcion:   z.string().optional(),
+  precio_venta:  z.number().min(0, 'precio_venta debe ser >= 0.'),
+  precio_costo:  z.number().min(0, 'precio_costo debe ser >= 0.'),
+  stock_minimo:  z.number().int().min(0).optional().default(0),
+  stock_inicial: z.number().int().min(0).optional().default(0),
+  id_categoria:  z.number().int().positive().optional(),
 })
 
 export const updateProductoSchema = z
