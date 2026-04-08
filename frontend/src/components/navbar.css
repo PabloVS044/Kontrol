@@ -143,7 +143,7 @@ h3 {
 }
 
 /* ─── Responsive breakpoints ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (min-width: 951px) {
   nav { width: 90%; }
   .mobile-menu { width: 90%; }
 
@@ -152,7 +152,7 @@ h3 {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
   nav {
     width: 92%;
     height: 68px;
