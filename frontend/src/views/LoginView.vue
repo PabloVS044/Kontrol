@@ -83,11 +83,7 @@
 
           <!-- OAuth -->
           <div class="login-oauth-row">
-            <button class="login-btn-oauth">
-              <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-white-icon.png" alt="GitHub" class="login-oauth-logo" />
-              Sign in with GitHub
-            </button>
-            <button class="login-btn-oauth">
+            <button class="login-btn-oauth" @click="handleGoogleLogin">
               <img src="https://img.icons8.com/ios11/512/FFFFFF/google-logo.png" alt="Google" class="login-oauth-logo" />
               Sign in with Google
             </button>
@@ -106,15 +102,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
-import { loginUser } from '@/services/auth'
+import { loginUser, loginWithGoogle } from '@/services/auth'
 import './LoginView.css'
 
 const router    = useRouter()
+const route     = useRoute()
 const authStore = useAuthStore()
 
 const form     = reactive({ email: '', password: '' })
@@ -123,6 +120,11 @@ const isLoading   = ref(false)
 const errorMessage = ref('')
 const rememberMe   = ref(false)
 const showPass     = ref(false)
+
+// Show error forwarded from AuthCallback (e.g. google_cancelado)
+onMounted(() => {
+  if (route.query.error) errorMessage.value = route.query.error
+})
 
 function validateEmail() {
   errors.email = !form.email
@@ -146,6 +148,10 @@ function isValid() {
   return !errors.email && !errors.password
 }
 
+function handleGoogleLogin() {
+  loginWithGoogle()
+}
+
 async function handleLogin() {
   errorMessage.value = ''
   if (!isValid()) return
@@ -154,7 +160,7 @@ async function handleLogin() {
   try {
     const data = await loginUser(form.email, form.password)
     authStore.setToken(data.token)
-    router.push({ name: 'home' })
+    router.push({ name: 'dashboard' })
   } catch (err) {
     errorMessage.value = err.message || 'Something went wrong. Please try again.'
   } finally {

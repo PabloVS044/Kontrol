@@ -96,11 +96,7 @@
 
           <!-- OAuth -->
           <div class="register-oauth-row">
-            <button class="register-btn-oauth">
-              <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-white-icon.png" alt="GitHub" class="register-oauth-logo" />
-              Sign up with GitHub
-            </button>
-            <button class="register-btn-oauth">
+            <button class="register-btn-oauth" @click="handleGoogleRegister">
               <img src="https://img.icons8.com/ios11/512/FFFFFF/google-logo.png" alt="Google" class="register-oauth-logo" />
               Sign up with Google
             </button>
@@ -130,7 +126,7 @@ import { useRouter } from 'vue-router'
 import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
-import { registerUser } from '@/services/auth'
+import { registerUser, loginWithGoogle } from '@/services/auth'
 import './RegisterView.css'
 
 const router    = useRouter()
@@ -167,6 +163,10 @@ function isValid() {
   return !Object.values(errors).some(Boolean)
 }
 
+function handleGoogleRegister() {
+  loginWithGoogle()
+}
+
 async function handleRegister() {
   errorMessage.value  = ''
   successMessage.value = ''
@@ -174,7 +174,7 @@ async function handleRegister() {
 
   isLoading.value = true
   try {
-    await registerUser(form.email, form.password, form.firstName, form.lastName)
+    await registerUser(form.firstName, form.lastName, form.email, form.password)
     successMessage.value = 'Account created! Redirecting to login...'
     setTimeout(() => router.push({ name: 'login' }), 1400)
   } catch (err) {

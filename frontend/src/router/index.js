@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../views/LoginView.vue'
+import LoginView    from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
-import LandingPage from '../views/LandingPage.vue'
-import HomeView from '../views/HomeView.vue'
+import LandingPage  from '../views/LandingPage.vue'
+import HomeView     from '../views/HomeView.vue'
 import InventoryPage from '../views/InventoryPage.vue'
+import ProjectsView from '../views/ProjectsView.vue'
+import AuthCallback from '../views/AuthCallback.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'landing',
       component: LandingPage
     },
     {
@@ -24,9 +26,28 @@ const router = createRouter({
       component: RegisterView
     },
     {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: HomeView,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/inventory',
       name: 'inventory',
       component: InventoryPage
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectsView,
+      component: InventoryPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      // Receives ?token=&onboarding=&error= from the backend Google OAuth callback
+      path: '/auth/callback',
+      name: 'auth-callback',
+      component: AuthCallback
     }
   ]
 })
