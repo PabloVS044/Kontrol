@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView    from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LandingPage  from '../views/LandingPage.vue'
-import HomeView     from '../views/HomeView.vue'
 import InventoryPage from '../views/InventoryPage.vue'
 import ProjectsView from '../views/ProjectsView.vue'
+import DashboardView from '../views/DashboardView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
 
 const router = createRouter({
@@ -28,7 +28,7 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: HomeView,
+      component: DashboardView,
       meta: { requiresAuth: true }
     },
     {

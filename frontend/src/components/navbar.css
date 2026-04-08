@@ -6,7 +6,7 @@ body {
   position: fixed;
   top: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   width: 100%;
   color: var(--Text);
@@ -17,12 +17,14 @@ nav {
   display: flex;
   border-radius: 50px;
   justify-content: space-between;
+  align-items: center;
   width: 80%;
   height: 80px;
   border: 3px solid var(--Border);
   background-color: var(--Tertiary);
   padding-left: 40px;
   padding-right: 20px;
+  box-sizing: border-box;
 }
 
 ul {
@@ -35,10 +37,10 @@ ul {
 
 .icon {
   display: flex;
-  width: 10%;
-  height: 100%;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .icon img {
@@ -48,11 +50,10 @@ ul {
 
 .actions {
   display: flex;
-  width: 20%;
-  height: 100%;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 h3 {
@@ -60,4 +61,113 @@ h3 {
   letter-spacing: 1px;
 }
 
+/* ─── Hamburger button ───────────────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
 
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--Text);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+  transform-origin: center;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ─── Mobile menu ────────────────────────────────────────────────────────── */
+.mobile-menu {
+  width: 80%;
+  background: var(--Tertiary);
+  border: 3px solid var(--Border);
+  border-radius: 24px;
+  margin-top: 8px;
+  padding: 0 24px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  box-sizing: border-box;
+}
+
+.mobile-menu.open {
+  max-height: 500px;
+  padding: 20px 24px;
+}
+
+.mobile-nav {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.mobile-nav li {
+  width: 100%;
+}
+
+.mobile-nav li a {
+  justify-content: flex-start;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.mobile-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--Border);
+  margin-top: 8px;
+}
+
+.mobile-actions a {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ─── Responsive breakpoints ─────────────────────────────────────────────── */
+@media (max-width: 1024px) and (min-width: 951px) {
+  nav { width: 90%; }
+  .mobile-menu { width: 90%; }
+
+  .navigation {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 950px) {
+  nav {
+    width: 92%;
+    height: 68px;
+    padding-left: 20px;
+    padding-right: 16px;
+  }
+
+  .mobile-menu { width: 92%; }
+
+  .navigation { display: none; }
+  .actions    { display: none; }
+  .hamburger  { display: flex; }
+}
+
+@media (max-width: 480px) {
+  nav { width: 94%; border-radius: 20px; }
+  .mobile-menu { width: 94%; }
+}
