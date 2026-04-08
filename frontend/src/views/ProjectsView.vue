@@ -64,13 +64,12 @@
             <p v-if="modalError" class="modal-error">{{ modalError }}</p>
 
             <div class="modal-actions">
-              <button type="button" class="ctx-btn-secondary" @click="closeModal">Cancel</button>
-              <button type="submit" class="btn-primary" :disabled="modalLoading">
-                <svg v-if="!modalLoading" class="icon16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
-                </svg>
-                <span>{{ modalLoading ? 'Saving…' : 'Save project' }}</span>
-              </button>
+              <Button label="Cancel" type="button" @click="closeModal" />
+              <Button
+                :label="modalLoading ? 'Saving…' : 'Save project'"
+                type="submit"
+                :disabled="modalLoading"
+              />
             </div>
           </form>
         </div>
@@ -175,9 +174,12 @@
               <div class="card-accent" :style="{ backgroundColor: statusColor(project.estado) }"></div>
               <div class="card-header">
                 <span class="card-name">{{ project.nombre }}</span>
-                <span class="role-badge" :class="isAdmin(project) ? 'badge-admin' : 'badge-member'">
-                  {{ isAdmin(project) ? 'ADMIN' : 'MEMBER' }}
-                </span>
+                <Pill
+                  :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
+                  :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
+                  :circleColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                  :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                />
               </div>
               <div class="card-body">
                 <p class="card-desc">{{ project.descripcion || 'No description.' }}</p>
@@ -191,16 +193,25 @@
                   <span class="progress-val">{{ statusProgress(project.estado) }}%</span>
                 </div>
                 <div class="card-footer-row">
-                  <span class="status-dot" :style="{ color: statusColor(project.estado) }">
-                    ● {{ statusLabel(project.estado) }}
-                  </span>
+                  <Pill
+                    :label="statusLabel(project.estado)"
+                    :btnColor="statusColor(project.estado) + '18'"
+                    :circleColor="statusColor(project.estado)"
+                    :textColor="statusColor(project.estado)"
+                  />
                   <span class="due-date">
                     {{ project.fecha_fin_planificada ? 'Due ' + formatDate(project.fecha_fin_planificada) : 'No due date' }}
                   </span>
                 </div>
               </div>
               <div class="card-open">
-                <span class="open-link">→ Open project</span>
+                <Anchor
+                  label="→ Open project"
+                  link="#"
+                  textColor="#555"
+                  backColor="transparent"
+                  hoverColor="rgba(201,169,98,0.06)"
+                />
               </div>
             </div>
 
@@ -244,18 +255,8 @@
 
           <div>
             <p class="ctx-label">QUICK ACTIONS</p>
-            <button class="ctx-btn-primary" @click="openModal">
-              <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
-              </svg>
-              <span>Create new project</span>
-            </button>
-            <button class="ctx-btn-secondary">
-              <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 12h10M8 3v7M5 7l3 3 3-3" stroke="#faf8f5" stroke-width="1.4" stroke-linecap="square"/>
-              </svg>
-              <span>Export summary</span>
-            </button>
+            <Button label="+ Create new project" @click="openModal" />
+            <Button label="↓ Export summary" />
           </div>
 
           <div class="data-source">
@@ -273,6 +274,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar from '../components/AppNavbar.vue'
+import Pill from '../components/UI/Pill/Pill.vue'
+import Anchor from '../components/UI/Button/Anchor.vue'
+import Button from '../components/UI/Button/Button.vue'
 
 const authStore  = useAuthStore()
 const projects   = ref([])
@@ -610,6 +614,97 @@ async function submitProject() {
 .open-link { font-size: 12px; color: #555; cursor: pointer; transition: color 0.15s; }
 .project-card:hover .open-link { color: #c9a962; }
 
+/* ── UI component overrides ── */
+
+/* Pill in card header (role badge) */
+.card-header :deep(.pill) {
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+.card-header :deep(.pill-text) {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  font-family: 'Manrope', sans-serif;
+}
+.card-header :deep(.dot) {
+  display: none;
+}
+
+/* Pill in card footer (status) */
+.card-footer-row :deep(.pill) {
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+.card-footer-row :deep(.pill-text) {
+  font-size: 10px;
+  font-family: 'Manrope', sans-serif;
+}
+.card-footer-row :deep(.dot) {
+  width: 6px; height: 6px;
+  margin-right: 6px;
+}
+
+/* Anchor in card-open footer */
+.card-open :deep(.anchor) {
+  padding: 0;
+  border-radius: 0;
+  font-size: 12px;
+  font-family: 'Manrope', sans-serif;
+  justify-content: flex-start;
+  width: 100%;
+  transition: color 0.15s;
+}
+.project-card:hover .card-open :deep(.anchor) {
+  color: #c9a962 !important;
+}
+
+/* Button overrides for modal actions */
+.modal-actions :deep(.btn) {
+  border-radius: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+.modal-actions :deep(.btn:first-child) {
+  background: transparent;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+}
+.modal-actions :deep(.btn:last-child) {
+  background: #c9a962;
+  color: #0a0a0a;
+}
+.modal-actions :deep(.btn:last-child:disabled) {
+  opacity: 0.6;
+}
+
+/* Button overrides for context panel quick actions */
+.context-panel :deep(.btn) {
+  width: 100%;
+  border-radius: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 12px 16px;
+  display: block;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.context-panel :deep(.btn:first-of-type) {
+  background: #c9a962;
+  color: #0a0a0a;
+}
+.context-panel :deep(.btn:last-of-type) {
+  background: transparent;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+}
+
 /* Skeleton */
 .project-card.skeleton { pointer-events: none; }
 .skeleton-accent { height: 3px; background: #1f1f1f; }
@@ -662,6 +757,47 @@ async function submitProject() {
 .data-source { margin-top: auto; }
 .ds-label { font-size: 10px; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
 .ds-text  { font-size: 11px; color: #444; }
+
+/* ── Responsive ── */
+
+/* Tablet ancho (≤1200px): panel lateral más estrecho */
+@media (max-width: 1200px) {
+  .main-panel { padding: 40px 40px; }
+  .context-panel { width: 280px; padding: 40px 20px; }
+}
+
+/* Tablet (≤900px): layout apilado, panel debajo */
+@media (max-width: 900px) {
+  .projects-layout { flex-direction: column; }
+  .main-panel { padding: 32px 28px; gap: 24px; }
+  .proj-title { font-size: 36px; }
+  .context-panel {
+    width: 100%;
+    max-height: none;
+    position: static;
+    border-left: none;
+    border-top: 1px solid #1a1a1a;
+    padding: 32px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .ctx-title { grid-column: 1 / -1; }
+  .data-source { grid-column: 1 / -1; margin-top: 0; }
+  .summary-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Mobile (≤640px): 1 columna, padding reducido */
+@media (max-width: 640px) {
+  .main-panel { padding: 24px 16px; gap: 20px; }
+  .proj-title { font-size: 28px; }
+  .proj-header { flex-direction: column; gap: 16px; }
+  .proj-header-actions { align-self: flex-start; }
+  .tabs { gap: 16px; overflow-x: auto; padding-bottom: 0; }
+  .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .project-grid { grid-template-columns: 1fr; }
+}
 
 /* Onboarding notice */
 .onboarding-notice {

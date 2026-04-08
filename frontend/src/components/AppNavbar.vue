@@ -7,15 +7,15 @@
         <span>Kontrol</span>
       </RouterLink>
 
-      <nav class="appnav-links">
+      <div class="appnav-links">
         <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
         <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
         <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
         <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
-      </nav>
+      </div>
 
       <div class="appnav-end">
-        <div class="appnav-avatar">U</div>
+        <div class="appnav-avatar">{{ userInitial }}</div>
       </div>
 
     </div>
@@ -23,8 +23,17 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
+
+const authStore = useAuthStore()
+
+const userInitial = computed(() => {
+  const name = authStore.user?.nombre || authStore.user?.email || 'U'
+  return name.charAt(0).toUpperCase()
+})
 </script>
 
 <style scoped>
@@ -32,17 +41,19 @@ import logo from '../assets/img/kontrol.png'
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0a0a0a;
+  background: rgba(10, 10, 10, 0.95);
   border-bottom: 1px solid #1f1f1f;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .appnav-inner {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   padding: 0 32px;
   gap: 40px;
 }
@@ -69,27 +80,43 @@ import logo from '../assets/img/kontrol.png'
 
 .appnav-links {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 0;
   flex: 1;
 }
 
 .appnav-link {
+  position: relative;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   text-decoration: none;
-  padding: 6px 12px;
-  border: 1px solid transparent;
-  transition: color .15s, border-color .15s;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: color .2s;
+  letter-spacing: 0.03em;
+}
+
+.appnav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: #c9a962;
+  transform: scaleX(0);
+  transition: transform .2s ease;
 }
 
 .appnav-link:hover { color: #faf8f5; }
 
 .appnav-link.router-link-active {
   color: #c9a962;
-  border-color: #1f1f1f;
+}
+
+.appnav-link.router-link-active::after {
+  transform: scaleX(1);
 }
 
 .appnav-end {
@@ -111,7 +138,13 @@ import logo from '../assets/img/kontrol.png'
   cursor: pointer;
 }
 
-/* responsive: ocultar links en mobile */
+/* Tablet: reducir gap y padding */
+@media (max-width: 900px) {
+  .appnav-inner { padding: 0 20px; gap: 20px; }
+  .appnav-link  { padding: 0 10px; font-size: 11px; }
+}
+
+/* Mobile: ocultar links */
 @media (max-width: 640px) {
   .appnav-links { display: none; }
   .appnav-inner { padding: 0 16px; gap: 0; }
