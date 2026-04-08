@@ -138,6 +138,13 @@ const userInitial = computed(() => {
   cursor: pointer;
 }
 
+/* Tablet: reducir gap y padding */
+@media (max-width: 900px) {
+  .appnav-inner { padding: 0 20px; gap: 20px; }
+  .appnav-link  { padding: 0 10px; font-size: 11px; }
+}
+
+/* Mobile: ocultar links */
 @media (max-width: 640px) {
   .appnav-links { display: none; }
   .appnav-inner { padding: 0 16px; gap: 0; }
