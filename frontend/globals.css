@@ -38,13 +38,13 @@ body,
   color: var(--Text);
   font-family: "Alfa Slab One";
   letter-spacing: 5px;
-  font-size: 7em;
+  font-size: clamp(2rem, 6vw, 6rem);
   margin-bottom: 20px;
 }
 
 p {
   font-family: "DM Sans";
-  font-size: 1.5em;
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
   color: var(--Text);
   z-index: 20;
 }
@@ -52,9 +52,10 @@ p {
 .sub-title {
   font-family: "Alfa Slab One";
   letter-spacing: 2px;
-  font-size: 3em;
+  font-size: clamp(1.5rem, 3.5vw, 3rem);
   text-align: center;
   color: var(--Text);
+  z-index: 20;
 }
 @media screen and (max-width: 500px) {
   .hero-title {

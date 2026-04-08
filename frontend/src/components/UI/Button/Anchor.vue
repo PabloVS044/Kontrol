@@ -7,8 +7,11 @@
       '--hover': hoverColor,
       '--color': textColor,
     }"
-    >{{ label }} <img v-if="icon" :src="icon" :alt="icon"
-  /></a>
+  >
+    {{ label }}
+    <component v-if="icon && typeof icon !== 'string'" :is="icon" :size="18" />
+    <img v-else-if="icon" :src="icon" :alt="label" />
+  </a>
 </template>
 <script setup>
 import "./Anchor.css";
@@ -19,6 +22,6 @@ const props = defineProps({
   backColor: { type: String, default: "" },
   hoverColor: { type: String, default: "var(--Primary)" },
   textColor: { type: String, default: "var(--Text)" },
-  icon: { type: String, default: "" },
+  icon: { type: [String, Object, Function], default: "" },
 });
 </script>
