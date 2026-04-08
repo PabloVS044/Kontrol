@@ -46,22 +46,35 @@ const projects = [
         <section class="project-grid">
           <div v-for="project in projects" :key="project.id" class="project-card">
             <div class="card-accent" :style="{ backgroundColor: project.color }"></div>
-            <div class="card-header">
-              <span class="card-name">{{ project.name }}</span>
-              <span class="role-badge">Admin</span>
-            </div>
-            <div class="card-body">
+            
+            <div class="card-main-body">
+              <div class="card-header">
+                <span class="card-name">{{ project.name }}</span>
+                <span class="role-badge">ADMIN</span>
+              </div>
+              
               <p class="card-desc">{{ project.desc }}</p>
-              <div class="progress-container">
-                <div class="progress-bg">
-                  <div class="progress-fill" :style="{ width: project.progress + '%', backgroundColor: project.color }"></div>
+              
+              <div class="progress-section">
+                <div class="progress-container">
+                  <div class="progress-bg">
+                    <div class="progress-fill" :style="{ width: project.progress + '%', backgroundColor: project.color }"></div>
+                  </div>
                 </div>
                 <span class="progress-value">{{ project.progress }}%</span>
               </div>
+
               <div class="card-bottom">
                 <span :style="{ color: project.color }" class="status-text">● {{ project.status }}</span>
                 <span class="due-date">Due Jan 28</span>
               </div>
+            </div>
+
+            <!-- FOOTER DE LA TARJETA (Lo nuevo para el Commit 4) -->
+            <div class="card-footer">
+              <button class="open-btn" @click="() => alert('Project details coming soon')">
+                Open project <span class="arrow">→</span>
+              </button>
             </div>
           </div>
         </section>
@@ -98,10 +111,11 @@ const projects = [
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap');
 
-.title { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
-
+/* --- Estilos Globales y Tipografía ---*/
+.title { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; font-size: 3rem; color: var(--Text); }
 .subtitle, p, span, label { font-family: 'DM Sans', sans-serif; }
 
+/* --- Header --- */
 .header {
   display: flex;
   justify-content: space-between;
@@ -109,6 +123,7 @@ const projects = [
   margin-bottom: 60px;
 }
 
+/* --- Layout --- */
 .projects-layout {
   display: flex;
   flex-direction: column;
@@ -145,7 +160,7 @@ const projects = [
 /* Estilos de Tarjetas */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 30px;
   margin-top: 40px;
 }
@@ -154,23 +169,39 @@ const projects = [
   background-color: var(--Background3);
   border: 1px solid var(--Border);
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-accent { height: 3px; }
 
-.card-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+.card-main-body { padding: 25px; flex: 1; }
 
-.card-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+.card-header { padding: 15px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;}
+.card-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.2; }
 
 .card-body { padding: 0 15px 15px; }
 
-.card-desc { font-size: 0.8rem; color: #888; margin-bottom: 15px; }
+.role-badge { font-size: 9px; border: 1px solid #333; padding: 2px 8px; color: #888; letter-spacing: 1px; }
+
+.card-desc { font-size: 0.85rem; color: #777; margin-bottom: 25px; line-height: 1.5; }
+
+.progress-section { margin-bottom: 20px; }
+.progress-bg { background: #1a1a1a; height: 4px; width: 100%; border-radius: 2px; }
+.progress-fill { height: 100%; border-radius: 2px; }
+.progress-value { font-size: 11px; color: #555; margin-top: 8px; display: block; }
 
 .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.status-text { font-size: 12px; font-weight: bold; }
+.due-date { font-size: 11px; color: #444; }
+
+.card-footer { border-top: 1px solid var(--Border); padding: 15px; display: flex; justify-content: center; background: var(--Background); }
+
+.open-btn { background: transparent; color: var(--Primary); border: none; font-size: 11px; font-weight: bold; cursor: pointer; letter-spacing: 1.5px; text-transform: uppercase; }
 
 /* Tabs */
 .tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--Border); margin-bottom: 50px; padding-bottom: 10px; }
-.tab { padding-bottom: 10px; cursor: pointer; color: #666; font-size: 0.9rem; }
+.tab { padding-bottom: 10px; cursor: pointer; color: #666; font-size: 0.9rem; transition: color 0.3s; }
 .tab.active { color: var(--Primary); border-bottom: 2px solid var(--Primary); }
 
 /* Botón Dorado */
@@ -182,21 +213,27 @@ const projects = [
   font-weight: bold;
   text-decoration: none;
   display: inline-block;
+  transition: filter 0.3s;
 }
+
+.btn-gold:hover { filter: brightness(1.2); }
 
 /* Stats */
 .summary-card {
-  background: #111;
-  padding: 15px;
+  background: var(--Background);
+  padding: 20px;
   border: 1px solid var(--Border);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
-.s-value { font-size: 1.5rem; font-weight: bold; display: block; }
-.s-label { font-size: 0.7rem; color: #666; }
+.s-value { font-size: 1.8rem; font-weight: bold; display: block; font-family: 'Playfair Display', serif; }
+.s-label { font-size: 0.7rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
 .ctx-title {
   font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 40px;
 }
+.ctx-label { color: var(--Primary); font-size: 11px; letter-spacing: 2px; margin-bottom: 20px; margin-top: 40px; }
+.activity-item p { font-size: 0.9rem; color: #999; margin-bottom: 5px; }
+.act-time { font-size: 11px; color: #444; }
 </style>
