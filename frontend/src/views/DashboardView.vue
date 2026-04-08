@@ -170,4 +170,32 @@ const stats = [
 .bar-group label { font-size: 12px; display: block; margin-bottom: 8px; color: #888; font-family: 'DM Sans', sans-serif; }
 .bar-bg { background: #111; height: 6px; border-radius: 3px; }
 .bar-fill { background: var(--Primary); height: 100%; border-radius: 3px; }
+
+/* ── Responsive ── */
+
+/* Tablet ancho (≤1100px) */
+@media (max-width: 1100px) {
+  .content { padding: 60px; }
+}
+
+/* Tablet (≤900px): KPIs 2 col, charts apilados */
+@media (max-width: 900px) {
+  .content { padding: 40px 32px; }
+  .title { font-size: 2.2rem; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-container { flex-direction: column; }
+  .ai-box { flex-direction: column; align-items: flex-start; padding: 28px; gap: 20px; }
+  .ai-box :deep(.btn) { align-self: flex-start; }
+}
+
+/* Mobile (≤600px): KPIs 1 col, padding reducido */
+@media (max-width: 600px) {
+  .content { padding: 24px 16px; }
+  .title { font-size: 1.8rem; }
+  .subtitle { margin-bottom: 24px; }
+  .kpi-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
+  .kpi-grid :deep(.card-title) { font-size: 1.6rem; }
+  .ai-box { padding: 20px; }
+  .ai-message { font-size: 0.95rem; }
+}
 </style>
