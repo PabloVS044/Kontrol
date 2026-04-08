@@ -96,6 +96,12 @@ const projects = [
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap');
+
+.title { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
+
+.subtitle, p, span, label { font-family: 'DM Sans', sans-serif; }
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -121,7 +127,7 @@ const projects = [
 
 .content {
   flex: 1;
-  padding: 80px 60px;
+  padding: 80px 100px;
 }
 
 .context-panel {
