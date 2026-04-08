@@ -55,6 +55,7 @@ p {
   font-size: 3em;
   text-align: center;
   color: var(--Text);
+  z-index: 20;
 }
 @media screen and (max-width: 500px) {
   .hero-title {

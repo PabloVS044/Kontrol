@@ -97,10 +97,8 @@
       <div class="feature-container">
         <h2 class="sub-title">The Comand Center</h2>
         <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Delectus,
-          voluptatem officiis libero laboriosam, ex animi ut reprehenderit
-          similique necessitatibus vel dignissimos sed! Voluptas, iusto animi.
-          Beatae, dicta! Error, eos quaerat.
+          Every facet of your operation, unified in a high-fidelity dashboard
+          that anticipates your next move.
         </p>
         <div class="magic-circles-wrapper">
           <MagicCircles
@@ -127,14 +125,60 @@
             :click-burst="false"
             background="var(--Background)"
           />
-          <CircleRounded
-            :size="300"
-            color="var(--Primary)"
-            roundedColor="var(--Primary2)"
-            :animationDuration="3"
-            :icon="NetworkIcon"
-          />
-
+          <div class="graph">
+            <CircleRounded
+              :size="200"
+              color="var(--Primary)"
+              roundedColor="var(--Primary2)"
+              :animationDuration="3"
+              :icon="NetworkIcon"
+              class="main-circle"
+            />
+            <Card
+              class="sub-1"
+              title="Finances"
+              subtitle="Real-time cashflow tracking"
+              :icon="Banknote"
+              :iconSize="100"
+              back="var(--Tertiary)"
+              iconColor="var(--Text)"
+              borderColor="var(--Border)"
+              shadowColor="var(--Primary)"
+            />
+            <Card
+              class="sub-2"
+              title="Team CRM"
+              subtitle="Collaboration simplified"
+              :icon="UsersRound"
+              :iconSize="100"
+              back="var(--Tertiary)"
+              iconColor="var(--Text)"
+              borderColor="var(--Border)"
+              shadowColor="var(--Primary)"
+            />
+            <Card
+              class="sub-3"
+              title="Marketing"
+              subtitle="Omnichannel campaigns"
+              :icon="Megaphone"
+              :iconSize="100"
+              back="var(--Tertiary)"
+              iconColor="var(--Text)"
+              borderColor="var(--Border)"
+              shadowColor="var(--Primary)"
+            />
+            <Card
+              class="sub-4"
+              title="Inventory"
+              subtitle="Automated stock control"
+              :icon="Box"
+              :iconSize="100"
+              back="var(--Tertiary)"
+              iconColor="var(--Text)"
+              borderColor="var(--Border)"
+              shadowColor="var(--Primary)"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -149,7 +193,17 @@ import Pill from "../components/UI/Pill/Pill.vue";
 import Anchor from "../components/UI/Button/Anchor.vue";
 import arrowRightIcon from "../assets/img/arrow-right.png";
 import Card from "../components/UI/Card/Card.vue";
-import { LayoutGrid, Sparkles, CircleX, CircleCheck, NetworkIcon } from "lucide-vue-next";
+import {
+  LayoutGrid,
+  Sparkles,
+  CircleX,
+  CircleCheck,
+  NetworkIcon,
+  Banknote,
+  UsersRound,
+  Megaphone,
+  Box,
+} from "lucide-vue-next";
 import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
 import CircleRounded from "../components/UI/CircleRounded/CircleRounded.vue";
 

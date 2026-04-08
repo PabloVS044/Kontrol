@@ -30,6 +30,7 @@
 
 p {
   width: 60%;
+  margin: 20px;
 }
 
 #problem {
@@ -91,4 +92,32 @@ p {
   top: 0;
   left: 0;
   z-index: 1;
+}
+
+.graph {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  height: 100vh;
+  place-items: center;
+}
+
+.main-circle {
+  grid-area: 2 / 2;
+}
+
+.sub-1 {
+  grid-area: 1 / 2;
+}
+
+.sub-2 {
+  grid-area: 2 / 1;
+}
+
+.sub-3 {
+  grid-area: 2 / 3;
+}
+
+.sub-4 {
+  grid-area: 3 / 2;
 }
