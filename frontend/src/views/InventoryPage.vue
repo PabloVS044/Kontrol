@@ -38,9 +38,15 @@
               </div>
             </div>
 
-            <div class="form-field" style="max-width:160px">
-              <label>Min. stock</label>
-              <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
+            <div class="form-row">
+              <div class="form-field">
+                <label>Initial stock</label>
+                <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
+              </div>
+              <div class="form-field">
+                <label>Min. stock</label>
+                <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
+              </div>
             </div>
 
             <p v-if="modalError" class="modal-error">{{ modalError }}</p>
@@ -417,10 +423,10 @@ function stockNumClass(p) {
 const showModal    = ref(false)
 const modalLoading = ref(false)
 const modalError   = ref(null)
-const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0 })
+const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 })
 
 function openNewProduct() {
-  form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0 }
+  form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 }
   modalError.value = null
   showModal.value  = true
 }
@@ -437,11 +443,12 @@ async function submitProduct() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({
-        nombre:       form.value.nombre,
-        descripcion:  form.value.descripcion || undefined,
-        precio_venta: form.value.precio_venta,
-        precio_costo: form.value.precio_costo,
-        stock_minimo: form.value.stock_minimo ?? 0,
+        nombre:        form.value.nombre,
+        descripcion:   form.value.descripcion || undefined,
+        precio_venta:  form.value.precio_venta,
+        precio_costo:  form.value.precio_costo,
+        stock_minimo:  form.value.stock_minimo ?? 0,
+        stock_inicial: form.value.stock_inicial ?? 0,
       }),
     })
     const data = await res.json()
