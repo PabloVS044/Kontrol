@@ -1,0 +1,26 @@
+a.anchor {
+  text-decoration: none;
+  color: var(--color);
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: var(--background);
+  border-radius: 50px;
+  padding: 10px 15px 10px 15px;
+  transition: all 0.8s;
+  font-family: "DM Sans";
+  gap: 8px;
+}
+
+.anchor img {
+  width: 20px;
+  height: 20px;
+}
+
+a:hover {
+  background-color: var(--hover);
+}
