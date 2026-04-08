@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue'
 import LandingPage  from '../views/LandingPage.vue'
 import HomeView     from '../views/HomeView.vue'
 import InventoryPage from '../views/InventoryPage.vue'
+import ProjectsView from '../views/ProjectsView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
 
 const router = createRouter({
@@ -33,6 +34,12 @@ const router = createRouter({
     {
       path: '/inventory',
       name: 'inventory',
+      component: InventoryPage
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectsView
       component: InventoryPage,
       meta: { requiresAuth: true }
     },
