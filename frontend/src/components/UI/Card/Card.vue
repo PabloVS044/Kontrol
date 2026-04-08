@@ -37,6 +37,7 @@
         <span>{{ characteristic.title }}</span>
       </li>
     </ul>
+    <slot />
   </div>
 </template>
 
