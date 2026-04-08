@@ -1,0 +1,218 @@
+
+/* ── Layout ── */
+.register-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.register-layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: 5rem;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* ── Panel logo (derecha) ── */
+.register-logo-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 1;
+}
+
+.register-logo-img {
+  width: 400px;
+  max-width: 100%;
+  filter: drop-shadow(0 0 80px rgba(202, 168, 96, 0.35));
+  
+}
+
+/* ── Panel formulario (izquierda) ── */
+.register-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 700px;
+}
+
+/* ── Card ── */
+.register-card {
+  width: 100%;
+  max-width: 700px;
+  background: var(--Background);
+  border: 1px solid var(--Border);
+  border-radius: 14px;
+  padding: 4rem;
+}
+
+.register-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--Text);
+  margin: 0 0 1.5rem;
+}
+
+/* ── Fila doble (First + Last name) ── */
+.register-row-two {
+  display: flex;
+  gap: 0.75rem;
+}
+.register-row-two .register-field { flex: 1; }
+
+/* ── Campos ── */
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.register-field-label {
+  font-size: 0.80rem;
+  color: var(--TextMuted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.register-input-wrap { position: relative; }
+
+.register-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.72rem 2.4rem 0.72rem 0.85rem;
+  background: var(--InputBg);
+  border: 1px solid var(--Border);
+  border-radius: 6px;
+  color: var(--Text);
+  font-size: 0.92rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.register-input::placeholder { color: var(--TextPlaceholder); }
+.register-input:focus        { border-color: var(--Primary); background: var(--InputFocusBg); }
+.register-input--error       { border-color: var(--ErrorText) !important; }
+
+.register-input-icon {
+  position: absolute;
+  right: 0.72rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--TextDim);
+  pointer-events: none;
+}
+.register-input-icon--btn { pointer-events: auto; cursor: pointer; }
+
+.register-field-error { font-size: 0.76rem; color: var(--ErrorText); }
+
+/* ── Botón principal ── */
+.register-btn-primary {
+  width: 100%;
+  padding: 0.82rem;
+  background: linear-gradient(135deg, var(--Primary), var(--Primary2));
+  color: var(--BtnText);
+  font-weight: 700;
+  font-size: 0.97rem;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.register-btn-primary:hover:not(:disabled) { opacity: 0.60; }
+.register-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Spinner ── */
+.register-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(14, 12, 8, 0.25);
+  border-top-color: var(--BtnText);
+  border-radius: 50%;
+  animation: register-spin 0.65s linear infinite;
+}
+@keyframes register-spin { to { transform: rotate(360deg); } }
+
+/* ── Divisor ── */
+.register-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1.2rem 0;
+}
+.register-divider::before,
+.register-divider::after { content: ''; flex: 1; height: 1px; background: var(--Border); }
+.register-divider span   { font-size: 0.78rem; color: var(--TextDim); }
+
+/* ── OAuth ── */
+.register-oauth-row { display: flex; gap: 0.7rem; margin-bottom: 0.5rem; }
+
+.register-btn-oauth {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.62rem 0.4rem;
+  background: transparent;
+  border: 1px solid var(--Border);
+  border-radius: 6px;
+  color: var(--TextMuted);
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.register-btn-oauth:hover { border-color: var(--Primary); color: var(--Text); }
+
+.register-oauth-logo {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  filter: grayscale(0.4);
+}
+
+/* ── Link a login ── */
+.register-switch {
+  width: 100%;
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--TextDim);
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+.register-switch-link { color: var(--Primary); text-decoration: none; margin-left: 0.2rem; }
+.register-switch-link:hover { text-decoration: underline; }
+
+/* ── Banners ── */
+.register-banner {
+  padding: 0.7rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  margin-bottom: 1rem;
+}
+.register-banner--error   { background: rgba(224, 82, 82, 0.1);  border: 1px solid var(--ErrorText);   color: var(--ErrorText); }
+.register-banner--success { background: rgba(72, 199, 116, 0.1); border: 1px solid var(--SuccessText); color: var(--SuccessText); }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .register-layout       { flex-direction: column-reverse; gap: 2rem; }
+  .register-logo-panel   { min-height: 200px; }
+  .register-logo-img     { width: 150px; }
+  .register-form-panel   { width: 100%; padding: 1.5rem; }
+  .register-row-two      { flex-direction: column; gap: 0; }
+}

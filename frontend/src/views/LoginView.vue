@@ -1,87 +1,106 @@
 <template>
-  <div class="page">
-    <!-- Panel izquierdo: logo -->
-    <div class="logo-panel">
-      <img src="/logo-k.png" alt="Kontrol" class="logo" />
-    </div>
+  <div class="login-page">
 
-    <!-- Panel derecho: formulario -->
-    <div class="form-panel">
-      <div class="form-card">
-        <h1>Login</h1>
+    <SoftParticle />
 
-        <!-- Error general del servidor -->
-        <div v-if="errorMessage" class="error-banner">
-          {{ errorMessage }}
-        </div>
+    <div class="login-layout">
 
-        <!-- Campo Email -->
-        <div class="field">
-          <label for="email">Email</label>
-          <div class="input-wrapper">
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              placeholder="Email"
-              @blur="validateEmail"
-            />
-            <span class="icon">✉</span>
-          </div>
-          <span v-if="errors.email" class="field-error">{{ errors.email }}</span>
-        </div>
-
-        <!-- Campo Password -->
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-wrapper">
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              placeholder="Password"
-              @blur="validatePassword"
-            />
-            <span class="icon">🔒</span>
-          </div>
-          <span v-if="errors.password" class="field-error">{{ errors.password }}</span>
-        </div>
-
-        <!-- Remember me + Forgot password -->
-        <div class="row-extras">
-          <label class="remember">
-            <input type="checkbox" v-model="rememberMe" />
-            Remember me
-          </label>
-          <a href="#" class="forgot">Forgot password?</a>
-        </div>
-
-        <!-- Botón principal -->
-        <button class="btn-primary" @click="handleLogin" :disabled="isLoading">
-          {{ isLoading ? 'Signing in...' : 'Sign In' }}
-        </button>
-
-        <!-- Divisor -->
-        <div class="divider"><span>or</span></div>
-
-        <!-- OAuth buttons -->
-        <div class="oauth-row">
-          <button class="btn-oauth">
-            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" />
-            Sign up with GitHub
-          </button>
-          <button class="btn-oauth">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-            Sign up with Google
-          </button>
-        </div>
-
-        <!-- Link a register -->
-        <p class="switch">
-          Do you have an account?
-          <RouterLink to="/register">Sign up now</RouterLink>
-        </p>
+      <!-- Panel izquierdo: Logo -->
+      <div class="login-logo-panel">
+        <img src="@/assets/img/kontrol.png" alt="Kontrol" class="login-logo-img" />
       </div>
+
+      <!-- Panel derecho: Formulario -->
+      <div class="login-form-panel">
+        <div class="login-card">
+          <h2 class="login-title">Login</h2>
+
+          <!-- Error del servidor -->
+          <div v-if="errorMessage" class="login-banner login-banner--error">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Email -->
+          <div class="login-field">
+            <label class="login-field-label">Email</label>
+            <div class="login-input-wrap">
+              <input
+                v-model="form.email"
+                type="email"
+                placeholder="Email"
+                class="login-input"
+                :class="{ 'login-input--error': errors.email }"
+                @blur="validateEmail"
+              />
+              <MailIcon class="login-input-icon" :size="15" />
+            </div>
+            <span v-if="errors.email" class="login-field-error">{{ errors.email }}</span>
+          </div>
+
+          <!-- Password -->
+          <div class="login-field">
+            <label class="login-field-label">Password</label>
+            <div class="login-input-wrap">
+              <input
+                v-model="form.password"
+                :type="showPass ? 'text' : 'password'"
+                placeholder="Password"
+                class="login-input"
+                :class="{ 'login-input--error': errors.password }"
+                @blur="validatePassword"
+              />
+              <component
+                :is="showPass ? EyeIcon : LockIcon"
+                class="login-input-icon login-input-icon--btn"
+                :size="15"
+                @click="showPass = !showPass"
+              />
+            </div>
+            <span v-if="errors.password" class="login-field-error">{{ errors.password }}</span>
+          </div>
+
+          <!-- Remember + Forgot -->
+          <div class="login-row-extras">
+            <label class="login-remember">
+              <input type="checkbox" v-model="rememberMe" />
+              Remember me
+            </label>
+            <a href="#" class="login-forgot">Forgot password</a>
+          </div>
+
+          <!-- Botón principal -->
+          <button
+            class="login-btn-primary"
+            :disabled="isLoading"
+            @click="handleLogin"
+          >
+            <span v-if="isLoading" class="login-spinner" />
+            {{ isLoading ? 'Signing in...' : 'Sign In' }}
+          </button>
+
+          <!-- Divisor -->
+          <div class="login-divider"><span>or</span></div>
+
+          <!-- OAuth -->
+          <div class="login-oauth-row">
+            <button class="login-btn-oauth">
+              <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-white-icon.png" alt="GitHub" class="login-oauth-logo" />
+              Sign in with GitHub
+            </button>
+            <button class="login-btn-oauth">
+              <img src="https://img.icons8.com/ios11/512/FFFFFF/google-logo.png" alt="Google" class="login-oauth-logo" />
+              Sign in with Google
+            </button>
+          </div>
+
+          <!-- Link a register -->
+          <p class="login-switch">
+            Don't have an account?
+            <RouterLink to="/register" class="login-switch-link">Sign up now</RouterLink>
+          </p>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -89,39 +108,39 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
+import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
 import { loginUser } from '@/services/auth'
+import './LoginView.css'
 
-const router = useRouter()
+const router    = useRouter()
 const authStore = useAuthStore()
 
-const form = reactive({ email: '', password: '' })
-const errors = reactive({ email: '', password: '' })
-const isLoading = ref(false)
+const form     = reactive({ email: '', password: '' })
+const errors   = reactive({ email: '', password: '' })
+const isLoading   = ref(false)
 const errorMessage = ref('')
-const rememberMe = ref(false)
+const rememberMe   = ref(false)
+const showPass     = ref(false)
 
 function validateEmail() {
-  if (!form.email) {
-    errors.email = 'Email is required'
-  } else if (!form.email.includes('@')) {
-    errors.email = 'Enter a valid email'
-  } else {
-    errors.email = ''
-  }
+  errors.email = !form.email
+    ? 'Email is required'
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+      ? 'Enter a valid email'
+      : ''
 }
 
 function validatePassword() {
-  if (!form.password) {
-    errors.password = 'Password is required'
-  } else if (form.password.length < 6) {
-    errors.password = 'Minimum 6 characters'
-  } else {
-    errors.password = ''
-  }
+  errors.password = !form.password
+    ? 'Password is required'
+    : form.password.length < 6
+      ? 'Minimum 6 characters'
+      : ''
 }
 
-function formIsValid() {
+function isValid() {
   validateEmail()
   validatePassword()
   return !errors.email && !errors.password
@@ -129,244 +148,17 @@ function formIsValid() {
 
 async function handleLogin() {
   errorMessage.value = ''
-  if (!formIsValid()) return
+  if (!isValid()) return
 
   isLoading.value = true
   try {
     const data = await loginUser(form.email, form.password)
     authStore.setToken(data.token)
-    router.push({ name: 'dashboard' })
-  } catch (error) {
-    errorMessage.value = error.message || 'Something went wrong. Try again.'
+    router.push({ name: 'home' })
+  } catch (err) {
+    errorMessage.value = err.message || 'Something went wrong. Please try again.'
   } finally {
     isLoading.value = false
   }
 }
 </script>
-
-<style scoped>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-.page {
-  min-height: 100vh;
-  display: flex;
-  background: #1a1612;
-  font-family: 'Inter', sans-serif;
-}
-
-/* Panel izquierdo (logo) */
-.logo-panel {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(ellipse at center, #2a1f0e 0%, #1a1612 70%);
-}
-
-.logo {
-  width: 260px;
-  opacity: 0.95;
-}
-
-/* Panel derecho (formulario) */
-.form-panel {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.form-card {
-  width: 100%;
-  max-width: 380px;
-}
-
-h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f5f0e8;
-  margin-bottom: 1.5rem;
-}
-
-/* Campos */
-.field {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-label {
-  font-size: 0.8rem;
-  color: #8a8070;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-  width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 0.9rem;
-  background: transparent;
-  border: 1px solid #3a3020;
-  border-radius: 6px;
-  color: #f5f0e8;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-input::placeholder { color: #5a5040; }
-
-input:focus { border-color: #c9a84c; }
-
-.icon {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #5a5040;
-  font-size: 0.9rem;
-  pointer-events: none;
-}
-
-.field-error {
-  color: #e05252;
-  font-size: 0.78rem;
-}
-
-/* Fila remember + forgot */
-.row-extras {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
-}
-
-.remember {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #8a8070;
-  font-size: 0.85rem;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.forgot {
-  color: #c9a84c;
-  font-size: 0.85rem;
-  text-decoration: none;
-}
-
-.forgot:hover { text-decoration: underline; }
-
-/* Botón principal */
-.btn-primary {
-  width: 100%;
-  padding: 0.85rem;
-  background: linear-gradient(135deg, #c9a84c, #a07830);
-  color: #1a1612;
-  font-weight: 700;
-  font-size: 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  letter-spacing: 0.03em;
-}
-
-.btn-primary:hover { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* Divisor */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 1.2rem 0;
-  color: #3a3020;
-  font-size: 0.8rem;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #3a3020;
-}
-
-.divider span { color: #5a5040; }
-
-/* OAuth */
-.oauth-row {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.2rem;
-}
-
-.btn-oauth {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 0.5rem;
-  background: transparent;
-  border: 1px solid #3a3020;
-  border-radius: 6px;
-  color: #8a8070;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.btn-oauth:hover { border-color: #c9a84c; color: #f5f0e8; }
-
-.btn-oauth img {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-  filter: grayscale(0.5);
-}
-
-/* Link switch */
-.switch {
-  text-align: center;
-  color: #5a5040;
-  font-size: 0.85rem;
-}
-
-.switch a {
-  color: #c9a84c;
-  text-decoration: none;
-  margin-left: 0.25rem;
-}
-
-.switch a:hover { text-decoration: underline; }
-
-/* Error banner */
-.error-banner {
-  background: rgba(224, 82, 82, 0.1);
-  border: 1px solid #e05252;
-  color: #e05252;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
-/* Responsive: en móvil stack vertical */
-@media (max-width: 700px) {
-  .page { flex-direction: column; }
-  .logo-panel { padding: 2rem; min-height: 200px; }
-  .logo { width: 140px; }
-}
-</style>
