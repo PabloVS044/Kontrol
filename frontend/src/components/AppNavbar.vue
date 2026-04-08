@@ -7,12 +7,12 @@
         <span>Kontrol</span>
       </RouterLink>
 
-      <nav class="appnav-links">
+      <div class="appnav-links">
         <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
         <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
         <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
         <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
-      </nav>
+      </div>
 
       <div class="appnav-end">
         <div class="appnav-avatar">{{ userInitial }}</div>
