@@ -39,7 +39,7 @@ const router = createRouter({
     {
       path: '/projects',
       name: 'projects',
-      component: ProjectsView
+      component: ProjectsView,
       component: InventoryPage,
       meta: { requiresAuth: true }
     },

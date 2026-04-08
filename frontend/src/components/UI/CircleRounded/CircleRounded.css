@@ -1,0 +1,24 @@
+.circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 350px;
+    height: 350px;
+    position: relative;
+    border: var(--roundedColor) solid 2px;
+    background-color: color-mix(in srgb, var(--roundedColor) 50%, transparent);
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.circle-rounded {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    background-color: var(--back);
+    border-radius: 50%;
+    z-index: 30;
+}
