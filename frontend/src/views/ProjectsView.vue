@@ -758,6 +758,47 @@ async function submitProject() {
 .ds-label { font-size: 10px; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
 .ds-text  { font-size: 11px; color: #444; }
 
+/* ── Responsive ── */
+
+/* Tablet ancho (≤1200px): panel lateral más estrecho */
+@media (max-width: 1200px) {
+  .main-panel { padding: 40px 40px; }
+  .context-panel { width: 280px; padding: 40px 20px; }
+}
+
+/* Tablet (≤900px): layout apilado, panel debajo */
+@media (max-width: 900px) {
+  .projects-layout { flex-direction: column; }
+  .main-panel { padding: 32px 28px; gap: 24px; }
+  .proj-title { font-size: 36px; }
+  .context-panel {
+    width: 100%;
+    max-height: none;
+    position: static;
+    border-left: none;
+    border-top: 1px solid #1a1a1a;
+    padding: 32px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .ctx-title { grid-column: 1 / -1; }
+  .data-source { grid-column: 1 / -1; margin-top: 0; }
+  .summary-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Mobile (≤640px): 1 columna, padding reducido */
+@media (max-width: 640px) {
+  .main-panel { padding: 24px 16px; gap: 20px; }
+  .proj-title { font-size: 28px; }
+  .proj-header { flex-direction: column; gap: 16px; }
+  .proj-header-actions { align-self: flex-start; }
+  .tabs { gap: 16px; overflow-x: auto; padding-bottom: 0; }
+  .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .project-grid { grid-template-columns: 1fr; }
+}
+
 /* Onboarding notice */
 .onboarding-notice {
   background: rgba(201,169,98,0.06);
