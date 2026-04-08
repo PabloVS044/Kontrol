@@ -2,7 +2,12 @@
 import AppNavbar from '../components/AppNavbar.vue'
 import Anchor from '../components/UI/Button/Anchor.vue'
 
-// Simulaciód de datos de proyectos
+// Función para el botón
+const handleNewProject = () => {
+  window.alert('Funcionalidad de creación en desarrollo para el Sprint 2');
+};
+
+// Simulación de datos de proyectos
 const projects = [
   { id: 1, name: 'Restock Math 2026', desc: 'Annual textbook purchase.', progress: 62, status: 'On Track', color: 'var(--Primary)' },
   { id: 2, name: 'Website Redesign', desc: 'Full corporate site overhaul.', progress: 40, status: 'At Risk', color: 'var(--Error)' },
@@ -23,9 +28,11 @@ const projects = [
             <p class="subtitle">Projects you are enrolled in as admin or member</p>
           </div>
           <div class="header-actions">
-            <Anchor href="#" class="btn-gold" label="+ New Project">
-              + New project
-            </Anchor>
+            <div @click.capture="handleNewProject" style="cursor: pointer;">
+                <Anchor href="#" class="btn-gold" label="+ New Project">
+                + New project
+                </Anchor>
+            </div>
           </div>
         </header>
 
@@ -109,27 +116,32 @@ const projects = [
   width: 100%;
   max-width: 1800px;
   margin: 0 auto;
+  align-items: stretch;
 }
 
 .content {
-  flex: 3;
-  padding: 60px;
+  flex: 1;
+  padding: 80px 60px;
 }
 
 .context-panel {
-  flex: 1;
+  width: 380px;
+  flex: none;
   background-color: var(--Background2);
   border-left: 1px solid var(--Border);
-  padding: 80px 40px;
-  min-width: 100vh;
+  padding: 80px 32px;
+  min-width: 380px;
+  max-width: 380px;
+  position: sticky;
+  top: 0;
 }
 
 /* Estilos de Tarjetas */
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  gap: 30px;
+  margin-top: 40px;
 }
 
 .project-card {
