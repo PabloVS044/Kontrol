@@ -9,10 +9,8 @@
       <ul class="navigation">
         <li><Anchor label="Home"         link="#header"   /></li>
         <li><Anchor label="Features"     link="#features" /></li>
-        <li><Anchor label="How it works" link="#steps"    /></li>
-        <li><Anchor label="Pricing"      link="#pricing"  /></li>
-        <li><Anchor label="About"        link="#about"    /></li>
-        <li><Anchor label="Contact"      link="#contact"  /></li>
+        <li><Anchor label="How it works" link="#solution"    /></li>
+        <li><Anchor label="Companies"        link="#companies"    /></li>
       </ul>
 
       <div class="actions">
