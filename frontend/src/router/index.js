@@ -6,6 +6,8 @@ import InventoryPage from '../views/InventoryPage.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
+import ReportsView from '../views/ReportsView.vue'
+import ReportDetailView from '../views/ReportDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +42,18 @@ const router = createRouter({
       path: '/projects',
       name: 'projects',
       component: ProjectsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/reports',
+      name: 'reports',
+      component: ReportsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/reports/:id',
+      name: 'report-detail',
+      component: ReportDetailView,
       meta: { requiresAuth: true }
     },
     {

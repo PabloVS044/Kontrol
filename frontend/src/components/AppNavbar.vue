@@ -11,6 +11,7 @@
         <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
         <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
         <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
+        <RouterLink class="appnav-link" to="/reports">Reports</RouterLink>
         <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
       </div>
 
