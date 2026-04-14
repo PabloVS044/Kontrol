@@ -119,12 +119,13 @@
                     <span class="proj-badge">{{ project.nombre }}</span>
                   </td>
                   <td class="td-status">
-                    <Pill
-                      :label="statusPill(project.estado).label"
-                      :btnColor="statusPill(project.estado).bg"
-                      :circleColor="statusPill(project.estado).color"
-                      :textColor="statusPill(project.estado).color"
-                    />
+                    <span class="status-tag" :style="{
+                      color: statusPill(project.estado).color,
+                      background: statusPill(project.estado).bg
+                    }">
+                      <span class="status-dot" :style="{ background: statusPill(project.estado).color }"></span>
+                      {{ statusPill(project.estado).label }}
+                    </span>
                   </td>
                   <td class="td-date">{{ formatDate(project.fecha_inicio) }}</td>
                   <td class="td-action">
@@ -622,6 +623,23 @@ function goToDetail(id) {
   padding: 3px 8px;
   font-size: 11px;
   color: #777;
+}
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .td-date { color: #555; font-size: 11px; }
