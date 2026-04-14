@@ -7,16 +7,22 @@
         <span>Kontrol</span>
       </RouterLink>
 
-      <div class="appnav-links">
-        <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
-        <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
-        <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
-        <RouterLink class="appnav-link" to="/reports">Reports</RouterLink>
-        <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
+      <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
+        <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
+        <RouterLink class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
+        <RouterLink class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
+        <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
+        <RouterLink class="appnav-link" to="/finance" @click="closeMenu">Finance</RouterLink>
       </div>
 
       <div class="appnav-end">
         <div class="appnav-avatar">{{ userInitial }}</div>
+        
+        <button class="hamburger" @click="toggleMenu" aria-label="Menu">
+          <span :class="{'line': true, 'line-top': isMenuOpen}"></span>
+          <span :class="{'line': true, 'line-middle': isMenuOpen}"></span>
+          <span :class="{'line': true, 'line-bottom': isMenuOpen}"></span>
+        </button>
       </div>
 
     </div>
@@ -24,17 +30,26 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
+const isMenuOpen = ref(false)
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const closeMenu = () => {
+  isMenuOpen.value = false
+}
 </script>
 
 <style scoped>
@@ -123,6 +138,9 @@ const userInitial = computed(() => {
 .appnav-end {
   margin-left: auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .appnav-avatar {
@@ -139,15 +157,82 @@ const userInitial = computed(() => {
   cursor: pointer;
 }
 
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 20px;
+  position: relative;
+  z-index: 101;
+}
+
+.hamburger .line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #faf8f5;
+  position: absolute;
+  left: 0;
+  transition: all 0.3s ease;
+}
+
+.hamburger .line:nth-child(1) { top: 0; }
+.hamburger .line:nth-child(2) { top: 9px; }
+.hamburger .line:nth-child(3) { top: 18px; }
+
+.hamburger .line.line-top {
+  transform: translateY(9px) rotate(45deg);
+}
+.hamburger .line.line-middle {
+  opacity: 0;
+}
+.hamburger .line.line-bottom {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
 /* Tablet: reducir gap y padding */
 @media (max-width: 900px) {
   .appnav-inner { padding: 0 20px; gap: 20px; }
   .appnav-link  { padding: 0 10px; font-size: 11px; }
 }
 
-/* Mobile: ocultar links */
+/* Mobile: mostrar menu hamburguesa y ocultar/mostrar links según estado */
 @media (max-width: 640px) {
-  .appnav-links { display: none; }
+  .hamburger {
+    display: block;
+  }
+
   .appnav-inner { padding: 0 16px; gap: 0; }
+
+  .appnav-links { 
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.98);
+    border-bottom: 1px solid #1f1f1f;
+    flex-direction: column;
+    padding: 20px 0;
+    gap: 16px;
+    align-items: center;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: clip-path 0.3s ease-in-out;
+    pointer-events: none;
+  }
+
+  .appnav-links.is-open {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    pointer-events: auto;
+  }
+
+  .appnav-link {
+    font-size: 16px;
+    padding: 10px 20px;
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
