@@ -29,9 +29,12 @@
                 <p class="proj-desc">{{ project.descripcion || 'No description provided.' }}</p>
               </div>
               <div class="header-actions">
-                <span class="status-pill" :class="statusClass(project.estado)">
-                  <span class="status-dot"></span>{{ statusLabel(project.estado) }}
-                </span>
+                <Pill
+                  :label="statusPill(project.estado).label"
+                  :btnColor="statusPill(project.estado).bg"
+                  :circleColor="statusPill(project.estado).color"
+                  :textColor="statusPill(project.estado).color"
+                />
                 <button class="btn-outline">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M6 9V2M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
@@ -372,27 +375,11 @@
 
         <div class="side-section">
           <p class="side-label">Actions</p>
-          <button class="side-btn">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <rect x="1" y="1" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.1"/>
-              <path d="M3.5 5.5h4M5.5 3.5v4" stroke="currentColor" stroke-width="1.1" stroke-linecap="square"/>
-            </svg>
-            Generate Report
-          </button>
-          <button class="side-btn">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <circle cx="5.5" cy="3.5" r="1.8" stroke="currentColor" stroke-width="1.1"/>
-              <path d="M1.5 9.5c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="square"/>
-            </svg>
-            Add Member
-          </button>
-          <button class="side-btn">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <circle cx="5.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.1"/>
-              <path d="M5.5 1v1.5M5.5 8.5V10M1 5.5h1.5M8.5 5.5H10" stroke="currentColor" stroke-width="1.1" stroke-linecap="square"/>
-            </svg>
-            Settings
-          </button>
+          <div class="side-actions">
+            <Button label="Generate Report" />
+            <Button label="Add Member" />
+            <Button label="Settings" />
+          </div>
         </div>
 
         <div class="side-divider"></div>
@@ -402,9 +389,12 @@
           <div class="info-list">
             <div class="info-row">
               <span class="info-key">Status</span>
-              <span class="status-pill sm" :class="statusClass(project.estado)">
-                <span class="status-dot"></span>{{ statusLabel(project.estado) }}
-              </span>
+              <Pill
+                :label="statusPill(project.estado).label"
+                :btnColor="statusPill(project.estado).bg"
+                :circleColor="statusPill(project.estado).color"
+                :textColor="statusPill(project.estado).color"
+              />
             </div>
             <div class="info-row">
               <span class="info-key">Company</span>
@@ -447,6 +437,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
+import Pill   from '../components/UI/Pill/Pill.vue'
+import Button from '../components/UI/Button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 
 const route     = useRoute()
@@ -477,14 +469,14 @@ onMounted(loadProject)
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  PLANIFICADO: { label: 'Planned',     cls: 'status-planned'   },
-  EN_PROGRESO: { label: 'In Progress', cls: 'status-active'    },
-  PAUSADO:     { label: 'On Hold',     cls: 'status-paused'    },
-  COMPLETADO:  { label: 'Completed',   cls: 'status-completed' },
-  CANCELADO:   { label: 'Cancelled',   cls: 'status-cancelled' },
+  PLANIFICADO: { label: 'Planned',     color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+  EN_PROGRESO: { label: 'In Progress', color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
+  PAUSADO:     { label: 'On Hold',     color: '#fb923c', bg: 'rgba(251,146,60,0.1)'  },
+  COMPLETADO:  { label: 'Completed',   color: '#c9a962', bg: 'rgba(201,169,98,0.1)'  },
+  CANCELADO:   { label: 'Cancelled',   color: '#fb7185', bg: 'rgba(251,113,133,0.1)' },
 }
 function statusLabel(e) { return STATUS_MAP[e]?.label ?? e }
-function statusClass(e) { return STATUS_MAP[e]?.cls   ?? '' }
+function statusPill(e)  { return STATUS_MAP[e] ?? { label: e, color: '#888', bg: 'rgba(255,255,255,0.06)' } }
 
 // ── Formatting ─────────────────────────────────────────────────────────────
 function formatDate(d) {
@@ -807,29 +799,15 @@ const healthSub = computed(() => {
   white-space: nowrap;
 }
 
-/* Status pills */
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+/* Pill sizing overrides */
+.header-actions :deep(.pill) {
   padding: 4px 10px;
-  font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  font-weight: 600;
 }
-.status-pill.sm { padding: 3px 8px; font-size: 10px; }
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
+.info-row :deep(.pill) {
+  padding: 3px 8px;
+  font-size: 10px;
 }
-.status-planned   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
-.status-active    { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.status-paused    { color: #fb923c; background: rgba(251,146,60,0.08);  }
-.status-completed { color: #c9a962; background: rgba(201,169,98,0.08);  }
-.status-cancelled { color: #fb7185; background: rgba(251,113,133,0.08); }
 
 /* Skeleton */
 .header-skeleton { display: flex; flex-direction: column; gap: 10px; }
@@ -1196,24 +1174,25 @@ const healthSub = computed(() => {
 .qstat-val.gold { color: #c9a962; }
 .qstat-val.red  { color: #fb7185; }
 
-/* Side buttons */
-.side-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* Side action buttons */
+.side-actions :deep(.btn) {
+  display: block;
   width: 100%;
+  text-align: left;
   padding: 8px 10px;
   background: rgba(255,255,255,0.02);
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  cursor: pointer;
+  border-radius: 0;
   margin-bottom: 6px;
-  text-align: left;
   transition: border-color .2s, color .2s;
 }
-.side-btn:hover { border-color: rgba(201,169,98,0.3); color: #c9a962; }
+.side-actions :deep(.btn:hover) {
+  border-color: rgba(201,169,98,0.3);
+  color: #c9a962;
+}
 
 /* Info list */
 .info-list { display: flex; flex-direction: column; gap: 0; }
