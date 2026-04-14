@@ -54,63 +54,29 @@
 
         <!-- KPI Cards -->
         <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <div class="kpi-icon" style="background: rgba(201,169,98,0.1);">
-                <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
-                  <path d="M9 2l1.8 5.4H17l-4.9 3.6 1.9 5.4L9 13l-5 3.4 1.9-5.4L1 7.4h6.2z" stroke="#c9a962" stroke-width="1.3"/>
-                </svg>
-              </div>
-              <span class="kpi-delta positive">+12.3%</span>
-            </div>
-            <div class="kpi-value">32.5%</div>
-            <div class="kpi-label">ROI Growth</div>
-          </div>
+          <Card title="32.5%" subtitle="ROI Growth"
+            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
+            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
+            <Pill label="+12.3%" btnColor="rgba(74,222,128,0.1)" circleColor="#4ade80" textColor="#4ade80" />
+          </Card>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <div class="kpi-icon" style="background: rgba(96,165,250,0.1);">
-                <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
-                  <circle cx="9" cy="6" r="3" stroke="#60a5fa" stroke-width="1.3"/>
-                  <path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#60a5fa" stroke-width="1.3" stroke-linecap="square"/>
-                </svg>
-              </div>
-              <span class="kpi-delta positive">+8.2%</span>
-            </div>
-            <div class="kpi-value">{{ loading ? '—' : projects.length }}</div>
-            <div class="kpi-label">Active Projects</div>
-          </div>
+          <Card :title="loading ? '—' : String(projects.length)" subtitle="Active Projects"
+            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
+            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
+            <Pill label="+8.2%" btnColor="rgba(74,222,128,0.1)" circleColor="#4ade80" textColor="#4ade80" />
+          </Card>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <div class="kpi-icon" style="background: rgba(167,139,250,0.1);">
-                <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
-                  <rect x="2" y="2" width="6" height="6" rx="1" stroke="#a78bfa" stroke-width="1.3"/>
-                  <rect x="10" y="2" width="6" height="6" rx="1" stroke="#a78bfa" stroke-width="1.3"/>
-                  <rect x="2" y="10" width="6" height="6" rx="1" stroke="#a78bfa" stroke-width="1.3"/>
-                  <rect x="10" y="10" width="6" height="6" rx="1" stroke="#a78bfa" stroke-width="1.3"/>
-                </svg>
-              </div>
-              <span class="kpi-delta positive">+15</span>
-            </div>
-            <div class="kpi-value">{{ loading ? '—' : completedCount }}</div>
-            <div class="kpi-label">Completed</div>
-          </div>
+          <Card :title="loading ? '—' : String(completedCount)" subtitle="Completed"
+            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
+            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
+            <Pill label="+15" btnColor="rgba(167,139,250,0.1)" circleColor="#a78bfa" textColor="#a78bfa" />
+          </Card>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <div class="kpi-icon" style="background: rgba(251,113,133,0.1);">
-                <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
-                  <rect x="2" y="9" width="3" height="7" rx="0.5" stroke="#fb7185" stroke-width="1.3"/>
-                  <rect x="7.5" y="5" width="3" height="11" rx="0.5" stroke="#fb7185" stroke-width="1.3"/>
-                  <rect x="13" y="2" width="3" height="14" rx="0.5" stroke="#fb7185" stroke-width="1.3"/>
-                </svg>
-              </div>
-              <span class="kpi-delta negative">-2.1%</span>
-            </div>
-            <div class="kpi-value">{{ loading ? '—' : formatBudget(totalBudget) }}</div>
-            <div class="kpi-label">Budget Total</div>
-          </div>
+          <Card :title="loading ? '—' : formatBudget(totalBudget)" subtitle="Budget Total"
+            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
+            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
+            <Pill label="-2.1%" btnColor="rgba(251,113,133,0.1)" circleColor="#fb7185" textColor="#fb7185" />
+          </Card>
         </div>
 
         <!-- Active Reports Table -->
@@ -153,10 +119,12 @@
                     <span class="proj-badge">{{ project.nombre }}</span>
                   </td>
                   <td class="td-status">
-                    <span class="status-pill" :class="statusClass(project.estado)">
-                      <span class="status-dot"></span>
-                      {{ statusLabel(project.estado) }}
-                    </span>
+                    <Pill
+                      :label="statusPill(project.estado).label"
+                      :btnColor="statusPill(project.estado).bg"
+                      :circleColor="statusPill(project.estado).color"
+                      :textColor="statusPill(project.estado).color"
+                    />
                   </td>
                   <td class="td-date">{{ formatDate(project.fecha_inicio) }}</td>
                   <td class="td-action">
@@ -262,9 +230,11 @@
 
         <div class="ctx-section">
           <p class="ctx-label">Actions</p>
-          <button class="ctx-action-btn">Quick Summary of Q1 Project Launch</button>
-          <button class="ctx-action-btn">Analyze Budget Deviation</button>
-          <button class="ctx-action-btn">Compare to Last Year</button>
+          <div class="ctx-actions">
+            <Button label="Quick Summary of Q1 Project Launch" />
+            <Button label="Analyze Budget Deviation" />
+            <Button label="Compare to Last Year" />
+          </div>
         </div>
 
         <div class="ctx-divider"></div>
@@ -327,6 +297,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
+import Card   from '../components/UI/Card/Card.vue'
+import Pill   from '../components/UI/Pill/Pill.vue'
+import Button from '../components/UI/Button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 
 const router   = useRouter()
@@ -395,15 +368,15 @@ const totalBudget = computed(() =>
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  PLANIFICADO:  { label: 'Planned',     cls: 'status-planned'   },
-  EN_PROGRESO:  { label: 'In Progress', cls: 'status-active'    },
-  PAUSADO:      { label: 'On Hold',     cls: 'status-paused'    },
-  COMPLETADO:   { label: 'Completed',   cls: 'status-completed' },
-  CANCELADO:    { label: 'Cancelled',   cls: 'status-cancelled' },
+  PLANIFICADO: { label: 'Planned',     color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+  EN_PROGRESO: { label: 'In Progress', color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
+  PAUSADO:     { label: 'On Hold',     color: '#fb923c', bg: 'rgba(251,146,60,0.1)'  },
+  COMPLETADO:  { label: 'Completed',   color: '#c9a962', bg: 'rgba(201,169,98,0.1)'  },
+  CANCELADO:   { label: 'Cancelled',   color: '#fb7185', bg: 'rgba(251,113,133,0.1)' },
 }
 
 function statusLabel(estado) { return STATUS_MAP[estado]?.label ?? estado }
-function statusClass(estado) { return STATUS_MAP[estado]?.cls   ?? ''     }
+function statusPill(estado)  { return STATUS_MAP[estado] ?? { label: estado, color: '#888', bg: 'rgba(255,255,255,0.06)' } }
 
 function formatDate(d) {
   if (!d) return '—'
@@ -540,56 +513,34 @@ function goToDetail(id) {
   margin-bottom: 28px;
 }
 
-.kpi-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid #1e1e1e;
+.kpi-grid :deep(.card) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
   padding: 16px;
-  position: relative;
+  gap: 10px;
   transition: border-color .2s, background .2s;
 }
 
-.kpi-card:hover {
-  border-color: rgba(201,169,98,0.25);
-  background: rgba(201,169,98,0.04);
+.kpi-grid :deep(.card:hover) {
+  border-color: rgba(201,169,98,0.3) !important;
 }
 
-.kpi-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.kpi-icon {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-}
-
-.kpi-delta {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-}
-.kpi-delta.positive { color: #4ade80; }
-.kpi-delta.negative { color: #fb7185; }
-
-.kpi-value {
+.kpi-grid :deep(.card-title) {
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #faf8f5;
+  font-size: 1.6rem;
   line-height: 1;
-  margin-bottom: 4px;
 }
 
-.kpi-label {
-  font-family: 'Manrope', sans-serif;
+.kpi-grid :deep(.card-subtitle) {
   font-size: 11px;
   color: var(--TextMuted);
+  font-family: 'Manrope', sans-serif;
+}
+
+.kpi-grid :deep(.pill) {
+  margin-top: 4px;
 }
 
 /* ─── Section blocks ─────────────────────────────────────────────────────── */
@@ -672,29 +623,6 @@ function goToDetail(id) {
   font-size: 11px;
   color: #777;
 }
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.status-planned   { color: #60a5fa; background: rgba(96,165,250,0.08);   }
-.status-active    { color: #4ade80; background: rgba(74,222,128,0.08);   }
-.status-paused    { color: #fb923c; background: rgba(251,146,60,0.08);   }
-.status-completed { color: #c9a962; background: rgba(201,169,98,0.08);   }
-.status-cancelled { color: #fb7185; background: rgba(251,113,133,0.08);  }
 
 .td-date { color: #555; font-size: 11px; }
 
@@ -883,7 +811,7 @@ function goToDetail(id) {
   box-sizing: border-box;
 }
 
-.ctx-action-btn {
+.ctx-actions :deep(.btn) {
   display: block;
   width: 100%;
   text-align: left;
@@ -893,12 +821,12 @@ function goToDetail(id) {
   color: #555;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  cursor: pointer;
+  border-radius: 0;
   margin-bottom: 6px;
   transition: border-color .2s, color .2s;
 }
 
-.ctx-action-btn:hover {
+.ctx-actions :deep(.btn:hover) {
   border-color: rgba(201,169,98,0.3);
   color: #c9a962;
 }
