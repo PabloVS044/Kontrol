@@ -29,6 +29,7 @@ az vm create \
   --image Ubuntu2204 \
   --size "$VM_SIZE" \
   --admin-username "$ADMIN_USER" \
+  --admin-username "$ADMIN_USER" \
   --generate-ssh-keys \
   --public-ip-sku Standard \
   --security-type Standard \

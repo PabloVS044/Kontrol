@@ -6,7 +6,12 @@ const SALT_ROUNDS = 10
 
 const signToken = (user) =>
   jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, nombre_rol: user.nombre_rol },
+    {
+      id_usuario:    user.id_usuario,
+      email:         user.email,
+      nombre_rol:    user.nombre_rol,
+      token_version: user.token_version ?? 1,
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
   )
@@ -37,14 +42,15 @@ export const register = async (req, res) => {
     )
 
     const user = await client.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre_rol
+      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.token_version, r.nombre_rol
        FROM public.usuario u JOIN public.rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = $1`,
       [inserted.rows[0].id_usuario]
     )
 
+    const { token_version: _tv, ...userData } = user.rows[0]
     const token = signToken(user.rows[0])
-    return res.status(201).json({ success: true, token, data: user.rows[0] })
+    return res.status(201).json({ success: true, token, data: userData })
   } finally {
     client.release()
   }
@@ -55,7 +61,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body
 
   const result = await pool.query(
-    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre_rol
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
      FROM public.usuario u JOIN public.rol r ON r.id_rol = u.id_rol
      WHERE u.email = $1`,
     [email]
@@ -77,7 +83,7 @@ export const login = async (req, res) => {
   }
 
   const token = signToken(user)
-  const { password_hash, activo, ...userData } = user
+  const { password_hash, activo, token_version, ...userData } = user
   return res.json({ success: true, token, data: userData })
 }
 
@@ -164,7 +170,7 @@ export const googleCallback = async (req, res) => {
     try {
       // 1. Look up by google_id
       let userRow = await client.query(
-        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, u.token_version, r.nombre_rol
          FROM public.usuario u
          JOIN public.rol r ON r.id_rol = u.id_rol
          WHERE u.google_id = $1`,
@@ -174,7 +180,7 @@ export const googleCallback = async (req, res) => {
       // 2. Look up by email and link the Google account
       if (!userRow.rows.length) {
         const byEmail = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.email = $1`,
@@ -207,7 +213,7 @@ export const googleCallback = async (req, res) => {
         )
 
         userRow = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.id_usuario = $1`,

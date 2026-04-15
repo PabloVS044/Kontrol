@@ -12,6 +12,7 @@
         <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
         <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
         <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
+        <RouterLink v-if="isAdmin" class="appnav-link appnav-link--admin" to="/admin">Admin</RouterLink>
       </div>
 
       <div class="appnav-end">
@@ -34,6 +35,8 @@ const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
+
+const isAdmin = computed(() => authStore.nombreRol === 'admin')
 </script>
 
 <style scoped>
@@ -117,6 +120,17 @@ const userInitial = computed(() => {
 
 .appnav-link.router-link-active::after {
   transform: scaleX(1);
+}
+
+.appnav-link--admin {
+  color: #c9a962;
+  opacity: 0.7;
+}
+
+.appnav-link--admin:hover,
+.appnav-link--admin.router-link-active {
+  opacity: 1;
+  color: #c9a962;
 }
 
 .appnav-end {
