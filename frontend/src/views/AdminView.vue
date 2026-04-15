@@ -1,6 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import AppNavbar from '../components/AppNavbar.vue'
+import AppNavbar  from '../components/AppNavbar.vue'
+import Card       from '../components/UI/Card/Card.vue'
+import Button     from '../components/UI/Button/Button.vue'
+import Pill       from '../components/UI/Pill/Pill.vue'
+import AppInput   from '../components/UI/AppInput/AppInput.vue'
+import AppSelect  from '../components/UI/AppSelect/AppSelect.vue'
 import { useAuthStore } from '../stores/auth'
 import {
   fetchAdminStats,
@@ -13,18 +18,27 @@ import {
 const authStore = useAuthStore()
 
 // ── State ──────────────────────────────────────────────────────────────────────
-const stats   = ref(null)
-const users   = ref([])
-const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
-
-const loading      = ref(false)
-const statsLoading = ref(false)
-const actionLoading = ref(null) // user id currently performing an action
-
-const filters = ref({ search: '', role: '', activo: '', page: 1 })
-const toast   = ref(null) // { message, type: 'success' | 'error' }
+const stats          = ref(null)
+const users          = ref([])
+const pagination     = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
+const loading        = ref(false)
+const statsLoading   = ref(false)
+const actionLoading  = ref(null)
+const filters        = ref({ search: '', role: '', activo: '', page: 1 })
+const toast          = ref(null)
 
 const ROLES = ['admin', 'manager', 'collaborator']
+
+const ROLE_OPTIONS = [
+  { value: '', label: 'Todos los roles' },
+  ...ROLES.map(r => ({ value: r, label: r })),
+]
+
+const ACTIVO_OPTIONS = [
+  { value: '',      label: 'Todos' },
+  { value: 'true',  label: 'Activos' },
+  { value: 'false', label: 'Inactivos' },
+]
 
 // ── Data fetching ──────────────────────────────────────────────────────────────
 async function loadStats() {
@@ -63,14 +77,10 @@ onMounted(() => {
   loadUsers()
 })
 
-// Re-fetch users when filters change (debounce the search field)
 let searchTimer = null
 watch(() => filters.value.search, () => {
   clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => {
-    filters.value.page = 1
-    loadUsers()
-  }, 300)
+  searchTimer = setTimeout(() => { filters.value.page = 1; loadUsers() }, 300)
 })
 
 watch([() => filters.value.role, () => filters.value.activo], () => {
@@ -85,7 +95,6 @@ async function onRevokeToken(user) {
   try {
     const res = await revokeUserToken(authStore.token, user.id_usuario)
     showToast(res.message, 'success')
-    // Bump local token_version so the table reflects the change immediately
     const found = users.value.find(u => u.id_usuario === user.id_usuario)
     if (found) found.token_version = res.data.token_version
   } catch (e) {
@@ -103,10 +112,7 @@ async function onToggleActive(user) {
     const res = await toggleUserActive(authStore.token, user.id_usuario)
     showToast(res.message, 'success')
     const found = users.value.find(u => u.id_usuario === user.id_usuario)
-    if (found) {
-      found.activo        = res.data.activo
-      found.token_version = res.data.token_version
-    }
+    if (found) { found.activo = res.data.activo; found.token_version = res.data.token_version }
   } catch (e) {
     showToast(e.message, 'error')
   } finally {
@@ -125,7 +131,6 @@ async function onChangeRole(user, newRole) {
     if (found) found.nombre_rol = newRole
   } catch (e) {
     showToast(e.message, 'error')
-    // Reload to revert the optimistic UI change
     loadUsers()
   } finally {
     actionLoading.value = null
@@ -150,21 +155,28 @@ function showToast(message, type = 'success') {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function authMethod(user) {
-  if (user.google_auth && user.password_auth) return 'Google + Contraseña'
+  if (user.google_auth && user.password_auth) return 'Google + Pass'
   if (user.google_auth)   return 'Google'
   if (user.password_auth) return 'Contraseña'
   return '—'
 }
 
+function authPillColor(user) {
+  if (user.google_auth) return { bg: '#0d1a2a', dot: '#60a5fa', text: '#60a5fa' }
+  return { bg: '#16102a', dot: '#a78bfa', text: '#a78bfa' }
+}
+
 const statCards = computed(() => {
   if (!stats.value) return []
   return [
-    { label: 'Total usuarios',    value: stats.value.total,        color: '#c9a962' },
-    { label: 'Activos',           value: stats.value.activos,      color: '#34d399' },
-    { label: 'Inactivos',         value: stats.value.inactivos,    color: '#fb7185' },
-    { label: 'Login con Google',  value: stats.value.google_users, color: '#60a5fa' },
+    { label: 'Total usuarios',   value: stats.value.total,        color: '#c9a962', dot: '#c9a962' },
+    { label: 'Activos',          value: stats.value.activos,      color: '#34d399', dot: '#34d399' },
+    { label: 'Inactivos',        value: stats.value.inactivos,    color: '#fb7185', dot: '#fb7185' },
+    { label: 'Login con Google', value: stats.value.google_users, color: '#60a5fa', dot: '#60a5fa' },
   ]
 })
+
+const isSelf = (user) => user.id_usuario === authStore.idUsuario
 </script>
 
 <template>
@@ -172,49 +184,53 @@ const statCards = computed(() => {
     <AppNavbar />
 
     <main class="admin-main">
+
       <header class="admin-header">
-        <div>
-          <h1 class="admin-title">Panel de Administración</h1>
-          <p class="admin-sub">Gestión de usuarios y sesiones</p>
-        </div>
+        <h1 class="admin-title">Panel de Administración</h1>
+        <p class="admin-sub">Gestión de usuarios y sesiones</p>
       </header>
 
-      <!-- Stats cards -->
+      <!-- Stats usando Card + Pill -->
       <section class="stats-grid">
-        <div
+        <Card
           v-for="card in statCards"
           :key="card.label"
-          class="stat-card"
+          :title="statsLoading ? '—' : String(card.value)"
+          :subtitle="card.label"
+          :titleColor="card.color"
+          back="rgba(12,12,12,0.9)"
+          borderColor="#1f1f1f"
+          shadowColor="rgba(0,0,0,0.4)"
         >
-          <span class="stat-value" :style="{ color: card.color }">
-            {{ statsLoading ? '—' : card.value }}
-          </span>
-          <span class="stat-label">{{ card.label }}</span>
-        </div>
+          <Pill
+            :label="card.label"
+            :btnColor="card.color + '15'"
+            :circleColor="card.dot"
+            :textColor="card.color"
+          />
+        </Card>
       </section>
 
-      <!-- Filters -->
+      <!-- Filtros usando AppInput + AppSelect -->
       <section class="filters-row">
-        <input
+        <AppInput
           v-model="filters.search"
-          class="filter-input"
-          placeholder="Buscar por nombre o email..."
-          type="text"
+          placeholder="Buscar por nombre o email…"
+          class="filter-search"
         />
-
-        <select v-model="filters.role" class="filter-select">
-          <option value="">Todos los roles</option>
-          <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
-        </select>
-
-        <select v-model="filters.activo" class="filter-select">
-          <option value="">Todos</option>
-          <option value="true">Activos</option>
-          <option value="false">Inactivos</option>
-        </select>
+        <AppSelect
+          v-model="filters.role"
+          :options="ROLE_OPTIONS"
+          class="filter-select"
+        />
+        <AppSelect
+          v-model="filters.activo"
+          :options="ACTIVO_OPTIONS"
+          class="filter-select"
+        />
       </section>
 
-      <!-- Users table -->
+      <!-- Tabla de usuarios -->
       <section class="table-wrapper">
         <div v-if="loading" class="table-loading">Cargando usuarios…</div>
 
@@ -235,94 +251,96 @@ const statCards = computed(() => {
             <tr v-if="users.length === 0">
               <td colspan="8" class="empty-row">No se encontraron usuarios.</td>
             </tr>
+
             <tr
               v-for="user in users"
               :key="user.id_usuario"
               :class="{ 'row-inactive': !user.activo }"
             >
-              <td class="td-id">{{ user.id_usuario }}</td>
+              <td class="td-muted">{{ user.id_usuario }}</td>
 
               <td>
-                <div class="user-name">{{ user.nombre }} {{ user.apellido }}</div>
+                <span class="user-name">{{ user.nombre }} {{ user.apellido }}</span>
               </td>
 
-              <td class="td-email">{{ user.email }}</td>
+              <td class="td-muted td-email">{{ user.email }}</td>
 
               <td>
-                <span
-                  class="badge"
-                  :class="user.google_auth ? 'badge-google' : 'badge-pass'"
-                >
-                  {{ authMethod(user) }}
-                </span>
+                <Pill
+                  :label="authMethod(user)"
+                  :btnColor="authPillColor(user).bg"
+                  :circleColor="authPillColor(user).dot"
+                  :textColor="authPillColor(user).text"
+                />
               </td>
 
               <td>
-                <select
+                <AppSelect
+                  :modelValue="user.nombre_rol"
+                  :options="ROLES"
+                  :disabled="actionLoading === `role-${user.id_usuario}` || isSelf(user)"
                   class="role-select"
-                  :value="user.nombre_rol"
-                  :disabled="actionLoading === `role-${user.id_usuario}` || user.id_usuario === authStore.idUsuario"
-                  @change="onChangeRole(user, $event.target.value)"
-                >
-                  <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
-                </select>
+                  @update:modelValue="onChangeRole(user, $event)"
+                />
               </td>
 
               <td>
-                <span class="badge" :class="user.activo ? 'badge-active' : 'badge-inactive'">
-                  {{ user.activo ? 'Activo' : 'Inactivo' }}
-                </span>
+                <Pill
+                  :label="user.activo ? 'Activo' : 'Inactivo'"
+                  :btnColor="user.activo ? '#0d2418' : '#2a0d0d'"
+                  :circleColor="user.activo ? '#34d399' : '#fb7185'"
+                  :textColor="user.activo ? '#34d399' : '#fb7185'"
+                />
               </td>
 
-              <td class="td-version">v{{ user.token_version }}</td>
+              <td class="td-muted td-version">v{{ user.token_version }}</td>
 
               <td class="td-actions">
-                <!-- Revoke token -->
-                <button
-                  class="action-btn btn-revoke"
-                  :disabled="actionLoading !== null || user.id_usuario === authStore.idUsuario"
-                  :title="user.id_usuario === authStore.idUsuario ? 'No puedes revocar tu propia sesión' : 'Revocar sesiones activas'"
+                <Button
+                  label="Revocar"
+                  variant="warning"
+                  :disabled="actionLoading !== null || isSelf(user)"
+                  :title="isSelf(user) ? 'No puedes revocar tu propia sesión' : 'Revocar sesiones activas'"
                   @click="onRevokeToken(user)"
-                >
-                  <span v-if="actionLoading === `revoke-${user.id_usuario}`">…</span>
-                  <span v-else>Revocar</span>
-                </button>
-
-                <!-- Toggle active -->
-                <button
-                  class="action-btn"
-                  :class="user.activo ? 'btn-deactivate' : 'btn-activate'"
-                  :disabled="actionLoading !== null || user.id_usuario === authStore.idUsuario"
-                  :title="user.id_usuario === authStore.idUsuario ? 'No puedes desactivar tu propia cuenta' : (user.activo ? 'Desactivar cuenta' : 'Activar cuenta')"
+                />
+                <Button
+                  :label="user.activo ? 'Desactivar' : 'Activar'"
+                  :variant="user.activo ? 'danger' : 'success'"
+                  :disabled="actionLoading !== null || isSelf(user)"
+                  :title="isSelf(user) ? 'No puedes modificar tu propia cuenta' : ''"
                   @click="onToggleActive(user)"
-                >
-                  <span v-if="actionLoading === `toggle-${user.id_usuario}`">…</span>
-                  <span v-else>{{ user.activo ? 'Desactivar' : 'Activar' }}</span>
-                </button>
+                />
               </td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Pagination -->
+      <!-- Paginación usando Button -->
       <div v-if="!loading && pagination.totalPages > 1" class="pagination">
-        <button class="page-btn" :disabled="filters.page <= 1" @click="goToPage(filters.page - 1)">
-          ← Anterior
-        </button>
+        <Button
+          label="← Anterior"
+          variant="ghost"
+          :disabled="filters.page <= 1"
+          @click="goToPage(filters.page - 1)"
+        />
         <span class="page-info">
           Página {{ pagination.page }} de {{ pagination.totalPages }}
           ({{ pagination.total }} usuarios)
         </span>
-        <button class="page-btn" :disabled="filters.page >= pagination.totalPages" @click="goToPage(filters.page + 1)">
-          Siguiente →
-        </button>
+        <Button
+          label="Siguiente →"
+          variant="ghost"
+          :disabled="filters.page >= pagination.totalPages"
+          @click="goToPage(filters.page + 1)"
+        />
       </div>
+
     </main>
 
-    <!-- Toast notification -->
+    <!-- Toast -->
     <Transition name="toast">
-      <div v-if="toast" class="toast" :class="`toast-${toast.type}`">
+      <div v-if="toast" class="toast" :class="`toast--${toast.type}`">
         {{ toast.message }}
       </div>
     </Transition>
@@ -332,9 +350,9 @@ const statCards = computed(() => {
 <style scoped>
 .admin-layout {
   min-height: 100vh;
-  background: #080808;
-  color: #faf8f5;
-  font-family: 'Manrope', sans-serif;
+  background: var(--Background, #000);
+  color: var(--Text, #faf8f5);
+  font-family: 'Manrope', 'DM Sans', sans-serif;
 }
 
 .admin-main {
@@ -351,45 +369,63 @@ const statCards = computed(() => {
 .admin-title {
   font-size: 22px;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text, #faf8f5);
   letter-spacing: 0.02em;
   margin: 0 0 4px;
 }
 
 .admin-sub {
   font-size: 13px;
-  color: #555;
+  color: var(--TextMuted, #8a8070);
   margin: 0;
 }
 
-/* ── Stats ── */
+/* ── Stats grid ──
+   Overrides Card's default margin/max-width for grid layout */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 0;
   margin-bottom: 32px;
 }
 
-.stat-card {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.stats-grid :deep(.card) {
+  margin: 0;
+  max-width: none;
+  border-radius: 0;
+  border-right: none;
 }
 
-.stat-value {
+.stats-grid :deep(.card:last-child) {
+  border-right: 0.01px solid #1f1f1f;
+}
+
+.stats-grid :deep(.card-title) {
   font-size: 28px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
 
-.stat-label {
-  font-size: 11px;
-  color: #666;
+.stats-grid :deep(.card-subtitle) {
+  font-size: 12px;
+  color: var(--TextMuted, #8a8070);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+}
+
+/* Pill inside Card: reduce size a bit */
+.stats-grid :deep(.pill) {
+  height: 28px;
+  padding: 0 10px;
+  margin-top: 12px;
+}
+
+.stats-grid :deep(.pill-text) {
+  font-size: 11px;
+}
+
+.stats-grid :deep(.dot) {
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
 }
 
 /* ── Filters ── */
@@ -398,45 +434,29 @@ const statCards = computed(() => {
   gap: 12px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
 
-.filter-input,
-.filter-select {
-  background: #0f0f0f;
-  border: 1px solid #2a2a2a;
-  color: #faf8f5;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-family: 'Manrope', sans-serif;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.filter-input {
+.filter-search {
   flex: 1;
   min-width: 220px;
 }
 
-.filter-input:focus,
-.filter-select:focus {
-  border-color: #c9a962;
-}
-
-.filter-select option {
-  background: #0f0f0f;
+.filter-select {
+  min-width: 160px;
 }
 
 /* ── Table ── */
 .table-wrapper {
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
+  background: var(--Background2, #120f07);
+  border: 1px solid var(--Border, #312713);
   overflow-x: auto;
 }
 
 .table-loading {
   padding: 48px;
   text-align: center;
-  color: #555;
+  color: var(--TextMuted, #8a8070);
   font-size: 14px;
 }
 
@@ -447,23 +467,23 @@ const statCards = computed(() => {
 }
 
 .users-table th {
-  background: #111;
-  color: #666;
+  background: rgba(255,255,255,0.02);
+  color: var(--TextMuted, #8a8070);
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid #1f1f1f;
+  border-bottom: 1px solid var(--Border, #312713);
   white-space: nowrap;
 }
 
 .users-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #141414;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(49,39,19,0.4);
   vertical-align: middle;
-  color: #ccc;
+  color: var(--Text, #faf8f5);
 }
 
 .users-table tr:last-child td {
@@ -471,133 +491,75 @@ const statCards = computed(() => {
 }
 
 .users-table tr:hover td {
-  background: #0e0e0e;
+  background: rgba(255,255,255,0.015);
 }
 
-.row-inactive td {
-  opacity: 0.5;
+.row-inactive {
+  opacity: 0.45;
 }
 
 .empty-row {
   text-align: center;
-  color: #444;
+  color: var(--TextMuted, #8a8070) !important;
   padding: 48px !important;
 }
 
-.td-id {
-  color: #444;
+.td-muted {
+  color: var(--TextDim, #5a5040);
   font-size: 12px;
+}
+
+.td-email {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-version {
   font-variant-numeric: tabular-nums;
 }
 
 .user-name {
   font-weight: 500;
-  color: #e8e8e8;
 }
 
-.td-email {
-  color: #888;
-  font-size: 12px;
+/* Pill in table rows: compact */
+.users-table :deep(.pill) {
+  height: 24px;
+  padding: 0 8px;
 }
 
-.td-version {
-  color: #555;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Badges ── */
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
+.users-table :deep(.pill-text) {
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  border-radius: 2px;
 }
 
-.badge-google   { background: #1a2a3a; color: #60a5fa; }
-.badge-pass     { background: #1a1a2a; color: #a78bfa; }
-.badge-active   { background: #0d2418; color: #34d399; }
-.badge-inactive { background: #2a0d0d; color: #fb7185; }
+.users-table :deep(.dot) {
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+}
 
-/* ── Role select ── */
+/* Role AppSelect inside table */
 .role-select {
-  background: #141414;
-  border: 1px solid #2a2a2a;
-  color: #c9a962;
-  padding: 4px 8px;
+  min-width: 130px;
+}
+
+.role-select :deep(.app-select) {
+  padding: 5px 30px 5px 10px;
   font-size: 12px;
-  font-family: 'Manrope', sans-serif;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s;
 }
 
-.role-select:hover:not(:disabled) {
-  border-color: #c9a962;
-}
-
-.role-select:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.role-select option {
-  background: #141414;
-}
-
-/* ── Action buttons ── */
+/* Action buttons: smaller in table */
 .td-actions {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.action-btn {
-  padding: 4px 10px;
+.td-actions :deep(.btn) {
+  padding: 5px 12px;
   font-size: 11px;
-  font-weight: 600;
-  font-family: 'Manrope', sans-serif;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: opacity 0.15s, background 0.15s;
-  white-space: nowrap;
-}
-
-.action-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.btn-revoke {
-  background: #1a1200;
-  border-color: #3a2900;
-  color: #c9a962;
-}
-
-.btn-revoke:hover:not(:disabled) {
-  background: #2a1e00;
-}
-
-.btn-deactivate {
-  background: #2a0d0d;
-  border-color: #4a1a1a;
-  color: #fb7185;
-}
-
-.btn-deactivate:hover:not(:disabled) {
-  background: #3a1212;
-}
-
-.btn-activate {
-  background: #0d2418;
-  border-color: #1a4030;
-  color: #34d399;
-}
-
-.btn-activate:hover:not(:disabled) {
-  background: #112e1e;
 }
 
 /* ── Pagination ── */
@@ -609,29 +571,10 @@ const statCards = computed(() => {
   margin-top: 24px;
 }
 
-.page-btn {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  color: #c9a962;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-family: 'Manrope', sans-serif;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-
-.page-btn:hover:not(:disabled) {
-  border-color: #c9a962;
-}
-
-.page-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
 .page-info {
   font-size: 12px;
-  color: #555;
+  color: var(--TextMuted, #8a8070);
+  margin: 0;
 }
 
 /* ── Toast ── */
@@ -645,33 +588,35 @@ const statCards = computed(() => {
   border: 1px solid transparent;
   z-index: 9999;
   max-width: 380px;
+  font-family: 'Manrope', 'DM Sans', sans-serif;
 }
 
-.toast-success {
+.toast--success {
   background: #0d2418;
   border-color: #1a4030;
   color: #34d399;
 }
 
-.toast-error {
-  background: #2a0d0d;
+.toast--error {
+  background: var(--Error, #800d0d);
   border-color: #4a1a1a;
-  color: #fb7185;
+  color: var(--ErrorText, #e05252);
 }
 
-.toast-enter-active,
-.toast-leave-active { transition: all 0.25s ease; }
-.toast-enter-from   { opacity: 0; transform: translateY(12px); }
-.toast-leave-to     { opacity: 0; transform: translateY(12px); }
+.toast-enter-active, .toast-leave-active { transition: all 0.25s ease; }
+.toast-enter-from, .toast-leave-to       { opacity: 0; transform: translateY(12px); }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .admin-main { padding: 80px 16px 48px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .admin-main   { padding: 80px 16px 48px; }
+  .stats-grid   { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid :deep(.card:nth-child(2)) { border-right: 0.01px solid #1f1f1f; }
+  .stats-grid :deep(.card:nth-child(4)) { border-right: 0.01px solid #1f1f1f; }
 }
 
 @media (max-width: 640px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .filters-row { flex-direction: column; }
+  .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+  .filters-row   { flex-direction: column; }
+  .filter-search { min-width: unset; }
 }
 </style>
