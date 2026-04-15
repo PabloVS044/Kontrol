@@ -12,7 +12,10 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
+set -a
+# shellcheck disable=SC1090
 source "$ENV_FILE"
+set +a
 
 : "${VM_IP:?Falta VM_IP en .env.deploy}"
 : "${VM_USER:?Falta VM_USER en .env.deploy}"
@@ -25,21 +28,24 @@ source "$ENV_FILE"
 : "${GOOGLE_CALLBACK_URL:?Falta GOOGLE_CALLBACK_URL en .env.deploy}"
 : "${FRONTEND_URL:?Falta FRONTEND_URL en .env.deploy}"
 
+# Codifica el .env del servidor en base64 para evitar problemas con caracteres especiales
+ENV_B64=$(printf '%s\n' \
+  "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" \
+  "JWT_SECRET=$JWT_SECRET" \
+  "JWT_EXPIRES_IN=$JWT_EXPIRES_IN" \
+  "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" \
+  "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" \
+  "GOOGLE_CALLBACK_URL=$GOOGLE_CALLBACK_URL" \
+  "FRONTEND_URL=$FRONTEND_URL" \
+  | base64 -w0)
+
 echo "==> Desplegando en $VM_USER@$VM_IP ..."
 
-ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" "$VM_USER@$VM_IP" \
-  POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
-  JWT_SECRET="$JWT_SECRET" \
-  JWT_EXPIRES_IN="$JWT_EXPIRES_IN" \
-  GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
-  GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
-  GOOGLE_CALLBACK_URL="$GOOGLE_CALLBACK_URL" \
-  FRONTEND_URL="$FRONTEND_URL" \
-  bash <<'REMOTE'
+ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" "$VM_USER@$VM_IP" bash << REMOTE
   set -e
 
   if [ ! -d "/app/Kontrol" ]; then
-    sudo mkdir -p /app && sudo chown $USER:$USER /app
+    sudo mkdir -p /app && sudo chown \$USER:\$USER /app
     git clone https://github.com/PabloVS044/Kontrol.git /app/Kontrol
   else
     cd /app/Kontrol && git pull origin main
@@ -47,15 +53,7 @@ ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" "$VM_USER@$VM_IP" \
 
   cd /app/Kontrol
 
-  {
-    echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
-    echo "JWT_SECRET=$JWT_SECRET"
-    echo "JWT_EXPIRES_IN=$JWT_EXPIRES_IN"
-    echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
-    echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET"
-    echo "GOOGLE_CALLBACK_URL=$GOOGLE_CALLBACK_URL"
-    echo "FRONTEND_URL=$FRONTEND_URL"
-  } > .env
+  echo "$ENV_B64" | base64 -d > .env
 
   docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
   docker image prune -f
