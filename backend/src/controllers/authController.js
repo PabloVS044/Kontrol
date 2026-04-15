@@ -193,7 +193,7 @@ export const googleCallback = async (req, res) => {
       // 3. Create a new user (first-time Google sign-up)
       if (!userRow.rows.length) {
         const rolRow = await client.query(
-          "SELECT id_rol FROM public.rol WHERE nombre_rol = 'admin' LIMIT 1"
+          "SELECT id_rol FROM public.rol WHERE nombre_rol = 'usuario' LIMIT 1"
         )
         if (!rolRow.rows.length) {
           return res.redirect(`${FRONTEND_URL}/login?error=rol_no_encontrado`)
