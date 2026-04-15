@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=kontrol
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/kontrol.sql:/docker-entrypoint-initdb.d/kontrol.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kontrol"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -12,6 +29,9 @@ services:
       - PORT=3000
     env_file:
       - ./backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
     build:
@@ -28,3 +48,4 @@ services:
 volumes:
   backend_modules:
   frontend_modules:
+  postgres_data:
