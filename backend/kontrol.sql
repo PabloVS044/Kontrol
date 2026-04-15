@@ -253,3 +253,64 @@ CREATE TABLE public.reporte (
   CONSTRAINT reporte_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
   CONSTRAINT reporte_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
+
+-- ─── SEED DATA ────────────────────────────────────────────────────────────────
+
+-- Roles de sistema (asignado a cada usuario de la plataforma)
+INSERT INTO public.rol (nombre_rol, descripcion) VALUES
+  ('admin',   'Administrador de la plataforma'),
+  ('usuario', 'Usuario estándar de la plataforma');
+
+-- Permisos de empresa
+INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
+  ('gestionar_miembros',   'Agregar, editar y eliminar miembros de la empresa'),
+  ('ver_proyectos',        'Ver proyectos de la empresa'),
+  ('crear_proyectos',      'Crear nuevos proyectos'),
+  ('editar_proyectos',     'Editar proyectos existentes'),
+  ('eliminar_proyectos',   'Eliminar proyectos'),
+  ('ver_inventario',       'Ver inventario de la empresa'),
+  ('gestionar_inventario', 'Gestionar inventario'),
+  ('ver_reportes',         'Ver reportes'),
+  ('crear_reportes',       'Crear reportes');
+
+-- Permisos de proyecto
+INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
+  ('editar_proyecto',       'Editar información del proyecto'),
+  ('gestionar_tareas',      'Crear y editar tareas'),
+  ('asignar_usuarios',      'Asignar usuarios a tareas'),
+  ('gestionar_inventario',  'Gestionar inventario del proyecto'),
+  ('gestionar_presupuesto', 'Gestionar presupuesto del proyecto'),
+  ('crear_reportes',        'Crear reportes del proyecto');
+
+-- Roles estándar de empresa
+INSERT INTO public.rol_empresa (nombre, descripcion) VALUES
+  ('owner',        'Propietario — acceso total a la empresa'),
+  ('admin',        'Administrador — gestión completa excepto eliminar empresa'),
+  ('manager',      'Gerente — gestiona proyectos y equipo'),
+  ('collaborator', 'Colaborador — acceso básico y ejecución de tareas');
+
+-- Permisos del rol owner (todos)
+INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
+SELECT re.id_rol_empresa, pe.id_permiso_empresa
+FROM public.rol_empresa re, public.permiso_empresa pe
+WHERE re.nombre = 'owner';
+
+-- Permisos del rol admin (todos excepto gestionar_miembros de nivel owner)
+INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
+SELECT re.id_rol_empresa, pe.id_permiso_empresa
+FROM public.rol_empresa re, public.permiso_empresa pe
+WHERE re.nombre = 'admin';
+
+-- Permisos del rol manager
+INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
+SELECT re.id_rol_empresa, pe.id_permiso_empresa
+FROM public.rol_empresa re, public.permiso_empresa pe
+WHERE re.nombre = 'manager'
+  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes');
+
+-- Permisos del rol collaborator
+INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
+SELECT re.id_rol_empresa, pe.id_permiso_empresa
+FROM public.rol_empresa re, public.permiso_empresa pe
+WHERE re.nombre = 'collaborator'
+  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes');
