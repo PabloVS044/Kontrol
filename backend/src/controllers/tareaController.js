@@ -45,16 +45,17 @@ export const getTareaById = async (req, res) => {
 // POST /api/projects/:id_proyecto/tareas
 export const createTarea = async (req, res) => {
     const { id_proyecto } = req.params
-    const { nombre, descripcion, estado, fecha_vencimiento } = req.body
+    const { nombre, descripcion, estado, prioridad, fecha_vencimiento } = req.body
 
     const result = await pool.query(
-        `INSERT INTO public.tarea (nombre, descripcion, estado, fecha_vencimiento, id_proyecto)
-        VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO public.tarea (nombre, descripcion, estado, prioridad, fecha_vencimiento, id_proyecto)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING ${TAREA_SELECT}`,
         [
         nombre,
         descripcion ?? null,
         estado ?? 'PENDIENTE',
+        prioridad ?? 'MEDIA',
         fecha_vencimiento ?? null,
         id_proyecto,
         ]
@@ -67,7 +68,7 @@ export const createTarea = async (req, res) => {
 // PUT /api/projects/:id_proyecto/tareas/:id
 export const updateTarea = async (req, res) => {
     const { id_proyecto, id } = req.params
-    const { nombre, descripcion, estado, fecha_vencimiento } = req.body
+    const { nombre, descripcion, estado, prioridad, fecha_vencimiento } = req.body
 
     const existing = await pool.query(
         'SELECT id_tarea FROM public.tarea WHERE id_tarea = $1 AND id_proyecto = $2',
@@ -83,6 +84,7 @@ export const updateTarea = async (req, res) => {
     if (nombre !== undefined)            { values.push(nombre);            setClauses.push(`nombre = $${values.length}`) }
     if (descripcion !== undefined)       { values.push(descripcion);       setClauses.push(`descripcion = $${values.length}`) }
     if (estado !== undefined)            { values.push(estado);            setClauses.push(`estado = $${values.length}`) }
+    if (prioridad !== undefined)         { values.push(prioridad);         setClauses.push(`prioridad = $${values.length}`) }
     if (fecha_vencimiento !== undefined) { values.push(fecha_vencimiento); setClauses.push(`fecha_vencimiento = $${values.length}`) }
 
     values.push(id)
