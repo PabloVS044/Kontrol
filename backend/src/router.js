@@ -7,6 +7,8 @@ import movimientoRoutes from './routes/movimientoRoutes.js'
 import projectRoutes from './routes/projectRoutes.js'
 import empresaRoutes from './routes/empresaRoutes.js'
 import budgetRoutes from './routes/budgetRoutes.js'
+import tareaRoutes from './routes/tareaRoutes.js'
+
 
 const router = Router()
 
@@ -22,5 +24,7 @@ router.use('/movimientos', movimientoRoutes)
 router.use('/projects', projectRoutes)
 router.use('/empresas', empresaRoutes)
 router.use('/budgets', budgetRoutes)
+router.use('/projects/:id_proyecto/tareas', tareaRoutes)
+
 
 export default router
