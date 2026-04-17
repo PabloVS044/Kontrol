@@ -13,6 +13,9 @@
           <!-- Banners -->
           <div v-if="errorMessage" class="register-banner register-banner--error">{{ errorMessage }}</div>
           <div v-if="successMessage" class="register-banner register-banner--success">{{ successMessage }}</div>
+          <div v-if="inviteToken" class="register-banner register-banner--success">
+            This account will automatically be linked to the invited company.
+          </div>
 
           <!-- First Name + Last Name -->
           <div class="register-row-two">
@@ -105,7 +108,12 @@
           <!-- Link a login -->
           <p class="register-switch">
             Already have an account?
-            <RouterLink to="/login" class="register-switch-link">Sign in</RouterLink>
+            <RouterLink
+              :to="inviteToken ? { name: 'login', query: { invite: inviteToken } } : { name: 'login' }"
+              class="register-switch-link"
+            >
+              Sign in
+            </RouterLink>
           </p>
 
         </div>
@@ -121,15 +129,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref, reactive } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
 import { registerUser, loginWithGoogle } from '@/services/auth'
+import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
+import { getInviteTokenFromQuery } from '@/utils/invitation'
 import './RegisterView.css'
 
 const router    = useRouter()
+const route     = useRoute()
 const authStore = useAuthStore()
 
 const form = reactive({ firstName: '', lastName: '', email: '', password: '' })
@@ -138,6 +149,7 @@ const isLoading     = ref(false)
 const errorMessage  = ref('')
 const successMessage = ref('')
 const showPass      = ref(false)
+const inviteToken   = computed(() => getInviteTokenFromQuery(route.query))
 
 const rules = {
   firstName: () => !form.firstName.trim() ? 'First name is required' : '',
@@ -164,7 +176,7 @@ function isValid() {
 }
 
 function handleGoogleRegister() {
-  loginWithGoogle()
+  loginWithGoogle(inviteToken.value)
 }
 
 async function handleRegister() {
@@ -174,7 +186,35 @@ async function handleRegister() {
 
   isLoading.value = true
   try {
-    await registerUser(form.firstName, form.lastName, form.email, form.password)
+    const data = await registerUser(
+      form.firstName,
+      form.lastName,
+      form.email,
+      form.password,
+      { inviteToken: inviteToken.value || undefined }
+    )
+
+    if (inviteToken.value) {
+      await finalizeAuthenticatedSession({
+        authStore,
+        token: data.token,
+        user: data.data,
+        joinedEmpresaId: data.invite?.empresa?.id_empresa,
+      })
+
+      if (data.invite && !data.invite.success && !authStore.empresaActual) {
+        router.push({
+          name: 'invite',
+          params: { token: inviteToken.value },
+          query: { error: data.invite.code },
+        })
+        return
+      }
+
+      router.push(getDefaultAuthenticatedRoute(authStore))
+      return
+    }
+
     successMessage.value = 'Account created! Redirecting to login...'
     setTimeout(() => router.push({ name: 'login' }), 1400)
   } catch (err) {

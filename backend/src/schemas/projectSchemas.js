@@ -14,14 +14,12 @@ export const projectIdParamSchema = z.object({
 })
 
 export const createProjectSchema = z.object({
-  nombre:              z.string().min(1, 'nombre es requerido.').max(200),
-  descripcion:         z.string().optional(),
-  fecha_inicio:        z.string().date('fecha_inicio debe ser una fecha válida (YYYY-MM-DD).'),
+  nombre:               z.string().min(1, 'nombre es requerido.').max(200),
+  descripcion:          z.string().optional(),
+  fecha_inicio:         z.string().date('fecha_inicio debe ser una fecha válida (YYYY-MM-DD).'),
   fecha_fin_planificada: z.string().date('fecha_fin_planificada debe ser una fecha válida (YYYY-MM-DD).').optional(),
-  presupuesto_total:   z.number().min(0, 'presupuesto_total no puede ser negativo.'),
-  estado:              z.enum(VALID_ESTADOS, { message: `estado debe ser uno de: ${VALID_ESTADOS.join(', ')}.` }).optional(),
-  id_empresa:          z.number().int().positive(),
-  id_encargado:        z.number().int().positive(),
+  presupuesto_total:    z.number().min(0, 'presupuesto_total no puede ser negativo.'),
+  estado:               z.enum(VALID_ESTADOS, { message: `estado debe ser uno de: ${VALID_ESTADOS.join(', ')}.` }).optional(),
 })
 
 export const updateProjectSchema = z
@@ -32,7 +30,6 @@ export const updateProjectSchema = z
     fecha_fin_planificada: z.string().date('fecha_fin_planificada debe ser una fecha válida (YYYY-MM-DD).').nullable().optional(),
     presupuesto_total:   z.number().min(0, 'presupuesto_total no puede ser negativo.').optional(),
     estado:              z.enum(VALID_ESTADOS, { message: `estado debe ser uno de: ${VALID_ESTADOS.join(', ')}.` }).optional(),
-    id_empresa:          z.number().int().positive().optional(),
     id_encargado:        z.number().int().positive().optional(),
   })
   .refine(

@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
-import requireRole from '../middleware/requireRole.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
+import requireProyecto from '../middleware/requireProyecto.js'
+import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
 import {
   getProductosQuerySchema,
@@ -25,42 +27,40 @@ import {
 
 const router = Router()
 
-// All routes require authentication
+// All routes require authentication + empresa context
 router.use(requireAuth)
+router.use(requireEmpresa)
 
 // ── Productos ─────────────────────────────────────────────────────────────────
 
 // /alertas/stock-bajo must come before /:id to avoid "alertas" matching as an id
 router.get(
   '/alertas/stock-bajo',
-  requireRole('admin', 'manager', 'collaborator'),
   getAlertasStockBajo
 )
 
 router.get(
   '/',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(getProductosQuerySchema, 'query'),
   getProductos
 )
 
 router.get(
   '/:id',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(productoIdParamSchema, 'params'),
   getProductoById
 )
 
 router.post(
   '/',
-  requireRole('admin', 'manager'),
+  requireProyecto,
+  requireProjectPermission('gestionar_inventario'),
   validate(createProductoSchema),
   createProducto
 )
 
 router.put(
   '/:id',
-  requireRole('admin', 'manager'),
   validate(productoIdParamSchema, 'params'),
   validate(updateProductoSchema),
   updateProducto
@@ -68,7 +68,6 @@ router.put(
 
 router.delete(
   '/:id',
-  requireRole('admin'),
   validate(productoIdParamSchema, 'params'),
   deleteProducto
 )
@@ -77,7 +76,6 @@ router.delete(
 
 router.post(
   '/:id/proveedores',
-  requireRole('admin', 'manager'),
   validate(productoIdParamSchema, 'params'),
   validate(linkProveedorSchema),
   linkProveedor
@@ -85,7 +83,6 @@ router.post(
 
 router.put(
   '/:id/proveedores/:pid',
-  requireRole('admin', 'manager'),
   validate(productoProveedorParamsSchema, 'params'),
   validate(updateLinkProveedorSchema),
   updateLinkProveedor
@@ -93,7 +90,6 @@ router.put(
 
 router.delete(
   '/:id/proveedores/:pid',
-  requireRole('admin'),
   validate(productoProveedorParamsSchema, 'params'),
   unlinkProveedor
 )

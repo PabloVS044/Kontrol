@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
 export const getProductosQuerySchema = z.object({
-  categoria: z.coerce.number().int().positive().optional(),
-  stock_bajo: z.enum(['true', 'false']).optional(),
+  categoria:   z.coerce.number().int().positive().optional(),
+  stock_bajo:  z.enum(['true', 'false']).optional(),
+  id_proyecto: z.coerce.number().int().positive().optional(),
 })
 
 export const productoIdParamSchema = z.object({

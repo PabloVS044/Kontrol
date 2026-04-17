@@ -20,6 +20,10 @@
             {{ errorMessage }}
           </div>
 
+          <div v-if="inviteToken" class="login-banner login-banner--success">
+            This session will be linked to the invitation you received.
+          </div>
+
           <!-- Email -->
           <div class="login-field">
             <label class="login-field-label">Email</label>
@@ -92,7 +96,12 @@
           <!-- Link a register -->
           <p class="login-switch">
             Don't have an account?
-            <RouterLink to="/register" class="login-switch-link">Sign up now</RouterLink>
+            <RouterLink
+              :to="inviteToken ? { name: 'register', query: { invite: inviteToken } } : { name: 'register' }"
+              class="login-switch-link"
+            >
+              Sign up now
+            </RouterLink>
           </p>
         </div>
       </div>
@@ -102,12 +111,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
 import { loginUser, loginWithGoogle } from '@/services/auth'
+import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
+import { getInviteTokenFromQuery } from '@/utils/invitation'
 import './LoginView.css'
 
 const router    = useRouter()
@@ -120,6 +131,7 @@ const isLoading   = ref(false)
 const errorMessage = ref('')
 const rememberMe   = ref(false)
 const showPass     = ref(false)
+const inviteToken  = computed(() => getInviteTokenFromQuery(route.query))
 
 // Show error forwarded from AuthCallback (e.g. google_cancelado)
 onMounted(() => {
@@ -149,7 +161,7 @@ function isValid() {
 }
 
 function handleGoogleLogin() {
-  loginWithGoogle()
+  loginWithGoogle(inviteToken.value)
 }
 
 async function handleLogin() {
@@ -158,9 +170,25 @@ async function handleLogin() {
 
   isLoading.value = true
   try {
-    const data = await loginUser(form.email, form.password)
-    authStore.setToken(data.token)
-    router.push({ name: 'dashboard' })
+    const data = await loginUser(form.email, form.password, inviteToken.value || undefined)
+
+    await finalizeAuthenticatedSession({
+      authStore,
+      token: data.token,
+      user: data.data,
+      joinedEmpresaId: data.invite?.empresa?.id_empresa,
+    })
+
+    if (inviteToken.value && data.invite && !data.invite.success && !authStore.empresaActual) {
+      router.push({
+        name: 'invite',
+        params: { token: inviteToken.value },
+        query: { error: data.invite.code },
+      })
+      return
+    }
+
+    router.push(getDefaultAuthenticatedRoute(authStore))
   } catch (err) {
     errorMessage.value = err.message || 'Something went wrong. Please try again.'
   } finally {

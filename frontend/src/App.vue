@@ -25,8 +25,17 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import { RouterView } from "vue-router";
 import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
+import { useAuthStore } from './stores/auth'
+
+const authStore = useAuthStore()
+
+onMounted(() => {
+  // Refresh empresa list on every page load so it stays in sync
+  if (authStore.isLoggedIn) authStore.loadEmpresas()
+})
 </script>
 
 <style scoped>
