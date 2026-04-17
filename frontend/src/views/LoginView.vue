@@ -160,7 +160,12 @@ async function handleLogin() {
   try {
     const data = await loginUser(form.email, form.password)
     authStore.setToken(data.token)
-    router.push({ name: 'dashboard' })
+    await authStore.loadEmpresas()
+    if (!authStore.empresaActual) {
+      router.push({ name: 'onboarding' })
+    } else {
+      router.push({ name: 'dashboard' })
+    }
   } catch (err) {
     errorMessage.value = err.message || 'Something went wrong. Please try again.'
   } finally {

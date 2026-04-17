@@ -9,19 +9,11 @@ const PROVEEDOR_SELECT = `
   pr.id_empresa
 `
 
-async function getIdEmpresa(id_usuario) {
-  const result = await pool.query(
-    'SELECT id_empresa FROM public.usuario WHERE id_usuario = $1',
-    [id_usuario]
-  )
-  return result.rows[0]?.id_empresa ?? null
-}
-
 /**
  * GET /api/proveedores
  */
 export const getProveedores = async (req, res) => {
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   const result = await pool.query(
     `SELECT ${PROVEEDOR_SELECT}
@@ -39,7 +31,7 @@ export const getProveedores = async (req, res) => {
  */
 export const getProveedorById = async (req, res) => {
   const { id } = req.params
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   const result = await pool.query(
     `SELECT ${PROVEEDOR_SELECT},
@@ -74,7 +66,7 @@ export const getProveedorById = async (req, res) => {
  */
 export const createProveedor = async (req, res) => {
   const { nombre, contacto_nombre, telefono, email } = req.body
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   const inserted = await pool.query(
     `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
@@ -96,7 +88,7 @@ export const createProveedor = async (req, res) => {
  */
 export const updateProveedor = async (req, res) => {
   const { id } = req.params
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   const existing = await pool.query(
     'SELECT id_proveedor FROM public.proveedor WHERE id_proveedor = $1 AND id_empresa = $2',
@@ -136,7 +128,7 @@ export const updateProveedor = async (req, res) => {
  */
 export const deleteProveedor = async (req, res) => {
   const { id } = req.params
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   try {
     const result = await pool.query(

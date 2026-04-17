@@ -152,10 +152,10 @@ CREATE TABLE public.producto (
   stock_actual integer NOT NULL DEFAULT 0 CHECK (stock_actual >= 0),
   stock_minimo integer NOT NULL DEFAULT 0 CHECK (stock_minimo >= 0),
   id_categoria integer,
-  id_empresa integer NOT NULL,
+  id_proyecto integer NOT NULL,
   CONSTRAINT producto_id_categoria_fkey FOREIGN KEY (id_categoria) REFERENCES public.categoria(id_categoria),
-  CONSTRAINT producto_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
-  CONSTRAINT producto_empresa_id_unique UNIQUE (id_empresa, id_producto)
+  CONSTRAINT producto_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
+  CONSTRAINT producto_proyecto_id_unique UNIQUE (id_proyecto, id_producto)
 );
 
 CREATE TABLE public.producto_proveedor (
@@ -183,8 +183,8 @@ CREATE TABLE public.movimiento_inventario (
   id_usuario integer NOT NULL,
   id_proyecto integer NOT NULL,
   id_proveedor integer,
-  -- FK compuesta: producto (si existe) debe pertenecer a la misma empresa que el proyecto
-  CONSTRAINT mi_producto_empresa_fkey FOREIGN KEY (id_empresa, id_producto) REFERENCES public.producto(id_empresa, id_producto),
+  -- FK compuesta: producto (si existe) debe pertenecer al mismo proyecto
+  CONSTRAINT mi_producto_proyecto_fkey FOREIGN KEY (id_proyecto, id_producto) REFERENCES public.producto(id_proyecto, id_producto),
   CONSTRAINT mi_proyecto_empresa_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto),
   CONSTRAINT movimiento_inventario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario),
   CONSTRAINT movimiento_inventario_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor),
