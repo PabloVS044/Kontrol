@@ -21,7 +21,7 @@
           </div>
 
           <div v-if="inviteToken" class="login-banner login-banner--success">
-            Esta sesión se conectará con la invitación que recibiste.
+            This session will be linked to the invitation you received.
           </div>
 
           <!-- Email -->

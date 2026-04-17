@@ -41,7 +41,7 @@ const projectPermissionCatalog = computed(() => panel.value?.project_permission_
 
 const currentUserName = computed(() => {
   const fullName = [authStore.user?.nombre, authStore.user?.apellido].filter(Boolean).join(' ').trim()
-  return fullName || authStore.user?.email || 'Usuario'
+  return fullName || authStore.user?.email || 'User'
 })
 
 const totalMembers = computed(() => members.value.length)
@@ -84,7 +84,7 @@ async function loadPanel() {
     const payload = await res.json()
 
     if (!res.ok) {
-      errorMessage.value = payload.message || 'No se pudo cargar el panel de colaboradores.'
+      errorMessage.value = payload.message || 'Could not load the collaborators panel.'
       panel.value = null
       return
     }
@@ -112,16 +112,16 @@ async function generateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo generar el enlace.'
+      actionError.value = payload.message || 'Could not generate the link.'
       return
     }
 
     if (panel.value) {
       panel.value.invitation = payload.data
     }
-    actionMessage.value = 'Enlace de invitación listo para compartir.'
+    actionMessage.value = 'Invitation link ready to share.'
   } catch {
-    actionError.value = 'No se pudo generar el enlace.'
+    actionError.value = 'Could not generate the link.'
   } finally {
     generatingInvite.value = false
   }
@@ -140,16 +140,16 @@ async function deactivateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo desactivar el enlace.'
+      actionError.value = payload.message || 'Could not deactivate the link.'
       return
     }
 
     if (panel.value) {
       panel.value.invitation = null
     }
-    actionMessage.value = payload.message || 'El enlace fue desactivado.'
+    actionMessage.value = payload.message || 'The link was deactivated.'
   } catch {
-    actionError.value = 'No se pudo desactivar el enlace.'
+    actionError.value = 'Could not deactivate the link.'
   } finally {
     deactivatingInvite.value = false
   }
@@ -163,9 +163,9 @@ async function copyInviteLink() {
 
   try {
     await navigator.clipboard.writeText(invitation.value.link)
-    actionMessage.value = 'Enlace copiado al portapapeles.'
+    actionMessage.value = 'Link copied to clipboard.'
   } catch {
-    actionError.value = 'No se pudo copiar el enlace.'
+    actionError.value = 'Could not copy the link.'
   }
 }
 
@@ -188,7 +188,7 @@ async function updateMemberRole(member, newRole) {
 
     const payload = await res.json()
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo actualizar el rol.'
+      actionError.value = payload.message || 'Could not update the role.'
       return
     }
 
@@ -197,9 +197,9 @@ async function updateMemberRole(member, newRole) {
         currentMember.id_usuario === member.id_usuario ? payload.data : currentMember
       )
     }
-    actionMessage.value = 'Rol actualizado.'
+    actionMessage.value = 'Role updated.'
   } catch {
-    actionError.value = 'No se pudo actualizar el rol.'
+    actionError.value = 'Could not update the role.'
   } finally {
     updatingMemberId.value = null
   }
@@ -218,7 +218,7 @@ async function removeMember(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo remover al usuario.'
+      actionError.value = payload.message || 'Could not remove the user.'
       return
     }
 
@@ -227,9 +227,9 @@ async function removeMember(member) {
         ({ id_usuario }) => id_usuario !== member.id_usuario
       )
     }
-    actionMessage.value = payload.message || 'Usuario removido.'
+    actionMessage.value = payload.message || 'User removed.'
   } catch {
-    actionError.value = 'No se pudo remover al usuario.'
+    actionError.value = 'Could not remove the user.'
   } finally {
     removingMemberId.value = null
   }
@@ -299,7 +299,7 @@ async function assignProjectToMember(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo asignar el proyecto.'
+      actionError.value = payload.message || 'Could not assign the project.'
       return
     }
 
@@ -307,10 +307,10 @@ async function assignProjectToMember(member) {
       ...selectedProjectDrafts.value,
       [member.id_usuario]: '',
     }
-    actionMessage.value = 'Proyecto asignado. Ahora puedes configurar sus permisos.'
+    actionMessage.value = 'Project assigned. You can now configure permissions.'
     await loadPanel()
   } catch {
-    actionError.value = 'No se pudo asignar el proyecto.'
+    actionError.value = 'Could not assign the project.'
   } finally {
     assigningProjectMemberId.value = null
   }
@@ -338,14 +338,14 @@ async function saveProjectPermissions(member, assignment) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudieron guardar los permisos del proyecto.'
+      actionError.value = payload.message || 'Could not save project permissions.'
       return
     }
 
-    actionMessage.value = 'Permisos del proyecto actualizados.'
+    actionMessage.value = 'Project permissions updated.'
     await loadPanel()
   } catch {
-    actionError.value = 'No se pudieron guardar los permisos del proyecto.'
+    actionError.value = 'Could not save project permissions.'
   } finally {
     savingProjectAccessKey.value = ''
   }
@@ -369,14 +369,14 @@ async function removeProjectAccess(member, assignment) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'No se pudo remover el acceso al proyecto.'
+      actionError.value = payload.message || 'Could not remove project access.'
       return
     }
 
-    actionMessage.value = payload.message || 'Acceso al proyecto removido.'
+    actionMessage.value = payload.message || 'Project access removed.'
     await loadPanel()
   } catch {
-    actionError.value = 'No se pudo remover el acceso al proyecto.'
+    actionError.value = 'Could not remove project access.'
   } finally {
     removingProjectAccessKey.value = ''
   }
@@ -475,17 +475,17 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
             <p class="team-eyebrow">Company Access</p>
             <h2 class="team-title">Collaborators</h2>
             <p class="team-subtitle">
-              Gestiona acceso por empresa, asignación de proyectos y permisos tipo capacidades para cada colaborador.
+              Manage company access, project assignment, and capability-based permissions for each collaborator.
             </p>
           </div>
           <div class="team-summary">
-            <span class="team-chip">{{ totalMembers }} miembros</span>
+            <span class="team-chip">{{ totalMembers }} members</span>
             <span class="team-chip">{{ collaboratorCount }} collaborators</span>
-            <span class="team-chip">{{ adminLikeCount }} roles de gestión</span>
+            <span class="team-chip">{{ adminLikeCount }} management roles</span>
           </div>
         </div>
 
-        <div v-if="loading" class="team-state">Cargando colaboradores...</div>
+        <div v-if="loading" class="team-state">Loading collaborators...</div>
         <div v-else-if="errorMessage" class="team-state team-state--error">{{ errorMessage }}</div>
 
         <template v-else-if="panel">
@@ -494,15 +494,15 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
               <div class="team-card-head">
                 <div>
                   <p class="team-card-kicker">Shared Invite</p>
-                  <h3>Enlace de invitación</h3>
+                  <h3>Invitation Link</h3>
                 </div>
                 <span class="team-chip" :class="{ inactive: !invitation }">
-                  {{ invitation ? 'Activo' : 'Inactivo' }}
+                  {{ invitation ? 'Active' : 'Inactive' }}
                 </span>
               </div>
 
               <p class="team-copy">
-                El owner puede compartir un único enlace de acceso para sumar colaboradores y desactivarlo cuando cierre la incorporación.
+                The owner can share a single access link to add collaborators and deactivate it when onboarding closes.
               </p>
 
               <template v-if="isOwner">
@@ -517,26 +517,26 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                     :disabled="generatingInvite"
                     @click="generateInvite"
                   >
-                    {{ generatingInvite ? 'Generando...' : 'Generar enlace' }}
+                    {{ generatingInvite ? 'Generating...' : 'Generate link' }}
                   </button>
 
                   <template v-else>
                     <button class="team-btn team-btn--primary" @click="copyInviteLink">
-                      Copiar enlace
+                      Copy link
                     </button>
                     <button
                       class="team-btn team-btn--secondary"
                       :disabled="deactivatingInvite"
                       @click="deactivateInvite"
                     >
-                      {{ deactivatingInvite ? 'Desactivando...' : 'Desactivar enlace' }}
+                      {{ deactivatingInvite ? 'Deactivating...' : 'Deactivate link' }}
                     </button>
                   </template>
                 </div>
               </template>
 
               <p v-else class="team-copy muted">
-                Solo el owner puede ver, generar o desactivar el enlace.
+                Only the owner can view, generate, or deactivate the link.
               </p>
 
               <p v-if="actionMessage" class="feedback feedback--ok">{{ actionMessage }}</p>
@@ -547,7 +547,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
               <div class="team-card-head">
                 <div>
                   <p class="team-card-kicker">Members</p>
-                  <h3>Usuarios de la empresa</h3>
+                  <h3>Company Users</h3>
                 </div>
                 <span class="team-chip">{{ members.length }} total</span>
               </div>
@@ -590,7 +590,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                         :disabled="removingMemberId === member.id_usuario"
                         @click="removeMember(member)"
                       >
-                        {{ removingMemberId === member.id_usuario ? 'Quitando...' : 'Quitar' }}
+                        {{ removingMemberId === member.id_usuario ? 'Removing...' : 'Remove' }}
                       </button>
                     </template>
                   </div>
@@ -600,7 +600,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                       <div>
                         <span class="member-project-access-title">Project Access</span>
                         <p class="member-project-access-subtitle">
-                          Asignado sin permisos = pertenece al proyecto, pero no ve inventario ni puede escribir.
+                          Assigned without permissions = belongs to the project, but cannot view inventory or write.
                         </p>
                       </div>
 
@@ -610,7 +610,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                           class="role-select"
                           :disabled="assigningProjectMemberId === member.id_usuario || !availableProjectsForMember(member).length"
                         >
-                          <option value="">Selecciona proyecto</option>
+                          <option value="">Select project</option>
                           <option
                             v-for="project in availableProjectsForMember(member)"
                             :key="project.id_proyecto"
@@ -625,7 +625,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                           :disabled="assigningProjectMemberId === member.id_usuario || !selectedProjectDrafts[member.id_usuario]"
                           @click="assignProjectToMember(member)"
                         >
-                          {{ assigningProjectMemberId === member.id_usuario ? 'Asignando...' : 'Asignar proyecto' }}
+                          {{ assigningProjectMemberId === member.id_usuario ? 'Assigning...' : 'Assign project' }}
                         </button>
                       </div>
                     </div>
@@ -647,7 +647,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                             :disabled="removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}`"
                             @click="removeProjectAccess(member, assignment)"
                           >
-                            {{ removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Quitando...' : 'Quitar proyecto' }}
+                            {{ removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Removing...' : 'Remove project' }}
                           </button>
                         </div>
 
@@ -673,14 +673,14 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                             :disabled="savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}`"
                             @click="saveProjectPermissions(member, assignment)"
                           >
-                            {{ savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Guardando...' : 'Guardar permisos' }}
+                            {{ savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Saving...' : 'Save permissions' }}
                           </button>
                         </div>
                       </div>
                     </div>
 
                     <p v-else class="team-copy muted">
-                      Este usuario ya pertenece a la empresa, pero todavía no tiene proyectos accesibles.
+                      This user already belongs to the company but has no accessible projects yet.
                     </p>
                   </div>
                 </div>
