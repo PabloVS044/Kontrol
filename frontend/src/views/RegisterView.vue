@@ -14,7 +14,7 @@
           <div v-if="errorMessage" class="register-banner register-banner--error">{{ errorMessage }}</div>
           <div v-if="successMessage" class="register-banner register-banner--success">{{ successMessage }}</div>
           <div v-if="inviteToken" class="register-banner register-banner--success">
-            Esta cuenta quedará unida automáticamente a la empresa invitada.
+            This account will automatically be linked to the invited company.
           </div>
 
           <!-- First Name + Last Name -->
