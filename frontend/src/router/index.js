@@ -31,7 +31,7 @@ const router = createRouter({
       component: RegisterView,
     },
     {
-      // Receives ?token=&error= from the backend Google OAuth callback
+      // Receives ?token=&onboarding=&error= from the backend Google OAuth callback
       path: '/auth/callback',
       name: 'auth-callback',
       component: AuthCallback,
@@ -79,17 +79,13 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      // Receives ?token=&onboarding=&error= from the backend Google OAuth callback
-      path: '/auth/callback',
-      name: 'auth-callback',
-      component: AuthCallback
-    },
-    {
       path: '/budget',
       name: 'budget',
-      component: BudgetView
-    }
-]})
+      component: BudgetView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+  ],
+})
 
 import { useAuthStore } from '../stores/auth'
 

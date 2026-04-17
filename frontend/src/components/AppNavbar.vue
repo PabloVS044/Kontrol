@@ -43,15 +43,10 @@
         </Teleport>
       </div>
 
-      <div class="appnav-links">
-        <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
-        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory">Inventory</RouterLink>
-        <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects">Projects</RouterLink>
-        <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
-        <RouterLink class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
-        <RouterLink class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
+        <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
         <RouterLink class="appnav-link" to="/finance" @click="closeMenu">Finance</RouterLink>
       </div>
