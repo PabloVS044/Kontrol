@@ -8,12 +8,12 @@
         <h1 class="invite-title">{{ title }}</h1>
         <p class="invite-subtitle">{{ subtitle }}</p>
 
-        <div v-if="loading" class="invite-state">Cargando invitación...</div>
+        <div v-if="loading" class="invite-state">Loading invitation...</div>
 
         <div v-else-if="inviteData" class="invite-body">
           <div class="invite-summary">
             <div class="summary-row">
-              <span class="summary-label">Empresa</span>
+              <span class="summary-label">Company</span>
               <span class="summary-value">{{ inviteData.empresa.nombre }}</span>
             </div>
             <div class="summary-row">
@@ -21,13 +21,13 @@
               <span class="summary-value">{{ inviteData.empresa.owner_nombre || 'Owner' }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Rol al entrar</span>
+              <span class="summary-label">Role on entry</span>
               <span class="summary-value">{{ inviteData.rol_asignado }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Estado</span>
+              <span class="summary-label">Status</span>
               <span class="summary-pill" :class="{ inactive: !inviteData.invitation.activa }">
-                {{ inviteData.invitation.activa ? 'Activa' : 'Desactivada' }}
+                {{ inviteData.invitation.activa ? 'Active' : 'Inactive' }}
               </span>
             </div>
           </div>
@@ -41,18 +41,18 @@
               :disabled="accepting"
               @click="acceptInvite"
             >
-              {{ accepting ? 'Uniéndote...' : 'Unirme a la empresa' }}
+              {{ accepting ? 'Joining...' : 'Join the company' }}
             </button>
 
             <template v-else-if="!authStore.isLoggedIn && inviteData.invitation.activa">
               <RouterLink class="primary-btn link-btn" :to="loginLink">
-                Ya tengo cuenta
+                I already have an account
               </RouterLink>
               <RouterLink class="secondary-btn link-btn" :to="registerLink">
-                Crear cuenta nueva
+                Create new account
               </RouterLink>
               <button class="ghost-btn" @click="continueWithGoogle">
-                Continuar con Google
+                Continue with Google
               </button>
             </template>
 
@@ -61,7 +61,7 @@
               class="secondary-btn link-btn"
               :to="{ name: 'dashboard' }"
             >
-              Ir al dashboard
+              Go to dashboard
             </RouterLink>
 
             <RouterLink
@@ -69,12 +69,12 @@
               class="secondary-btn link-btn"
               :to="{ name: 'onboarding' }"
             >
-              Crear mi workspace
+              Create my workspace
             </RouterLink>
           </div>
         </div>
 
-        <div v-else class="invite-state">{{ feedbackMessage || 'No se encontró la invitación.' }}</div>
+        <div v-else class="invite-state">{{ feedbackMessage || 'Invitation not found.' }}</div>
       </div>
     </div>
   </div>
@@ -99,20 +99,20 @@ const feedbackMessage = ref('')
 
 const token = computed(() => String(route.params.token || ''))
 const title = computed(() => {
-  if (loading.value) return 'Revisando tu invitación'
-  if (!inviteData.value?.invitation?.activa) return 'Este enlace ya no está disponible'
-  if (authStore.isLoggedIn) return `Únete a ${inviteData.value.empresa.nombre}`
-  return `Te invitaron a ${inviteData.value.empresa.nombre}`
+  if (loading.value) return 'Checking your invitation'
+  if (!inviteData.value?.invitation?.activa) return 'This link is no longer available'
+  if (authStore.isLoggedIn) return `Join ${inviteData.value.empresa.nombre}`
+  return `You've been invited to ${inviteData.value.empresa.nombre}`
 })
 
 const subtitle = computed(() => {
-  if (loading.value) return 'Validando el enlace compartido por el owner.'
+  if (loading.value) return 'Validating the link shared by the owner.'
   if (!inviteData.value?.invitation?.activa) {
-    return 'El owner desactivó este enlace o la invitación ya no existe.'
+    return 'The owner deactivated this link or the invitation no longer exists.'
   }
   return authStore.isLoggedIn
-    ? 'Puedes entrar con tu sesión actual y quedar agregado como collaborator.'
-    : 'Puedes entrar con una cuenta existente o crear una nueva para quedar agregado como collaborator.'
+    ? 'You can sign in with your current session and be added as a collaborator.'
+    : 'You can sign in with an existing account or create a new one to be added as a collaborator.'
 })
 
 const loginLink = computed(() => ({ name: 'login', query: { invite: token.value } }))
@@ -128,7 +128,7 @@ async function loadInvitation() {
 
     if (!payload.data) {
       inviteData.value = null
-      feedbackMessage.value = feedbackMessage.value || payload.message || 'No se encontró la invitación.'
+      feedbackMessage.value = feedbackMessage.value || payload.message || 'Invitation not found.'
       return
     }
 
@@ -138,7 +138,7 @@ async function loadInvitation() {
     }
   } catch {
     inviteData.value = null
-    feedbackMessage.value = 'No se pudo consultar la invitación. Intenta de nuevo.'
+    feedbackMessage.value = 'Could not retrieve the invitation. Please try again.'
   } finally {
     loading.value = false
   }
@@ -168,7 +168,7 @@ async function acceptInvite() {
     feedbackMessage.value = payload.message
     router.push(getDefaultAuthenticatedRoute(authStore))
   } catch {
-    feedbackMessage.value = 'No se pudo aceptar la invitación. Intenta de nuevo.'
+    feedbackMessage.value = 'Could not accept the invitation. Please try again.'
   } finally {
     accepting.value = false
   }
