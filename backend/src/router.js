@@ -6,6 +6,8 @@ import proveedorRoutes from './routes/proveedorRoutes.js'
 import movimientoRoutes from './routes/movimientoRoutes.js'
 import projectRoutes from './routes/projectRoutes.js'
 import empresaRoutes from './routes/empresaRoutes.js'
+import tareaRoutes from './routes/tareaRoutes.js'
+
 
 const router = Router()
 
@@ -20,5 +22,7 @@ router.use('/proveedores', proveedorRoutes)
 router.use('/movimientos', movimientoRoutes)
 router.use('/projects', projectRoutes)
 router.use('/empresas', empresaRoutes)
+router.use('/projects/:id_proyecto/tareas', tareaRoutes)
+
 
 export default router
