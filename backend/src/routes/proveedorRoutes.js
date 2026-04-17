@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
 import requireRole from '../middleware/requireRole.js'
 import validate from '../middleware/validate.js'
 import {
@@ -18,6 +19,7 @@ import {
 const router = Router()
 
 router.use(requireAuth)
+router.use(requireEmpresa)
 
 router.get(
   '/',

@@ -20,8 +20,8 @@ const ERROR_MESSAGES = {
   google_error:        'Ocurrió un error con Google. Intenta de nuevo.',
 }
 
-onMounted(() => {
-  const { token, onboarding, error } = route.query
+onMounted(async () => {
+  const { token, error } = route.query
 
   if (error) {
     const msg = ERROR_MESSAGES[error] || 'Error al iniciar sesión con Google.'
@@ -35,11 +35,10 @@ onMounted(() => {
   }
 
   authStore.setToken(token)
+  await authStore.loadEmpresas()
 
-  // onboarding=true means the user just signed up via Google and has no empresa yet
-  if (onboarding === 'true') {
-    // TODO: redirect to onboarding flow once that view exists
-    router.replace({ name: 'dashboard' })
+  if (!authStore.empresaActual) {
+    router.replace({ name: 'onboarding' })
   } else {
     router.replace({ name: 'dashboard' })
   }
