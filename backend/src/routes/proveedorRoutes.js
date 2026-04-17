@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
-import requireRole from '../middleware/requireRole.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
+import requireEmpresaRole from '../middleware/requireEmpresaRole.js'
 import validate from '../middleware/validate.js'
 import {
   proveedorIdParamSchema,
@@ -18,30 +19,29 @@ import {
 const router = Router()
 
 router.use(requireAuth)
+router.use(requireEmpresa)
 
 router.get(
   '/',
-  requireRole('admin', 'manager', 'collaborator'),
   getProveedores
 )
 
 router.get(
   '/:id',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(proveedorIdParamSchema, 'params'),
   getProveedorById
 )
 
 router.post(
   '/',
-  requireRole('admin', 'manager'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(createProveedorSchema),
   createProveedor
 )
 
 router.put(
   '/:id',
-  requireRole('admin', 'manager'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(proveedorIdParamSchema, 'params'),
   validate(updateProveedorSchema),
   updateProveedor
@@ -49,7 +49,7 @@ router.put(
 
 router.delete(
   '/:id',
-  requireRole('admin'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(proveedorIdParamSchema, 'params'),
   deleteProveedor
 )
