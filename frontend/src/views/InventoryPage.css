@@ -370,3 +370,73 @@
 .skeleton-line       { height: 10px; width: 100%; }
 .skeleton-line.short { width: 40%; }
 .skeleton-line.mid   { width: 70%; }
+
+/* ── Project filter bar ── */
+.project-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.pf-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #444;
+  flex-shrink: 0;
+}
+.pf-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.pf-tab {
+  background: none;
+  border: 1px solid #1f1f1f;
+  color: #555;
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.pf-tab:hover { color: #faf8f5; border-color: #333; }
+.pf-tab.active {
+  color: #c9a962;
+  border-color: #c9a962;
+  background: rgba(201,169,98,0.06);
+}
+.pf-loading { font-size: 11px; color: #444; flex-shrink: 0; }
+
+/* ── Per-project usage in cards ── */
+.card-proj-usage {
+  border-top: 1px solid #1a1a1a;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.proj-usage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pu-label { font-size: 10px; color: #555; }
+.pu-val   { font-size: 11px; font-weight: 600; }
+.pu-val.green { color: #34d399; }
+.pu-val.red   { color: #fb7185; }
+
+.btn-disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-disabled span { color: #0a0a0a; }
+
+.card-project-tag {
+  font-size: 10px;
+  color: #c9a962;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(201,169,98,0.25);
+  padding: 1px 6px;
+  display: inline-block;
+  margin-bottom: 4px;
+}

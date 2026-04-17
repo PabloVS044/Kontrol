@@ -19,24 +19,17 @@ const MOVIMIENTO_SELECT = `
   pv.nombre AS proveedor_nombre
 `
 
-async function getIdEmpresa(id_usuario) {
-  const result = await pool.query(
-    'SELECT id_empresa FROM public.usuario WHERE id_usuario = $1',
-    [id_usuario]
-  )
-  return result.rows[0]?.id_empresa ?? null
-}
-
 /**
  * GET /api/movimientos
  * Filters: ?id_producto, ?id_proyecto, ?tipo, ?desde, ?hasta
- * Scoped to authenticated user's empresa via product join.
+ * Scoped to the empresa in X-Empresa-ID header via product join.
  */
 export const getMovimientos = async (req, res) => {
   const { id_producto, id_proyecto, tipo, desde, hasta } = req.query
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
-  const filters = ['p.id_empresa = $1']
+  // Scope to empresa via proyecto join
+  const filters = ['proj.id_empresa = $1']
   const values = [id_empresa]
 
   if (id_producto) {
@@ -63,9 +56,10 @@ export const getMovimientos = async (req, res) => {
   const result = await pool.query(
     `SELECT ${MOVIMIENTO_SELECT}
      FROM public.movimiento_inventario m
-     JOIN public.producto p   ON p.id_producto   = m.id_producto
-     JOIN public.usuario u    ON u.id_usuario    = m.id_usuario
-     JOIN public.proyecto pr  ON pr.id_proyecto  = m.id_proyecto
+     JOIN public.producto p    ON p.id_producto  = m.id_producto
+     JOIN public.proyecto pr   ON pr.id_proyecto = m.id_proyecto
+     JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
+     JOIN public.usuario u     ON u.id_usuario   = m.id_usuario
      LEFT JOIN public.proveedor pv ON pv.id_proveedor = m.id_proveedor
      WHERE ${filters.join(' AND ')}
      ORDER BY m.fecha DESC`,
@@ -80,7 +74,7 @@ export const getMovimientos = async (req, res) => {
  */
 export const getMovimientoById = async (req, res) => {
   const { id } = req.params
-  const id_empresa = await getIdEmpresa(req.user.id_usuario)
+  const { id_empresa } = req.empresa
 
   const result = await pool.query(
     `SELECT ${MOVIMIENTO_SELECT}
@@ -89,7 +83,7 @@ export const getMovimientoById = async (req, res) => {
      JOIN public.usuario u    ON u.id_usuario    = m.id_usuario
      JOIN public.proyecto pr  ON pr.id_proyecto  = m.id_proyecto
      LEFT JOIN public.proveedor pv ON pv.id_proveedor = m.id_proveedor
-     WHERE m.id_movimiento = $1 AND p.id_empresa = $2`,
+     WHERE m.id_movimiento = $1 AND pr.id_empresa = $2`,
     [id, id_empresa]
   )
 
@@ -112,7 +106,7 @@ export const getMovimientoById = async (req, res) => {
 export const createMovimiento = async (req, res) => {
   const { tipo, cantidad, precio_unitario, motivo, id_producto, id_proyecto, id_proveedor } = req.body
   const id_usuario = req.user.id_usuario
-  const id_empresa = await getIdEmpresa(id_usuario)
+  const { id_empresa } = req.empresa
 
   const client = await pool.connect()
   try {
@@ -120,24 +114,20 @@ export const createMovimiento = async (req, res) => {
 
     // Lock the product row for the duration of the transaction
     const productoResult = await client.query(
-      `SELECT id_producto, stock_actual, costo_promedio_ponderado, id_empresa
-       FROM public.producto
-       WHERE id_producto = $1
+      `SELECT p.id_producto, p.stock_actual, p.costo_promedio_ponderado
+       FROM public.producto p
+       JOIN public.proyecto proj ON proj.id_proyecto = p.id_proyecto
+       WHERE p.id_producto = $1 AND p.id_proyecto = $2 AND proj.id_empresa = $3
        FOR UPDATE`,
-      [id_producto]
+      [id_producto, id_proyecto, id_empresa]
     )
 
     if (!productoResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Producto no encontrado en este proyecto.' })
     }
 
     const producto = productoResult.rows[0]
-
-    if (producto.id_empresa !== id_empresa) {
-      await client.query('ROLLBACK')
-      return res.status(403).json({ success: false, message: 'Acceso denegado.' })
-    }
 
     // SALIDA: ensure enough stock
     if (tipo === 'SALIDA' && producto.stock_actual < cantidad) {
@@ -157,7 +147,7 @@ export const createMovimiento = async (req, res) => {
       [tipo, cantidad, precio_unitario, motivo ?? null, id_producto, id_usuario, id_proyecto, id_proveedor ?? null]
     )
 
-    // Update stock — formula evaluated against pre-update values by PostgreSQL
+    // Update stock
     if (tipo === 'ENTRADA') {
       await client.query(
         `UPDATE public.producto
