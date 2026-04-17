@@ -7,6 +7,7 @@ import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import OnboardingView from '../views/OnboardingView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
+import BudgetView from '../views/BudgetView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 
@@ -76,6 +77,11 @@ const router = createRouter({
       path: '/auth/callback',
       name: 'auth-callback',
       component: AuthCallback
+    },
+    {
+      path: '/budget',
+      name: 'budget',
+      component: BudgetView
     }
   ]
 })
