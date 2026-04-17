@@ -8,6 +8,7 @@
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 
 const route     = useRoute()
 const router    = useRouter()
@@ -21,7 +22,7 @@ const ERROR_MESSAGES = {
 }
 
 onMounted(async () => {
-  const { token, error } = route.query
+  const { token, error, joinedEmpresaId, inviteToken, inviteError } = route.query
 
   if (error) {
     const msg = ERROR_MESSAGES[error] || 'Error al iniciar sesión con Google.'
@@ -34,14 +35,22 @@ onMounted(async () => {
     return
   }
 
-  authStore.setToken(token)
-  await authStore.loadEmpresas()
+  await finalizeAuthenticatedSession({
+    authStore,
+    token,
+    joinedEmpresaId: joinedEmpresaId ? Number(joinedEmpresaId) : null,
+  })
 
-  if (!authStore.empresaActual) {
-    router.replace({ name: 'onboarding' })
-  } else {
-    router.replace({ name: 'dashboard' })
+  if (inviteToken && inviteError && !authStore.empresaActual) {
+    router.replace({
+      name: 'invite',
+      params: { token: inviteToken },
+      query: { error: inviteError },
+    })
+    return
   }
+
+  router.replace(getDefaultAuthenticatedRoute(authStore))
 })
 </script>
 

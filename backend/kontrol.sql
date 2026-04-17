@@ -85,6 +85,24 @@ CREATE TABLE public.empresa_usuario (
   CONSTRAINT eu_id_rol_empresa_fkey FOREIGN KEY (id_rol_empresa) REFERENCES public.rol_empresa(id_rol_empresa)
 );
 
+CREATE TABLE public.empresa_invitacion (
+  id_invitacion SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  token character varying NOT NULL UNIQUE,
+  id_usuario_owner integer NOT NULL,
+  activa boolean NOT NULL DEFAULT true,
+  creada_en timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  desactivada_en timestamp without time zone,
+  ultimo_uso_en timestamp without time zone,
+  CONSTRAINT empresa_invitacion_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
+  CONSTRAINT empresa_invitacion_id_usuario_owner_fkey FOREIGN KEY (id_usuario_owner) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE INDEX empresa_invitacion_empresa_idx ON public.empresa_invitacion (id_empresa);
+CREATE UNIQUE INDEX empresa_invitacion_empresa_activa_unique
+  ON public.empresa_invitacion (id_empresa)
+  WHERE activa = true;
+
 -- 4. PROYECTOS
 CREATE TABLE public.proyecto (
   id_proyecto SERIAL PRIMARY KEY,
@@ -275,6 +293,7 @@ INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
 
 -- Permisos de proyecto
 INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
+  ('ver_inventario',        'Ver inventario del proyecto'),
   ('editar_proyecto',       'Editar información del proyecto'),
   ('gestionar_tareas',      'Crear y editar tareas'),
   ('asignar_usuarios',      'Asignar usuarios a tareas'),

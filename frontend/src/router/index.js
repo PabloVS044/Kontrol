@@ -7,6 +7,7 @@ import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AuthCallback  from '../views/AuthCallback.vue'
 import OnboardingView from '../views/OnboardingView.vue'
+import InviteView from '../views/InviteView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/invite/:token',
+      name: 'invite',
+      component: InviteView,
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
@@ -49,13 +55,13 @@ const router = createRouter({
       path: '/projects',
       name: 'projects',
       component: ProjectsView,
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {
       path: '/inventory',
       name: 'inventory',
       component: InventoryPage,
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
   ],
 })
@@ -82,6 +88,21 @@ router.beforeEach(async (to, from, next) => {
       next({ name: 'onboarding' })
       return
     }
+
+    const accessEmpresaId = authStore.accessContext?.empresa?.id_empresa
+    if (accessEmpresaId !== authStore.idEmpresaActual) {
+      await authStore.loadAccessContext()
+    }
+  }
+
+  if (to.meta.requiresProjectsAccess && !authStore.canViewProjects) {
+    next({ name: 'dashboard' })
+    return
+  }
+
+  if (to.meta.requiresInventoryAccess && !authStore.canViewInventory) {
+    next({ name: 'dashboard' })
+    return
   }
 
   next()

@@ -1,4 +1,11 @@
 import pool from '../db/pool.js'
+import {
+  ensureProjectAccess,
+  getAccessibleProjectIds,
+  hasEmpresaManagementAccess,
+  INVENTORY_VIEW_PERMISSION_NAMES,
+  INVENTORY_WRITE_PERMISSION_NAMES,
+} from '../services/projectAccessService.js'
 
 // Producto joined with its project (for empresa-level access checks)
 const PRODUCTO_SELECT = `
@@ -22,6 +29,62 @@ const PRODUCTO_FROM = `
   JOIN public.proyecto proj ON proj.id_proyecto = p.id_proyecto
 `
 
+const getProductScope = async (client, { id_producto, id_empresa }) => {
+  const result = await client.query(
+    `SELECT p.id_producto, p.id_proyecto
+     ${PRODUCTO_FROM}
+     WHERE p.id_producto = $1 AND proj.id_empresa = $2
+     LIMIT 1`,
+    [id_producto, id_empresa]
+  )
+
+  return result.rows[0] ?? null
+}
+
+const getInventoryAccessibleProjectIds = async (req) => {
+  if (hasEmpresaManagementAccess(req.empresa.rol_empresa)) {
+    return null
+  }
+
+  return getAccessibleProjectIds({
+    client: pool,
+    id_empresa: req.empresa.id_empresa,
+    id_usuario: req.user.id_usuario,
+    rol_empresa: req.empresa.rol_empresa,
+    requiredPermissions: INVENTORY_VIEW_PERMISSION_NAMES,
+  })
+}
+
+const ensureProductInventoryAccess = async ({
+  id_producto,
+  req,
+  requiredPermissions = INVENTORY_VIEW_PERMISSION_NAMES,
+}) => {
+  const scope = await getProductScope(pool, {
+    id_producto,
+    id_empresa: req.empresa.id_empresa,
+  })
+
+  if (!scope) {
+    return { ok: false, status: 404, message: 'Producto no encontrado.' }
+  }
+
+  const access = await ensureProjectAccess({
+    client: pool,
+    id_empresa: req.empresa.id_empresa,
+    id_usuario: req.user.id_usuario,
+    rol_empresa: req.empresa.rol_empresa,
+    id_proyecto: scope.id_proyecto,
+    requiredPermissions,
+  })
+
+  if (!access.allowed) {
+    return { ok: false, status: 403, message: 'No tienes acceso a este producto.' }
+  }
+
+  return { ok: true, scope, access }
+}
+
 /**
  * GET /api/productos
  * Query: ?categoria, ?stock_bajo=true, ?id_proyecto
@@ -32,6 +95,15 @@ const PRODUCTO_FROM = `
 export const getProductos = async (req, res) => {
   const { categoria, stock_bajo, id_proyecto } = req.query
   const { id_empresa } = req.empresa
+  const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: [] })
+  }
+
+  if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
+    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+  }
 
   if (id_proyecto) {
     const filters = ['p.id_proyecto = $1', 'proj.id_empresa = $2']
@@ -61,6 +133,11 @@ export const getProductos = async (req, res) => {
   const filters = ['proj.id_empresa = $1']
   const values  = [id_empresa]
 
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    filters.push(`p.id_proyecto = ANY($${values.length}::int[])`)
+  }
+
   if (categoria) { values.push(categoria); filters.push(`p.id_categoria = $${values.length}`) }
   if (stock_bajo === 'true') filters.push('p.stock_actual < p.stock_minimo')
 
@@ -80,6 +157,15 @@ export const getProductos = async (req, res) => {
 export const getAlertasStockBajo = async (req, res) => {
   const { id_empresa } = req.empresa
   const { id_proyecto } = req.query
+  const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: [] })
+  }
+
+  if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
+    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+  }
 
   if (id_proyecto) {
     const result = await pool.query(
@@ -96,9 +182,11 @@ export const getAlertasStockBajo = async (req, res) => {
   const result = await pool.query(
     `SELECT ${PRODUCTO_SELECT}, (p.stock_minimo - p.stock_actual) AS deficit
      ${PRODUCTO_FROM}
-     WHERE proj.id_empresa = $1 AND p.stock_actual < p.stock_minimo
+     WHERE proj.id_empresa = $1
+       ${accessibleProjectIds ? 'AND p.id_proyecto = ANY($2::int[])' : ''}
+       AND p.stock_actual < p.stock_minimo
      ORDER BY deficit DESC`,
-    [id_empresa]
+    accessibleProjectIds ? [id_empresa, accessibleProjectIds] : [id_empresa]
   )
   return res.json({ success: true, data: result.rows })
 }
@@ -108,7 +196,10 @@ export const getAlertasStockBajo = async (req, res) => {
  */
 export const getProductoById = async (req, res) => {
   const { id } = req.params
-  const { id_empresa } = req.empresa
+  const access = await ensureProductInventoryAccess({ id_producto: id, req })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
 
   const result = await pool.query(
     `SELECT ${PRODUCTO_SELECT},
@@ -122,7 +213,7 @@ export const getProductoById = async (req, res) => {
      LEFT JOIN public.proveedor pv ON pv.id_proveedor = pp.id_proveedor
      WHERE p.id_producto = $1 AND proj.id_empresa = $2
      GROUP BY p.id_producto, proj.nombre, c.nombre, c.id_categoria`,
-    [id, id_empresa]
+    [id, req.empresa.id_empresa]
   )
 
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
@@ -155,13 +246,14 @@ export const createProducto = async (req, res) => {
  */
 export const updateProducto = async (req, res) => {
   const { id } = req.params
-  const { id_empresa } = req.empresa
-
-  const existing = await pool.query(
-    `SELECT p.id_producto ${PRODUCTO_FROM} WHERE p.id_producto = $1 AND proj.id_empresa = $2`,
-    [id, id_empresa]
-  )
-  if (!existing.rows.length) return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
+  const access = await ensureProductInventoryAccess({
+    id_producto: id,
+    req,
+    requiredPermissions: INVENTORY_WRITE_PERMISSION_NAMES,
+  })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
 
   const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria']
   const setClauses = []
@@ -185,13 +277,14 @@ export const updateProducto = async (req, res) => {
  */
 export const deleteProducto = async (req, res) => {
   const { id } = req.params
-  const { id_empresa } = req.empresa
-
-  const check = await pool.query(
-    `SELECT p.id_producto ${PRODUCTO_FROM} WHERE p.id_producto = $1 AND proj.id_empresa = $2`,
-    [id, id_empresa]
-  )
-  if (!check.rows.length) return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
+  const access = await ensureProductInventoryAccess({
+    id_producto: id,
+    req,
+    requiredPermissions: INVENTORY_WRITE_PERMISSION_NAMES,
+  })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
 
   try {
     await pool.query('DELETE FROM public.producto WHERE id_producto = $1', [id])
@@ -207,13 +300,14 @@ export const deleteProducto = async (req, res) => {
 export const linkProveedor = async (req, res) => {
   const { id } = req.params
   const { id_proveedor, precio_unitario } = req.body
-  const { id_empresa } = req.empresa
-
-  const producto = await pool.query(
-    `SELECT p.id_producto ${PRODUCTO_FROM} WHERE p.id_producto = $1 AND proj.id_empresa = $2`,
-    [id, id_empresa]
-  )
-  if (!producto.rows.length) return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
+  const access = await ensureProductInventoryAccess({
+    id_producto: id,
+    req,
+    requiredPermissions: INVENTORY_WRITE_PERMISSION_NAMES,
+  })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
 
   const proveedor = await pool.query('SELECT id_proveedor FROM public.proveedor WHERE id_proveedor = $1', [id_proveedor])
   if (!proveedor.rows.length) return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
@@ -233,6 +327,15 @@ export const linkProveedor = async (req, res) => {
 
 export const updateLinkProveedor = async (req, res) => {
   const { id, pid } = req.params
+  const access = await ensureProductInventoryAccess({
+    id_producto: id,
+    req,
+    requiredPermissions: INVENTORY_WRITE_PERMISSION_NAMES,
+  })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
+
   const { precio_unitario, fecha_ultima_cotizacion } = req.body
   const setClauses = []
   const values = []
@@ -252,6 +355,15 @@ export const updateLinkProveedor = async (req, res) => {
 
 export const unlinkProveedor = async (req, res) => {
   const { id, pid } = req.params
+  const access = await ensureProductInventoryAccess({
+    id_producto: id,
+    req,
+    requiredPermissions: INVENTORY_WRITE_PERMISSION_NAMES,
+  })
+  if (!access.ok) {
+    return res.status(access.status).json({ success: false, message: access.message })
+  }
+
   const result = await pool.query(
     'DELETE FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2 RETURNING id_producto',
     [id, pid]
