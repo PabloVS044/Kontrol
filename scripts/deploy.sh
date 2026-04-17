@@ -55,10 +55,12 @@ $SSH "
   echo '==> .env actualizado'
 "
 
-echo "==> [2/3] Construyendo y levantando contenedores (puede tardar unos minutos)..."
-$SSH "cd /app/Kontrol && docker compose -f docker-compose.prod.yml up -d --build --remove-orphans"
+echo "==> [2/3] Lanzando build en el servidor (corre en background, no depende de SSH)..."
+$SSH "cd /app/Kontrol && nohup docker compose -f docker-compose.prod.yml up -d --build --remove-orphans > /tmp/deploy.log 2>&1 && docker image prune -f >> /tmp/deploy.log 2>&1 &"
 
-echo "==> [3/3] Limpiando imágenes viejas..."
-$SSH "docker image prune -f"
-
-echo "==> Deploy completado. App en http://$VM_IP"
+echo ""
+echo "==> Build lanzado. Sigue corriendo en el servidor aunque se cierre la conexión."
+echo "    Para ver el progreso conéctate y corre:"
+echo "    tail -f /tmp/deploy.log"
+echo ""
+echo "    Cuando termine, la app estará en: http://$VM_IP"
