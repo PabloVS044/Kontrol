@@ -5,9 +5,12 @@ import LandingPage   from '../views/LandingPage.vue'
 import InventoryPage from '../views/InventoryPage.vue'
 import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
-import AuthCallback  from '../views/AuthCallback.vue'
 import OnboardingView from '../views/OnboardingView.vue'
 import InviteView from '../views/InviteView.vue'
+import AuthCallback from '../views/AuthCallback.vue'
+import BudgetView from '../views/BudgetView.vue'
+import ReportsView from '../views/ReportsView.vue'
+import ReportDetailView from '../views/ReportDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,8 +66,30 @@ const router = createRouter({
       component: InventoryPage,
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
-  ],
-})
+    {
+      path: '/reports',
+      name: 'reports',
+      component: ReportsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/reports/:id',
+      name: 'report-detail',
+      component: ReportDetailView,
+      meta: { requiresAuth: true }
+    },
+    {
+      // Receives ?token=&onboarding=&error= from the backend Google OAuth callback
+      path: '/auth/callback',
+      name: 'auth-callback',
+      component: AuthCallback
+    },
+    {
+      path: '/budget',
+      name: 'budget',
+      component: BudgetView
+    }
+]})
 
 import { useAuthStore } from '../stores/auth'
 
