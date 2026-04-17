@@ -13,7 +13,7 @@ const signToken = (user) =>
 
 // POST /api/auth/register (validado por Zod)
 export const register = async (req, res) => {
-  const { nombre, apellido, email, password, role, telefono, id_empresa } = req.body
+  const { nombre, apellido, email, password, role, telefono } = req.body
 
   const client = await pool.connect()
   try {
@@ -30,10 +30,10 @@ export const register = async (req, res) => {
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
 
     const inserted = await client.query(
-      `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_empresa, id_rol)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_rol)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id_usuario`,
-      [nombre, apellido, email, password_hash, telefono ?? null, id_empresa ?? null, rolRow.rows[0].id_rol]
+      [nombre, apellido, email, password_hash, telefono ?? null, rolRow.rows[0].id_rol]
     )
 
     const user = await client.query(
@@ -84,7 +84,7 @@ export const login = async (req, res) => {
 // GET /api/auth/me
 export const getMe = async (req, res) => {
   const result = await pool.query(
-    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.id_empresa, u.activo, r.nombre_rol
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.activo, r.nombre_rol
      FROM public.usuario u
      JOIN public.rol r ON r.id_rol = u.id_rol
      WHERE u.id_usuario = $1`,
@@ -164,7 +164,7 @@ export const googleCallback = async (req, res) => {
     try {
       // 1. Look up by google_id
       let userRow = await client.query(
-        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
          FROM public.usuario u
          JOIN public.rol r ON r.id_rol = u.id_rol
          WHERE u.google_id = $1`,
@@ -174,7 +174,7 @@ export const googleCallback = async (req, res) => {
       // 2. Look up by email and link the Google account
       if (!userRow.rows.length) {
         const byEmail = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.email = $1`,
@@ -193,7 +193,7 @@ export const googleCallback = async (req, res) => {
       // 3. Create a new user (first-time Google sign-up)
       if (!userRow.rows.length) {
         const rolRow = await client.query(
-          "SELECT id_rol FROM public.rol WHERE nombre_rol = 'admin' LIMIT 1"
+          "SELECT id_rol FROM public.rol WHERE nombre_rol = 'usuario' LIMIT 1"
         )
         if (!rolRow.rows.length) {
           return res.redirect(`${FRONTEND_URL}/login?error=rol_no_encontrado`)
@@ -207,7 +207,7 @@ export const googleCallback = async (req, res) => {
         )
 
         userRow = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.id_empresa, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.id_usuario = $1`,
@@ -223,8 +223,12 @@ export const googleCallback = async (req, res) => {
 
       const token = signToken(user)
 
-      // onboarding=true signals the frontend that this user has no empresa yet
-      const onboarding = !user.id_empresa
+      // onboarding=true si el usuario no pertenece a ninguna empresa todavía
+      const empresaRow = await client.query(
+        'SELECT 1 FROM public.empresa_usuario WHERE id_usuario = $1 LIMIT 1',
+        [user.id_usuario]
+      )
+      const onboarding = empresaRow.rows.length === 0
       return res.redirect(
         `${FRONTEND_URL}/auth/callback?token=${token}&onboarding=${onboarding}`
       )
