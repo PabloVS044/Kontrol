@@ -6,6 +6,7 @@ import InventoryPage from '../views/InventoryPage.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
+import BudgetView from '../views/BudgetView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,11 @@ const router = createRouter({
       path: '/auth/callback',
       name: 'auth-callback',
       component: AuthCallback
+    },
+    {
+      path: '/budget',
+      name: 'budget',
+      component: BudgetView
     }
   ]
 })
