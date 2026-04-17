@@ -94,7 +94,7 @@
               <p class="proj-subtitle">Projects you are enrolled in as admin or member</p>
             </div>
             <div class="proj-header-actions">
-              <button class="btn-primary" @click="openModal">
+              <button v-if="authStore.canCreateProjects" class="btn-primary" @click="openModal">
                 <svg class="icon16" viewBox="0 0 16 16" fill="none">
                   <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
                 </svg>
@@ -245,7 +245,7 @@
 
           <div>
             <p class="ctx-label">QUICK ACTIONS</p>
-            <Button label="+ Create new project" @click="openModal" />
+            <Button v-if="authStore.canCreateProjects" label="+ Create new project" @click="openModal" />
             <Button label="↓ Export summary" />
           </div>
 
@@ -261,7 +261,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar from '../components/AppNavbar.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
@@ -353,6 +353,7 @@ async function loadData() {
 }
 
 onMounted(loadData)
+watch(() => authStore.idEmpresaActual, loadData)
 
 // ── Computed counts ───────────────────────────────────────────────────────────
 
@@ -393,6 +394,7 @@ const emptyForm = () => ({
 const form = ref(emptyForm())
 
 function openModal() {
+  if (!authStore.canCreateProjects) return
   form.value       = emptyForm()
   modalError.value = null
   showModal.value  = true
