@@ -10,7 +10,6 @@ const USER_SELECT = `
   u.apellido,
   u.email,
   u.telefono,
-  u.id_empresa,
   u.activo,
   r.nombre_rol
 `
@@ -92,7 +91,7 @@ export const getUserById = async (req, res) => {
  * Body: { nombre, apellido, email, password, role, telefono?, id_empresa? }  (validated by Zod)
  */
 export const createUser = async (req, res) => {
-  const { nombre, apellido, email, password, role, telefono, id_empresa } = req.body
+  const { nombre, apellido, email, password, role, telefono } = req.body
 
   const client = await pool.connect()
   try {
@@ -118,10 +117,10 @@ export const createUser = async (req, res) => {
 
     const inserted = await client.query(
       `INSERT INTO public.usuario
-         (nombre, apellido, email, password_hash, telefono, id_empresa, id_rol)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+         (nombre, apellido, email, password_hash, telefono, id_rol)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id_usuario`,
-      [nombre, apellido, email, password_hash, telefono ?? null, id_empresa ?? null, id_rol]
+      [nombre, apellido, email, password_hash, telefono ?? null, id_rol]
     )
 
     const newUser = await client.query(
@@ -144,7 +143,7 @@ export const createUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   const { id } = req.params
-  const { nombre, apellido, email, role, telefono, id_empresa } = req.body
+  const { nombre, apellido, email, role, telefono } = req.body
 
   const client = await pool.connect()
   try {
@@ -181,12 +180,11 @@ export const updateUser = async (req, res) => {
     const setClauses = []
     const values = []
 
-    if (nombre !== undefined)     { values.push(nombre);     setClauses.push(`nombre = $${values.length}`) }
-    if (apellido !== undefined)   { values.push(apellido);   setClauses.push(`apellido = $${values.length}`) }
-    if (email !== undefined)      { values.push(email);      setClauses.push(`email = $${values.length}`) }
-    if (telefono !== undefined)   { values.push(telefono);   setClauses.push(`telefono = $${values.length}`) }
-    if (id_empresa !== undefined) { values.push(id_empresa); setClauses.push(`id_empresa = $${values.length}`) }
-    if (id_rol !== undefined)     { values.push(id_rol);     setClauses.push(`id_rol = $${values.length}`) }
+    if (nombre !== undefined)   { values.push(nombre);   setClauses.push(`nombre = $${values.length}`) }
+    if (apellido !== undefined) { values.push(apellido); setClauses.push(`apellido = $${values.length}`) }
+    if (email !== undefined)    { values.push(email);    setClauses.push(`email = $${values.length}`) }
+    if (telefono !== undefined) { values.push(telefono); setClauses.push(`telefono = $${values.length}`) }
+    if (id_rol !== undefined)   { values.push(id_rol);   setClauses.push(`id_rol = $${values.length}`) }
 
     values.push(id)
     await client.query(
