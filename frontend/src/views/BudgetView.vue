@@ -136,9 +136,18 @@ const budgetData = {
   border: 1px solid var(--Border); 
   padding: 40px; 
   display: flex; 
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
+  min-height: 350px;
+}
+
+.summary-info {
+    flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .card-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 30px; }
 .amount-group { margin-bottom: 20px; }
