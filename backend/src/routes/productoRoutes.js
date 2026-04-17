@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
+import requireProyecto from '../middleware/requireProyecto.js'
 import requireRole from '../middleware/requireRole.js'
 import validate from '../middleware/validate.js'
 import {
@@ -25,8 +27,9 @@ import {
 
 const router = Router()
 
-// All routes require authentication
+// All routes require authentication + empresa context
 router.use(requireAuth)
+router.use(requireEmpresa)
 
 // ── Productos ─────────────────────────────────────────────────────────────────
 
@@ -53,6 +56,7 @@ router.get(
 
 router.post(
   '/',
+  requireProyecto,
   requireRole('admin', 'manager'),
   validate(createProductoSchema),
   createProducto
