@@ -94,11 +94,16 @@
             <p class="inv-subtitle">Browse and manage your product catalogue</p>
           </div>
           <div class="inv-header-actions">
-            <button class="btn-primary" @click="openNewProduct">
+            <button
+              class="btn-primary"
+              :class="{ 'btn-disabled': !canCreateProduct }"
+              :title="canCreateProduct ? '' : selectedProject ? 'You do not have write access in this project' : 'Select a project first'"
+              @click="canCreateProduct ? openNewProduct() : null"
+            >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <span>New product</span>
+              <span>{{ canCreateProduct ? 'New product' : selectedProject ? 'No write access' : 'Select project first' }}</span>
             </button>
             <button class="icon-btn" title="Configuración">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
@@ -113,6 +118,26 @@
               </svg>
             </button>
           </div>
+        </div>
+
+        <!-- Selector de proyecto -->
+        <div class="project-filter">
+          <span class="pf-label">Project</span>
+          <div class="pf-tabs">
+            <button
+              class="pf-tab"
+              :class="{ active: !selectedProject }"
+              @click="selectProject(null)"
+            >All projects</button>
+            <button
+              v-for="p in projects"
+              :key="p.id_proyecto"
+              class="pf-tab"
+              :class="{ active: selectedProject?.id_proyecto === p.id_proyecto }"
+              @click="selectProject(p)"
+            >{{ p.nombre }}</button>
+          </div>
+          <span v-if="projectsLoading" class="pf-loading">Loading…</span>
         </div>
 
         <!-- Búsqueda -->
@@ -192,6 +217,7 @@
             </div>
 
             <div class="card-body">
+              <span v-if="!selectedProject && product.proyecto_nombre" class="card-project-tag">{{ product.proyecto_nombre }}</span>
               <span v-if="product.categoria" class="card-code">{{ product.categoria }}</span>
               <span class="card-name">{{ product.nombre }}</span>
               <div class="card-meta">
@@ -203,7 +229,24 @@
                   <div class="card-stock-num" :class="stockNumClass(product)">
                     {{ product.stock_actual }}
                   </div>
-                  <div class="card-stock-label">units</div>
+                  <div class="card-stock-label">total stock</div>
+                </div>
+              </div>
+              <!-- Project-specific usage -->
+              <div v-if="selectedProject" class="card-proj-usage">
+                <div class="proj-usage-row">
+                  <span class="pu-label">Entries</span>
+                  <span class="pu-val green">+{{ product.entradas_proyecto ?? 0 }}</span>
+                </div>
+                <div class="proj-usage-row">
+                  <span class="pu-label">Exits</span>
+                  <span class="pu-val red">-{{ product.salidas_proyecto ?? 0 }}</span>
+                </div>
+                <div class="proj-usage-row">
+                  <span class="pu-label">Net</span>
+                  <span class="pu-val" :class="(product.neto_proyecto ?? 0) >= 0 ? 'green' : 'red'">
+                    {{ (product.neto_proyecto ?? 0) >= 0 ? '+' : '' }}{{ product.neto_proyecto ?? 0 }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -232,7 +275,9 @@
 
         <div>
           <div class="ctx-title">Summary</div>
-          <div class="ctx-subtitle">Inventory at a glance</div>
+          <div class="ctx-subtitle">
+            {{ selectedProject ? selectedProject.nombre : 'All projects' }}
+          </div>
         </div>
 
         <!-- Stats generales -->
@@ -289,7 +334,7 @@
         <!-- Acciones rápidas -->
         <div>
           <p class="ctx-label">Quick Actions</p>
-          <Button label="+ Add product" @click="openNewProduct" />
+          <Button v-if="canCreateProduct" label="+ Add product" @click="openNewProduct" />
           <Button label="↓ Export inventory" @click="exportInventory" />
         </div>
 
@@ -306,42 +351,87 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
+import { useAuthStore } from '@/stores/auth'
 
-const products    = ref([])
-const stockAlerts = ref([])
-const loading     = ref(true)
-const authError   = ref(false)
-const fetchError  = ref(null)
+const authStore = useAuthStore()
+
+const products       = ref([])
+const stockAlerts    = ref([])
+const loading        = ref(true)
+const authError      = ref(false)
+const fetchError     = ref(null)
 const searchQuery    = ref('')
 const activeCategory = ref('All')
 
+const projects        = ref([])
+const projectsLoading = ref(false)
+const selectedProject = ref(null)
+const canCreateProduct = computed(() => {
+  if (!selectedProject.value) return false
+  if (authStore.canManageInventory) return true
+  return (selectedProject.value.mis_permisos || []).includes('gestionar_inventario')
+})
+
 /* ── helpers API ── */
-function authHeader() {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+function authHeader(includeProyecto = false) {
+  const token   = localStorage.getItem('token')
+  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  if (includeProyecto && selectedProject.value) headers['X-Proyecto-ID'] = selectedProject.value.id_proyecto
+  return headers
 }
 
-async function apiFetch(path) {
-  const res = await fetch(path, { headers: authHeader() })
+async function apiFetch(path, write = false) {
+  const res = await fetch(path, { headers: authHeader(write) })
   if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
 
+async function loadProjects() {
+  projectsLoading.value = true
+  try {
+    const res = await apiFetch('/api/projects?limit=100')
+    const allProjects = res.data ?? []
+    const inventoryProjectIds = authStore.accessContext?.inventory_project_ids ?? []
+
+    projects.value = authStore.canManageInventory
+      ? allProjects
+      : allProjects.filter((project) => inventoryProjectIds.includes(project.id_proyecto))
+
+    if (
+      selectedProject.value &&
+      !projects.value.some(({ id_proyecto }) => id_proyecto === selectedProject.value.id_proyecto)
+    ) {
+      selectedProject.value = null
+    }
+  } catch {
+    // non-fatal: project filter just stays empty
+  } finally {
+    projectsLoading.value = false
+  }
+}
+
 async function loadData() {
-  loading.value   = true
-  authError.value = false
+  loading.value    = true
+  authError.value  = false
   fetchError.value = null
   try {
+    const params = new URLSearchParams()
+    if (selectedProject.value) {
+      params.set('id_proyecto', selectedProject.value.id_proyecto)
+    }
+    const qs = params.toString() ? `?${params}` : ''
+
     const [productosRes, alertasRes] = await Promise.all([
-      apiFetch('/api/productos'),
-      apiFetch('/api/productos/alertas/stock-bajo'),
+      apiFetch(`/api/productos${qs}`),
+      apiFetch(`/api/productos/alertas/stock-bajo${qs}`),
     ])
     products.value    = productosRes.data
     stockAlerts.value = alertasRes.data
@@ -353,7 +443,25 @@ async function loadData() {
   }
 }
 
-onMounted(loadData)
+function selectProject(p) {
+  selectedProject.value = p
+  activeCategory.value  = 'All'
+  loadData()
+}
+
+onMounted(async () => {
+  const accessEmpresaId = authStore.accessContext?.empresa?.id_empresa
+  if (accessEmpresaId !== authStore.idEmpresaActual) {
+    await authStore.loadAccessContext()
+  }
+  await Promise.all([loadData(), loadProjects()])
+})
+
+watch(() => authStore.idEmpresaActual, async () => {
+  selectedProject.value = null
+  await authStore.loadAccessContext()
+  await Promise.all([loadData(), loadProjects()])
+})
 
 /* ── categorías dinámicas ── */
 const categories = computed(() => {
@@ -426,6 +534,7 @@ const modalError   = ref(null)
 const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 })
 
 function openNewProduct() {
+  if (!canCreateProduct.value) return
   form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 }
   modalError.value = null
   showModal.value  = true
@@ -436,12 +545,16 @@ function closeModal() {
 }
 
 async function submitProduct() {
+  if (!selectedProject.value) {
+    modalError.value = 'Select a project before adding a product.'
+    return
+  }
   modalLoading.value = true
   modalError.value   = null
   try {
     const res = await fetch('/api/productos', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeader(true) },
       body: JSON.stringify({
         nombre:        form.value.nombre,
         descripcion:   form.value.descripcion || undefined,
