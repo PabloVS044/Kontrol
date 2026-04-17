@@ -28,7 +28,9 @@ set +a
 : "${GOOGLE_CALLBACK_URL:?Falta GOOGLE_CALLBACK_URL en .env.deploy}"
 : "${FRONTEND_URL:?Falta FRONTEND_URL en .env.deploy}"
 
-# Codifica el .env del servidor en base64 para evitar problemas con caracteres especiales
+SSH="ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -t -i $SSH_KEY $VM_USER@$VM_IP"
+
+# Codifica el .env en base64 para evitar problemas con caracteres especiales
 ENV_B64=$(printf '%s\n' \
   "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" \
   "JWT_SECRET=$JWT_SECRET" \
@@ -39,24 +41,24 @@ ENV_B64=$(printf '%s\n' \
   "FRONTEND_URL=$FRONTEND_URL" \
   | base64 -w0)
 
-echo "==> Desplegando en $VM_USER@$VM_IP ..."
-
-ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" "$VM_USER@$VM_IP" bash << REMOTE
+echo "==> [1/3] Actualizando código en $VM_USER@$VM_IP ..."
+$SSH "
   set -e
-
-  if [ ! -d "/app/Kontrol" ]; then
+  if [ ! -d /app/Kontrol ]; then
     sudo mkdir -p /app && sudo chown \$USER:\$USER /app
     git clone https://github.com/PabloVS044/Kontrol.git /app/Kontrol
-  else
-    cd /app/Kontrol && git pull origin main
   fi
-
   cd /app/Kontrol
+  git fetch origin
+  git reset --hard origin/feat/deploy
+  echo '$ENV_B64' | base64 -d > .env
+  echo '==> .env actualizado'
+"
 
-  echo "$ENV_B64" | base64 -d > .env
+echo "==> [2/3] Construyendo y levantando contenedores (puede tardar unos minutos)..."
+$SSH "cd /app/Kontrol && docker compose -f docker-compose.prod.yml up -d --build --remove-orphans"
 
-  docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
-  docker image prune -f
+echo "==> [3/3] Limpiando imágenes viejas..."
+$SSH "docker image prune -f"
 
-  echo "==> Deploy completado."
-REMOTE
+echo "==> Deploy completado. App en http://$VM_IP"
