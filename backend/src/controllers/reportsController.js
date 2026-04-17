@@ -1,6 +1,15 @@
-import { success } from "zod";
 import pool from "../db/pool.js";
 
+/**
+ * Reports controller.
+ * Handles CRUD operations for the reporte table.
+ * Expected route prefix: /api/reportes
+ */
+
+/**
+ * GET /api/reportes
+ * Returns all reports from the database.
+ */
 export const getReports = async (req, res) => {
     try {
         const result = await pool.query(`
@@ -13,6 +22,12 @@ export const getReports = async (req, res) => {
     }
 }
 
+/**
+ * GET /api/reportes/:id
+ * Params:
+ *   id - report ID
+ * Returns the requested report or 404 if not found.
+ */
 export const getReportById = async (req, res) => {
     try {
         const { id } = req.params
@@ -30,6 +45,11 @@ export const getReportById = async (req, res) => {
     }
 }
 
+/**
+ * POST /api/reportes
+ * Body: { titulo, tipo, contenido_url, id_proyecto, id_usuario }
+ * Creates a new report entry.
+ */
 export const createReport = async (req, res) => {
     try {
         const { titulo, tipo, contenido_url, id_proyecto, id_usuario } = req.body;
@@ -46,6 +66,13 @@ export const createReport = async (req, res) => {
     }
 };
 
+/**
+ * PUT /api/reportes/:id
+ * Params:
+ *   id - report ID
+ * Body: { titulo, tipo, contenido_url, id_proyecto }
+ * Updates an existing report.
+ */
 export const updateReport = async (req, res) => {
     try {
         const { id } = req.params
@@ -69,6 +96,12 @@ export const updateReport = async (req, res) => {
     }
 }
 
+/**
+ * DELETE /api/reportes/:id
+ * Params:
+ *   id - report ID
+ * Deletes the requested report.
+ */
 export const deleteReport = async (req, res) => {
     try {
         const { id } = req.params
