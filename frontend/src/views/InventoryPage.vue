@@ -105,13 +105,13 @@
               </svg>
               <span>{{ canCreateProduct ? 'New product' : selectedProject ? 'No write access' : 'Select project first' }}</span>
             </button>
-            <button class="icon-btn" title="Configuración">
+            <button class="icon-btn" title="Settings">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
                 <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
                 <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
-            <button class="icon-btn" title="Historial">
+            <button class="icon-btn" title="History">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
                 <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
                 <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
@@ -496,7 +496,7 @@ const CAT_COLORS = ['#c9a962', '#60a5fa', '#a78bfa', '#34d399', '#f97316', '#fb7
 const categoryStats = computed(() => {
   const totals = {}
   products.value.forEach(p => {
-    const cat = p.categoria || 'Sin categoría'
+    const cat = p.categoria || 'Uncategorized'
     totals[cat] = (totals[cat] || 0) + 1
   })
   const entries = Object.entries(totals).sort((a, b) => b[1] - a[1])
