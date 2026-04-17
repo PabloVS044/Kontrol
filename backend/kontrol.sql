@@ -85,6 +85,24 @@ CREATE TABLE public.empresa_usuario (
   CONSTRAINT eu_id_rol_empresa_fkey FOREIGN KEY (id_rol_empresa) REFERENCES public.rol_empresa(id_rol_empresa)
 );
 
+CREATE TABLE public.empresa_invitacion (
+  id_invitacion SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  token character varying NOT NULL UNIQUE,
+  id_usuario_owner integer NOT NULL,
+  activa boolean NOT NULL DEFAULT true,
+  creada_en timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  desactivada_en timestamp without time zone,
+  ultimo_uso_en timestamp without time zone,
+  CONSTRAINT empresa_invitacion_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
+  CONSTRAINT empresa_invitacion_id_usuario_owner_fkey FOREIGN KEY (id_usuario_owner) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE INDEX empresa_invitacion_empresa_idx ON public.empresa_invitacion (id_empresa);
+CREATE UNIQUE INDEX empresa_invitacion_empresa_activa_unique
+  ON public.empresa_invitacion (id_empresa)
+  WHERE activa = true;
+
 -- 4. PROYECTOS
 CREATE TABLE public.proyecto (
   id_proyecto SERIAL PRIMARY KEY,
@@ -152,10 +170,10 @@ CREATE TABLE public.producto (
   stock_actual integer NOT NULL DEFAULT 0 CHECK (stock_actual >= 0),
   stock_minimo integer NOT NULL DEFAULT 0 CHECK (stock_minimo >= 0),
   id_categoria integer,
-  id_empresa integer NOT NULL,
+  id_proyecto integer NOT NULL,
   CONSTRAINT producto_id_categoria_fkey FOREIGN KEY (id_categoria) REFERENCES public.categoria(id_categoria),
-  CONSTRAINT producto_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
-  CONSTRAINT producto_empresa_id_unique UNIQUE (id_empresa, id_producto)
+  CONSTRAINT producto_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
+  CONSTRAINT producto_proyecto_id_unique UNIQUE (id_proyecto, id_producto)
 );
 
 CREATE TABLE public.producto_proveedor (
@@ -183,8 +201,8 @@ CREATE TABLE public.movimiento_inventario (
   id_usuario integer NOT NULL,
   id_proyecto integer NOT NULL,
   id_proveedor integer,
-  -- FK compuesta: producto (si existe) debe pertenecer a la misma empresa que el proyecto
-  CONSTRAINT mi_producto_empresa_fkey FOREIGN KEY (id_empresa, id_producto) REFERENCES public.producto(id_empresa, id_producto),
+  -- FK compuesta: producto (si existe) debe pertenecer al mismo proyecto
+  CONSTRAINT mi_producto_proyecto_fkey FOREIGN KEY (id_proyecto, id_producto) REFERENCES public.producto(id_proyecto, id_producto),
   CONSTRAINT mi_proyecto_empresa_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto),
   CONSTRAINT movimiento_inventario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario),
   CONSTRAINT movimiento_inventario_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor),
@@ -275,6 +293,7 @@ INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
 
 -- Permisos de proyecto
 INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
+  ('ver_inventario',        'Ver inventario del proyecto'),
   ('editar_proyecto',       'Editar información del proyecto'),
   ('gestionar_tareas',      'Crear y editar tareas'),
   ('asignar_usuarios',      'Asignar usuarios a tareas'),

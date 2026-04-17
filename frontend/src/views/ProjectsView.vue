@@ -17,16 +17,6 @@
 
           <form class="modal-form" @submit.prevent="submitProject">
 
-            <!-- Onboarding: user has no empresa yet -->
-            <div v-if="!authStore.idEmpresa" class="onboarding-notice">
-              <p class="notice-title">Set up your company first</p>
-              <p class="notice-sub">Your account has no company assigned. Enter your company name to get started.</p>
-              <div class="form-field" style="margin-top:12px">
-                <label>Company name <span class="req">*</span></label>
-                <input v-model="form.nombre_empresa" type="text" placeholder="e.g. Acme Corp" :required="!authStore.idEmpresa" />
-              </div>
-            </div>
-
             <div class="form-field">
               <label>Name <span class="req">*</span></label>
               <input v-model="form.nombre" type="text" placeholder="Project name" required />
@@ -104,7 +94,7 @@
               <p class="proj-subtitle">Projects you are enrolled in as admin or member</p>
             </div>
             <div class="proj-header-actions">
-              <button class="btn-primary" @click="openModal">
+              <button v-if="authStore.canCreateProjects" class="btn-primary" @click="openModal">
                 <svg class="icon16" viewBox="0 0 16 16" fill="none">
                   <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
                 </svg>
@@ -255,7 +245,7 @@
 
           <div>
             <p class="ctx-label">QUICK ACTIONS</p>
-            <Button label="+ Create new project" @click="openModal" />
+            <Button v-if="authStore.canCreateProjects" label="+ Create new project" @click="openModal" />
             <Button label="↓ Export summary" />
           </div>
 
@@ -271,7 +261,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar from '../components/AppNavbar.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
@@ -330,8 +320,10 @@ function formatDate(d) {
 // ── API ───────────────────────────────────────────────────────────────────────
 
 function authHeader() {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+  const token   = localStorage.getItem('token')
+  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  return headers
 }
 
 async function apiFetch(path, options = {}) {
@@ -346,12 +338,9 @@ async function loadData() {
   authError.value  = false
   fetchError.value = null
   try {
-    // Ensure we have the user profile (for id_empresa + id_usuario)
     if (!authStore.user) await authStore.fetchMe()
 
     const params = new URLSearchParams({ limit: 100 })
-    if (authStore.idEmpresa) params.set('id_empresa', authStore.idEmpresa)
-
     const res = await apiFetch(`/api/projects?${params}`)
     projects.value = res.data
     lastSync.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
@@ -364,6 +353,7 @@ async function loadData() {
 }
 
 onMounted(loadData)
+watch(() => authStore.idEmpresaActual, loadData)
 
 // ── Computed counts ───────────────────────────────────────────────────────────
 
@@ -393,7 +383,6 @@ const modalLoading = ref(false)
 const modalError   = ref(null)
 
 const emptyForm = () => ({
-  nombre_empresa:       '',
   nombre:               '',
   descripcion:          '',
   fecha_inicio:         new Date().toISOString().split('T')[0],
@@ -405,6 +394,7 @@ const emptyForm = () => ({
 const form = ref(emptyForm())
 
 function openModal() {
+  if (!authStore.canCreateProjects) return
   form.value       = emptyForm()
   modalError.value = null
   showModal.value  = true
@@ -418,37 +408,12 @@ async function submitProject() {
   modalLoading.value = true
   modalError.value   = null
   try {
-    // Step 1: if no empresa yet, create it first
-    let id_empresa = authStore.idEmpresa
-    if (!id_empresa) {
-      if (!form.value.nombre_empresa?.trim()) {
-        modalError.value = 'Company name is required to create your first project.'
-        return
-      }
-      const empRes = await fetch('/api/empresas', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeader() },
-        body:    JSON.stringify({ nombre: form.value.nombre_empresa.trim() }),
-      })
-      const empData = await empRes.json()
-      if (!empRes.ok) {
-        modalError.value = empData.message || 'Could not create company.'
-        return
-      }
-      id_empresa = empData.data.id_empresa
-      // Refresh user profile so the store has the new id_empresa
-      await authStore.fetchMe()
-    }
-
-    // Step 2: create the project
     const body = {
       nombre:            form.value.nombre,
       descripcion:       form.value.descripcion || undefined,
       fecha_inicio:      form.value.fecha_inicio,
       presupuesto_total: form.value.presupuesto_total,
       estado:            form.value.estado,
-      id_empresa,
-      id_encargado:      authStore.idUsuario,
     }
     if (form.value.fecha_fin_planificada) {
       body.fecha_fin_planificada = form.value.fecha_fin_planificada
@@ -798,15 +763,6 @@ async function submitProject() {
   .summary-grid { grid-template-columns: 1fr 1fr; }
   .project-grid { grid-template-columns: 1fr; }
 }
-
-/* Onboarding notice */
-.onboarding-notice {
-  background: rgba(201,169,98,0.06);
-  border: 1px solid rgba(201,169,98,0.2);
-  padding: 16px;
-}
-.notice-title { font-size: 13px; color: #c9a962; font-weight: 600; margin-bottom: 4px; }
-.notice-sub   { font-size: 12px; color: #888; line-height: 1.5; }
 
 /* ── Modal ── */
 .modal-overlay {
