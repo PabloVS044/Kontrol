@@ -1,16 +1,22 @@
 <script setup>
 import AppNavbar from '../components/AppNavbar.vue'
 
-const activities = [
-  { name: 'Marketing', percentage: 51 },
-  { name: 'Development', percentage: 16 },
-  { name: 'Design', percentage: 5 }
-]
+const budgetData = {
+  totalAllocated: 8293.00,
+  remaining: 2322.00,
+  completedPercentage: 72,
+  activities: [
+    { name: 'Marketing', percentage: 51 },
+    { name: 'Development', percentage: 16 },
+    { name: 'Design', percentage: 5 }
+  ]
+}
 </script>
 
 <template>
   <div class="budget-layout">
     <AppNavbar />
+
     <main class="content">
       <header class="header">
         <h1 class="title">Budget Management</h1>
@@ -20,25 +26,41 @@ const activities = [
       </header>
 
       <div class="main-grid">
-        <!-- COLUMNA IZQUIERDA -->
+        <!-- LEFT PANEL -->
         <div class="left-panel">
+          <!-- CARD: Budget Summary -->
           <section class="summary-card">
             <div class="summary-info">
               <h2 class="card-title">Budget Summary</h2>
               <div class="amount-group">
                 <span class="label">Total Allocated</span>
-                <h3 class="total-value">$8,293.00</h3>
+                <h3 class="total-value">${{ budgetData.totalAllocated.toLocaleString() }}</h3>
               </div>
               <div class="amount-group">
                 <span class="label gold">Remaining</span>
-                <h3 class="remaining-value gold">$2,322.00</h3>
+                <h3 class="remaining-value gold">${{ budgetData.remaining.toLocaleString() }}</h3>
+              </div>
+            </div>
+            
+            <!-- Donut Chart SVG -->
+            <div class="chart-donut">
+              <svg viewBox="0 0 100 100">
+                <circle class="circle-bg" cx="50" cy="50" r="40" />
+                <circle class="circle-progress" cx="50" cy="50" r="40" 
+                  :style="{ strokeDasharray: `${budgetData.completedPercentage * 2.51}, 251.2` }" />
+              </svg>
+              <div class="donut-text">
+                <span class="p-label">Completed</span>
+                <span class="p-value">{{ budgetData.completedPercentage }}%</span>
               </div>
             </div>
           </section>
 
+          <!-- SECTION: Distribution by activity -->
           <section class="distribution-section">
             <h2 class="section-subtitle">BUDGET DISTRIBUTION BY ACTIVITY</h2>
-            <div v-for="act in activities" :key="act.name" class="bar-item">
+            
+            <div v-for="act in budgetData.activities" :key="act.name" class="bar-item">
               <div class="bar-header">
                 <span>{{ act.name }}</span>
                 <span class="gold">{{ act.percentage }}%</span>
@@ -50,7 +72,7 @@ const activities = [
           </section>
         </div>
 
-        <!-- COLUMNA DERECHA -->
+        <!-- RIGHT PANEL -->
         <div class="right-panel">
           <!-- AI Insights -->
           <div class="ai-insight-box">
@@ -62,7 +84,7 @@ const activities = [
           <section class="monitoring-section">
             <h2 class="section-subtitle">Overrun Monitoring</h2>
             
-            <!-- Caja Roja de Alerta -->
+            <!-- Alert Box -->
             <div class="alert-box">
               <div class="alert-content">
                 <div class="alert-header">
@@ -70,17 +92,24 @@ const activities = [
                   <strong>Alert</strong>
                 </div>
                 <p>Potential overspeeding in development Budget</p>
-                <a href="#" @click.prevent="() => alert('Redirecting to report...')">Learn More</a>
+                <a href="#">Learn More</a>
               </div>
+              <button class="close-btn">×</button>
             </div>
 
-            <!-- Gráfica de Tendencia (SVG) -->
+            <!-- Line Chart Placeholder -->
             <div class="trend-chart">
                <p class="chart-label">Development Expected vs. Actual Spending</p>
                <svg viewBox="0 0 400 150" class="line-svg">
+                  <!-- Expected Line -->
                   <path d="M0,140 L100,120 L200,110 L300,90 L400,70" stroke="#333" fill="none" stroke-dasharray="4"/>
+                  <!-- Actual Line -->
                   <path d="M0,140 L80,130 L180,100 L280,60 L400,30" stroke="var(--Primary)" fill="none" stroke-width="3"/>
                </svg>
+               <div class="chart-legend">
+                 <span><i class="dot gray"></i> Expected</span>
+                 <span><i class="dot gold"></i> Actual Spending</span>
+               </div>
             </div>
           </section>
         </div>
@@ -90,38 +119,67 @@ const activities = [
 </template>
 
 <style scoped>
-/* ESTILOS BASE */
-.budget-layout { background-color: var(--Background); min-height: 100vh; color: #fff; }
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap');
+
+.budget-layout { background-color: var(--Background); min-height: 100vh; color: #fff; font-family: 'DM Sans', sans-serif; }
 .content { padding: 60px 80px; }
 .title { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 10px; }
 .breadcrumbs { font-size: 0.9rem; margin-bottom: 40px; }
 .gold { color: var(--Primary); }
 .gray { color: #666; }
+
 .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
 
-/* COLUMNA IZQUIERDA */
-.summary-card { background: var(--Background2); border: 1px solid var(--Border); padding: 40px; margin-bottom: 40px; }
+/* SUMMARY CARD */
+.summary-card { 
+  background: var(--Background2); 
+  border: 1px solid var(--Border); 
+  padding: 40px; 
+  display: flex; 
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
 .card-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 30px; }
 .amount-group { margin-bottom: 20px; }
 .label { font-size: 0.8rem; text-transform: uppercase; color: #666; display: block; }
 .total-value { font-size: 2.5rem; font-weight: bold; }
 .remaining-value { font-size: 2rem; font-weight: bold; }
-.section-subtitle { letter-spacing: 2px; font-size: 0.8rem; color: #fff; margin-bottom: 30px; font-weight: bold; text-transform: uppercase; }
+
+/* DONUT CHART */
+.chart-donut { width: 180px; position: relative; }
+.circle-bg { fill: none; stroke: #1a1a1a; stroke-width: 8; }
+.circle-progress { fill: none; stroke: var(--Primary); stroke-width: 8; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray 1s ease; }
+.donut-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.p-label { font-size: 10px; color: #666; display: block; }
+.p-value { font-size: 1.5rem; font-weight: bold; }
+
+/* BARS */
+.section-subtitle { letter-spacing: 2px; font-size: 0.8rem; color: #fff; margin-bottom: 30px; font-weight: bold; }
 .bar-item { margin-bottom: 30px; }
 .bar-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-.bar-container { background: #1a1a1a; height: 40px; border-radius: 20px; overflow: hidden; }
-.bar-fill { background: linear-gradient(90deg, var(--Primary2), var(--Primary)); height: 100%; border-radius: 20px; }
+.bar-container { background: #1a1a1a; height: 40px; border-radius: 20px; overflow: hidden; position: relative; }
+.bar-fill { 
+  background: linear-gradient(90deg, var(--Primary2), var(--Primary)); 
+  height: 100%; 
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(202, 168, 96, 0.3);
+}
 
-/* COLUMNA DERECHA */
+/* RIGHT PANEL */
 .ai-insight-box { border: 1px dashed var(--Border); padding: 25px; background: #080808; margin-bottom: 40px; }
 .ai-insight-box p { font-size: 0.9rem; color: #888; line-height: 1.6; margin-top: 10px; }
 
 .alert-box { background: var(--Error); padding: 20px; border-radius: 4px; display: flex; justify-content: space-between; margin-bottom: 30px; }
-.alert-header { display: flex; gap: 10px; margin-bottom: 5px; align-items: center; }
-.alert-box p { font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; }
-.alert-box a { font-size: 0.8rem; text-decoration: underline; color: #fff; font-weight: bold; }
+.alert-header { display: flex; gap: 10px; margin-bottom: 5px; }
+.alert-box p { font-size: 0.9rem; font-weight: bold; }
+.alert-box a { font-size: 0.8rem; text-decoration: underline; color: #fff; }
 
 .trend-chart { background: #080808; border: 1px solid var(--Border); padding: 20px; }
 .chart-label { font-size: 0.7rem; color: #666; margin-bottom: 15px; }
 .line-svg { width: 100%; height: auto; }
+.chart-legend { display: flex; gap: 20px; margin-top: 15px; font-size: 0.7rem; color: #666; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot.gold { background: var(--Primary); }
+.dot.gray { background: #333; }
 </style>
