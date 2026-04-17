@@ -60,7 +60,7 @@ const router = createRouter({
       component: InventoryPage,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
-  ],
+    {
       path: '/reports',
       name: 'reports',
       component: ReportsView,
@@ -83,8 +83,7 @@ const router = createRouter({
       name: 'budget',
       component: BudgetView
     }
-  ]
-})
+]})
 
 import { useAuthStore } from '../stores/auth'
 

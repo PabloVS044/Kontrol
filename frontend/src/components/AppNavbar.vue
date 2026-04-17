@@ -43,15 +43,6 @@
         </Teleport>
       </div>
 
-      <div class="appnav-links">
-        <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
-        <RouterLink class="appnav-link" to="/inventory">Inventory</RouterLink>
-        <RouterLink class="appnav-link" to="/projects">Projects</RouterLink>
-        <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
-      </div>
-
-      <div class="appnav-end">
-        <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
         <RouterLink class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
@@ -61,8 +52,8 @@
       </div>
 
       <div class="appnav-end">
-        <div class="appnav-avatar">{{ userInitial }}</div>
-        
+        <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
+
         <button class="hamburger" @click="toggleMenu" aria-label="Menu">
           <span :class="{'line': true, 'line-top': isMenuOpen}"></span>
           <span :class="{'line': true, 'line-middle': isMenuOpen}"></span>
@@ -77,7 +68,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { computed, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
 
@@ -426,18 +416,13 @@ const closeMenu = () => {
 
 /* Mobile */
 @media (max-width: 640px) {
-  .appnav-links    { display: none; }
-  .appnav-inner    { padding: 0 16px; }
-  .empresa-role    { display: none; }
-/* Mobile: mostrar menu hamburguesa y ocultar/mostrar links según estado */
-@media (max-width: 640px) {
-  .hamburger {
-    display: block;
-  }
+  .hamburger { display: block; }
 
   .appnav-inner { padding: 0 16px; gap: 0; }
 
-  .appnav-links { 
+  .empresa-role { display: none; }
+
+  .appnav-links {
     position: fixed;
     top: 56px;
     left: 0;
