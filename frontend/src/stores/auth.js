@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', {
     user:          JSON.parse(localStorage.getItem('user') || 'null'),
     empresas:      JSON.parse(localStorage.getItem('empresas') || '[]'),
     empresaActual: JSON.parse(localStorage.getItem('empresaActual') || 'null'),
+    accessContext: JSON.parse(localStorage.getItem('accessContext') || 'null'),
   }),
 
   getters: {
@@ -14,6 +15,11 @@ export const useAuthStore = defineStore('auth', {
     nombreRol:       (state) => state.user?.nombre_rol  ?? null,
     idEmpresaActual: (state) => state.empresaActual?.id_empresa ?? null,
     hasEmpresa:      (state) => state.empresas.length > 0,
+    canManageUsers:  (state) => state.accessContext?.capabilities?.can_manage_users === true,
+    canViewProjects: (state) => state.accessContext?.capabilities?.can_view_projects === true,
+    canCreateProjects: (state) => state.accessContext?.capabilities?.can_create_projects === true,
+    canViewInventory: (state) => state.accessContext?.capabilities?.can_view_inventory === true,
+    canManageInventory: (state) => state.accessContext?.capabilities?.can_manage_inventory === true,
     // Legacy alias kept for any remaining references
     idEmpresa:       (state) => state.empresaActual?.id_empresa ?? null,
   },
@@ -29,9 +35,36 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('user', JSON.stringify(user))
     },
 
+    setEmpresas(empresas) {
+      this.empresas = empresas
+      localStorage.setItem('empresas', JSON.stringify(empresas))
+    },
+
+    setAccessContext(context) {
+      this.accessContext = context
+      if (context) {
+        localStorage.setItem('accessContext', JSON.stringify(context))
+      } else {
+        localStorage.removeItem('accessContext')
+      }
+    },
+
     setEmpresaActual(empresa) {
       this.empresaActual = empresa
-      localStorage.setItem('empresaActual', JSON.stringify(empresa))
+      this.setAccessContext(null)
+      if (empresa) {
+        localStorage.setItem('empresaActual', JSON.stringify(empresa))
+      } else {
+        localStorage.removeItem('empresaActual')
+      }
+    },
+
+    selectEmpresaById(idEmpresa) {
+      const empresa = this.empresas.find(({ id_empresa }) => id_empresa === Number(idEmpresa)) || null
+      if (empresa) {
+        this.setEmpresaActual(empresa)
+      }
+      return empresa
     },
 
     /**
@@ -47,8 +80,7 @@ export const useAuthStore = defineStore('auth', {
         })
         if (!res.ok) return
         const { data } = await res.json()
-        this.empresas = data
-        localStorage.setItem('empresas', JSON.stringify(data))
+        this.setEmpresas(data)
 
         if (data.length > 0) {
           const stillExists = this.empresaActual &&
@@ -59,8 +91,36 @@ export const useAuthStore = defineStore('auth', {
         } else {
           this.setEmpresaActual(null)
         }
+
+        await this.loadAccessContext()
       } catch {
         // silently ignore — caller can check hasEmpresa / empresaActual
+      }
+    },
+
+    async loadAccessContext() {
+      if (!this.token || !this.empresaActual?.id_empresa) {
+        this.setAccessContext(null)
+        return
+      }
+
+      try {
+        const res = await fetch('/api/empresas/contexto-acceso', {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            'X-Empresa-ID': this.empresaActual.id_empresa,
+          },
+        })
+
+        if (!res.ok) {
+          this.setAccessContext(null)
+          return
+        }
+
+        const { data } = await res.json()
+        this.setAccessContext(data)
+      } catch {
+        this.setAccessContext(null)
       }
     },
 
@@ -83,10 +143,12 @@ export const useAuthStore = defineStore('auth', {
       this.user          = null
       this.empresas      = []
       this.empresaActual = null
+      this.accessContext = null
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('empresas')
       localStorage.removeItem('empresaActual')
+      localStorage.removeItem('accessContext')
     },
   },
 })

@@ -43,6 +43,11 @@
         </Teleport>
       </div>
 
+      <div class="appnav-links">
+        <RouterLink class="appnav-link" to="/dashboard">Dashboard</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory">Inventory</RouterLink>
+        <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects">Projects</RouterLink>
+        <RouterLink class="appnav-link" to="/finance">Finance</RouterLink>
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
         <RouterLink class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
@@ -67,12 +72,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
 const router    = useRouter()
+const route     = useRoute()
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
@@ -101,9 +107,19 @@ function closeDropdown() {
   dropdownOpen.value = false
 }
 
-function selectEmpresa(empresa) {
+async function selectEmpresa(empresa) {
   authStore.setEmpresaActual(empresa)
+  await authStore.loadAccessContext()
   closeDropdown()
+
+  if (route.name === 'inventory' && !authStore.canViewInventory) {
+    router.push({ name: 'dashboard' })
+    return
+  }
+
+  if (route.name === 'projects' && !authStore.canViewProjects) {
+    router.push({ name: 'dashboard' })
+  }
 }
 
 function logout() {

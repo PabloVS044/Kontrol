@@ -96,14 +96,14 @@
           <div class="inv-header-actions">
             <button
               class="btn-primary"
-              :class="{ 'btn-disabled': !selectedProject }"
-              :title="selectedProject ? '' : 'Select a project first'"
-              @click="selectedProject ? openNewProduct() : null"
+              :class="{ 'btn-disabled': !canCreateProduct }"
+              :title="canCreateProduct ? '' : selectedProject ? 'You do not have write access in this project' : 'Select a project first'"
+              @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <span>{{ selectedProject ? 'New product' : 'Select project first' }}</span>
+              <span>{{ canCreateProduct ? 'New product' : selectedProject ? 'No write access' : 'Select project first' }}</span>
             </button>
             <button class="icon-btn" title="Configuración">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
@@ -334,7 +334,7 @@
         <!-- Acciones rápidas -->
         <div>
           <p class="ctx-label">Quick Actions</p>
-          <Button label="+ Add product" @click="openNewProduct" />
+          <Button v-if="canCreateProduct" label="+ Add product" @click="openNewProduct" />
           <Button label="↓ Export inventory" @click="exportInventory" />
         </div>
 
@@ -351,7 +351,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
@@ -372,6 +372,11 @@ const activeCategory = ref('All')
 const projects        = ref([])
 const projectsLoading = ref(false)
 const selectedProject = ref(null)
+const canCreateProduct = computed(() => {
+  if (!selectedProject.value) return false
+  if (authStore.canManageInventory) return true
+  return (selectedProject.value.mis_permisos || []).includes('gestionar_inventario')
+})
 
 /* ── helpers API ── */
 function authHeader(includeProyecto = false) {
@@ -393,7 +398,19 @@ async function loadProjects() {
   projectsLoading.value = true
   try {
     const res = await apiFetch('/api/projects?limit=100')
-    projects.value = res.data ?? []
+    const allProjects = res.data ?? []
+    const inventoryProjectIds = authStore.accessContext?.inventory_project_ids ?? []
+
+    projects.value = authStore.canManageInventory
+      ? allProjects
+      : allProjects.filter((project) => inventoryProjectIds.includes(project.id_proyecto))
+
+    if (
+      selectedProject.value &&
+      !projects.value.some(({ id_proyecto }) => id_proyecto === selectedProject.value.id_proyecto)
+    ) {
+      selectedProject.value = null
+    }
   } catch {
     // non-fatal: project filter just stays empty
   } finally {
@@ -433,6 +450,16 @@ function selectProject(p) {
 }
 
 onMounted(async () => {
+  const accessEmpresaId = authStore.accessContext?.empresa?.id_empresa
+  if (accessEmpresaId !== authStore.idEmpresaActual) {
+    await authStore.loadAccessContext()
+  }
+  await Promise.all([loadData(), loadProjects()])
+})
+
+watch(() => authStore.idEmpresaActual, async () => {
+  selectedProject.value = null
+  await authStore.loadAccessContext()
   await Promise.all([loadData(), loadProjects()])
 })
 
@@ -507,6 +534,7 @@ const modalError   = ref(null)
 const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 })
 
 function openNewProduct() {
+  if (!canCreateProduct.value) return
   form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 }
   modalError.value = null
   showModal.value  = true
