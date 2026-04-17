@@ -6,6 +6,7 @@ import proveedorRoutes from './routes/proveedorRoutes.js'
 import movimientoRoutes from './routes/movimientoRoutes.js'
 import projectRoutes from './routes/projectRoutes.js'
 import empresaRoutes from './routes/empresaRoutes.js'
+import budgetRoutes from './routes/budgetRoutes.js'
 
 const router = Router()
 
@@ -20,5 +21,6 @@ router.use('/proveedores', proveedorRoutes)
 router.use('/movimientos', movimientoRoutes)
 router.use('/projects', projectRoutes)
 router.use('/empresas', empresaRoutes)
+router.use('/budgets', budgetRoutes)
 
 export default router
