@@ -3,7 +3,6 @@ import requireAuth from '../middleware/requireAuth.js'
 import validate from '../middleware/validate.js'
 import {
     projectTareaParamsSchema,
-    tareaIdParamSchema,
     createTareaSchema,
     updateTareaSchema,
 } from '../schemas/tareaSchemas.js'
