@@ -1,10 +1,14 @@
 // ── Login ─────────────────────────────────────────────────────────────────────
 
-export async function loginUser(email, password) {
+export async function loginUser(email, password, inviteToken) {
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({
+      email,
+      password,
+      inviteToken: inviteToken || undefined,
+    }),
   })
 
   const data = await response.json()
@@ -14,7 +18,9 @@ export async function loginUser(email, password) {
 
 // ── Register ──────────────────────────────────────────────────────────────────
 
-export async function registerUser(firstName, lastName, email, password) {
+export async function registerUser(firstName, lastName, email, password, options = {}) {
+  const { inviteToken } = options
+
   const response = await fetch('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -23,7 +29,8 @@ export async function registerUser(firstName, lastName, email, password) {
       apellido: lastName,
       email,
       password,
-      role: 'admin', // self-registering users are owners of their own workspace
+      role: inviteToken ? 'usuario' : 'admin',
+      inviteToken: inviteToken || undefined,
     }),
   })
 
@@ -38,6 +45,10 @@ export async function registerUser(firstName, lastName, email, password) {
  * Initiates the Google OAuth flow by redirecting the browser to the backend.
  * The backend handles the full OAuth dance and redirects back to /auth/callback.
  */
-export function loginWithGoogle() {
-  window.location.href = '/api/auth/google'
+export function loginWithGoogle(inviteToken) {
+  const params = new URLSearchParams()
+  if (inviteToken) params.set('invite', inviteToken)
+
+  const suffix = params.toString() ? `?${params}` : ''
+  window.location.href = `/api/auth/google${suffix}`
 }

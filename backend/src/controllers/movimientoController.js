@@ -1,4 +1,10 @@
 import pool from '../db/pool.js'
+import {
+  ensureProjectAccess,
+  getAccessibleProjectIds,
+  hasEmpresaManagementAccess,
+  INVENTORY_VIEW_PERMISSION_NAMES,
+} from '../services/projectAccessService.js'
 
 const MOVIMIENTO_SELECT = `
   m.id_movimiento,
@@ -19,6 +25,20 @@ const MOVIMIENTO_SELECT = `
   pv.nombre AS proveedor_nombre
 `
 
+const getAccessibleInventoryProjectIds = async (req) => {
+  if (hasEmpresaManagementAccess(req.empresa.rol_empresa)) {
+    return null
+  }
+
+  return getAccessibleProjectIds({
+    client: pool,
+    id_empresa: req.empresa.id_empresa,
+    id_usuario: req.user.id_usuario,
+    rol_empresa: req.empresa.rol_empresa,
+    requiredPermissions: INVENTORY_VIEW_PERMISSION_NAMES,
+  })
+}
+
 /**
  * GET /api/movimientos
  * Filters: ?id_producto, ?id_proyecto, ?tipo, ?desde, ?hasta
@@ -27,10 +47,24 @@ const MOVIMIENTO_SELECT = `
 export const getMovimientos = async (req, res) => {
   const { id_producto, id_proyecto, tipo, desde, hasta } = req.query
   const { id_empresa } = req.empresa
+  const accessibleProjectIds = await getAccessibleInventoryProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: [] })
+  }
+
+  if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
+    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+  }
 
   // Scope to empresa via proyecto join
   const filters = ['proj.id_empresa = $1']
   const values = [id_empresa]
+
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    filters.push(`m.id_proyecto = ANY($${values.length}::int[])`)
+  }
 
   if (id_producto) {
     values.push(id_producto)
@@ -75,6 +109,32 @@ export const getMovimientos = async (req, res) => {
 export const getMovimientoById = async (req, res) => {
   const { id } = req.params
   const { id_empresa } = req.empresa
+
+  const scope = await pool.query(
+    `SELECT m.id_movimiento, m.id_proyecto
+     FROM public.movimiento_inventario m
+     JOIN public.proyecto pr ON pr.id_proyecto = m.id_proyecto
+     WHERE m.id_movimiento = $1 AND pr.id_empresa = $2
+     LIMIT 1`,
+    [id, id_empresa]
+  )
+
+  if (!scope.rows.length) {
+    return res.status(404).json({ success: false, message: 'Movimiento no encontrado.' })
+  }
+
+  const access = await ensureProjectAccess({
+    client: pool,
+    id_empresa,
+    id_usuario: req.user.id_usuario,
+    rol_empresa: req.empresa.rol_empresa,
+    id_proyecto: scope.rows[0].id_proyecto,
+    requiredPermissions: INVENTORY_VIEW_PERMISSION_NAMES,
+  })
+
+  if (!access.allowed) {
+    return res.status(403).json({ success: false, message: 'No tienes acceso a este movimiento.' })
+  }
 
   const result = await pool.query(
     `SELECT ${MOVIMIENTO_SELECT}

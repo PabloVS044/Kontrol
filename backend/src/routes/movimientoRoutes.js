@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
 import requireEmpresa from '../middleware/requireEmpresa.js'
-import requireRole from '../middleware/requireRole.js'
+import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
 import {
   getMovimientosQuerySchema,
@@ -21,21 +21,19 @@ router.use(requireEmpresa)
 
 router.get(
   '/',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(getMovimientosQuerySchema, 'query'),
   getMovimientos
 )
 
 router.get(
   '/:id',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(movimientoIdParamSchema, 'params'),
   getMovimientoById
 )
 
 router.post(
   '/',
-  requireRole('admin', 'manager'),
+  requireProjectPermission('gestionar_inventario'),
   validate(createMovimientoSchema),
   createMovimiento
 )
