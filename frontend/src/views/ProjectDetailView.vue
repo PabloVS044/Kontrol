@@ -230,7 +230,7 @@
               <div class="task-card-left">
                 <span class="priority-bar" :style="{ background: priorityColor(task.prioridad) }"></span>
                 <div class="task-info">
-                  <span class="task-name">{{ task.nombre }}</span>
+                  <span class="task-name task-name-link" @click="openTaskDetail(task)">{{ task.nombre }}</span>
                   <span v-if="task.descripcion" class="task-desc">{{ task.descripcion }}</span>
                   <div class="task-badges">
                     <span class="status-badge small" :style="statusStyle(task.estado)">
@@ -290,6 +290,45 @@
 
     <!-- ── Task Modal ── -->
     <Teleport to="body">
+      <div v-if="showDetailModal" class="modal-overlay" @click.self="closeDetailModal">
+        <div class="modal">
+          <div class="modal-header" style="display: flex; gap: 12px; align-items: center;">
+            <span class="priority-bar" :style="{ background: priorityColor(detailTask?.prioridad), minHeight: '24px' }"></span>
+            <span class="modal-title" style="flex: 1;">{{ detailTask?.nombre ?? '…' }}</span>
+            <button class="modal-close" @click="closeDetailModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </div>
+
+
+          <div v-if="detailLoading" style="padding: 24px; text-align: center;">Loading…</div>
+
+          <div v-else-if="detailTask" class="modal-form">
+            
+            <div class="form-field">
+              <label>Description</label>
+              <p>{{ detailTask.descripcion || '—' }}</p>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Priority</label>
+                <p>{{ detailTask.prioridad }}</p>
+              </div>
+            <div class="form-field" style="align-items: flex-start;">
+              <label>Status</label>
+              <span class="status-badge small" :style="statusStyle(detailTask.estado)" style="width: fit-content;">{{ statusLabel(detailTask.estado) }}</span>
+            </div>
+            </div>
+            <div class="form-field">
+              <label>Due date</label>
+              <p>{{ detailTask.fecha_vencimiento?.substring(0, 10) || '—' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div v-if="showTaskModal" class="modal-overlay" @click.self="closeTaskModal">
         <div class="modal">
           <div class="modal-header">
@@ -391,6 +430,11 @@ const editingTask    = ref(null)
 const taskSubmitting = ref(false)
 const taskError      = ref(null)
 const closingTaskId  = ref(null)
+
+const showDetailModal = ref(false)
+const detailTask      = ref(null)
+const detailLoading   = ref(false)
+
 
 const taskForm = ref({
   nombre: '', descripcion: '', prioridad: 'MEDIA', estado: 'PENDIENTE', fecha_vencimiento: '', id_asignado: '',
@@ -611,6 +655,22 @@ function closeTaskModal() {
   showTaskModal.value = false
 }
 
+async function openTaskDetail(task) {
+  showDetailModal.value = true
+  detailLoading.value   = true
+  detailTask.value      = null
+  const res  = await fetch(`/api/projects/${projectId.value}/tareas/${task.id_tarea}`, { headers: authHeader() })
+  const data = await res.json()
+  detailTask.value    = data.data
+  detailLoading.value = false
+}
+
+function closeDetailModal() {
+  showDetailModal.value = false
+  detailTask.value      = null
+}
+
+
 async function submitTask() {
   taskError.value   = null
   taskSubmitting.value = true
@@ -666,6 +726,14 @@ watch(() => route.params.id, loadAll)
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.task-name-link {
+  cursor: pointer;
+}
+.task-name-link:hover {
+  text-decoration: underline;
+}
+
 
 .pd-root {
   background: transparent;
