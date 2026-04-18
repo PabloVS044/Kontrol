@@ -334,6 +334,17 @@
             </div>
 
             <div class="form-field">
+              <label>Assign to</label>
+              <select v-model="taskForm.id_asignado">
+                <option value="">— Unassigned —</option>
+                <option v-for="m in projectMembers" :key="m.id_usuario" :value="m.id_usuario">
+                  {{ m.nombre }} {{ m.apellido }}
+                </option>
+              </select>
+            </div>
+
+
+            <div class="form-field">
               <label>Due date</label>
               <input v-model="taskForm.fecha_vencimiento" type="date" />
             </div>
@@ -382,8 +393,11 @@ const taskError      = ref(null)
 const closingTaskId  = ref(null)
 
 const taskForm = ref({
-  nombre: '', descripcion: '', prioridad: 'MEDIA', estado: 'PENDIENTE', fecha_vencimiento: '',
+  nombre: '', descripcion: '', prioridad: 'MEDIA', estado: 'PENDIENTE', fecha_vencimiento: '', id_asignado: '',
 })
+
+const projectMembers = ref([])
+
 
 const tabs = [
   { id: 'overview', label: 'Overview' },
@@ -550,12 +564,20 @@ async function loadTasks() {
   }
 }
 
+async function loadMembers() {
+  const res = await fetch(`/api/projects/${projectId.value}/members`, { headers: authHeader() })
+  if (!res.ok) return
+  const data = await res.json()
+  projectMembers.value = data.data ?? []
+}
+
+
 async function loadAll() {
   loading.value = true
   error.value   = null
   try {
     await loadProject()
-    await Promise.all([loadMetrics(), loadTasks()])
+    await Promise.all([loadMetrics(), loadTasks(), loadMembers()])
   } catch (err) {
     error.value = err.message
   } finally {
@@ -599,6 +621,7 @@ async function submitTask() {
       estado:            taskForm.value.estado,
       descripcion:       taskForm.value.descripcion || undefined,
       fecha_vencimiento: taskForm.value.fecha_vencimiento || undefined,
+      id_asignado:       taskForm.value.id_asignado || undefined,
     }
     const url    = editingTask.value
       ? `/api/projects/${projectId.value}/tareas/${editingTask.value.id_tarea}`
