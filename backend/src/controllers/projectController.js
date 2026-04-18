@@ -200,3 +200,19 @@ export const deleteProject = async (req, res) => {
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
   return res.json({ success: true, message: 'Proyecto eliminado correctamente.' })
 }
+
+export const getProjectMembers = async (req, res) => {
+  const { id } = req.params
+  const { id_empresa } = req.empresa
+
+  const result = await pool.query(
+      `SELECT u.id_usuario, u.nombre, u.apellido
+      FROM public.proyecto_usuario pu
+      JOIN public.usuario u ON u.id_usuario = pu.id_usuario
+      WHERE pu.id_proyecto = $1
+      ORDER BY u.nombre`,
+    [id]
+  )
+
+  return res.json({ success: true, data: result.rows })
+}
