@@ -54,7 +54,7 @@
                 @blur="validatePassword"
               />
               <component
-                :is="showPass ? EyeIcon : LockIcon"
+                :is="showPass ? EyeIcon : EyeOffIcon"
                 class="login-input-icon login-input-icon--btn"
                 :size="15"
                 @click="showPass = !showPass"
@@ -113,7 +113,7 @@
 <script setup>
 import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
+import { MailIcon,  EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
 import { loginUser, loginWithGoogle } from '@/services/auth'
