@@ -325,6 +325,13 @@
               <label>Due date</label>
               <p>{{ detailTask.fecha_vencimiento?.substring(0, 10) || '—' }}</p>
             </div>
+            <div class="form-field">
+              <label>Assigned to</label>
+              <p>
+                {{ detailTask.asignado_nombre ? `${detailTask.asignado_nombre} ${detailTask.asignado_apellido}` : '—' }}
+              </p>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -646,6 +653,8 @@ function openEditTask(task) {
     prioridad:         task.prioridad,
     estado:            task.estado,
     fecha_vencimiento: task.fecha_vencimiento?.substring(0, 10) || '',
+    id_asignado:       task.asignado_id || '',
+
   }
   taskError.value   = null
   showTaskModal.value = true
@@ -681,7 +690,7 @@ async function submitTask() {
       estado:            taskForm.value.estado,
       descripcion:       taskForm.value.descripcion || undefined,
       fecha_vencimiento: taskForm.value.fecha_vencimiento || undefined,
-      id_asignado:       taskForm.value.id_asignado || undefined,
+      id_asignado: taskForm.value.id_asignado ? Number(taskForm.value.id_asignado) : (editingTask.value ? null : undefined),
     }
     const url    = editingTask.value
       ? `/api/projects/${projectId.value}/tareas/${editingTask.value.id_tarea}`
