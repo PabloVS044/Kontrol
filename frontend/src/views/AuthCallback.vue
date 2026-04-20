@@ -15,17 +15,17 @@ const router    = useRouter()
 const authStore = useAuthStore()
 
 const ERROR_MESSAGES = {
-  google_cancelado:    'Cancelaste el inicio de sesión con Google.',
-  cuenta_desactivada:  'Tu cuenta está desactivada. Contacta al administrador.',
-  rol_no_encontrado:   'No se pudo asignar un rol. Contacta al administrador.',
-  google_error:        'Ocurrió un error con Google. Intenta de nuevo.',
+  google_cancelado:    'You cancelled the Google sign-in.',
+  cuenta_desactivada:  'Your account is disabled. Contact the administrator.',
+  rol_no_encontrado:   'Could not assign a role. Contact the administrator.',
+  google_error:        'An error occurred with Google. Please try again.',
 }
 
 onMounted(async () => {
   const { token, error, joinedEmpresaId, inviteToken, inviteError } = route.query
 
   if (error) {
-    const msg = ERROR_MESSAGES[error] || 'Error al iniciar sesión con Google.'
+    const msg = ERROR_MESSAGES[error] || 'Error signing in with Google.'
     router.replace({ name: 'login', query: { error: msg } })
     return
   }

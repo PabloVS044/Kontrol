@@ -197,7 +197,7 @@
               <div class="card-open">
                 <Anchor
                   label="→ Open project"
-                  link="#"
+                  :link="`/projects/${project.id_proyecto}`"
                   textColor="#555"
                   backColor="transparent"
                   hoverColor="rgba(201,169,98,0.06)"
