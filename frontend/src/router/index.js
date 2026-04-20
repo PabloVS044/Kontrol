@@ -9,6 +9,7 @@ import OnboardingView from '../views/OnboardingView.vue'
 import InviteView from '../views/InviteView.vue'
 import AuthCallback from '../views/AuthCallback.vue'
 import BudgetView from '../views/BudgetView.vue'
+import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 
@@ -58,6 +59,12 @@ const router = createRouter({
       path: '/projects',
       name: 'projects',
       component: ProjectsView,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
+    },
+    {
+      path: '/projects/:id',
+      name: 'project-detail',
+      component: ProjectDetailView,
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {

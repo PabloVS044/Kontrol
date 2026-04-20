@@ -14,7 +14,7 @@
           <div v-if="errorMessage" class="register-banner register-banner--error">{{ errorMessage }}</div>
           <div v-if="successMessage" class="register-banner register-banner--success">{{ successMessage }}</div>
           <div v-if="inviteToken" class="register-banner register-banner--success">
-            Esta cuenta quedará unida automáticamente a la empresa invitada.
+            This account will automatically be linked to the invited company.
           </div>
 
           <!-- First Name + Last Name -->
@@ -75,7 +75,7 @@
                 @blur="validate('password')"
               />
               <component
-                :is="showPass ? EyeIcon : LockIcon"
+                :is="showPass ? EyeIcon : EyeOffIcon"
                 class="register-input-icon register-input-icon--btn"
                 :size="15"
                 @click="showPass = !showPass"
@@ -131,7 +131,7 @@
 <script setup>
 import { computed, ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { MailIcon, LockIcon, EyeIcon } from 'lucide-vue-next'
+import { MailIcon,  EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import { useAuthStore } from '@/stores/auth'
 import { registerUser, loginWithGoogle } from '@/services/auth'
