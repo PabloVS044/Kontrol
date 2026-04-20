@@ -25,7 +25,7 @@ export const updateTareaSchema = z
     estado:            z.enum(VALID_ESTADOS, { message: `estado debe ser uno de: ${VALID_ESTADOS.join(', ')}.` }).optional(),
     prioridad:         z.enum(VALID_PRIORIDADES, { message: `prioridad debe ser uno de: ${VALID_PRIORIDADES.join(', ')}.` }).optional(),
     fecha_vencimiento: z.string().date('fecha_vencimiento debe ser una fecha válida (YYYY-MM-DD).').nullable().optional(),
-    id_asignado:       z.number().int().positive().optional(),
+    id_asignado:       z.number().int().positive().nullable().optional(),
     })
     .refine(
     (data) => Object.keys(data).length > 0,

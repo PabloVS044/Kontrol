@@ -15,6 +15,7 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  getProjectMembers
 } from '../controllers/projectController.js'
 import { getProyectsMetrics } from '../controllers/metricasProyectoController.js'
 
@@ -26,5 +27,7 @@ router.post('/', requireAuth, requireEmpresa, requireEmpresaRole('owner', 'admin
 router.put('/:id', requireAuth, requireEmpresa, requireEmpresaRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), validate(updateProjectSchema), updateProject)
 router.delete('/:id', requireAuth, requireEmpresa, requireEmpresaRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), deleteProject)
 router.get('/:id/metrics', requireAuth, requireEmpresa, getProyectsMetrics)
+router.get('/:id/members', requireAuth, requireEmpresa, validate(projectIdParamSchema, 'params'), getProjectMembers)
+
 
 export default router

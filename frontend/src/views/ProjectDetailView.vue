@@ -230,7 +230,7 @@
               <div class="task-card-left">
                 <span class="priority-bar" :style="{ background: priorityColor(task.prioridad) }"></span>
                 <div class="task-info">
-                  <span class="task-name">{{ task.nombre }}</span>
+                  <span class="task-name task-name-link" @click="openTaskDetail(task)">{{ task.nombre }}</span>
                   <span v-if="task.descripcion" class="task-desc">{{ task.descripcion }}</span>
                   <div class="task-badges">
                     <span class="status-badge small" :style="statusStyle(task.estado)">
@@ -266,30 +266,211 @@
         </section>
 
         <!-- ── TEAM ── -->
+        <!-- TODO: reemplazar MOCK_TEAMS con endpoint real cuando exista tabla equipos en BD -->
         <section v-if="activeTab === 'team'" class="tab-panel">
-          <p class="team-note">
-            Role breakdown for this project. To manage individual members and permissions, use the
-            <RouterLink to="/dashboard" class="team-note-link">Dashboard</RouterLink>.
-          </p>
-
-          <div v-if="metrics?.equipo?.length" class="team-roles-grid">
-            <div v-for="role in metrics.equipo" :key="role.rol" class="team-role-card">
-              <div class="role-count">{{ role.total }}</div>
-              <div class="role-name">{{ role.rol }}</div>
-              <div class="role-sub">{{ role.total === 1 ? 'member' : 'members' }}</div>
+          <div class="tasks-toolbar">
+            <div class="tasks-filters">
+              <input v-model="teamFilterNombre" type="text" placeholder="Search by name…" class="filter-input" />
+              <select v-model="teamFilterArea" class="filter-select">
+                <option value="">All areas</option>
+                <option v-for="area in MOCK_AREAS" :key="area" :value="area">{{ area }}</option>
+              </select>
+              <span class="tasks-count">{{ filteredTeams.length }} teams</span>
             </div>
+            <button class="btn-primary" @click="openCreateTeam">
+              <svg class="icon16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+              </svg>
+              New team
+            </button>
           </div>
 
-          <div v-else class="empty-state">
-            <p>No team roles assigned to this project yet.</p>
+          <div v-if="filteredTeams.length === 0" class="empty-state">
+            <p>No teams match your filters.</p>
+          </div>
+
+          <div v-else class="tasks-list">
+            <div class="list-header">
+              <span>Team</span><span>Area</span><span>Members</span><span>Tasks</span>
+            </div>
+            <div v-for="team in filteredTeams" :key="team.id" class="task-card list-row">
+              <div class="list-name-col">
+                <span class="priority-bar" :style="{ background: areaColor(team.area) }"></span>
+                <span class="task-name task-name-link" @click="openTeamDetail(team)">{{ team.nombre }}</span>
+              </div>
+              <span><span class="area-badge">{{ team.area }}</span></span>
+              <span class="list-cell-num">{{ team.miembros.length }}</span>
+              <span class="list-cell-num">{{ team.tareasAsignadas.length }}</span>
+            </div>
+
           </div>
         </section>
+
 
       </template>
     </div>
 
     <!-- ── Task Modal ── -->
     <Teleport to="body">
+      <div v-if="showDetailModal" class="modal-overlay" @click.self="closeDetailModal">
+        <div class="modal">
+          <div class="modal-header" style="display: flex; gap: 12px; align-items: center;">
+            <span class="priority-bar" :style="{ background: priorityColor(detailTask?.prioridad), minHeight: '24px' }"></span>
+            <span class="modal-title" style="flex: 1;">{{ detailTask?.nombre ?? '…' }}</span>
+            <button class="modal-close" @click="closeDetailModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </div>
+
+
+          <div v-if="detailLoading" style="padding: 24px; text-align: center;">Loading…</div>
+
+          <div v-else-if="detailTask" class="modal-form">
+            
+            <div class="form-field">
+              <label>Description</label>
+              <p>{{ detailTask.descripcion || '—' }}</p>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Priority</label>
+                <p>{{ detailTask.prioridad }}</p>
+              </div>
+            <div class="form-field" style="align-items: flex-start;">
+              <label>Status</label>
+              <span class="status-badge small" :style="statusStyle(detailTask.estado)" style="width: fit-content;">{{ statusLabel(detailTask.estado) }}</span>
+            </div>
+            </div>
+            <div class="form-field">
+              <label>Due date</label>
+              <p>{{ detailTask.fecha_vencimiento?.substring(0, 10) || '—' }}</p>
+            </div>
+            <div class="form-field">
+              <label>Assigned to</label>
+              <p>
+                {{ detailTask.asignado_nombre ? `${detailTask.asignado_nombre} ${detailTask.asignado_apellido}` : '—' }}
+              </p>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <div v-if="showTeamDetailModal" class="modal-overlay" @click.self="closeTeamDetailModal">
+        <div class="modal" style="max-width: 560px;">
+          <div class="modal-header" style="display: flex; gap: 12px; align-items: center;">
+            <span class="priority-bar" :style="{ background: areaColor(detailTeam?.area), minHeight: '24px' }"></span>
+            <span class="modal-title" style="flex: 1;">{{ detailTeam?.nombre }}</span>
+            <button class="task-action-btn" @click="openEditTeam(detailTeam); closeTeamDetailModal()">Edit</button>
+            <button class="task-action-btn task-action-btn--close" @click="deleteTeam(detailTeam)">Delete</button>
+            <button class="modal-close" @click="closeTeamDetailModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-form">
+            <div class="form-row">
+              <div class="form-field">
+                <label>Area</label>
+                <span class="area-badge" style="width: fit-content;">{{ detailTeam?.area }}</span>
+              </div>
+              <div class="form-field">
+                <label>Members</label>
+                <p>{{ detailTeam?.miembros.length }}</p>
+              </div>
+              <div class="form-field">
+                <label>Tasks assigned</label>
+                <p>{{ detailTeam?.tareasAsignadas.length }}</p>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Members</label>
+              <div v-if="detailTeam?.miembros.length === 0" style="color: #555; font-size: 13px;">No members assigned.</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                <span
+                  v-for="m in detailTeam?.miembros"
+                  :key="m.id_usuario"
+                  class="area-badge"
+                >{{ m.nombre }} {{ m.apellido }}</span>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Tasks</label>
+              <div class="tasks-list" style="margin-top: 8px; gap: 6px;">
+                <div
+                  v-for="t in detailTeam?.tareasAsignadas"
+                  :key="t.id"
+                  class="task-card"
+                  :class="{ 'task-card--done': t.estado === 'COMPLETADA' || t.estado === 'CANCELADA' }"
+                >
+                  <div class="task-card-left">
+                    <span class="priority-bar" :style="{ background: priorityColor(t.prioridad) }"></span>
+                    <div class="task-info">
+                      <span class="task-name">{{ t.nombre }}</span>
+                      <div class="task-badges">
+                        <span class="status-badge small" :style="statusStyle(t.estado)">{{ statusLabel(t.estado) }}</span>
+                        <span class="priority-badge" :style="{ color: priorityColor(t.prioridad) }">{{ t.prioridad }}</span>
+                        <span v-if="t.fecha_vencimiento" class="due-badge">Due {{ formatDate(t.fecha_vencimiento) }}</span>
+                        <span v-if="t.asignado" class="due-badge">{{ t.asignado }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Team Modal ── -->
+      <div v-if="showTeamModal" class="modal-overlay" @click.self="closeTeamModal">
+        <div class="modal" style="max-width: 480px;">
+          <div class="modal-header">
+            <span class="modal-title">{{ editingTeam ? 'Edit team' : 'New team' }}</span>
+            <button class="modal-close" @click="closeTeamModal">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </div>
+          <form class="modal-form" @submit.prevent="submitTeam">
+            <div class="form-field">
+              <label>Name <span class="req">*</span></label>
+              <input v-model="teamForm.nombre" type="text" placeholder="Team name" required />
+            </div>
+            <div class="form-field">
+              <label>Area <span class="req">*</span></label>
+              <select v-model="teamForm.area">
+                <option value="">— Select area —</option>
+                <option v-for="area in MOCK_AREAS" :key="area" :value="area">{{ area }}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Members</label>
+              <div style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto;">
+                <label
+                  v-for="m in projectMembers"
+                  :key="m.id_usuario"
+                  style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"
+                >
+                  <input type="checkbox" :value="m.id_usuario" v-model="teamForm.miembros" />
+                  {{ m.nombre }} {{ m.apellido }}
+                </label>
+                <span v-if="projectMembers.length === 0" style="color: #555; font-size: 13px;">No members in project.</span>
+              </div>
+            </div>
+            <p v-if="teamError" class="modal-error">{{ teamError }}</p>
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" @click="closeTeamModal">Cancel</button>
+              <button type="submit" class="btn-primary" :disabled="teamSubmitting">{{ editingTeam ? 'Save' : 'Create' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <div v-if="showTaskModal" class="modal-overlay" @click.self="closeTaskModal">
         <div class="modal">
           <div class="modal-header">
@@ -332,6 +513,17 @@
                 </select>
               </div>
             </div>
+
+            <div class="form-field">
+              <label>Assign to</label>
+              <select v-model="taskForm.id_asignado">
+                <option value="">— Unassigned —</option>
+                <option v-for="m in projectMembers" :key="m.id_usuario" :value="m.id_usuario">
+                  {{ m.nombre }} {{ m.apellido }}
+                </option>
+              </select>
+            </div>
+
 
             <div class="form-field">
               <label>Due date</label>
@@ -381,10 +573,124 @@ const taskSubmitting = ref(false)
 const taskError      = ref(null)
 const closingTaskId  = ref(null)
 
+const showDetailModal = ref(false)
+const detailTask      = ref(null)
+const detailLoading   = ref(false)
+
+// Teams detail, mock en lo que crean tabla equipo ───────────────────────────────────────────────
+const showTeamDetailModal = ref(false)
+const detailTeam = ref(null)
+const showTeamModal  = ref(false)
+const teamSubmitting = ref(false)
+const teamError      = ref(null)
+const teamForm       = ref({ nombre: '', area: '', miembros: [] })
+const editingTeam = ref(null)
+
+function openCreateTeam() {
+  teamForm.value = { nombre: '', area: '', miembros: [] }
+  teamError.value = null
+  editingTeam.value = null
+  showTeamModal.value = true
+}
+function closeTeamModal() {
+  showTeamModal.value = false
+  teamError.value = null
+}
+function submitTeam() {
+  if (!teamForm.value.nombre.trim()) { teamError.value = 'El nombre es requerido.'; return }
+  if (!teamForm.value.area)          { teamError.value = 'El área es requerida.'; return }
+
+  const selectedMembers = projectMembers.value.filter(m =>
+    teamForm.value.miembros.includes(m.id_usuario)
+  )
+  if (editingTeam.value) {
+    const team = mockTeams.value.find(t => t.id === editingTeam.value.id)
+    team.nombre   = teamForm.value.nombre.trim()
+    team.area     = teamForm.value.area
+    team.miembros = selectedMembers
+  } else {
+    mockTeams.value.push({
+      id: mockTeamsNextId.value++,
+      nombre: teamForm.value.nombre.trim(),
+      area:   teamForm.value.area,
+      miembros: selectedMembers,
+      tareasAsignadas: [],
+    })
+  }
+  closeTeamModal()
+}
+
+function openEditTeam(team) {
+  teamForm.value = {
+    nombre: team.nombre,
+    area: team.area,
+    miembros: team.miembros.map(m => m.id_usuario),
+  }
+  teamError.value = null
+  editingTeam.value = team
+  showTeamModal.value = true
+}
+
+function deleteTeam(team) {
+  mockTeams.value = mockTeams.value.filter(t => t.id !== team.id)
+  if (detailTeam.value?.id === team.id) closeTeamDetailModal()
+}
+
+
+// ───────────────────────────────────────────────
+
 const taskForm = ref({
-  nombre: '', descripcion: '', prioridad: 'MEDIA', estado: 'PENDIENTE', fecha_vencimiento: '',
+  nombre: '', descripcion: '', prioridad: 'MEDIA', estado: 'PENDIENTE', fecha_vencimiento: '', id_asignado: '',
 })
 
+const projectMembers = ref([])
+
+// TODO: reemplazar con endpoint real cuando exista tabla equipos en BD
+const mockTeamsNextId = ref(6)
+const mockTeams = ref([
+  { id: 1, nombre: 'Alpha', area: 'Desarrollo',
+    miembros: [], tareasAsignadas: [
+      { id: 1, nombre: 'Setup CI/CD pipeline', estado: 'EN_PROGRESO', prioridad: 'ALTA', fecha_vencimiento: '2026-05-01', asignado: 'Manolo Flores' },
+      { id: 2, nombre: 'API integration',      estado: 'PENDIENTE',   prioridad: 'MEDIA', fecha_vencimiento: '2026-05-15', asignado: null },
+      { id: 3, nombre: 'Database migration',   estado: 'COMPLETADA',  prioridad: 'CRITICA', fecha_vencimiento: '2026-04-20', asignado: 'Manolo Flores' },
+    ]
+  },
+  { id: 2, nombre: 'Beta', area: 'Diseño',
+    miembros: [], tareasAsignadas: [
+      { id: 4, nombre: 'UI component library', estado: 'EN_PROGRESO', prioridad: 'MEDIA', fecha_vencimiento: '2026-05-10', asignado: null },
+      { id: 5, nombre: 'Figma handoff',        estado: 'PENDIENTE',   prioridad: 'BAJA',  fecha_vencimiento: '2026-05-20', asignado: null },
+    ]
+  },
+  { id: 3, nombre: 'QA', area: 'Calidad',
+    miembros: [], tareasAsignadas: [
+      { id: 6, nombre: 'Write test cases',  estado: 'PENDIENTE',   prioridad: 'ALTA',  fecha_vencimiento: '2026-05-05', asignado: null },
+      { id: 7, nombre: 'Regression tests',  estado: 'EN_PROGRESO', prioridad: 'MEDIA', fecha_vencimiento: '2026-05-12', asignado: null },
+    ]
+  },
+  { id: 4, nombre: 'DevOps', area: 'Infraestructura',
+    miembros: [], tareasAsignadas: [
+      { id: 8, nombre: 'Server provisioning', estado: 'COMPLETADA', prioridad: 'CRITICA', fecha_vencimiento: '2026-04-15', asignado: null },
+      { id: 9, nombre: 'Monitoring setup',    estado: 'PENDIENTE',  prioridad: 'ALTA',   fecha_vencimiento: '2026-05-08', asignado: null },
+    ]
+  },
+  { id: 5, nombre: 'Dirección', area: 'Gestión',
+    miembros: [], tareasAsignadas: [
+      { id: 10, nombre: 'Stakeholder report', estado: 'PENDIENTE', prioridad: 'MEDIA', fecha_vencimiento: '2026-05-30', asignado: null },
+    ]
+  },
+])
+
+const MOCK_AREAS = ['Desarrollo', 'Diseño', 'Calidad', 'Infraestructura', 'Gestión']
+const teamFilterNombre = ref('')
+const teamFilterArea   = ref('')
+const filteredTeams = computed(() =>
+  mockTeams.value.filter(t => {
+    if (teamFilterNombre.value && !t.nombre.toLowerCase().includes(teamFilterNombre.value.toLowerCase())) return false
+    if (teamFilterArea.value   && t.area !== teamFilterArea.value) return false
+    return true
+  })
+)
+// ── Tabs ─────────────────────────────────────────────────────────────────────
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'tasks',    label: 'Tasks'    },
@@ -449,6 +755,17 @@ function statusLabel(estado) {
 
 function priorityColor(p) {
   return { BAJA: '#555', MEDIA: '#60a5fa', ALTA: '#f97316', CRITICA: '#fb7185' }[p] || '#555'
+}
+
+// Áreas para filtro de equipos remplazar con endpoint real cuando exista tabla equipos en BD
+function areaColor(area) {
+  return {
+    'Desarrollo':      '#60a5fa',
+    'Diseño':          '#60a5fa',
+    'Calidad':         '#34d399',
+    'Infraestructura': '#f97316',
+    'Gestión':         '#c9a962',
+  }[area] || '#555'
 }
 
 function movColor(tipo) {
@@ -550,12 +867,20 @@ async function loadTasks() {
   }
 }
 
+async function loadMembers() {
+  const res = await fetch(`/api/projects/${projectId.value}/members`, { headers: authHeader() })
+  if (!res.ok) return
+  const data = await res.json()
+  projectMembers.value = data.data ?? []
+}
+
+
 async function loadAll() {
   loading.value = true
   error.value   = null
   try {
     await loadProject()
-    await Promise.all([loadMetrics(), loadTasks()])
+    await Promise.all([loadMetrics(), loadTasks(), loadMembers()])
   } catch (err) {
     error.value = err.message
   } finally {
@@ -580,6 +905,8 @@ function openEditTask(task) {
     prioridad:         task.prioridad,
     estado:            task.estado,
     fecha_vencimiento: task.fecha_vencimiento?.substring(0, 10) || '',
+    id_asignado:       task.asignado_id || '',
+
   }
   taskError.value   = null
   showTaskModal.value = true
@@ -588,6 +915,32 @@ function openEditTask(task) {
 function closeTaskModal() {
   showTaskModal.value = false
 }
+
+async function openTaskDetail(task) {
+  showDetailModal.value = true
+  detailLoading.value   = true
+  detailTask.value      = null
+  const res  = await fetch(`/api/projects/${projectId.value}/tareas/${task.id_tarea}`, { headers: authHeader() })
+  const data = await res.json()
+  detailTask.value    = data.data
+  detailLoading.value = false
+}
+
+function closeDetailModal() {
+  showDetailModal.value = false
+  detailTask.value      = null
+}
+
+// ── Team detail modal (mock) ─────────────────────────────────────────────────
+function openTeamDetail(team) {
+  detailTeam.value = team
+  showTeamDetailModal.value = true
+}
+function closeTeamDetailModal() {
+  showTeamDetailModal.value = false
+  detailTeam.value = null
+}
+
 
 async function submitTask() {
   taskError.value   = null
@@ -599,6 +952,7 @@ async function submitTask() {
       estado:            taskForm.value.estado,
       descripcion:       taskForm.value.descripcion || undefined,
       fecha_vencimiento: taskForm.value.fecha_vencimiento || undefined,
+      id_asignado: taskForm.value.id_asignado ? Number(taskForm.value.id_asignado) : (editingTask.value ? null : undefined),
     }
     const url    = editingTask.value
       ? `/api/projects/${projectId.value}/tareas/${editingTask.value.id_tarea}`
@@ -643,6 +997,84 @@ watch(() => route.params.id, loadAll)
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.list-header {
+  display: grid;
+  grid-template-columns: 3fr 2fr 1fr 1fr;
+  padding: 0 20px 10px 20px;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6c6565;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 10px;
+}
+.list-row {
+  display: grid !important;
+  grid-template-columns: 3fr 2fr 1fr 1fr;
+  align-items: center;
+  padding: 0 20px 0 0 !important;
+}
+.list-name-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.list-cell-num { color: #888; font-size: 15px; }
+
+
+.filter-input {
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filter-input:focus { border-color: #c9a962; }
+.filter-input::placeholder { color: #444; }
+
+.teams-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.teams-table th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #444;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid #1a1a1a;
+}
+.teams-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #111;
+  color: #faf8f5;
+}
+.teams-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+.team-cell-name { font-weight: 600; }
+.area-badge {
+  font-size: 11px;
+  color: #c9a962;
+  background: rgba(201,169,98,0.1);
+  border: 1px solid rgba(201,169,98,0.2);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+
+.task-name-link {
+  cursor: pointer;
+}
+.task-name-link:hover {
+  text-decoration: underline;
+}
+
 
 .pd-root {
   background: transparent;
@@ -1025,7 +1457,7 @@ watch(() => route.params.id, loadAll)
 }
 
 .task-name {
-  font-size: 14px;
+  font-size: 16px;
   color: #faf8f5;
   white-space: nowrap;
   overflow: hidden;
