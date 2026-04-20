@@ -16,10 +16,12 @@ export const getTareas = async (req, res) => {
     const { id_proyecto } = req.params
 
     const result = await pool.query(
-        `SELECT ${TAREA_SELECT}
-            FROM public.tarea
-            WHERE id_proyecto = $1
-            ORDER BY id_tarea`,
+        `SELECT t.id_tarea, t.nombre, t.descripcion, t.estado, t.prioridad, t.fecha_vencimiento, t.id_proyecto,
+            a.id_usuario AS asignado_id
+            FROM public.tarea t
+            LEFT JOIN public.asignacion a ON a.id_tarea = t.id_tarea AND a.id_proyecto = t.id_proyecto
+            WHERE t.id_proyecto = $1
+            ORDER BY t.id_tarea`,
         [id_proyecto]
     )
     
@@ -30,10 +32,18 @@ export const getTareas = async (req, res) => {
 export const getTareaById = async (req, res) => {
     const { id_proyecto, id } = req.params
 
-    const result = await pool.query(
-        `SELECT ${TAREA_SELECT} FROM public.tarea WHERE id_tarea = $1 AND id_proyecto = $2`,
-        [id, id_proyecto]
-    )
+        const result = await pool.query(
+        `SELECT t.id_tarea, t.nombre, t.descripcion, t.estado, t.prioridad, t.fecha_vencimiento, t.id_proyecto,
+            u.id_usuario AS asignado_id,
+            u.nombre    AS asignado_nombre,
+            u.apellido  AS asignado_apellido
+            FROM public.tarea t
+            LEFT JOIN public.asignacion a ON a.id_tarea = t.id_tarea AND a.id_proyecto = t.id_proyecto
+            LEFT JOIN public.usuario u ON u.id_usuario = a.id_usuario
+            WHERE t.id_tarea = $1 AND t.id_proyecto = $2`,
+            [id, id_proyecto]
+        )
+
 
     if (!result.rows.length) {
         return res.status(404).json({ success: false, message: 'Tarea no encontrada.' })
@@ -114,20 +124,26 @@ export const updateTarea = async (req, res) => {
     }
 
     if (id_asignado !== undefined) {
-        try {
+    try {
+        await pool.query(
+            `DELETE FROM public.asignacion WHERE id_tarea = $1`,
+            [id]
+        )
+        if (id_asignado) {
             await pool.query(
                 `INSERT INTO public.asignacion (id_tarea, id_usuario, id_proyecto)
-                VALUES ($1, $2, $3)
-                ON CONFLICT (id_tarea, id_usuario) DO NOTHING`,
+                VALUES ($1, $2, $3)`,
                 [id, id_asignado, id_proyecto]
             )
-        } catch (err) {
-            if (err.code === '23503') {
-                return res.status(400).json({ success: false, message: 'El usuario no es miembro del proyecto.' })
-            }
-            throw err
         }
+    } catch (err) {
+        if (err.code === '23503') {
+            return res.status(400).json({ success: false, message: 'El usuario no es miembro del proyecto.' })
+        }
+        throw err
     }
+}
+
 
     const updated = await pool.query(
         `SELECT ${TAREA_SELECT} FROM public.tarea WHERE id_tarea = $1`,
