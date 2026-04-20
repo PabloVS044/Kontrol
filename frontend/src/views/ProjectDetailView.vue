@@ -359,6 +359,7 @@ import { useRoute, RouterLink } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth'
 import './ProjectDetailsView.css'
+
 const route     = useRoute()
 const authStore = useAuthStore()
 
