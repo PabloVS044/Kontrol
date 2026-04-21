@@ -1,9 +1,86 @@
-import { Router } from 'express';
-import { registerExpense } from '../controllers/budgetController.js';
-import { expenseSchema } from '../schemas/budgetSchema.js';
+import { Router } from 'express'
+import requireAuth from '../middleware/requireAuth.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
+import requireEmpresaRole from '../middleware/requireEmpresaRole.js'
+import validate from '../middleware/validate.js'
+import {
+  expenseSchema,
+  getActividadesQuerySchema,
+  actividadIdParamSchema,
+  proyectoIdParamSchema,
+  createActividadSchema,
+  updateActividadSchema,
+} from '../schemas/budgetSchema.js'
+import {
+  getActividades,
+  getActividadById,
+  createActividad,
+  updateActividad,
+  deleteActividad,
+  getProjectBudgetSummary,
+  getProjectBudgetTrend,
+  registerExpense,
+} from '../controllers/budgetController.js'
 
-const router = Router();
+const router = Router()
 
-router.post('/register-expense', registerExpense);
+router.use(requireAuth, requireEmpresa)
 
-export default router;
+// Resumen consolidado de presupuesto por proyecto (con alertas)
+router.get(
+  '/project/:id_proyecto/summary',
+  validate(proyectoIdParamSchema, 'params'),
+  getProjectBudgetSummary
+)
+
+// Serie temporal (curva real vs plan) por proyecto
+router.get(
+  '/project/:id_proyecto/trend',
+  validate(proyectoIdParamSchema, 'params'),
+  getProjectBudgetTrend
+)
+
+// Registro rápido de gastos (acumulativo por nombre_actividad)
+router.post(
+  '/register-expense',
+  requireEmpresaRole('owner', 'admin', 'manager'),
+  validate(expenseSchema),
+  registerExpense
+)
+
+// CRUD de actividades de presupuesto
+router.get(
+  '/',
+  validate(getActividadesQuerySchema, 'query'),
+  getActividades
+)
+
+router.get(
+  '/:id',
+  validate(actividadIdParamSchema, 'params'),
+  getActividadById
+)
+
+router.post(
+  '/',
+  requireEmpresaRole('owner', 'admin', 'manager'),
+  validate(createActividadSchema),
+  createActividad
+)
+
+router.put(
+  '/:id',
+  requireEmpresaRole('owner', 'admin', 'manager'),
+  validate(actividadIdParamSchema, 'params'),
+  validate(updateActividadSchema),
+  updateActividad
+)
+
+router.delete(
+  '/:id',
+  requireEmpresaRole('owner', 'admin'),
+  validate(actividadIdParamSchema, 'params'),
+  deleteActividad
+)
+
+export default router
