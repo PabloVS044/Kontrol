@@ -1,23 +1,25 @@
 import pool from '../db/pool.js'
 
-const ACTIVIDAD_SELECT = `
+const ACTIVITY_SELECT = `
   id_actividad, nombre, monto_planificado, monto_real, id_proyecto
 `
 
+const getCompanyId = (req) => req.company?.id_empresa ?? req.empresa?.id_empresa
+
 // GET /api/budgets
-// Lista de actividades de presupuesto. Opcional filtro por id_proyecto.
-export const getActividades = async (req, res) => {
-  const { id_proyecto } = req.query
+// List budget activities, optionally filtered by project.
+export const getActivities = async (req, res) => {
+  const projectId = req.query.projectId
   const values = []
   let where = ''
 
-  if (id_proyecto) {
-    values.push(id_proyecto)
+  if (projectId) {
+    values.push(projectId)
     where = `WHERE id_proyecto = $${values.length}`
   }
 
   const result = await pool.query(
-    `SELECT ${ACTIVIDAD_SELECT} FROM public.presupuesto_actividad
+    `SELECT ${ACTIVITY_SELECT} FROM public.presupuesto_actividad
      ${where} ORDER BY id_actividad`,
     values
   )
@@ -26,42 +28,45 @@ export const getActividades = async (req, res) => {
 }
 
 // GET /api/budgets/:id
-export const getActividadById = async (req, res) => {
+export const getActivityById = async (req, res) => {
   const result = await pool.query(
-    `SELECT ${ACTIVIDAD_SELECT} FROM public.presupuesto_actividad WHERE id_actividad = $1`,
+    `SELECT ${ACTIVITY_SELECT} FROM public.presupuesto_actividad WHERE id_actividad = $1`,
     [req.params.id]
   )
+
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Actividad no encontrada.' })
+    return res.status(404).json({ success: false, message: 'Activity not found.' })
   }
+
   return res.json({ success: true, data: result.rows[0] })
 }
 
 // POST /api/budgets
-export const createActividad = async (req, res) => {
-  const { nombre, monto_planificado, monto_real, id_proyecto } = req.body
+export const createActivity = async (req, res) => {
+  const { nombre, monto_planificado, monto_real, projectId } = req.body
 
-  const proyecto = await pool.query(
+  const project = await pool.query(
     'SELECT id_proyecto FROM public.proyecto WHERE id_proyecto = $1',
-    [id_proyecto]
+    [projectId]
   )
-  if (!proyecto.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+
+  if (!project.rows.length) {
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
   const result = await pool.query(
     `INSERT INTO public.presupuesto_actividad
        (nombre, monto_planificado, monto_real, id_proyecto)
      VALUES ($1, $2, $3, $4)
-     RETURNING ${ACTIVIDAD_SELECT}`,
-    [nombre, monto_planificado, monto_real ?? null, id_proyecto]
+     RETURNING ${ACTIVITY_SELECT}`,
+    [nombre, monto_planificado, monto_real ?? null, projectId]
   )
 
   return res.status(201).json({ success: true, data: result.rows[0] })
 }
 
 // PUT /api/budgets/:id
-export const updateActividad = async (req, res) => {
+export const updateActivity = async (req, res) => {
   const { id } = req.params
   const { nombre, monto_planificado, monto_real } = req.body
 
@@ -69,22 +74,32 @@ export const updateActividad = async (req, res) => {
     'SELECT id_actividad FROM public.presupuesto_actividad WHERE id_actividad = $1',
     [id]
   )
+
   if (!existing.rows.length) {
-    return res.status(404).json({ success: false, message: 'Actividad no encontrada.' })
+    return res.status(404).json({ success: false, message: 'Activity not found.' })
   }
 
   const setClauses = []
   const values = []
 
-  if (nombre !== undefined)            { values.push(nombre);            setClauses.push(`nombre = $${values.length}`) }
-  if (monto_planificado !== undefined) { values.push(monto_planificado); setClauses.push(`monto_planificado = $${values.length}`) }
-  if (monto_real !== undefined)        { values.push(monto_real);        setClauses.push(`monto_real = $${values.length}`) }
+  if (nombre !== undefined) {
+    values.push(nombre)
+    setClauses.push(`nombre = $${values.length}`)
+  }
+  if (monto_planificado !== undefined) {
+    values.push(monto_planificado)
+    setClauses.push(`monto_planificado = $${values.length}`)
+  }
+  if (monto_real !== undefined) {
+    values.push(monto_real)
+    setClauses.push(`monto_real = $${values.length}`)
+  }
 
   values.push(id)
   const result = await pool.query(
     `UPDATE public.presupuesto_actividad SET ${setClauses.join(', ')}
      WHERE id_actividad = $${values.length}
-     RETURNING ${ACTIVIDAD_SELECT}`,
+     RETURNING ${ACTIVITY_SELECT}`,
     values
   )
 
@@ -92,101 +107,103 @@ export const updateActividad = async (req, res) => {
 }
 
 // DELETE /api/budgets/:id
-export const deleteActividad = async (req, res) => {
+export const deleteActivity = async (req, res) => {
   const result = await pool.query(
     'DELETE FROM public.presupuesto_actividad WHERE id_actividad = $1 RETURNING id_actividad',
     [req.params.id]
   )
+
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Actividad no encontrada.' })
+    return res.status(404).json({ success: false, message: 'Activity not found.' })
   }
-  return res.json({ success: true, message: 'Actividad eliminada correctamente.' })
+
+  return res.json({ success: true, message: 'Activity deleted successfully.' })
 }
 
-// GET /api/budgets/project/:id_proyecto/summary
-// Resumen del presupuesto del proyecto con alertas (consolidado).
+// GET /api/budgets/project/:projectId/summary
 export const getProjectBudgetSummary = async (req, res) => {
-  const { id_proyecto } = req.params
+  const { projectId } = req.params
 
   const projectResult = await pool.query(
     `SELECT id_proyecto, nombre, presupuesto_total
      FROM public.proyecto WHERE id_proyecto = $1`,
-    [id_proyecto]
+    [projectId]
   )
+
   if (!projectResult.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
-  const actividadesResult = await pool.query(
-    `SELECT ${ACTIVIDAD_SELECT} FROM public.presupuesto_actividad
+  const activitiesResult = await pool.query(
+    `SELECT ${ACTIVITY_SELECT} FROM public.presupuesto_actividad
      WHERE id_proyecto = $1 ORDER BY id_actividad`,
-    [id_proyecto]
+    [projectId]
   )
 
-  const proyecto = projectResult.rows[0]
-  const actividades = actividadesResult.rows
+  const project = projectResult.rows[0]
+  const activities = activitiesResult.rows
 
-  const presupuestoTotal = parseFloat(proyecto.presupuesto_total)
-  const totalPlanificado = actividades.reduce((sum, a) => sum + parseFloat(a.monto_planificado || 0), 0)
-  const totalGastado     = actividades.reduce((sum, a) => sum + parseFloat(a.monto_real || 0), 0)
-  const disponible       = presupuestoTotal - totalGastado
-  const porcentajeUso    = presupuestoTotal > 0 ? totalGastado / presupuestoTotal : 0
-  const porcentajeCompletado = Math.min(100, Math.round(porcentajeUso * 100))
+  const totalBudget = parseFloat(project.presupuesto_total)
+  const totalPlanned = activities.reduce((sum, activity) => sum + parseFloat(activity.monto_planificado || 0), 0)
+  const totalSpent = activities.reduce((sum, activity) => sum + parseFloat(activity.monto_real || 0), 0)
+  const available = totalBudget - totalSpent
+  const usageRatio = totalBudget > 0 ? totalSpent / totalBudget : 0
+  const completionPercentage = Math.min(100, Math.round(usageRatio * 100))
 
-  let alerta = null
-  let alertaNivel = null
-  if (totalGastado >= presupuestoTotal && presupuestoTotal > 0) {
-    alertaNivel = 'CRITICO'
-    alerta = 'CRÍTICO: Se ha alcanzado o superado el presupuesto total del proyecto.'
-  } else if (porcentajeUso >= 0.8) {
-    alertaNivel = 'ADVERTENCIA'
-    alerta = 'ADVERTENCIA: Se ha utilizado más del 80% del presupuesto disponible.'
+  let alert = null
+  let alertLevel = null
+
+  if (totalSpent >= totalBudget && totalBudget > 0) {
+    alertLevel = 'CRITICO'
+    alert = 'CRITICAL: The total project budget has been reached or exceeded.'
+  } else if (usageRatio >= 0.8) {
+    alertLevel = 'ADVERTENCIA'
+    alert = 'WARNING: More than 80% of the available budget has been used.'
   }
 
   return res.json({
     success: true,
     data: {
       proyecto: {
-        id_proyecto: proyecto.id_proyecto,
-        nombre: proyecto.nombre,
+        id_proyecto: project.id_proyecto,
+        nombre: project.nombre,
       },
-      presupuesto_total:     presupuestoTotal,
-      total_planificado:     totalPlanificado,
-      total_gastado:         totalGastado,
-      disponible,
-      porcentaje_uso:        Number(porcentajeUso.toFixed(4)),
-      porcentaje_completado: porcentajeCompletado,
-      alerta,
-      alerta_nivel:          alertaNivel,
-      actividades,
+      presupuesto_total: totalBudget,
+      total_planificado: totalPlanned,
+      total_gastado: totalSpent,
+      disponible: available,
+      porcentaje_uso: Number(usageRatio.toFixed(4)),
+      porcentaje_completado: completionPercentage,
+      alerta: alert,
+      alerta_nivel: alertLevel,
+      actividades: activities,
     },
   })
 }
 
 // POST /api/budgets/register-expense
-// Endpoint original (a9c8551): registra/acumula gasto por nombre de actividad
-// y devuelve totales + alertas del proyecto.
+// Accumulates spending by activity name and returns updated budget totals.
 export const registerExpense = async (req, res) => {
-  const { id_proyecto, nombre_actividad, monto_gasto } = req.body
+  const { projectId, activityName, expenseAmount } = req.body
 
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
 
-    const proyecto = await client.query(
+    const project = await client.query(
       'SELECT id_proyecto, presupuesto_total FROM public.proyecto WHERE id_proyecto = $1 FOR UPDATE',
-      [id_proyecto]
+      [projectId]
     )
-    if (!proyecto.rows.length) {
+
+    if (!project.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Project not found.' })
     }
 
-    // Buscar actividad existente por (id_proyecto, nombre)
     const existing = await client.query(
       `SELECT id_actividad, monto_real FROM public.presupuesto_actividad
        WHERE id_proyecto = $1 AND nombre = $2`,
-      [id_proyecto, nombre_actividad]
+      [projectId, activityName]
     )
 
     if (existing.rows.length) {
@@ -194,77 +211,77 @@ export const registerExpense = async (req, res) => {
         `UPDATE public.presupuesto_actividad
          SET monto_real = COALESCE(monto_real, 0) + $1
          WHERE id_actividad = $2`,
-        [monto_gasto, existing.rows[0].id_actividad]
+        [expenseAmount, existing.rows[0].id_actividad]
       )
     } else {
       await client.query(
         `INSERT INTO public.presupuesto_actividad
            (nombre, monto_planificado, monto_real, id_proyecto)
          VALUES ($1, 0, $2, $3)`,
-        [nombre_actividad, monto_gasto, id_proyecto]
+        [activityName, expenseAmount, projectId]
       )
     }
 
     const totals = await client.query(
       `SELECT COALESCE(SUM(monto_real), 0) AS total_acumulado
        FROM public.presupuesto_actividad WHERE id_proyecto = $1`,
-      [id_proyecto]
+      [projectId]
     )
 
     await client.query('COMMIT')
 
-    const presupuestoTotal = parseFloat(proyecto.rows[0].presupuesto_total)
-    const totalAcumulado   = parseFloat(totals.rows[0].total_acumulado) || 0
-    const porcentajeUso    = presupuestoTotal > 0 ? totalAcumulado / presupuestoTotal : 0
+    const totalBudget = parseFloat(project.rows[0].presupuesto_total)
+    const totalSpent = parseFloat(totals.rows[0].total_acumulado) || 0
+    const usageRatio = totalBudget > 0 ? totalSpent / totalBudget : 0
 
-    let alerta = null
-    let alertaNivel = null
-    if (totalAcumulado >= presupuestoTotal && presupuestoTotal > 0) {
-      alertaNivel = 'CRITICO'
-      alerta = 'CRÍTICO: Se ha alcanzado o superado el presupuesto total del proyecto.'
-    } else if (porcentajeUso >= 0.8) {
-      alertaNivel = 'ADVERTENCIA'
-      alerta = 'ADVERTENCIA: Se ha utilizado más del 80% del presupuesto disponible.'
+    let alert = null
+    let alertLevel = null
+    if (totalSpent >= totalBudget && totalBudget > 0) {
+      alertLevel = 'CRITICO'
+      alert = 'CRITICAL: The total project budget has been reached or exceeded.'
+    } else if (usageRatio >= 0.8) {
+      alertLevel = 'ADVERTENCIA'
+      alert = 'WARNING: More than 80% of the available budget has been used.'
     }
 
     return res.status(200).json({
       success: true,
       data: {
-        total_proyecto: presupuestoTotal,
-        gasto_actual:   totalAcumulado,
-        disponible:     presupuestoTotal - totalAcumulado,
-        porcentaje_uso: Number(porcentajeUso.toFixed(4)),
-        alerta,
-        alerta_nivel:   alertaNivel,
+        total_proyecto: totalBudget,
+        gasto_actual: totalSpent,
+        disponible: totalBudget - totalSpent,
+        porcentaje_uso: Number(usageRatio.toFixed(4)),
+        alerta: alert,
+        alerta_nivel: alertLevel,
       },
     })
-  } catch (err) {
+  } catch (error) {
     await client.query('ROLLBACK')
-    throw err
+    throw error
   } finally {
     client.release()
   }
 }
 
-// GET /api/budgets/project/:id_proyecto/trend
-// Serie temporal de gasto acumulado (proxy: movimiento_inventario tipo ENTRADA / GASTO_ADMIN)
-// junto con el plan del proyecto (fecha_inicio, fecha_fin_planificada, presupuesto_total).
+// GET /api/budgets/project/:projectId/trend
+// Returns cumulative project spending based on inventory movements.
 export const getProjectBudgetTrend = async (req, res) => {
-  const { id_proyecto } = req.params
-  const { id_empresa } = req.empresa
+  const { projectId } = req.params
+  const companyId = getCompanyId(req)
 
   const projectResult = await pool.query(
     `SELECT id_proyecto, nombre, presupuesto_total, fecha_inicio, fecha_fin_planificada
      FROM public.proyecto
      WHERE id_proyecto = $1 AND id_empresa = $2`,
-    [id_proyecto, id_empresa]
+    [projectId, companyId]
   )
-  if (!projectResult.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
-  }
-  const proyecto = projectResult.rows[0]
 
-  // Gasto diario agregado: ENTRADA (compras) y GASTO_ADMIN
+  if (!projectResult.rows.length) {
+    return res.status(404).json({ success: false, message: 'Project not found.' })
+  }
+
+  const project = projectResult.rows[0]
+
   const trendResult = await pool.query(
     `SELECT
        DATE(fecha) AS dia,
@@ -275,39 +292,38 @@ export const getProjectBudgetTrend = async (req, res) => {
        AND tipo IN ('ENTRADA', 'GASTO_ADMIN')
      GROUP BY DATE(fecha)
      ORDER BY DATE(fecha) ASC`,
-    [id_proyecto, id_empresa]
+    [projectId, companyId]
   )
 
-  let acumulado = 0
-  const puntos = trendResult.rows.map(r => {
-    acumulado += Number(r.monto_dia)
+  let accumulated = 0
+  const points = trendResult.rows.map((row) => {
+    accumulated += Number(row.monto_dia)
     return {
-      fecha: r.dia instanceof Date ? r.dia.toISOString().slice(0, 10) : r.dia,
-      monto_dia: Number(r.monto_dia),
-      acumulado: Number(acumulado.toFixed(2)),
+      fecha: row.dia instanceof Date ? row.dia.toISOString().slice(0, 10) : row.dia,
+      monto_dia: Number(row.monto_dia),
+      acumulado: Number(accumulated.toFixed(2)),
     }
   })
 
-  // Total actual registrado en presupuesto_actividad (source of truth del Budget module)
   const totalActivity = await pool.query(
     `SELECT COALESCE(SUM(monto_real), 0) AS total_gastado
      FROM public.presupuesto_actividad WHERE id_proyecto = $1`,
-    [id_proyecto]
+    [projectId]
   )
 
   return res.json({
     success: true,
     data: {
       proyecto: {
-        id_proyecto:           proyecto.id_proyecto,
-        nombre:                proyecto.nombre,
-        presupuesto_total:     Number(proyecto.presupuesto_total),
-        fecha_inicio:          proyecto.fecha_inicio,
-        fecha_fin_planificada: proyecto.fecha_fin_planificada,
+        id_proyecto: project.id_proyecto,
+        nombre: project.nombre,
+        presupuesto_total: Number(project.presupuesto_total),
+        fecha_inicio: project.fecha_inicio,
+        fecha_fin_planificada: project.fecha_fin_planificada,
       },
-      puntos,
+      puntos: points,
       total_gastado_actividades: Number(totalActivity.rows[0].total_gastado),
-      total_acumulado_movimientos: Number(acumulado.toFixed(2)),
+      total_acumulado_movimientos: Number(accumulated.toFixed(2)),
     },
   })
 }

@@ -1,42 +1,79 @@
 import { z } from 'zod'
 
-// Schema original (commit a9c8551): registrar un gasto sobre una actividad (por nombre).
-export const expenseSchema = z.object({
-  id_proyecto:      z.number().int().positive(),
-  nombre_actividad: z.string().min(3, 'nombre_actividad debe tener al menos 3 caracteres.').max(200),
-  monto_gasto:      z.number().nonnegative('monto_gasto no puede ser negativo.'),
+const positiveProjectId = z.coerce.number().int().positive('The project id must be valid.')
+const positiveAmount = z.number().nonnegative('The amount cannot be negative.')
+const activityNameSchema = z.string().min(3, 'The activity name must contain at least 3 characters.').max(200)
+
+export const expenseSchema = z.union([
+  z.object({
+    projectId: positiveProjectId,
+    activityName: activityNameSchema,
+    expenseAmount: positiveAmount,
+  }),
+  z.object({
+    id_proyecto: positiveProjectId,
+    nombre_actividad: activityNameSchema,
+    monto_gasto: positiveAmount,
+  }).transform((data) => ({
+    projectId: data.id_proyecto,
+    activityName: data.nombre_actividad,
+    expenseAmount: data.monto_gasto,
+  })),
+])
+
+export const getActivitiesQuerySchema = z.union([
+  z.object({
+    projectId: positiveProjectId.optional(),
+  }),
+  z.object({
+    id_proyecto: positiveProjectId.optional(),
+  }).transform((data) => ({
+    projectId: data.id_proyecto,
+  })),
+])
+
+export const activityIdParamSchema = z.object({
+  id: z.coerce.number().int().positive({ message: 'The id must be a positive integer.' }),
 })
 
-// Listado de actividades de presupuesto del proyecto
-export const getActividadesQuerySchema = z.object({
-  id_proyecto: z.coerce.number().int().positive().optional(),
-})
+export const projectIdParamSchema = z.union([
+  z.object({
+    projectId: positiveProjectId,
+  }),
+  z.object({
+    id_proyecto: positiveProjectId,
+  }).transform((data) => ({
+    projectId: data.id_proyecto,
+  })),
+])
 
-// Params
-export const actividadIdParamSchema = z.object({
-  id: z.coerce.number().int().positive({ message: 'El id debe ser un entero positivo.' }),
-})
+export const createActivitySchema = z.union([
+  z.object({
+    nombre: z.string().min(1, 'Name is required.').max(200),
+    monto_planificado: z.number().min(0, 'The planned amount cannot be negative.'),
+    monto_real: z.number().min(0, 'The actual amount cannot be negative.').nullable().optional(),
+    projectId: positiveProjectId,
+  }),
+  z.object({
+    nombre: z.string().min(1, 'Name is required.').max(200),
+    monto_planificado: z.number().min(0, 'The planned amount cannot be negative.'),
+    monto_real: z.number().min(0, 'The actual amount cannot be negative.').nullable().optional(),
+    id_proyecto: positiveProjectId,
+  }).transform((data) => ({
+    nombre: data.nombre,
+    monto_planificado: data.monto_planificado,
+    monto_real: data.monto_real,
+    projectId: data.id_proyecto,
+  })),
+])
 
-export const proyectoIdParamSchema = z.object({
-  id_proyecto: z.coerce.number().int().positive({ message: 'id_proyecto debe ser un entero positivo.' }),
-})
-
-// Crear actividad planificada
-export const createActividadSchema = z.object({
-  nombre:            z.string().min(1, 'nombre es requerido.').max(200),
-  monto_planificado: z.number().min(0, 'monto_planificado no puede ser negativo.'),
-  monto_real:        z.number().min(0, 'monto_real no puede ser negativo.').nullable().optional(),
-  id_proyecto:       z.number().int().positive(),
-})
-
-// Actualizar actividad
-export const updateActividadSchema = z
+export const updateActivitySchema = z
   .object({
-    nombre:            z.string().min(1).max(200).optional(),
-    monto_planificado: z.number().min(0, 'monto_planificado no puede ser negativo.').optional(),
-    monto_real:        z.number().min(0, 'monto_real no puede ser negativo.').nullable().optional(),
+    nombre: z.string().min(1).max(200).optional(),
+    monto_planificado: z.number().min(0, 'The planned amount cannot be negative.').optional(),
+    monto_real: z.number().min(0, 'The actual amount cannot be negative.').nullable().optional(),
   })
   .refine(
     (data) => Object.keys(data).length > 0,
-    { message: 'No se proporcionaron campos para actualizar.' }
+    { message: 'No fields were provided for update.' }
   )

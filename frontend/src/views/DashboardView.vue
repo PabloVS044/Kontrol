@@ -5,6 +5,8 @@ import Card from '../components/UI/Card/Card.vue'
 import Button from '../components/UI/Button/Button.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
+import { statusLabel } from '../utils/statusHelpers'
+import { projectPermissionLabel } from '../utils/projectAccessLabels'
 
 const authStore = useAuthStore()
 
@@ -290,7 +292,7 @@ const adminLikeCount = computed(() =>
 function authHeaders() {
   return {
     Authorization: `Bearer ${authStore.token}`,
-    'X-Empresa-ID': authStore.idEmpresaActual,
+    'X-Company-ID': authStore.idEmpresaActual,
   }
 }
 
@@ -315,7 +317,7 @@ async function loadPanel() {
       return
     }
 
-    const res = await fetch('/api/empresas/panel-usuarios', {
+    const res = await fetch('/api/companies/members-panel', {
       headers: authHeaders(),
     })
     const payload = await res.json()
@@ -329,7 +331,7 @@ async function loadPanel() {
     panel.value = payload.data
     syncProjectDrafts(payload.data.members ?? [])
   } catch {
-    errorMessage.value = 'No se pudo cargar el panel de colaboradores.'
+    errorMessage.value = 'Could not load the collaborators panel.'
     panel.value = null
   } finally {
     loading.value = false
@@ -342,7 +344,7 @@ async function generateInvite() {
   generatingInvite.value = true
 
   try {
-    const res = await fetch('/api/empresas/invitacion', {
+    const res = await fetch('/api/companies/invitation', {
       method: 'POST',
       headers: authHeaders(),
     })
@@ -370,7 +372,7 @@ async function deactivateInvite() {
   deactivatingInvite.value = true
 
   try {
-    const res = await fetch('/api/empresas/invitacion', {
+    const res = await fetch('/api/companies/invitation', {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -414,7 +416,7 @@ async function updateMemberRole(member, newRole) {
   updatingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}/rol`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}/role`, {
       method: 'PATCH',
       headers: {
         ...authHeaders(),
@@ -448,7 +450,7 @@ async function removeMember(member) {
   removingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}`, {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -525,7 +527,7 @@ async function assignProjectToMember(member) {
   assigningProjectMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}/proyectos/${idProyecto}`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}/projects/${idProyecto}`, {
       method: 'PUT',
       headers: {
         ...authHeaders(),
@@ -562,7 +564,7 @@ async function saveProjectPermissions(member, assignment) {
 
   try {
     const res = await fetch(
-      `/api/empresas/miembros/${member.id_usuario}/proyectos/${assignment.id_proyecto}`,
+      `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'PUT',
         headers: {
@@ -597,7 +599,7 @@ async function removeProjectAccess(member, assignment) {
 
   try {
     const res = await fetch(
-      `/api/empresas/miembros/${member.id_usuario}/proyectos/${assignment.id_proyecto}`,
+      `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'DELETE',
         headers: authHeaders(),
@@ -991,7 +993,7 @@ watch(() => authStore.idEmpresaActual, () => {
                         <div class="project-assignment-head">
                           <div>
                             <strong class="member-name">{{ assignment.proyecto_nombre }}</strong>
-                            <p class="member-email">{{ assignment.proyecto_estado }}</p>
+                            <p class="member-email">{{ statusLabel(assignment.proyecto_estado) }}</p>
                           </div>
 
                           <button
@@ -1014,7 +1016,7 @@ watch(() => authStore.idEmpresaActual, () => {
                               :checked="getDraftPermissions(member.id_usuario, assignment.id_proyecto).includes(permission.nombre_permiso)"
                               @change="toggleProjectPermission(member.id_usuario, assignment.id_proyecto, permission.nombre_permiso, $event.target.checked)"
                             />
-                            <span class="permission-name">{{ permission.nombre_permiso }}</span>
+                            <span class="permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
                             <small class="permission-description">{{ permission.descripcion }}</small>
                           </label>
                         </div>

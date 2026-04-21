@@ -9,7 +9,7 @@ const requireRole = (...roles) => (req, res, next) => {
   const userRole = req.user?.nombre_rol
 
   if (!userRole || !roles.includes(userRole)) {
-    return res.status(403).json({ success: false, message: 'Acceso denegado.' })
+    return res.status(403).json({ success: false, message: 'Access denied.' })
   }
 
   next()

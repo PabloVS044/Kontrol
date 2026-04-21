@@ -15,9 +15,9 @@ const PROVEEDOR_SELECT = `
 `
 
 /**
- * GET /api/proveedores
+ * GET /api/suppliers
  */
-export const getProveedores = async (req, res) => {
+export const getSuppliers = async (req, res) => {
   const { id_empresa } = req.empresa
 
   if (!hasEmpresaManagementAccess(req.empresa.rol_empresa)) {
@@ -61,9 +61,9 @@ export const getProveedores = async (req, res) => {
 }
 
 /**
- * GET /api/proveedores/:id  — includes linked products
+ * GET /api/suppliers/:id  — includes linked products
  */
-export const getProveedorById = async (req, res) => {
+export const getSupplierById = async (req, res) => {
   const { id } = req.params
   const { id_empresa } = req.empresa
 
@@ -77,7 +77,7 @@ export const getProveedorById = async (req, res) => {
     })
 
     if (!accessibleProjectIds.length) {
-      return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Supplier not found.' })
     }
 
     const result = await pool.query(
@@ -104,7 +104,7 @@ export const getProveedorById = async (req, res) => {
     )
 
     if (!result.rows.length || result.rows[0].productos.length === 0) {
-      return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Supplier not found.' })
     }
 
     return res.json({ success: true, data: result.rows[0] })
@@ -132,16 +132,16 @@ export const getProveedorById = async (req, res) => {
   )
 
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Supplier not found.' })
   }
 
   return res.json({ success: true, data: result.rows[0] })
 }
 
 /**
- * POST /api/proveedores
+ * POST /api/suppliers
  */
-export const createProveedor = async (req, res) => {
+export const createSupplier = async (req, res) => {
   const { nombre, contacto_nombre, telefono, email } = req.body
   const { id_empresa } = req.empresa
 
@@ -161,9 +161,9 @@ export const createProveedor = async (req, res) => {
 }
 
 /**
- * PUT /api/proveedores/:id
+ * PUT /api/suppliers/:id
  */
-export const updateProveedor = async (req, res) => {
+export const updateSupplier = async (req, res) => {
   const { id } = req.params
   const { id_empresa } = req.empresa
 
@@ -172,7 +172,7 @@ export const updateProveedor = async (req, res) => {
     [id, id_empresa]
   )
   if (!existing.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Supplier not found.' })
   }
 
   const ALLOWED = ['nombre', 'contacto_nombre', 'telefono', 'email']
@@ -201,9 +201,9 @@ export const updateProveedor = async (req, res) => {
 }
 
 /**
- * DELETE /api/proveedores/:id
+ * DELETE /api/suppliers/:id
  */
-export const deleteProveedor = async (req, res) => {
+export const deleteSupplier = async (req, res) => {
   const { id } = req.params
   const { id_empresa } = req.empresa
 
@@ -214,15 +214,15 @@ export const deleteProveedor = async (req, res) => {
     )
 
     if (!result.rows.length) {
-      return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Supplier not found.' })
     }
 
-    return res.json({ success: true, message: 'Proveedor eliminado correctamente.' })
+    return res.json({ success: true, message: 'Supplier deleted successfully.' })
   } catch (err) {
     if (err.code === '23503') {
       return res.status(409).json({
         success: false,
-        message: 'No se puede eliminar el proveedor porque tiene movimientos u otras referencias.',
+        message: 'Cannot delete the supplier because it has movements or other references.',
       })
     }
     throw err
