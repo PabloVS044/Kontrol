@@ -25,8 +25,10 @@ const activityForm = ref({ nombre: '', monto_planificado: null, monto_real: null
 const expenseForm  = ref({ nombre_actividad: '', monto_gasto: null })
 
 function authHeader() {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+  const token   = localStorage.getItem('token')
+  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  return headers
 }
 
 async function apiFetch(path, options = {}) {
@@ -41,13 +43,24 @@ async function apiFetch(path, options = {}) {
 
 async function loadProjects() {
   if (!authStore.user) await authStore.fetchMe()
+  // Ensure we have empresas loaded (router guard already does this, but be defensive on hot reload)
+  if (!authStore.empresas.length) await authStore.loadEmpresas()
+
   const params = new URLSearchParams({ limit: 100 })
-  if (authStore.idEmpresa) params.set('id_empresa', authStore.idEmpresa)
   const res = await apiFetch(`/api/projects?${params}`)
   projects.value = res.data
-  if (!selectedProjectId.value && projects.value.length) {
-    selectedProjectId.value =
-      Number(route.query.project) || projects.value[0].id_proyecto
+  if (projects.value.length) {
+    const queryPid = Number(route.query.project)
+    const stillValid = projects.value.some(p => p.id_proyecto === selectedProjectId.value)
+    if (!stillValid) {
+      selectedProjectId.value =
+        (queryPid && projects.value.some(p => p.id_proyecto === queryPid))
+          ? queryPid
+          : projects.value[0].id_proyecto
+    }
+  } else {
+    selectedProjectId.value = null
+    summary.value = null
   }
 }
 
@@ -66,11 +79,17 @@ async function loadSummary() {
   }
 }
 
-onMounted(async () => {
+async function reloadAll() {
   try { await loadProjects() } catch (err) { error.value = err.message }
   await loadSummary()
-})
+}
 
+onMounted(reloadAll)
+
+// Reload when the active empresa changes (workspace switch)
+watch(() => authStore.idEmpresaActual, reloadAll)
+
+// Reload summary when project selection changes
 watch(selectedProjectId, loadSummary)
 
 // Derived values
@@ -264,9 +283,6 @@ async function submitExpense() {
       <header class="header">
         <div>
           <h1 class="title">Budget Management</h1>
-          <nav class="breadcrumbs">
-            <span class="gold">Dashboard</span> • <span class="gray">Project plans</span>
-          </nav>
         </div>
         <div class="header-actions">
           <select v-model="selectedProjectId" class="project-select">
@@ -408,9 +424,6 @@ async function submitExpense() {
 
 .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; gap: 16px; flex-wrap: wrap; }
 .title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; color: #faf8f5; }
-.breadcrumbs { font-size: 13px; color: #666; margin-top: 6px; }
-.gold { color: #c9a962; }
-.gray { color: #666; }
 
 .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .project-select {
