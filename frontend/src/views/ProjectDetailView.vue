@@ -3,7 +3,6 @@
     <AppNavbar />
 
     <div class="pd-layout">
-
       <!-- Loading -->
       <div v-if="loading" class="state-screen">
         <span class="pd-spinner" />
@@ -13,16 +12,22 @@
       <div v-else-if="error" class="state-screen">
         <p class="state-title">Could not load project</p>
         <p class="state-msg">{{ error }}</p>
-        <button class="btn-primary" style="margin-top:20px" @click="loadAll">Retry</button>
+        <button class="btn-primary" style="margin-top: 20px" @click="loadAll">
+          Retry
+        </button>
       </div>
 
       <template v-else-if="project">
-
         <!-- ── Header ── -->
         <header class="pd-header">
           <RouterLink to="/projects" class="pd-back">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M9 2L4 7l5 5" stroke="#555" stroke-width="1.4" stroke-linecap="square"/>
+              <path
+                d="M9 2L4 7l5 5"
+                stroke="#555"
+                stroke-width="1.4"
+                stroke-linecap="square"
+              />
             </svg>
             Projects
           </RouterLink>
@@ -39,8 +44,21 @@
               <div class="pd-meta-row">
                 <span class="pd-meta-item">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <rect x="1" y="2" width="10" height="9" rx="1" stroke="#555" stroke-width="1.2"/>
-                    <path d="M1 5h10M4 1v2M8 1v2" stroke="#555" stroke-width="1.2" stroke-linecap="square"/>
+                    <rect
+                      x="1"
+                      y="2"
+                      width="10"
+                      height="9"
+                      rx="1"
+                      stroke="#555"
+                      stroke-width="1.2"
+                    />
+                    <path
+                      d="M1 5h10M4 1v2M8 1v2"
+                      stroke="#555"
+                      stroke-width="1.2"
+                      stroke-linecap="square"
+                    />
                   </svg>
                   {{ formatDate(project.fecha_inicio) }}
                   <template v-if="project.fecha_fin_planificada">
@@ -50,25 +68,46 @@
                 <span
                   v-if="daysRemaining !== null"
                   class="pd-meta-item"
-                  :style="{ color: daysRemaining < 0 ? '#fb7185' : daysRemaining <= 7 ? '#f97316' : '#555' }"
+                  :style="{
+                    color:
+                      daysRemaining < 0
+                        ? '#fb7185'
+                        : daysRemaining <= 7
+                          ? '#f97316'
+                          : '#555',
+                  }"
                 >
-                  {{ daysRemaining < 0 ? `${Math.abs(daysRemaining)}d overdue` : `${daysRemaining}d remaining` }}
+                  {{
+                    daysRemaining < 0
+                      ? `${Math.abs(daysRemaining)}d overdue`
+                      : `${daysRemaining}d remaining`
+                  }}
                 </span>
               </div>
 
-              <p v-if="project.descripcion" class="pd-desc">{{ project.descripcion }}</p>
+              <p v-if="project.descripcion" class="pd-desc">
+                {{ project.descripcion }}
+              </p>
             </div>
 
             <div class="pd-header-right">
               <div class="budget-card">
                 <div class="budget-card-top">
                   <span class="budget-label">Budget</span>
-                  <span class="budget-pct" :style="{ color: budgetColor }">{{ budgetPct }}%</span>
+                  <span class="budget-pct" :style="{ color: budgetColor }"
+                    >{{ budgetPct }}%</span
+                  >
                 </div>
                 <ProgressBar :pct="budgetPct" :color="budgetColor" />
                 <div class="budget-amounts">
-                  <span>${{ formatMoney(metrics?.presupuesto?.total_real || 0) }} <small>spent</small></span>
-                  <span>${{ formatMoney(project.presupuesto_total) }} <small>total</small></span>
+                  <span
+                    >${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
+                    <small>spent</small></span
+                  >
+                  <span
+                    >${{ formatMoney(project.presupuesto_total) }}
+                    <small>total</small></span
+                  >
                 </div>
               </div>
             </div>
@@ -91,15 +130,21 @@
         <!-- ── OVERVIEW ── -->
         <section v-if="activeTab === 'overview'" class="tab-panel">
           <div class="overview-grid">
-
             <!-- Task progress -->
             <div class="metric-card">
               <p class="metric-kicker">Task Progress</p>
               <p class="metric-total">{{ totalTasks }} tasks total</p>
               <div class="task-states">
-                <div v-for="s in taskStateRows" :key="s.estado" class="task-state-row">
+                <div
+                  v-for="s in taskStateRows"
+                  :key="s.estado"
+                  class="task-state-row"
+                >
                   <div class="task-state-label">
-                    <span class="task-state-dot" :style="{ background: s.color }"></span>
+                    <span
+                      class="task-state-dot"
+                      :style="{ background: s.color }"
+                    ></span>
                     <span>{{ s.label }}</span>
                   </div>
                   <ProgressBar :pct="s.pct" :color="s.color" style="flex:1" />
@@ -113,11 +158,16 @@
               <p class="metric-kicker">Budget Overview</p>
               <div class="budget-detail-row">
                 <div class="budget-detail-cell">
-                  <div class="budget-detail-val">${{ formatMoney(project.presupuesto_total) }}</div>
+                  <div class="budget-detail-val">
+                    ${{ formatMoney(project.presupuesto_total) }}
+                  </div>
                   <div class="budget-detail-sub">Total budget</div>
                 </div>
                 <div class="budget-detail-cell">
-                  <div class="budget-detail-val" :style="{ color: budgetColor }">
+                  <div
+                    class="budget-detail-val"
+                    :style="{ color: budgetColor }"
+                  >
                     ${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
                   </div>
                   <div class="budget-detail-sub">Spent</div>
@@ -125,7 +175,9 @@
                 <div class="budget-detail-cell">
                   <div
                     class="budget-detail-val"
-                    :style="{ color: budgetRemaining < 0 ? '#fb7185' : '#34d399' }"
+                    :style="{
+                      color: budgetRemaining < 0 ? '#fb7185' : '#34d399',
+                    }"
                   >
                     ${{ formatMoney(Math.abs(budgetRemaining)) }}
                   </div>
@@ -139,11 +191,20 @@
             <div class="metric-card">
               <p class="metric-kicker">Inventory Activity</p>
               <template v-if="metrics?.movimientos?.length">
-                <div v-for="mov in metrics.movimientos" :key="mov.tipo" class="movement-row">
-                  <span class="movement-dot" :style="{ background: movColor(mov.tipo) }"></span>
+                <div
+                  v-for="mov in metrics.movimientos"
+                  :key="mov.tipo"
+                  class="movement-row"
+                >
+                  <span
+                    class="movement-dot"
+                    :style="{ background: movColor(mov.tipo) }"
+                  ></span>
                   <span class="movement-tipo">{{ mov.tipo }}</span>
                   <span class="movement-count">{{ mov.count }}</span>
-                  <span class="movement-total">${{ formatMoney(mov.total || 0) }}</span>
+                  <span class="movement-total"
+                    >${{ formatMoney(mov.total || 0) }}</span
+                  >
                 </div>
               </template>
               <p v-else class="empty-hint">No inventory movements recorded.</p>
@@ -157,13 +218,18 @@
                   <div class="team-role-avatar">{{ role.total }}</div>
                   <div>
                     <div class="team-role-name">{{ role.rol }}</div>
-                    <div class="team-role-sub">{{ role.total === 1 ? '1 member' : `${role.total} members` }}</div>
+                    <div class="team-role-sub">
+                      {{
+                        role.total === 1 ? "1 member" : `${role.total} members`
+                      }}
+                    </div>
                   </div>
                 </div>
               </template>
-              <p v-else class="empty-hint">No roles assigned to this project yet.</p>
+              <p v-else class="empty-hint">
+                No roles assigned to this project yet.
+              </p>
             </div>
-
           </div>
         </section>
 
@@ -188,9 +254,18 @@
               <span class="tasks-count">{{ filteredTasks.length }} tasks</span>
             </div>
 
-            <button v-if="canManageTasks" class="btn-primary" @click="openCreateTask">
+            <button
+              v-if="canManageTasks"
+              class="btn-primary"
+              @click="openCreateTask"
+            >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                <path
+                  d="M8 3v10M3 8h10"
+                  stroke="#0a0a0a"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                />
               </svg>
               New task
             </button>
@@ -256,6 +331,11 @@
           </div>
         </section>
 
+        <!-- ── PROGRESS ── -->
+        <section v-if="activeTab === 'progress'" class="tab-panel">
+          <ProgressTab />
+        </section>
+
       </template>
     </div>
 
@@ -298,6 +378,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import AppNavbar       from '../components/AppNavbar.vue'
 import ProgressBar     from '../components/UI/ProgressBar/ProgressBar.vue'
+import ProgressTab     from '../components/DetailProject/ProgressTab.vue'
 import TaskCard        from '../components/projects/TaskCard.vue'
 import TaskModal       from '../components/projects/TaskModal.vue'
 import TaskDetailModal from '../components/projects/TaskDetailModal.vue'
@@ -305,31 +386,32 @@ import TeamModal       from '../components/projects/TeamModal.vue'
 import TeamDetailModal from '../components/projects/TeamDetailModal.vue'
 import { useAuthStore } from '../stores/auth'
 import {
-  statusStyle, statusLabel, priorityColor,
-  formatDate, formatMoney, isOverdue,
+  statusStyle, statusLabel,
+  formatDate, formatMoney,
 } from '../utils/statusHelpers.js'
+import './ProjectDetailsView.css'
 
-const route     = useRoute()
-const authStore = useAuthStore()
+const route = useRoute();
+const authStore = useAuthStore();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-const project      = ref(null)
-const metrics      = ref(null)
-const tareas       = ref([])
-const loading      = ref(true)
-const error        = ref(null)
-const tasksLoading = ref(false)
-const activeTab    = ref('overview')
+const project = ref(null);
+const metrics = ref(null);
+const tareas = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const tasksLoading = ref(false);
+const activeTab = ref("overview");
 
-const taskFilterEstado    = ref('')
-const taskFilterPrioridad = ref('')
+const taskFilterEstado = ref("");
+const taskFilterPrioridad = ref("");
 
-const showTaskModal  = ref(false)
-const editingTask    = ref(null)
-const taskSubmitting = ref(false)
-const taskError      = ref(null)
-const closingTaskId  = ref(null)
+const showTaskModal = ref(false);
+const editingTask = ref(null);
+const taskSubmitting = ref(false);
+const taskError = ref(null);
+const closingTaskId = ref(null);
 
 const showDetailModal = ref(false)
 const detailTask      = ref(null)
@@ -392,20 +474,22 @@ const filteredTeams = computed(() =>
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────
 const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'tasks',    label: 'Tasks'    },
-  { id: 'team',     label: 'Team'     },
-]
+  { id: "overview", label: "Overview" },
+  { id: "tasks", label: "Tasks" },
+  { id: "team", label: "Team" },
+  { id: "progress", label: "Progress" }, // Placeholder for future feature
+];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const projectId = computed(() => route.params.id)
+const projectId = computed(() => route.params.id);
 
 function authHeader() {
-  const token = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
-  return headers
+  const token = localStorage.getItem("token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  if (authStore.idEmpresaActual)
+    headers["X-Empresa-ID"] = authStore.idEmpresaActual;
+  return headers;
 }
 
 function areaColor(area) {
@@ -419,40 +503,48 @@ function areaColor(area) {
 }
 
 function movColor(tipo) {
-  return { ENTRADA: '#34d399', SALIDA: '#fb7185', AJUSTE: '#60a5fa', GASTO_ADMIN: '#f97316' }[tipo] || '#666'
+  return (
+    {
+      ENTRADA: "#34d399",
+      SALIDA: "#fb7185",
+      AJUSTE: "#60a5fa",
+      GASTO_ADMIN: "#f97316",
+    }[tipo] || "#666"
+  );
 }
 
 // ── Computed ──────────────────────────────────────────────────────────────────
 
-const canManageTasks = computed(() =>
-  project.value?.mis_permisos?.includes('gestionar_tareas') ?? false
-)
+const canManageTasks = computed(
+  () => project.value?.mis_permisos?.includes("gestionar_tareas") ?? false,
+);
 
 const daysRemaining = computed(() => {
-  if (!project.value?.fecha_fin_planificada) return null
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const end   = new Date(project.value.fecha_fin_planificada)
-  return Math.round((end - today) / 86_400_000)
-})
+  if (!project.value?.fecha_fin_planificada) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const end = new Date(project.value.fecha_fin_planificada);
+  return Math.round((end - today) / 86_400_000);
+});
 
 const budgetPct = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0)
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0)
-  if (!total) return 0
-  return Math.round((spent / total) * 100)
-})
+  const total = Number(project.value?.presupuesto_total || 0);
+  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
+  if (!total) return 0;
+  return Math.round((spent / total) * 100);
+});
 
 const budgetColor = computed(() => {
-  if (budgetPct.value >= 100) return '#fb7185'
-  if (budgetPct.value >= 80)  return '#f97316'
-  return '#34d399'
-})
+  if (budgetPct.value >= 100) return "#fb7185";
+  if (budgetPct.value >= 80) return "#f97316";
+  return "#34d399";
+});
 
 const budgetRemaining = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0)
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0)
-  return total - spent
-})
+  const total = Number(project.value?.presupuesto_total || 0);
+  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
+  return total - spent;
+});
 
 const TASK_STATE_META = [
   { estado: 'PENDIENTE',   label: 'Pending',    color: '#60a5fa' },
@@ -462,52 +554,62 @@ const TASK_STATE_META = [
 ]
 
 const totalTasks = computed(() =>
-  (metrics.value?.tareas || []).reduce((acc, t) => acc + Number(t.count), 0)
-)
+  (metrics.value?.tareas || []).reduce((acc, t) => acc + Number(t.count), 0),
+);
 
 const taskStateRows = computed(() => {
-  const total = totalTasks.value || 1
-  return TASK_STATE_META.map(meta => {
-    const found = (metrics.value?.tareas || []).find(t => t.estado === meta.estado)
-    const count = found ? Number(found.count) : 0
-    return { ...meta, count, pct: Math.round((count / total) * 100) }
-  })
-})
+  const total = totalTasks.value || 1;
+  return TASK_STATE_META.map((meta) => {
+    const found = (metrics.value?.tareas || []).find(
+      (t) => t.estado === meta.estado,
+    );
+    const count = found ? Number(found.count) : 0;
+    return { ...meta, count, pct: Math.round((count / total) * 100) };
+  });
+});
 
 const filteredTasks = computed(() =>
-  tareas.value.filter(t => {
-    if (taskFilterEstado.value    && t.estado    !== taskFilterEstado.value)    return false
-    if (taskFilterPrioridad.value && t.prioridad !== taskFilterPrioridad.value) return false
-    return true
-  })
-)
+  tareas.value.filter((t) => {
+    if (taskFilterEstado.value && t.estado !== taskFilterEstado.value)
+      return false;
+    if (taskFilterPrioridad.value && t.prioridad !== taskFilterPrioridad.value)
+      return false;
+    return true;
+  }),
+);
 
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 async function loadProject() {
-  const res = await fetch(`/api/projects/${projectId.value}`, { headers: authHeader() })
-  if (res.status === 404) throw new Error('Project not found.')
-  if (!res.ok)            throw new Error(`HTTP ${res.status}`)
-  const data = await res.json()
-  project.value = data.data
+  const res = await fetch(`/api/projects/${projectId.value}`, {
+    headers: authHeader(),
+  });
+  if (res.status === 404) throw new Error("Project not found.");
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  project.value = data.data;
 }
 
 async function loadMetrics() {
-  const res = await fetch(`/api/projects/${projectId.value}/metrics`, { headers: authHeader() })
-  if (!res.ok) return
-  const data = await res.json()
-  metrics.value = data.data
+  const res = await fetch(`/api/projects/${projectId.value}/metrics`, {
+    headers: authHeader(),
+  });
+  if (!res.ok) return;
+  const data = await res.json();
+  metrics.value = data.data;
 }
 
 async function loadTasks() {
-  tasksLoading.value = true
+  tasksLoading.value = true;
   try {
-    const res = await fetch(`/api/projects/${projectId.value}/tareas`, { headers: authHeader() })
-    if (!res.ok) return
-    const data = await res.json()
-    tareas.value = data.data ?? []
+    const res = await fetch(`/api/projects/${projectId.value}/tareas`, {
+      headers: authHeader(),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    tareas.value = data.data ?? [];
   } finally {
-    tasksLoading.value = false
+    tasksLoading.value = false;
   }
 }
 
@@ -519,15 +621,15 @@ async function loadMembers() {
 }
 
 async function loadAll() {
-  loading.value = true
-  error.value   = null
+  loading.value = true;
+  error.value = null;
   try {
     await loadProject()
     await Promise.all([loadMetrics(), loadTasks(), loadMembers()])
   } catch (err) {
-    error.value = err.message
+    error.value = err.message;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -569,36 +671,39 @@ async function submitTask(formData) {
     }
     const url    = editingTask.value
       ? `/api/projects/${projectId.value}/tareas/${editingTask.value.id_tarea}`
-      : `/api/projects/${projectId.value}/tareas`
-    const method = editingTask.value ? 'PUT' : 'POST'
+      : `/api/projects/${projectId.value}/tareas`;
+    const method = editingTask.value ? "PUT" : "POST";
 
-    const res  = await fetch(url, {
+    const res = await fetch(url, {
       method,
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
-      body:    JSON.stringify(body),
-    })
-    const data = await res.json()
-    if (!res.ok) { taskError.value = data.message || `Error ${res.status}`; return }
+      headers: { ...authHeader(), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      taskError.value = data.message || `Error ${res.status}`;
+      return;
+    }
 
     showTaskModal.value = false
     await Promise.all([loadTasks(), loadMetrics()])
   } catch {
-    taskError.value = 'Network error, try again.'
+    taskError.value = "Network error, try again.";
   } finally {
-    taskSubmitting.value = false
+    taskSubmitting.value = false;
   }
 }
 
 async function closeTask(task) {
-  closingTaskId.value = task.id_tarea
+  closingTaskId.value = task.id_tarea;
   try {
     const res = await fetch(
       `/api/projects/${projectId.value}/tareas/${task.id_tarea}/cerrar`,
-      { method: 'PATCH', headers: authHeader() }
-    )
-    if (res.ok) await Promise.all([loadTasks(), loadMetrics()])
+      { method: "PATCH", headers: authHeader() },
+    );
+    if (res.ok) await Promise.all([loadTasks(), loadMetrics()]);
   } finally {
-    closingTaskId.value = null
+    closingTaskId.value = null;
   }
 }
 
@@ -655,279 +760,3 @@ function deleteTeam(team) {
 onMounted(loadAll)
 watch(() => route.params.id, loadAll)
 </script>
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-.list-header {
-  display: grid;
-  grid-template-columns: 3fr 2fr 1fr 1fr;
-  padding: 0 20px 10px 20px;
-  font-size: 15px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #6c6565;
-  border-bottom: 1px solid #1a1a1a;
-  margin-bottom: 10px;
-}
-.list-row {
-  display: grid !important;
-  grid-template-columns: 3fr 2fr 1fr 1fr;
-  align-items: center;
-  padding: 0 20px 0 0 !important;
-}
-.list-name-col {
-  display: flex; align-items: center; gap: 10px; min-width: 0;
-}
-.list-cell-num { color: #888; font-size: 15px; }
-
-.filter-input {
-  background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 12px;
-  padding: 8px 12px; outline: none; transition: border-color 0.15s;
-}
-.filter-input:focus { border-color: #c9a962; }
-.filter-input::placeholder { color: #444; }
-
-.task-name-link { cursor: pointer; }
-.task-name-link:hover { text-decoration: underline; }
-
-.pd-root {
-  background: transparent; min-height: 100vh;
-}
-
-.pd-layout {
-  font-family: 'Manrope', sans-serif; color: #faf8f5;
-  min-height: calc(100vh - 56px); margin-top: 56px;
-  background: rgba(10,10,10,0.82); display: flex; flex-direction: column;
-}
-
-.state-screen {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
-}
-.state-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #faf8f5; }
-.state-msg   { font-size: 14px; color: #888; }
-
-.pd-spinner {
-  display: inline-block; width: 32px; height: 32px;
-  border: 2px solid rgba(255,255,255,0.1); border-top-color: #c9a962;
-  border-radius: 50%; animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.pd-header {
-  padding: 40px 56px 0; display: flex; flex-direction: column; gap: 20px;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-.pd-back {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; color: #555; text-decoration: none;
-  transition: color 0.15s; width: fit-content;
-}
-.pd-back:hover { color: #888; }
-
-.pd-header-body {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 40px; padding-bottom: 32px;
-}
-
-.pd-header-left {
-  display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0;
-}
-
-.pd-title-row {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-
-.pd-title {
-  font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400;
-  color: #faf8f5; line-height: 1.1;
-}
-
-.status-badge {
-  display: inline-flex; align-items: center;
-  padding: 4px 12px; border: 1px solid;
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  white-space: nowrap; flex-shrink: 0;
-}
-
-.pd-meta-row {
-  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-}
-
-.pd-meta-item {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12px; color: #555;
-}
-
-.pd-desc { font-size: 14px; color: #888; line-height: 1.6; max-width: 640px; }
-
-.pd-header-right { flex-shrink: 0; }
-
-.budget-card {
-  background: rgba(15,15,15,0.8); border: 1px solid #1f1f1f;
-  padding: 20px 24px; min-width: 260px;
-  display: flex; flex-direction: column; gap: 12px;
-}
-
-.budget-card-top {
-  display: flex; justify-content: space-between; align-items: center;
-}
-
-.budget-label { font-size: 10px; letter-spacing: 0.1em; color: #444; text-transform: uppercase; }
-.budget-pct   { font-size: 20px; font-weight: 700; }
-
-.budget-amounts {
-  display: flex; justify-content: space-between; font-size: 12px; color: #888;
-}
-.budget-amounts small { font-size: 10px; color: #555; }
-
-.pd-tabs {
-  display: flex; gap: 32px; padding: 0 56px;
-  border-bottom: 1px solid #1f1f1f;
-}
-
-.pd-tab {
-  background: none; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 13px; color: #555;
-  padding: 16px 0; border-bottom: 2px solid transparent; transition: color 0.15s;
-}
-.pd-tab.active { color: #c9a962; border-bottom-color: #c9a962; }
-.pd-tab:hover:not(.active) { color: #888; }
-
-.tab-panel { padding: 40px 56px; flex: 1; }
-
-.overview-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
-}
-
-.metric-card {
-  background: rgba(15,15,15,0.7); border: 1px solid #1f1f1f;
-  padding: 24px; display: flex; flex-direction: column; gap: 16px;
-}
-
-.metric-kicker {
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #c9a962;
-}
-
-.metric-total { font-size: 13px; color: #555; }
-
-.task-states { display: flex; flex-direction: column; gap: 10px; }
-
-.task-state-row {
-  display: flex; align-items: center; gap: 10px;
-}
-.task-state-label {
-  display: flex; align-items: center; gap: 7px;
-  width: 110px; flex-shrink: 0; font-size: 12px; color: #888;
-}
-.task-state-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.task-state-count { font-size: 12px; color: #555; width: 20px; text-align: right; flex-shrink: 0; }
-
-.budget-detail-row { display: flex; gap: 24px; }
-.budget-detail-cell { flex: 1; }
-.budget-detail-val { font-size: 22px; font-weight: 700; line-height: 1; }
-.budget-detail-sub { font-size: 11px; color: #555; margin-top: 4px; }
-
-.movement-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0; border-bottom: 1px solid #111;
-}
-.movement-row:last-child { border-bottom: none; }
-.movement-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.movement-tipo { font-size: 12px; color: #faf8f5; flex: 1; }
-.movement-count { font-size: 11px; color: #555; }
-.movement-total { font-size: 12px; color: #888; min-width: 60px; text-align: right; }
-
-.team-role-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 8px 0; border-bottom: 1px solid #111;
-}
-.team-role-row:last-child { border-bottom: none; }
-.team-role-avatar {
-  width: 36px; height: 36px;
-  background: rgba(201,169,98,0.1); border: 1px solid rgba(201,169,98,0.2);
-  color: #c9a962; display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; flex-shrink: 0;
-}
-.team-role-name { font-size: 13px; color: #faf8f5; }
-.team-role-sub  { font-size: 11px; color: #555; margin-top: 2px; }
-
-.empty-hint { font-size: 13px; color: #444; }
-
-.tasks-toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 24px; gap: 16px;
-}
-
-.tasks-filters {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-
-.filter-select {
-  appearance: none; background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 12px;
-  padding: 8px 12px; outline: none; transition: border-color 0.15s; cursor: pointer;
-}
-.filter-select:focus { border-color: #c9a962; }
-.filter-select option { background: #0f0f0f; }
-
-.tasks-count { font-size: 12px; color: #444; }
-.tasks-loading { font-size: 13px; color: #555; padding: 32px 0; }
-.tasks-list { display: flex; flex-direction: column; gap: 8px; }
-
-.task-card {
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 16px; padding: 16px 20px;
-  background: rgba(15,15,15,0.7); border: 1px solid #1f1f1f;
-  transition: border-color 0.15s;
-}
-.task-card:hover { border-color: #2a2a2a; }
-
-.task-name { font-size: 16px; color: #faf8f5; }
-
-.priority-bar { width: 3px; min-height: 36px; flex-shrink: 0; }
-
-.area-badge {
-  font-size: 11px; color: #c9a962;
-  background: rgba(201,169,98,0.1); border: 1px solid rgba(201,169,98,0.2);
-  padding: 3px 10px; white-space: nowrap;
-}
-
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: #0a0a0a; white-space: nowrap; transition: filter 0.15s;
-}
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.empty-state { text-align: center; padding: 60px 0; color: #555; font-size: 14px; }
-.icon16 { width: 16px; height: 16px; flex-shrink: 0; }
-
-@media (max-width: 1100px) {
-  .pd-header, .pd-tabs, .tab-panel { padding-left: 40px; padding-right: 40px; }
-  .overview-grid { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 900px) {
-  .pd-header, .pd-tabs, .tab-panel { padding-left: 28px; padding-right: 28px; }
-  .pd-header-body { flex-direction: column; gap: 24px; }
-  .budget-card { min-width: unset; width: 100%; }
-  .pd-title { font-size: 32px; }
-}
-
-@media (max-width: 640px) {
-  .pd-header, .pd-tabs, .tab-panel { padding-left: 16px; padding-right: 16px; }
-  .pd-title { font-size: 26px; }
-  .overview-grid { grid-template-columns: 1fr; }
-  .tasks-toolbar { flex-direction: column; align-items: flex-start; }
-  .pd-tabs { gap: 20px; overflow-x: auto; }
-}
-</style>
