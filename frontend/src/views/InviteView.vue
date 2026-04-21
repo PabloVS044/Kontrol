@@ -31,7 +31,7 @@
             <div v-if="isProjectInvite" class="summary-row">
               <span class="summary-label">Project permissions</span>
               <span class="summary-value">
-                {{ inviteData.permisos_proyecto?.length ? inviteData.permisos_proyecto.join(', ') : 'No explicit permissions' }}
+                {{ inviteData.permisos_proyecto?.length ? projectPermissionListLabel(inviteData.permisos_proyecto) : 'No explicit permissions' }}
               </span>
             </div>
             <div class="summary-row">
@@ -97,6 +97,7 @@ import { useAuthStore } from '@/stores/auth'
 import { loginWithGoogle } from '@/services/auth'
 import { getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 import { getInviteErrorMessage } from '@/utils/invitation'
+import { projectPermissionListLabel } from '@/utils/projectAccessLabels'
 
 const route = useRoute()
 const router = useRouter()
@@ -153,8 +154,8 @@ async function loadInvitation() {
 
   try {
     const candidates = [
-      `/api/empresas/invitaciones/${encodeURIComponent(token.value)}`,
-      `/api/projects/invitaciones/${encodeURIComponent(token.value)}`,
+      `/api/companies/invitations/${encodeURIComponent(token.value)}`,
+      `/api/projects/invitations/${encodeURIComponent(token.value)}`,
     ]
 
     let loadedInvitation = null
@@ -200,8 +201,8 @@ async function acceptInvite() {
 
   try {
     const acceptPath = isProjectInvite.value
-      ? `/api/projects/invitaciones/${encodeURIComponent(token.value)}/accept`
-      : `/api/empresas/invitaciones/${encodeURIComponent(token.value)}/accept`
+      ? `/api/projects/invitations/${encodeURIComponent(token.value)}/accept`
+      : `/api/companies/invitations/${encodeURIComponent(token.value)}/accept`
 
     const res = await fetch(acceptPath, {
       method: 'POST',

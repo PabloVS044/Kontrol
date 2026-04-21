@@ -81,7 +81,7 @@ export const getCollaboratorRole = async (client) => {
   )
 
   if (!result.rows.length) {
-    throw new Error('Rol collaborator no encontrado. Verifica el seed de la base de datos.')
+    throw new Error('Collaborator role not found. Check the database seed data.')
   }
 
   return result.rows[0]
@@ -117,7 +117,7 @@ export const getOrCreateActiveInvitation = async ({ client, id_empresa, id_usuar
     }
   }
 
-  throw new Error('No se pudo generar el enlace de invitación.')
+  throw new Error('Could not generate the invitation link.')
 }
 
 export const deactivateActiveInvitation = async ({ client, id_empresa, req }) => {
@@ -140,7 +140,7 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
     return {
       success: false,
       code: 'invite_not_found',
-      message: 'La invitación no existe.',
+      message: 'The invitation does not exist.',
       invitation: null,
       empresa: null,
     }
@@ -150,7 +150,7 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
     return {
       success: false,
       code: 'invite_inactive',
-      message: 'La invitación ya no está activa.',
+      message: 'This invitation is no longer active.',
       invitation: serializeInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
     }
@@ -178,7 +178,7 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
       joined: false,
       alreadyMember: true,
       code: 'already_member',
-      message: 'Ya perteneces a esta empresa.',
+      message: 'You already belong to this company.',
       invitation: serializeInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
       membership: {
@@ -205,7 +205,7 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
       joined: false,
       alreadyMember: true,
       code: 'already_member',
-      message: 'Ya perteneces a esta empresa.',
+      message: 'You already belong to this company.',
       invitation: serializeInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
       membership: {
@@ -226,7 +226,7 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
     joined: true,
     alreadyMember: false,
     code: 'accepted',
-    message: 'Te uniste a la empresa correctamente.',
+    message: 'You joined the company successfully.',
     invitation: serializeInvitation(invitation, req),
     empresa: serializeInvitationCompany(invitation),
     membership: {

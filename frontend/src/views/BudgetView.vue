@@ -29,7 +29,7 @@ const DONUT_CIRCUMFERENCE = 2 * Math.PI * 40 // r=40
 function authHeader() {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
   return headers
 }
 
@@ -165,7 +165,7 @@ async function submitActivity() {
       const body = {
         nombre:            activityForm.value.nombre,
         monto_planificado: activityForm.value.monto_planificado,
-        id_proyecto:       selectedProjectId.value,
+        projectId:         selectedProjectId.value,
       }
       if (activityForm.value.monto_real !== null && activityForm.value.monto_real !== '') {
         body.monto_real = activityForm.value.monto_real
@@ -206,9 +206,9 @@ async function submitExpense() {
     await apiFetch('/api/budgets/register-expense', {
       method: 'POST',
       body: JSON.stringify({
-        id_proyecto:      selectedProjectId.value,
-        nombre_actividad: expenseForm.value.nombre_actividad,
-        monto_gasto:      expenseForm.value.monto_gasto,
+        projectId:      selectedProjectId.value,
+        activityName:   expenseForm.value.nombre_actividad,
+        expenseAmount:  expenseForm.value.monto_gasto,
       }),
     })
     showExpenseModal.value = false

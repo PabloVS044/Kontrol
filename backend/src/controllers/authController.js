@@ -4,7 +4,7 @@ import pool from '../db/pool.js'
 import {
   acceptCompanyInvitation,
   getInvitationByToken as getCompanyInvitationByToken,
-} from '../services/empresaInvitacionService.js'
+} from '../services/companyInvitationService.js'
 import {
   acceptProjectInvitation,
   getProjectInvitationByToken,
@@ -59,7 +59,7 @@ const maybeResolveInvite = async ({ client, inviteToken, id_usuario, req }) => {
   return {
     success: false,
     code: 'invite_not_found',
-    message: 'La invitación no existe.',
+    message: 'The invitation does not exist.',
     invitation: null,
     empresa: null,
     proyecto: null,
@@ -107,12 +107,12 @@ export const register = async (req, res) => {
   try {
     const dup = await client.query('SELECT id_usuario FROM public.usuario WHERE email = $1', [email])
     if (dup.rows.length) {
-      return res.status(409).json({ success: false, message: 'El email ya está registrado.' })
+      return res.status(409).json({ success: false, message: 'This email is already registered.' })
     }
 
     const rolRow = await client.query('SELECT id_rol FROM public.rol WHERE nombre_rol = $1', [platformRole])
     if (!rolRow.rows.length) {
-      return res.status(400).json({ success: false, message: `El rol "${platformRole}" no existe.` })
+      return res.status(400).json({ success: false, message: `The role "${platformRole}" does not exist.` })
     }
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
@@ -161,18 +161,18 @@ export const login = async (req, res) => {
     )
 
     if (!result.rows.length) {
-      return res.status(401).json({ success: false, message: 'Credenciales inválidas.' })
+      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
     }
 
     const user = result.rows[0]
 
     if (!user.activo) {
-      return res.status(403).json({ success: false, message: 'Cuenta desactivada.' })
+      return res.status(403).json({ success: false, message: 'Account disabled.' })
     }
 
     const valid = await bcrypt.compare(password, user.password_hash)
     if (!valid) {
-      return res.status(401).json({ success: false, message: 'Credenciales inválidas.' })
+      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
     }
 
     const invite = await maybeResolveInvite({
@@ -200,7 +200,7 @@ export const getMe = async (req, res) => {
     [req.user.id_usuario]
   )
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
+    return res.status(404).json({ success: false, message: 'User not found.' })
   }
   return res.json({ success: true, data: result.rows[0] })
 }

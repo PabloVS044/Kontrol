@@ -15,7 +15,7 @@
       <div class="form-row">
         <div class="form-field">
           <label>Area</label>
-          <span class="area-badge" style="width: fit-content;">{{ team.area }}</span>
+          <span class="area-badge" style="width: fit-content;">{{ areaLabel(team.area) }}</span>
         </div>
         <div class="form-field">
           <label>Members</label>
@@ -71,12 +71,28 @@ const show = computed({
 
 function areaColor(area) {
   return {
-    'Desarrollo':      '#60a5fa',
-    'Diseño':          '#60a5fa',
-    'Calidad':         '#34d399',
-    'Infraestructura': '#f97316',
-    'Gestión':         '#c9a962',
+    Development: '#60a5fa',
+    Engineering: '#60a5fa',
+    Design: '#60a5fa',
+    Quality: '#34d399',
+    Infrastructure: '#f97316',
+    Management: '#c9a962',
+    Desarrollo: '#60a5fa',
+    Diseño: '#60a5fa',
+    Calidad: '#34d399',
+    Infraestructura: '#f97316',
+    Gestión: '#c9a962',
   }[area] || '#555'
+}
+
+function areaLabel(area) {
+  return {
+    Desarrollo: 'Engineering',
+    Diseño: 'Design',
+    Calidad: 'Quality',
+    Infraestructura: 'Infrastructure',
+    Gestión: 'Management',
+  }[area] || area
 }
 </script>
 

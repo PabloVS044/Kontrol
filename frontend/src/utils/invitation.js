@@ -1,6 +1,6 @@
 export const INVITE_ERROR_MESSAGES = {
-  invite_not_found: 'La invitación no existe o fue eliminada.',
-  invite_inactive: 'El enlace de invitación ya fue desactivado por el owner.',
+  invite_not_found: 'The invitation does not exist or was removed.',
+  invite_inactive: 'The invitation link was already deactivated by the owner.',
 }
 
 export function getInviteTokenFromQuery(query) {
@@ -11,5 +11,5 @@ export function getInviteTokenFromQuery(query) {
 
 export function getInviteErrorMessage(code) {
   if (!code || typeof code !== 'string') return ''
-  return INVITE_ERROR_MESSAGES[code] || 'No se pudo procesar la invitación.'
+  return INVITE_ERROR_MESSAGES[code] || 'The invitation could not be processed.'
 }

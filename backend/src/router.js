@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
-import productoRoutes from './routes/productoRoutes.js'
-import proveedorRoutes from './routes/proveedorRoutes.js'
-import movimientoRoutes from './routes/movimientoRoutes.js'
+import productRoutes from './routes/productRoutes.js'
+import supplierRoutes from './routes/supplierRoutes.js'
+import inventoryMovementRoutes from './routes/inventoryMovementRoutes.js'
 import projectRoutes from './routes/projectRoutes.js'
-import empresaRoutes from './routes/empresaRoutes.js'
-import reportesRoutes from './routes/reportsRoutes.js'
+import companyRoutes from './routes/companyRoutes.js'
+import reportsRoutes from './routes/reportsRoutes.js'
 import budgetRoutes from './routes/budgetRoutes.js'
-import tareaRoutes from './routes/tareaRoutes.js'
+import taskRoutes from './routes/taskRoutes.js'
 
 
 const router = Router()
@@ -19,14 +19,14 @@ router.get('/health', (req, res) => {
 
 router.use('/auth', authRoutes)
 router.use('/users', userRoutes)
-router.use('/productos', productoRoutes)
-router.use('/proveedores', proveedorRoutes)
-router.use('/movimientos', movimientoRoutes)
+router.use('/products', productRoutes)
+router.use('/suppliers', supplierRoutes)
+router.use('/inventory-movements', inventoryMovementRoutes)
 router.use('/projects', projectRoutes)
-router.use('/empresas', empresaRoutes)
-router.use('/reportes', reportesRoutes)
+router.use('/companies', companyRoutes)
+router.use('/reports', reportsRoutes)
 router.use('/budgets', budgetRoutes)
-router.use('/projects/:id_proyecto/tareas', tareaRoutes)
+router.use('/projects/:projectId/tasks', taskRoutes)
 
 
 export default router

@@ -11,9 +11,9 @@ const TAREA_SELECT = `
     id_proyecto
 `
 
-// GET /api/projects/:id_proyecto/tareas
-export const getTareas = async (req, res) => {
-    const { id_proyecto } = req.params
+// GET /api/projects/:projectId/tasks
+export const getTasks = async (req, res) => {
+    const { projectId: id_proyecto } = req.params
 
     const result = await pool.query(
         `SELECT t.id_tarea, t.nombre, t.descripcion, t.estado, t.prioridad, t.fecha_vencimiento, t.id_proyecto,
@@ -28,9 +28,9 @@ export const getTareas = async (req, res) => {
     return res.json({ success: true, data: result.rows })
 }
 
-// GET /api/projects/:id_proyecto/tareas/:id
-export const getTareaById = async (req, res) => {
-    const { id_proyecto, id } = req.params
+// GET /api/projects/:projectId/tasks/:id
+export const getTaskById = async (req, res) => {
+    const { projectId: id_proyecto, id } = req.params
 
         const result = await pool.query(
         `SELECT t.id_tarea, t.nombre, t.descripcion, t.estado, t.prioridad, t.fecha_vencimiento, t.id_proyecto,
@@ -46,15 +46,15 @@ export const getTareaById = async (req, res) => {
 
 
     if (!result.rows.length) {
-        return res.status(404).json({ success: false, message: 'Tarea no encontrada.' })
+        return res.status(404).json({ success: false, message: 'Task not found.' })
     }
 
     return res.json({ success: true, data: result.rows[0] })
 }
 
-// POST /api/projects/:id_proyecto/tareas
-export const createTarea = async (req, res) => {
-    const { id_proyecto } = req.params
+// POST /api/projects/:projectId/tasks
+export const createTask = async (req, res) => {
+    const { projectId: id_proyecto } = req.params
     const { nombre, descripcion, estado, prioridad, fecha_vencimiento, id_asignado } = req.body
 
     const result = await pool.query(
@@ -82,7 +82,7 @@ export const createTarea = async (req, res) => {
             )
         } catch (err) {
             if (err.code === '23503') {
-                return res.status(400).json({ success: false, message: 'El usuario no es miembro del proyecto.' })
+                return res.status(400).json({ success: false, message: 'The user is not a member of the project.' })
             }
             throw err
         }
@@ -92,9 +92,9 @@ export const createTarea = async (req, res) => {
 }
 
 
-// PUT /api/projects/:id_proyecto/tareas/:id
-export const updateTarea = async (req, res) => {
-    const { id_proyecto, id } = req.params
+// PUT /api/projects/:projectId/tasks/:id
+export const updateTask = async (req, res) => {
+    const { projectId: id_proyecto, id } = req.params
     const { nombre, descripcion, estado, prioridad, fecha_vencimiento, id_asignado } = req.body
 
     const existing = await pool.query(
@@ -102,7 +102,7 @@ export const updateTarea = async (req, res) => {
         [id, id_proyecto]
     )
     if (!existing.rows.length) {
-        return res.status(404).json({ success: false, message: 'Tarea no encontrada.' })
+        return res.status(404).json({ success: false, message: 'Task not found.' })
     }
 
     const setClauses = []
@@ -138,7 +138,7 @@ export const updateTarea = async (req, res) => {
         }
     } catch (err) {
         if (err.code === '23503') {
-            return res.status(400).json({ success: false, message: 'El usuario no es miembro del proyecto.' })
+            return res.status(400).json({ success: false, message: 'The user is not a member of the project.' })
         }
         throw err
     }
@@ -153,9 +153,9 @@ export const updateTarea = async (req, res) => {
     return res.json({ success: true, data: updated.rows[0] })
 }
 
-// PATCH /api/projects/:id_proyecto/tareas/:id/cerrar
-export const cerrarTarea = async (req, res) => {
-    const { id_proyecto, id } = req.params
+// PATCH /api/projects/:projectId/tasks/:id/close
+export const closeTask = async (req, res) => {
+    const { projectId: id_proyecto, id } = req.params
 
     const existing = await pool.query(
         'SELECT id_tarea, estado FROM public.tarea WHERE id_tarea = $1 AND id_proyecto = $2',
@@ -163,11 +163,11 @@ export const cerrarTarea = async (req, res) => {
     )
 
     if (!existing.rows.length) {
-        return res.status(404).json({ success: false, message: 'Tarea no encontrada.' })
+        return res.status(404).json({ success: false, message: 'Task not found.' })
     }
 
     if (existing.rows[0].estado === 'COMPLETADA') {
-        return res.status(400).json({ success: false, message: 'La tarea ya está completada.' })
+        return res.status(400).json({ success: false, message: 'The task is already completed.' })
     }
 
     const result = await pool.query(

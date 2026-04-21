@@ -3,11 +3,11 @@ import pool from "../db/pool.js";
 /**
  * Reports controller.
  * Handles CRUD operations for the reporte table.
- * Expected route prefix: /api/reportes
+ * Expected route prefix: /api/reports
  */
 
 /**
- * GET /api/reportes
+ * GET /api/reports
  * Returns all reports from the database.
  */
 export const getReports = async (req, res) => {
@@ -23,7 +23,7 @@ export const getReports = async (req, res) => {
 }
 
 /**
- * GET /api/reportes/:id
+ * GET /api/reports/:id
  * Params:
  *   id - report ID
  * Returns the requested report or 404 if not found.
@@ -36,7 +36,7 @@ export const getReportById = async (req, res) => {
             `, [id])
 
         if (!result.rows.length) {
-            return res.status(404).json({ success: false, message: "Reporte no encontrado" })
+            return res.status(404).json({ success: false, message: "Report not found" })
         }
 
         return res.status(200).json({ success: true, data: result.rows[0] })
@@ -46,7 +46,7 @@ export const getReportById = async (req, res) => {
 }
 
 /**
- * POST /api/reportes
+ * POST /api/reports
  * Body: { titulo, tipo, contenido_url, id_proyecto, id_usuario }
  * Creates a new report entry.
  */
@@ -59,7 +59,7 @@ export const createReport = async (req, res) => {
             VALUES ($1, $2, $3, $4, $5)
         `, [titulo, tipo, contenido_url, id_proyecto, id_usuario]);
 
-        return res.status(201).json({ success: true, message: "Reporte creado correctamente" });
+        return res.status(201).json({ success: true, message: "Report created successfully" });
     } catch (error) {
         console.error('Error creating report:', error); // Log internally
         return res.status(500).json({ success: false, error: 'Internal server error' });
@@ -67,7 +67,7 @@ export const createReport = async (req, res) => {
 };
 
 /**
- * PUT /api/reportes/:id
+ * PUT /api/reports/:id
  * Params:
  *   id - report ID
  * Body: { titulo, tipo, contenido_url, id_proyecto }
@@ -85,19 +85,19 @@ export const updateReport = async (req, res) => {
             `, [titulo, tipo, contenido_url, id_proyecto, id])
 
         if (!result.rows.length) {
-            return res.status(404).json({ success: false, message: "Reporte no encontrado" })
+            return res.status(404).json({ success: false, message: "Report not found" })
         }
 
         return res.status(200).json({ success: true, data: result.rows[0] })
 
     } catch (error) {
         console.error(error)
-        res.status(500).json({ success: false, message: "Error con el servidor" })
+        res.status(500).json({ success: false, message: "Server error" })
     }
 }
 
 /**
- * DELETE /api/reportes/:id
+ * DELETE /api/reports/:id
  * Params:
  *   id - report ID
  * Deletes the requested report.
@@ -111,15 +111,15 @@ export const deleteReport = async (req, res) => {
             `, [id])
 
         if (!existing.rows.length) {
-            return res.status(404).json({ success: false, message: "Reporte no encontrado" })
+            return res.status(404).json({ success: false, message: "Report not found" })
         }
 
         const result = await pool.query(`
             DELETE FROM reporte WHERE id_reporte = $1
             `, [id])
 
-        return res.status(200).json({ success: true, message: "Reporte eliminado" })
+        return res.status(200).json({ success: true, message: "Report deleted" })
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Error del servidor" })
+        return res.status(500).json({ success: false, message: "Server error" })
     }
 }

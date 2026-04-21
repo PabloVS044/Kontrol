@@ -16,9 +16,9 @@ try {
   await ensureDatabaseSchema()
 
   app.listen(PORT, () => {
-    console.log(`Backend corriendo en http://localhost:${PORT}`)
+    console.log(`Backend running at http://localhost:${PORT}`)
   })
 } catch (error) {
-  console.error('No se pudo inicializar el backend:', error)
+  console.error('Could not initialize the backend:', error)
   process.exit(1)
 }

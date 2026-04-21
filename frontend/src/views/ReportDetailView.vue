@@ -487,11 +487,11 @@ const mock = computed(() => {
   const tasksBlocked      = totalTasks - tasksCompleted - tasksInProgress - tasksPending
 
   const names = [
-    { name: 'Ana García',    role: 'Project Lead',   initials: 'AG', avatarBg: 'rgba(201,169,98,0.15)',  statusCls: 'st-active',    status: 'Active'   },
-    { name: 'Carlos Ruiz',   role: 'Developer',      initials: 'CR', avatarBg: 'rgba(96,165,250,0.12)',  statusCls: 'st-active',    status: 'Active'   },
-    { name: 'María López',   role: 'Designer',       initials: 'ML', avatarBg: 'rgba(167,139,250,0.12)', statusCls: 'st-idle',      status: 'Idle'     },
-    { name: 'Diego Martínez',role: 'QA Engineer',    initials: 'DM', avatarBg: 'rgba(74,222,128,0.1)',   statusCls: 'st-active',    status: 'Active'   },
-    { name: 'Sofia Herrera', role: 'Analyst',        initials: 'SH', avatarBg: 'rgba(251,146,60,0.1)',   statusCls: 'st-away',      status: 'Away'     },
+    { name: 'Anna Carter',   role: 'Project Lead',   initials: 'AC', avatarBg: 'rgba(201,169,98,0.15)',  statusCls: 'st-active',    status: 'Active'   },
+    { name: 'Carlos Reed',   role: 'Developer',      initials: 'CR', avatarBg: 'rgba(96,165,250,0.12)',  statusCls: 'st-active',    status: 'Active'   },
+    { name: 'Maya Lopez',    role: 'Designer',       initials: 'ML', avatarBg: 'rgba(167,139,250,0.12)', statusCls: 'st-idle',      status: 'Idle'     },
+    { name: 'Daniel Morris', role: 'QA Engineer',    initials: 'DM', avatarBg: 'rgba(74,222,128,0.1)',   statusCls: 'st-active',    status: 'Active'   },
+    { name: 'Sophie Harper', role: 'Analyst',        initials: 'SH', avatarBg: 'rgba(251,146,60,0.1)',   statusCls: 'st-away',      status: 'Away'     },
   ]
   const teamSize = seeded(id + 8, 2, 5)
   const team = names.slice(0, teamSize)
@@ -516,11 +516,11 @@ const mock = computed(() => {
   ]
 
   const activities = [
-    { id:1, type:'task',   text:`Task "${project.value.nombre} — Sprint ${seeded(id,1,5)}" marked as complete`, who:'Ana García',     time:'2h ago',  tag:'Task',   tagCls:'tag-green'  },
-    { id:2, type:'budget', text:`Budget allocation updated: +${formatBudget(seeded(id+1,1000,8000))} approved`,  who:'Carlos Ruiz',    time:'5h ago',  tag:'Budget', tagCls:'tag-gold'   },
-    { id:3, type:'member', text:`María López joined as Designer`,                                                 who:'System',         time:'1d ago',  tag:'Team',   tagCls:'tag-purple' },
-    { id:4, type:'status', text:`Project status changed to ${statusLabel(project.value.estado)}`,                who:'Diego Martínez', time:'2d ago',  tag:'Status', tagCls:'tag-blue'   },
-    { id:5, type:'task',   text:`${seeded(id+2,3,10)} tasks moved to In Progress`,                              who:'Ana García',     time:'3d ago',  tag:'Task',   tagCls:'tag-green'  },
+    { id:1, type:'task',   text:`Task "${project.value.nombre} — Sprint ${seeded(id,1,5)}" marked as complete`, who:'Anna Carter',   time:'2h ago',  tag:'Task',   tagCls:'tag-green'  },
+    { id:2, type:'budget', text:`Budget allocation updated: +${formatBudget(seeded(id+1,1000,8000))} approved`,  who:'Carlos Reed',   time:'5h ago',  tag:'Budget', tagCls:'tag-gold'   },
+    { id:3, type:'member', text:`Maya Lopez joined as Designer`,                                                 who:'System',        time:'1d ago',  tag:'Team',   tagCls:'tag-purple' },
+    { id:4, type:'status', text:`Project status changed to ${statusLabel(project.value.estado)}`,                who:'Daniel Morris', time:'2d ago',  tag:'Status', tagCls:'tag-blue'   },
+    { id:5, type:'task',   text:`${seeded(id+2,3,10)} tasks moved to In Progress`,                              who:'Anna Carter',   time:'3d ago',  tag:'Task',   tagCls:'tag-green'  },
   ]
 
   const risks = [

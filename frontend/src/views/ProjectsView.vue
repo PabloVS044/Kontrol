@@ -359,7 +359,7 @@ function openBudget(p) {
 function authHeader() {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
   return headers
 }
 

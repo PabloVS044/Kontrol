@@ -1,22 +1,22 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
-import requireEmpresa from '../middleware/requireEmpresa.js'
-import requireEmpresaRole from '../middleware/requireEmpresaRole.js'
+import requireCompany from '../middleware/requireCompany.js'
+import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
 import {
   expenseSchema,
-  getActividadesQuerySchema,
-  actividadIdParamSchema,
-  proyectoIdParamSchema,
-  createActividadSchema,
-  updateActividadSchema,
+  getActivitiesQuerySchema,
+  activityIdParamSchema,
+  projectIdParamSchema,
+  createActivitySchema,
+  updateActivitySchema,
 } from '../schemas/budgetSchema.js'
 import {
-  getActividades,
-  getActividadById,
-  createActividad,
-  updateActividad,
-  deleteActividad,
+  getActivities,
+  getActivityById,
+  createActivity,
+  updateActivity,
+  deleteActivity,
   getProjectBudgetSummary,
   getProjectBudgetTrend,
   registerExpense,
@@ -24,63 +24,63 @@ import {
 
 const router = Router()
 
-router.use(requireAuth, requireEmpresa)
+router.use(requireAuth, requireCompany)
 
-// Resumen consolidado de presupuesto por proyecto (con alertas)
+// Consolidated project budget summary with alerts.
 router.get(
-  '/project/:id_proyecto/summary',
-  validate(proyectoIdParamSchema, 'params'),
+  '/project/:projectId/summary',
+  validate(projectIdParamSchema, 'params'),
   getProjectBudgetSummary
 )
 
-// Serie temporal (curva real vs plan) por proyecto
+// Time series for actual spending against project plan.
 router.get(
-  '/project/:id_proyecto/trend',
-  validate(proyectoIdParamSchema, 'params'),
+  '/project/:projectId/trend',
+  validate(projectIdParamSchema, 'params'),
   getProjectBudgetTrend
 )
 
-// Registro rápido de gastos (acumulativo por nombre_actividad)
+// Quick expense registration, cumulative by activity name.
 router.post(
   '/register-expense',
-  requireEmpresaRole('owner', 'admin', 'manager'),
+  requireCompanyRole('owner', 'admin', 'manager'),
   validate(expenseSchema),
   registerExpense
 )
 
-// CRUD de actividades de presupuesto
+// Budget activity CRUD.
 router.get(
   '/',
-  validate(getActividadesQuerySchema, 'query'),
-  getActividades
+  validate(getActivitiesQuerySchema, 'query'),
+  getActivities
 )
 
 router.get(
   '/:id',
-  validate(actividadIdParamSchema, 'params'),
-  getActividadById
+  validate(activityIdParamSchema, 'params'),
+  getActivityById
 )
 
 router.post(
   '/',
-  requireEmpresaRole('owner', 'admin', 'manager'),
-  validate(createActividadSchema),
-  createActividad
+  requireCompanyRole('owner', 'admin', 'manager'),
+  validate(createActivitySchema),
+  createActivity
 )
 
 router.put(
   '/:id',
-  requireEmpresaRole('owner', 'admin', 'manager'),
-  validate(actividadIdParamSchema, 'params'),
-  validate(updateActividadSchema),
-  updateActividad
+  requireCompanyRole('owner', 'admin', 'manager'),
+  validate(activityIdParamSchema, 'params'),
+  validate(updateActivitySchema),
+  updateActivity
 )
 
 router.delete(
   '/:id',
-  requireEmpresaRole('owner', 'admin'),
-  validate(actividadIdParamSchema, 'params'),
-  deleteActividad
+  requireCompanyRole('owner', 'admin'),
+  validate(activityIdParamSchema, 'params'),
+  deleteActivity
 )
 
 export default router
