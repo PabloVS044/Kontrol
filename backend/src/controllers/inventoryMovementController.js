@@ -40,12 +40,13 @@ const getAccessibleInventoryProjectIds = async (req) => {
 }
 
 /**
- * GET /api/movimientos
- * Filters: ?id_producto, ?id_proyecto, ?tipo, ?desde, ?hasta
- * Scoped to the empresa in X-Empresa-ID header via product join.
+ * GET /api/inventory-movements
+ * Filters: ?id_producto, ?projectId, ?tipo, ?desde, ?hasta
+ * Scoped to the company in the X-Company-ID header via product join.
  */
-export const getMovimientos = async (req, res) => {
-  const { id_producto, id_proyecto, tipo, desde, hasta } = req.query
+export const getInventoryMovements = async (req, res) => {
+  const { id_producto, projectId, id_proyecto: legacyProjectId, tipo, desde, hasta } = req.query
+  const id_proyecto = projectId ?? legacyProjectId
   const { id_empresa } = req.empresa
   const accessibleProjectIds = await getAccessibleInventoryProjectIds(req)
 
@@ -54,7 +55,7 @@ export const getMovimientos = async (req, res) => {
   }
 
   if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
-    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
   }
 
   // Scope to empresa via proyecto join
@@ -104,9 +105,9 @@ export const getMovimientos = async (req, res) => {
 }
 
 /**
- * GET /api/movimientos/:id
+ * GET /api/inventory-movements/:id
  */
-export const getMovimientoById = async (req, res) => {
+export const getInventoryMovementById = async (req, res) => {
   const { id } = req.params
   const { id_empresa } = req.empresa
 
@@ -120,7 +121,7 @@ export const getMovimientoById = async (req, res) => {
   )
 
   if (!scope.rows.length) {
-    return res.status(404).json({ success: false, message: 'Movimiento no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Movement not found.' })
   }
 
   const access = await ensureProjectAccess({
@@ -133,7 +134,7 @@ export const getMovimientoById = async (req, res) => {
   })
 
   if (!access.allowed) {
-    return res.status(403).json({ success: false, message: 'No tienes acceso a este movimiento.' })
+    return res.status(403).json({ success: false, message: 'You do not have access to this movement.' })
   }
 
   const result = await pool.query(
@@ -148,14 +149,14 @@ export const getMovimientoById = async (req, res) => {
   )
 
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Movimiento no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Movement not found.' })
   }
 
   return res.json({ success: true, data: result.rows[0] })
 }
 
 /**
- * POST /api/movimientos
+ * POST /api/inventory-movements
  *
  * Business rules:
  *  - SALIDA: stock_actual >= cantidad (409 if not)
@@ -163,7 +164,7 @@ export const getMovimientoById = async (req, res) => {
  *  - ENTRADA: recalculates costo_promedio_ponderado using weighted average cost
  *  - AJUSTE:  sets stock_actual = cantidad (absolute, not delta)
  */
-export const createMovimiento = async (req, res) => {
+export const createInventoryMovement = async (req, res) => {
   const { tipo, cantidad, precio_unitario, motivo, id_producto, id_proyecto, id_proveedor } = req.body
   const id_usuario = req.user.id_usuario
   const { id_empresa } = req.empresa
@@ -184,7 +185,7 @@ export const createMovimiento = async (req, res) => {
 
     if (!productoResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Producto no encontrado en este proyecto.' })
+      return res.status(404).json({ success: false, message: 'Product not found in this project.' })
     }
 
     const producto = productoResult.rows[0]
@@ -194,7 +195,7 @@ export const createMovimiento = async (req, res) => {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: `Stock insuficiente. Disponible: ${producto.stock_actual}, solicitado: ${cantidad}.`,
+        message: `Insufficient stock. Available: ${producto.stock_actual}, requested: ${cantidad}.`,
       })
     }
 

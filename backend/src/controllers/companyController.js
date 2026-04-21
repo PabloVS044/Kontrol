@@ -1,15 +1,15 @@
 import pool from '../db/pool.js'
 import {
-  acceptCompanyInvitation,
+  acceptCompanyInvitation as acceptCompanyInvitationToken,
   deactivateActiveInvitation,
-  getActiveInvitationByEmpresa,
+  getActiveInvitationByEmpresa as getActiveInvitationByCompany,
   getInvitationByToken,
   getOrCreateActiveInvitation,
   serializeInvitation,
   serializeInvitationCompany,
-} from '../services/empresaInvitacionService.js'
+} from '../services/companyInvitationService.js'
 import {
-  buildEmpresaAccessContext,
+  buildEmpresaAccessContext as buildCompanyAccessContext,
   getCompanyProjectAssignments,
   getCompanyProjects,
   getProjectPermissionsCatalog,
@@ -53,11 +53,11 @@ const mapMemberAssignments = (members, assignments) => {
 }
 
 /**
- * POST /api/empresas
- * Crea una empresa y vincula al usuario autenticado como 'owner'.
- * Usado en onboarding cuando el usuario aún no pertenece a ninguna empresa.
+ * POST /api/companies
+ * Creates a company and links the authenticated user as 'owner'.
+ * Used during onboarding when the user still does not belong to any company.
  */
-export const createEmpresa = async (req, res) => {
+export const createCompany = async (req, res) => {
   const { nombre, industria, telefono, direccion } = req.body
   const id_usuario = req.user.id_usuario
 
@@ -84,7 +84,7 @@ export const createEmpresa = async (req, res) => {
       "SELECT id_rol_empresa FROM public.rol_empresa WHERE nombre = 'owner' LIMIT 1"
     )
     if (!ownerRole.rows.length) {
-      throw new Error('Rol owner no encontrado. Verifica el seed de la base de datos.')
+      throw new Error('Owner role not found. Check the database seed data.')
     }
 
     await client.query(
@@ -98,7 +98,7 @@ export const createEmpresa = async (req, res) => {
   } catch (err) {
     await client.query('ROLLBACK')
     if (err.code === '23505') {
-      return res.status(409).json({ success: false, message: 'Ya existe una empresa con ese email.' })
+      return res.status(409).json({ success: false, message: 'A company with that email already exists.' })
     }
     throw err
   } finally {
@@ -107,10 +107,10 @@ export const createEmpresa = async (req, res) => {
 }
 
 /**
- * GET /api/empresas/mis-empresas
- * Retorna todas las empresas a las que pertenece el usuario autenticado.
+ * GET /api/companies/my-companies
+ * Returns every company that the authenticated user belongs to.
  */
-export const getMisEmpresas = async (req, res) => {
+export const getMyCompanies = async (req, res) => {
   const id_usuario = req.user.id_usuario
 
   const result = await pool.query(
@@ -127,11 +127,11 @@ export const getMisEmpresas = async (req, res) => {
 }
 
 /**
- * GET /api/empresas/contexto-acceso
- * Resumen del acceso efectivo del usuario actual dentro de la empresa seleccionada.
+ * GET /api/companies/access-context
+ * Summary of the current user's effective access inside the selected company.
  */
-export const getEmpresaAccessContext = async (req, res) => {
-  const data = await buildEmpresaAccessContext({
+export const getCompanyAccessContext = async (req, res) => {
+  const data = await buildCompanyAccessContext({
     client: pool,
     id_empresa: req.empresa.id_empresa,
     id_usuario: req.user.id_usuario,
@@ -151,10 +151,10 @@ export const getEmpresaAccessContext = async (req, res) => {
 }
 
 /**
- * GET /api/empresas/panel-usuarios
- * Retorna el estado actual del panel de miembros de la empresa seleccionada.
+ * GET /api/companies/members-panel
+ * Returns the current state of the selected company's members panel.
  */
-export const getEmpresaUsersPanel = async (req, res) => {
+export const getCompanyUsersPanel = async (req, res) => {
   const { id_empresa, rol_empresa } = req.empresa
   const canManageUsers = rol_empresa === 'owner'
 
@@ -194,14 +194,14 @@ export const getEmpresaUsersPanel = async (req, res) => {
              nombre`
         )
       : Promise.resolve({ rows: [] }),
-    canManageUsers ? getActiveInvitationByEmpresa(pool, id_empresa) : Promise.resolve(null),
+    canManageUsers ? getActiveInvitationByCompany(pool, id_empresa) : Promise.resolve(null),
     getCompanyProjects(pool, { id_empresa }),
     getProjectPermissionsCatalog(pool),
     getCompanyProjectAssignments(pool, { id_empresa }),
   ])
 
   if (!empresaResult.rows.length) {
-    return res.status(404).json({ success: false, message: 'Empresa no encontrada.' })
+    return res.status(404).json({ success: false, message: 'Company not found.' })
   }
 
   return res.json({
@@ -222,10 +222,10 @@ export const getEmpresaUsersPanel = async (req, res) => {
 }
 
 /**
- * POST /api/empresas/invitacion
- * Genera o reutiliza el enlace activo de invitación de la empresa actual.
+ * POST /api/companies/invitation
+ * Generates or reuses the current company's active invitation link.
  */
-export const createOrGetEmpresaInvitation = async (req, res) => {
+export const createOrGetCompanyInvitation = async (req, res) => {
   const invitation = await getOrCreateActiveInvitation({
     client: pool,
     id_empresa: req.empresa.id_empresa,
@@ -237,10 +237,10 @@ export const createOrGetEmpresaInvitation = async (req, res) => {
 }
 
 /**
- * DELETE /api/empresas/invitacion
- * Desactiva el enlace de invitación activo de la empresa actual.
+ * DELETE /api/companies/invitation
+ * Deactivates the current company's active invitation link.
  */
-export const deactivateEmpresaInvitation = async (req, res) => {
+export const deactivateCompanyInvitation = async (req, res) => {
   const invitation = await deactivateActiveInvitation({
     client: pool,
     id_empresa: req.empresa.id_empresa,
@@ -250,29 +250,29 @@ export const deactivateEmpresaInvitation = async (req, res) => {
   if (!invitation) {
     return res.status(404).json({
       success: false,
-      message: 'No hay un enlace de invitación activo para desactivar.',
+      message: 'There is no active invitation link to deactivate.',
     })
   }
 
   return res.json({
     success: true,
-    message: 'El enlace de invitación fue desactivado.',
+    message: 'The invitation link was deactivated.',
     data: invitation,
   })
 }
 
 /**
- * GET /api/empresas/invitaciones/:token
- * Consulta pública del enlace de invitación.
+ * GET /api/companies/invitations/:token
+ * Public lookup for an invitation link.
  */
-export const getPublicEmpresaInvitation = async (req, res) => {
+export const getPublicCompanyInvitation = async (req, res) => {
   const invitation = await getInvitationByToken(pool, req.params.token)
 
   if (!invitation) {
     return res.status(404).json({
       success: false,
       code: 'invite_not_found',
-      message: 'La invitación no existe.',
+      message: 'The invitation does not exist.',
     })
   }
 
@@ -281,8 +281,8 @@ export const getPublicEmpresaInvitation = async (req, res) => {
     success: invitation.activa,
     code: invitation.activa ? 'invite_active' : 'invite_inactive',
     message: invitation.activa
-      ? 'Invitación disponible.'
-      : 'La invitación ya no está activa.',
+      ? 'Invitation available.'
+      : 'This invitation is no longer active.',
     data: {
       invitation: serializeInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
@@ -292,11 +292,11 @@ export const getPublicEmpresaInvitation = async (req, res) => {
 }
 
 /**
- * POST /api/empresas/invitaciones/:token/accept
- * Acepta una invitación usando el usuario autenticado.
+ * POST /api/companies/invitations/:token/accept
+ * Accepts an invitation with the authenticated user.
  */
-export const acceptEmpresaInvitation = async (req, res) => {
-  const result = await acceptCompanyInvitation({
+export const acceptCompanyInvitation = async (req, res) => {
+  const result = await acceptCompanyInvitationToken({
     client: pool,
     inviteToken: req.params.token,
     id_usuario: req.user.id_usuario,
@@ -311,18 +311,18 @@ export const acceptEmpresaInvitation = async (req, res) => {
 }
 
 /**
- * PATCH /api/empresas/miembros/:id_usuario/rol
- * Cambia el rol de un miembro dentro de la empresa actual.
+ * PATCH /api/companies/members/:userId/role
+ * Updates a member role inside the current company.
  */
-export const updateEmpresaMemberRole = async (req, res) => {
+export const updateCompanyMemberRole = async (req, res) => {
   const { id_empresa } = req.empresa
-  const { id_usuario } = req.params
+  const { userId: id_usuario } = req.params
   const { rol } = req.body
 
   if (rol === 'owner') {
     return res.status(400).json({
       success: false,
-      message: 'El rol owner no se puede asignar desde este panel.',
+      message: 'The owner role cannot be assigned from this panel.',
     })
   }
 
@@ -347,20 +347,20 @@ export const updateEmpresaMemberRole = async (req, res) => {
     ])
 
     if (!memberResult.rows.length) {
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       return res.status(409).json({
         success: false,
-        message: 'No puedes cambiar el rol del owner.',
+        message: 'You cannot change the owner role.',
       })
     }
 
     if (!roleResult.rows.length || roleResult.rows[0].nombre === 'owner') {
       return res.status(400).json({
         success: false,
-        message: 'El rol solicitado no es válido para esta operación.',
+        message: 'The requested role is not valid for this operation.',
       })
     }
 
@@ -380,7 +380,7 @@ export const updateEmpresaMemberRole = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Rol actualizado correctamente.',
+      message: 'Role updated successfully.',
       data: updatedMember.rows[0],
     })
   } finally {
@@ -389,12 +389,12 @@ export const updateEmpresaMemberRole = async (req, res) => {
 }
 
 /**
- * PUT /api/empresas/miembros/:id_usuario/proyectos/:id_proyecto
- * Asigna un proyecto a un miembro y define sus permisos explícitos.
+ * PUT /api/companies/members/:userId/projects/:projectId
+ * Assigns a project to a member and defines explicit permissions.
  */
-export const upsertEmpresaMemberProjectAccess = async (req, res) => {
+export const upsertCompanyMemberProjectAccess = async (req, res) => {
   const { id_empresa } = req.empresa
-  const { id_usuario, id_proyecto } = req.params
+  const { userId: id_usuario, projectId: id_proyecto } = req.params
   const { permisos = [] } = req.body
 
   const client = await pool.connect()
@@ -429,27 +429,27 @@ export const upsertEmpresaMemberProjectAccess = async (req, res) => {
 
     if (!memberResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'El owner no necesita asignaciones por proyecto.',
+        message: 'The owner does not need project assignments.',
       })
     }
 
     if (!projectResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Project not found in this company.' })
     }
 
     if (permissionRows.rows.length !== permisos.length) {
       await client.query('ROLLBACK')
       return res.status(400).json({
         success: false,
-        message: 'Uno o más permisos de proyecto no son válidos.',
+        message: 'One or more project permissions are invalid.',
       })
     }
 
@@ -478,7 +478,7 @@ export const upsertEmpresaMemberProjectAccess = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Acceso al proyecto actualizado correctamente.',
+      message: 'Project access updated successfully.',
       data: {
         id_usuario: Number(id_usuario),
         id_proyecto: Number(id_proyecto),
@@ -496,12 +496,12 @@ export const upsertEmpresaMemberProjectAccess = async (req, res) => {
 }
 
 /**
- * DELETE /api/empresas/miembros/:id_usuario/proyectos/:id_proyecto
- * Revoca completamente el acceso de un miembro a un proyecto.
+ * DELETE /api/companies/members/:userId/projects/:projectId
+ * Fully revokes a member's access to a project.
  */
-export const removeEmpresaMemberProjectAccess = async (req, res) => {
+export const removeCompanyMemberProjectAccess = async (req, res) => {
   const { id_empresa } = req.empresa
-  const { id_usuario, id_proyecto } = req.params
+  const { userId: id_usuario, projectId: id_proyecto } = req.params
 
   const client = await pool.connect()
   try {
@@ -527,20 +527,20 @@ export const removeEmpresaMemberProjectAccess = async (req, res) => {
 
     if (!memberResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'El owner no utiliza asignaciones por proyecto.',
+        message: 'The owner does not use project assignments.',
       })
     }
 
     if (!projectResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Project not found in this company.' })
     }
 
     await client.query(
@@ -566,7 +566,7 @@ export const removeEmpresaMemberProjectAccess = async (req, res) => {
       await client.query('ROLLBACK')
       return res.status(404).json({
         success: false,
-        message: 'Este usuario no estaba asignado a ese proyecto.',
+        message: 'This user was not assigned to that project.',
       })
     }
 
@@ -574,7 +574,7 @@ export const removeEmpresaMemberProjectAccess = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Acceso al proyecto removido correctamente.',
+      message: 'Project access removed successfully.',
     })
   } catch (error) {
     await client.query('ROLLBACK')
@@ -585,17 +585,17 @@ export const removeEmpresaMemberProjectAccess = async (req, res) => {
 }
 
 /**
- * DELETE /api/empresas/miembros/:id_usuario
- * Expulsa a un miembro de la empresa actual.
+ * DELETE /api/companies/members/:userId
+ * Removes a member from the current company.
  */
-export const removeEmpresaMember = async (req, res) => {
+export const removeCompanyMember = async (req, res) => {
   const { id_empresa } = req.empresa
-  const { id_usuario } = req.params
+  const { userId: id_usuario } = req.params
 
   if (Number(id_usuario) === req.user.id_usuario) {
     return res.status(409).json({
       success: false,
-      message: 'El owner no puede expulsarse a sí mismo.',
+      message: 'The owner cannot remove themselves.',
     })
   }
 
@@ -614,14 +614,14 @@ export const removeEmpresaMember = async (req, res) => {
 
     if (!memberResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'No puedes expulsar al owner de la empresa.',
+        message: 'You cannot remove the company owner.',
       })
     }
 
@@ -636,7 +636,7 @@ export const removeEmpresaMember = async (req, res) => {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'No puedes expulsar a este usuario porque aún es encargado de uno o más proyectos.',
+        message: 'You cannot remove this user because they are still responsible for one or more projects.',
       })
     }
 
@@ -677,7 +677,7 @@ export const removeEmpresaMember = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'El miembro fue removido de la empresa.',
+      message: 'The member was removed from the company.',
     })
   } catch (error) {
     await client.query('ROLLBACK')

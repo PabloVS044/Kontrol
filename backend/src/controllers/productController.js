@@ -66,7 +66,7 @@ const ensureProductInventoryAccess = async ({
   })
 
   if (!scope) {
-    return { ok: false, status: 404, message: 'Producto no encontrado.' }
+    return { ok: false, status: 404, message: 'Product not found.' }
   }
 
   const access = await ensureProjectAccess({
@@ -79,21 +79,22 @@ const ensureProductInventoryAccess = async ({
   })
 
   if (!access.allowed) {
-    return { ok: false, status: 403, message: 'No tienes acceso a este producto.' }
+    return { ok: false, status: 403, message: 'You do not have access to this product.' }
   }
 
   return { ok: true, scope, access }
 }
 
 /**
- * GET /api/productos
- * Query: ?categoria, ?stock_bajo=true, ?id_proyecto
+ * GET /api/products
+ * Query: ?categoria, ?stock_bajo=true, ?projectId
  *
- * Without id_proyecto  → all products for the empresa (across all projects)
- * With    id_proyecto  → products for that project + per-project aggregates
+ * Without projectId  → all products for the company (across all projects)
+ * With    projectId  → products for that project + per-project aggregates
  */
-export const getProductos = async (req, res) => {
-  const { categoria, stock_bajo, id_proyecto } = req.query
+export const getProducts = async (req, res) => {
+  const { categoria, stock_bajo, projectId, id_proyecto: legacyProjectId } = req.query
+  const id_proyecto = projectId ?? legacyProjectId
   const { id_empresa } = req.empresa
   const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
 
@@ -102,7 +103,7 @@ export const getProductos = async (req, res) => {
   }
 
   if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
-    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
   }
 
   if (id_proyecto) {
@@ -151,12 +152,13 @@ export const getProductos = async (req, res) => {
 }
 
 /**
- * GET /api/productos/alertas/stock-bajo
- * Optional: ?id_proyecto
+ * GET /api/products/alerts/low-stock
+ * Optional: ?projectId
  */
-export const getAlertasStockBajo = async (req, res) => {
+export const getLowStockAlerts = async (req, res) => {
   const { id_empresa } = req.empresa
-  const { id_proyecto } = req.query
+  const { projectId, id_proyecto: legacyProjectId } = req.query
+  const id_proyecto = projectId ?? legacyProjectId
   const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
 
   if (accessibleProjectIds && !accessibleProjectIds.length) {
@@ -164,7 +166,7 @@ export const getAlertasStockBajo = async (req, res) => {
   }
 
   if (accessibleProjectIds && id_proyecto && !accessibleProjectIds.includes(Number(id_proyecto))) {
-    return res.status(403).json({ success: false, message: 'No tienes acceso al inventario de este proyecto.' })
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
   }
 
   if (id_proyecto) {
@@ -192,9 +194,9 @@ export const getAlertasStockBajo = async (req, res) => {
 }
 
 /**
- * GET /api/productos/:id
+ * GET /api/products/:id
  */
-export const getProductoById = async (req, res) => {
+export const getProductById = async (req, res) => {
   const { id } = req.params
   const access = await ensureProductInventoryAccess({ id_producto: id, req })
   if (!access.ok) {
@@ -216,14 +218,14 @@ export const getProductoById = async (req, res) => {
     [id, req.empresa.id_empresa]
   )
 
-  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Producto no encontrado.' })
+  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Product not found.' })
   return res.json({ success: true, data: result.rows[0] })
 }
 
 /**
- * POST /api/productos  — requires requireProyecto middleware
+ * POST /api/products  — requires requireProject middleware
  */
-export const createProducto = async (req, res) => {
+export const createProduct = async (req, res) => {
   const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria } = req.body
   const { id_proyecto } = req.proyecto
 
@@ -242,9 +244,9 @@ export const createProducto = async (req, res) => {
 }
 
 /**
- * PUT /api/productos/:id
+ * PUT /api/products/:id
  */
-export const updateProducto = async (req, res) => {
+export const updateProduct = async (req, res) => {
   const { id } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
@@ -273,9 +275,9 @@ export const updateProducto = async (req, res) => {
 }
 
 /**
- * DELETE /api/productos/:id
+ * DELETE /api/products/:id
  */
-export const deleteProducto = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   const { id } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
@@ -288,16 +290,16 @@ export const deleteProducto = async (req, res) => {
 
   try {
     await pool.query('DELETE FROM public.producto WHERE id_producto = $1', [id])
-    return res.json({ success: true, message: 'Producto eliminado correctamente.' })
+    return res.json({ success: true, message: 'Product deleted successfully.' })
   } catch (err) {
-    if (err.code === '23503') return res.status(409).json({ success: false, message: 'No se puede eliminar: tiene movimientos u otras referencias.' })
+    if (err.code === '23503') return res.status(409).json({ success: false, message: 'Cannot delete the product because it has movements or other references.' })
     throw err
   }
 }
 
 // ─── Producto ↔ Proveedor ─────────────────────────────────────────────────────
 
-export const linkProveedor = async (req, res) => {
+export const linkSupplier = async (req, res) => {
   const { id } = req.params
   const { id_proveedor, precio_unitario } = req.body
   const access = await ensureProductInventoryAccess({
@@ -310,22 +312,22 @@ export const linkProveedor = async (req, res) => {
   }
 
   const proveedor = await pool.query('SELECT id_proveedor FROM public.proveedor WHERE id_proveedor = $1', [id_proveedor])
-  if (!proveedor.rows.length) return res.status(404).json({ success: false, message: 'Proveedor no encontrado.' })
+  if (!proveedor.rows.length) return res.status(404).json({ success: false, message: 'Supplier not found.' })
 
   const existing = await pool.query(
     'SELECT id_producto FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2',
     [id, id_proveedor]
   )
-  if (existing.rows.length) return res.status(409).json({ success: false, message: 'El proveedor ya está vinculado.' })
+  if (existing.rows.length) return res.status(409).json({ success: false, message: 'The supplier is already linked.' })
 
   await pool.query(
     'INSERT INTO public.producto_proveedor (id_producto, id_proveedor, precio_unitario) VALUES ($1,$2,$3)',
     [id, id_proveedor, precio_unitario]
   )
-  return res.status(201).json({ success: true, message: 'Proveedor vinculado correctamente.' })
+  return res.status(201).json({ success: true, message: 'Supplier linked successfully.' })
 }
 
-export const updateLinkProveedor = async (req, res) => {
+export const updateSupplierLink = async (req, res) => {
   const { id, pid } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
@@ -349,11 +351,11 @@ export const updateLinkProveedor = async (req, res) => {
      WHERE id_producto = $${values.length - 1} AND id_proveedor = $${values.length} RETURNING *`,
     values
   )
-  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relación no encontrada.' })
+  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
   return res.json({ success: true, data: result.rows[0] })
 }
 
-export const unlinkProveedor = async (req, res) => {
+export const unlinkSupplier = async (req, res) => {
   const { id, pid } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
@@ -368,6 +370,6 @@ export const unlinkProveedor = async (req, res) => {
     'DELETE FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2 RETURNING id_producto',
     [id, pid]
   )
-  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relación no encontrada.' })
-  return res.json({ success: true, message: 'Proveedor desvinculado correctamente.' })
+  if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
+  return res.json({ success: true, message: 'Supplier unlinked successfully.' })
 }

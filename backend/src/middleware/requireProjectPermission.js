@@ -2,10 +2,16 @@ import pool from '../db/pool.js'
 import { ensureProjectAccess } from '../services/projectAccessService.js'
 
 const resolveProjectId = (req) =>
+  req.project?.id_proyecto ??
   req.proyecto?.id_proyecto ??
+  req.body?.projectId ??
   req.body?.id_proyecto ??
+  req.query?.projectId ??
   req.query?.id_proyecto ??
+  req.params?.projectId ??
   req.params?.id_proyecto ??
+  req.params?.id ??
+  req.headers['x-project-id'] ??
   req.headers['x-proyecto-id']
 
 const requireProjectPermission = (...permissions) => async (req, res, next) => {
@@ -14,7 +20,7 @@ const requireProjectPermission = (...permissions) => async (req, res, next) => {
   if (!id_proyecto) {
     return res.status(400).json({
       success: false,
-      message: 'Selecciona un proyecto para continuar.',
+      message: 'Select a project to continue.',
     })
   }
 
@@ -29,17 +35,19 @@ const requireProjectPermission = (...permissions) => async (req, res, next) => {
 
   if (!access.allowed) {
     const message = access.reason === 'missing_permissions'
-      ? 'No tienes permisos suficientes para operar en este proyecto.'
-      : 'No tienes acceso a este proyecto.'
+      ? 'You do not have sufficient permissions to operate in this project.'
+      : 'You do not have access to this project.'
 
     return res.status(403).json({ success: false, message })
   }
 
-  req.proyecto = {
+  const projectContext = {
     ...(req.proyecto ?? {}),
     id_proyecto: Number(id_proyecto),
     permisos: access.permissions,
   }
+  req.project = projectContext
+  req.proyecto = projectContext
 
   next()
 }
