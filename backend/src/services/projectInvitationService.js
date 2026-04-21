@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { getCollaboratorRole, serializeInvitationCompany } from './empresaInvitacionService.js'
+import { getCollaboratorRole, serializeInvitationCompany } from './companyInvitationService.js'
 import { buildInvitationUrl } from '../utils/frontendUrl.js'
 
 const PROJECT_INVITATION_SELECT = `
@@ -187,7 +187,7 @@ export const getOrCreateActiveProjectInvitation = async ({
     }
   }
 
-  throw new Error('No se pudo generar la invitación del proyecto.')
+  throw new Error('Could not generate the project invitation.')
 }
 
 export const deactivateActiveProjectInvitation = async ({ client, id_empresa, id_proyecto, req }) => {
@@ -213,7 +213,7 @@ export const acceptProjectInvitation = async ({ client, inviteToken, id_usuario,
     return {
       success: false,
       code: 'invite_not_found',
-      message: 'La invitación no existe.',
+      message: 'The invitation does not exist.',
       invitation: null,
       empresa: null,
       proyecto: null,
@@ -224,7 +224,7 @@ export const acceptProjectInvitation = async ({ client, inviteToken, id_usuario,
     return {
       success: false,
       code: 'invite_inactive',
-      message: 'La invitación ya no está activa.',
+      message: 'This invitation is no longer active.',
       invitation: serializeProjectInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
       proyecto: serializeProjectInvitationProject(invitation),
@@ -272,7 +272,7 @@ export const acceptProjectInvitation = async ({ client, inviteToken, id_usuario,
       alreadyMember: !joinedCompany,
       alreadyAssigned: true,
       code: 'already_assigned',
-      message: 'Ya tienes acceso a este proyecto por tu rol actual dentro de la empresa.',
+      message: 'You already have access to this project through your current company role.',
       invitation: serializeProjectInvitation(invitation, req),
       empresa: serializeInvitationCompany(invitation),
       proyecto: serializeProjectInvitationProject(invitation),
@@ -338,8 +338,8 @@ export const acceptProjectInvitation = async ({ client, inviteToken, id_usuario,
     alreadyAssigned: existingAssignment.rows.length > 0,
     code: existingAssignment.rows.length ? 'already_assigned' : 'accepted',
     message: existingAssignment.rows.length
-      ? 'Ya tienes acceso a este proyecto.'
-      : 'Te uniste al proyecto correctamente.',
+      ? 'You already have access to this project.'
+      : 'You joined the project successfully.',
     invitation: serializeProjectInvitation(invitation, req),
     empresa: serializeInvitationCompany(invitation),
     proyecto: serializeProjectInvitationProject(invitation),

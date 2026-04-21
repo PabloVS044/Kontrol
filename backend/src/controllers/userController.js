@@ -80,7 +80,7 @@ export const getUserById = async (req, res) => {
   )
 
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
+    return res.status(404).json({ success: false, message: 'User not found.' })
   }
 
   return res.json({ success: true, data: result.rows[0] })
@@ -101,7 +101,7 @@ export const createUser = async (req, res) => {
       [email]
     )
     if (duplicate.rows.length) {
-      return res.status(409).json({ success: false, message: 'El email ya está registrado.' })
+      return res.status(409).json({ success: false, message: 'This email is already registered.' })
     }
 
     const rolRow = await client.query(
@@ -109,7 +109,7 @@ export const createUser = async (req, res) => {
       [role]
     )
     if (!rolRow.rows.length) {
-      return res.status(400).json({ success: false, message: `El rol "${role}" no existe en la base de datos.` })
+      return res.status(400).json({ success: false, message: `The role "${role}" does not exist in the database.` })
     }
     const id_rol = rolRow.rows[0].id_rol
 
@@ -152,7 +152,7 @@ export const updateUser = async (req, res) => {
       [id]
     )
     if (!existing.rows.length) {
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
+      return res.status(404).json({ success: false, message: 'User not found.' })
     }
 
     if (email) {
@@ -161,7 +161,7 @@ export const updateUser = async (req, res) => {
         [email, id]
       )
       if (duplicate.rows.length) {
-        return res.status(409).json({ success: false, message: 'El email ya está registrado.' })
+        return res.status(409).json({ success: false, message: 'This email is already registered.' })
       }
     }
 
@@ -172,7 +172,7 @@ export const updateUser = async (req, res) => {
         [role]
       )
       if (!rolRow.rows.length) {
-        return res.status(400).json({ success: false, message: `El rol "${role}" no existe en la base de datos.` })
+        return res.status(400).json({ success: false, message: `The role "${role}" does not exist in the database.` })
       }
       id_rol = rolRow.rows[0].id_rol
     }
@@ -219,8 +219,8 @@ export const deleteUser = async (req, res) => {
   )
 
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Usuario no encontrado.' })
+    return res.status(404).json({ success: false, message: 'User not found.' })
   }
 
-  return res.json({ success: true, message: 'Usuario desactivado correctamente.' })
+  return res.json({ success: true, message: 'User deactivated successfully.' })
 }

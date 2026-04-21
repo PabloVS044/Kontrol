@@ -17,7 +17,7 @@ const validate = (schema, source = 'body') => (req, res, next) => {
 
     return res.status(400).json({
       success: false,
-      message: 'Datos inválidos.',
+      message: 'Invalid data.',
       errors,
     })
   }

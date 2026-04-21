@@ -153,6 +153,34 @@
               </div>
             </div>
 
+            <!-- Project progress -->
+            <div class="metric-card">
+              <p class="metric-kicker">Project Progress</p>
+              <div class="progress-overview-head">
+                <div>
+                  <div class="progress-overview-value">{{ progressPercentage }}%</div>
+                  <div class="progress-overview-sub">{{ progressSourceLabel }}</div>
+                </div>
+                <span
+                  class="status-badge small"
+                  :style="{
+                    color: progressSignalColor,
+                    borderColor: `${progressSignalColor}44`,
+                    background: `${progressSignalColor}14`,
+                  }"
+                >
+                  {{ progressEntriesTotal ? `${progressEntriesTotal} updates` : 'No updates' }}
+                </span>
+              </div>
+              <ProgressBar :pct="progressPercentage" :color="progressSignalColor" />
+              <div class="progress-overview-meta">
+                <span>{{ taskCompletionPercentage }}% tasks done</span>
+                <span>{{ progressMilestones }} milestones</span>
+                <span>{{ progressBlockers }} blockers</span>
+              </div>
+              <p class="metric-total">{{ progressLastUpdateLabel }}</p>
+            </div>
+
             <!-- Budget detail -->
             <div class="metric-card">
               <p class="metric-kicker">Budget Overview</p>
@@ -301,7 +329,10 @@
 
         <!-- ── PROGRESS ── -->
         <section v-if="activeTab === 'progress'" class="tab-panel">
-          <ProgressTab />
+          <ProgressTab
+            :project-id="projectId"
+            @updated="handleProjectProgressUpdated"
+          />
         </section>
 
       </template>
@@ -375,7 +406,7 @@ const tabs = [
   { id: "overview", label: "Overview" },
   { id: "tasks", label: "Tasks" },
   { id: "members", label: "Members" },
-  { id: "progress", label: "Progress" }, // Placeholder for future feature
+  { id: "progress", label: "Progress" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -386,7 +417,7 @@ function authHeader() {
   const token = localStorage.getItem("token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   if (authStore.idEmpresaActual)
-    headers["X-Empresa-ID"] = authStore.idEmpresaActual;
+    headers["X-Company-ID"] = authStore.idEmpresaActual;
   return headers;
 }
 
@@ -433,6 +464,48 @@ const budgetRemaining = computed(() => {
   const spent = Number(metrics.value?.presupuesto?.total_real || 0);
   return total - spent;
 });
+
+const progressSummary = computed(() => metrics.value?.progress ?? null);
+
+const progressPercentage = computed(() =>
+  Math.round(Number(progressSummary.value?.current_percentage || 0)),
+);
+
+const taskCompletionPercentage = computed(() =>
+  Math.round(Number(progressSummary.value?.task_completion_percentage || 0)),
+);
+
+const progressEntriesTotal = computed(() =>
+  Number(progressSummary.value?.entries_total || 0),
+);
+
+const progressMilestones = computed(() =>
+  Number(progressSummary.value?.milestones_total || 0),
+);
+
+const progressBlockers = computed(() =>
+  Number(progressSummary.value?.blockers_total || 0),
+);
+
+const progressSignalColor = computed(() => {
+  if (progressBlockers.value > 0) return "#fb7185";
+  if (progressPercentage.value >= 100) return "#c9a962";
+  if (progressPercentage.value >= 60) return "#34d399";
+  if (progressPercentage.value > 0) return "#60a5fa";
+  return "#666";
+});
+
+const progressSourceLabel = computed(() =>
+  progressSummary.value?.derived_from === "progress_entry"
+    ? "Based on timeline updates"
+    : "Derived from task completion",
+);
+
+const progressLastUpdateLabel = computed(() =>
+  progressSummary.value?.last_update_at
+    ? `Latest update ${formatDate(progressSummary.value.last_update_at)}`
+    : "No progress updates recorded yet.",
+);
 
 const TASK_STATE_META = [
   { estado: 'PENDIENTE',   label: 'Pending',    color: '#60a5fa' },
@@ -490,7 +563,7 @@ async function loadMetrics() {
 async function loadTasks() {
   tasksLoading.value = true;
   try {
-    const res = await fetch(`/api/projects/${projectId.value}/tareas`, {
+    const res = await fetch(`/api/projects/${projectId.value}/tasks`, {
       headers: authHeader(),
     });
     if (!res.ok) return;
@@ -539,7 +612,7 @@ async function openTaskDetail(task) {
   showDetailModal.value = true
   detailLoading.value   = true
   detailTask.value      = null
-  const res  = await fetch(`/api/projects/${projectId.value}/tareas/${task.id_tarea}`, { headers: authHeader() })
+  const res  = await fetch(`/api/projects/${projectId.value}/tasks/${task.id_tarea}`, { headers: authHeader() })
   const data = await res.json()
   detailTask.value    = data.data
   detailLoading.value = false
@@ -558,8 +631,8 @@ async function submitTask(formData) {
       id_asignado: formData.id_asignado ? Number(formData.id_asignado) : (editingTask.value ? null : undefined),
     }
     const url    = editingTask.value
-      ? `/api/projects/${projectId.value}/tareas/${editingTask.value.id_tarea}`
-      : `/api/projects/${projectId.value}/tareas`;
+      ? `/api/projects/${projectId.value}/tasks/${editingTask.value.id_tarea}`
+      : `/api/projects/${projectId.value}/tasks`;
     const method = editingTask.value ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -586,7 +659,7 @@ async function closeTask(task) {
   closingTaskId.value = task.id_tarea;
   try {
     const res = await fetch(
-      `/api/projects/${projectId.value}/tareas/${task.id_tarea}/cerrar`,
+      `/api/projects/${projectId.value}/tasks/${task.id_tarea}/close`,
       { method: "PATCH", headers: authHeader() },
     );
     if (res.ok) await Promise.all([loadTasks(), loadMetrics()]);
@@ -597,6 +670,10 @@ async function closeTask(task) {
 
 async function handleProjectMembersUpdated() {
   await Promise.all([loadMembers(), loadMetrics()])
+}
+
+async function handleProjectProgressUpdated() {
+  await loadMetrics()
 }
 
 onMounted(loadAll)

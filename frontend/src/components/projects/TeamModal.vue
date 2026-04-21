@@ -43,7 +43,15 @@
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 
-const MOCK_AREAS = ['Desarrollo', 'Diseño', 'Calidad', 'Infraestructura', 'Gestión']
+const AREA_LABELS = {
+  Desarrollo: 'Engineering',
+  Diseño: 'Design',
+  Calidad: 'Quality',
+  Infraestructura: 'Infrastructure',
+  Gestión: 'Management',
+}
+
+const MOCK_AREAS = Object.values(AREA_LABELS)
 
 const props = defineProps({
   modelValue:  { type: Boolean, required: true },
@@ -67,7 +75,7 @@ watch(() => props.modelValue, (open) => {
   if (props.editingTeam) {
     form.value = {
       nombre:   props.editingTeam.nombre,
-      area:     props.editingTeam.area,
+      area:     AREA_LABELS[props.editingTeam.area] || props.editingTeam.area,
       miembros: props.editingTeam.miembros.map(m => m.id_usuario),
     }
   } else {

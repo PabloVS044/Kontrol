@@ -327,8 +327,8 @@ const canCreateProduct = computed(() => {
 function authHeader(includeProyecto = false) {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
-  if (includeProyecto && selectedProject.value) headers['X-Proyecto-ID'] = selectedProject.value.id_proyecto
+  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
+  if (includeProyecto && selectedProject.value) headers['X-Project-ID'] = selectedProject.value.id_proyecto
   return headers
 }
 
@@ -370,13 +370,13 @@ async function loadData() {
   try {
     const params = new URLSearchParams()
     if (selectedProject.value) {
-      params.set('id_proyecto', selectedProject.value.id_proyecto)
+      params.set('projectId', selectedProject.value.id_proyecto)
     }
     const qs = params.toString() ? `?${params}` : ''
 
     const [productosRes, alertasRes] = await Promise.all([
-      apiFetch(`/api/productos${qs}`),
-      apiFetch(`/api/productos/alertas/stock-bajo${qs}`),
+      apiFetch(`/api/products${qs}`),
+      apiFetch(`/api/products/alerts/low-stock${qs}`),
     ])
     products.value    = productosRes.data
     stockAlerts.value = alertasRes.data
@@ -491,7 +491,7 @@ async function submitProduct(formData) {
   modalLoading.value = true
   modalError.value   = null
   try {
-    const res = await fetch('/api/productos', {
+    const res = await fetch('/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader(true) },
       body: JSON.stringify({

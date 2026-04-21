@@ -4,7 +4,7 @@ import {
   ensureProjectAccess,
   getAccessibleProjectAssignments,
   getProjectPermissionsCatalog,
-  hasEmpresaManagementAccess,
+  hasEmpresaManagementAccess as hasCompanyManagementAccess,
 } from '../services/projectAccessService.js'
 import {
   acceptProjectInvitation as acceptProjectInvitationToken,
@@ -15,7 +15,7 @@ import {
   serializeProjectInvitation,
   serializeProjectInvitationProject,
 } from '../services/projectInvitationService.js'
-import { serializeInvitationCompany } from '../services/empresaInvitacionService.js'
+import { serializeInvitationCompany } from '../services/companyInvitationService.js'
 
 const PROJECT_SELECT = `
   id_proyecto, nombre, descripcion, fecha_inicio, fecha_fin_planificada,
@@ -51,7 +51,7 @@ export const getProjects = async (req, res) => {
   const { page, limit, estado } = req.query
   const { id_empresa, rol_empresa } = req.empresa
   const offset = (page - 1) * limit
-  const managementAccess = hasEmpresaManagementAccess(rol_empresa)
+  const managementAccess = hasCompanyManagementAccess(rol_empresa)
 
   if (!managementAccess) {
     const assignments = await getAccessibleProjectAssignments({
@@ -142,7 +142,7 @@ export const getProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
   const { id_empresa, rol_empresa } = req.empresa
 
-  if (!hasEmpresaManagementAccess(rol_empresa)) {
+  if (!hasCompanyManagementAccess(rol_empresa)) {
     const assignments = await getAccessibleProjectAssignments({
       client: pool,
       id_empresa,
@@ -152,7 +152,7 @@ export const getProjectById = async (req, res) => {
 
     const assignment = assignments.find(({ id_proyecto }) => id_proyecto === Number(req.params.id))
     if (!assignment) {
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Project not found.' })
     }
 
     const result = await pool.query(
@@ -160,7 +160,7 @@ export const getProjectById = async (req, res) => {
       [req.params.id, id_empresa]
     )
     if (!result.rows.length) {
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+      return res.status(404).json({ success: false, message: 'Project not found.' })
     }
 
     return res.json({
@@ -177,7 +177,7 @@ export const getProjectById = async (req, res) => {
     [req.params.id, id_empresa]
   )
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
   return res.json({
@@ -223,7 +223,7 @@ export const updateProject = async (req, res) => {
     [id, id_empresa]
   )
   if (!existing.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
   const allowedFields = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin_planificada', 'presupuesto_total', 'estado', 'id_encargado']
@@ -254,10 +254,10 @@ export const deleteProject = async (req, res) => {
   )
 
   if (!result.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
-  return res.json({ success: true, message: 'Proyecto eliminado correctamente.' })
+  return res.json({ success: true, message: 'Project deleted successfully.' })
 }
 
 export const getProjectMembers = async (req, res) => {
@@ -291,7 +291,7 @@ export const getProjectMembersPanel = async (req, res) => {
   })
 
   if (!access.allowed) {
-    return res.status(403).json({ success: false, message: 'No tienes acceso a este proyecto.' })
+    return res.status(403).json({ success: false, message: 'You do not have access to this project.' })
   }
 
   const canManageMembers = access.permissions.includes('asignar_usuarios')
@@ -378,7 +378,7 @@ export const getProjectMembersPanel = async (req, res) => {
   ])
 
   if (!projectResult.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
   return res.json({
@@ -408,14 +408,14 @@ export const createOrGetProjectInvitation = async (req, res) => {
   )
 
   if (!projectResult.rows.length) {
-    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+    return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
   const permissionRows = await getPermissionRowsByNames(pool, permisos)
   if (permissionRows === null) {
     return res.status(400).json({
       success: false,
-      message: 'Uno o más permisos de proyecto no son válidos.',
+      message: 'One or more project permissions are invalid.',
     })
   }
 
@@ -445,13 +445,13 @@ export const deactivateProjectInvitation = async (req, res) => {
   if (!invitation) {
     return res.status(404).json({
       success: false,
-      message: 'No hay un enlace de invitación activo para este proyecto.',
+      message: 'There is no active invitation link for this project.',
     })
   }
 
   return res.json({
     success: true,
-    message: 'El enlace de invitación del proyecto fue desactivado.',
+    message: 'The project invitation link was deactivated.',
     data: invitation,
   })
 }
@@ -463,7 +463,7 @@ export const getPublicProjectInvitation = async (req, res) => {
     return res.status(404).json({
       success: false,
       code: 'invite_not_found',
-      message: 'La invitación no existe.',
+      message: 'The invitation does not exist.',
     })
   }
 
@@ -473,8 +473,8 @@ export const getPublicProjectInvitation = async (req, res) => {
     success: invitation.activa,
     code: invitation.activa ? 'invite_active' : 'invite_inactive',
     message: invitation.activa
-      ? 'Invitación disponible.'
-      : 'La invitación ya no está activa.',
+      ? 'Invitation available.'
+      : 'This invitation is no longer active.',
     data: {
       scope: 'project',
       invitation: serializeProjectInvitation(invitation, req),
@@ -504,7 +504,7 @@ export const acceptProjectInvitation = async (req, res) => {
 export const upsertProjectMemberAccess = async (req, res) => {
   const { id_empresa } = req.empresa
   const id_proyecto = Number(req.params.id)
-  const id_usuario = Number(req.params.id_usuario)
+  const id_usuario = Number(req.params.userId)
   const { permisos = [] } = req.body
 
   const client = await pool.connect()
@@ -533,27 +533,27 @@ export const upsertProjectMemberAccess = async (req, res) => {
 
     if (!memberResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'El owner no necesita asignaciones por proyecto.',
+        message: 'The owner does not need project assignments.',
       })
     }
 
     if (!projectResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Project not found in this company.' })
     }
 
     if (permissionRows === null) {
       await client.query('ROLLBACK')
       return res.status(400).json({
         success: false,
-        message: 'Uno o más permisos de proyecto no son válidos.',
+        message: 'One or more project permissions are invalid.',
       })
     }
 
@@ -582,7 +582,7 @@ export const upsertProjectMemberAccess = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Acceso del miembro actualizado correctamente.',
+      message: 'Member access updated successfully.',
       data: {
         id_usuario,
         id_proyecto,
@@ -602,7 +602,7 @@ export const upsertProjectMemberAccess = async (req, res) => {
 export const removeProjectMemberAccess = async (req, res) => {
   const { id_empresa } = req.empresa
   const id_proyecto = Number(req.params.id)
-  const id_usuario = Number(req.params.id_usuario)
+  const id_usuario = Number(req.params.userId)
 
   const client = await pool.connect()
   try {
@@ -628,20 +628,20 @@ export const removeProjectMemberAccess = async (req, res) => {
 
     if (!memberResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Miembro no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Member not found in this company.' })
     }
 
     if (memberResult.rows[0].rol_empresa === 'owner') {
       await client.query('ROLLBACK')
       return res.status(409).json({
         success: false,
-        message: 'El owner no utiliza asignaciones por proyecto.',
+        message: 'The owner does not use project assignments.',
       })
     }
 
     if (!projectResult.rows.length) {
       await client.query('ROLLBACK')
-      return res.status(404).json({ success: false, message: 'Proyecto no encontrado en esta empresa.' })
+      return res.status(404).json({ success: false, message: 'Project not found in this company.' })
     }
 
     await client.query(
@@ -667,7 +667,7 @@ export const removeProjectMemberAccess = async (req, res) => {
       await client.query('ROLLBACK')
       return res.status(404).json({
         success: false,
-        message: 'Este usuario no estaba asignado a este proyecto.',
+        message: 'This user was not assigned to this project.',
       })
     }
 
@@ -675,7 +675,7 @@ export const removeProjectMemberAccess = async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Acceso al proyecto removido correctamente.',
+      message: 'Project access removed successfully.',
     })
   } catch (error) {
     await client.query('ROLLBACK')
