@@ -199,7 +199,24 @@
                 </div>
 
                 <div class="card-footer-row">
+                  <template v-if="canEditStatus(project)">
+                    <div
+                      class="status-select-wrap"
+                      :style="{ '--status-color': statusColor(project.estado) }"
+                    >
+                      <span class="status-dot-mark" :style="{ backgroundColor: statusColor(project.estado) }"></span>
+                      <select
+                        class="status-select"
+                        :value="project.estado"
+                        :disabled="statusUpdating[project.id_proyecto]"
+                        @change="updateProjectStatus(project, $event.target.value)"
+                      >
+                        <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
+                      </select>
+                    </div>
+                  </template>
                   <Pill
+                    v-else
                     :label="statusLabel(project.estado)"
                     :btnColor="statusColor(project.estado) + '18'"
                     :circleColor="statusColor(project.estado)"
@@ -209,6 +226,9 @@
                     {{ project.fecha_fin_planificada ? 'Due ' + formatDate(project.fecha_fin_planificada) : 'No due date' }}
                   </span>
                 </div>
+                <p v-if="statusError[project.id_proyecto]" class="status-error">
+                  {{ statusError[project.id_proyecto] }}
+                </p>
               </div>
               <div class="card-open">
                 <Anchor
@@ -452,6 +472,40 @@ function closeModal() {
   showModal.value = false
 }
 
+const statusUpdating = ref({}) // id_proyecto -> bool
+const statusError    = ref({}) // id_proyecto -> message
+
+function canEditStatus(p) {
+  if (isAdmin(p)) return true
+  const role = authStore.empresaActual?.rol
+  return ['owner', 'admin', 'manager'].includes(role)
+}
+
+async function updateProjectStatus(project, newEstado) {
+  if (!newEstado || newEstado === project.estado) return
+  statusUpdating.value = { ...statusUpdating.value, [project.id_proyecto]: true }
+  statusError.value = { ...statusError.value, [project.id_proyecto]: null }
+  const previous = project.estado
+  project.estado = newEstado // optimistic
+  try {
+    const res = await fetch(`/api/projects/${project.id_proyecto}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ estado: newEstado }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      project.estado = previous
+      statusError.value = { ...statusError.value, [project.id_proyecto]: data.message || `Error ${res.status}` }
+    }
+  } catch {
+    project.estado = previous
+    statusError.value = { ...statusError.value, [project.id_proyecto]: 'Network error' }
+  } finally {
+    statusUpdating.value = { ...statusUpdating.value, [project.id_proyecto]: false }
+  }
+}
+
 async function submitProject() {
   modalLoading.value = true
   modalError.value   = null
@@ -635,9 +689,52 @@ async function submitProject() {
 .open-anchor:hover { color: #c9a962; }
 .project-card:hover .open-anchor { color: #c9a962; }
 
-.card-footer-row { display: flex; justify-content: space-between; align-items: center; }
+.card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .status-dot { font-size: 11px; }
 .due-date   { font-size: 11px; color: #555; }
+
+.status-select-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--status-color, #555);
+  background: color-mix(in srgb, var(--status-color, #555) 9%, transparent);
+  border-radius: 3px;
+  height: 22px;
+}
+.status-dot-mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-select {
+  background: transparent;
+  border: none;
+  color: var(--status-color, #faf8f5);
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 0;
+  padding-right: 14px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'><path d='M1 1l3 3 3-3' stroke='%23888' stroke-width='1.2' fill='none' stroke-linecap='square'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  background-size: 8px 6px;
+}
+.status-select:disabled { opacity: 0.6; cursor: wait; }
+.status-select option { background: #0f0f0f; color: #faf8f5; }
+
+.status-error {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #fecdd3;
+  font-family: 'Manrope', sans-serif;
+}
 
 .card-open {
   border-top: 1px solid #1a1a1a;
