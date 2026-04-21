@@ -245,3 +245,69 @@ export const registerExpense = async (req, res) => {
     client.release()
   }
 }
+
+// GET /api/budgets/project/:id_proyecto/trend
+// Serie temporal de gasto acumulado (proxy: movimiento_inventario tipo ENTRADA / GASTO_ADMIN)
+// junto con el plan del proyecto (fecha_inicio, fecha_fin_planificada, presupuesto_total).
+export const getProjectBudgetTrend = async (req, res) => {
+  const { id_proyecto } = req.params
+  const { id_empresa } = req.empresa
+
+  const projectResult = await pool.query(
+    `SELECT id_proyecto, nombre, presupuesto_total, fecha_inicio, fecha_fin_planificada
+     FROM public.proyecto
+     WHERE id_proyecto = $1 AND id_empresa = $2`,
+    [id_proyecto, id_empresa]
+  )
+  if (!projectResult.rows.length) {
+    return res.status(404).json({ success: false, message: 'Proyecto no encontrado.' })
+  }
+  const proyecto = projectResult.rows[0]
+
+  // Gasto diario agregado: ENTRADA (compras) y GASTO_ADMIN
+  const trendResult = await pool.query(
+    `SELECT
+       DATE(fecha) AS dia,
+       SUM(COALESCE(cantidad, 1) * COALESCE(precio_unitario, 0))::numeric AS monto_dia
+     FROM public.movimiento_inventario
+     WHERE id_proyecto = $1
+       AND id_empresa = $2
+       AND tipo IN ('ENTRADA', 'GASTO_ADMIN')
+     GROUP BY DATE(fecha)
+     ORDER BY DATE(fecha) ASC`,
+    [id_proyecto, id_empresa]
+  )
+
+  let acumulado = 0
+  const puntos = trendResult.rows.map(r => {
+    acumulado += Number(r.monto_dia)
+    return {
+      fecha: r.dia instanceof Date ? r.dia.toISOString().slice(0, 10) : r.dia,
+      monto_dia: Number(r.monto_dia),
+      acumulado: Number(acumulado.toFixed(2)),
+    }
+  })
+
+  // Total actual registrado en presupuesto_actividad (source of truth del Budget module)
+  const totalActivity = await pool.query(
+    `SELECT COALESCE(SUM(monto_real), 0) AS total_gastado
+     FROM public.presupuesto_actividad WHERE id_proyecto = $1`,
+    [id_proyecto]
+  )
+
+  return res.json({
+    success: true,
+    data: {
+      proyecto: {
+        id_proyecto:           proyecto.id_proyecto,
+        nombre:                proyecto.nombre,
+        presupuesto_total:     Number(proyecto.presupuesto_total),
+        fecha_inicio:          proyecto.fecha_inicio,
+        fecha_fin_planificada: proyecto.fecha_fin_planificada,
+      },
+      puntos,
+      total_gastado_actividades: Number(totalActivity.rows[0].total_gastado),
+      total_acumulado_movimientos: Number(acumulado.toFixed(2)),
+    },
+  })
+}

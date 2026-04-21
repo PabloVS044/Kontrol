@@ -18,6 +18,7 @@ import {
   updateActividad,
   deleteActividad,
   getProjectBudgetSummary,
+  getProjectBudgetTrend,
   registerExpense,
 } from '../controllers/budgetController.js'
 
@@ -30,6 +31,13 @@ router.get(
   '/project/:id_proyecto/summary',
   validate(proyectoIdParamSchema, 'params'),
   getProjectBudgetSummary
+)
+
+// Serie temporal (curva real vs plan) por proyecto
+router.get(
+  '/project/:id_proyecto/trend',
+  validate(proyectoIdParamSchema, 'params'),
+  getProjectBudgetTrend
 )
 
 // Registro rápido de gastos (acumulativo por nombre_actividad)

@@ -24,6 +24,8 @@ const editingActivity = ref(null)
 const activityForm = ref({ nombre: '', monto_planificado: null, monto_real: null })
 const expenseForm  = ref({ nombre_actividad: '', monto_gasto: null })
 
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 40 // r=40
+
 function authHeader() {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
@@ -96,7 +98,13 @@ watch(selectedProjectId, loadSummary)
 const totalAllocated = computed(() => summary.value?.presupuesto_total ?? 0)
 const totalGastado   = computed(() => summary.value?.total_gastado ?? 0)
 const remaining      = computed(() => summary.value?.disponible ?? 0)
-const completedPct   = computed(() => summary.value?.porcentaje_completado ?? 0)
+const usageRatio     = computed(() => summary.value?.porcentaje_uso ?? 0) // 0..1 (raw)
+const completedPct   = computed(() => {
+  const pct = usageRatio.value * 100
+  if (pct <= 0) return 0
+  if (pct < 1)  return Math.round(pct * 10) / 10 // 1 decimal for <1%
+  return Math.round(Math.min(100, pct))
+})
 const activities     = computed(() => summary.value?.actividades ?? [])
 const alerta         = computed(() => summary.value?.alerta ?? null)
 const alertaNivel    = computed(() => summary.value?.alerta_nivel ?? null)
@@ -322,8 +330,12 @@ async function submitExpense() {
             <div class="chart-donut">
               <svg viewBox="0 0 100 100">
                 <circle class="circle-bg" cx="50" cy="50" r="40" />
-                <circle class="circle-progress" cx="50" cy="50" r="40"
-                  :style="{ strokeDasharray: `${completedPct * 2.512}, 251.2` }" />
+                <circle
+                  class="circle-progress"
+                  cx="50" cy="50" r="40"
+                  :stroke-dasharray="DONUT_CIRCUMFERENCE"
+                  :stroke-dashoffset="DONUT_CIRCUMFERENCE * (1 - Math.min(1, usageRatio))"
+                />
               </svg>
               <div class="donut-text">
                 <span class="p-label">Used</span>
@@ -455,10 +467,10 @@ async function submitExpense() {
 .remaining-value{ font-size: 26px; font-weight: 700; }
 
 .chart-donut { width: 180px; height: 180px; position: relative; flex-shrink: 0; }
-.chart-donut svg { width: 100%; height: 100%; }
+.chart-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .circle-bg       { fill: none; stroke: #1a1a1a; stroke-width: 8; }
 .circle-progress { fill: none; stroke: #c9a962; stroke-width: 8; stroke-linecap: round;
-                   transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray 0.6s ease; }
+                   transition: stroke-dashoffset 0.6s ease; }
 .donut-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
 .p-label { font-size: 10px; letter-spacing: 0.1em; color: #666; display: block; }
 .p-value { font-size: 22px; font-weight: 700; color: #faf8f5; }
