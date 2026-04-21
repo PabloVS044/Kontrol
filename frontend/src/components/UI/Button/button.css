@@ -4,9 +4,15 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    background-color: var(--background);
+    transition: all 1s;
 }
 
 .btn:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.btn:hover {
+    background-color: var(--Primary2);
 }
