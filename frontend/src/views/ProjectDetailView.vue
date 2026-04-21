@@ -319,6 +319,56 @@
           </div>
         </section>
 
+        <!-- ── TEAM (TODO: reemplazar mock con endpoint real cuando exista tabla equipos en BD) ── -->
+        <section v-if="activeTab === 'team'" class="tab-panel">
+          <div class="tasks-toolbar">
+            <div class="tasks-filters">
+              <input
+                v-model="teamFilterNombre"
+                type="text"
+                placeholder="Search by name…"
+                class="filter-input"
+              />
+              <select v-model="teamFilterArea" class="filter-select">
+                <option value="">All areas</option>
+                <option v-for="area in MOCK_AREAS" :key="area" :value="area">
+                  {{ area }}
+                </option>
+              </select>
+              <span class="tasks-count">{{ filteredTeams.length }} teams</span>
+            </div>
+            <button class="btn-primary" @click="openCreateTeam">
+              <svg class="icon16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square" />
+              </svg>
+              New team
+            </button>
+          </div>
+
+          <div v-if="filteredTeams.length === 0" class="empty-state">
+            <p>No teams match your filters.</p>
+          </div>
+
+          <div v-else class="tasks-list">
+            <div class="list-header">
+              <span>Team</span><span>Area</span><span>Members</span><span>Tasks</span>
+            </div>
+            <div
+              v-for="team in filteredTeams"
+              :key="team.id"
+              class="task-card list-row"
+            >
+              <div class="list-name-col">
+                <span class="priority-bar" :style="{ background: areaColor(team.area) }"></span>
+                <span class="task-name task-name-link" @click="openTeamDetail(team)">{{ team.nombre }}</span>
+              </div>
+              <span><span class="area-badge">{{ team.area }}</span></span>
+              <span class="list-cell-num">{{ team.miembros.length }}</span>
+              <span class="list-cell-num">{{ team.tareasAsignadas.length }}</span>
+            </div>
+          </div>
+        </section>
+
         <!-- ── MEMBERS ── -->
         <section v-if="activeTab === 'members'" class="tab-panel">
           <ProjectMembersPanel
@@ -353,6 +403,22 @@
       :error="taskError"
       @submit="submitTask"
     />
+
+    <TeamDetailModal
+      v-model="showTeamDetailModal"
+      :team="detailTeam"
+      @edit="handleTeamDetailEdit"
+      @delete="deleteTeam"
+    />
+
+    <TeamModal
+      v-model="showTeamModal"
+      :editing-team="editingTeam"
+      :members="projectMembers"
+      :submitting="teamSubmitting"
+      :error="teamError"
+      @submit="submitTeam"
+    />
   </div>
 </template>
 
@@ -366,6 +432,8 @@ import ProjectMembersPanel from '../components/projects/ProjectMembersPanel.vue'
 import TaskCard        from '../components/projects/TaskCard.vue'
 import TaskModal       from '../components/projects/TaskModal.vue'
 import TaskDetailModal from '../components/projects/TaskDetailModal.vue'
+import TeamModal       from '../components/projects/TeamModal.vue'
+import TeamDetailModal from '../components/projects/TeamDetailModal.vue'
 import { useAuthStore } from '../stores/auth'
 import {
   statusStyle, statusLabel,
@@ -401,11 +469,85 @@ const detailLoading   = ref(false)
 
 const projectMembers = ref([])
 
+// ── Team (mock until tabla equipos existe en BD) ───────────────────────────────
+const mockTeamsNextId = ref(6)
+const mockTeams = ref([
+  {
+    id: 1,
+    nombre: "Alpha",
+    area: "Desarrollo",
+    miembros: [],
+    tareasAsignadas: [
+      { id: 1, nombre: "Setup CI/CD pipeline", estado: "EN_PROGRESO", prioridad: "ALTA", fecha_vencimiento: "2026-05-01", asignado: "Manolo Flores" },
+      { id: 2, nombre: "API integration",      estado: "PENDIENTE",   prioridad: "MEDIA", fecha_vencimiento: "2026-05-15", asignado: null },
+      { id: 3, nombre: "Database migration",   estado: "COMPLETADA",  prioridad: "CRITICA", fecha_vencimiento: "2026-04-20", asignado: "Manolo Flores" },
+    ],
+  },
+  {
+    id: 2,
+    nombre: "Beta",
+    area: "Diseño",
+    miembros: [],
+    tareasAsignadas: [
+      { id: 4, nombre: "UI component library", estado: "EN_PROGRESO", prioridad: "MEDIA", fecha_vencimiento: "2026-05-10", asignado: null },
+      { id: 5, nombre: "Figma handoff",        estado: "PENDIENTE",   prioridad: "BAJA",  fecha_vencimiento: "2026-05-20", asignado: null },
+    ],
+  },
+  {
+    id: 3,
+    nombre: "QA",
+    area: "Calidad",
+    miembros: [],
+    tareasAsignadas: [
+      { id: 6, nombre: "Write test cases",  estado: "PENDIENTE",   prioridad: "ALTA",  fecha_vencimiento: "2026-05-05", asignado: null },
+      { id: 7, nombre: "Regression tests",  estado: "EN_PROGRESO", prioridad: "MEDIA", fecha_vencimiento: "2026-05-12", asignado: null },
+    ],
+  },
+  {
+    id: 4,
+    nombre: "DevOps",
+    area: "Infraestructura",
+    miembros: [],
+    tareasAsignadas: [
+      { id: 8, nombre: "Server provisioning", estado: "COMPLETADA", prioridad: "CRITICA", fecha_vencimiento: "2026-04-15", asignado: null },
+      { id: 9, nombre: "Monitoring setup",    estado: "PENDIENTE",  prioridad: "ALTA",    fecha_vencimiento: "2026-05-08", asignado: null },
+    ],
+  },
+  {
+    id: 5,
+    nombre: "Dirección",
+    area: "Gestión",
+    miembros: [],
+    tareasAsignadas: [
+      { id: 10, nombre: "Stakeholder report", estado: "PENDIENTE", prioridad: "MEDIA", fecha_vencimiento: "2026-05-30", asignado: null },
+    ],
+  },
+])
+
+const MOCK_AREAS = ["Desarrollo", "Diseño", "Calidad", "Infraestructura", "Gestión"]
+const teamFilterNombre = ref("")
+const teamFilterArea   = ref("")
+const filteredTeams = computed(() =>
+  mockTeams.value.filter((t) => {
+    if (teamFilterNombre.value && !t.nombre.toLowerCase().includes(teamFilterNombre.value.toLowerCase())) return false
+    if (teamFilterArea.value && t.area !== teamFilterArea.value) return false
+    return true
+  })
+)
+
+const showTeamDetailModal = ref(false)
+const detailTeam          = ref(null)
+const showTeamModal       = ref(false)
+const teamSubmitting      = ref(false)
+const teamError           = ref(null)
+const editingTeam         = ref(null)
+
 // ── Tabs ─────────────────────────────────────────────────────────────────────
 const tabs = [
   { id: "overview", label: "Overview" },
-  { id: "tasks", label: "Tasks" },
-  { id: "members", label: "Members" },
+  { id: "tasks",    label: "Tasks" },
+  { id: "team",     label: "Team" },
+  { id: "members",  label: "Members" },
   { id: "progress", label: "Progress" },
 ];
 
@@ -670,6 +812,60 @@ async function closeTask(task) {
 
 async function handleProjectMembersUpdated() {
   await Promise.all([loadMembers(), loadMetrics()])
+}
+
+// ── Team modal ────────────────────────────────────────────────────────────────
+
+function areaColor(area) {
+  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "#34d399", Infraestructura: "#f97316", Gestión: "#c9a962" }[area] || "#555")
+}
+
+function openCreateTeam() {
+  editingTeam.value  = null
+  teamError.value    = null
+  showTeamModal.value = true
+}
+
+function openTeamDetail(team) {
+  detailTeam.value          = team
+  showTeamDetailModal.value = true
+}
+
+function handleTeamDetailEdit(team) {
+  showTeamDetailModal.value = false
+  editingTeam.value         = team
+  teamError.value           = null
+  showTeamModal.value       = true
+}
+
+function submitTeam(formData) {
+  if (!formData.nombre.trim()) { teamError.value = "El nombre es requerido."; return }
+  if (!formData.area)           { teamError.value = "El área es requerida.";   return }
+
+  const selectedMembers = projectMembers.value.filter((m) => formData.miembros.includes(m.id_usuario))
+  if (editingTeam.value) {
+    const team = mockTeams.value.find((t) => t.id === editingTeam.value.id)
+    team.nombre   = formData.nombre.trim()
+    team.area     = formData.area
+    team.miembros = selectedMembers
+  } else {
+    mockTeams.value.push({
+      id: mockTeamsNextId.value++,
+      nombre: formData.nombre.trim(),
+      area: formData.area,
+      miembros: selectedMembers,
+      tareasAsignadas: [],
+    })
+  }
+  showTeamModal.value = false
+}
+
+function deleteTeam(team) {
+  mockTeams.value = mockTeams.value.filter((t) => t.id !== team.id)
+  if (detailTeam.value?.id === team.id) {
+    showTeamDetailModal.value = false
+    detailTeam.value          = null
+  }
 }
 
 async function handleProjectProgressUpdated() {

@@ -575,6 +575,77 @@
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .modal-error   { font-size: 12px; color: #fb7185; }
 
+/* ── Team tab ── */
+.filter-input {
+  appearance: none;
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filter-input:focus { border-color: #c9a962; }
+
+.list-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 80px 80px;
+  gap: 12px;
+  padding: 8px 16px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #444;
+}
+
+.list-row {
+  display: grid !important;
+  grid-template-columns: 2fr 1fr 80px 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: default;
+}
+
+.list-name-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.priority-bar {
+  width: 3px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.task-name-link {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.task-name-link:hover { color: #c9a962; }
+
+.area-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: rgba(96,165,250,0.08);
+  border: 1px solid rgba(96,165,250,0.2);
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.list-cell-num {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
   .pd-header,
