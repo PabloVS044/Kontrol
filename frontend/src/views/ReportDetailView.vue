@@ -93,19 +93,14 @@
             </div>
             <div class="budget-body">
               <div class="donut-wrap">
-                <svg viewBox="0 0 80 80" class="donut-svg">
-                  <circle cx="40" cy="40" r="28" fill="none" stroke="#181818" stroke-width="10"/>
-                  <circle
-                    cx="40" cy="40" r="28" fill="none"
-                    stroke="#c9a962" stroke-width="10"
-                    :stroke-dasharray="`${175.9 * mock.budgetUsedPct / 100} 175.9`"
-                    stroke-dashoffset="44"
-                    stroke-linecap="butt"
-                    transform="rotate(-90 40 40)"
-                  />
-                  <text x="40" y="43" text-anchor="middle" fill="#c9a962" font-size="11" font-family="Manrope" font-weight="700">{{ mock.budgetUsedPct }}%</text>
-                  <text x="40" y="53" text-anchor="middle" fill="#555" font-size="6" font-family="Manrope">used</text>
-                </svg>
+                <DonutChart
+                  :pct="mock.budgetUsedPct"
+                  color="#c9a962"
+                  :size="80" :radius="28" :stroke-width="10"
+                  :label="`${mock.budgetUsedPct}%`" label-color="#c9a962" :label-font-size="11" :label-offset-y="3"
+                  sublabel="used" :sublabel-font-size="6" :sublabel-offset-y="10"
+                  display-width="72px"
+                />
               </div>
               <div class="budget-stats">
                 <div class="bstat">
@@ -148,18 +143,13 @@
               <span class="card-tag">{{ mock.totalTasks }} tasks</span>
             </div>
             <div class="task-completion-circle">
-              <svg viewBox="0 0 60 60" class="mini-donut">
-                <circle cx="30" cy="30" r="22" fill="none" stroke="#181818" stroke-width="8"/>
-                <circle
-                  cx="30" cy="30" r="22" fill="none"
-                  stroke="#4ade80" stroke-width="8"
-                  :stroke-dasharray="`${138.2 * mock.tasksCompletedPct / 100} 138.2`"
-                  stroke-dashoffset="34.5"
-                  stroke-linecap="butt"
-                  transform="rotate(-90 30 30)"
-                />
-                <text x="30" y="33" text-anchor="middle" fill="#fff" font-size="9" font-family="Manrope" font-weight="700">{{ mock.tasksCompletedPct }}%</text>
-              </svg>
+              <DonutChart
+                :pct="mock.tasksCompletedPct"
+                color="#4ade80"
+                :size="60" :radius="22" :stroke-width="8"
+                :label="`${mock.tasksCompletedPct}%`" label-color="#fff" :label-font-size="9" :label-offset-y="3"
+                display-width="56px"
+              />
               <div class="task-summary">
                 <span class="ts-big">{{ mock.tasksCompleted }} / {{ mock.totalTasks }}</span>
                 <span class="ts-label">tasks completed</span>
@@ -437,8 +427,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
-import Pill   from '../components/UI/Pill/Pill.vue'
-import Button from '../components/UI/Button/Button.vue'
+import Pill       from '../components/UI/Pill/Pill.vue'
+import Button     from '../components/UI/Button/Button.vue'
+import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
+import { statusLabel, statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
 
 const route     = useRoute()
@@ -467,28 +459,6 @@ async function loadProject() {
 
 onMounted(loadProject)
 
-// ── Status helpers ─────────────────────────────────────────────────────────
-const STATUS_MAP = {
-  PLANIFICADO: { label: 'Planned',     color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
-  EN_PROGRESO: { label: 'In Progress', color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
-  PAUSADO:     { label: 'On Hold',     color: '#fb923c', bg: 'rgba(251,146,60,0.1)'  },
-  COMPLETADO:  { label: 'Completed',   color: '#c9a962', bg: 'rgba(201,169,98,0.1)'  },
-  CANCELADO:   { label: 'Cancelled',   color: '#fb7185', bg: 'rgba(251,113,133,0.1)' },
-}
-function statusLabel(e) { return STATUS_MAP[e]?.label ?? e }
-function statusPill(e)  { return STATUS_MAP[e] ?? { label: e, color: '#888', bg: 'rgba(255,255,255,0.06)' } }
-
-// ── Formatting ─────────────────────────────────────────────────────────────
-function formatDate(d) {
-  if (!d) return null
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-function formatBudget(n) {
-  const num = parseFloat(n) || 0
-  if (num >= 1_000_000) return `$${(num / 1_000_000).toFixed(1)}M`
-  if (num >= 1_000)     return `$${(num / 1_000).toFixed(0)}K`
-  return `$${num.toFixed(0)}`
-}
 
 // ── Seeded mock data (deterministic from project id) ──────────────────────
 function seeded(id, min, max) {
@@ -884,7 +854,6 @@ const healthSub = computed(() => {
 /* ─── Budget card ────────────────────────────────────────────────────────── */
 .budget-body { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
 .donut-wrap { flex-shrink: 0; }
-.donut-svg { width: 72px; height: 72px; }
 .budget-stats { display: flex; flex-direction: column; gap: 8px; }
 .bstat { display: flex; flex-direction: column; }
 .bstat-val {
@@ -913,7 +882,6 @@ const healthSub = computed(() => {
   gap: 16px;
   margin-bottom: 16px;
 }
-.mini-donut { width: 56px; height: 56px; }
 .task-summary { display: flex; flex-direction: column; gap: 3px; }
 .ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #faf8f5; }
 .ts-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; }
