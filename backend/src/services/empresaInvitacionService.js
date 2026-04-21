@@ -72,7 +72,7 @@ export const getInvitationByToken = async (client, token) => {
 
 const generateInvitationToken = () => crypto.randomBytes(24).toString('base64url')
 
-const getCollaboratorRole = async (client) => {
+export const getCollaboratorRole = async (client) => {
   const result = await client.query(
     `SELECT id_rol_empresa, nombre
      FROM public.rol_empresa

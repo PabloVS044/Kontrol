@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { PROJECT_PERMISSION_NAMES } from './empresaSchemas.js'
 
 export const VALID_ESTADOS = ['PLANIFICADO', 'EN_PROGRESO', 'PAUSADO', 'COMPLETADO', 'CANCELADO']
 
@@ -11,6 +12,31 @@ export const getProjectsQuerySchema = z.object({
 
 export const projectIdParamSchema = z.object({
   id: z.coerce.number().int().positive({ message: 'El id debe ser un entero positivo.' }),
+})
+
+export const projectMemberParamSchema = z.object({
+  id: z.coerce.number().int().positive({ message: 'El id del proyecto debe ser un entero positivo.' }),
+  id_usuario: z.coerce.number().int().positive({ message: 'El id del usuario debe ser un entero positivo.' }),
+})
+
+export const projectInvitationTokenParamSchema = z.object({
+  token: z.string().min(16, 'Token de invitación inválido.').max(255),
+})
+
+export const updateProjectMemberAccessSchema = z.object({
+  permisos: z.array(
+    z.enum(PROJECT_PERMISSION_NAMES, {
+      message: `Cada permiso debe ser uno de: ${PROJECT_PERMISSION_NAMES.join(', ')}.`,
+    })
+  ).optional().default([]),
+})
+
+export const upsertProjectInvitationSchema = z.object({
+  permisos: z.array(
+    z.enum(PROJECT_PERMISSION_NAMES, {
+      message: `Cada permiso debe ser uno de: ${PROJECT_PERMISSION_NAMES.join(', ')}.`,
+    })
+  ).optional().default([]),
 })
 
 export const createProjectSchema = z.object({
