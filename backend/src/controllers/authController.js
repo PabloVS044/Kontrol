@@ -1,7 +1,14 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import pool from '../db/pool.js'
-import { acceptCompanyInvitation } from '../services/empresaInvitacionService.js'
+import {
+  acceptCompanyInvitation,
+  getInvitationByToken as getCompanyInvitationByToken,
+} from '../services/empresaInvitacionService.js'
+import {
+  acceptProjectInvitation,
+  getProjectInvitationByToken,
+} from '../services/projectInvitationService.js'
 import { getFrontendBaseUrl } from '../utils/frontendUrl.js'
 
 const SALT_ROUNDS = 10
@@ -29,12 +36,34 @@ const decodeOAuthState = (value) => {
 const maybeResolveInvite = async ({ client, inviteToken, id_usuario, req }) => {
   if (!inviteToken) return null
 
-  return acceptCompanyInvitation({
-    client,
-    inviteToken,
-    id_usuario,
-    req,
-  })
+  const companyInvitation = await getCompanyInvitationByToken(client, inviteToken)
+  if (companyInvitation) {
+    return acceptCompanyInvitation({
+      client,
+      inviteToken,
+      id_usuario,
+      req,
+    })
+  }
+
+  const projectInvitation = await getProjectInvitationByToken(client, inviteToken)
+  if (projectInvitation) {
+    return acceptProjectInvitation({
+      client,
+      inviteToken,
+      id_usuario,
+      req,
+    })
+  }
+
+  return {
+    success: false,
+    code: 'invite_not_found',
+    message: 'La invitación no existe.',
+    invitation: null,
+    empresa: null,
+    proyecto: null,
+  }
 }
 
 const getAuthRedirectForGoogle = async ({ client, user, req, inviteToken }) => {

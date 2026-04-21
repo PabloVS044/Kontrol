@@ -30,6 +30,49 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.proyecto_invitacion (
+      id_invitacion SERIAL PRIMARY KEY,
+      id_empresa integer NOT NULL,
+      id_proyecto integer NOT NULL,
+      token character varying NOT NULL UNIQUE,
+      id_usuario_invitador integer NOT NULL,
+      activa boolean NOT NULL DEFAULT true,
+      creada_en timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      desactivada_en timestamp without time zone,
+      ultimo_uso_en timestamp without time zone,
+      CONSTRAINT proyecto_invitacion_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
+      CONSTRAINT proyecto_invitacion_id_proyecto_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
+      CONSTRAINT proyecto_invitacion_id_usuario_invitador_fkey
+        FOREIGN KEY (id_usuario_invitador) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.proyecto_invitacion_permiso (
+      id_invitacion integer NOT NULL,
+      id_permiso_proyecto integer NOT NULL,
+      PRIMARY KEY (id_invitacion, id_permiso_proyecto),
+      CONSTRAINT proyecto_invitacion_permiso_invitacion_fkey
+        FOREIGN KEY (id_invitacion) REFERENCES public.proyecto_invitacion(id_invitacion),
+      CONSTRAINT proyecto_invitacion_permiso_permiso_fkey
+        FOREIGN KEY (id_permiso_proyecto) REFERENCES public.permiso_proyecto(id_permiso_proyecto)
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS proyecto_invitacion_proyecto_idx
+      ON public.proyecto_invitacion (id_proyecto)
+  `)
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS proyecto_invitacion_proyecto_activa_unique
+      ON public.proyecto_invitacion (id_proyecto)
+      WHERE activa = true
+  `)
+
+  await pool.query(`
     INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion)
     VALUES
       ('ver_inventario', 'Ver inventario del proyecto'),

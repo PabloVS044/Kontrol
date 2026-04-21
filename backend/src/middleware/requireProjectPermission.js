@@ -6,6 +6,7 @@ const resolveProjectId = (req) =>
   req.body?.id_proyecto ??
   req.query?.id_proyecto ??
   req.params?.id_proyecto ??
+  req.params?.id ??
   req.headers['x-proyecto-id']
 
 const requireProjectPermission = (...permissions) => async (req, res, next) => {
