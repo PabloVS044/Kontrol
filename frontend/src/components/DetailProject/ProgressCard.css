@@ -1,0 +1,87 @@
+.entry {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.dot {
+  position: absolute;
+  left: -32px;
+  top: 14px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--Primary);
+  background: var(--Tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--Primary);
+}
+
+.progress-card {
+  border-radius: 20px;
+  padding: 20px;
+  background-color: var(--Tertiary);
+  border: 2px solid var(--Background3);
+  width: 100%;
+}
+
+.success {
+  border-color: var(--Success);
+}
+.error {
+  border-color: var(--Error);
+}
+.warning {
+  border-color: var(--Warning);
+}
+
+.card-header {
+  display: grid;
+  grid-template-columns: 2.5% 97.5%;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.fecha {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.descripcion {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.success .dot-inner { background: var(--Success); }
+.error   .dot-inner { background: var(--Error);   }
+.warning .dot-inner { background: var(--Warning); }
+
+.success .dot { border-color: var(--Success); }
+.error   .dot { border-color: var(--Error);   }
+.warning .dot { border-color: var(--Warning); }
