@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
-import requireRole from '../middleware/requireRole.js'
+import requireEmpresa from '../middleware/requireEmpresa.js'
+import requireEmpresaRole from '../middleware/requireEmpresaRole.js'
 import validate from '../middleware/validate.js'
 import {
   expenseSchema,
@@ -22,12 +23,11 @@ import {
 
 const router = Router()
 
-router.use(requireAuth)
+router.use(requireAuth, requireEmpresa)
 
 // Resumen consolidado de presupuesto por proyecto (con alertas)
 router.get(
   '/project/:id_proyecto/summary',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(proyectoIdParamSchema, 'params'),
   getProjectBudgetSummary
 )
@@ -35,7 +35,7 @@ router.get(
 // Registro rápido de gastos (acumulativo por nombre_actividad)
 router.post(
   '/register-expense',
-  requireRole('admin', 'manager'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(expenseSchema),
   registerExpense
 )
@@ -43,28 +43,26 @@ router.post(
 // CRUD de actividades de presupuesto
 router.get(
   '/',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(getActividadesQuerySchema, 'query'),
   getActividades
 )
 
 router.get(
   '/:id',
-  requireRole('admin', 'manager', 'collaborator'),
   validate(actividadIdParamSchema, 'params'),
   getActividadById
 )
 
 router.post(
   '/',
-  requireRole('admin', 'manager'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(createActividadSchema),
   createActividad
 )
 
 router.put(
   '/:id',
-  requireRole('admin', 'manager'),
+  requireEmpresaRole('owner', 'admin', 'manager'),
   validate(actividadIdParamSchema, 'params'),
   validate(updateActividadSchema),
   updateActividad
@@ -72,7 +70,7 @@ router.put(
 
 router.delete(
   '/:id',
-  requireRole('admin'),
+  requireEmpresaRole('owner', 'admin'),
   validate(actividadIdParamSchema, 'params'),
   deleteActividad
 )
