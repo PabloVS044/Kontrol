@@ -1,6 +1,6 @@
 <template>
   <div class="nav-container">
-    <nav>
+    <nav class="landing-nav">
       <div class="icon">
         <img :src="logo" alt="Logo" />
         <h3>Kontrol</h3>

@@ -121,7 +121,7 @@ async function submit() {
   loading.value = true
 
   try {
-    const res = await fetch('/api/empresas', {
+    const res = await fetch('/api/companies', {
       method:  'POST',
       headers: {
         'Content-Type': 'application/json',

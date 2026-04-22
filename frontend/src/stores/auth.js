@@ -75,7 +75,7 @@ export const useAuthStore = defineStore('auth', {
     async loadEmpresas() {
       if (!this.token) return
       try {
-        const res = await fetch('/api/empresas/mis-empresas', {
+        const res = await fetch('/api/companies/my-companies', {
           headers: { Authorization: `Bearer ${this.token}` },
         })
         if (!res.ok) return
@@ -105,10 +105,10 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        const res = await fetch('/api/empresas/contexto-acceso', {
+        const res = await fetch('/api/companies/access-context', {
           headers: {
             Authorization: `Bearer ${this.token}`,
-            'X-Empresa-ID': this.empresaActual.id_empresa,
+            'X-Company-ID': this.empresaActual.id_empresa,
           },
         })
 

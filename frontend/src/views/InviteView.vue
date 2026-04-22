@@ -16,13 +16,23 @@
               <span class="summary-label">Company</span>
               <span class="summary-value">{{ inviteData.empresa.nombre }}</span>
             </div>
+            <div v-if="isProjectInvite" class="summary-row">
+              <span class="summary-label">Project</span>
+              <span class="summary-value">{{ inviteData.proyecto.nombre }}</span>
+            </div>
             <div class="summary-row">
-              <span class="summary-label">Owner</span>
+              <span class="summary-label">{{ isProjectInvite ? 'Invited by' : 'Owner' }}</span>
               <span class="summary-value">{{ inviteData.empresa.owner_nombre || 'Owner' }}</span>
             </div>
             <div class="summary-row">
               <span class="summary-label">Role on entry</span>
               <span class="summary-value">{{ inviteData.rol_asignado }}</span>
+            </div>
+            <div v-if="isProjectInvite" class="summary-row">
+              <span class="summary-label">Project permissions</span>
+              <span class="summary-value">
+                {{ inviteData.permisos_proyecto?.length ? projectPermissionListLabel(inviteData.permisos_proyecto) : 'No explicit permissions' }}
+              </span>
             </div>
             <div class="summary-row">
               <span class="summary-label">Status</span>
@@ -41,7 +51,7 @@
               :disabled="accepting"
               @click="acceptInvite"
             >
-              {{ accepting ? 'Joining...' : 'Join the company' }}
+              {{ accepting ? 'Joining...' : isProjectInvite ? 'Join the project' : 'Join the company' }}
             </button>
 
             <template v-else-if="!authStore.isLoggedIn && inviteData.invitation.activa">
@@ -87,6 +97,7 @@ import { useAuthStore } from '@/stores/auth'
 import { loginWithGoogle } from '@/services/auth'
 import { getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 import { getInviteErrorMessage } from '@/utils/invitation'
+import { projectPermissionListLabel } from '@/utils/projectAccessLabels'
 
 const route = useRoute()
 const router = useRouter()
@@ -98,17 +109,30 @@ const inviteData = ref(null)
 const feedbackMessage = ref('')
 
 const token = computed(() => String(route.params.token || ''))
+const isProjectInvite = computed(() => inviteData.value?.scope === 'project')
+
 const title = computed(() => {
   if (loading.value) return 'Checking your invitation'
   if (!inviteData.value?.invitation?.activa) return 'This link is no longer available'
-  if (authStore.isLoggedIn) return `Join ${inviteData.value.empresa.nombre}`
-  return `You've been invited to ${inviteData.value.empresa.nombre}`
+  if (authStore.isLoggedIn) {
+    return isProjectInvite.value
+      ? `Join ${inviteData.value.proyecto.nombre}`
+      : `Join ${inviteData.value.empresa.nombre}`
+  }
+  return isProjectInvite.value
+    ? `You've been invited to ${inviteData.value.proyecto.nombre}`
+    : `You've been invited to ${inviteData.value.empresa.nombre}`
 })
 
 const subtitle = computed(() => {
   if (loading.value) return 'Validating the link shared by the owner.'
   if (!inviteData.value?.invitation?.activa) {
     return 'The owner deactivated this link or the invitation no longer exists.'
+  }
+  if (isProjectInvite.value) {
+    return authStore.isLoggedIn
+      ? 'You can sign in with your current session and be linked directly to this project.'
+      : 'You can sign in or create an account to join the company and be assigned directly to this project.'
   }
   return authStore.isLoggedIn
     ? 'You can sign in with your current session and be added as a collaborator.'
@@ -118,23 +142,50 @@ const subtitle = computed(() => {
 const loginLink = computed(() => ({ name: 'login', query: { invite: token.value } }))
 const registerLink = computed(() => ({ name: 'register', query: { invite: token.value } }))
 
+async function fetchInvitation(url) {
+  const res = await fetch(url)
+  const payload = await res.json()
+  return { res, payload }
+}
+
 async function loadInvitation() {
   loading.value = true
   feedbackMessage.value = getInviteErrorMessage(route.query.error)
 
   try {
-    const res = await fetch(`/api/empresas/invitaciones/${encodeURIComponent(token.value)}`)
-    const payload = await res.json()
+    const candidates = [
+      `/api/companies/invitations/${encodeURIComponent(token.value)}`,
+      `/api/projects/invitations/${encodeURIComponent(token.value)}`,
+    ]
 
-    if (!payload.data) {
+    let loadedInvitation = null
+    let loadedError = ''
+
+    for (const candidate of candidates) {
+      const { res, payload } = await fetchInvitation(candidate)
+
+      if (payload.data) {
+        loadedInvitation = payload.data
+        loadedError = !res.ok
+          ? payload.message || getInviteErrorMessage(payload.code)
+          : ''
+        break
+      }
+
+      if (!loadedError) {
+        loadedError = payload.message || getInviteErrorMessage(payload.code)
+      }
+    }
+
+    if (!loadedInvitation) {
       inviteData.value = null
-      feedbackMessage.value = feedbackMessage.value || payload.message || 'Invitation not found.'
+      feedbackMessage.value = feedbackMessage.value || loadedError || 'Invitation not found.'
       return
     }
 
-    inviteData.value = payload.data
-    if (!res.ok && !feedbackMessage.value) {
-      feedbackMessage.value = payload.message || getInviteErrorMessage(payload.code)
+    inviteData.value = loadedInvitation
+    if (!feedbackMessage.value && loadedError) {
+      feedbackMessage.value = loadedError
     }
   } catch {
     inviteData.value = null
@@ -149,7 +200,11 @@ async function acceptInvite() {
   feedbackMessage.value = ''
 
   try {
-    const res = await fetch(`/api/empresas/invitaciones/${encodeURIComponent(token.value)}/accept`, {
+    const acceptPath = isProjectInvite.value
+      ? `/api/projects/invitations/${encodeURIComponent(token.value)}/accept`
+      : `/api/companies/invitations/${encodeURIComponent(token.value)}/accept`
+
+    const res = await fetch(acceptPath, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${authStore.token}`,
@@ -165,7 +220,14 @@ async function acceptInvite() {
 
     await authStore.loadEmpresas()
     authStore.selectEmpresaById(payload.empresa.id_empresa)
+    await authStore.loadAccessContext()
     feedbackMessage.value = payload.message
+
+    if (payload.proyecto?.id_proyecto && authStore.canViewProjects) {
+      router.push({ name: 'project-detail', params: { id: payload.proyecto.id_proyecto } })
+      return
+    }
+
     router.push(getDefaultAuthenticatedRoute(authStore))
   } catch {
     feedbackMessage.value = 'Could not accept the invitation. Please try again.'

@@ -1,5 +1,14 @@
 <template>
-    <button class="btn" :type="type" :disabled="disabled" @click="handleClick">
+    <button
+        class="btn"
+        :type="type"
+        :disabled="disabled"
+        @click="handleClick"
+        :style="{
+            '--background': backColor,
+            '--hoverBack': hoverBack
+        }"
+    >
         {{ label }}
     </button>
 </template>
@@ -20,6 +29,12 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        backColor: {
+            default: 'var(--Primary)'
+        },
+        hoverBack: {
+            default: 'var(--secondary)'
         }
     },
     methods: {

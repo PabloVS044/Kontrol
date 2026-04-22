@@ -5,14 +5,253 @@ import Card from '../components/UI/Card/Card.vue'
 import Button from '../components/UI/Button/Button.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
+import { statusLabel } from '../utils/statusHelpers'
+import { projectPermissionLabel } from '../utils/projectAccessLabels'
 
 const authStore = useAuthStore()
 
-const stats = [
-  { label: 'Total Spent', value: '$12,450.00', trend: '+2.5%', trendColor: '#34d399', back: 'rgba(15,15,15,0.85)' },
-  { label: 'Active Projects', value: '24', trend: '+3 new', trendColor: '#c9a962', back: 'rgba(15,15,15,0.85)' },
-  { label: 'Overrun Alerts', value: '2', trend: 'Critical', trendColor: '#fb7185', back: 'rgba(25,10,10,0.85)' },
-]
+const projects = ref([])
+const budgetByProj = ref({}) // id_proyecto -> summary
+const overviewLoading = ref(false)
+const overviewError = ref(null)
+
+function money(n) {
+  const num = Number(n || 0)
+  return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+}
+
+const totalSpent = computed(() =>
+  Object.values(budgetByProj.value).reduce((s, b) => s + Number(b?.total_gastado || 0), 0)
+)
+const totalAllocated = computed(() =>
+  Object.values(budgetByProj.value).reduce((s, b) => s + Number(b?.presupuesto_total || 0), 0)
+)
+const activeProjectsCount = computed(() =>
+  projects.value.filter(p => p.estado === 'EN_PROGRESO').length
+)
+const overrunCount = computed(() =>
+  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'CRITICO').length
+)
+const warningCount = computed(() =>
+  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'ADVERTENCIA').length
+)
+const spentPct = computed(() => {
+  const t = totalAllocated.value
+  return t > 0 ? Math.round((totalSpent.value / t) * 100) : 0
+})
+
+const stats = computed(() => [
+  {
+    label: 'Total Spent',
+    value: money(totalSpent.value),
+    trend: totalAllocated.value > 0 ? `${spentPct.value}% of budget` : 'No budget set',
+    trendColor: spentPct.value >= 80 ? '#fb7185' : '#34d399',
+    back: 'rgba(15,15,15,0.85)',
+  },
+  {
+    label: 'Active Projects',
+    value: String(activeProjectsCount.value),
+    trend: `${projects.value.length} total`,
+    trendColor: '#c9a962',
+    back: 'rgba(15,15,15,0.85)',
+  },
+  {
+    label: 'Overrun Alerts',
+    value: String(overrunCount.value),
+    trend: warningCount.value ? `${warningCount.value} warning` : (overrunCount.value ? 'Critical' : 'All healthy'),
+    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#c9a962' : '#34d399'),
+    back: overrunCount.value ? 'rgba(25,10,10,0.85)' : 'rgba(15,15,15,0.85)',
+  },
+])
+
+function fmtDate(d) {
+  if (!d) return '—'
+  const dt = new Date(d)
+  if (isNaN(dt)) return '—'
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+// ── Trend chart ─────────────────────────────────────────────────────────────
+const trendProjectId = ref(null)
+const trend = ref(null)
+const trendLoading = ref(false)
+const trendError = ref(null)
+
+const trendEligibleProjects = computed(() =>
+  projects.value.filter(p => p.fecha_inicio && p.fecha_fin_planificada && Number(p.presupuesto_total) > 0)
+)
+
+async function loadTrend() {
+  if (!trendProjectId.value) { trend.value = null; return }
+  trendLoading.value = true
+  trendError.value = null
+  try {
+    const res = await fetch(`/api/budgets/project/${trendProjectId.value}/trend`, { headers: authHeaders() })
+    const payload = await res.json()
+    if (!res.ok) throw new Error(payload.message || `HTTP ${res.status}`)
+    trend.value = payload.data
+  } catch (err) {
+    trendError.value = err.message
+    trend.value = null
+  } finally {
+    trendLoading.value = false
+  }
+}
+
+watch(trendProjectId, loadTrend)
+watch(trendEligibleProjects, (list) => {
+  if (!trendProjectId.value && list.length) trendProjectId.value = list[0].id_proyecto
+})
+
+// Chart geometry
+const CHART = { w: 800, h: 280, padL: 70, padR: 24, padT: 20, padB: 46 }
+const chartArea = computed(() => ({
+  x: CHART.padL,
+  y: CHART.padT,
+  w: CHART.w - CHART.padL - CHART.padR,
+  h: CHART.h - CHART.padT - CHART.padB,
+}))
+
+const chartData = computed(() => {
+  if (!trend.value) return null
+  const p = trend.value.proyecto
+  const start = new Date(p.fecha_inicio).getTime()
+  const end   = new Date(p.fecha_fin_planificada).getTime()
+  const total = Number(p.presupuesto_total) || 0
+  if (!(end > start) || total <= 0) return null
+
+  const a = chartArea.value
+  const xScale = (t) => a.x + ((Math.max(start, Math.min(end, t)) - start) / (end - start)) * a.w
+  const yScale = (v) => a.y + a.h - (Math.max(0, Math.min(total, v)) / total) * a.h
+
+  // Planned line: (start,0) → (end,total)
+  const plannedPath = `M ${xScale(start)} ${yScale(0)} L ${xScale(end)} ${yScale(total)}`
+
+  // Actual: stepwise cumulative. Start at (start, 0), each point (date, acumulado), then extend to today.
+  const points = [{ t: start, v: 0 }]
+  for (const pt of trend.value.puntos) {
+    const t = new Date(pt.fecha).getTime()
+    if (t < start) continue
+    points.push({ t, v: pt.acumulado })
+  }
+  const today = Date.now()
+  const lastV = points[points.length - 1].v
+  if (today > points[points.length - 1].t) points.push({ t: today, v: lastV })
+
+  let actualPath = ''
+  points.forEach((pt, i) => {
+    const x = xScale(pt.t)
+    const y = yScale(pt.v)
+    if (i === 0) actualPath = `M ${x} ${y}`
+    else {
+      // stepwise: horizontal then vertical
+      const prev = points[i - 1]
+      const px = xScale(prev.t)
+      actualPath += ` L ${x} ${yScale(prev.v)} L ${x} ${y}`
+      void px
+    }
+  })
+
+  // Y ticks (0, 25, 50, 75, 100 %)
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
+    y: yScale(total * f),
+    label: (total * f).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+  }))
+
+  // X ticks (start, mid, end) — plus today if inside range
+  const mid = start + (end - start) / 2
+  const xTicks = [
+    { x: xScale(start), label: fmtDate(p.fecha_inicio) },
+    { x: xScale(mid),   label: fmtDate(new Date(mid)) },
+    { x: xScale(end),   label: fmtDate(p.fecha_fin_planificada) },
+  ]
+
+  const todayClamped = Math.max(start, Math.min(end, today))
+  const todayLine = (today >= start && today <= end)
+    ? { x: xScale(todayClamped), label: 'Today' }
+    : null
+
+  return { plannedPath, actualPath, yTicks, xTicks, todayLine, lastActual: lastV, total }
+})
+
+const topBudgetProjects = computed(() => {
+  return projects.value
+    .map(p => {
+      const b = budgetByProj.value[p.id_proyecto]
+      const planned = Number(b?.presupuesto_total ?? p.presupuesto_total ?? 0)
+      const spent   = Number(b?.total_gastado ?? 0)
+      const pct     = planned > 0 ? Math.min(100, Math.round((spent / planned) * 100)) : 0
+      return {
+        id_proyecto: p.id_proyecto,
+        nombre: p.nombre,
+        planned, spent, pct,
+        level: b?.alerta_nivel ?? null,
+      }
+    })
+    .filter(r => r.planned > 0)
+    .sort((a, b) => b.planned - a.planned)
+    .slice(0, 5)
+})
+
+const worstProject = computed(() => {
+  const entries = Object.entries(budgetByProj.value)
+    .map(([id, b]) => {
+      const planned = Number(b?.presupuesto_total || 0)
+      const spent   = Number(b?.total_gastado || 0)
+      const pct     = planned > 0 ? spent / planned : 0
+      const p = projects.value.find(x => String(x.id_proyecto) === String(id))
+      return { id, nombre: p?.nombre || 'Project', pct, level: b?.alerta_nivel }
+    })
+    .filter(r => r.pct > 0)
+    .sort((a, b) => b.pct - a.pct)
+  return entries[0] ?? null
+})
+
+const aiInsight = computed(() => {
+  if (!projects.value.length) return 'No projects yet. Create your first project to start tracking budgets and usage here.'
+  const w = worstProject.value
+  if (w && w.level === 'CRITICO') {
+    return `"${w.nombre}" has exceeded its allocated budget (${Math.round(w.pct * 100)}% used). Review expenses and consider reallocating funds.`
+  }
+  if (w && w.level === 'ADVERTENCIA') {
+    return `"${w.nombre}" is approaching its limit (${Math.round(w.pct * 100)}% used). Monitor upcoming expenses closely.`
+  }
+  if (overrunCount.value === 0 && warningCount.value === 0 && totalAllocated.value > 0) {
+    return `All ${projects.value.length} projects are within their budget allocations. Overall usage is ${spentPct.value}%.`
+  }
+  return `You have ${projects.value.length} project${projects.value.length === 1 ? '' : 's'} under management. Register activities and expenses to start tracking budget health.`
+})
+
+async function loadOverview() {
+  if (!authStore.idEmpresaActual || !authStore.token) return
+  overviewLoading.value = true
+  overviewError.value = null
+  try {
+    const headers = authHeaders()
+    const pr = await fetch('/api/projects?limit=100', { headers })
+    const prPayload = await pr.json()
+    if (!pr.ok) throw new Error(prPayload.message || `HTTP ${pr.status}`)
+    projects.value = prPayload.data || []
+
+    const results = await Promise.allSettled(
+      projects.value.map(p =>
+        fetch(`/api/budgets/project/${p.id_proyecto}/summary`, { headers })
+          .then(r => r.json().then(j => [p.id_proyecto, j]))
+      )
+    )
+    const map = {}
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value[1]?.success) {
+        map[r.value[0]] = r.value[1].data
+      }
+    }
+    budgetByProj.value = map
+  } catch (err) {
+    overviewError.value = err.message
+  } finally {
+    overviewLoading.value = false
+  }
+}
 
 const loading = ref(true)
 const errorMessage = ref('')
@@ -53,7 +292,7 @@ const adminLikeCount = computed(() =>
 function authHeaders() {
   return {
     Authorization: `Bearer ${authStore.token}`,
-    'X-Empresa-ID': authStore.idEmpresaActual,
+    'X-Company-ID': authStore.idEmpresaActual,
   }
 }
 
@@ -78,7 +317,7 @@ async function loadPanel() {
       return
     }
 
-    const res = await fetch('/api/empresas/panel-usuarios', {
+    const res = await fetch('/api/companies/members-panel', {
       headers: authHeaders(),
     })
     const payload = await res.json()
@@ -92,7 +331,7 @@ async function loadPanel() {
     panel.value = payload.data
     syncProjectDrafts(payload.data.members ?? [])
   } catch {
-    errorMessage.value = 'No se pudo cargar el panel de colaboradores.'
+    errorMessage.value = 'Could not load the collaborators panel.'
     panel.value = null
   } finally {
     loading.value = false
@@ -105,7 +344,7 @@ async function generateInvite() {
   generatingInvite.value = true
 
   try {
-    const res = await fetch('/api/empresas/invitacion', {
+    const res = await fetch('/api/companies/invitation', {
       method: 'POST',
       headers: authHeaders(),
     })
@@ -133,7 +372,7 @@ async function deactivateInvite() {
   deactivatingInvite.value = true
 
   try {
-    const res = await fetch('/api/empresas/invitacion', {
+    const res = await fetch('/api/companies/invitation', {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -177,7 +416,7 @@ async function updateMemberRole(member, newRole) {
   updatingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}/rol`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}/role`, {
       method: 'PATCH',
       headers: {
         ...authHeaders(),
@@ -211,7 +450,7 @@ async function removeMember(member) {
   removingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}`, {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -288,7 +527,7 @@ async function assignProjectToMember(member) {
   assigningProjectMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/empresas/miembros/${member.id_usuario}/proyectos/${idProyecto}`, {
+    const res = await fetch(`/api/companies/members/${member.id_usuario}/projects/${idProyecto}`, {
       method: 'PUT',
       headers: {
         ...authHeaders(),
@@ -325,7 +564,7 @@ async function saveProjectPermissions(member, assignment) {
 
   try {
     const res = await fetch(
-      `/api/empresas/miembros/${member.id_usuario}/proyectos/${assignment.id_proyecto}`,
+      `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'PUT',
         headers: {
@@ -360,7 +599,7 @@ async function removeProjectAccess(member, assignment) {
 
   try {
     const res = await fetch(
-      `/api/empresas/miembros/${member.id_usuario}/proyectos/${assignment.id_proyecto}`,
+      `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'DELETE',
         headers: authHeaders(),
@@ -382,7 +621,10 @@ async function removeProjectAccess(member, assignment) {
   }
 }
 
-watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
+watch(() => authStore.idEmpresaActual, () => {
+  loadPanel()
+  loadOverview()
+}, { immediate: true })
 </script>
 
 <template>
@@ -429,43 +671,155 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
       <section class="ai-box">
         <div class="ai-content">
           <h3 class="ai-title">KONTROL AI ANALYSIS</h3>
-          <p class="ai-message">"{{ currentUserName }}, the 'Math Series 2026' stock is critical. I recommend restocking 40 units based on next week's projections."</p>
+          <p class="ai-message">"{{ currentUserName }}, {{ aiInsight }}"</p>
         </div>
-        <Button label="GENERATE ORDER" @click="() => {}" />
+        <Button
+          v-if="worstProject"
+          label="REVIEW BUDGET"
+          @click="$router.push({ name: 'budget', query: { project: worstProject.id } })"
+        />
+      </section>
+
+      <section class="chart-card trend-card">
+        <div class="trend-head">
+          <div>
+            <h3>Financial Performance Trend</h3>
+            <p class="timeline-hint">Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.</p>
+          </div>
+          <select
+            v-if="trendEligibleProjects.length"
+            v-model="trendProjectId"
+            class="trend-select"
+          >
+            <option v-for="p in trendEligibleProjects" :key="p.id_proyecto" :value="p.id_proyecto">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div v-if="trendLoading" class="chart-state">Loading trend…</div>
+        <div v-else-if="trendError" class="chart-state chart-state--error">{{ trendError }}</div>
+        <div v-else-if="!trendEligibleProjects.length" class="chart-state">
+          No projects with start date, end date and budget set yet.
+        </div>
+        <div v-else-if="!chartData" class="chart-state">
+          This project needs fecha_inicio, fecha_fin_planificada and presupuesto_total.
+        </div>
+        <svg v-else class="trend-svg" :viewBox="`0 0 ${CHART.w} ${CHART.h}`" preserveAspectRatio="xMidYMid meet">
+          <!-- Y grid -->
+          <g>
+            <line
+              v-for="t in chartData.yTicks"
+              :key="`yg-${t.label}`"
+              :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
+              :y1="t.y" :y2="t.y"
+              stroke="#1f1f1f" stroke-width="1"
+            />
+            <text
+              v-for="t in chartData.yTicks"
+              :key="`yt-${t.label}`"
+              :x="chartArea.x - 8" :y="t.y + 4"
+              fill="#666" font-size="10" text-anchor="end"
+              font-family="Manrope, sans-serif"
+            >{{ t.label }}</text>
+          </g>
+
+          <!-- X axis -->
+          <line
+            :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
+            :y1="chartArea.y + chartArea.h" :y2="chartArea.y + chartArea.h"
+            stroke="#2a2a2a" stroke-width="1"
+          />
+          <text
+            v-for="(t, i) in chartData.xTicks"
+            :key="`xt-${i}`"
+            :x="t.x" :y="chartArea.y + chartArea.h + 18"
+            fill="#888" font-size="10"
+            :text-anchor="i === 0 ? 'start' : i === chartData.xTicks.length - 1 ? 'end' : 'middle'"
+            font-family="Manrope, sans-serif"
+          >{{ t.label }}</text>
+
+          <!-- Planned line (dashed gold) -->
+          <path
+            :d="chartData.plannedPath"
+            fill="none" stroke="#c9a962" stroke-width="1.5"
+            stroke-dasharray="6,5" opacity="0.75"
+          />
+
+          <!-- Actual cumulative line -->
+          <path
+            :d="chartData.actualPath"
+            fill="none" stroke="#34d399" stroke-width="2"
+          />
+
+          <!-- Today marker -->
+          <template v-if="chartData.todayLine">
+            <line
+              :x1="chartData.todayLine.x" :x2="chartData.todayLine.x"
+              :y1="chartArea.y" :y2="chartArea.y + chartArea.h"
+              stroke="#faf8f5" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"
+            />
+            <text
+              :x="chartData.todayLine.x" :y="chartArea.y - 6"
+              fill="#faf8f5" font-size="10" text-anchor="middle" opacity="0.8"
+              font-family="Manrope, sans-serif"
+            >Today</text>
+          </template>
+
+          <!-- Legend -->
+          <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
+            <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f"/>
+            <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5"/>
+            <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Planned budget</text>
+            <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2"/>
+            <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Actual spend (movements)</text>
+          </g>
+        </svg>
       </section>
 
       <div class="charts-container">
         <div class="chart-card main-chart">
-          <h3>Financial Performance Trend</h3>
-          <div class="chart-placeholder">
-            <svg viewBox="0 0 500 150" class="line-chart">
-              <path d="M0,130 L100,110 L200,120 L300,80 L400,60 L500,40"
-                    fill="none" stroke="var(--Primary)" stroke-width="3" />
-              <path d="M0,130 L100,110 L200,120 L300,80 L400,60 L500,40 V150 H0 Z"
-                    fill="url(#grad)" opacity="0.2" />
-              <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:var(--Primary);stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:var(--Primary);stop-opacity:0" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div class="chart-labels">
-              <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span>
+          <h3>Budget Usage by Project</h3>
+
+          <div v-if="overviewLoading" class="chart-state">Loading budgets…</div>
+          <div v-else-if="overviewError" class="chart-state chart-state--error">{{ overviewError }}</div>
+          <div v-else-if="!topBudgetProjects.length" class="chart-state">
+            No projects with budget data yet.
+          </div>
+          <div v-else class="project-bars">
+            <div v-for="row in topBudgetProjects" :key="row.id_proyecto" class="project-bar-row">
+              <div class="project-bar-head">
+                <span class="project-bar-name">{{ row.nombre }}</span>
+                <span class="project-bar-meta">
+                  <span>{{ money(row.spent) }} / {{ money(row.planned) }}</span>
+                  <span class="project-bar-pct" :class="row.level?.toLowerCase()">{{ row.pct }}%</span>
+                </span>
+              </div>
+              <div class="bar-bg">
+                <div class="bar-fill" :class="row.level?.toLowerCase()" :style="{ width: row.pct + '%' }"></div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="chart-card mini-chart">
-          <h3>Budget by Category</h3>
-          <div class="bar-group">
-            <label>Books</label>
-            <div class="bar-bg"><div class="bar-fill" style="width: 85%"></div></div>
+          <h3>Portfolio Snapshot</h3>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Allocated</span>
+            <span class="snapshot-value">{{ money(totalAllocated) }}</span>
           </div>
-          <div class="bar-group">
-            <label>Logistics</label>
-            <div class="bar-bg"><div class="bar-fill" style="width: 40%"></div></div>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Spent</span>
+            <span class="snapshot-value">{{ money(totalSpent) }}</span>
           </div>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Remaining</span>
+            <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
+          </div>
+          <div class="snapshot-bar bar-bg">
+            <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
+          </div>
+          <p class="snapshot-foot">{{ spentPct }}% of total budget used across {{ projects.length }} project{{ projects.length === 1 ? '' : 's' }}.</p>
         </div>
       </div>
 
@@ -639,7 +993,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                         <div class="project-assignment-head">
                           <div>
                             <strong class="member-name">{{ assignment.proyecto_nombre }}</strong>
-                            <p class="member-email">{{ assignment.proyecto_estado }}</p>
+                            <p class="member-email">{{ statusLabel(assignment.proyecto_estado) }}</p>
                           </div>
 
                           <button
@@ -662,7 +1016,7 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
                               :checked="getDraftPermissions(member.id_usuario, assignment.id_proyecto).includes(permission.nombre_permiso)"
                               @change="toggleProjectPermission(member.id_usuario, assignment.id_proyecto, permission.nombre_permiso, $event.target.checked)"
                             />
-                            <span class="permission-name">{{ permission.nombre_permiso }}</span>
+                            <span class="permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
                             <small class="permission-description">{{ permission.descripcion }}</small>
                           </label>
                         </div>
@@ -874,6 +1228,97 @@ watch(() => authStore.idEmpresaActual, loadPanel, { immediate: true })
   background: var(--Primary);
   height: 100%;
   border-radius: 3px;
+  transition: width .4s ease;
+}
+
+.bar-fill.advertencia { background: #f59e0b; }
+.bar-fill.critico     { background: #fb7185; }
+
+.chart-state {
+  padding: 24px 0;
+  color: #8f8f8f;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+}
+.chart-state--error { color: #fecdd3; }
+
+.project-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 12px;
+}
+.project-bar-row { display: flex; flex-direction: column; gap: 6px; }
+.project-bar-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  color: #faf8f5;
+}
+.project-bar-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.project-bar-meta {
+  display: flex;
+  gap: 10px;
+  color: #8f8f8f;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.project-bar-pct { color: #c9a962; font-weight: 600; }
+.project-bar-pct.advertencia { color: #f59e0b; }
+.project-bar-pct.critico     { color: #fb7185; }
+
+.snapshot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Manrope', sans-serif;
+}
+.snapshot-label { color: #8f8f8f; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: #faf8f5; font-size: 15px; font-variant-numeric: tabular-nums; }
+.snapshot-value.gold { color: var(--Primary); }
+.snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
+.snapshot-foot { color: #8f8f8f; font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+
+.trend-card { margin-bottom: 20px; }
+.trend-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.timeline-hint {
+  color: #8f8f8f;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 4px 0 12px;
+  max-width: 520px;
+}
+.trend-select {
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: 'Manrope', sans-serif;
+  min-width: 220px;
+}
+.trend-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 8px;
 }
 
 .company-collaborators {
