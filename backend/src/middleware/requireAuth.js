@@ -10,7 +10,7 @@ const requireAuth = (req, res, next) => {
   const authHeader = req.headers.authorization
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, message: 'Token requerido.' })
+    return res.status(401).json({ success: false, message: 'Token required.' })
   }
 
   const token = authHeader.slice(7)
@@ -20,7 +20,7 @@ const requireAuth = (req, res, next) => {
     req.user = payload
     next()
   } catch {
-    return res.status(401).json({ success: false, message: 'Token inválido o expirado.' })
+    return res.status(401).json({ success: false, message: 'Invalid or expired token.' })
   }
 }
 

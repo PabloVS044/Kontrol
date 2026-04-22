@@ -28,7 +28,7 @@ set +a
 : "${GOOGLE_CALLBACK_URL:?Falta GOOGLE_CALLBACK_URL en .env.deploy}"
 : "${FRONTEND_URL:?Falta FRONTEND_URL en .env.deploy}"
 
-SSH="ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -t -i $SSH_KEY $VM_USER@$VM_IP"
+SSH="ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -i $SSH_KEY $VM_USER@$VM_IP"
 
 # Codifica el .env en base64 para evitar problemas con caracteres especiales
 ENV_B64=$(printf '%s\n' \
@@ -50,7 +50,7 @@ $SSH "
   fi
   cd /app/Kontrol
   git fetch origin
-  git reset --hard origin/feat/deploy
+  git reset --hard origin/main
   echo '$ENV_B64' | base64 -d > .env
   echo '==> .env actualizado'
 "

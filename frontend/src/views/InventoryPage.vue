@@ -2,68 +2,12 @@
   <div class="inventory-root">
     <AppNavbar />
 
-    <!-- Modal: nuevo producto (fuera del v-if/v-else) -->
-    <Teleport to="body">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal">
-          <div class="modal-header">
-            <span class="modal-title">New product</span>
-            <button class="modal-close" @click="closeModal">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
-              </svg>
-            </button>
-          </div>
-
-          <form class="modal-form" @submit.prevent="submitProduct">
-
-            <div class="form-field">
-              <label>Name <span class="req">*</span></label>
-              <input v-model="form.nombre" type="text" placeholder="Product name" required />
-            </div>
-
-            <div class="form-field">
-              <label>Description</label>
-              <textarea v-model="form.descripcion" placeholder="Optional description" rows="2"></textarea>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label>Sale price <span class="req">*</span></label>
-                <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
-              </div>
-              <div class="form-field">
-                <label>Cost price <span class="req">*</span></label>
-                <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" required />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label>Initial stock</label>
-                <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
-              </div>
-              <div class="form-field">
-                <label>Min. stock</label>
-                <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
-              </div>
-            </div>
-
-            <p v-if="modalError" class="modal-error">{{ modalError }}</p>
-
-            <div class="modal-actions">
-              <Button label="Cancel" type="button" @click="closeModal" />
-              <Button
-                :label="modalLoading ? 'Saving…' : 'Save product'"
-                type="submit"
-                :disabled="modalLoading"
-              />
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </Teleport>
+    <ProductModal
+      v-model="showModal"
+      :submitting="modalLoading"
+      :error="modalError"
+      @submit="submitProduct"
+    />
 
     <div class="inventory-layout">
 
@@ -357,6 +301,7 @@ import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
+import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -382,8 +327,8 @@ const canCreateProduct = computed(() => {
 function authHeader(includeProyecto = false) {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
-  if (includeProyecto && selectedProject.value) headers['X-Proyecto-ID'] = selectedProject.value.id_proyecto
+  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
+  if (includeProyecto && selectedProject.value) headers['X-Project-ID'] = selectedProject.value.id_proyecto
   return headers
 }
 
@@ -425,13 +370,13 @@ async function loadData() {
   try {
     const params = new URLSearchParams()
     if (selectedProject.value) {
-      params.set('id_proyecto', selectedProject.value.id_proyecto)
+      params.set('projectId', selectedProject.value.id_proyecto)
     }
     const qs = params.toString() ? `?${params}` : ''
 
     const [productosRes, alertasRes] = await Promise.all([
-      apiFetch(`/api/productos${qs}`),
-      apiFetch(`/api/productos/alertas/stock-bajo${qs}`),
+      apiFetch(`/api/products${qs}`),
+      apiFetch(`/api/products/alerts/low-stock${qs}`),
     ])
     products.value    = productosRes.data
     stockAlerts.value = alertasRes.data
@@ -531,20 +476,14 @@ function stockNumClass(p) {
 const showModal    = ref(false)
 const modalLoading = ref(false)
 const modalError   = ref(null)
-const form = ref({ nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 })
 
 function openNewProduct() {
   if (!canCreateProduct.value) return
-  form.value       = { nombre: '', descripcion: '', precio_venta: null, precio_costo: null, stock_minimo: 0, stock_inicial: 0 }
   modalError.value = null
   showModal.value  = true
 }
 
-function closeModal() {
-  showModal.value = false
-}
-
-async function submitProduct() {
+async function submitProduct(formData) {
   if (!selectedProject.value) {
     modalError.value = 'Select a project before adding a product.'
     return
@@ -552,16 +491,16 @@ async function submitProduct() {
   modalLoading.value = true
   modalError.value   = null
   try {
-    const res = await fetch('/api/productos', {
+    const res = await fetch('/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader(true) },
       body: JSON.stringify({
-        nombre:        form.value.nombre,
-        descripcion:   form.value.descripcion || undefined,
-        precio_venta:  form.value.precio_venta,
-        precio_costo:  form.value.precio_costo,
-        stock_minimo:  form.value.stock_minimo ?? 0,
-        stock_inicial: form.value.stock_inicial ?? 0,
+        nombre:        formData.nombre,
+        descripcion:   formData.descripcion || undefined,
+        precio_venta:  formData.precio_venta,
+        precio_costo:  formData.precio_costo,
+        stock_minimo:  formData.stock_minimo ?? 0,
+        stock_inicial: formData.stock_inicial ?? 0,
       }),
     })
     const data = await res.json()
@@ -569,7 +508,7 @@ async function submitProduct() {
       modalError.value = data.message || `Error ${res.status}`
       return
     }
-    closeModal()
+    showModal.value = false
     await loadData()
   } catch {
     modalError.value = 'Network error, try again.'

@@ -244,18 +244,13 @@
         <div class="ctx-section">
           <p class="ctx-label">Budget Usage</p>
           <div class="donut-wrap">
-            <svg viewBox="0 0 80 80" class="donut-svg">
-              <circle cx="40" cy="40" r="30" fill="none" stroke="#1f1f1f" stroke-width="10"/>
-              <circle
-                cx="40" cy="40" r="30" fill="none"
-                stroke="#c9a962" stroke-width="10"
-                stroke-dasharray="135.7 188.5"
-                stroke-dashoffset="47.1"
-                stroke-linecap="butt"
-                transform="rotate(-90 40 40)"
-              />
-              <text x="40" y="44" text-anchor="middle" fill="#fff" font-size="13" font-family="Manrope" font-weight="700">72%</text>
-            </svg>
+            <DonutChart
+              :pct="72"
+              color="#c9a962"
+              :size="80" :radius="30" :stroke-width="10"
+              label="72%" label-color="#fff" :label-font-size="13" :label-offset-y="4"
+              display-width="90px"
+            />
           </div>
           <div class="donut-legend">
             <span class="dl-item"><span class="dl-dot gold"></span>Used (72%)</span>
@@ -297,10 +292,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import AppNavbar from '../components/AppNavbar.vue'
-import Card   from '../components/UI/Card/Card.vue'
-import Pill   from '../components/UI/Pill/Pill.vue'
-import Button from '../components/UI/Button/Button.vue'
+import AppNavbar  from '../components/AppNavbar.vue'
+import Card       from '../components/UI/Card/Card.vue'
+import Pill       from '../components/UI/Pill/Pill.vue'
+import Button     from '../components/UI/Button/Button.vue'
+import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
+import { statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
 
 const router   = useRouter()
@@ -367,28 +364,6 @@ const totalBudget = computed(() =>
   projects.value.reduce((sum, p) => sum + (parseFloat(p.presupuesto_total) || 0), 0)
 )
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-const STATUS_MAP = {
-  PLANIFICADO: { label: 'Planned',     color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
-  EN_PROGRESO: { label: 'In Progress', color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
-  PAUSADO:     { label: 'On Hold',     color: '#fb923c', bg: 'rgba(251,146,60,0.1)'  },
-  COMPLETADO:  { label: 'Completed',   color: '#c9a962', bg: 'rgba(201,169,98,0.1)'  },
-  CANCELADO:   { label: 'Cancelled',   color: '#fb7185', bg: 'rgba(251,113,133,0.1)' },
-}
-
-function statusLabel(estado) { return STATUS_MAP[estado]?.label ?? estado }
-function statusPill(estado)  { return STATUS_MAP[estado] ?? { label: estado, color: '#888', bg: 'rgba(255,255,255,0.06)' } }
-
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function formatBudget(n) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000)     return `$${(n / 1_000).toFixed(0)}K`
-  return `$${n.toFixed(0)}`
-}
 
 function goToDetail(id) {
   router.push({ name: 'report-detail', params: { id } })
@@ -856,7 +831,6 @@ function goToDetail(id) {
   margin: 8px 0;
 }
 
-.donut-svg { width: 90px; height: 90px; }
 
 .donut-legend {
   display: flex;

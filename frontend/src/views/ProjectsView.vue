@@ -2,69 +2,55 @@
   <div class="projects-root">
     <AppNavbar />
 
-    <!-- Modal: nuevo proyecto -->
-    <Teleport to="body">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal">
-          <div class="modal-header">
-            <span class="modal-title">New project</span>
-            <button class="modal-close" @click="closeModal">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
-              </svg>
-            </button>
-          </div>
+    <BaseModal v-model="showModal" title="New project">
+      <form class="modal-form" @submit.prevent="submitProject">
 
-          <form class="modal-form" @submit.prevent="submitProject">
-
-            <div class="form-field">
-              <label>Name <span class="req">*</span></label>
-              <input v-model="form.nombre" type="text" placeholder="Project name" required />
-            </div>
-
-            <div class="form-field">
-              <label>Description</label>
-              <textarea v-model="form.descripcion" placeholder="Optional description" rows="2" />
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label>Start date <span class="req">*</span></label>
-                <input v-model="form.fecha_inicio" type="date" required />
-              </div>
-              <div class="form-field">
-                <label>End date</label>
-                <input v-model="form.fecha_fin_planificada" type="date" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label>Budget <span class="req">*</span></label>
-                <input v-model.number="form.presupuesto_total" type="number" min="0" step="0.01" placeholder="0.00" required />
-              </div>
-              <div class="form-field">
-                <label>Status</label>
-                <select v-model="form.estado">
-                  <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
-                </select>
-              </div>
-            </div>
-
-            <p v-if="modalError" class="modal-error">{{ modalError }}</p>
-
-            <div class="modal-actions">
-              <Button label="Cancel" type="button" @click="closeModal" />
-              <Button
-                :label="modalLoading ? 'Saving…' : 'Save project'"
-                type="submit"
-                :disabled="modalLoading"
-              />
-            </div>
-          </form>
+        <div class="form-field">
+          <label>Name <span class="req">*</span></label>
+          <input v-model="form.nombre" type="text" placeholder="Project name" required />
         </div>
-      </div>
-    </Teleport>
+
+        <div class="form-field">
+          <label>Description</label>
+          <textarea v-model="form.descripcion" placeholder="Optional description" rows="2" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Start date <span class="req">*</span></label>
+            <input v-model="form.fecha_inicio" type="date" required />
+          </div>
+          <div class="form-field">
+            <label>End date</label>
+            <input v-model="form.fecha_fin_planificada" type="date" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Budget <span class="req">*</span></label>
+            <input v-model.number="form.presupuesto_total" type="number" min="0" step="0.01" placeholder="0.00" required />
+          </div>
+          <div class="form-field">
+            <label>Status</label>
+            <select v-model="form.estado">
+              <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <p v-if="modalError" class="modal-error">{{ modalError }}</p>
+
+        <div class="modal-actions">
+          <Button label="Cancel" type="button" @click="showModal = false" />
+          <Button
+            :label="modalLoading ? 'Saving…' : 'Save project'"
+            type="submit"
+            :disabled="modalLoading"
+          />
+        </div>
+      </form>
+    </BaseModal>
 
     <div class="projects-layout">
 
@@ -174,16 +160,56 @@
               <div class="card-body">
                 <p class="card-desc">{{ project.descripcion || 'No description.' }}</p>
                 <div class="progress-wrap">
+                  <ProgressBar
+                    :pct="statusProgress(project.estado)"
+                    :color="statusColor(project.estado)"
+                    height="3px"
+                    style="flex:1"
+                  />
+                  <span class="progress-val">{{ statusProgress(project.estado) }}%</span>
+                </div>
+                <div class="budget-line">
+                  <div class="budget-labels">
+                    <span>Budget</span>
+                    <span class="budget-val">
+                      ${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}
+                    </span>
+                  </div>
                   <div class="progress-bg">
                     <div
                       class="progress-fill"
-                      :style="{ width: statusProgress(project.estado) + '%', backgroundColor: statusColor(project.estado) }"
+                      :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"
                     ></div>
                   </div>
-                  <span class="progress-val">{{ statusProgress(project.estado) }}%</span>
+                  <div class="budget-meta">
+                    <span :style="{ color: budgetColor(project) }">{{ budgetPct(project) }}% used</span>
+                    <span v-if="budgetByProj[project.id_proyecto]?.alerta_nivel"
+                          class="alert-pill"
+                          :class="budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'critical' : 'warn'">
+                      {{ budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'OVERRUN' : 'WARNING' }}
+                    </span>
+                  </div>
                 </div>
+
                 <div class="card-footer-row">
+                  <template v-if="canEditStatus(project)">
+                    <div
+                      class="status-select-wrap"
+                      :style="{ '--status-color': statusColor(project.estado) }"
+                    >
+                      <span class="status-dot-mark" :style="{ backgroundColor: statusColor(project.estado) }"></span>
+                      <select
+                        class="status-select"
+                        :value="project.estado"
+                        :disabled="statusUpdating[project.id_proyecto]"
+                        @change="updateProjectStatus(project, $event.target.value)"
+                      >
+                        <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
+                      </select>
+                    </div>
+                  </template>
                   <Pill
+                    v-else
                     :label="statusLabel(project.estado)"
                     :btnColor="statusColor(project.estado) + '18'"
                     :circleColor="statusColor(project.estado)"
@@ -193,6 +219,9 @@
                     {{ project.fecha_fin_planificada ? 'Due ' + formatDate(project.fecha_fin_planificada) : 'No due date' }}
                   </span>
                 </div>
+                <p v-if="statusError[project.id_proyecto]" class="status-error">
+                  {{ statusError[project.id_proyecto] }}
+                </p>
               </div>
               <div class="card-open">
                 <Anchor
@@ -202,6 +231,7 @@
                   backColor="transparent"
                   hoverColor="rgba(201,169,98,0.06)"
                 />
+                <a class="open-anchor" @click.prevent="openBudget(project)">→ Open budget</a>
               </div>
             </div>
 
@@ -262,26 +292,33 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import AppNavbar from '../components/AppNavbar.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
+import AppNavbar  from '../components/AppNavbar.vue'
+import BaseModal  from '../components/UI/Modal/BaseModal.vue'
+import ProgressBar from '../components/UI/ProgressBar/ProgressBar.vue'
+import Pill   from '../components/UI/Pill/Pill.vue'
 import Anchor from '../components/UI/Button/Anchor.vue'
 import Button from '../components/UI/Button/Button.vue'
+import { statusLabel, formatDate } from '../utils/statusHelpers.js'
 
-const authStore  = useAuthStore()
-const projects   = ref([])
-const loading    = ref(true)
+const router = useRouter()
+
+const authStore    = useAuthStore()
+const projects     = ref([])
+const budgetByProj = ref({}) // id_proyecto -> summary
+const loading      = ref(true)
 const authError  = ref(false)
 const fetchError = ref(null)
 const activeTab  = ref('all')
 const lastSync   = ref('—')
 
 const ESTADOS = [
-  { value: 'PLANIFICADO', label: 'Planned'   },
+  { value: 'PLANIFICADO', label: 'Planned'    },
   { value: 'EN_PROGRESO', label: 'In Progress'},
-  { value: 'PAUSADO',     label: 'Paused'    },
-  { value: 'COMPLETADO',  label: 'Completed' },
-  { value: 'CANCELADO',   label: 'Cancelled' },
+  { value: 'PAUSADO',     label: 'Paused'     },
+  { value: 'COMPLETADO',  label: 'Completed'  },
+  { value: 'CANCELADO',   label: 'Cancelled'  },
 ]
 
 const STATUS_COLOR = {
@@ -298,31 +335,31 @@ const STATUS_PROGRESS = {
   COMPLETADO:  100,
   CANCELADO:   5,
 }
-const STATUS_LABEL = {
-  PLANIFICADO: 'Planned',
-  EN_PROGRESO: 'On Track',
-  PAUSADO:     'Paused',
-  COMPLETADO:  'Completed',
-  CANCELADO:   'Cancelled',
-}
 
 const statusColor    = (e) => STATUS_COLOR[e]    || '#666'
 const statusProgress = (e) => STATUS_PROGRESS[e] ?? 0
-const statusLabel    = (e) => STATUS_LABEL[e]    || e
 const isAdmin        = (p) => p.id_encargado === authStore.idUsuario
 
-function formatDate(d) {
-  if (!d) return ''
-  const date = new Date(d)
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+// ── Budget helpers ────────────────────────────────────────────────────────────
+const money = (v) => Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const budgetTotal  = (p) => money(budgetByProj.value[p.id_proyecto]?.presupuesto_total ?? p.presupuesto_total)
+const budgetSpent  = (p) => money(budgetByProj.value[p.id_proyecto]?.total_gastado ?? 0)
+const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_completado ?? 0
+const budgetColor  = (p) => {
+  const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
+  if (lvl === 'CRITICO')     return '#fb7185'
+  if (lvl === 'ADVERTENCIA') return '#f97316'
+  return '#c9a962'
 }
-
+function openBudget(p) {
+  router.push({ name: 'budget', query: { project: p.id_proyecto } })
+}
 // ── API ───────────────────────────────────────────────────────────────────────
 
 function authHeader() {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Empresa-ID'] = authStore.idEmpresaActual
+  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
   return headers
 }
 
@@ -344,6 +381,18 @@ async function loadData() {
     const res = await apiFetch(`/api/projects?${params}`)
     projects.value = res.data
     lastSync.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+
+    // Load budget summaries in parallel (best-effort)
+    const summaries = await Promise.allSettled(
+      projects.value.map(p =>
+        apiFetch(`/api/budgets/project/${p.id_proyecto}/summary`).then(r => [p.id_proyecto, r.data])
+      )
+    )
+    const map = {}
+    for (const s of summaries) {
+      if (s.status === 'fulfilled') { map[s.value[0]] = s.value[1] }
+    }
+    budgetByProj.value = map
   } catch (err) {
     if (err.status === 401) authError.value = true
     else fetchError.value = err.message
@@ -357,10 +406,10 @@ watch(() => authStore.idEmpresaActual, loadData)
 
 // ── Computed counts ───────────────────────────────────────────────────────────
 
-const asAdminCount    = computed(() => projects.value.filter(p => isAdmin(p)).length)
-const atRiskCount     = computed(() => projects.value.filter(p => ['PAUSADO', 'CANCELADO'].includes(p.estado)).length)
-const completedCount  = computed(() => projects.value.filter(p => p.estado === 'COMPLETADO').length)
-const pausedCount     = computed(() => projects.value.filter(p => p.estado === 'PAUSADO').length)
+const asAdminCount   = computed(() => projects.value.filter(p => isAdmin(p)).length)
+const atRiskCount    = computed(() => projects.value.filter(p => ['PAUSADO', 'CANCELADO'].includes(p.estado)).length)
+const completedCount = computed(() => projects.value.filter(p => p.estado === 'COMPLETADO').length)
+const pausedCount    = computed(() => projects.value.filter(p => p.estado === 'PAUSADO').length)
 
 const tabs = computed(() => [
   { key: 'all',       label: 'All',       count: projects.value.length },
@@ -400,10 +449,39 @@ function openModal() {
   showModal.value  = true
 }
 
-function closeModal() {
-  showModal.value = false
+const statusUpdating = ref({}) // id_proyecto -> bool
+const statusError    = ref({}) // id_proyecto -> message
+
+function canEditStatus(p) {
+  if (isAdmin(p)) return true
+  const role = authStore.empresaActual?.rol
+  return ['owner', 'admin', 'manager'].includes(role)
 }
 
+async function updateProjectStatus(project, newEstado) {
+  if (!newEstado || newEstado === project.estado) return
+  statusUpdating.value = { ...statusUpdating.value, [project.id_proyecto]: true }
+  statusError.value = { ...statusError.value, [project.id_proyecto]: null }
+  const previous = project.estado
+  project.estado = newEstado // optimistic
+  try {
+    const res = await fetch(`/api/projects/${project.id_proyecto}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ estado: newEstado }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      project.estado = previous
+      statusError.value = { ...statusError.value, [project.id_proyecto]: data.message || `Error ${res.status}` }
+    }
+  } catch {
+    project.estado = previous
+    statusError.value = { ...statusError.value, [project.id_proyecto]: 'Network error' }
+  } finally {
+    statusUpdating.value = { ...statusUpdating.value, [project.id_proyecto]: false }
+  }
+}
 async function submitProject() {
   modalLoading.value = true
   modalError.value   = null
@@ -429,7 +507,7 @@ async function submitProject() {
       modalError.value = data.message || `Error ${res.status}`
       return
     }
-    closeModal()
+    showModal.value = false
     await loadData()
   } catch {
     modalError.value = 'Network error, try again.'
@@ -444,44 +522,27 @@ async function submitProject() {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.projects-root {
-  background: transparent;
-  min-height: 100vh;
-}
+.projects-root { background: transparent; min-height: 100vh; }
 
 .projects-layout {
-  font-family: 'Manrope', sans-serif;
-  color: #faf8f5;
-  min-height: calc(100vh - 56px);
-  margin-top: 56px;
-  display: flex;
-  overflow-x: hidden;
+  font-family: 'Manrope', sans-serif; color: #faf8f5;
+  min-height: calc(100vh - 56px); margin-top: 56px;
+  display: flex; overflow-x: hidden;
 }
 
-/* ── State screens ── */
 .state-screen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
   background: rgba(10,10,10,0.82);
 }
 .state-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #faf8f5; }
 .state-msg   { font-size: 14px; color: #888; }
 
-/* ── Main panel ── */
 .main-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 48px 56px;
-  background: rgba(10,10,10,0.82);
+  flex: 1; display: flex; flex-direction: column; gap: 32px;
+  padding: 48px 56px; background: rgba(10,10,10,0.82);
 }
 
-/* Header */
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }
 .proj-header-left   { display: flex; flex-direction: column; gap: 4px; }
 .proj-title         { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 400; color: #faf8f5; line-height: 1.1; }
@@ -502,40 +563,26 @@ async function submitProject() {
 .icon16 { width: 16px; height: 16px; flex-shrink: 0; }
 .icon18 { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* Tabs */
-.tabs {
-  display: flex; gap: 32px;
-  border-bottom: 1px solid #1f1f1f;
-  padding-bottom: 0;
-}
+.tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; }
 .tab {
   background: none; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 13px;
-  color: #555; padding-bottom: 12px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s;
+  font-family: 'Manrope', sans-serif; font-size: 13px; color: #555;
+  padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
 }
 .tab.active { color: #c9a962; border-bottom-color: #c9a962; }
 .tab:hover:not(.active) { color: #888; }
 
-/* Section header */
 .section-header { display: flex; justify-content: space-between; align-items: center; }
 .section-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
 .section-meta   { font-size: 12px; color: #555; }
 
-/* Project grid */
 .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;
 }
 
 .project-card {
-  background: rgba(15,15,15,0.7);
-  border: 1px solid #1f1f1f;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.2s;
+  background: rgba(15,15,15,0.7); border: 1px solid #1f1f1f;
+  display: flex; flex-direction: column; transition: border-color 0.2s;
 }
 .project-card:hover { border-color: #333; }
 
@@ -546,31 +593,83 @@ async function submitProject() {
   padding: 16px 16px 8px;
 }
 .card-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 16px; color: #faf8f5;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  max-width: 200px;
+  font-family: 'Playfair Display', serif; font-size: 16px; color: #faf8f5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;
 }
-
-.role-badge {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
-  padding: 2px 8px; flex-shrink: 0;
-}
-.badge-admin  { background: rgba(201,169,98,0.15); color: #c9a962; border: 1px solid rgba(201,169,98,0.3); }
-.badge-member { background: rgba(96,165,250,0.1);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
 
 .card-body { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-
 .card-desc { font-size: 12px; color: #666; line-height: 1.5; }
 
 .progress-wrap { display: flex; align-items: center; gap: 10px; }
-.progress-bg   { flex: 1; height: 3px; background: #1f1f1f; }
+.progress-bg   { width: 100%; height: 4px; background: #1f1f1f; border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; transition: width 0.4s; }
 .progress-val  { font-size: 11px; color: #555; width: 30px; text-align: right; }
 
-.card-footer-row { display: flex; justify-content: space-between; align-items: center; }
+/* Budget line on project card */
+.budget-line { display: flex; flex-direction: column; gap: 4px; }
+.budget-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+.budget-val { color: #faf8f5; font-variant-numeric: tabular-nums; }
+.budget-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #555; }
+.alert-pill {
+  font-size: 9px; padding: 2px 6px; letter-spacing: 0.08em; border-radius: 2px;
+  border: 1px solid currentColor;
+}
+.alert-pill.warn     { color: #f97316; background: rgba(249,115,22,0.08); }
+.alert-pill.critical { color: #fb7185; background: rgba(251,113,133,0.08); }
+
+.open-anchor {
+  font-size: 12px; color: #555; cursor: pointer; display: inline-block;
+  width: 100%; transition: color 0.15s; text-decoration: none;
+}
+.open-anchor:hover { color: #c9a962; }
+.project-card:hover .open-anchor { color: #c9a962; }
+
+.card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .status-dot { font-size: 11px; }
 .due-date   { font-size: 11px; color: #555; }
+
+.status-select-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--status-color, #555);
+  background: color-mix(in srgb, var(--status-color, #555) 9%, transparent);
+  border-radius: 3px;
+  height: 22px;
+}
+.status-dot-mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-select {
+  background: transparent;
+  border: none;
+  color: var(--status-color, #faf8f5);
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 0;
+  padding-right: 14px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'><path d='M1 1l3 3 3-3' stroke='%23888' stroke-width='1.2' fill='none' stroke-linecap='square'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  background-size: 8px 6px;
+}
+.status-select:disabled { opacity: 0.6; cursor: wait; }
+.status-select option { background: #0f0f0f; color: #faf8f5; }
+
+.status-error {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #fecdd3;
+  font-family: 'Manrope', sans-serif;
+}
 
 .card-open {
   border-top: 1px solid #1a1a1a;
@@ -579,98 +678,33 @@ async function submitProject() {
 .open-link { font-size: 12px; color: #555; cursor: pointer; transition: color 0.15s; }
 .project-card:hover .open-link { color: #c9a962; }
 
-/* ── UI component overrides ── */
+.card-header :deep(.pill) { height: 22px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
+.card-header :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
+.card-header :deep(.dot) { display: none; }
 
-/* Pill in card header (role badge) */
-.card-header :deep(.pill) {
-  height: 22px;
-  padding: 0 10px;
-  border-radius: 3px;
-  border: 1px solid currentColor;
-}
-.card-header :deep(.pill-text) {
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  font-family: 'Manrope', sans-serif;
-}
-.card-header :deep(.dot) {
-  display: none;
-}
+.card-footer-row :deep(.pill) { height: 20px; padding: 0 8px; border-radius: 3px; border: 1px solid currentColor; }
+.card-footer-row :deep(.pill-text) { font-size: 10px; font-family: 'Manrope', sans-serif; }
+.card-footer-row :deep(.dot) { width: 6px; height: 6px; margin-right: 6px; }
 
-/* Pill in card footer (status) */
-.card-footer-row :deep(.pill) {
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 3px;
-  border: 1px solid currentColor;
-}
-.card-footer-row :deep(.pill-text) {
-  font-size: 10px;
-  font-family: 'Manrope', sans-serif;
-}
-.card-footer-row :deep(.dot) {
-  width: 6px; height: 6px;
-  margin-right: 6px;
-}
-
-/* Anchor in card-open footer */
 .card-open :deep(.anchor) {
-  padding: 0;
-  border-radius: 0;
-  font-size: 12px;
-  font-family: 'Manrope', sans-serif;
-  justify-content: flex-start;
-  width: 100%;
-  transition: color 0.15s;
+  padding: 0; border-radius: 0; font-size: 12px; font-family: 'Manrope', sans-serif;
+  justify-content: flex-start; width: 100%; transition: color 0.15s;
 }
-.project-card:hover .card-open :deep(.anchor) {
-  color: #c9a962 !important;
-}
+.project-card:hover .card-open :deep(.anchor) { color: #c9a962 !important; }
 
-/* Button overrides for modal actions */
-.modal-actions :deep(.btn) {
-  border-radius: 0;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 10px 20px;
-}
-.modal-actions :deep(.btn:first-child) {
-  background: transparent;
-  border: 1px solid #1f1f1f;
-  color: #faf8f5;
-}
-.modal-actions :deep(.btn:last-child) {
-  background: #c9a962;
-  color: #0a0a0a;
-}
-.modal-actions :deep(.btn:last-child:disabled) {
-  opacity: 0.6;
-}
+.modal-actions :deep(.btn) { border-radius: 0; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; padding: 10px 20px; }
+.modal-actions :deep(.btn:first-child) { background: transparent; border: 1px solid #1f1f1f; color: #faf8f5; }
+.modal-actions :deep(.btn:last-child)  { background: #c9a962; color: #0a0a0a; }
+.modal-actions :deep(.btn:last-child:disabled) { opacity: 0.6; }
 
-/* Button overrides for context panel quick actions */
 .context-panel :deep(.btn) {
-  width: 100%;
-  border-radius: 0;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 12px 16px;
-  display: block;
-  margin-bottom: 8px;
-  text-align: left;
+  width: 100%; border-radius: 0; font-family: 'Manrope', sans-serif;
+  font-size: 12px; font-weight: 600; padding: 12px 16px;
+  display: block; margin-bottom: 8px; text-align: left;
 }
-.context-panel :deep(.btn:first-of-type) {
-  background: #c9a962;
-  color: #0a0a0a;
-}
-.context-panel :deep(.btn:last-of-type) {
-  background: transparent;
-  border: 1px solid #1f1f1f;
-  color: #faf8f5;
-}
+.context-panel :deep(.btn:first-of-type) { background: #c9a962; color: #0a0a0a; }
+.context-panel :deep(.btn:last-of-type)  { background: transparent; border: 1px solid #1f1f1f; color: #faf8f5; }
 
-/* Skeleton */
 .project-card.skeleton { pointer-events: none; }
 .skeleton-accent { height: 3px; background: #1f1f1f; }
 .skeleton-body   { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -679,16 +713,12 @@ async function submitProject() {
 .skeleton-line.mid   { width: 70%; }
 @keyframes pulse { 0%,100% { opacity:0.4 } 50% { opacity:0.8 } }
 
-/* Empty state */
 .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #555; font-size: 14px; }
 
-/* ── Context panel ── */
 .context-panel {
   width: 320px; flex: none;
-  background: rgba(10,10,10,0.9);
-  border-left: 1px solid #1a1a1a;
-  padding: 48px 28px;
-  display: flex; flex-direction: column; gap: 32px;
+  background: rgba(10,10,10,0.9); border-left: 1px solid #1a1a1a;
+  padding: 48px 28px; display: flex; flex-direction: column; gap: 32px;
   position: sticky; top: 0; max-height: 100vh; overflow-y: auto;
 }
 
@@ -707,99 +737,57 @@ async function submitProject() {
 .s-sub.gold { color: #c9a962; }
 .s-sub.red  { color: #fb7185; }
 
-.ctx-btn-primary {
-  width: 100%; display: flex; align-items: center; gap: 8px;
-  background: #c9a962; border: none; padding: 12px 16px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; color: #0a0a0a;
-  margin-bottom: 8px;
-}
-.ctx-btn-secondary {
-  width: 100%; display: flex; align-items: center; gap: 8px;
-  background: transparent; border: 1px solid #1f1f1f; padding: 12px 16px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; color: #faf8f5;
-}
-
 .data-source { margin-top: auto; }
 .ds-label { font-size: 10px; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
 .ds-text  { font-size: 11px; color: #444; }
 
-/* ── Responsive ── */
-
-/* Tablet ancho (≤1200px): panel lateral más estrecho */
-@media (max-width: 1200px) {
-  .main-panel { padding: 40px 40px; }
-  .context-panel { width: 280px; padding: 40px 20px; }
-}
-
-/* Tablet (≤900px): layout apilado, panel debajo */
-@media (max-width: 900px) {
-  .projects-layout { flex-direction: column; }
-  .main-panel { padding: 32px 28px; gap: 24px; }
-  .proj-title { font-size: 36px; }
-  .context-panel {
-    width: 100%;
-    max-height: none;
-    position: static;
-    border-left: none;
-    border-top: 1px solid #1a1a1a;
-    padding: 32px 28px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  .ctx-title { grid-column: 1 / -1; }
-  .data-source { grid-column: 1 / -1; margin-top: 0; }
-  .summary-grid { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* Mobile (≤640px): 1 columna, padding reducido */
-@media (max-width: 640px) {
-  .main-panel { padding: 24px 16px; gap: 20px; }
-  .proj-title { font-size: 28px; }
-  .proj-header { flex-direction: column; gap: 16px; }
-  .proj-header-actions { align-self: flex-start; }
-  .tabs { gap: 16px; overflow-x: auto; padding-bottom: 0; }
-  .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
-  .summary-grid { grid-template-columns: 1fr 1fr; }
-  .project-grid { grid-template-columns: 1fr; }
-}
-
-/* ── Modal ── */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-}
-.modal {
-  background: #0f0f0f; border: 1px solid #1f1f1f;
-  width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
-}
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 20px 24px; border-bottom: 1px solid #1a1a1a;
-}
-.modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
-.modal-close { background: none; border: none; cursor: pointer; padding: 4px; }
+/* Modal form styles */
 .modal-form  { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-
-.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field  { display: flex; flex-direction: column; gap: 6px; }
 .form-field label { font-size: 11px; color: #888; letter-spacing: 0.05em; }
 .form-field input,
 .form-field textarea,
 .form-field select {
   background: #0a0a0a; border: 1px solid #1f1f1f;
   color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none; resize: none;
-  transition: border-color 0.15s;
+  padding: 10px 12px; outline: none; resize: none; transition: border-color 0.15s;
 }
 .form-field input:focus,
 .form-field textarea:focus,
 .form-field select:focus { border-color: #c9a962; }
 .form-field select option { background: #0f0f0f; }
-
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .req { color: #c9a962; }
-
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .modal-error   { font-size: 12px; color: #fb7185; }
+
+@media (max-width: 1200px) {
+  .main-panel { padding: 40px 40px; }
+  .context-panel { width: 280px; padding: 40px 20px; }
+}
+
+@media (max-width: 900px) {
+  .projects-layout { flex-direction: column; }
+  .main-panel { padding: 32px 28px; gap: 24px; }
+  .proj-title { font-size: 36px; }
+  .context-panel {
+    width: 100%; max-height: none; position: static;
+    border-left: none; border-top: 1px solid #1a1a1a;
+    padding: 32px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .ctx-title { grid-column: 1 / -1; }
+  .data-source { grid-column: 1 / -1; margin-top: 0; }
+  .summary-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .main-panel { padding: 24px 16px; gap: 20px; }
+  .proj-title { font-size: 28px; }
+  .proj-header { flex-direction: column; gap: 16px; }
+  .proj-header-actions { align-self: flex-start; }
+  .tabs { gap: 16px; overflow-x: auto; }
+  .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .project-grid { grid-template-columns: 1fr; }
+}
 </style>

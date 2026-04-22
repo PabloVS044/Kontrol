@@ -16,18 +16,18 @@ export const getUsersQuerySchema = z.object({
  * Route param :id shared by GET/:id, PUT/:id, DELETE/:id
  */
 export const userIdParamSchema = z.object({
-  id: z.coerce.number().int().positive({ message: 'El id debe ser un entero positivo.' }),
+  id: z.coerce.number().int().positive({ message: 'The id must be a positive integer.' }),
 })
 
 /**
  * Body for POST /api/users
  */
 export const createUserSchema = z.object({
-  nombre:     z.string().min(1, 'nombre es requerido.').max(100),
-  apellido:   z.string().min(1, 'apellido es requerido.').max(100),
-  email:      z.string().email('Formato de email inválido.'),
-  password:   z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
-  role:       z.enum(VALID_ROLES, { message: `role debe ser uno de: ${VALID_ROLES.join(', ')}.` }),
+  nombre:     z.string().min(1, 'First name is required.').max(100),
+  apellido:   z.string().min(1, 'Last name is required.').max(100),
+  email:      z.string().email('Invalid email format.'),
+  password:   z.string().min(8, 'Password must be at least 8 characters long.'),
+  role:       z.enum(VALID_ROLES, { message: `role must be one of: ${VALID_ROLES.join(', ')}.` }),
   telefono:   z.string().max(20).optional(),
   id_empresa: z.number().int().positive().optional(),
 })
@@ -39,12 +39,12 @@ export const updateUserSchema = z
   .object({
     nombre:     z.string().min(1).max(100).optional(),
     apellido:   z.string().min(1).max(100).optional(),
-    email:      z.string().email('Formato de email inválido.').optional(),
-    role:       z.enum(VALID_ROLES, { message: `role debe ser uno de: ${VALID_ROLES.join(', ')}.` }).optional(),
+    email:      z.string().email('Invalid email format.').optional(),
+    role:       z.enum(VALID_ROLES, { message: `role must be one of: ${VALID_ROLES.join(', ')}.` }).optional(),
     telefono:   z.string().max(20).nullable().optional(),
     id_empresa: z.number().int().positive().nullable().optional(),
   })
   .refine(
     (data) => Object.keys(data).length > 0,
-    { message: 'No se proporcionaron campos para actualizar.' }
+    { message: 'No fields were provided for update.' }
   )
