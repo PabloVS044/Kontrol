@@ -4,28 +4,33 @@
 
       <div class="form-field">
         <label>Descripción <span class="req">*</span></label>
-        <textarea v-model="form.descripcion" placeholder="¿Qué avance se realizó?" rows="3" required></textarea>
+        <textarea v-model="form.title" placeholder="¿Qué avance se realizó?" rows="3" required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label>Detalles adicionales</label>
+        <textarea v-model="form.details" placeholder="Contexto extra para el equipo (opcional)" rows="2"></textarea>
       </div>
 
       <div class="form-row">
         <div class="form-field">
           <label>Tipo de entrada</label>
-          <select v-model="form.tipo">
-            <option value="completed">Completado</option>
-            <option value="warning">Advertencia</option>
-            <option value="error">Error / Bloqueo</option>
+          <select v-model="form.updateType">
+            <option value="UPDATE">Avance</option>
+            <option value="MILESTONE">Hito / Logro</option>
+            <option value="BLOCKER">Bloqueo</option>
           </select>
         </div>
 
         <div class="form-field">
-          <label>Fecha</label>
-          <input v-model="form.fecha" type="datetime-local" />
+          <label>Progreso (%) <span class="req">*</span></label>
+          <input v-model.number="form.progressPercentage" type="number" min="0" max="100" step="1" required />
         </div>
       </div>
 
       <div class="form-field">
-        <label>Registrado por</label>
-        <input v-model="form.nombre" type="text" placeholder="Nombre del responsable" />
+        <label>Fecha</label>
+        <input v-model="form.happenedAt" type="datetime-local" />
       </div>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
@@ -63,10 +68,11 @@ function emptyForm() {
   const now = new Date()
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
   return {
-    nombre:      '',
-    descripcion: '',
-    tipo:        'completed',
-    fecha:       now.toISOString().substring(0, 16),
+    title:              '',
+    details:            '',
+    updateType:         'UPDATE',
+    progressPercentage: 0,
+    happenedAt:         now.toISOString().substring(0, 16),
   }
 }
 
