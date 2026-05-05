@@ -156,13 +156,18 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import AppNavbar from '../components/AppNavbar.vue'
-import './InventoryPage.css'
-import Anchor from '../components/UI/Button/Anchor.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
-import Button from '../components/UI/Button/Button.vue'
-import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
+
+import AppNavbar from '../components/AppNavbar.vue'
+import PageHeader from '../components/common/PageHeader.vue'
+import ErrorState from '../components/common/ErrorState.vue'
+import LoadingSkeleton from '../components/common/LoadingSkeleton.vue'
+
+import ProductCard from '../components/inventory/ProductCard.vue'
+import InventorySummaryPanel from '../components/inventory/InventorySummaryPanel.vue'
+import ProductModal from '../components/inventory/ProductModal.vue'
+
+import './InventoryPage.css'
 
 const authStore = useAuthStore()
 

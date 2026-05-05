@@ -81,7 +81,7 @@
         </template>
         <Pill
           v-else
-          :label="statusLabel"
+          :label="displayStatusLabel"
           :btnColor="statusColor + '18'"
           :circleColor="statusColor"
           :textColor="statusColor"
@@ -116,6 +116,10 @@ import Pill from '../UI/Pill/Pill.vue'
 import ProgressBar from '../UI/ProgressBar/ProgressBar.vue'
 import Anchor from '../UI/Button/Anchor.vue'
 import { statusLabel, formatDate } from '../../utils/statusHelpers.js'
+import { useAuthStore } from '../../stores/auth.js'
+import { ESTADOS, STATUS_COLOR, STATUS_PROGRESS } from '../../utils/projectConstants.js'
+
+const authStore = useAuthStore()
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -129,34 +133,10 @@ const emit = defineEmits(['update-status', 'open-budget'])
 
 const router = useRouter()
 
-const ESTADOS = [
-  { value: 'PLANIFICADO', label: 'Planned' },
-  { value: 'EN_PROGRESO', label: 'In Progress' },
-  { value: 'PAUSADO', label: 'Paused' },
-  { value: 'COMPLETADO', label: 'Completed' },
-  { value: 'CANCELADO', label: 'Cancelled' }
-]
-
-const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa',
-  EN_PROGRESO: '#34d399',
-  PAUSADO: '#f97316',
-  COMPLETADO: '#c9a962',
-  CANCELADO: '#fb7185'
-}
-
-const STATUS_PROGRESS = {
-  PLANIFICADO: 10,
-  EN_PROGRESO: 60,
-  PAUSADO: 35,
-  COMPLETADO: 100,
-  CANCELADO: 5
-}
-
 const statusColor = computed(() => STATUS_COLOR[props.project.estado] || '#666')
 const progressPct = computed(() => STATUS_PROGRESS[props.project.estado] ?? 0)
-const statusLabel = computed(() => statusLabel(props.project.estado))
-const isAdmin = computed(() => props.project.id_encargado === 'USER_ID_HERE') // TODO: from store
+const displayStatusLabel = computed(() => statusLabel(props.project.estado))
+const isAdmin = computed(() => props.project.id_encargado === authStore.idUsuario)
 
 const budgetSummary = computed(() => props.budgetSummary)
 const budgetPct = computed(() => budgetSummary.value?.porcentaje_completado ?? 0)

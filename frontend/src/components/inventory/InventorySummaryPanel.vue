@@ -94,7 +94,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import Button from '../UI/Button/Button.vue'
+
+const props = defineProps({
   stats: Object,
   categoryStats: Array,
   stockAlerts: Array,
@@ -103,6 +106,11 @@ defineProps({
 })
 
 defineEmits(['add-product', 'export'])
+
+const lowStockColor = computed(() => {
+  return props.stats.lowStock > 0 ? '#c9a962' : '#555'
+})
+
 </script>
 
 <style scoped>
