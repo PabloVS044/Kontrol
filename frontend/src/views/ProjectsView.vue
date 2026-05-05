@@ -301,6 +301,7 @@ import Pill   from '../components/UI/Pill/Pill.vue'
 import Anchor from '../components/UI/Button/Anchor.vue'
 import Button from '../components/UI/Button/Button.vue'
 import { statusLabel, formatDate } from '../utils/statusHelpers.js'
+import Card from '../components/UI/Card/Card.vue'
 
 const router = useRouter()
 
