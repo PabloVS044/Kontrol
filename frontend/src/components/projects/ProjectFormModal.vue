@@ -91,7 +91,8 @@ import { ref, watch } from 'vue'
 import BaseModal from '../UI/Modal/BaseModal.vue'
 import Button from '../UI/Button/Button.vue'
 import FormField from '../common/FormField.vue'
-import { ESTADOS } from './ProjectCard.vue' // Reuse constants
+import { ESTADOS } from '../../utils/projectConstants.js'
+
 
 const emit = defineEmits(['update:show', 'submit'])
 
