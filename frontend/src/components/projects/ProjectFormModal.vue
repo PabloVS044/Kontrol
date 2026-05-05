@@ -99,7 +99,8 @@ const emit = defineEmits(['update:show', 'submit'])
 const props = defineProps({
   modelValue: Boolean,
   loading: Boolean,
-  error: String
+  error: String,
+  title: { type: String, default: 'New Project' }
 })
 
 const localShow = ref(false)
