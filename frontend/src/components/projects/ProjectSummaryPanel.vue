@@ -47,6 +47,8 @@
 </template>
 
 <script setup>
+import Button from '../UI/Button/Button.vue'
+
 defineProps({
   totalProjects: Number,
   adminCount: Number,

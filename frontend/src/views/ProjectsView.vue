@@ -29,7 +29,7 @@
 
           <!-- Tabs -->
           <div class="tabs">
-            <button v-for="tab in tabs" :key="tab.key" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
+            <button v-for="tab in tabs" :key="tab.key" class="tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
               {{ tab.label }} ({{ tab.count }})
             </button>
           </div>
@@ -349,14 +349,14 @@ async function submitProject() {
 .icon16 { width: 16px; height: 16px; flex-shrink: 0; }
 .icon18 { width: 18px; height: 18px; flex-shrink: 0; }
 
-.tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; }
+.tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; margin-bottom: 32px; padding: 0;}
 .tab {
-  background: none; border: none; cursor: pointer;
+  background: none !important; background-color: transparent !important; border: none !important; outline: none; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 13px; color: #555;
-  padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
+  padding-bottom: 12px; border-bottom: 2px solid transparent !important; transition: color 0.15s;
 }
-.tab.active { color: #c9a962; border-bottom-color: #c9a962; }
-.tab:hover:not(.active) { color: #888; }
+.tab.active { color: var(--Primary) !important; border-bottom-color: var(--Primary) !important; }
+.tab:hover:not(.active) { color: #faf8f5; }
 
 .section-header { display: flex; justify-content: space-between; align-items: center; }
 .section-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
