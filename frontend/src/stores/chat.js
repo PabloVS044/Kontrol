@@ -171,6 +171,10 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function mapMediaError(error) {
+    if (error?.code === 'INSECURE_CONTEXT') {
+      return 'Las videollamadas requieren HTTPS en el servidor. En localhost si funcionan por excepcion del navegador.'
+    }
+
     if (error?.name === 'NotAllowedError') {
       return 'Permite acceso a la camara y al microfono para usar videollamadas.'
     }
@@ -268,6 +272,12 @@ export const useChatStore = defineStore('chat', () => {
     if (localStream.value) {
       syncLocalTrackState()
       return localStream.value
+    }
+
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      const error = new Error('Video calls require a secure context.')
+      error.code = 'INSECURE_CONTEXT'
+      throw error
     }
 
     if (!navigator.mediaDevices?.getUserMedia) {
