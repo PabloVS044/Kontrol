@@ -11,6 +11,20 @@ import {
 } from '../utils/chat.js'
 
 const API = import.meta.env.VITE_API_URL || window.location.origin
+
+function resolveSocketUrl() {
+  const explicit = import.meta.env.VITE_SOCKET_URL
+  if (explicit) return explicit
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    const port = import.meta.env.VITE_BACKEND_PORT || '3000'
+    return `${window.location.protocol}//${window.location.hostname}:${port}`
+  }
+  return typeof window !== 'undefined' ? window.location.origin : ''
+}
+
+const SOCKET_URL = resolveSocketUrl()
+
 const uploadthing = genUploader({
   url: `${API}/api/uploadthing`,
 })
@@ -157,6 +171,10 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function mapMediaError(error) {
+    if (error?.code === 'INSECURE_CONTEXT') {
+      return 'Las videollamadas requieren HTTPS en el servidor. En localhost si funcionan por excepcion del navegador.'
+    }
+
     if (error?.name === 'NotAllowedError') {
       return 'Permite acceso a la camara y al microfono para usar videollamadas.'
     }
@@ -254,6 +272,12 @@ export const useChatStore = defineStore('chat', () => {
     if (localStream.value) {
       syncLocalTrackState()
       return localStream.value
+    }
+
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      const error = new Error('Video calls require a secure context.')
+      error.code = 'INSECURE_CONTEXT'
+      throw error
     }
 
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -594,9 +618,11 @@ export const useChatStore = defineStore('chat', () => {
 
     lastError.value = ''
 
-    socket.value = io(API, {
+    socket.value = io(SOCKET_URL, {
       auth: { token: authStore.token },
       withCredentials: true,
+      transports: ['polling', 'websocket'],
+      upgrade: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
