@@ -173,11 +173,39 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function ensureSocketReady() {
-    if (!socket.value?.connected) {
-      connect()
-    }
-
+    if (socket.value?.connected) return true
+    connect()
     return Boolean(socket.value?.connected)
+  }
+
+  function waitForSocketReady(timeoutMs = 5000) {
+    if (socket.value?.connected) return Promise.resolve(true)
+    connect()
+    if (!socket.value) return Promise.resolve(false)
+
+    return new Promise((resolve) => {
+      const sock = socket.value
+      const timeoutId = window.setTimeout(() => {
+        sock?.off('connect', onConnect)
+        sock?.off('connect_error', onError)
+        resolve(false)
+      }, timeoutMs)
+
+      const onConnect = () => {
+        window.clearTimeout(timeoutId)
+        sock?.off('connect_error', onError)
+        resolve(true)
+      }
+
+      const onError = () => {
+        window.clearTimeout(timeoutId)
+        sock?.off('connect', onConnect)
+        resolve(false)
+      }
+
+      sock.once('connect', onConnect)
+      sock.once('connect_error', onError)
+    })
   }
 
   function cleanupCallSession({ keepCallError = false, keepIncomingCall = false } = {}) {
@@ -547,24 +575,54 @@ export const useChatStore = defineStore('chat', () => {
     return message
   }
 
+  function refreshActiveConversationMessages() {
+    const ids = Object.keys(messages.value || {})
+    ids.forEach((conversationId) => {
+      void loadMessages(conversationId)
+    })
+  }
+
   function connect() {
-    if (!authStore.token || socket.value) return
+    if (!authStore.token) return
+    if (socket.value?.connected) return
+
+    if (socket.value) {
+      try { socket.value.removeAllListeners() } catch {}
+      try { socket.value.disconnect() } catch {}
+      socket.value = null
+    }
 
     lastError.value = ''
 
     socket.value = io(API, {
       auth: { token: authStore.token },
       withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
     })
 
     socket.value.on('connect', () => {
       isConnected.value = true
       clearLastError()
       void loadConversations()
+      refreshActiveConversationMessages()
     })
 
-    socket.value.on('disconnect', () => {
+    socket.value.io?.on('reconnect', () => {
+      isConnected.value = true
+      clearLastError()
+      void loadConversations()
+      refreshActiveConversationMessages()
+    })
+
+    socket.value.on('disconnect', (reason) => {
       isConnected.value = false
+      if (reason === 'io server disconnect') {
+        try { socket.value?.connect() } catch {}
+      }
     })
 
     socket.value.on('connect_error', (error) => {
@@ -714,16 +772,13 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  function startDM(targetUserId) {
+  async function startDM(targetUserId) {
     const existing = conversations.value.find((conversation) => conversation.otherUserId === targetUserId)
-    if (existing) return Promise.resolve(existing)
+    if (existing) return existing
 
-    if (!socket.value?.connected) {
-      connect()
-    }
-
-    if (!socket.value) {
-      return Promise.resolve(null)
+    const ready = await waitForSocketReady()
+    if (!ready || !socket.value) {
+      throw new Error(currentChatUnavailableMessage())
     }
 
     return new Promise((resolve, reject) => {
@@ -760,6 +815,7 @@ export const useChatStore = defineStore('chat', () => {
 
   function sendMessage({ conversationId, text = '', attachments = [] }) {
     if (!socket.value?.connected) {
+      connect()
       lastError.value = currentChatUnavailableMessage()
       return false
     }
@@ -857,7 +913,8 @@ export const useChatStore = defineStore('chat', () => {
       return { success: false, message: 'Conversation not found.' }
     }
 
-    if (!ensureSocketReady()) {
+    const ready = await waitForSocketReady()
+    if (!ready) {
       const message = currentChatUnavailableMessage()
       callError.value = message
       return { success: false, message }
@@ -900,7 +957,8 @@ export const useChatStore = defineStore('chat', () => {
       return { success: false, message: 'No incoming call.' }
     }
 
-    if (!ensureSocketReady()) {
+    const ready = await waitForSocketReady()
+    if (!ready) {
       const message = currentChatUnavailableMessage()
       callError.value = message
       return { success: false, message }
