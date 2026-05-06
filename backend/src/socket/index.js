@@ -105,12 +105,19 @@ async function joinConversationRooms(socket, userId) {
 
 // ── setup ─────────────────────────────────────────────────────
 
-export function setupSocket(httpServer, { isChatAvailable = () => true } = {}) {
+export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrigin } = {}) {
+  const fallbackOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      origin: corsOrigin || fallbackOrigin,
       credentials: true,
     },
+    pingInterval: 25000,
+    pingTimeout: 20000,
   })
 
   mongoose.connection.on('connected', () => {
