@@ -15,6 +15,30 @@ const uploadthing = genUploader({
   url: `${API}/api/uploadthing`,
 })
 
+function resolveRtcConfiguration() {
+  const fallbackIceServers = [{ urls: ['stun:stun.l.google.com:19302'] }]
+  const rawIceServers = import.meta.env.VITE_WEBRTC_ICE_SERVERS
+
+  if (!rawIceServers) {
+    return { iceServers: fallbackIceServers }
+  }
+
+  try {
+    const parsedIceServers = JSON.parse(rawIceServers)
+    return {
+      iceServers: Array.isArray(parsedIceServers) && parsedIceServers.length
+        ? parsedIceServers
+        : fallbackIceServers,
+    }
+  } catch (error) {
+    console.warn('Invalid VITE_WEBRTC_ICE_SERVERS configuration. Falling back to STUN only.', error)
+    return { iceServers: fallbackIceServers }
+  }
+}
+
+const RTC_CONFIGURATION = resolveRtcConfiguration()
+const CALL_ENDED_CLEANUP_DELAY_MS = 2200
+
 function sortConversations(list) {
   return [...list].sort((left, right) => {
     const leftDate = left.lastMessage?.createdAt ?? left.updatedAt ?? ''
@@ -50,13 +74,35 @@ export const useChatStore = defineStore('chat', () => {
   const typingUsers = ref({})
   const companyUsers = ref([])
   const lastError = ref('')
+  const incomingCall = ref(null)
+  const activeCall = ref(null)
+  const localStream = ref(null)
+  const remoteStream = ref(null)
+  const callError = ref('')
+  const isMicrophoneEnabled = ref(true)
+  const isCameraEnabled = ref(true)
 
   const totalUnread = computed(() =>
     conversations.value.reduce((sum, conversation) => sum + (conversation.unread || 0), 0)
   )
 
+  let peerConnection = null
+  let pendingIceCandidates = []
+  let callCleanupTimer = null
+
   function clearLastError() {
     lastError.value = ''
+  }
+
+  function clearCallCleanupTimer() {
+    if (callCleanupTimer) {
+      window.clearTimeout(callCleanupTimer)
+      callCleanupTimer = null
+    }
+  }
+
+  function clearCallError() {
+    callError.value = ''
   }
 
   function authHeaders() {
@@ -65,6 +111,351 @@ export const useChatStore = defineStore('chat', () => {
 
   function currentChatUnavailableMessage() {
     return lastError.value || 'The chat server is unavailable.'
+  }
+
+  function stopMediaStream(stream) {
+    stream?.getTracks?.().forEach((track) => track.stop())
+  }
+
+  function syncLocalTrackState() {
+    const audioTrack = localStream.value?.getAudioTracks?.()[0] ?? null
+    const videoTrack = localStream.value?.getVideoTracks?.()[0] ?? null
+    isMicrophoneEnabled.value = audioTrack ? audioTrack.enabled : true
+    isCameraEnabled.value = videoTrack ? videoTrack.enabled : true
+  }
+
+  function getConversationById(conversationId) {
+    const normalizedId = String(conversationId ?? '')
+    return conversations.value.find((conversation) => conversation._id === normalizedId) ?? null
+  }
+
+  function buildPeerMeta(input) {
+    if (!input) {
+      return {
+        peerUserId: null,
+        peerName: 'Usuario',
+        peerAvatar: '??',
+        peerEmail: '',
+      }
+    }
+
+    if (typeof input === 'object' && '_id' in input) {
+      return {
+        peerUserId: input.otherUserId ?? null,
+        peerName: input.name ?? 'Usuario',
+        peerAvatar: input.avatar ?? '??',
+        peerEmail: input.email ?? '',
+      }
+    }
+
+    return {
+      peerUserId: input.peerUserId ?? null,
+      peerName: input.peerName ?? input.fromName ?? 'Usuario',
+      peerAvatar: input.peerAvatar ?? input.fromAvatar ?? '??',
+      peerEmail: input.peerEmail ?? '',
+    }
+  }
+
+  function mapMediaError(error) {
+    if (error?.name === 'NotAllowedError') {
+      return 'Permite acceso a la camara y al microfono para usar videollamadas.'
+    }
+
+    if (error?.name === 'NotFoundError') {
+      return 'No se encontro una camara o microfono disponible.'
+    }
+
+    if (error?.name === 'NotReadableError') {
+      return 'La camara o el microfono estan siendo usados por otra aplicacion.'
+    }
+
+    return error?.message || 'No se pudo acceder a la camara y al microfono.'
+  }
+
+  function ensureSocketReady() {
+    if (!socket.value?.connected) {
+      connect()
+    }
+
+    return Boolean(socket.value?.connected)
+  }
+
+  function cleanupCallSession({ keepCallError = false, keepIncomingCall = false } = {}) {
+    clearCallCleanupTimer()
+
+    if (peerConnection) {
+      peerConnection.onicecandidate = null
+      peerConnection.ontrack = null
+      peerConnection.onconnectionstatechange = null
+      peerConnection.close()
+      peerConnection = null
+    }
+
+    pendingIceCandidates = []
+    stopMediaStream(localStream.value)
+    stopMediaStream(remoteStream.value)
+    localStream.value = null
+    remoteStream.value = null
+    activeCall.value = null
+    if (!keepIncomingCall) incomingCall.value = null
+    if (!keepCallError) clearCallError()
+    isMicrophoneEnabled.value = true
+    isCameraEnabled.value = true
+  }
+
+  function scheduleCallCleanup(message = '') {
+    clearCallCleanupTimer()
+
+    if (message) {
+      callError.value = message
+    }
+
+    if (activeCall.value) {
+      activeCall.value = {
+        ...activeCall.value,
+        status: 'ended',
+      }
+    }
+
+    callCleanupTimer = window.setTimeout(() => {
+      cleanupCallSession()
+    }, CALL_ENDED_CLEANUP_DELAY_MS)
+  }
+
+  async function ensureLocalStream() {
+    if (localStream.value) {
+      syncLocalTrackState()
+      return localStream.value
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('This browser does not support camera access.')
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    })
+
+    localStream.value = stream
+    remoteStream.value = new MediaStream()
+    syncLocalTrackState()
+    return stream
+  }
+
+  async function flushPendingIceCandidates() {
+    if (!peerConnection?.remoteDescription || !pendingIceCandidates.length) return
+
+    const queuedCandidates = [...pendingIceCandidates]
+    pendingIceCandidates = []
+
+    for (const candidate of queuedCandidates) {
+      try {
+        await peerConnection.addIceCandidate(candidate ? new RTCIceCandidate(candidate) : null)
+      } catch (error) {
+        console.error('Failed to add queued ICE candidate:', error)
+      }
+    }
+  }
+
+  async function addRemoteIceCandidate(candidate) {
+    if (!candidate) return
+
+    if (!peerConnection?.remoteDescription) {
+      pendingIceCandidates.push(candidate)
+      return
+    }
+
+    try {
+      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+    } catch (error) {
+      console.error('Failed to add ICE candidate:', error)
+    }
+  }
+
+  async function ensurePeerConnection(conversationId) {
+    if (peerConnection) return peerConnection
+
+    const stream = await ensureLocalStream()
+    remoteStream.value = new MediaStream()
+    pendingIceCandidates = []
+
+    const connection = new RTCPeerConnection(RTC_CONFIGURATION)
+
+    stream.getTracks().forEach((track) => {
+      connection.addTrack(track, stream)
+    })
+
+    connection.onicecandidate = (event) => {
+      if (!event.candidate || !activeCall.value?.conversationId || !socket.value?.connected) return
+
+      socket.value.emit('call:signal', {
+        conversationId: activeCall.value.conversationId,
+        candidate: event.candidate.toJSON ? event.candidate.toJSON() : event.candidate,
+      })
+    }
+
+    connection.ontrack = (event) => {
+      if (!remoteStream.value) {
+        remoteStream.value = new MediaStream()
+      }
+
+      const streamWithTracks = event.streams?.[0]
+      if (streamWithTracks) {
+        streamWithTracks.getTracks().forEach((track) => {
+          if (!remoteStream.value.getTracks().some((existingTrack) => existingTrack.id === track.id)) {
+            remoteStream.value.addTrack(track)
+          }
+        })
+        return
+      }
+
+      event.tracks.forEach((track) => {
+        if (!remoteStream.value.getTracks().some((existingTrack) => existingTrack.id === track.id)) {
+          remoteStream.value.addTrack(track)
+        }
+      })
+    }
+
+    connection.onconnectionstatechange = () => {
+      const state = connection.connectionState
+
+      if (state === 'connected') {
+        clearCallError()
+        if (activeCall.value) {
+          activeCall.value = { ...activeCall.value, status: 'connected' }
+        }
+        return
+      }
+
+      if (state === 'failed') {
+        scheduleCallCleanup('La videollamada fallo.')
+        return
+      }
+
+      if (state === 'disconnected') {
+        scheduleCallCleanup('La videollamada se desconecto.')
+      }
+    }
+
+    peerConnection = connection
+    return peerConnection
+  }
+
+  async function handleIncomingCallSignal({ conversationId, description, candidate }) {
+    if (!activeCall.value || activeCall.value.conversationId !== String(conversationId)) return
+
+    try {
+      const connection = await ensurePeerConnection(conversationId)
+
+      if (description) {
+        if (description.type === 'offer') {
+          await connection.setRemoteDescription(description)
+          await flushPendingIceCandidates()
+
+          const answer = await connection.createAnswer()
+          await connection.setLocalDescription(answer)
+
+          socket.value?.emit('call:signal', {
+            conversationId: activeCall.value.conversationId,
+            description: connection.localDescription?.toJSON
+              ? connection.localDescription.toJSON()
+              : connection.localDescription,
+          })
+        } else if (description.type === 'answer') {
+          await connection.setRemoteDescription(description)
+          await flushPendingIceCandidates()
+        }
+      }
+
+      if (candidate) {
+        await addRemoteIceCandidate(candidate)
+      }
+    } catch (error) {
+      console.error('WebRTC signaling error:', error)
+      scheduleCallCleanup('No se pudo establecer la videollamada.')
+    }
+  }
+
+  function handleIncomingCall(payload) {
+    clearCallCleanupTimer()
+
+    if (activeCall.value?.status === 'ended') {
+      cleanupCallSession()
+    }
+
+    if (activeCall.value) {
+      socket.value?.emit('call:decline', {
+        conversationId: payload.conversationId,
+        reason: 'busy',
+      })
+      return
+    }
+
+    clearCallError()
+    incomingCall.value = {
+      conversationId: String(payload.conversationId),
+      ...buildPeerMeta(payload),
+      status: 'incoming',
+    }
+  }
+
+  async function handleAcceptedCall({ conversationId }) {
+    if (!activeCall.value || activeCall.value.conversationId !== String(conversationId)) return
+
+    try {
+      activeCall.value = {
+        ...activeCall.value,
+        status: 'connecting',
+      }
+
+      const connection = await ensurePeerConnection(conversationId)
+      const offer = await connection.createOffer()
+      await connection.setLocalDescription(offer)
+
+      socket.value?.emit('call:signal', {
+        conversationId: activeCall.value.conversationId,
+        description: connection.localDescription?.toJSON
+          ? connection.localDescription.toJSON()
+          : connection.localDescription,
+      })
+    } catch (error) {
+      console.error('Failed to create WebRTC offer:', error)
+      scheduleCallCleanup('No se pudo iniciar la videollamada.')
+    }
+  }
+
+  function handleDeclinedCall({ conversationId, reason }) {
+    if (!activeCall.value || activeCall.value.conversationId !== String(conversationId)) return
+
+    const message = reason === 'busy'
+      ? 'El usuario ya esta en otra videollamada.'
+      : 'La videollamada fue rechazada.'
+
+    scheduleCallCleanup(message)
+  }
+
+  function handleEndedCall({ conversationId }) {
+    const normalizedId = String(conversationId)
+
+    if (incomingCall.value?.conversationId === normalizedId) {
+      incomingCall.value = null
+      return
+    }
+
+    if (activeCall.value?.conversationId === normalizedId) {
+      scheduleCallCleanup('La videollamada termino.')
+    }
+  }
+
+  function handleCallError(payload) {
+    if (!payload?.message) return
+
+    callError.value = payload.message
+
+    if (payload.conversationId && activeCall.value?.conversationId === String(payload.conversationId)) {
+      scheduleCallCleanup(payload.message)
+    }
   }
 
   function upsertConversation(rawConversation) {
@@ -233,9 +624,43 @@ export const useChatStore = defineStore('chat', () => {
       clearLastError()
       void loadConversations()
     })
+
+    socket.value.on('call:incoming', (payload) => {
+      handleIncomingCall(payload)
+    })
+
+    socket.value.on('call:ringing', ({ conversationId }) => {
+      if (activeCall.value?.conversationId !== String(conversationId)) return
+      clearCallError()
+      activeCall.value = {
+        ...activeCall.value,
+        status: 'ringing',
+      }
+    })
+
+    socket.value.on('call:accepted', (payload) => {
+      void handleAcceptedCall(payload)
+    })
+
+    socket.value.on('call:declined', (payload) => {
+      handleDeclinedCall(payload)
+    })
+
+    socket.value.on('call:ended', (payload) => {
+      handleEndedCall(payload)
+    })
+
+    socket.value.on('call:signal', (payload) => {
+      void handleIncomingCallSignal(payload)
+    })
+
+    socket.value.on('call:error', (payload) => {
+      handleCallError(payload)
+    })
   }
 
   function disconnect() {
+    cleanupCallSession()
     socket.value?.disconnect()
     socket.value = null
     isConnected.value = false
@@ -423,6 +848,123 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  async function startVideoCall(conversationInput) {
+    const conversation = typeof conversationInput === 'string'
+      ? getConversationById(conversationInput)
+      : conversationInput
+
+    if (!conversation?._id) {
+      return { success: false, message: 'Conversation not found.' }
+    }
+
+    if (!ensureSocketReady()) {
+      const message = currentChatUnavailableMessage()
+      callError.value = message
+      return { success: false, message }
+    }
+
+    if (activeCall.value?.status === 'ended') {
+      cleanupCallSession()
+    }
+
+    if (activeCall.value) {
+      const message = 'Ya hay una videollamada activa.'
+      callError.value = message
+      return { success: false, message }
+    }
+
+    try {
+      clearCallCleanupTimer()
+      clearCallError()
+      await ensureLocalStream()
+
+      activeCall.value = {
+        conversationId: conversation._id,
+        ...buildPeerMeta(conversation),
+        direction: 'outgoing',
+        status: 'ringing',
+      }
+
+      socket.value?.emit('call:invite', { conversationId: conversation._id })
+      return { success: true }
+    } catch (error) {
+      cleanupCallSession()
+      const message = mapMediaError(error)
+      callError.value = message
+      return { success: false, message }
+    }
+  }
+
+  async function acceptIncomingCall() {
+    if (!incomingCall.value) {
+      return { success: false, message: 'No incoming call.' }
+    }
+
+    if (!ensureSocketReady()) {
+      const message = currentChatUnavailableMessage()
+      callError.value = message
+      return { success: false, message }
+    }
+
+    try {
+      clearCallCleanupTimer()
+      clearCallError()
+      await ensureLocalStream()
+
+      const call = incomingCall.value
+      activeCall.value = {
+        conversationId: call.conversationId,
+        ...buildPeerMeta(call),
+        direction: 'incoming',
+        status: 'connecting',
+      }
+
+      incomingCall.value = null
+      await ensurePeerConnection(call.conversationId)
+      socket.value?.emit('call:answer', { conversationId: call.conversationId })
+
+      return { success: true }
+    } catch (error) {
+      const message = mapMediaError(error)
+      callError.value = message
+      return { success: false, message }
+    }
+  }
+
+  function declineIncomingCall(reason = 'declined') {
+    if (!incomingCall.value) return
+
+    socket.value?.emit('call:decline', {
+      conversationId: incomingCall.value.conversationId,
+      reason,
+    })
+
+    incomingCall.value = null
+    clearCallError()
+  }
+
+  function endVideoCall({ notify = true } = {}) {
+    if (notify && activeCall.value?.conversationId && socket.value?.connected) {
+      socket.value.emit('call:end', { conversationId: activeCall.value.conversationId })
+    }
+
+    cleanupCallSession()
+  }
+
+  function toggleCallMicrophone() {
+    const audioTrack = localStream.value?.getAudioTracks?.()[0]
+    if (!audioTrack) return
+    audioTrack.enabled = !audioTrack.enabled
+    isMicrophoneEnabled.value = audioTrack.enabled
+  }
+
+  function toggleCallCamera() {
+    const videoTrack = localStream.value?.getVideoTracks?.()[0]
+    if (!videoTrack) return
+    videoTrack.enabled = !videoTrack.enabled
+    isCameraEnabled.value = videoTrack.enabled
+  }
+
   return {
     socket,
     isConnected,
@@ -431,6 +973,13 @@ export const useChatStore = defineStore('chat', () => {
     typingUsers,
     companyUsers,
     lastError,
+    incomingCall,
+    activeCall,
+    localStream,
+    remoteStream,
+    callError,
+    isMicrophoneEnabled,
+    isCameraEnabled,
     totalUnread,
     connect,
     disconnect,
@@ -444,5 +993,11 @@ export const useChatStore = defineStore('chat', () => {
     markRead,
     uploadFiles,
     uploadFile,
+    startVideoCall,
+    acceptIncomingCall,
+    declineIncomingCall,
+    endVideoCall,
+    toggleCallMicrophone,
+    toggleCallCamera,
   }
 })

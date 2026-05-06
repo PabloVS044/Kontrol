@@ -55,6 +55,13 @@
             </div>
           </div>
 
+          <button class="fp-icon-btn" title="Videollamada" @click="startVideoCallFromFloatingChat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
+            </svg>
+          </button>
+
           <RouterLink to="/chat" class="fp-icon-btn" title="Abrir en pantalla completa" @click="isOpen = false">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -412,6 +419,15 @@ async function startDM(user) {
     }
   } catch (error) {
     panelError.value = error.message || 'No se pudo iniciar el chat.'
+  }
+}
+
+async function startVideoCallFromFloatingChat() {
+  if (!activeChat.value) return
+
+  const response = await chatStore.startVideoCall(activeChat.value)
+  if (!response.success) {
+    panelError.value = response.message || 'No se pudo iniciar la videollamada.'
   }
 }
 

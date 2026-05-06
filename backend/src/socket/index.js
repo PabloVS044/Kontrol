@@ -13,6 +13,10 @@ import {
 
 const CHAT_UNAVAILABLE_MESSAGE = 'Chat is unavailable because MongoDB is not connected.'
 const CHAT_AVAILABLE_MESSAGE = 'Chat is available again.'
+const CALL_DM_ONLY_MESSAGE = 'Only direct video calls are supported.'
+const CALL_TARGET_OFFLINE_MESSAGE = 'The other user is not connected to the chat.'
+const CALL_START_ERROR_MESSAGE = 'Could not start video call.'
+const CALL_SIGNAL_ERROR_MESSAGE = 'Could not deliver call signaling data.'
 
 // ── helpers ──────────────────────────────────────────────────
 
@@ -28,6 +32,11 @@ async function getUserById(id) {
     [id]
   )
   return rows[0] ?? null
+}
+
+function buildDisplayName(user) {
+  if (!user) return 'Usuario'
+  return [user.nombre, user.apellido].filter(Boolean).join(' ').trim() || user.email || 'Usuario'
 }
 
 async function usersShareCompany(userA, userB) {
@@ -51,6 +60,38 @@ function emitConversationEvent(io, eventName, conv, participantIds) {
       conversation: formatConversation(conv, participantId),
     })
   })
+}
+
+function emitToUsers(io, participantIds, eventName, payload, excludedUserId = null) {
+  participantIds
+    .filter((participantId) => participantId !== excludedUserId)
+    .forEach((participantId) => {
+      io.to(`user:${participantId}`).emit(eventName, payload)
+    })
+}
+
+function getOtherParticipantId(conv, userId) {
+  return Array.isArray(conv?.participants)
+    ? conv.participants.find((participantId) => participantId !== userId) ?? null
+    : null
+}
+
+function isUserOnline(io, userId) {
+  const room = io.sockets.adapter.rooms.get(`user:${userId}`)
+  return Boolean(room?.size)
+}
+
+async function getDirectConversationForUser(conversationId, userId) {
+  const conv = await Conversation.findById(conversationId).lean()
+  if (!conv || !conv.participants.includes(userId)) {
+    return { conv: null, error: 'Conversation not found.' }
+  }
+
+  if (conv.type !== 'dm' || conv.participants.length !== 2) {
+    return { conv: null, error: CALL_DM_ONLY_MESSAGE }
+  }
+
+  return { conv, error: null }
 }
 
 async function joinConversationRooms(socket, userId) {
@@ -163,6 +204,127 @@ export function setupSocket(httpServer, { isChatAvailable = () => true } = {}) {
       } catch (err) {
         console.error('chat:start_dm error:', err)
         socket.emit('chat:error', { message: 'Could not start conversation' })
+      }
+    })
+
+    // ── call:invite ───────────────────────────────────────────
+    socket.on('call:invite', async ({ conversationId }) => {
+      try {
+        if (!isChatAvailable()) {
+          return socket.emit('call:error', { conversationId, message: CHAT_UNAVAILABLE_MESSAGE })
+        }
+
+        const { conv, error } = await getDirectConversationForUser(conversationId, userId)
+        if (!conv) {
+          return socket.emit('call:error', { conversationId, message: error || CALL_START_ERROR_MESSAGE })
+        }
+
+        const targetUserId = getOtherParticipantId(conv, userId)
+        if (!targetUserId) {
+          return socket.emit('call:error', { conversationId, message: CALL_START_ERROR_MESSAGE })
+        }
+
+        if (!isUserOnline(io, targetUserId)) {
+          return socket.emit('call:error', { conversationId, message: CALL_TARGET_OFFLINE_MESSAGE })
+        }
+
+        const me = await getUserById(userId)
+
+        io.to(`user:${targetUserId}`).emit('call:incoming', {
+          conversationId: String(conv._id),
+          fromUserId: userId,
+          fromName: buildDisplayName(me),
+          fromAvatar: initials(me?.nombre, me?.apellido),
+        })
+
+        socket.emit('call:ringing', {
+          conversationId: String(conv._id),
+          targetUserId,
+        })
+      } catch (err) {
+        console.error('call:invite error:', err)
+        socket.emit('call:error', { conversationId, message: CALL_START_ERROR_MESSAGE })
+      }
+    })
+
+    // ── call:answer ───────────────────────────────────────────
+    socket.on('call:answer', async ({ conversationId }) => {
+      try {
+        if (!isChatAvailable()) {
+          return socket.emit('call:error', { conversationId, message: CHAT_UNAVAILABLE_MESSAGE })
+        }
+
+        const { conv, error } = await getDirectConversationForUser(conversationId, userId)
+        if (!conv) {
+          return socket.emit('call:error', { conversationId, message: error || CALL_START_ERROR_MESSAGE })
+        }
+
+        const me = await getUserById(userId)
+        emitToUsers(io, conv.participants, 'call:accepted', {
+          conversationId: String(conv._id),
+          byUserId: userId,
+          byName: buildDisplayName(me),
+        }, userId)
+      } catch (err) {
+        console.error('call:answer error:', err)
+        socket.emit('call:error', { conversationId, message: CALL_START_ERROR_MESSAGE })
+      }
+    })
+
+    // ── call:decline ──────────────────────────────────────────
+    socket.on('call:decline', async ({ conversationId, reason }) => {
+      try {
+        const { conv } = await getDirectConversationForUser(conversationId, userId)
+        if (!conv) return
+
+        emitToUsers(io, conv.participants, 'call:declined', {
+          conversationId: String(conv._id),
+          byUserId: userId,
+          reason: reason === 'busy' ? 'busy' : 'declined',
+        }, userId)
+      } catch (err) {
+        console.error('call:decline error:', err)
+      }
+    })
+
+    // ── call:end ──────────────────────────────────────────────
+    socket.on('call:end', async ({ conversationId }) => {
+      try {
+        const { conv } = await getDirectConversationForUser(conversationId, userId)
+        if (!conv) return
+
+        emitToUsers(io, conv.participants, 'call:ended', {
+          conversationId: String(conv._id),
+          byUserId: userId,
+        }, userId)
+      } catch (err) {
+        console.error('call:end error:', err)
+      }
+    })
+
+    // ── call:signal ───────────────────────────────────────────
+    socket.on('call:signal', async ({ conversationId, description, candidate }) => {
+      try {
+        if (!description && !candidate) return
+
+        if (!isChatAvailable()) {
+          return socket.emit('call:error', { conversationId, message: CHAT_UNAVAILABLE_MESSAGE })
+        }
+
+        const { conv, error } = await getDirectConversationForUser(conversationId, userId)
+        if (!conv) {
+          return socket.emit('call:error', { conversationId, message: error || CALL_SIGNAL_ERROR_MESSAGE })
+        }
+
+        emitToUsers(io, conv.participants, 'call:signal', {
+          conversationId: String(conv._id),
+          fromUserId: userId,
+          description: description ?? null,
+          candidate: candidate ?? null,
+        }, userId)
+      } catch (err) {
+        console.error('call:signal error:', err)
+        socket.emit('call:error', { conversationId, message: CALL_SIGNAL_ERROR_MESSAGE })
       }
     })
 
