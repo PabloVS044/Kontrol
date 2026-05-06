@@ -11,14 +11,31 @@ const app        = express()
 const httpServer = createServer(app)
 const PORT       = process.env.PORT || 3000
 
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean)
+
+function corsOriginFn(origin, cb) {
+  if (!origin) return cb(null, true)
+  if (allowedOrigins.includes('*')) return cb(null, true)
+  if (allowedOrigins.includes(origin)) return cb(null, true)
+  return cb(new Error(`Origin ${origin} not allowed by CORS`))
+}
+
 app.set('trust proxy', true)
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: corsOriginFn,
   credentials: true,
 }))
+app.locals.corsOriginFn = corsOriginFn
+app.locals.allowedOrigins = allowedOrigins
 app.use(express.json())
 app.use('/api', router)
-setupSocket(httpServer, { isChatAvailable: isMongoReady })
+setupSocket(httpServer, {
+  isChatAvailable: isMongoReady,
+  corsOrigin: corsOriginFn,
+})
 
 try {
   await ensureDatabaseSchema()
