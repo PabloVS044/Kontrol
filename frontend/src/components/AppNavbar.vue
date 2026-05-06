@@ -49,6 +49,7 @@
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
+        <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
       </div>
 
       <div class="appnav-end">

@@ -22,6 +22,7 @@ docker compose up
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3000
+- PostgreSQL (host): `localhost:5433` por defecto. Si necesitas otro puerto, define `POSTGRES_HOST_PORT`.
 
 El hot reload está habilitado en ambos servicios — cualquier cambio en el código se refleja automáticamente sin reiniciar nada.
 
