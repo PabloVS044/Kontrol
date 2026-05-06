@@ -18,6 +18,9 @@ set -a
 source "$ENV_FILE"
 set +a
 
+PUBLIC_HOST="${PUBLIC_HOST:-${FRONTEND_URL#*://}}"
+PUBLIC_HOST="${PUBLIC_HOST%%/*}"
+
 if [ -n "$(git -C "$ROOT" status --porcelain)" ]; then
   echo "Error: tienes cambios locales sin commit. Este deploy solo sube lo que exista en origin/$GIT_REF."
   echo "Haz commit y push antes de desplegar."
@@ -50,6 +53,7 @@ fi
 : "${GOOGLE_CALLBACK_URL:?Falta GOOGLE_CALLBACK_URL en .env.deploy}"
 : "${FRONTEND_URL:?Falta FRONTEND_URL en .env.deploy}"
 : "${UPLOADTHING_TOKEN:?Falta UPLOADTHING_TOKEN en .env.deploy}"
+: "${PUBLIC_HOST:?No se pudo derivar PUBLIC_HOST desde FRONTEND_URL}"
 
 SSH="ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -i $SSH_KEY $VM_USER@$VM_IP"
 
@@ -63,6 +67,7 @@ ENV_B64=$(printf '%s\n' \
   "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" \
   "GOOGLE_CALLBACK_URL=$GOOGLE_CALLBACK_URL" \
   "FRONTEND_URL=$FRONTEND_URL" \
+  "PUBLIC_HOST=$PUBLIC_HOST" \
   "UPLOADTHING_TOKEN=$UPLOADTHING_TOKEN" \
   "VITE_API_URL=${VITE_API_URL-}" \
   "VITE_SOCKET_URL=${VITE_SOCKET_URL-}" \
