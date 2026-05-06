@@ -24,14 +24,17 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - NODE_ENV=production
       - PORT=3000
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/kontrol
+      - MONGODB_URI=${MONGODB_URI}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
       - FRONTEND_URL=${FRONTEND_URL}
+      - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,6 +44,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL:-}
+        VITE_WEBRTC_ICE_SERVERS: ${VITE_WEBRTC_ICE_SERVERS:-}
     ports:
       - "80:80"
     depends_on:
