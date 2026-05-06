@@ -22,6 +22,7 @@
       <RouterView />
     </div>
     <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat'" />
+    <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
   </div>
 </template>
 
@@ -30,6 +31,7 @@ import { onMounted, watch } from 'vue'
 import { RouterView, useRoute } from "vue-router";
 import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
 import FloatingChat from "./components/chat/FloatingChat.vue";
+import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
 import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 

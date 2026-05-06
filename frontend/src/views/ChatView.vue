@@ -233,6 +233,15 @@ async function startDM(user) {
   }
 }
 
+async function startVideoCallForActiveChat() {
+  if (!activeChat.value) return
+
+  const response = await chatStore.startVideoCall(activeChat.value)
+  if (!response.success) {
+    panelError.value = response.message || 'No se pudo iniciar la videollamada.'
+  }
+}
+
 watch(activeMessages, () => {
   nextTick(scrollToBottom)
 })
@@ -359,6 +368,13 @@ onMounted(() => {
             </div>
 
             <div class="chat-header-actions">
+              <button class="ch-action-btn" title="Videollamada" @click="startVideoCallForActiveChat">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                  <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+              </button>
+
               <button class="ch-action-btn" title="Nuevo mensaje directo" @click="openNewDM">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
