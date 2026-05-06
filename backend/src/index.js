@@ -11,15 +11,19 @@ const app        = express()
 const httpServer = createServer(app)
 const PORT       = process.env.PORT || 3000
 
+const isDev = process.env.NODE_ENV !== 'production'
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean)
 
+const LAN_DEV_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/
+
 function corsOriginFn(origin, cb) {
   if (!origin) return cb(null, true)
   if (allowedOrigins.includes('*')) return cb(null, true)
   if (allowedOrigins.includes(origin)) return cb(null, true)
+  if (isDev && LAN_DEV_ORIGIN.test(origin)) return cb(null, true)
   return cb(new Error(`Origin ${origin} not allowed by CORS`))
 }
 
