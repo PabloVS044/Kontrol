@@ -611,7 +611,8 @@ export const useChatStore = defineStore('chat', () => {
     socket.value = io(SOCKET_URL, {
       auth: { token: authStore.token },
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      upgrade: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
