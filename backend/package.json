@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20 <23"
+  },
   "scripts": {
-    "dev": "node --dns-result-order=ipv4first --watch src/index.js",
+    "dev": "NODE_ENV=development node --dns-result-order=ipv4first --watch src/index.js",
     "start": "node --dns-result-order=ipv4first src/index.js"
   },
   "dependencies": {
@@ -14,7 +17,11 @@
     "express": "^4.21.0",
     "google-auth-library": "^10.6.2",
     "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.5.0",
     "pg": "^8.20.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "uploadthing": "^7.7.4",
     "zod": "^4.3.6"
   }
 }
