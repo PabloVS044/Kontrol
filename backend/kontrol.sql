@@ -272,6 +272,54 @@ CREATE TABLE public.reporte (
   CONSTRAINT reporte_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
 
+CREATE TABLE public.marketing_campaign (
+  id_campaign SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  id_proyecto integer,
+  name character varying(160) NOT NULL,
+  description text,
+  objective character varying(240),
+  channel character varying(120),
+  status character varying(20) NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED')),
+  start_date date,
+  end_date date,
+  created_by integer NOT NULL,
+  updated_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT marketing_campaign_company_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+  CONSTRAINT marketing_campaign_project_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
+  CONSTRAINT marketing_campaign_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+  CONSTRAINT marketing_campaign_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE TABLE public.marketing_item (
+  id_marketing_item SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  id_campaign integer,
+  id_proyecto integer,
+  title character varying(180) NOT NULL,
+  description text,
+  content text NOT NULL,
+  status character varying(20) NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED')),
+  content_type character varying(20) NOT NULL CHECK (content_type IN ('IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL')),
+  marketing_date date NOT NULL DEFAULT CURRENT_DATE,
+  resource_link character varying(500),
+  origin_type character varying(20) NOT NULL DEFAULT 'MANUAL' CHECK (origin_type IN ('MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL')),
+  integration_provider character varying(80),
+  integration_reference character varying(180),
+  integration_metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_by integer NOT NULL,
+  updated_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT marketing_item_company_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+  CONSTRAINT marketing_item_campaign_fkey FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
+  CONSTRAINT marketing_item_project_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
+  CONSTRAINT marketing_item_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+  CONSTRAINT marketing_item_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
+);
+
 -- ─── SEED DATA ────────────────────────────────────────────────────────────────
 
 -- Roles de sistema (asignado a cada usuario de la plataforma)
@@ -289,7 +337,9 @@ INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
   ('ver_inventario',       'Ver inventario de la empresa'),
   ('gestionar_inventario', 'Gestionar inventario'),
   ('ver_reportes',         'Ver reportes'),
-  ('crear_reportes',       'Crear reportes');
+  ('crear_reportes',       'Crear reportes'),
+  ('ver_marketing',        'Ver el centro de marketing'),
+  ('gestionar_marketing',  'Crear y editar contenido de marketing');
 
 -- Permisos de proyecto
 INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
@@ -325,11 +375,11 @@ INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'manager'
-  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes');
+  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes','ver_marketing','gestionar_marketing');
 
 -- Permisos del rol collaborator
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'collaborator'
-  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes');
+  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes','ver_marketing');

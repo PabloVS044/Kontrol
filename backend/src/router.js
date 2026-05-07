@@ -10,6 +10,7 @@ import reportsRoutes from './routes/reportsRoutes.js'
 import budgetRoutes from './routes/budgetRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
+import marketingRoutes from './routes/marketingRoutes.js'
 import uploadthingRouter from './uploadthing.js'
 
 const router = Router()
@@ -29,6 +30,7 @@ router.use('/reports', reportsRoutes)
 router.use('/budgets', budgetRoutes)
 router.use('/projects/:projectId/tasks', taskRoutes)
 router.use('/chat', chatRoutes)
+router.use('/marketing', marketingRoutes)
 router.use('/uploadthing', uploadthingRouter)
 
 export default router

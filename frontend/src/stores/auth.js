@@ -20,6 +20,8 @@ export const useAuthStore = defineStore('auth', {
     canCreateProjects: (state) => state.accessContext?.capabilities?.can_create_projects === true,
     canViewInventory: (state) => state.accessContext?.capabilities?.can_view_inventory === true,
     canManageInventory: (state) => state.accessContext?.capabilities?.can_manage_inventory === true,
+    canViewMarketing: (state) => state.accessContext?.capabilities?.can_view_marketing === true,
+    canManageMarketing: (state) => state.accessContext?.capabilities?.can_manage_marketing === true,
     // Legacy alias kept for any remaining references
     idEmpresa:       (state) => state.empresaActual?.id_empresa ?? null,
   },
