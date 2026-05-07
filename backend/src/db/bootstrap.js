@@ -101,6 +101,26 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.integracion (
+      id_integracion  SERIAL PRIMARY KEY,
+      id_empresa      INTEGER NOT NULL,
+      slug            VARCHAR(50) NOT NULL,
+      status          VARCHAR(20) NOT NULL DEFAULT 'inactive'
+                        CHECK (status IN ('active', 'inactive', 'error')),
+      credentials_enc TEXT,
+      config          JSONB NOT NULL DEFAULT '{}',
+      creado_por      INTEGER,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT integracion_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT integracion_usuario_fkey
+        FOREIGN KEY (creado_por) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT integracion_empresa_slug_unique UNIQUE (id_empresa, slug)
+    )
+  `)
+
+  await pool.query(`
     INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion)
     VALUES
       ('ver_inventario', 'View project inventory'),
