@@ -14,9 +14,7 @@
       <div v-else-if="fetchError" class="state-screen">
         <p class="state-title">No se pudo cargar las integraciones</p>
         <p class="state-msg">{{ fetchError }}</p>
-        <button class="btn-primary" style="margin-top:16px" @click="loadIntegrations">
-          <span>Reintentar</span>
-        </button>
+        <Button label="Reintentar" style="margin-top:16px" backColor="var(--Primary)" @click="loadIntegrations" />
       </div>
 
       <template v-else>
@@ -93,10 +91,12 @@
 
             <!-- Estado + última actualización -->
             <div class="card-meta-row">
-              <span class="status-badge" :class="statusClass(integration.status)">
-                <span class="status-dot"></span>
-                {{ statusLabel(integration.status) }}
-              </span>
+              <Pill
+                :label="statusLabel(integration.status)"
+                :btnColor="statusPillColors(integration.status).bg"
+                :circleColor="statusPillColors(integration.status).dot"
+                :textColor="statusPillColors(integration.status).text"
+              />
               <span v-if="integration.updated_at" class="updated-at">
                 Actualizado {{ fmtDate(integration.updated_at) }}
               </span>
@@ -165,9 +165,12 @@
           <p v-if="modalSuccess" class="modal-success">{{ modalSuccess }}</p>
 
           <div class="modal-footer">
-            <button type="submit" class="btn-primary" :disabled="modalLoading">
-              {{ modalLoading ? 'Guardando…' : 'Guardar' }}
-            </button>
+            <Button
+              :label="modalLoading ? 'Guardando…' : 'Guardar'"
+              type="submit"
+              :disabled="modalLoading"
+              backColor="var(--Primary)"
+            />
           </div>
         </form>
       </template>
@@ -180,6 +183,8 @@
 import { ref, computed, onMounted } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
+import Pill from '../components/UI/Pill/Pill.vue'
+import Button from '../components/UI/Button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 import {
   listIntegrations,
@@ -233,10 +238,10 @@ function statusLabel(status) {
   return map[status] ?? status
 }
 
-function statusClass(status) {
-  if (status === 'active') return 'status-active'
-  if (status === 'error') return 'status-error'
-  return 'status-inactive'
+function statusPillColors(status) {
+  if (status === 'active')  return { bg: 'rgba(52,211,153,0.1)',  dot: '#34d399', text: '#34d399' }
+  if (status === 'error')   return { bg: 'rgba(251,113,133,0.1)', dot: '#fb7185', text: '#fb7185' }
+  return                           { bg: 'rgba(255,255,255,0.05)', dot: '#444',   text: '#666'    }
 }
 
 function fmtDate(d) {
@@ -521,47 +526,13 @@ onMounted(() => {
   margin: 0;
 }
 
-/* ── Status badge ── */
+/* ── Status row ── */
 .card-meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.status-active {
-  background: rgba(52, 211, 153, 0.1);
-  color: #34d399;
-}
-.status-active .status-dot { background: #34d399; }
-
-.status-inactive {
-  background: rgba(255, 255, 255, 0.05);
-  color: #666;
-}
-.status-inactive .status-dot { background: #444; }
-
-.status-error {
-  background: rgba(251, 113, 133, 0.1);
-  color: #fb7185;
-}
-.status-error .status-dot { background: #fb7185; }
 
 .updated-at {
   font-size: 11px;
@@ -826,29 +797,5 @@ onMounted(() => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: #caa860;
-  color: #0a0a0a;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 </style>
