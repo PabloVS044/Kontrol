@@ -13,6 +13,7 @@ import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 import ChatView from '../views/ChatView.vue'
+import IntegrationsView from '../views/IntegrationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -96,6 +97,12 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',
       component: ChatView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/integrations',
+      name: 'integrations',
+      component: IntegrationsView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
   ],

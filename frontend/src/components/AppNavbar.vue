@@ -50,6 +50,12 @@
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
+        <RouterLink
+          v-if="isAdminOrOwner"
+          class="appnav-link"
+          to="/integrations"
+          @click="closeMenu"
+        >Integrations</RouterLink>
       </div>
 
       <div class="appnav-end">
@@ -80,6 +86,11 @@ const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
 const triggerEl     = ref(null)
 const isMenuOpen = ref(false)
+
+const isAdminOrOwner = computed(() => {
+  const rol = authStore.empresaActual?.rol
+  return rol === 'owner' || rol === 'admin'
+})
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
