@@ -8,6 +8,10 @@ import {
 } from '../services/integrationService.js'
 import { testSlackConnection } from '../services/slackService.js'
 import { testSendGridConnection } from '../services/sendgridService.js'
+import { testTeamsConnection } from '../services/teamsService.js'
+import { testTelegramConnection } from '../services/telegramService.js'
+import { testTwilioSmsConnection } from '../services/twilioSmsService.js'
+import { testWebhookConnection } from '../services/webhookService.js'
 
 export const listIntegrations = async (req, res) => {
   const { id_empresa } = req.empresa
@@ -163,8 +167,12 @@ export const testIntegration = async (req, res) => {
   const credentials = decryptCredentials(result.rows[0].credentials_enc)
 
   try {
-    if (slug === 'slack') await testSlackConnection(credentials)
-    else if (slug === 'sendgrid') await testSendGridConnection(credentials)
+    if      (slug === 'slack')           await testSlackConnection(credentials)
+    else if (slug === 'sendgrid')        await testSendGridConnection(credentials)
+    else if (slug === 'microsoft-teams') await testTeamsConnection(credentials)
+    else if (slug === 'telegram')        await testTelegramConnection(credentials)
+    else if (slug === 'twilio-sms')      await testTwilioSmsConnection(credentials)
+    else if (slug === 'webhook')         await testWebhookConnection(credentials)
 
     await pool.query(
       `UPDATE public.integracion SET status = 'active', updated_at = NOW()

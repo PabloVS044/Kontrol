@@ -229,7 +229,13 @@ const filteredIntegrations = computed(() => {
 })
 
 function categoryLabel(cat) {
-  const map = { comunicacion: 'Comunicación', email: 'Email', crm: 'CRM', storage: 'Almacenamiento' }
+  const map = {
+    comunicacion: 'Comunicación',
+    email: 'Email',
+    automatizacion: 'Automatización',
+    crm: 'CRM',
+    storage: 'Almacenamiento',
+  }
   return map[cat] ?? cat
 }
 
@@ -372,6 +378,41 @@ const SendGridIcon = {
   </svg>`,
 }
 
+const TeamsIcon = {
+  template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <rect x="14" y="4" width="11" height="11" rx="2" fill="#5059C9"/>
+    <circle cx="19.5" cy="9.5" r="3" fill="#7B83EB"/>
+    <rect x="3" y="11" width="14" height="13" rx="2" fill="#5059C9"/>
+    <circle cx="10" cy="8" r="4" fill="#7B83EB"/>
+    <path d="M6 17.5h8M10 15v5" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>`,
+}
+
+const TelegramIcon = {
+  template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="11" fill="#29A9EB"/>
+    <path d="M8 13.8l10.5-4.5c.5-.2.9.1.7.7l-1.8 8.4c-.1.5-.5.6-.9.4l-2.5-1.9-1.2 1.1c-.1.1-.3.2-.5.2l.2-2.6 4.8-4.3c.2-.2 0-.3-.3-.1l-5.9 3.7-2.5-.8c-.5-.2-.5-.5.4-.9z" fill="white"/>
+  </svg>`,
+}
+
+const TwilioIcon = {
+  template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="11" fill="#F22F46"/>
+    <circle cx="14" cy="14" r="4" fill="none" stroke="white" stroke-width="2"/>
+    <circle cx="10.5" cy="10.5" r="1.5" fill="white"/>
+    <circle cx="17.5" cy="10.5" r="1.5" fill="white"/>
+    <circle cx="10.5" cy="17.5" r="1.5" fill="white"/>
+    <circle cx="17.5" cy="17.5" r="1.5" fill="white"/>
+  </svg>`,
+}
+
+const WebhookIcon = {
+  template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <path d="M10 14c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="#caa860" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M14 10V6M14 22v-4M6 14H4M24 14h-2M8.1 8.1L6.7 6.7M21.3 21.3l-1.4-1.4M8.1 19.9l-1.4 1.4M21.3 6.7l-1.4 1.4" stroke="#caa860" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>`,
+}
+
 const DefaultIcon = {
   template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
     <rect x="4" y="4" width="20" height="20" rx="3" stroke="#555" stroke-width="1.6"/>
@@ -379,10 +420,17 @@ const DefaultIcon = {
   </svg>`,
 }
 
+const ICONS = {
+  'slack':           SlackIcon,
+  'sendgrid':        SendGridIcon,
+  'microsoft-teams': TeamsIcon,
+  'telegram':        TelegramIcon,
+  'twilio-sms':      TwilioIcon,
+  'webhook':         WebhookIcon,
+}
+
 function integrationIcon(slug) {
-  if (slug === 'slack') return SlackIcon
-  if (slug === 'sendgrid') return SendGridIcon
-  return DefaultIcon
+  return ICONS[slug] ?? DefaultIcon
 }
 
 onMounted(() => {
