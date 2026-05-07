@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { notifyCompany } from '../services/notificationService.js'
 
 const ACTIVITY_SELECT = `
   id_actividad, nombre, monto_planificado, monto_real, id_proyecto
@@ -242,6 +243,20 @@ export const registerExpense = async (req, res) => {
     } else if (usageRatio >= 0.8) {
       alertLevel = 'ADVERTENCIA'
       alert = 'WARNING: More than 80% of the available budget has been used.'
+    }
+
+    if (alertLevel) {
+      const projectName = project.rows[0].nombre ?? `#${projectId}`
+      const pct = Math.round(usageRatio * 100)
+      const isCritical = alertLevel === 'CRITICO'
+      notifyCompany(req.empresa?.id_empresa ?? req.company?.id_empresa, {
+        title: isCritical ? `🚨 Presupuesto crítico — ${projectName}` : `⚠️ Alerta de presupuesto — ${projectName}`,
+        text: isCritical
+          ? `El proyecto *${projectName}* ha alcanzado o superado su presupuesto total (${pct}% usado).`
+          : `El proyecto *${projectName}* ha consumido el ${pct}% de su presupuesto.`,
+        event: 'budget.alert',
+        data: { projectId, alertLevel, usageRatio, totalBudget, totalSpent },
+      })
     }
 
     return res.status(200).json({
