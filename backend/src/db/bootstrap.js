@@ -101,6 +101,104 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.marketing_campaign (
+      id_campaign SERIAL PRIMARY KEY,
+      id_empresa integer NOT NULL,
+      id_proyecto integer,
+      name character varying(160) NOT NULL,
+      description text,
+      objective character varying(240),
+      channel character varying(120),
+      status character varying(20) NOT NULL DEFAULT 'DRAFT',
+      start_date date,
+      end_date date,
+      created_by integer NOT NULL,
+      updated_by integer NOT NULL,
+      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT marketing_campaign_company_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT marketing_campaign_project_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
+      CONSTRAINT marketing_campaign_created_by_fkey
+        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_campaign_updated_by_fkey
+        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_campaign_status_check
+        CHECK (status IN ('DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED'))
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_campaign_company_name_idx
+      ON public.marketing_campaign (id_empresa, LOWER(name))
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.marketing_item (
+      id_marketing_item SERIAL PRIMARY KEY,
+      id_empresa integer NOT NULL,
+      id_campaign integer,
+      id_proyecto integer,
+      title character varying(180) NOT NULL,
+      description text,
+      content text NOT NULL,
+      status character varying(20) NOT NULL DEFAULT 'DRAFT',
+      content_type character varying(20) NOT NULL,
+      marketing_date date NOT NULL DEFAULT CURRENT_DATE,
+      resource_link character varying(500),
+      origin_type character varying(20) NOT NULL DEFAULT 'MANUAL',
+      integration_provider character varying(80),
+      integration_reference character varying(180),
+      integration_metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+      created_by integer NOT NULL,
+      updated_by integer NOT NULL,
+      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT marketing_item_company_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT marketing_item_campaign_fkey
+        FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
+      CONSTRAINT marketing_item_project_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
+      CONSTRAINT marketing_item_created_by_fkey
+        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_item_updated_by_fkey
+        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_item_status_check
+        CHECK (status IN ('DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED')),
+      CONSTRAINT marketing_item_type_check
+        CHECK (content_type IN ('IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL')),
+      CONSTRAINT marketing_item_origin_check
+        CHECK (origin_type IN ('MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL'))
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_item_company_date_idx
+      ON public.marketing_item (id_empresa, marketing_date DESC, updated_at DESC)
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_item_campaign_idx
+      ON public.marketing_item (id_campaign)
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_item_project_idx
+      ON public.marketing_item (id_proyecto)
+  `)
+
+  await pool.query(`
+    INSERT INTO public.permiso_empresa (nombre_permiso, descripcion)
+    VALUES
+      ('ver_marketing', 'View the marketing center'),
+      ('gestionar_marketing', 'Create and edit marketing content')
+    ON CONFLICT (nombre_permiso) DO UPDATE
+    SET descripcion = EXCLUDED.descripcion
+  `)
+
+  await pool.query(`
     INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion)
     VALUES
       ('ver_inventario', 'View project inventory'),
