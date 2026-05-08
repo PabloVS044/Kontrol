@@ -140,8 +140,10 @@ export const getCompanySummary = async (req, res) => {
          p.fecha_inicio,
          p.fecha_fin_planificada,
          p.presupuesto_total,
-         COALESCE(t.total_tareas, 0)       AS total_tareas,
+         COALESCE(t.total_tareas, 0)        AS total_tareas,
          COALESCE(t.tareas_completadas, 0) AS tareas_completadas,
+         COALESCE(t.tareas_en_progreso, 0) AS tareas_en_progreso,
+         COALESCE(t.tareas_pendientes, 0)  AS tareas_pendientes,
          COALESCE(b.total_planificado, 0)  AS presupuesto_planificado,
          COALESCE(b.total_real, 0)         AS presupuesto_real,
          COALESCE(pr.progreso_actual, 0)   AS progreso_actual
@@ -149,7 +151,9 @@ export const getCompanySummary = async (req, res) => {
        LEFT JOIN (
          SELECT id_proyecto,
            COUNT(*)::int                                          AS total_tareas,
-           COUNT(*) FILTER (WHERE estado = 'COMPLETADA')::int    AS tareas_completadas
+           COUNT(*) FILTER (WHERE estado = 'COMPLETADA')::int    AS tareas_completadas,
+           COUNT(*) FILTER (WHERE estado = 'EN_PROGRESO')::int   AS tareas_en_progreso,
+           COUNT(*) FILTER (WHERE estado = 'PENDIENTE')::int     AS tareas_pendientes
          FROM public.tarea
          GROUP BY id_proyecto
        ) t ON t.id_proyecto = p.id_proyecto
