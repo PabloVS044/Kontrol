@@ -1,5 +1,6 @@
 import pool from "../db/pool.js";
 
+//GET /api/reports
 export const getReports = async (req, res) => {
   try {
     const { id_empresa } = req.empresa
@@ -20,6 +21,7 @@ export const getReports = async (req, res) => {
   }
 }
 
+//GET /api/reports/:id
 export const getReportById = async (req, res) => {
   try {
     const { id } = req.params
@@ -44,6 +46,7 @@ export const getReportById = async (req, res) => {
   }
 }
 
+//POST /api/reports
 export const createReport = async (req, res) => {
   try {
     const { titulo, tipo, contenido_url, id_proyecto } = req.body
@@ -73,6 +76,7 @@ export const createReport = async (req, res) => {
   }
 }
 
+//PUT /api/reports/:id
 export const updateReport = async (req, res) => {
   try {
     const { id } = req.params
@@ -101,6 +105,7 @@ export const updateReport = async (req, res) => {
   }
 }
 
+//DELETE /api/reports/:id
 export const deleteReport = async (req, res) => {
   try {
     const { id } = req.params
@@ -127,6 +132,7 @@ export const deleteReport = async (req, res) => {
   }
 }
 
+//GET /api/reports/summary
 export const getCompanySummary = async (req, res) => {
   try {
     const { id_empresa } = req.empresa
