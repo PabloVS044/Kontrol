@@ -189,6 +189,8 @@ CREATE TABLE public.producto_proveedor (
 -- id_producto es nullable: permite registrar gastos administrativos del proyecto
 -- que impactan el presupuesto sin corresponder a un item de inventario.
 -- cantidad también nullable por la misma razón (un gasto admin no tiene unidades).
+-- id_actividad opcional: enlaza un GASTO_ADMIN a una actividad de presupuesto
+-- para que la actividad pueda mostrar su historia de gastos sin tabla aparte.
 CREATE TABLE public.movimiento_inventario (
   id_movimiento SERIAL PRIMARY KEY,
   tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['ENTRADA', 'SALIDA', 'AJUSTE', 'GASTO_ADMIN'])),
@@ -201,11 +203,13 @@ CREATE TABLE public.movimiento_inventario (
   id_usuario integer NOT NULL,
   id_proyecto integer NOT NULL,
   id_proveedor integer,
+  id_actividad integer,
   -- FK compuesta: producto (si existe) debe pertenecer al mismo proyecto
   CONSTRAINT mi_producto_proyecto_fkey FOREIGN KEY (id_proyecto, id_producto) REFERENCES public.producto(id_proyecto, id_producto),
   CONSTRAINT mi_proyecto_empresa_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto),
   CONSTRAINT movimiento_inventario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario),
   CONSTRAINT movimiento_inventario_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor),
+  CONSTRAINT mi_actividad_fkey FOREIGN KEY (id_actividad) REFERENCES public.presupuesto_actividad(id_actividad) ON DELETE SET NULL,
   -- Coherencia: si es inventario, debe haber producto y cantidad; si es gasto admin, no.
   CONSTRAINT mi_tipo_producto_check CHECK (
     (tipo IN ('ENTRADA','SALIDA','AJUSTE') AND id_producto IS NOT NULL AND cantidad IS NOT NULL)
@@ -258,6 +262,21 @@ CREATE TABLE public.presupuesto_actividad (
   monto_real numeric CHECK (monto_real >= 0::numeric),
   id_proyecto integer NOT NULL,
   CONSTRAINT presupuesto_actividad_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto)
+);
+
+-- Audit log for top-up additions to a project's allocated budget.
+-- Positive monto = add funds; negative = withdraw (allowed for corrections).
+-- Distinct from movimiento_inventario because adjustments change the capital
+-- allocation, not the cash-flow ledger.
+CREATE TABLE public.presupuesto_ajuste (
+  id_ajuste SERIAL PRIMARY KEY,
+  id_proyecto integer NOT NULL,
+  monto numeric NOT NULL CHECK (monto <> 0),
+  motivo text,
+  fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id_usuario integer NOT NULL,
+  CONSTRAINT presupuesto_ajuste_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
+  CONSTRAINT presupuesto_ajuste_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
 
 CREATE TABLE public.reporte (
