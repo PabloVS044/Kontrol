@@ -147,9 +147,15 @@
               :key="project.id_proyecto"
               class="project-card"
             >
+              <!-- Accent bar -->
               <div class="card-accent" :style="{ backgroundColor: statusColor(project.estado) }"></div>
-              <div class="card-header">
-                <span class="card-name">{{ project.nombre }}</span>
+
+              <!-- Status + Role -->
+              <div class="card-status-row">
+                <div class="card-status-left">
+                  <span class="card-status-dot" :style="{ backgroundColor: statusColor(project.estado) }"></span>
+                  <span class="card-status-text" :style="{ color: statusColor(project.estado) }">{{ statusLabel(project.estado) }}</span>
+                </div>
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
                   :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
@@ -157,29 +163,29 @@
                   :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
                 />
               </div>
+
+              <!-- Name + Description (clickable → project detail) -->
+              <div class="card-main" @click="router.push(`/projects/${project.id_proyecto}`)">
+                <p class="card-name">{{ project.nombre }}</p>
+                <p class="card-desc">{{ project.descripcion || 'Sin descripción.' }}</p>
+              </div>
+
+              <!-- Progress + Budget + Footer -->
               <div class="card-body">
-                <p class="card-desc">{{ project.descripcion || 'No description.' }}</p>
                 <div class="progress-wrap">
-                  <ProgressBar
-                    :pct="statusProgress(project.estado)"
-                    :color="statusColor(project.estado)"
-                    height="3px"
-                    style="flex:1"
-                  />
+                  <div class="progress-bg" style="flex:1">
+                    <div class="progress-fill" :style="{ width: statusProgress(project.estado) + '%', backgroundColor: statusColor(project.estado) }"></div>
+                  </div>
                   <span class="progress-val">{{ statusProgress(project.estado) }}%</span>
                 </div>
+
                 <div class="budget-line">
                   <div class="budget-labels">
                     <span>Budget</span>
-                    <span class="budget-val">
-                      ${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}
-                    </span>
+                    <span class="budget-val">${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}</span>
                   </div>
                   <div class="progress-bg">
-                    <div
-                      class="progress-fill"
-                      :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"
-                    ></div>
+                    <div class="progress-fill" :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"></div>
                   </div>
                   <div class="budget-meta">
                     <span :style="{ color: budgetColor(project) }">{{ budgetPct(project) }}% used</span>
@@ -193,10 +199,7 @@
 
                 <div class="card-footer-row">
                   <template v-if="canEditStatus(project)">
-                    <div
-                      class="status-select-wrap"
-                      :style="{ '--status-color': statusColor(project.estado) }"
-                    >
+                    <div class="status-select-wrap" :style="{ '--status-color': statusColor(project.estado) }">
                       <span class="status-dot-mark" :style="{ backgroundColor: statusColor(project.estado) }"></span>
                       <select
                         class="status-select"
@@ -223,20 +226,53 @@
                   {{ statusError[project.id_proyecto] }}
                 </p>
               </div>
-              <div class="card-open">
-                <Anchor
-                  label="→ Open project"
-                  :link="`/projects/${project.id_proyecto}`"
-                  textColor="#555"
-                  backColor="transparent"
-                  hoverColor="rgba(201,169,98,0.06)"
-                />
-                <a class="open-anchor" @click.prevent="openBudget(project)">→ Open budget</a>
+
+              <!-- Quick access row -->
+              <div class="card-quick-row">
+                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=tasks`)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                  <span>Tareas</span>
+                </button>
+                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
+                    <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
+                  </svg>
+                  <span>Equipo</span>
+                </button>
+                <button class="quick-btn" @click="openBudget(project)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                  </svg>
+                  <span>Presupuesto</span>
+                </button>
+                <button class="quick-btn" @click="router.push({ name: 'reports', query: { project: project.id_proyecto } })">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                    <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                  <span>Reportes</span>
+                </button>
               </div>
             </div>
 
-            <div v-if="!loading && filteredProjects.length === 0" class="empty-state">
-              <p>No projects in this category.</p>
+            <!-- Empty state -->
+            <div v-if="filteredProjects.length === 0" class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="6" y="10" width="28" height="22" rx="2" stroke="#2a2a2a" stroke-width="1.5"/>
+                <path d="M6 15h28M13 10V8M27 10V8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M13 22h14M13 27h8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
+              </svg>
+              <p class="empty-title">Sin proyectos aquí</p>
+              <p class="empty-sub">Cambia el filtro o crea un nuevo proyecto.</p>
+              <button v-if="authStore.canCreateProjects" class="btn-primary empty-cta" @click="openModal">
+                <span>+ Nuevo proyecto</span>
+              </button>
             </div>
           </div>
 
@@ -294,12 +330,10 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import AppNavbar  from '../components/AppNavbar.vue'
-import BaseModal  from '../components/UI/Modal/BaseModal.vue'
-import ProgressBar from '../components/UI/ProgressBar/ProgressBar.vue'
-import Pill   from '../components/UI/Pill/Pill.vue'
-import Anchor from '../components/UI/Button/Anchor.vue'
-import Button from '../components/UI/Button/Button.vue'
+import AppNavbar from '../components/AppNavbar.vue'
+import BaseModal from '../components/UI/Modal/BaseModal.vue'
+import Pill      from '../components/UI/Pill/Pill.vue'
+import Button    from '../components/UI/Button/Button.vue'
 import { statusLabel, formatDate } from '../utils/statusHelpers.js'
 
 const router = useRouter()
@@ -577,7 +611,7 @@ async function submitProject() {
 .section-meta   { font-size: 12px; color: #555; }
 
 .project-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
 }
 
 .project-card {
@@ -588,59 +622,81 @@ async function submitProject() {
 
 .card-accent { height: 3px; flex-shrink: 0; }
 
-.card-header {
+/* Status + role row */
+.card-status-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 16px 8px;
+  padding: 18px 20px 0;
+}
+.card-status-left  { display: flex; align-items: center; gap: 6px; }
+.card-status-dot   { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.card-status-text  { font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Name + description (clickable) */
+.card-main {
+  padding: 14px 20px 6px;
+  cursor: pointer;
 }
 .card-name {
-  font-family: 'Playfair Display', serif; font-size: 16px; color: #faf8f5;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; color: #faf8f5;
+  line-height: 1.2; margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+.card-main:hover .card-name { color: #c9a962; }
 
-.card-body { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-.card-desc { font-size: 12px; color: #666; line-height: 1.5; }
+.card-body { padding: 10px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+.card-desc { font-size: 15px; color: #666; line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 .progress-wrap { display: flex; align-items: center; gap: 10px; }
 .progress-bg   { width: 100%; height: 4px; background: #1f1f1f; border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; transition: width 0.4s; }
-.progress-val  { font-size: 11px; color: #555; width: 30px; text-align: right; }
+.progress-val  { font-size: 14px; color: #666; width: 36px; text-align: right; }
 
 /* Budget line on project card */
 .budget-line { display: flex; flex-direction: column; gap: 4px; }
-.budget-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+.budget-labels { display: flex; justify-content: space-between; font-size: 14px; color: #888; }
 .budget-val { color: #faf8f5; font-variant-numeric: tabular-nums; }
-.budget-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #555; }
+.budget-meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; }
 .alert-pill {
-  font-size: 9px; padding: 2px 6px; letter-spacing: 0.08em; border-radius: 2px;
+  font-size: 12px; padding: 2px 8px; letter-spacing: 0.05em; border-radius: 2px;
   border: 1px solid currentColor;
 }
 .alert-pill.warn     { color: #f97316; background: rgba(249,115,22,0.08); }
 .alert-pill.critical { color: #fb7185; background: rgba(251,113,133,0.08); }
 
-.open-anchor {
-  font-size: 12px; color: #555; cursor: pointer; display: inline-block;
-  width: 100%; transition: color 0.15s; text-decoration: none;
+/* Quick access row */
+.card-quick-row {
+  display: flex;
+  border-top: 1px solid rgba(201,169,98,0.15);
+  background: rgba(201,169,98,0.04);
+  margin-top: auto;
 }
-.open-anchor:hover { color: #c9a962; }
-.project-card:hover .open-anchor { color: #c9a962; }
+.quick-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 13px 4px;
+  background: none; border: none; border-right: 1px solid rgba(201,169,98,0.1);
+  color: #999; font-size: 14px; font-family: 'Manrope', sans-serif;
+  cursor: pointer; transition: color 0.2s, background 0.2s;
+}
+.quick-btn:last-child { border-right: none; }
+.quick-btn:hover { color: #c9a962; background: rgba(201,169,98,0.1); }
 
 .card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.status-dot { font-size: 11px; }
-.due-date   { font-size: 11px; color: #555; }
+.due-date { font-size: 14px; color: #555; }
 
 .status-select-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 8px;
+  gap: 8px;
+  padding: 6px 12px;
   border: 1px solid var(--status-color, #555);
   background: color-mix(in srgb, var(--status-color, #555) 9%, transparent);
   border-radius: 3px;
-  height: 22px;
 }
 .status-dot-mark {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -649,17 +705,17 @@ async function submitProject() {
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  font-size: 15px;
+  letter-spacing: 0.03em;
   padding: 0;
-  padding-right: 14px;
+  padding-right: 18px;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'><path d='M1 1l3 3 3-3' stroke='%23888' stroke-width='1.2' fill='none' stroke-linecap='square'/></svg>");
   background-repeat: no-repeat;
   background-position: right 0 center;
-  background-size: 8px 6px;
+  background-size: 9px 7px;
 }
 .status-select:disabled { opacity: 0.6; cursor: wait; }
 .status-select option { background: #0f0f0f; color: #faf8f5; }
@@ -678,19 +734,13 @@ async function submitProject() {
 .open-link { font-size: 12px; color: #555; cursor: pointer; transition: color 0.15s; }
 .project-card:hover .open-link { color: #c9a962; }
 
-.card-header :deep(.pill) { height: 22px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
-.card-header :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
-.card-header :deep(.dot) { display: none; }
+.card-status-row :deep(.pill) { height: 20px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
+.card-status-row :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
+.card-status-row :deep(.dot) { display: none; }
 
 .card-footer-row :deep(.pill) { height: 20px; padding: 0 8px; border-radius: 3px; border: 1px solid currentColor; }
 .card-footer-row :deep(.pill-text) { font-size: 10px; font-family: 'Manrope', sans-serif; }
 .card-footer-row :deep(.dot) { width: 6px; height: 6px; margin-right: 6px; }
-
-.card-open :deep(.anchor) {
-  padding: 0; border-radius: 0; font-size: 12px; font-family: 'Manrope', sans-serif;
-  justify-content: flex-start; width: 100%; transition: color 0.15s;
-}
-.project-card:hover .card-open :deep(.anchor) { color: #c9a962 !important; }
 
 .modal-actions :deep(.btn) { border-radius: 0; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; padding: 10px 20px; }
 .modal-actions :deep(.btn:first-child) { background: transparent; border: 1px solid #1f1f1f; color: #faf8f5; }
@@ -713,7 +763,13 @@ async function submitProject() {
 .skeleton-line.mid   { width: 70%; }
 @keyframes pulse { 0%,100% { opacity:0.4 } 50% { opacity:0.8 } }
 
-.empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #555; font-size: 14px; }
+.empty-state {
+  grid-column: 1/-1; display: flex; flex-direction: column;
+  align-items: center; gap: 12px; padding: 72px 0; text-align: center;
+}
+.empty-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #444; }
+.empty-sub   { font-size: 13px; color: #333; }
+.empty-cta   { margin-top: 4px; }
 
 .context-panel {
   width: 320px; flex: none;
@@ -764,6 +820,7 @@ async function submitProject() {
 @media (max-width: 1200px) {
   .main-panel { padding: 40px 40px; }
   .context-panel { width: 280px; padding: 40px 20px; }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 900px) {
@@ -789,5 +846,6 @@ async function submitProject() {
   .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
   .summary-grid { grid-template-columns: 1fr 1fr; }
   .project-grid { grid-template-columns: 1fr; }
+
 }
 </style>
