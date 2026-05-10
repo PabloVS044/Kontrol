@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
+import globalRoutes from './routes/globalRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import supplierRoutes from './routes/supplierRoutes.js'
 import inventoryMovementRoutes from './routes/inventoryMovementRoutes.js'
@@ -20,6 +21,7 @@ router.get('/health', (req, res) => {
 
 router.use('/auth', authRoutes)
 router.use('/users', userRoutes)
+router.use('/global', globalRoutes)
 router.use('/products', productRoutes)
 router.use('/suppliers', supplierRoutes)
 router.use('/inventory-movements', inventoryMovementRoutes)
