@@ -706,14 +706,14 @@ async function submitProject() {
 .state-screen {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px;
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.82);
 }
 .state-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #faf8f5; }
 .state-msg   { font-size: 14px; color: #888; }
 
 .main-panel {
   flex: 1; display: flex; flex-direction: column; gap: 32px;
-  padding: 48px 56px; background: #0a0a0a;
+  padding: 48px 56px; background: rgba(10,10,10,0.82);
 }
 
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }
@@ -739,11 +739,11 @@ async function submitProject() {
 .tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; }
 .tab {
   background: none; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 13px; color: #555;
+  font-family: 'Manrope', sans-serif; font-size: 15px; color: #777;
   padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
 }
 .tab.active { color: #c9a962; border-bottom-color: #c9a962; }
-.tab:hover:not(.active) { color: #888; }
+.tab:hover:not(.active) { color: #aaa; }
 
 .section-header  { display: flex; justify-content: space-between; align-items: center; }
 .section-title   { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
@@ -1032,7 +1032,7 @@ async function submitProject() {
 
 .context-panel {
   width: 320px; flex: none;
-  background: #0a0a0a; border-left: 1px solid #1a1a1a;
+  background: rgba(10,10,10,0.9); border-left: 1px solid #1a1a1a;
   padding: 48px 28px; display: flex; flex-direction: column; gap: 32px;
   position: sticky; top: 0; max-height: 100vh; overflow-y: auto;
 }
