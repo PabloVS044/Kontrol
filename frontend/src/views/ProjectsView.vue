@@ -615,7 +615,7 @@ async function submitProject() {
 }
 
 .project-card {
-  background: rgba(15,15,15,0.7); border: 1px solid #1f1f1f;
+  background: #0f0f0f; border: 1px solid #1f1f1f;
   display: flex; flex-direction: column; transition: border-color 0.2s;
 }
 .project-card:hover { border-color: #333; }
