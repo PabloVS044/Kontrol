@@ -129,8 +129,22 @@
   max-width: 640px;
 }
 
-/* Budget card in header */
-.pd-header-right { flex-shrink: 0; }
+/* Header right: nav actions + budget card */
+.pd-header-right { flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+
+.pd-nav-actions { display: flex; gap: 8px; }
+
+.pd-nav-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid #1f1f1f;
+  color: #666;
+  font-size: 12px; font-family: 'Manrope', sans-serif;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pd-nav-btn:hover { color: #c9a962; border-color: rgba(201,169,98,0.4); }
 
 .budget-card {
   background: rgba(15,15,15,0.8);
@@ -654,11 +668,20 @@
   .overview-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* ── Tab empty states ── */
+.tab-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 72px 0; text-align: center;
+}
+.tab-empty-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #444; }
+.tab-empty-sub   { font-size: 13px; color: #333; margin-bottom: 4px; }
+
 @media (max-width: 900px) {
   .pd-header,
   .pd-tabs,
   .tab-panel { padding-left: 28px; padding-right: 28px; }
   .pd-header-body { flex-direction: column; gap: 24px; }
+  .pd-nav-actions { flex-wrap: wrap; }
   .budget-card { min-width: unset; width: 100%; }
   .pd-title { font-size: 32px; }
 }
