@@ -172,6 +172,17 @@
 
           <!-- List view -->
           <div v-else-if="viewMode === 'list'" class="project-list">
+            <!-- Column headers -->
+            <div class="list-header">
+              <div class="lh-spacer"></div>
+              <div class="lh-col">Proyecto</div>
+              <div class="lh-col">Progreso</div>
+              <div class="lh-col">Presupuesto</div>
+              <div class="lh-col">Vence</div>
+              <div class="lh-col lh-center">Acciones</div>
+              <div class="lh-col lh-center">Rol</div>
+            </div>
+
             <div
               v-for="project in filteredProjects"
               :key="project.id_proyecto"
@@ -463,7 +474,8 @@ const router = useRouter()
 const authStore    = useAuthStore()
 const projects     = ref([])
 const searchQuery  = ref('')
-const viewMode     = ref('grid')
+const viewMode     = ref(localStorage.getItem('projects-view-mode') || 'grid')
+watch(viewMode, (v) => localStorage.setItem('projects-view-mode', v))
 const budgetByProj = ref({}) // id_proyecto -> summary
 const loading      = ref(true)
 const authError  = ref(false)
@@ -773,6 +785,25 @@ async function submitProject() {
 
 /* List view */
 .project-list { display: flex; flex-direction: column; gap: 1px; background: #1a1a1a; }
+
+.list-header {
+  display: grid;
+  grid-template-columns: 3px 1fr 150px 190px 100px 140px 80px;
+  background: #0a0a0a;
+  border-bottom: 1px solid #1f1f1f;
+  position: sticky; top: 56px; z-index: 1;
+}
+.lh-spacer { }
+.lh-col {
+  padding: 8px 16px;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #555;
+  font-family: 'Manrope', sans-serif;
+}
+.lh-col:first-of-type { padding-left: 20px; }
+.lh-center { text-align: center; }
 
 .list-row {
   display: grid;
