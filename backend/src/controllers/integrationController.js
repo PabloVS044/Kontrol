@@ -147,6 +147,26 @@ export const toggleIntegration = async (req, res) => {
   return res.json({ success: true, data: { slug, status } })
 }
 
+export const deleteIntegrationConfig = async (req, res) => {
+  const { id_empresa } = req.empresa
+  const { slug } = req.params
+
+  if (!VALID_SLUGS.includes(slug)) {
+    return res.status(404).json({ success: false, message: 'Integración no encontrada.' })
+  }
+
+  const result = await pool.query(
+    `DELETE FROM public.integracion WHERE id_empresa = $1 AND slug = $2 RETURNING id_integracion`,
+    [id_empresa, slug],
+  )
+
+  if (!result.rows.length) {
+    return res.status(404).json({ success: false, message: 'La integración no estaba configurada.' })
+  }
+
+  return res.json({ success: true, message: 'Integración desconectada correctamente.' })
+}
+
 export const testIntegration = async (req, res) => {
   const { id_empresa } = req.empresa
   const { slug } = req.params
