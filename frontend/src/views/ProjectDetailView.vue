@@ -101,11 +101,11 @@
                 <ProgressBar :pct="budgetPct" :color="budgetColor" />
                 <div class="budget-amounts">
                   <span
-                    >${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
+                    >${{ formatMoney(spentBudget) }}
                     <small>spent</small></span
                   >
                   <span
-                    >${{ formatMoney(project.presupuesto_total) }}
+                    >${{ formatMoney(totalBudget) }}
                     <small>total</small></span
                   >
                 </div>
@@ -187,7 +187,7 @@
               <div class="budget-detail-row">
                 <div class="budget-detail-cell">
                   <div class="budget-detail-val">
-                    ${{ formatMoney(project.presupuesto_total) }}
+                    ${{ formatMoney(totalBudget) }}
                   </div>
                   <div class="budget-detail-sub">Total budget</div>
                 </div>
@@ -196,7 +196,7 @@
                     class="budget-detail-val"
                     :style="{ color: budgetColor }"
                   >
-                    ${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
+                    ${{ formatMoney(spentBudget) }}
                   </div>
                   <div class="budget-detail-sub">Spent</div>
                 </div>
@@ -448,6 +448,7 @@ const authStore = useAuthStore();
 
 const project = ref(null);
 const metrics = ref(null);
+const budgetSummary = ref(null);
 const tareas = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -589,8 +590,8 @@ const daysRemaining = computed(() => {
 });
 
 const budgetPct = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0);
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
+  const total = totalBudget.value;
+  const spent = spentBudget.value;
   if (!total) return 0;
   return Math.round((spent / total) * 100);
 });
@@ -602,10 +603,19 @@ const budgetColor = computed(() => {
 });
 
 const budgetRemaining = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0);
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
-  return total - spent;
+  if (budgetSummary.value) {
+    return Number(budgetSummary.value.disponible || 0);
+  }
+  return totalBudget.value - spentBudget.value;
 });
+
+const totalBudget = computed(() =>
+  Number((budgetSummary.value?.presupuesto_total ?? project.value?.presupuesto_total) || 0)
+);
+
+const spentBudget = computed(() =>
+  Number((budgetSummary.value?.total_gastado ?? metrics.value?.presupuesto?.total_real) || 0)
+);
 
 const progressSummary = computed(() => metrics.value?.progress ?? null);
 
@@ -702,6 +712,18 @@ async function loadMetrics() {
   metrics.value = data.data;
 }
 
+async function loadBudgetSummary() {
+  const res = await fetch(`/api/budgets/project/${projectId.value}/summary`, {
+    headers: authHeader(),
+  })
+  if (!res.ok) {
+    budgetSummary.value = null
+    return
+  }
+  const data = await res.json()
+  budgetSummary.value = data.data
+}
+
 async function loadTasks() {
   tasksLoading.value = true;
   try {
@@ -726,9 +748,10 @@ async function loadMembers() {
 async function loadAll() {
   loading.value = true;
   error.value = null;
+  budgetSummary.value = null;
   try {
     await loadProject()
-    await Promise.all([loadMetrics(), loadTasks(), loadMembers()])
+    await Promise.all([loadMetrics(), loadTasks(), loadMembers(), loadBudgetSummary()])
   } catch (err) {
     error.value = err.message;
   } finally {

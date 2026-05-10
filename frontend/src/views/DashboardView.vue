@@ -15,6 +15,23 @@ const budgetByProj = ref({}) // id_proyecto -> summary
 const overviewLoading = ref(false)
 const overviewError = ref(null)
 
+const CRITICAL_BUDGET_LEVELS = ['CRITICO', 'EXCEDIDO']
+const WARNING_BUDGET_LEVELS = ['PRECAUCION', 'ADVERTENCIA']
+
+function isCriticalBudgetLevel(level) {
+  return CRITICAL_BUDGET_LEVELS.includes(level)
+}
+
+function isWarningBudgetLevel(level) {
+  return WARNING_BUDGET_LEVELS.includes(level)
+}
+
+function budgetLevelClass(level) {
+  if (isCriticalBudgetLevel(level)) return 'critico'
+  if (isWarningBudgetLevel(level)) return 'advertencia'
+  return ''
+}
+
 function money(n) {
   const num = Number(n || 0)
   return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
@@ -30,10 +47,10 @@ const activeProjectsCount = computed(() =>
   projects.value.filter(p => p.estado === 'EN_PROGRESO').length
 )
 const overrunCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'CRITICO').length
+  Object.values(budgetByProj.value).filter(b => isCriticalBudgetLevel(b?.alerta_nivel)).length
 )
 const warningCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'ADVERTENCIA').length
+  Object.values(budgetByProj.value).filter(b => isWarningBudgetLevel(b?.alerta_nivel)).length
 )
 const spentPct = computed(() => {
   const t = totalAllocated.value
@@ -210,10 +227,10 @@ const worstProject = computed(() => {
 const aiInsight = computed(() => {
   if (!projects.value.length) return 'No projects yet. Create your first project to start tracking budgets and usage here.'
   const w = worstProject.value
-  if (w && w.level === 'CRITICO') {
+  if (w && isCriticalBudgetLevel(w.level)) {
     return `"${w.nombre}" has exceeded its allocated budget (${Math.round(w.pct * 100)}% used). Review expenses and consider reallocating funds.`
   }
-  if (w && w.level === 'ADVERTENCIA') {
+  if (w && isWarningBudgetLevel(w.level)) {
     return `"${w.nombre}" is approaching its limit (${Math.round(w.pct * 100)}% used). Monitor upcoming expenses closely.`
   }
   if (overrunCount.value === 0 && warningCount.value === 0 && totalAllocated.value > 0) {
@@ -792,11 +809,11 @@ watch(() => authStore.idEmpresaActual, () => {
                 <span class="project-bar-name">{{ row.nombre }}</span>
                 <span class="project-bar-meta">
                   <span>{{ money(row.spent) }} / {{ money(row.planned) }}</span>
-                  <span class="project-bar-pct" :class="row.level?.toLowerCase()">{{ row.pct }}%</span>
+                  <span class="project-bar-pct" :class="budgetLevelClass(row.level)">{{ row.pct }}%</span>
                 </span>
               </div>
               <div class="bar-bg">
-                <div class="bar-fill" :class="row.level?.toLowerCase()" :style="{ width: row.pct + '%' }"></div>
+                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: row.pct + '%' }"></div>
               </div>
             </div>
           </div>
