@@ -114,7 +114,7 @@
             </button>
           </div>
 
-          <!-- Section label -->
+          <!-- Section label + controls -->
           <div class="section-header">
             <span class="section-title">
               {{ activeTab === 'all' ? 'All Projects' :
@@ -122,11 +122,41 @@
                  activeTab === 'risk' ? 'At Risk' :
                  activeTab === 'completed' ? 'Completed' : 'Projects' }}
             </span>
-            <span v-if="loading" class="section-meta">Loading…</span>
-            <span v-else class="section-meta">
-              {{ filteredProjects.length }} projects · Click any project to view details
-            </span>
+            <div class="section-controls">
+              <div class="search-wrap">
+                <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M9 9l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                </svg>
+                <input
+                  v-model="searchQuery"
+                  class="search-input"
+                  placeholder="Buscar proyecto…"
+                  @keydown.escape="searchQuery = ''"
+                />
+                <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">×</button>
+              </div>
+              <div class="view-toggle">
+                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'" title="Vista grid">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
+                    <rect x="8" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
+                    <rect x="1" y="8" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
+                    <rect x="8" y="8" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
+                  </svg>
+                </button>
+                <button class="vt-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'" title="Vista lista">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
+          <p class="section-meta">
+            <span v-if="loading">Cargando…</span>
+            <span v-else>{{ filteredProjects.length }} proyecto{{ filteredProjects.length !== 1 ? 's' : '' }}</span>
+          </p>
 
           <!-- Skeleton -->
           <div v-if="loading" class="project-grid">
@@ -140,7 +170,99 @@
             </div>
           </div>
 
-          <!-- Grid -->
+          <!-- List view -->
+          <div v-else-if="viewMode === 'list'" class="project-list">
+            <div
+              v-for="project in filteredProjects"
+              :key="project.id_proyecto"
+              class="list-row"
+              @click="router.push(`/projects/${project.id_proyecto}`)"
+            >
+              <div class="lr-accent" :style="{ backgroundColor: statusColor(project.estado) }"></div>
+
+              <!-- Name + status + desc -->
+              <div class="lr-info">
+                <p class="lr-name">{{ project.nombre }}</p>
+                <div class="lr-meta">
+                  <span class="lr-dot" :style="{ backgroundColor: statusColor(project.estado) }"></span>
+                  <span class="lr-status-text" :style="{ color: statusColor(project.estado) }">{{ statusLabel(project.estado) }}</span>
+                  <span class="lr-meta-sep">·</span>
+                  <span class="lr-desc">{{ project.descripcion || 'Sin descripción.' }}</span>
+                </div>
+              </div>
+
+              <!-- Progress -->
+              <div class="lr-progress-col">
+                <div class="lr-bar-wrap">
+                  <div class="lr-bar-fill" :style="{ width: statusProgress(project.estado) + '%', backgroundColor: statusColor(project.estado) }"></div>
+                </div>
+                <span class="lr-pct">{{ statusProgress(project.estado) }}%</span>
+              </div>
+
+              <!-- Budget -->
+              <div class="lr-budget-col">
+                <span class="lr-budget-spent">${{ budgetSpent(project) }}</span>
+                <span class="lr-budget-sep">/</span>
+                <span>${{ budgetTotal(project) }}</span>
+              </div>
+
+              <!-- Due date -->
+              <div class="lr-due-col">{{ project.fecha_fin_planificada ? formatDate(project.fecha_fin_planificada) : '—' }}</div>
+
+              <!-- Quick actions -->
+              <div class="lr-actions" @click.stop>
+                <button class="lr-btn" title="Tareas" @click="router.push(`/projects/${project.id_proyecto}?tab=tasks`)">
+                  <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
+                    <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                </button>
+                <button class="lr-btn" title="Equipo" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                  <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
+                    <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
+                    <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
+                  </svg>
+                </button>
+                <button class="lr-btn" title="Presupuesto" @click="openBudget(project)">
+                  <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <button class="lr-btn" title="Reportes" @click="router.push({ name: 'reports', query: { project: project.id_proyecto } })">
+                  <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
+                    <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                    <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Role pill -->
+              <div class="lr-pill-col" @click.stop>
+                <Pill
+                  :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
+                  :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
+                  :circleColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                  :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                />
+              </div>
+            </div>
+            <div v-if="filteredProjects.length === 0" class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="6" y="10" width="28" height="22" rx="2" stroke="#2a2a2a" stroke-width="1.5"/>
+                <path d="M6 15h28M13 10V8M27 10V8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M13 22h14M13 27h8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
+              </svg>
+              <p class="empty-title">Sin proyectos aquí</p>
+              <p class="empty-sub">{{ searchQuery ? 'Ningún proyecto coincide con la búsqueda.' : 'Cambia el filtro o crea un nuevo proyecto.' }}</p>
+              <button v-if="authStore.canCreateProjects && !searchQuery" class="btn-primary empty-cta" @click="openModal">
+                <span>+ Nuevo proyecto</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Grid view -->
           <div v-else class="project-grid">
             <div
               v-for="project in filteredProjects"
@@ -269,8 +391,8 @@
                 <path d="M13 22h14M13 27h8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
               <p class="empty-title">Sin proyectos aquí</p>
-              <p class="empty-sub">Cambia el filtro o crea un nuevo proyecto.</p>
-              <button v-if="authStore.canCreateProjects" class="btn-primary empty-cta" @click="openModal">
+              <p class="empty-sub">{{ searchQuery ? 'Ningún proyecto coincide con la búsqueda.' : 'Cambia el filtro o crea un nuevo proyecto.' }}</p>
+              <button v-if="authStore.canCreateProjects && !searchQuery" class="btn-primary empty-cta" @click="openModal">
                 <span>+ Nuevo proyecto</span>
               </button>
             </div>
@@ -340,6 +462,8 @@ const router = useRouter()
 
 const authStore    = useAuthStore()
 const projects     = ref([])
+const searchQuery  = ref('')
+const viewMode     = ref('grid')
 const budgetByProj = ref({}) // id_proyecto -> summary
 const loading      = ref(true)
 const authError  = ref(false)
@@ -453,10 +577,13 @@ const tabs = computed(() => [
 ])
 
 const filteredProjects = computed(() => {
-  if (activeTab.value === 'active')    return projects.value.filter(p => p.estado === 'EN_PROGRESO')
-  if (activeTab.value === 'risk')      return projects.value.filter(p => ['PAUSADO', 'CANCELADO'].includes(p.estado))
-  if (activeTab.value === 'completed') return projects.value.filter(p => p.estado === 'COMPLETADO')
-  return projects.value
+  let list = projects.value
+  if (activeTab.value === 'active')         list = list.filter(p => p.estado === 'EN_PROGRESO')
+  else if (activeTab.value === 'risk')      list = list.filter(p => ['PAUSADO', 'CANCELADO'].includes(p.estado))
+  else if (activeTab.value === 'completed') list = list.filter(p => p.estado === 'COMPLETADO')
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q) list = list.filter(p => p.nombre.toLowerCase().includes(q))
+  return list
 })
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
@@ -567,14 +694,14 @@ async function submitProject() {
 .state-screen {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px;
-  background: rgba(10,10,10,0.82);
+  background: #0a0a0a;
 }
 .state-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #faf8f5; }
 .state-msg   { font-size: 14px; color: #888; }
 
 .main-panel {
   flex: 1; display: flex; flex-direction: column; gap: 32px;
-  padding: 48px 56px; background: rgba(10,10,10,0.82);
+  padding: 48px 56px; background: #0a0a0a;
 }
 
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }
@@ -606,13 +733,114 @@ async function submitProject() {
 .tab.active { color: #c9a962; border-bottom-color: #c9a962; }
 .tab:hover:not(.active) { color: #888; }
 
-.section-header { display: flex; justify-content: space-between; align-items: center; }
-.section-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
-.section-meta   { font-size: 12px; color: #555; }
+.section-header  { display: flex; justify-content: space-between; align-items: center; }
+.section-title   { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
+.section-meta    { font-size: 12px; color: #555; margin-top: -20px; }
+.section-controls { display: flex; align-items: center; gap: 10px; }
+
+/* Search */
+.search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid #1f1f1f; background: #0a0a0a;
+  padding: 6px 12px; transition: border-color 0.15s;
+}
+.search-wrap:focus-within { border-color: rgba(201,169,98,0.4); }
+.search-icon { color: #444; flex-shrink: 0; }
+.search-input {
+  background: transparent; border: none; outline: none;
+  color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 13px; width: 180px;
+}
+.search-input::placeholder { color: #444; }
+.search-clear {
+  background: none; border: none; color: #555; cursor: pointer;
+  font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
+}
+.search-clear:hover { color: #888; }
+
+/* View toggle */
+.view-toggle { display: flex; border: 1px solid #1f1f1f; }
+.vt-btn {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: #444; cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.vt-btn.active { color: #c9a962; background: rgba(201,169,98,0.08); }
+.vt-btn:hover:not(.active) { color: #888; }
 
 .project-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
 }
+
+/* List view */
+.project-list { display: flex; flex-direction: column; gap: 1px; background: #1a1a1a; }
+
+.list-row {
+  display: grid;
+  grid-template-columns: 3px 1fr 150px 190px 100px 140px 80px;
+  align-items: center;
+  background: #0f0f0f;
+  cursor: pointer;
+  min-height: 64px;
+  transition: background 0.15s;
+}
+.list-row:hover { background: #141414; }
+
+.lr-accent { height: 100%; }
+
+.lr-info { padding: 12px 20px; min-width: 0; }
+.lr-name {
+  font-family: 'Playfair Display', serif; font-size: 17px; color: #faf8f5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.15s; margin-bottom: 4px;
+}
+.list-row:hover .lr-name { color: #c9a962; }
+.lr-meta { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.lr-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.lr-status-text { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+.lr-meta-sep { color: #2a2a2a; font-size: 12px; flex-shrink: 0; }
+.lr-desc { font-size: 11px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.lr-progress-col {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px; border-left: 1px solid #1a1a1a;
+}
+.lr-bar-wrap {
+  flex: 1; height: 3px; background: #1f1f1f; border-radius: 2px; overflow: hidden;
+}
+.lr-bar-fill { height: 100%; transition: width 0.4s; }
+.lr-pct { font-size: 11px; color: #666; width: 26px; text-align: right; flex-shrink: 0; }
+
+.lr-budget-col {
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 16px; border-left: 1px solid #1a1a1a;
+  font-size: 12px; color: #555; white-space: nowrap; overflow: hidden;
+}
+.lr-budget-spent { color: #888; }
+.lr-budget-sep { color: #2a2a2a; }
+
+.lr-due-col {
+  padding: 0 16px; border-left: 1px solid #1a1a1a;
+  font-size: 12px; color: #555; white-space: nowrap;
+}
+
+.lr-actions {
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+  padding: 0 8px; border-left: 1px solid #1a1a1a;
+}
+.lr-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: #555; cursor: pointer;
+  transition: color 0.15s, background 0.15s; border-radius: 2px;
+}
+.lr-btn:hover { color: #c9a962; background: rgba(201,169,98,0.08); }
+
+.lr-pill-col {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px; border-left: 1px solid #1a1a1a;
+}
+.lr-pill-col :deep(.pill) { height: 20px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
+.lr-pill-col :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
+.lr-pill-col :deep(.dot) { display: none; }
 
 .project-card {
   background: #0f0f0f; border: 1px solid #1f1f1f;
@@ -773,7 +1001,7 @@ async function submitProject() {
 
 .context-panel {
   width: 320px; flex: none;
-  background: rgba(10,10,10,0.9); border-left: 1px solid #1a1a1a;
+  background: #0a0a0a; border-left: 1px solid #1a1a1a;
   padding: 48px 28px; display: flex; flex-direction: column; gap: 32px;
   position: sticky; top: 0; max-height: 100vh; overflow-y: auto;
 }
