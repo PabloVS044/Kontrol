@@ -121,6 +121,12 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    INSERT INTO public.rol (nombre_rol, descripcion)
+    VALUES ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma')
+    ON CONFLICT (nombre_rol) DO NOTHING
+  `)
+
+  await pool.query(`
     INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion)
     VALUES
       ('ver_inventario', 'View project inventory'),
