@@ -130,6 +130,12 @@
 
     </div>
 
+    <!-- Animación 3D conexión exitosa (solo en nuevas integraciones) -->
+    <ConnectionSuccessAnimation
+      v-if="showSuccessAnimation"
+      @done="showSuccessAnimation = false"
+    />
+
     <!-- Modal de configuración -->
     <BaseModal v-model="showModal" :title="modalIntegration?.nombre ?? ''" max-width="520px">
       <template v-if="modalIntegration">
@@ -185,6 +191,7 @@ import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
+import ConnectionSuccessAnimation from '../components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue'
 import { useAuthStore } from '../stores/auth'
 import {
   listIntegrations,
@@ -204,6 +211,9 @@ const activeCategory = ref('all')
 const togglingSlug = ref(null)
 const testingSlug = ref(null)
 const inlineFeedback = ref({})
+
+const showSuccessAnimation = ref(false)
+const isNewIntegration = ref(false)
 
 const showModal = ref(false)
 const modalIntegration = ref(null)
@@ -307,6 +317,7 @@ async function handleTest(integration) {
 
 async function openConfigure(integration) {
   modalIntegration.value = integration
+  isNewIntegration.value = !integration.is_configured
   modalError.value = null
   modalSuccess.value = null
   formCredentials.value = {}
@@ -339,7 +350,12 @@ async function handleSave() {
       integrations.value[idx].is_configured = true
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    setTimeout(() => { showModal.value = false }, 1200)
+    if (isNewIntegration.value) {
+      showModal.value = false
+      showSuccessAnimation.value = true
+    } else {
+      setTimeout(() => { showModal.value = false }, 1200)
+    }
   } catch (err) {
     modalError.value = err.message
   } finally {
@@ -846,4 +862,5 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
+
 </style>
