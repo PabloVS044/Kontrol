@@ -10,6 +10,7 @@ import {
   saveIntegrationConfig,
   toggleIntegration,
   testIntegration,
+  deleteIntegrationConfig,
 } from '../controllers/integrationController.js'
 
 const router = Router()
@@ -22,5 +23,6 @@ router.get('/:slug', ...admin, getIntegrationConfig)
 router.put('/:slug', ...admin, validate(saveIntegrationSchema), saveIntegrationConfig)
 router.patch('/:slug/toggle', ...admin, validate(toggleIntegrationSchema), toggleIntegration)
 router.post('/:slug/test', ...admin, testIntegration)
+router.delete('/:slug', ...admin, deleteIntegrationConfig)
 
 export default router
