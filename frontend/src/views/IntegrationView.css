@@ -20,9 +20,11 @@
 }
 
 .page-title {
-  font-family: 'Alfa Slab One', serif;
-  font-size: 32px;
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  font-weight: 400;
   color: #faf8f5;
+  line-height: 1.1;
   margin: 0 0 6px;
 }
 
