@@ -16,6 +16,25 @@ export const getAllCompanies = async (req, res) => {
   return res.json({ success: true, data: result.rows })
 }
 
+export const toggleCompanyStatus = async (req, res) => {
+  const { id } = req.params
+  const { activo } = req.body
+
+  const result = await pool.query(
+    `UPDATE public.empresa
+     SET activo = $1
+     WHERE id_empresa = $2
+     RETURNING id_empresa, nombre, activo`,
+    [activo, id]
+  )
+
+  if (!result.rows.length) {
+    return res.status(404).json({ success: false, message: 'Company not found.' })
+  }
+
+  return res.json({ success: true, data: result.rows[0] })
+}
+
 export const getPlatformStats = async (req, res) => {
   const [usersResult, companiesResult, projectsResult, activeUsersResult] = await Promise.all([
     pool.query('SELECT COUNT(*) FROM public.usuario'),

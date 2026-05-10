@@ -38,7 +38,8 @@ CREATE TABLE public.empresa (
   industria character varying,
   telefono character varying,
   direccion text,
-  email character varying NOT NULL UNIQUE
+  email character varying NOT NULL UNIQUE,
+  activo boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE public.categoria (

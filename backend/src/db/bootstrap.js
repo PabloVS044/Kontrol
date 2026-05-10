@@ -2,6 +2,11 @@ import pool from './pool.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
+    ALTER TABLE public.empresa
+      ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
+  `)
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS public.empresa_invitacion (
       id_invitacion SERIAL PRIMARY KEY,
       id_empresa integer NOT NULL,
