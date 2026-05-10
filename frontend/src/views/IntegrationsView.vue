@@ -102,7 +102,7 @@
               </span>
             </div>
 
-            <!-- Acciones -->
+            <!-- Acciones primarias -->
             <div class="card-actions">
               <button
                 class="btn-configure"
@@ -120,6 +120,39 @@
               </button>
             </div>
 
+            <!-- Acciones secundarias -->
+            <div class="card-secondary-actions">
+              <button class="btn-how" @click="openTutorial(integration)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+                  <path d="M6.5 5.5v4M6.5 3.8v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                ¿Cómo conectar?
+              </button>
+
+              <template v-if="integration.is_configured">
+                <template v-if="confirmingDisconnect === integration.slug">
+                  <button
+                    class="btn-confirm-disconnect"
+                    :disabled="disconnectingSlug === integration.slug"
+                    @click="handleDisconnect(integration)"
+                  >
+                    {{ disconnectingSlug === integration.slug ? 'Cerrando…' : 'Sí, cerrar' }}
+                  </button>
+                  <button class="btn-cancel-disconnect" @click="confirmingDisconnect = null">
+                    Cancelar
+                  </button>
+                </template>
+                <button
+                  v-else
+                  class="btn-disconnect"
+                  @click="confirmingDisconnect = integration.slug"
+                >
+                  Cerrar conexión
+                </button>
+              </template>
+            </div>
+
             <!-- Feedback inline -->
             <p v-if="inlineFeedback[integration.slug]" class="inline-feedback" :class="inlineFeedback[integration.slug].type">
               {{ inlineFeedback[integration.slug].msg }}
@@ -135,6 +168,24 @@
       v-if="showSuccessAnimation"
       @done="showSuccessAnimation = false"
     />
+
+    <!-- Modal tutorial -->
+    <BaseModal v-model="showTutorial" :title="`Cómo conectar ${tutorialIntegration?.nombre ?? ''}`" max-width="500px">
+      <div class="tutorial-body" v-if="tutorialIntegration">
+        <p class="tutorial-intro">Sigue estos pasos para configurar la integración con {{ tutorialIntegration.nombre }}.</p>
+        <ol class="tutorial-steps">
+          <li v-for="(step, i) in tutorialSteps" :key="i" class="tutorial-step">
+            <span class="step-num">{{ i + 1 }}</span>
+            <span class="step-text">{{ step }}</span>
+          </li>
+        </ol>
+        <div class="tutorial-footer">
+          <button class="btn-configure" style="width:100%" @click="showTutorial = false; openConfigure(tutorialIntegration)">
+            Ir a configurar
+          </button>
+        </div>
+      </div>
+    </BaseModal>
 
     <!-- Modal de configuración -->
     <BaseModal v-model="showModal" :title="modalIntegration?.nombre ?? ''" max-width="520px">
@@ -199,6 +250,7 @@ import {
   saveIntegrationConfig,
   toggleIntegration,
   testIntegration,
+  deleteIntegrationConfig,
 } from '../services/integrations.js'
 
 const authStore = useAuthStore()
@@ -214,6 +266,12 @@ const inlineFeedback = ref({})
 
 const showSuccessAnimation = ref(false)
 const isNewIntegration = ref(false)
+
+const showTutorial = ref(false)
+const tutorialIntegration = ref(null)
+
+const confirmingDisconnect = ref(null)
+const disconnectingSlug = ref(null)
 
 const showModal = ref(false)
 const modalIntegration = ref(null)
@@ -370,6 +428,85 @@ function setFeedback(slug, type, msg) {
 
 function clearFeedback(slug) {
   delete inlineFeedback.value[slug]
+}
+
+// ── Tutorial ───────────────────────────────────────────────────────────────────
+
+const TUTORIALS = {
+  'slack': [
+    'Ve a api.slack.com/apps e inicia sesión con tu cuenta de Slack.',
+    'Crea una nueva app seleccionando "From scratch" y elige tu workspace.',
+    'En el menú lateral, ve a "Incoming Webhooks" y actívalo.',
+    'Haz clic en "Add New Webhook to Workspace" y selecciona el canal donde quieres recibir notificaciones.',
+    'Copia la URL del webhook generada (comienza con https://hooks.slack.com/...) y pégala en la configuración.',
+  ],
+  'sendgrid': [
+    'Inicia sesión en app.sendgrid.com con tu cuenta de SendGrid.',
+    'Ve a Settings → API Keys y haz clic en "Create API Key".',
+    'Ponle un nombre descriptivo y selecciona el permiso "Restricted Access" → "Mail Send: Full Access".',
+    'Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.',
+    'Pega la API Key y tu correo remitente en los campos de configuración.',
+  ],
+  'microsoft-teams': [
+    'Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.',
+    'Haz clic en "..." junto al nombre del canal y selecciona "Connectors".',
+    'Busca "Incoming Webhook" en la lista y haz clic en "Configure".',
+    'Ponle un nombre al conector, sube un ícono opcional y haz clic en "Create".',
+    'Copia la URL del webhook generada y pégala en la configuración de Kontrol.',
+  ],
+  'telegram': [
+    'Abre Telegram y busca el bot @BotFather.',
+    'Envía el comando /newbot y sigue las instrucciones para elegir nombre y usuario para tu bot.',
+    'BotFather te entregará un Bot Token. Cópialo y guárdalo.',
+    'Para obtener tu Chat ID: inicia una conversación con tu bot y luego consulta la API con el token o usa el bot @userinfobot.',
+    'Ingresa el Bot Token y el Chat ID en la configuración de Kontrol.',
+  ],
+  'twilio-sms': [
+    'Crea una cuenta en twilio.com o inicia sesión si ya tienes una.',
+    'En el Dashboard principal verás tu Account SID y Auth Token. Cópialos.',
+    'Ve a "Phone Numbers → Manage → Buy a number" para adquirir un número de Twilio desde donde se enviarán los SMS.',
+    'Ingresa el Account SID, Auth Token, el número de Twilio y el número de destino en la configuración.',
+  ],
+  'webhook': [
+    'Prepara el servidor o servicio externo que recibirá los eventos (debe ser accesible públicamente).',
+    'El endpoint debe aceptar peticiones POST con body en formato JSON.',
+    'Asegúrate de usar HTTPS para mayor seguridad.',
+    'Copia la URL de tu endpoint y pégala en el campo URL de la configuración.',
+    'Kontrol enviará un evento POST cada vez que ocurra una acción relevante en tu empresa.',
+  ],
+}
+
+const tutorialSteps = computed(() => {
+  if (!tutorialIntegration.value) return []
+  return TUTORIALS[tutorialIntegration.value.slug] ?? [
+    'Obtén las credenciales desde la plataforma de ' + tutorialIntegration.value.nombre + '.',
+    'Cópialas e ingrésalas en el formulario de configuración de Kontrol.',
+    'Guarda los cambios y usa "Probar conexión" para verificar que todo funciona.',
+  ]
+})
+
+function openTutorial(integration) {
+  tutorialIntegration.value = integration
+  showTutorial.value = true
+}
+
+async function handleDisconnect(integration) {
+  disconnectingSlug.value = integration.slug
+  try {
+    await deleteIntegrationConfig(...authArgs(), integration.slug)
+    const idx = integrations.value.findIndex((i) => i.slug === integration.slug)
+    if (idx !== -1) {
+      integrations.value[idx].is_configured = false
+      integrations.value[idx].status = 'inactive'
+      integrations.value[idx].updated_at = new Date().toISOString()
+    }
+    confirmingDisconnect.value = null
+    setFeedback(integration.slug, 'success', 'Conexión cerrada correctamente.')
+  } catch (err) {
+    setFeedback(integration.slug, 'error', err.message)
+  } finally {
+    disconnectingSlug.value = null
+  }
 }
 
 // ── Icon components ────────────────────────────────────────────────────────────
@@ -861,6 +998,142 @@ onMounted(() => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+/* ── Acciones secundarias ── */
+.card-secondary-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-how {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.btn-how:hover {
+  color: #888;
+}
+
+.btn-disconnect {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.btn-disconnect:hover {
+  color: #fb7185;
+}
+
+.btn-confirm-disconnect {
+  margin-left: auto;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  color: #fb7185;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-confirm-disconnect:hover:not(:disabled) {
+  background: rgba(251, 113, 133, 0.18);
+}
+
+.btn-confirm-disconnect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel-disconnect {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-cancel-disconnect:hover {
+  border-color: #444;
+  color: #aaa;
+}
+
+/* ── Tutorial modal ── */
+.tutorial-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tutorial-intro {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.tutorial-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tutorial-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(202, 168, 96, 0.1);
+  border: 1px solid rgba(202, 168, 96, 0.25);
+  color: #caa860;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.step-text {
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.tutorial-footer {
+  padding-top: 4px;
+  border-top: 1px solid #1a1a1a;
 }
 
 </style>

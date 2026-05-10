@@ -51,3 +51,14 @@ export async function testIntegration(token, companyId, slug) {
   if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
   return data
 }
+
+export async function deleteIntegrationConfig(token, companyId, slug) {
+  const res = await fetch(`/api/integrations/${slug}`, {
+    method: 'DELETE',
+    headers: headers(token, companyId),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.message || `HTTP ${res.status}`)
+  }
+}
