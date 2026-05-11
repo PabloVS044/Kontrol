@@ -6,6 +6,14 @@
     </div>
     <div class="header-actions">
       <slot />
+      <button
+        v-if="showCreateButton"
+        class="create-btn"
+        :disabled="!canCreate"
+        @click="$emit('create')"
+      >
+        {{ createLabel }}
+      </button>
     </div>
   </div>
 </template>
@@ -13,8 +21,13 @@
 <script setup>
 defineProps({
   title: { type: String, required: true },
-  subtitle: { type: String, default: '' }
+  subtitle: { type: String, default: '' },
+  canCreate: { type: Boolean, default: false },
+  createLabel: { type: String, default: '+ New' },
+  showCreateButton: { type: Boolean, default: false },
 })
+
+defineEmits(['create'])
 </script>
 
 <style scoped>
@@ -48,6 +61,26 @@ defineProps({
   gap: 12px;
   align-items: center;
   margin-top: 8px;
+}
+
+.create-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #c9a962;
+  border: none;
+  color: #0a0a0a;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+
+.create-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 </style>
 
