@@ -24,6 +24,7 @@ export const useAuthStore = defineStore('auth', {
       const role = state.empresaActual?.rol ?? state.accessContext?.empresa?.rol_empresa
       return ['owner', 'admin', 'manager'].includes(role)
     },
+    isSuperUser:     (state) => state.user?.nombre_rol === 'super_user',
     // Legacy alias kept for any remaining references
     idEmpresa:       (state) => state.empresaActual?.id_empresa ?? null,
   },
