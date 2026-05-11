@@ -16,6 +16,10 @@ import ReportDetailView from '../views/ReportDetailView.vue'
 import ChatView from '../views/ChatView.vue'
 import AgentView from '../views/AgentView.vue'
 import IntegrationsView from '../views/IntegrationsView.vue'
+import AdminLayout from '../views/admin/AdminLayout.vue'
+import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
+import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
+import AdminUsersView from '../views/admin/AdminUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -119,6 +123,16 @@ const router = createRouter({
       component: IntegrationsView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      meta: { requiresAuth: true, requiresSuperUser: true },
+      children: [
+        { path: '',        name: 'admin-dashboard', component: AdminDashboardView },
+        { path: 'companies', name: 'admin-companies', component: AdminCompaniesView },
+        { path: 'users',     name: 'admin-users',     component: AdminUsersView },
+      ],
+    },
   ],
 })
 
@@ -133,8 +147,14 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Authenticated but heading to a route that needs an empresa context
-  if (authStore.isLoggedIn && to.meta.requiresEmpresa) {
+  // Super user belongs only in the admin panel
+  if (authStore.isSuperUser && to.meta.requiresAuth && !to.meta.requiresSuperUser) {
+    next({ name: 'admin-dashboard' })
+    return
+  }
+
+  // Authenticated but heading to a route that needs an empresa context (super_user bypasses this)
+  if (authStore.isLoggedIn && to.meta.requiresEmpresa && !authStore.isSuperUser) {
     // Reload empresas if the list is empty (e.g. after a hard refresh with no localStorage)
     if (!authStore.empresas.length && !authStore.empresaActual) {
       await authStore.loadEmpresas()
@@ -158,6 +178,12 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresInventoryAccess && !authStore.canViewInventory) {
     next({ name: 'dashboard' })
+    return
+  }
+
+  // Block non-super-user access to admin panel
+  if (to.meta.requiresSuperUser && !authStore.isSuperUser) {
+    next({ name: authStore.isLoggedIn ? 'dashboard' : 'login' })
     return
   }
 
