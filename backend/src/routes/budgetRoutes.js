@@ -5,6 +5,7 @@ import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
 import {
   expenseSchema,
+  fundingSchema,
   getActivitiesQuerySchema,
   activityIdParamSchema,
   projectIdParamSchema,
@@ -19,7 +20,11 @@ import {
   deleteActivity,
   getProjectBudgetSummary,
   getProjectBudgetTrend,
+  getProductsFinancials,
   registerExpense,
+  addProjectFunding,
+  getProjectFundingHistory,
+  getActivityExpenses,
 } from '../controllers/budgetController.js'
 
 const router = Router()
@@ -38,6 +43,35 @@ router.get(
   '/project/:projectId/trend',
   validate(projectIdParamSchema, 'params'),
   getProjectBudgetTrend
+)
+
+// Per-product purchase vs sale revenue derived from inventory movements.
+router.get(
+  '/project/:projectId/products-financial',
+  validate(projectIdParamSchema, 'params'),
+  getProductsFinancials
+)
+
+// Project funding adjustments (add/withdraw against allocated budget).
+router.get(
+  '/project/:projectId/funding',
+  validate(projectIdParamSchema, 'params'),
+  getProjectFundingHistory
+)
+
+router.post(
+  '/project/:projectId/funding',
+  requireCompanyRole('owner', 'admin'),
+  validate(projectIdParamSchema, 'params'),
+  validate(fundingSchema),
+  addProjectFunding
+)
+
+// Per-activity expense history (GASTO_ADMIN movements linked to the activity).
+router.get(
+  '/:id/expenses',
+  validate(activityIdParamSchema, 'params'),
+  getActivityExpenses
 )
 
 // Quick expense registration, cumulative by activity name.
