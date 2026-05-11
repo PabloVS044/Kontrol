@@ -8,18 +8,27 @@ export const expenseSchema = z.union([
   z.object({
     projectId: positiveProjectId,
     activityName: activityNameSchema,
-    expenseAmount: positiveAmount,
+    expenseAmount: z.number().positive('The expense amount must be greater than zero.'),
+    motivo: z.string().max(500).nullable().optional(),
   }),
   z.object({
     id_proyecto: positiveProjectId,
     nombre_actividad: activityNameSchema,
-    monto_gasto: positiveAmount,
+    monto_gasto: z.number().positive('The expense amount must be greater than zero.'),
+    motivo: z.string().max(500).nullable().optional(),
   }).transform((data) => ({
     projectId: data.id_proyecto,
     activityName: data.nombre_actividad,
     expenseAmount: data.monto_gasto,
+    motivo: data.motivo ?? null,
   })),
 ])
+
+export const fundingSchema = z.object({
+  monto: z.number()
+    .refine((v) => v !== 0, { message: 'The adjustment amount cannot be zero.' }),
+  motivo: z.string().max(500).nullable().optional(),
+})
 
 export const getActivitiesQuerySchema = z.union([
   z.object({

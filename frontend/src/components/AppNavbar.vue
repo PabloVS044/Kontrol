@@ -50,6 +50,7 @@
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
+        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">AI</RouterLink>
         <RouterLink
           v-if="isAdminOrOwner"
           class="appnav-link"
@@ -363,6 +364,15 @@ const closeMenu = () => {
 
 .appnav-link.router-link-active::after {
   transform: scaleX(1);
+}
+
+.appnav-link--agent {
+  color: #886911;
+}
+
+.appnav-link--agent:hover,
+.appnav-link--agent.router-link-active {
+  color: #c9a962;
 }
 
 /* ── End ── */
