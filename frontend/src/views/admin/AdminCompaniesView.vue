@@ -32,11 +32,12 @@
           <span>Email</span>
           <span class="col-center">Members</span>
           <span class="col-center">Projects</span>
+          <span class="col-center">Status</span>
         </div>
 
         <div v-for="c in sorted" :key="c.id_empresa" class="task-card list-row">
           <div class="list-name-col">
-            <span class="priority-bar"></span>
+            <span class="priority-bar" :class="c.activo ? '' : 'inactive'"></span>
             <div class="task-info">
               <span class="task-name">{{ c.nombre }}</span>
               <span class="task-id">ID {{ c.id_empresa }}</span>
@@ -48,6 +49,16 @@
           <span class="cell-email">{{ c.email }}</span>
           <span class="list-cell-num">{{ c.total_miembros }}</span>
           <span class="list-cell-num">{{ c.total_proyectos }}</span>
+          <div class="action-col">
+            <button
+              class="toggle-btn"
+              :class="c.activo ? 'btn-deactivate' : 'btn-activate'"
+              :disabled="toggling === c.id_empresa"
+              @click="toggleStatus(c)"
+            >
+              {{ c.activo ? 'Deactivate' : 'Activate' }}
+            </button>
+          </div>
         </div>
 
         <div v-if="!sorted.length" class="adm-empty">No companies found.</div>
@@ -66,6 +77,27 @@ const loading   = ref(true)
 const error     = ref(null)
 const sortKey   = ref('id')
 const sortDir   = ref('desc')
+const toggling  = ref(null)
+
+async function toggleStatus(company) {
+  toggling.value = company.id_empresa
+  try {
+    const res = await fetch(`/api/global/companies/${company.id_empresa}/status`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ activo: !company.activo }),
+    })
+    if (!res.ok) throw new Error()
+    company.activo = !company.activo
+  } catch {
+    // silently ignore — button returns to previous state
+  } finally {
+    toggling.value = null
+  }
+}
 
 const sortOptions = [
   { key: 'nombre',          label: 'Name' },
@@ -116,11 +148,20 @@ onMounted(async () => {
 
 .adm-header {  justify-content: space-between; padding-bottom: 2rem;}
 .adm-title {
-  font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 400; color: #faf8f5; line-height: 1.1;
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: var(--Text);
+  line-height: 1.1;
+  margin: 0;
 }
 
 .adm-subtitle {
-  padding-top: 0.5rem; font-size: 14px; color: #888;
+  padding-top: 0.5rem;
+  font-size: 14px;
+  color: var(--TextMuted);
+  font-family: 'DM Sans', sans-serif;
+  margin: 0;
 }
 
 .adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: 'DM Sans', sans-serif; }
@@ -172,7 +213,7 @@ onMounted(async () => {
 
 .list-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 90px 90px;
+  grid-template-columns: 2fr 1fr 2fr 90px 90px 110px;
   gap: 12px;
   padding: 8px 16px;
   font-size: 10px;
@@ -194,7 +235,7 @@ onMounted(async () => {
 
 .list-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 90px 90px;
+  grid-template-columns: 2fr 1fr 2fr 90px 90px 110px;
   gap: 12px;
   align-items: center;
   padding: 12px 16px;
@@ -214,6 +255,8 @@ onMounted(async () => {
   border-radius: 2px;
   background: var(--Primary);
 }
+
+.priority-bar.inactive { background: var(--TextDim); }
 
 .task-info {
   display: flex;
@@ -250,7 +293,7 @@ onMounted(async () => {
   padding: 3px 8px;
   background: rgba(96,165,250,0.08);
   border: 1px solid rgba(96,165,250,0.2);
-  color: #60a5fa;
+  color: var(--Tertiary, #60a5fa);
   font-size: 11px;
   font-weight: 600;
   font-family: 'DM Sans', sans-serif;
@@ -275,6 +318,29 @@ onMounted(async () => {
 }
 
 .col-center { text-align: center; }
+
+.action-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-btn {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border: 1px solid;
+  cursor: pointer;
+  background: transparent;
+  transition: opacity 0.15s;
+}
+
+.toggle-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-deactivate { color: var(--ErrorText); border-color: var(--ErrorText); }
+.btn-activate   { color: var(--SuccessText); border-color: var(--SuccessText); }
 
 .adm-empty {
   text-align: center;
