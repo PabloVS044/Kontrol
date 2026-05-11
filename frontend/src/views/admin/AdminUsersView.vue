@@ -45,10 +45,15 @@
             <span class="role-pill" :class="u.nombre_rol">{{ u.nombre_rol }}</span>
           </div>
           <span class="list-cell-num">{{ u.total_empresas }}</span>
-          <div class="status-col">
-            <span class="status-badge" :class="u.activo ? 'active' : 'inactive'">
-              {{ u.activo ? 'Active' : 'Inactive' }}
-            </span>
+          <div class="action-col">
+            <button
+              class="toggle-btn"
+              :class="u.activo ? 'btn-deactivate' : 'btn-activate'"
+              :disabled="toggling === u.id_usuario"
+              @click="toggleStatus(u)"
+            >
+              {{ u.activo ? 'Deactivate' : 'Activate' }}
+            </button>
           </div>
         </div>
 
@@ -68,6 +73,27 @@ const loading   = ref(true)
 const error     = ref(null)
 const sortKey   = ref('id')
 const sortDir   = ref('desc')
+const toggling  = ref(null)
+
+async function toggleStatus(user) {
+  toggling.value = user.id_usuario
+  try {
+    const res = await fetch(`/api/admin/users/${user.id_usuario}/status`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ activo: !user.activo }),
+    })
+    if (!res.ok) throw new Error()
+    user.activo = !user.activo
+  } catch {
+    // silently ignore
+  } finally {
+    toggling.value = null
+  }
+}
 
 const sortOptions = [
   { key: 'nombre',          label: 'Name' },
@@ -294,30 +320,28 @@ onMounted(async () => {
 
 .col-center { text-align: center; }
 
-.status-col {
+.action-col {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.status-badge {
-  display: inline-flex;
+.toggle-btn {
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
   font-family: 'DM Sans', sans-serif;
-  width: fit-content;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border: 1px solid;
+  cursor: pointer;
+  background: transparent;
+  transition: opacity 0.15s;
 }
 
-.status-badge.active {
-  color: var(--SuccessText);
-  background: var(--Success);
-}
+.toggle-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.status-badge.inactive {
-  color: var(--ErrorText);
-  background: var(--Error);
-}
+.btn-deactivate { color: var(--ErrorText); border-color: var(--ErrorText); }
+.btn-activate   { color: var(--SuccessText); border-color: var(--SuccessText); }
 
 .adm-empty {
   text-align: center;
