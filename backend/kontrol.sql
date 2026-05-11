@@ -354,3 +354,29 @@ SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'collaborator'
   AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes');
+
+-- Tabla de Equipos
+CREATE TABLE public.equipo (
+  id_equipo SERIAL PRIMARY KEY,
+  nombre character varying NOT NULL,
+  descripcion text,
+  id_empresa integer NOT NULL,
+  id_lider integer NOT NULL, 
+  activo boolean NOT NULL DEFAULT true,
+  creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT equipo_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+  CONSTRAINT equipo_id_lider_fkey FOREIGN KEY (id_lider) REFERENCES public.usuario(id_usuario)
+);
+
+-- Miembros del equipo (Relación muchos a muchos)
+CREATE TABLE public.equipo_usuario (
+  id_equipo integer NOT NULL,
+  id_usuario integer NOT NULL,
+  PRIMARY KEY (id_equipo, id_usuario),
+  CONSTRAINT eq_u_id_equipo_fkey FOREIGN KEY (id_equipo) REFERENCES public.equipo(id_equipo) ON DELETE CASCADE,
+  CONSTRAINT eq_u_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- Relación Proyecto - Equipo
+ALTER TABLE public.proyecto 
+ADD COLUMN id_equipo integer REFERENCES public.equipo(id_equipo) ON DELETE SET NULL;

@@ -197,4 +197,54 @@ export const ensureDatabaseSchema = async () => {
       ON public.movimiento_inventario (id_actividad)
       WHERE id_actividad IS NOT NULL
   `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.equipo (
+      id_equipo SERIAL PRIMARY KEY,
+      nombre character varying NOT NULL,
+      descripcion text,
+      id_empresa integer NOT NULL,
+      id_lider integer NOT NULL,
+      activo boolean NOT NULL DEFAULT true,
+      creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT equipo_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT equipo_id_lider_fkey
+        FOREIGN KEY (id_lider) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.equipo_usuario (
+      id_equipo integer NOT NULL,
+      id_usuario integer NOT NULL,
+      PRIMARY KEY (id_equipo, id_usuario),
+      CONSTRAINT eq_u_id_equipo_fkey
+        FOREIGN KEY (id_equipo) REFERENCES public.equipo(id_equipo) ON DELETE CASCADE,
+      CONSTRAINT eq_u_id_usuario_fkey
+        FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE
+    )
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.proyecto
+      ADD COLUMN IF NOT EXISTS id_equipo integer
+  `)
+
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'proyecto_id_equipo_fkey'
+          AND table_name = 'proyecto'
+      ) THEN
+        ALTER TABLE public.proyecto
+          ADD CONSTRAINT proyecto_id_equipo_fkey
+          FOREIGN KEY (id_equipo)
+          REFERENCES public.equipo(id_equipo)
+          ON DELETE SET NULL;
+      END IF;
+    END $$
+  `)
 }
