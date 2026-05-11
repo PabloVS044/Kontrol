@@ -3,6 +3,7 @@ import LoginView     from '../views/LoginView.vue'
 import RegisterView  from '../views/RegisterView.vue'
 import LandingPage   from '../views/LandingPage.vue'
 import InventoryPage from '../views/InventoryPage.vue'
+import ProductDetailView from '../views/ProductDetailView.vue'
 import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import OnboardingView from '../views/OnboardingView.vue'
@@ -13,7 +14,13 @@ import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 import ChatView from '../views/ChatView.vue'
-import MarketingHubView from '../views/MarketingHubView.vue'
+import TeamsView from '../views/TeamsView.vue'
+import AgentView from '../views/AgentView.vue'
+import IntegrationsView from '../views/IntegrationsView.vue'
+import AdminLayout from '../views/admin/AdminLayout.vue'
+import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
+import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
+import AdminUsersView from '../views/admin/AdminUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,9 +77,21 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {
+      path: '/teams',
+      name: 'teams',
+      component: TeamsView,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
+    },
+    {
       path: '/inventory',
       name: 'inventory',
       component: InventoryPage,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/inventory/:id',
+      name: 'inventory-detail',
+      component: ProductDetailView,
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
@@ -100,10 +119,26 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
-      path: '/marketing',
-      name: 'marketing',
-      component: MarketingHubView,
+      path: '/agent',
+      name: 'agent',
+      component: AgentView,
       meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/integrations',
+      name: 'integrations',
+      component: IntegrationsView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      meta: { requiresAuth: true, requiresSuperUser: true },
+      children: [
+        { path: '',        name: 'admin-dashboard', component: AdminDashboardView },
+        { path: 'companies', name: 'admin-companies', component: AdminCompaniesView },
+        { path: 'users',     name: 'admin-users',     component: AdminUsersView },
+      ],
     },
   ],
 })
@@ -119,8 +154,14 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Authenticated but heading to a route that needs an empresa context
-  if (authStore.isLoggedIn && to.meta.requiresEmpresa) {
+  // Super user belongs only in the admin panel
+  if (authStore.isSuperUser && to.meta.requiresAuth && !to.meta.requiresSuperUser) {
+    next({ name: 'admin-dashboard' })
+    return
+  }
+
+  // Authenticated but heading to a route that needs an empresa context (super_user bypasses this)
+  if (authStore.isLoggedIn && to.meta.requiresEmpresa && !authStore.isSuperUser) {
     // Reload empresas if the list is empty (e.g. after a hard refresh with no localStorage)
     if (!authStore.empresas.length && !authStore.empresaActual) {
       await authStore.loadEmpresas()
@@ -144,6 +185,17 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresInventoryAccess && !authStore.canViewInventory) {
     next({ name: 'dashboard' })
+    return
+  }
+
+  if (to.meta.requiresTeamManagement && !authStore.canManageTeams) {
+    next({ name: 'dashboard' })
+    return
+  }
+
+  // Block non-super-user access to admin panel
+  if (to.meta.requiresSuperUser && !authStore.isSuperUser) {
+    next({ name: authStore.isLoggedIn ? 'dashboard' : 'login' })
     return
   }
 

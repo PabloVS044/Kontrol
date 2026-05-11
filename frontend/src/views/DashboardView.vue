@@ -1,10 +1,9 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
-import DashboardAiInsight from '../components/dashboard/DashboardAiInsight.vue'
-import DashboardBudgetCharts from '../components/dashboard/DashboardBudgetCharts.vue'
-import DashboardKpiGrid from '../components/dashboard/DashboardKpiGrid.vue'
-import DashboardTrendChart from '../components/dashboard/DashboardTrendChart.vue'
+import Card from '../components/UI/Card/Card.vue'
+import Button from '../components/UI/Button/Button.vue'
+import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
 import { statusLabel } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
@@ -15,6 +14,23 @@ const projects = ref([])
 const budgetByProj = ref({}) // id_proyecto -> summary
 const overviewLoading = ref(false)
 const overviewError = ref(null)
+
+const CRITICAL_BUDGET_LEVELS = ['CRITICO', 'EXCEDIDO']
+const WARNING_BUDGET_LEVELS = ['PRECAUCION', 'ADVERTENCIA']
+
+function isCriticalBudgetLevel(level) {
+  return CRITICAL_BUDGET_LEVELS.includes(level)
+}
+
+function isWarningBudgetLevel(level) {
+  return WARNING_BUDGET_LEVELS.includes(level)
+}
+
+function budgetLevelClass(level) {
+  if (isCriticalBudgetLevel(level)) return 'critico'
+  if (isWarningBudgetLevel(level)) return 'advertencia'
+  return ''
+}
 
 function money(n) {
   const num = Number(n || 0)
@@ -31,10 +47,10 @@ const activeProjectsCount = computed(() =>
   projects.value.filter(p => p.estado === 'EN_PROGRESO').length
 )
 const overrunCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'CRITICO').length
+  Object.values(budgetByProj.value).filter(b => isCriticalBudgetLevel(b?.alerta_nivel)).length
 )
 const warningCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'ADVERTENCIA').length
+  Object.values(budgetByProj.value).filter(b => isWarningBudgetLevel(b?.alerta_nivel)).length
 )
 const spentPct = computed(() => {
   const t = totalAllocated.value
@@ -211,10 +227,10 @@ const worstProject = computed(() => {
 const aiInsight = computed(() => {
   if (!projects.value.length) return 'No projects yet. Create your first project to start tracking budgets and usage here.'
   const w = worstProject.value
-  if (w && w.level === 'CRITICO') {
+  if (w && isCriticalBudgetLevel(w.level)) {
     return `"${w.nombre}" has exceeded its allocated budget (${Math.round(w.pct * 100)}% used). Review expenses and consider reallocating funds.`
   }
-  if (w && w.level === 'ADVERTENCIA') {
+  if (w && isWarningBudgetLevel(w.level)) {
     return `"${w.nombre}" is approaching its limit (${Math.round(w.pct * 100)}% used). Monitor upcoming expenses closely.`
   }
   if (overrunCount.value === 0 && warningCount.value === 0 && totalAllocated.value > 0) {
@@ -649,35 +665,181 @@ watch(() => authStore.idEmpresaActual, () => {
         </p>
       </section>
 
-      <DashboardKpiGrid :stats="stats" />
+      <section class="kpi-grid">
+        <Card
+          v-for="stat in stats"
+          :key="stat.label"
+          :title="stat.value"
+          :subtitle="stat.label"
+          :back="stat.back"
+          titleColor="#faf8f5"
+          borderColor="#1f1f1f"
+          shadowColor="rgba(0,0,0,0.5)"
+        >
+          <Pill
+            :label="stat.trend"
+            :btnColor="stat.trendColor + '18'"
+            :circleColor="stat.trendColor"
+            :textColor="stat.trendColor"
+          />
+        </Card>
+      </section>
 
-      <DashboardAiInsight
-        :user-name="currentUserName"
-        :insight="aiInsight"
-        :project="worstProject"
-        @review-budget="$router.push({ name: 'budget', query: { project: $event.id } })"
-      />
+      <section class="ai-box">
+        <div class="ai-content">
+          <h3 class="ai-title">KONTROL AI ANALYSIS</h3>
+          <p class="ai-message">"{{ currentUserName }}, {{ aiInsight }}"</p>
+        </div>
+        <Button
+          v-if="worstProject"
+          label="REVIEW BUDGET"
+          @click="$router.push({ name: 'budget', query: { project: worstProject.id } })"
+        />
+      </section>
 
-      <DashboardTrendChart
-        v-model="trendProjectId"
-        :projects="trendEligibleProjects"
-        :loading="trendLoading"
-        :error="trendError"
-        :chart-data="chartData"
-        :chart="CHART"
-        :chart-area="chartArea"
-      />
+      <section class="chart-card trend-card">
+        <div class="trend-head">
+          <div>
+            <h3>Financial Performance Trend</h3>
+            <p class="timeline-hint">Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.</p>
+          </div>
+          <select
+            v-if="trendEligibleProjects.length"
+            v-model="trendProjectId"
+            class="trend-select"
+          >
+            <option v-for="p in trendEligibleProjects" :key="p.id_proyecto" :value="p.id_proyecto">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
 
-      <DashboardBudgetCharts
-        :projects="topBudgetProjects"
-        :loading="overviewLoading"
-        :error="overviewError"
-        :total-allocated="totalAllocated"
-        :total-spent="totalSpent"
-        :spent-pct="spentPct"
-        :project-count="projects.length"
-        :money="money"
-      />
+        <div v-if="trendLoading" class="chart-state">Loading trend…</div>
+        <div v-else-if="trendError" class="chart-state chart-state--error">{{ trendError }}</div>
+        <div v-else-if="!trendEligibleProjects.length" class="chart-state">
+          No projects with start date, end date and budget set yet.
+        </div>
+        <div v-else-if="!chartData" class="chart-state">
+          This project needs fecha_inicio, fecha_fin_planificada and presupuesto_total.
+        </div>
+        <svg v-else class="trend-svg" :viewBox="`0 0 ${CHART.w} ${CHART.h}`" preserveAspectRatio="xMidYMid meet">
+          <!-- Y grid -->
+          <g>
+            <line
+              v-for="t in chartData.yTicks"
+              :key="`yg-${t.label}`"
+              :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
+              :y1="t.y" :y2="t.y"
+              stroke="#1f1f1f" stroke-width="1"
+            />
+            <text
+              v-for="t in chartData.yTicks"
+              :key="`yt-${t.label}`"
+              :x="chartArea.x - 8" :y="t.y + 4"
+              fill="#666" font-size="10" text-anchor="end"
+              font-family="Manrope, sans-serif"
+            >{{ t.label }}</text>
+          </g>
+
+          <!-- X axis -->
+          <line
+            :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
+            :y1="chartArea.y + chartArea.h" :y2="chartArea.y + chartArea.h"
+            stroke="#2a2a2a" stroke-width="1"
+          />
+          <text
+            v-for="(t, i) in chartData.xTicks"
+            :key="`xt-${i}`"
+            :x="t.x" :y="chartArea.y + chartArea.h + 18"
+            fill="#888" font-size="10"
+            :text-anchor="i === 0 ? 'start' : i === chartData.xTicks.length - 1 ? 'end' : 'middle'"
+            font-family="Manrope, sans-serif"
+          >{{ t.label }}</text>
+
+          <!-- Planned line (dashed gold) -->
+          <path
+            :d="chartData.plannedPath"
+            fill="none" stroke="#c9a962" stroke-width="1.5"
+            stroke-dasharray="6,5" opacity="0.75"
+          />
+
+          <!-- Actual cumulative line -->
+          <path
+            :d="chartData.actualPath"
+            fill="none" stroke="#34d399" stroke-width="2"
+          />
+
+          <!-- Today marker -->
+          <template v-if="chartData.todayLine">
+            <line
+              :x1="chartData.todayLine.x" :x2="chartData.todayLine.x"
+              :y1="chartArea.y" :y2="chartArea.y + chartArea.h"
+              stroke="#faf8f5" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"
+            />
+            <text
+              :x="chartData.todayLine.x" :y="chartArea.y - 6"
+              fill="#faf8f5" font-size="10" text-anchor="middle" opacity="0.8"
+              font-family="Manrope, sans-serif"
+            >Today</text>
+          </template>
+
+          <!-- Legend -->
+          <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
+            <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f"/>
+            <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5"/>
+            <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Planned budget</text>
+            <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2"/>
+            <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Actual spend (movements)</text>
+          </g>
+        </svg>
+      </section>
+
+      <div class="charts-container">
+        <div class="chart-card main-chart">
+          <h3>Budget Usage by Project</h3>
+
+          <div v-if="overviewLoading" class="chart-state">Loading budgets…</div>
+          <div v-else-if="overviewError" class="chart-state chart-state--error">{{ overviewError }}</div>
+          <div v-else-if="!topBudgetProjects.length" class="chart-state">
+            No projects with budget data yet.
+          </div>
+          <div v-else class="project-bars">
+            <div v-for="row in topBudgetProjects" :key="row.id_proyecto" class="project-bar-row">
+              <div class="project-bar-head">
+                <span class="project-bar-name">{{ row.nombre }}</span>
+                <span class="project-bar-meta">
+                  <span>{{ money(row.spent) }} / {{ money(row.planned) }}</span>
+                  <span class="project-bar-pct" :class="budgetLevelClass(row.level)">{{ row.pct }}%</span>
+                </span>
+              </div>
+              <div class="bar-bg">
+                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: row.pct + '%' }"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card mini-chart">
+          <h3>Portfolio Snapshot</h3>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Allocated</span>
+            <span class="snapshot-value">{{ money(totalAllocated) }}</span>
+          </div>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Spent</span>
+            <span class="snapshot-value">{{ money(totalSpent) }}</span>
+          </div>
+          <div class="snapshot-row">
+            <span class="snapshot-label">Remaining</span>
+            <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
+          </div>
+          <div class="snapshot-bar bar-bg">
+            <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
+          </div>
+          <p class="snapshot-foot">{{ spentPct }}% of total budget used across {{ projects.length }} project{{ projects.length === 1 ? '' : 's' }}.</p>
+        </div>
+      </div>
+
       <section v-if="isOwner" class="company-collaborators">
         <div class="team-header">
           <div>
@@ -932,6 +1094,248 @@ watch(() => authStore.idEmpresaActual, () => {
   font-family: 'DM Sans', sans-serif;
   color: #666;
   margin-bottom: 40px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.access-waiting {
+  background: rgba(12,10,5,0.9);
+  border: 1px dashed var(--Primary);
+  padding: 28px 32px;
+  margin-bottom: 32px;
+}
+
+.access-waiting-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #faf8f5;
+  margin: 10px 0 8px;
+}
+
+.kpi-grid :deep(.card) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border-radius: 4px;
+  padding: 24px;
+  gap: 12px;
+}
+
+.kpi-grid :deep(.card-title) {
+  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.kpi-grid :deep(.card-subtitle) {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.ai-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(12,10,5,0.9);
+  border: 1px dashed var(--Primary);
+  padding: 40px;
+  margin-bottom: 40px;
+  gap: 32px;
+}
+
+.ai-title {
+  color: var(--Primary);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ai-message {
+  font-style: italic;
+  font-size: 1.05rem;
+  max-width: 800px;
+  line-height: 1.6;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ai-box :deep(.btn) {
+  background: var(--Primary);
+  color: #0a0a0a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border-radius: 0;
+  padding: 12px 24px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ai-box :deep(.btn:hover) {
+  filter: brightness(1.15);
+}
+
+.charts-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+.chart-card {
+  background: rgba(12,12,12,0.85);
+  border: 1px solid var(--Border);
+  padding: 30px;
+  flex: 1;
+}
+
+.chart-card h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.chart-placeholder {
+  margin-top: 20px;
+}
+
+.line-chart {
+  width: 100%;
+  height: 150px;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #444;
+  font-size: 10px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.bar-group {
+  margin-bottom: 20px;
+}
+
+.bar-group label {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 8px;
+  color: #888;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.bar-bg {
+  background: #111;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.bar-fill {
+  background: var(--Primary);
+  height: 100%;
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+
+.bar-fill.advertencia { background: #f59e0b; }
+.bar-fill.critico     { background: #fb7185; }
+
+.chart-state {
+  padding: 24px 0;
+  color: #8f8f8f;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+}
+.chart-state--error { color: #fecdd3; }
+
+.project-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 12px;
+}
+.project-bar-row { display: flex; flex-direction: column; gap: 6px; }
+.project-bar-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  color: #faf8f5;
+}
+.project-bar-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.project-bar-meta {
+  display: flex;
+  gap: 10px;
+  color: #8f8f8f;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.project-bar-pct { color: #c9a962; font-weight: 600; }
+.project-bar-pct.advertencia { color: #f59e0b; }
+.project-bar-pct.critico     { color: #fb7185; }
+
+.snapshot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Manrope', sans-serif;
+}
+.snapshot-label { color: #8f8f8f; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: #faf8f5; font-size: 15px; font-variant-numeric: tabular-nums; }
+.snapshot-value.gold { color: var(--Primary); }
+.snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
+.snapshot-foot { color: #8f8f8f; font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+
+.trend-card { margin-bottom: 20px; }
+.trend-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.timeline-hint {
+  color: #8f8f8f;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 4px 0 12px;
+  max-width: 520px;
+}
+.trend-select {
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: #faf8f5;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: 'Manrope', sans-serif;
+  min-width: 220px;
+}
+.trend-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 8px;
 }
 
 .company-collaborators {
@@ -1293,9 +1697,25 @@ watch(() => authStore.idEmpresaActual, () => {
     font-size: 2.2rem;
   }
 
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-container,
   .team-grid {
     flex-direction: column;
     grid-template-columns: 1fr;
+  }
+
+  .ai-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    gap: 20px;
+  }
+
+  .ai-box :deep(.btn) {
+    align-self: flex-start;
   }
 
   .team-header {
@@ -1318,6 +1738,24 @@ watch(() => authStore.idEmpresaActual, () => {
 
   .subtitle {
     margin-bottom: 24px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-grid :deep(.card-title) {
+    font-size: 1.6rem;
+  }
+
+  .ai-box {
+    padding: 20px;
+  }
+
+  .ai-message {
+    font-size: 0.95rem;
   }
 
   .company-collaborators {

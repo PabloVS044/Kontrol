@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs=require\\('fs'\\);const f='src/views/BudgetView.vue';const c=fs.readFileSync\\(f,'utf8'\\);console.log\\('Size:',c.length,'bytes'\\);const opens=\\(c.match\\(/<template>/g\\)||[]\\).length;const closes=\\(c.match\\(/<\\\\/template>/g\\)||[]\\).length;console.log\\('template tags:',opens,'/',closes\\);const sOpen=\\(c.match\\(/<script/g\\)||[]\\).length;const sClose=\\(c.match\\(/<\\\\/script>/g\\)||[]\\).length;console.log\\('script tags:',sOpen,'/',sClose\\);const stOpen=\\(c.match\\(/<style/g\\)||[]\\).length;const stClose=\\(c.match\\(/<\\\\/style>/g\\)||[]\\).length;console.log\\('style tags:',stOpen,'/',stClose\\);\")",
+      "Bash(npm run *)",
+      "Bash(node --check src/controllers/budgetController.js)",
+      "Bash(node --check src/controllers/projectMetricsController.js)",
+      "Bash(node --check src/routes/budgetRoutes.js)",
+      "Bash(node --check src/schemas/budgetSchema.js)"
+    ]
+  }
+}

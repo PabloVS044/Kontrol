@@ -91,6 +91,23 @@
             </div>
 
             <div class="pd-header-right">
+              <div class="pd-nav-actions">
+                <button class="pd-nav-btn" @click="goToBudget">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                  </svg>
+                  Presupuesto
+                </button>
+                <button class="pd-nav-btn" @click="goToReports">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                    <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
+                  </svg>
+                  Reportes
+                </button>
+              </div>
               <div class="budget-card">
                 <div class="budget-card-top">
                   <span class="budget-label">Budget</span>
@@ -101,11 +118,11 @@
                 <ProgressBar :pct="budgetPct" :color="budgetColor" />
                 <div class="budget-amounts">
                   <span
-                    >${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
+                    >${{ formatMoney(spentBudget) }}
                     <small>spent</small></span
                   >
                   <span
-                    >${{ formatMoney(project.presupuesto_total) }}
+                    >${{ formatMoney(totalBudget) }}
                     <small>total</small></span
                   >
                 </div>
@@ -187,7 +204,7 @@
               <div class="budget-detail-row">
                 <div class="budget-detail-cell">
                   <div class="budget-detail-val">
-                    ${{ formatMoney(project.presupuesto_total) }}
+                    ${{ formatMoney(totalBudget) }}
                   </div>
                   <div class="budget-detail-sub">Total budget</div>
                 </div>
@@ -196,7 +213,7 @@
                     class="budget-detail-val"
                     :style="{ color: budgetColor }"
                   >
-                    ${{ formatMoney(metrics?.presupuesto?.total_real || 0) }}
+                    ${{ formatMoney(spentBudget) }}
                   </div>
                   <div class="budget-detail-sub">Spent</div>
                 </div>
@@ -301,8 +318,24 @@
 
           <div v-if="tasksLoading" class="tasks-loading">Loading tasks…</div>
 
-          <div v-else-if="filteredTasks.length === 0" class="empty-state">
-            <p>No tasks match your filters.</p>
+          <div v-else-if="filteredTasks.length === 0" class="tab-empty">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <rect x="5" y="7" width="26" height="22" rx="2" stroke="#2a2a2a" stroke-width="1.4"/>
+              <path d="M5 13h26M12 7V5M24 7V5" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+              <path d="M11 20h14M11 24.5h8" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+            </svg>
+            <p class="tab-empty-title">
+              {{ taskFilterEstado || taskFilterPrioridad ? 'Sin tareas con este filtro' : 'Sin tareas aún' }}
+            </p>
+            <p class="tab-empty-sub">
+              {{ taskFilterEstado || taskFilterPrioridad ? 'Prueba cambiando los filtros.' : 'Crea la primera tarea del proyecto.' }}
+            </p>
+            <button v-if="canManageTasks && !taskFilterEstado && !taskFilterPrioridad" class="btn-primary" @click="openCreateTask">
+              <svg class="icon16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+              </svg>
+              Nueva tarea
+            </button>
           </div>
 
           <div v-else class="tasks-list">
@@ -345,8 +378,24 @@
             </button>
           </div>
 
-          <div v-if="filteredTeams.length === 0" class="empty-state">
-            <p>No teams match your filters.</p>
+          <div v-if="filteredTeams.length === 0" class="tab-empty">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <circle cx="13" cy="12" r="5" stroke="#2a2a2a" stroke-width="1.4"/>
+              <path d="M3 30c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+              <path d="M25 16c2.8.8 5 3.4 5 6.5M33 30c0-4-2.5-7.4-6-8.5" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+            </svg>
+            <p class="tab-empty-title">
+              {{ teamFilterNombre || teamFilterArea ? 'Sin equipos con este filtro' : 'Sin equipos aún' }}
+            </p>
+            <p class="tab-empty-sub">
+              {{ teamFilterNombre || teamFilterArea ? 'Prueba cambiando los filtros.' : 'Crea el primer equipo del proyecto.' }}
+            </p>
+            <button v-if="!teamFilterNombre && !teamFilterArea" class="btn-primary" @click="openCreateTeam">
+              <svg class="icon16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+              </svg>
+              Nuevo equipo
+            </button>
           </div>
 
           <div v-else class="tasks-list">
@@ -424,7 +473,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import AppNavbar       from '../components/AppNavbar.vue'
 import ProgressBar     from '../components/UI/ProgressBar/ProgressBar.vue'
 import ProgressTab     from '../components/DetailProject/ProgressTab.vue'
@@ -441,13 +490,15 @@ import {
 } from '../utils/statusHelpers.js'
 import './ProjectDetailsView.css'
 
-const route = useRoute();
+const route  = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
 const project = ref(null);
 const metrics = ref(null);
+const budgetSummary = ref(null);
 const tareas = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -589,8 +640,8 @@ const daysRemaining = computed(() => {
 });
 
 const budgetPct = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0);
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
+  const total = totalBudget.value;
+  const spent = spentBudget.value;
   if (!total) return 0;
   return Math.round((spent / total) * 100);
 });
@@ -602,10 +653,19 @@ const budgetColor = computed(() => {
 });
 
 const budgetRemaining = computed(() => {
-  const total = Number(project.value?.presupuesto_total || 0);
-  const spent = Number(metrics.value?.presupuesto?.total_real || 0);
-  return total - spent;
+  if (budgetSummary.value) {
+    return Number(budgetSummary.value.disponible || 0);
+  }
+  return totalBudget.value - spentBudget.value;
 });
+
+const totalBudget = computed(() =>
+  Number((budgetSummary.value?.presupuesto_total ?? project.value?.presupuesto_total) || 0)
+);
+
+const spentBudget = computed(() =>
+  Number((budgetSummary.value?.total_gastado ?? metrics.value?.presupuesto?.total_real) || 0)
+);
 
 const progressSummary = computed(() => metrics.value?.progress ?? null);
 
@@ -702,6 +762,18 @@ async function loadMetrics() {
   metrics.value = data.data;
 }
 
+async function loadBudgetSummary() {
+  const res = await fetch(`/api/budgets/project/${projectId.value}/summary`, {
+    headers: authHeader(),
+  })
+  if (!res.ok) {
+    budgetSummary.value = null
+    return
+  }
+  const data = await res.json()
+  budgetSummary.value = data.data
+}
+
 async function loadTasks() {
   tasksLoading.value = true;
   try {
@@ -726,9 +798,10 @@ async function loadMembers() {
 async function loadAll() {
   loading.value = true;
   error.value = null;
+  budgetSummary.value = null;
   try {
     await loadProject()
-    await Promise.all([loadMetrics(), loadTasks(), loadMembers()])
+    await Promise.all([loadMetrics(), loadTasks(), loadMembers(), loadBudgetSummary()])
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -872,6 +945,26 @@ async function handleProjectProgressUpdated() {
   await loadMetrics()
 }
 
-onMounted(loadAll)
+const TAB_NAMES = ['overview', 'tasks', 'team', 'members', 'progress']
+
+function applyTabFromQuery() {
+  const t = route.query.tab
+  if (t && TAB_NAMES.includes(t)) activeTab.value = t
+}
+
+onMounted(async () => {
+  await loadAll()
+  applyTabFromQuery()
+})
+
 watch(() => route.params.id, loadAll)
+watch(() => route.query.tab, applyTabFromQuery)
+
+function goToBudget() {
+  router.push({ name: 'budget', query: { project: projectId.value } })
+}
+
+function goToReports() {
+  router.push({ name: 'reports', query: { project: projectId.value } })
+}
 </script>

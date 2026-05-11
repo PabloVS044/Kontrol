@@ -2,6 +2,11 @@ import pool from './pool.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
+    ALTER TABLE public.empresa
+      ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
+  `)
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS public.empresa_invitacion (
       id_invitacion SERIAL PRIMARY KEY,
       id_empresa integer NOT NULL,
@@ -101,196 +106,29 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS public.marketing_campaign (
-      id_campaign SERIAL PRIMARY KEY,
-      id_empresa integer NOT NULL,
-      id_proyecto integer,
-      name character varying(160) NOT NULL,
-      description text,
-      objective character varying(240),
-      channel character varying(120),
-      status character varying(20) NOT NULL DEFAULT 'DRAFT',
-      start_date date,
-      end_date date,
-      created_by integer NOT NULL,
-      updated_by integer NOT NULL,
-      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT marketing_campaign_company_fkey
+    CREATE TABLE IF NOT EXISTS public.integracion (
+      id_integracion  SERIAL PRIMARY KEY,
+      id_empresa      INTEGER NOT NULL,
+      slug            VARCHAR(50) NOT NULL,
+      status          VARCHAR(20) NOT NULL DEFAULT 'inactive'
+                        CHECK (status IN ('active', 'inactive', 'error')),
+      credentials_enc TEXT,
+      config          JSONB NOT NULL DEFAULT '{}',
+      creado_por      INTEGER,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT integracion_empresa_fkey
         FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-      CONSTRAINT marketing_campaign_project_fkey
-        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
-      CONSTRAINT marketing_campaign_created_by_fkey
-        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_campaign_updated_by_fkey
-        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_campaign_status_check
-        CHECK (status IN ('DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED'))
+      CONSTRAINT integracion_usuario_fkey
+        FOREIGN KEY (creado_por) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT integracion_empresa_slug_unique UNIQUE (id_empresa, slug)
     )
   `)
 
   await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_campaign_company_name_idx
-      ON public.marketing_campaign (id_empresa, LOWER(name))
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_campaign_project_idx
-      ON public.marketing_campaign (id_proyecto)
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS public.marketing_item (
-      id_marketing_item SERIAL PRIMARY KEY,
-      id_empresa integer NOT NULL,
-      id_campaign integer,
-      id_proyecto integer,
-      title character varying(180) NOT NULL,
-      description text,
-      content text NOT NULL,
-      status character varying(20) NOT NULL DEFAULT 'DRAFT',
-      content_type character varying(20) NOT NULL,
-      marketing_date date NOT NULL DEFAULT CURRENT_DATE,
-      resource_link character varying(500),
-      origin_type character varying(20) NOT NULL DEFAULT 'MANUAL',
-      integration_provider character varying(80),
-      integration_reference character varying(180),
-      integration_metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
-      created_by integer NOT NULL,
-      updated_by integer NOT NULL,
-      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT marketing_item_company_fkey
-        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-      CONSTRAINT marketing_item_campaign_fkey
-        FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
-      CONSTRAINT marketing_item_project_fkey
-        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
-      CONSTRAINT marketing_item_created_by_fkey
-        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_item_updated_by_fkey
-        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_item_status_check
-        CHECK (status IN ('DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED')),
-      CONSTRAINT marketing_item_type_check
-        CHECK (content_type IN ('IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL')),
-      CONSTRAINT marketing_item_origin_check
-        CHECK (origin_type IN ('MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL'))
-    )
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_item_company_date_idx
-      ON public.marketing_item (id_empresa, marketing_date DESC, updated_at DESC)
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_item_campaign_idx
-      ON public.marketing_item (id_campaign)
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_item_project_idx
-      ON public.marketing_item (id_proyecto)
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS public.marketing_publication (
-      id_publication SERIAL PRIMARY KEY,
-      id_empresa integer NOT NULL,
-      id_campaign integer,
-      id_proyecto integer NOT NULL,
-      title character varying(180) NOT NULL,
-      caption text,
-      platform character varying(20) NOT NULL,
-      publication_format character varying(20) NOT NULL,
-      status character varying(20) NOT NULL DEFAULT 'PLANNED',
-      scheduled_for timestamp without time zone,
-      published_at timestamp without time zone,
-      asset_url character varying(500),
-      publication_url character varying(500),
-      notes text,
-      created_by integer NOT NULL,
-      updated_by integer NOT NULL,
-      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT marketing_publication_company_fkey
-        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-      CONSTRAINT marketing_publication_campaign_fkey
-        FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
-      CONSTRAINT marketing_publication_project_fkey
-        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
-      CONSTRAINT marketing_publication_created_by_fkey
-        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_publication_updated_by_fkey
-        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_publication_status_check
-        CHECK (status IN ('PLANNED', 'IN_DESIGN', 'SCHEDULED', 'PUBLISHED', 'PAUSED', 'CANCELLED')),
-      CONSTRAINT marketing_publication_platform_check
-        CHECK (platform IN ('FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TIKTOK', 'X', 'YOUTUBE', 'WHATSAPP', 'OTHER')),
-      CONSTRAINT marketing_publication_format_check
-        CHECK (publication_format IN ('POST', 'STORY', 'REEL', 'VIDEO', 'CAROUSEL', 'SHORT', 'AD', 'OTHER'))
-    )
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_publication_project_campaign_idx
-      ON public.marketing_publication (id_proyecto, id_campaign)
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_publication_status_idx
-      ON public.marketing_publication (status, platform)
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS public.marketing_publication_metric_snapshot (
-      id_metric_snapshot SERIAL PRIMARY KEY,
-      id_publication integer NOT NULL,
-      captured_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      impressions integer NOT NULL DEFAULT 0,
-      reach integer NOT NULL DEFAULT 0,
-      likes integer NOT NULL DEFAULT 0,
-      comments integer NOT NULL DEFAULT 0,
-      shares integer NOT NULL DEFAULT 0,
-      saves integer NOT NULL DEFAULT 0,
-      clicks integer NOT NULL DEFAULT 0,
-      leads integer NOT NULL DEFAULT 0,
-      followers_gained integer NOT NULL DEFAULT 0,
-      spend numeric(12,2) NOT NULL DEFAULT 0,
-      notes text,
-      created_by integer NOT NULL,
-      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT marketing_metric_snapshot_publication_fkey
-        FOREIGN KEY (id_publication) REFERENCES public.marketing_publication(id_publication) ON DELETE CASCADE,
-      CONSTRAINT marketing_metric_snapshot_created_by_fkey
-        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-      CONSTRAINT marketing_metric_snapshot_impressions_check CHECK (impressions >= 0),
-      CONSTRAINT marketing_metric_snapshot_reach_check CHECK (reach >= 0),
-      CONSTRAINT marketing_metric_snapshot_likes_check CHECK (likes >= 0),
-      CONSTRAINT marketing_metric_snapshot_comments_check CHECK (comments >= 0),
-      CONSTRAINT marketing_metric_snapshot_shares_check CHECK (shares >= 0),
-      CONSTRAINT marketing_metric_snapshot_saves_check CHECK (saves >= 0),
-      CONSTRAINT marketing_metric_snapshot_clicks_check CHECK (clicks >= 0),
-      CONSTRAINT marketing_metric_snapshot_leads_check CHECK (leads >= 0),
-      CONSTRAINT marketing_metric_snapshot_followers_check CHECK (followers_gained >= 0),
-      CONSTRAINT marketing_metric_snapshot_spend_check CHECK (spend >= 0)
-    )
-  `)
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS marketing_metric_snapshot_publication_time_idx
-      ON public.marketing_publication_metric_snapshot (id_publication, captured_at DESC, id_metric_snapshot DESC)
-  `)
-
-  await pool.query(`
-    INSERT INTO public.permiso_empresa (nombre_permiso, descripcion)
-    VALUES
-      ('ver_marketing', 'View the marketing center'),
-      ('gestionar_marketing', 'Create and edit marketing content')
-    ON CONFLICT (nombre_permiso) DO UPDATE
-    SET descripcion = EXCLUDED.descripcion
+    INSERT INTO public.rol (nombre_rol, descripcion)
+    VALUES ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma')
+    ON CONFLICT (nombre_rol) DO NOTHING
   `)
 
   await pool.query(`
@@ -305,5 +143,108 @@ export const ensureDatabaseSchema = async () => {
       ('crear_reportes', 'Create project reports')
     ON CONFLICT (nombre_permiso) DO UPDATE
     SET descripcion = EXCLUDED.descripcion
+  `)
+
+  // Audit log for top-up additions / withdrawals against a project's allocated
+  // budget. Each row records who changed it, by how much, and why.
+  // Conceptually distinct from movimiento_inventario (which is a cash-flow
+  // ledger) — this records changes to the project's capital allocation.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.presupuesto_ajuste (
+      id_ajuste SERIAL PRIMARY KEY,
+      id_proyecto integer NOT NULL,
+      monto numeric NOT NULL CHECK (monto <> 0),
+      motivo text,
+      fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      id_usuario integer NOT NULL,
+      CONSTRAINT presupuesto_ajuste_proyecto_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
+      CONSTRAINT presupuesto_ajuste_usuario_fkey
+        FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS presupuesto_ajuste_proyecto_idx
+      ON public.presupuesto_ajuste (id_proyecto, fecha DESC)
+  `)
+
+  // Reuse movimiento_inventario as the source of truth for activity expenses:
+  // GASTO_ADMIN movements can now optionally link to a presupuesto_actividad
+  // so the activity row can show its own expense history without a parallel
+  // table. id_producto stays NULL for these (admin/services spend).
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS id_actividad integer
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'mi_actividad_fkey'
+          AND table_name = 'movimiento_inventario'
+      ) THEN
+        ALTER TABLE public.movimiento_inventario
+          ADD CONSTRAINT mi_actividad_fkey
+          FOREIGN KEY (id_actividad)
+          REFERENCES public.presupuesto_actividad(id_actividad)
+          ON DELETE SET NULL;
+      END IF;
+    END $$
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_actividad_idx
+      ON public.movimiento_inventario (id_actividad)
+      WHERE id_actividad IS NOT NULL
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.equipo (
+      id_equipo SERIAL PRIMARY KEY,
+      nombre character varying NOT NULL,
+      descripcion text,
+      id_empresa integer NOT NULL,
+      id_lider integer NOT NULL,
+      activo boolean NOT NULL DEFAULT true,
+      creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT equipo_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT equipo_id_lider_fkey
+        FOREIGN KEY (id_lider) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.equipo_usuario (
+      id_equipo integer NOT NULL,
+      id_usuario integer NOT NULL,
+      PRIMARY KEY (id_equipo, id_usuario),
+      CONSTRAINT eq_u_id_equipo_fkey
+        FOREIGN KEY (id_equipo) REFERENCES public.equipo(id_equipo) ON DELETE CASCADE,
+      CONSTRAINT eq_u_id_usuario_fkey
+        FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE
+    )
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.proyecto
+      ADD COLUMN IF NOT EXISTS id_equipo integer
+  `)
+
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'proyecto_id_equipo_fkey'
+          AND table_name = 'proyecto'
+      ) THEN
+        ALTER TABLE public.proyecto
+          ADD CONSTRAINT proyecto_id_equipo_fkey
+          FOREIGN KEY (id_equipo)
+          REFERENCES public.equipo(id_equipo)
+          ON DELETE SET NULL;
+      END IF;
+    END $$
   `)
 }
