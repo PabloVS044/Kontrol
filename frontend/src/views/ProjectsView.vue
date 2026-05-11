@@ -185,8 +185,8 @@
                     <span :style="{ color: budgetColor(project) }">{{ budgetPct(project) }}% used</span>
                     <span v-if="budgetByProj[project.id_proyecto]?.alerta_nivel"
                           class="alert-pill"
-                          :class="budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'critical' : 'warn'">
-                      {{ budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'OVERRUN' : 'WARNING' }}
+                          :class="isCriticalBudgetLevel(budgetByProj[project.id_proyecto].alerta_nivel) ? 'critical' : 'warn'">
+                      {{ isCriticalBudgetLevel(budgetByProj[project.id_proyecto].alerta_nivel) ? 'OVERRUN' : 'WARNING' }}
                     </span>
                   </div>
                 </div>
@@ -340,6 +340,14 @@ const statusColor    = (e) => STATUS_COLOR[e]    || '#666'
 const statusProgress = (e) => STATUS_PROGRESS[e] ?? 0
 const isAdmin        = (p) => p.id_encargado === authStore.idUsuario
 
+function isCriticalBudgetLevel(level) {
+  return ['CRITICO', 'EXCEDIDO'].includes(level)
+}
+
+function isWarningBudgetLevel(level) {
+  return ['PRECAUCION', 'ADVERTENCIA'].includes(level)
+}
+
 // ── Budget helpers ────────────────────────────────────────────────────────────
 const money = (v) => Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const budgetTotal  = (p) => money(budgetByProj.value[p.id_proyecto]?.presupuesto_total ?? p.presupuesto_total)
@@ -347,8 +355,8 @@ const budgetSpent  = (p) => money(budgetByProj.value[p.id_proyecto]?.total_gasta
 const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_completado ?? 0
 const budgetColor  = (p) => {
   const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
-  if (lvl === 'CRITICO')     return '#fb7185'
-  if (lvl === 'ADVERTENCIA') return '#f97316'
+  if (isCriticalBudgetLevel(lvl)) return '#fb7185'
+  if (isWarningBudgetLevel(lvl)) return '#f97316'
   return '#c9a962'
 }
 function openBudget(p) {
