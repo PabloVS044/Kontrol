@@ -7,23 +7,6 @@ import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
 
-const ITEM_STATUS_OPTIONS = [
-  { value: 'DRAFT', label: 'Draft' },
-  { value: 'IN_REVIEW', label: 'In review' },
-  { value: 'READY', label: 'Ready' },
-  { value: 'SCHEDULED', label: 'Scheduled' },
-  { value: 'PUBLISHED', label: 'Published' },
-  { value: 'ARCHIVED', label: 'Archived' },
-]
-
-const CONTENT_TYPE_OPTIONS = [
-  { value: 'IDEA', label: 'Idea' },
-  { value: 'COPY', label: 'Copy' },
-  { value: 'POST', label: 'Post' },
-  { value: 'ASSET', label: 'Asset' },
-  { value: 'PROPOSAL', label: 'Proposal' },
-]
-
 const CAMPAIGN_STATUS_OPTIONS = [
   { value: 'DRAFT', label: 'Draft' },
   { value: 'ACTIVE', label: 'Active' },
@@ -31,53 +14,95 @@ const CAMPAIGN_STATUS_OPTIONS = [
   { value: 'COMPLETED', label: 'Completed' },
 ]
 
-const DEFAULT_ITEM_STATUS = 'DRAFT'
-const DEFAULT_ITEM_TYPE = 'IDEA'
-const DEFAULT_CAMPAIGN_STATUS = 'DRAFT'
+const PUBLICATION_STATUS_OPTIONS = [
+  { value: 'PLANNED', label: 'Planned' },
+  { value: 'IN_DESIGN', label: 'In design' },
+  { value: 'SCHEDULED', label: 'Scheduled' },
+  { value: 'PUBLISHED', label: 'Published' },
+  { value: 'PAUSED', label: 'Paused' },
+  { value: 'CANCELLED', label: 'Cancelled' },
+]
+
+const PLATFORM_OPTIONS = [
+  { value: 'FACEBOOK', label: 'Facebook' },
+  { value: 'INSTAGRAM', label: 'Instagram' },
+  { value: 'LINKEDIN', label: 'LinkedIn' },
+  { value: 'TIKTOK', label: 'TikTok' },
+  { value: 'X', label: 'X' },
+  { value: 'YOUTUBE', label: 'YouTube' },
+  { value: 'WHATSAPP', label: 'WhatsApp' },
+  { value: 'OTHER', label: 'Other' },
+]
+
+const FORMAT_OPTIONS = [
+  { value: 'POST', label: 'Post' },
+  { value: 'STORY', label: 'Story' },
+  { value: 'REEL', label: 'Reel' },
+  { value: 'VIDEO', label: 'Video' },
+  { value: 'CAROUSEL', label: 'Carousel' },
+  { value: 'SHORT', label: 'Short' },
+  { value: 'AD', label: 'Ad' },
+  { value: 'OTHER', label: 'Other' },
+]
 
 const loading = ref(false)
-const listError = ref('')
-const actionError = ref('')
+const errorMessage = ref('')
 const actionMessage = ref('')
-const generationError = ref('')
-const generatingDrafts = ref(false)
+const actionError = ref('')
+const metricsLoading = ref(false)
+const metricsError = ref('')
+
 const projects = ref([])
 const campaigns = ref([])
-const items = ref([])
-const generatedDrafts = ref([])
+const publications = ref([])
+const publicationMetrics = ref({
+  publicationId: null,
+  summary: { current: null, previous: null, delta: null },
+  snapshots: [],
+})
 
-const searchTerm = ref('')
-const selectedStatus = ref('ALL')
-const selectedContentType = ref('ALL')
-const selectedCampaignId = ref('ALL')
-const selectedProjectId = ref('ALL')
+const selectedProjectId = ref(null)
+const selectedCampaignId = ref(null)
+const selectedPublicationId = ref(null)
 
-const showItemModal = ref(false)
 const showCampaignModal = ref(false)
-const itemModalLoading = ref(false)
+const showPublicationModal = ref(false)
+const showMetricModal = ref(false)
 const campaignModalLoading = ref(false)
-const itemModalError = ref('')
+const publicationModalLoading = ref(false)
+const metricModalLoading = ref(false)
 const campaignModalError = ref('')
-const editingItem = ref(null)
+const publicationModalError = ref('')
+const metricModalError = ref('')
 const editingCampaign = ref(null)
+const editingPublication = ref(null)
+const editingMetricSnapshot = ref(null)
 
-function todayString() {
-  return new Date().toISOString().slice(0, 10)
+function dateInputValue(value) {
+  if (!value) return ''
+  return String(value).slice(0, 10)
 }
 
-function defaultItemForm() {
-  return {
-    title: '',
-    description: '',
-    content: '',
-    status: DEFAULT_ITEM_STATUS,
-    contentType: DEFAULT_ITEM_TYPE,
-    marketingDate: todayString(),
-    campaignId: '',
-    projectId: '',
-    resourceLink: '',
-    originType: 'MANUAL',
-  }
+function datetimeLocalNow() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+function datetimeInputValue(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
 function defaultCampaignForm() {
@@ -86,38 +111,56 @@ function defaultCampaignForm() {
     description: '',
     objective: '',
     channel: '',
-    status: DEFAULT_CAMPAIGN_STATUS,
-    projectId: '',
+    status: 'DRAFT',
+    projectId: selectedProjectId.value ? String(selectedProjectId.value) : '',
     startDate: '',
     endDate: '',
   }
 }
 
-function defaultGeneratorForm() {
+function defaultPublicationForm() {
   return {
-    objective: '',
-    audience: '',
-    tone: '',
-    channel: '',
-    callToAction: '',
-    productName: '',
-    contentType: DEFAULT_ITEM_TYPE,
-    quantity: 3,
-    campaignId: '',
-    projectId: '',
+    title: '',
+    caption: '',
+    platform: 'INSTAGRAM',
+    format: 'POST',
+    status: 'PLANNED',
+    campaignId: selectedCampaignId.value ? String(selectedCampaignId.value) : '',
+    projectId: selectedProjectId.value ? String(selectedProjectId.value) : '',
+    scheduledFor: '',
+    publishedAt: '',
+    assetUrl: '',
+    publicationUrl: '',
+    notes: '',
   }
 }
 
-const itemForm = ref(defaultItemForm())
+function defaultMetricForm() {
+  return {
+    capturedAt: datetimeLocalNow(),
+    impressions: 0,
+    reach: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    clicks: 0,
+    leads: 0,
+    followersGained: 0,
+    spend: 0,
+    notes: '',
+  }
+}
+
 const campaignForm = ref(defaultCampaignForm())
-const generatorForm = ref(defaultGeneratorForm())
+const publicationForm = ref(defaultPublicationForm())
+const metricForm = ref(defaultMetricForm())
 
 const canManageMarketing = computed(() => authStore.canManageMarketing)
 const canDeleteMarketing = computed(() => {
-  const companyRole = authStore.accessContext?.empresa?.rol_empresa
-  return companyRole === 'owner' || companyRole === 'admin'
+  const role = authStore.accessContext?.empresa?.rol_empresa
+  return role === 'owner' || role === 'admin'
 })
-const hasProjects = computed(() => projects.value.length > 0)
 
 function authHeaders() {
   const headers = {}
@@ -145,13 +188,30 @@ async function apiFetch(path, options = {}) {
 }
 
 function resetFeedback() {
-  actionError.value = ''
   actionMessage.value = ''
+  actionError.value = ''
 }
 
 function parseSelectId(value) {
-  if (value === '' || value === 'ALL' || value == null) return null
+  if (!value) return null
   return Number(value)
+}
+
+function formatInteger(value) {
+  return Number(value || 0).toLocaleString('en-US')
+}
+
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })
+}
+
+function formatPercent(value) {
+  return `${(Number(value || 0) * 100).toFixed(1)}%`
 }
 
 function formatDate(value) {
@@ -162,9 +222,9 @@ function formatDate(value) {
 }
 
 function formatDateTime(value) {
-  if (!value) return 'Unknown'
+  if (!value) return 'No timestamp'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Unknown'
+  if (Number.isNaN(date.getTime())) return 'No timestamp'
   return date.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -174,33 +234,20 @@ function formatDateTime(value) {
   })
 }
 
-function previewText(value, limit = 220) {
-  if (!value) return ''
-  if (value.length <= limit) return value
-  return `${value.slice(0, limit)}...`
-}
-
-function statusLabel(status) {
-  return ITEM_STATUS_OPTIONS.find((option) => option.value === status)?.label || status
-}
-
-function contentTypeLabel(contentType) {
-  return CONTENT_TYPE_OPTIONS.find((option) => option.value === contentType)?.label || contentType
-}
-
 function campaignStatusLabel(status) {
   return CAMPAIGN_STATUS_OPTIONS.find((option) => option.value === status)?.label || status
 }
 
-function statusTone(status) {
-  return {
-    DRAFT: 'neutral',
-    IN_REVIEW: 'warm',
-    READY: 'info',
-    SCHEDULED: 'brand',
-    PUBLISHED: 'success',
-    ARCHIVED: 'muted',
-  }[status] || 'neutral'
+function publicationStatusLabel(status) {
+  return PUBLICATION_STATUS_OPTIONS.find((option) => option.value === status)?.label || status
+}
+
+function platformLabel(platform) {
+  return PLATFORM_OPTIONS.find((option) => option.value === platform)?.label || platform
+}
+
+function formatLabel(format) {
+  return FORMAT_OPTIONS.find((option) => option.value === format)?.label || format
 }
 
 function campaignTone(status) {
@@ -212,13 +259,15 @@ function campaignTone(status) {
   }[status] || 'neutral'
 }
 
-function syncProjectFromCampaign(formRef) {
-  const campaignId = parseSelectId(formRef.value.campaignId)
-  if (!campaignId) return
-  const campaign = campaigns.value.find((entry) => entry.id === campaignId)
-  if (campaign?.projectId && !formRef.value.projectId) {
-    formRef.value.projectId = String(campaign.projectId)
-  }
+function publicationTone(status) {
+  return {
+    PLANNED: 'neutral',
+    IN_DESIGN: 'warm',
+    SCHEDULED: 'brand',
+    PUBLISHED: 'success',
+    PAUSED: 'muted',
+    CANCELLED: 'danger',
+  }[status] || 'neutral'
 }
 
 async function loadProjects() {
@@ -231,24 +280,68 @@ async function loadCampaigns() {
   campaigns.value = response.data || []
 }
 
-function buildItemsQuery() {
-  const params = new URLSearchParams()
-  if (selectedStatus.value !== 'ALL') params.set('status', selectedStatus.value)
-  if (selectedContentType.value !== 'ALL') params.set('contentType', selectedContentType.value)
-  if (selectedCampaignId.value !== 'ALL') params.set('campaignId', selectedCampaignId.value)
-  if (selectedProjectId.value !== 'ALL') params.set('projectId', selectedProjectId.value)
-  if (searchTerm.value.trim()) params.set('search', searchTerm.value.trim())
-  params.set('limit', '150')
-  return params.toString()
+async function loadPublications() {
+  const response = await apiFetch('/api/marketing/publications?limit=300')
+  publications.value = response.data || []
 }
 
-async function loadItems() {
-  const query = buildItemsQuery()
-  const response = await apiFetch(`/api/marketing/items${query ? `?${query}` : ''}`)
-  items.value = response.data || []
+async function loadSelectedPublicationMetrics() {
+  if (!selectedPublicationId.value) {
+    publicationMetrics.value = {
+      publicationId: null,
+      summary: { current: null, previous: null, delta: null },
+      snapshots: [],
+    }
+    metricsError.value = ''
+    return
+  }
+
+  metricsLoading.value = true
+  metricsError.value = ''
+
+  try {
+    const response = await apiFetch(`/api/marketing/publications/${selectedPublicationId.value}/metrics`)
+    publicationMetrics.value = {
+      publicationId: selectedPublicationId.value,
+      summary: response.data.summary,
+      snapshots: response.data.snapshots || [],
+    }
+  } catch (error) {
+    publicationMetrics.value = {
+      publicationId: selectedPublicationId.value,
+      summary: { current: null, previous: null, delta: null },
+      snapshots: [],
+    }
+    metricsError.value = error.message
+  } finally {
+    metricsLoading.value = false
+  }
 }
 
-async function refreshData() {
+function ensureSelections() {
+  const availableProjectIds = projects.value.map((project) => project.id_proyecto)
+  if (!availableProjectIds.includes(selectedProjectId.value)) {
+    selectedProjectId.value = availableProjectIds[0] ?? null
+  }
+
+  const projectCampaignIds = campaigns.value
+    .filter((campaign) => campaign.projectId === selectedProjectId.value)
+    .map((campaign) => campaign.id)
+
+  if (!projectCampaignIds.includes(selectedCampaignId.value)) {
+    selectedCampaignId.value = projectCampaignIds[0] ?? null
+  }
+
+  const campaignPublicationIds = publications.value
+    .filter((publication) => publication.campaignId === selectedCampaignId.value)
+    .map((publication) => publication.id)
+
+  if (!campaignPublicationIds.includes(selectedPublicationId.value)) {
+    selectedPublicationId.value = campaignPublicationIds[0] ?? null
+  }
+}
+
+async function refreshAll() {
   if (!authStore.token) return
 
   if (!authStore.empresas.length) {
@@ -258,53 +351,75 @@ async function refreshData() {
   if (!authStore.idEmpresaActual) return
 
   loading.value = true
-  listError.value = ''
+  errorMessage.value = ''
 
   try {
-    await Promise.all([loadProjects(), loadCampaigns(), loadItems()])
+    await Promise.all([loadProjects(), loadCampaigns(), loadPublications()])
+    ensureSelections()
+    await loadSelectedPublicationMetrics()
   } catch (error) {
-    listError.value = error.message
+    errorMessage.value = error.message
   } finally {
     loading.value = false
   }
 }
 
-const stats = computed(() => ({
-  total: items.value.length,
-  drafts: items.value.filter((item) => item.status === 'DRAFT').length,
-  scheduled: items.value.filter((item) => item.status === 'SCHEDULED').length,
-  published: items.value.filter((item) => item.status === 'PUBLISHED').length,
-}))
+const projectSummaries = computed(() =>
+  projects.value.map((project) => {
+    const projectCampaigns = campaigns.value.filter((campaign) => campaign.projectId === project.id_proyecto)
+    const projectPublications = publications.value.filter((publication) => publication.projectId === project.id_proyecto)
 
-const selectedCampaignName = computed(() => {
-  if (selectedCampaignId.value === 'ALL') return 'All campaigns'
-  return campaigns.value.find((campaign) => String(campaign.id) === String(selectedCampaignId.value))?.name || 'Campaign'
-})
+    return {
+      id: project.id_proyecto,
+      name: project.nombre,
+      description: project.descripcion || '',
+      campaignsCount: projectCampaigns.length,
+      publicationsCount: projectPublications.length,
+      scheduledCount: projectPublications.filter((publication) => publication.status === 'SCHEDULED').length,
+      publishedCount: projectPublications.filter((publication) => publication.status === 'PUBLISHED').length,
+      totals: projectPublications.reduce((accumulator, publication) => {
+        const metrics = publication.latestMetrics || {}
+        accumulator.impressions += Number(metrics.impressions || 0)
+        accumulator.reach += Number(metrics.reach || 0)
+        accumulator.clicks += Number(metrics.clicks || 0)
+        accumulator.leads += Number(metrics.leads || 0)
+        accumulator.engagements += Number(metrics.engagements || 0)
+        accumulator.spend += Number(metrics.spend || 0)
+        return accumulator
+      }, {
+        impressions: 0,
+        reach: 0,
+        clicks: 0,
+        leads: 0,
+        engagements: 0,
+        spend: 0,
+      }),
+    }
+  })
+)
 
-function openNewItem() {
-  editingItem.value = null
-  itemForm.value = defaultItemForm()
-  itemModalError.value = ''
-  showItemModal.value = true
-}
+const selectedProjectSummary = computed(() =>
+  projectSummaries.value.find((project) => project.id === selectedProjectId.value) || null
+)
 
-function openEditItem(item) {
-  editingItem.value = item
-  itemForm.value = {
-    title: item.title,
-    description: item.description || '',
-    content: item.content,
-    status: item.status,
-    contentType: item.contentType,
-    marketingDate: item.marketingDate || todayString(),
-    campaignId: item.campaignId ? String(item.campaignId) : '',
-    projectId: item.projectId ? String(item.projectId) : '',
-    resourceLink: item.resourceLink || '',
-    originType: item.originType || 'MANUAL',
-  }
-  itemModalError.value = ''
-  showItemModal.value = true
-}
+const campaignsBySelectedProject = computed(() =>
+  campaigns.value.filter((campaign) => campaign.projectId === selectedProjectId.value)
+)
+
+const selectedCampaign = computed(() =>
+  campaignsBySelectedProject.value.find((campaign) => campaign.id === selectedCampaignId.value) || null
+)
+
+const publicationsBySelectedCampaign = computed(() =>
+  publications.value.filter((publication) => publication.campaignId === selectedCampaignId.value)
+)
+
+const selectedPublication = computed(() =>
+  publicationsBySelectedCampaign.value.find((publication) => publication.id === selectedPublicationId.value) || null
+)
+
+const metricSummary = computed(() => publicationMetrics.value.summary || { current: null, previous: null, delta: null })
+const metricSnapshots = computed(() => publicationMetrics.value.snapshots || [])
 
 function openNewCampaign() {
   editingCampaign.value = null
@@ -322,26 +437,65 @@ function openEditCampaign(campaign) {
     channel: campaign.channel || '',
     status: campaign.status,
     projectId: campaign.projectId ? String(campaign.projectId) : '',
-    startDate: campaign.startDate || '',
-    endDate: campaign.endDate || '',
+    startDate: dateInputValue(campaign.startDate),
+    endDate: dateInputValue(campaign.endDate),
   }
   campaignModalError.value = ''
   showCampaignModal.value = true
 }
 
-function itemPayloadFromForm() {
-  return {
-    title: itemForm.value.title,
-    description: itemForm.value.description || null,
-    content: itemForm.value.content,
-    status: itemForm.value.status,
-    contentType: itemForm.value.contentType,
-    marketingDate: itemForm.value.marketingDate || null,
-    campaignId: parseSelectId(itemForm.value.campaignId),
-    projectId: parseSelectId(itemForm.value.projectId),
-    resourceLink: itemForm.value.resourceLink || null,
-    originType: itemForm.value.originType || 'MANUAL',
+function openNewPublication() {
+  editingPublication.value = null
+  publicationForm.value = defaultPublicationForm()
+  publicationModalError.value = ''
+  showPublicationModal.value = true
+}
+
+function openEditPublication(publication) {
+  editingPublication.value = publication
+  publicationForm.value = {
+    title: publication.title,
+    caption: publication.caption || '',
+    platform: publication.platform,
+    format: publication.format,
+    status: publication.status,
+    campaignId: publication.campaignId ? String(publication.campaignId) : '',
+    projectId: publication.projectId ? String(publication.projectId) : '',
+    scheduledFor: datetimeInputValue(publication.scheduledFor),
+    publishedAt: datetimeInputValue(publication.publishedAt),
+    assetUrl: publication.assetUrl || '',
+    publicationUrl: publication.publicationUrl || '',
+    notes: publication.notes || '',
   }
+  publicationModalError.value = ''
+  showPublicationModal.value = true
+}
+
+function openNewMetricSnapshot() {
+  editingMetricSnapshot.value = null
+  metricForm.value = defaultMetricForm()
+  metricModalError.value = ''
+  showMetricModal.value = true
+}
+
+function openEditMetricSnapshot(snapshot) {
+  editingMetricSnapshot.value = snapshot
+  metricForm.value = {
+    capturedAt: datetimeInputValue(snapshot.capturedAt),
+    impressions: snapshot.impressions,
+    reach: snapshot.reach,
+    likes: snapshot.likes,
+    comments: snapshot.comments,
+    shares: snapshot.shares,
+    saves: snapshot.saves,
+    clicks: snapshot.clicks,
+    leads: snapshot.leads,
+    followersGained: snapshot.followersGained,
+    spend: snapshot.spend,
+    notes: snapshot.notes || '',
+  }
+  metricModalError.value = ''
+  showMetricModal.value = true
 }
 
 function campaignPayloadFromForm() {
@@ -357,30 +511,37 @@ function campaignPayloadFromForm() {
   }
 }
 
-async function submitItem() {
-  itemModalLoading.value = true
-  itemModalError.value = ''
+function publicationPayloadFromForm() {
+  return {
+    title: publicationForm.value.title,
+    caption: publicationForm.value.caption || null,
+    platform: publicationForm.value.platform,
+    format: publicationForm.value.format,
+    status: publicationForm.value.status,
+    campaignId: parseSelectId(publicationForm.value.campaignId),
+    projectId: parseSelectId(publicationForm.value.projectId),
+    scheduledFor: publicationForm.value.scheduledFor || null,
+    publishedAt: publicationForm.value.publishedAt || null,
+    assetUrl: publicationForm.value.assetUrl || null,
+    publicationUrl: publicationForm.value.publicationUrl || null,
+    notes: publicationForm.value.notes || null,
+  }
+}
 
-  try {
-    const path = editingItem.value
-      ? `/api/marketing/items/${editingItem.value.id}`
-      : '/api/marketing/items'
-
-    await apiFetch(path, {
-      method: editingItem.value ? 'PUT' : 'POST',
-      body: JSON.stringify(itemPayloadFromForm()),
-    })
-
-    actionMessage.value = editingItem.value
-      ? 'Marketing item updated.'
-      : 'Marketing item created.'
-
-    showItemModal.value = false
-    await Promise.all([loadItems(), loadCampaigns()])
-  } catch (error) {
-    itemModalError.value = error.message
-  } finally {
-    itemModalLoading.value = false
+function metricPayloadFromForm() {
+  return {
+    capturedAt: metricForm.value.capturedAt || null,
+    impressions: Number(metricForm.value.impressions || 0),
+    reach: Number(metricForm.value.reach || 0),
+    likes: Number(metricForm.value.likes || 0),
+    comments: Number(metricForm.value.comments || 0),
+    shares: Number(metricForm.value.shares || 0),
+    saves: Number(metricForm.value.saves || 0),
+    clicks: Number(metricForm.value.clicks || 0),
+    leads: Number(metricForm.value.leads || 0),
+    followersGained: Number(metricForm.value.followersGained || 0),
+    spend: Number(metricForm.value.spend || 0),
+    notes: metricForm.value.notes || null,
   }
 }
 
@@ -389,21 +550,19 @@ async function submitCampaign() {
   campaignModalError.value = ''
 
   try {
-    const path = editingCampaign.value
-      ? `/api/marketing/campaigns/${editingCampaign.value.id}`
-      : '/api/marketing/campaigns'
+    const response = await apiFetch(
+      editingCampaign.value ? `/api/marketing/campaigns/${editingCampaign.value.id}` : '/api/marketing/campaigns',
+      {
+        method: editingCampaign.value ? 'PUT' : 'POST',
+        body: JSON.stringify(campaignPayloadFromForm()),
+      }
+    )
 
-    await apiFetch(path, {
-      method: editingCampaign.value ? 'PUT' : 'POST',
-      body: JSON.stringify(campaignPayloadFromForm()),
-    })
-
-    actionMessage.value = editingCampaign.value
-      ? 'Campaign updated.'
-      : 'Campaign created.'
-
+    actionMessage.value = editingCampaign.value ? 'Campaign updated.' : 'Campaign created.'
     showCampaignModal.value = false
-    await Promise.all([loadCampaigns(), loadItems()])
+    selectedProjectId.value = response.data.projectId
+    selectedCampaignId.value = response.data.id
+    await refreshAll()
   } catch (error) {
     campaignModalError.value = error.message
   } finally {
@@ -411,172 +570,159 @@ async function submitCampaign() {
   }
 }
 
-async function deleteItem(item) {
-  if (!window.confirm(`Delete "${item.title}"?`)) return
-
-  resetFeedback()
+async function submitPublication() {
+  publicationModalLoading.value = true
+  publicationModalError.value = ''
 
   try {
-    await apiFetch(`/api/marketing/items/${item.id}`, { method: 'DELETE' })
-    actionMessage.value = 'Marketing item deleted.'
-    await Promise.all([loadItems(), loadCampaigns()])
+    const response = await apiFetch(
+      editingPublication.value ? `/api/marketing/publications/${editingPublication.value.id}` : '/api/marketing/publications',
+      {
+        method: editingPublication.value ? 'PUT' : 'POST',
+        body: JSON.stringify(publicationPayloadFromForm()),
+      }
+    )
+
+    actionMessage.value = editingPublication.value ? 'Publication updated.' : 'Publication created.'
+    showPublicationModal.value = false
+    selectedProjectId.value = response.data.projectId
+    selectedCampaignId.value = response.data.campaignId
+    selectedPublicationId.value = response.data.id
+    await refreshAll()
   } catch (error) {
-    actionError.value = error.message
+    publicationModalError.value = error.message
+  } finally {
+    publicationModalLoading.value = false
+  }
+}
+
+async function submitMetricSnapshot() {
+  if (!selectedPublicationId.value) return
+
+  metricModalLoading.value = true
+  metricModalError.value = ''
+
+  try {
+    await apiFetch(
+      editingMetricSnapshot.value
+        ? `/api/marketing/publications/${selectedPublicationId.value}/metrics/${editingMetricSnapshot.value.id}`
+        : `/api/marketing/publications/${selectedPublicationId.value}/metrics`,
+      {
+        method: editingMetricSnapshot.value ? 'PUT' : 'POST',
+        body: JSON.stringify(metricPayloadFromForm()),
+      }
+    )
+
+    actionMessage.value = editingMetricSnapshot.value ? 'Metric snapshot updated.' : 'Metric snapshot saved.'
+    showMetricModal.value = false
+    await Promise.all([loadCampaigns(), loadPublications(), loadSelectedPublicationMetrics()])
+  } catch (error) {
+    metricModalError.value = error.message
+  } finally {
+    metricModalLoading.value = false
   }
 }
 
 async function deleteCampaign(campaign) {
-  if (!window.confirm(`Delete campaign "${campaign.name}"? Linked items will stay but lose the campaign link.`)) return
-
+  if (!window.confirm(`Delete campaign "${campaign.name}"?`)) return
   resetFeedback()
 
   try {
     await apiFetch(`/api/marketing/campaigns/${campaign.id}`, { method: 'DELETE' })
-    if (String(selectedCampaignId.value) === String(campaign.id)) {
-      selectedCampaignId.value = 'ALL'
-    }
     actionMessage.value = 'Campaign deleted.'
-    await Promise.all([loadCampaigns(), loadItems()])
+    if (selectedCampaignId.value === campaign.id) {
+      selectedCampaignId.value = null
+    }
+    await refreshAll()
   } catch (error) {
     actionError.value = error.message
   }
 }
 
-async function generateDrafts() {
-  generatingDrafts.value = true
-  generationError.value = ''
-  generatedDrafts.value = []
-
-  try {
-    const response = await apiFetch('/api/marketing/generate', {
-      method: 'POST',
-      body: JSON.stringify({
-        objective: generatorForm.value.objective,
-        audience: generatorForm.value.audience || null,
-        tone: generatorForm.value.tone || null,
-        channel: generatorForm.value.channel || null,
-        callToAction: generatorForm.value.callToAction || null,
-        productName: generatorForm.value.productName || null,
-        contentType: generatorForm.value.contentType,
-        quantity: Number(generatorForm.value.quantity || 3),
-        campaignId: parseSelectId(generatorForm.value.campaignId),
-        projectId: parseSelectId(generatorForm.value.projectId),
-      }),
-    })
-
-    generatedDrafts.value = response.data || []
-  } catch (error) {
-    generationError.value = error.message
-  } finally {
-    generatingDrafts.value = false
-  }
-}
-
-function useDraft(draft) {
-  editingItem.value = null
-  itemForm.value = {
-    title: draft.title,
-    description: draft.description || '',
-    content: draft.content,
-    status: draft.status || DEFAULT_ITEM_STATUS,
-    contentType: draft.contentType || DEFAULT_ITEM_TYPE,
-    marketingDate: draft.marketingDate || todayString(),
-    campaignId: draft.campaignId ? String(draft.campaignId) : '',
-    projectId: draft.projectId ? String(draft.projectId) : '',
-    resourceLink: '',
-    originType: draft.originType || 'RULE_BASED',
-  }
-  itemModalError.value = ''
-  showItemModal.value = true
-}
-
-async function saveDraft(draft) {
+async function deletePublication(publication) {
+  if (!window.confirm(`Delete publication "${publication.title}"?`)) return
   resetFeedback()
 
   try {
-    await apiFetch('/api/marketing/items', {
-      method: 'POST',
-      body: JSON.stringify({
-        title: draft.title,
-        description: draft.description || null,
-        content: draft.content,
-        status: draft.status || DEFAULT_ITEM_STATUS,
-        contentType: draft.contentType || DEFAULT_ITEM_TYPE,
-        marketingDate: draft.marketingDate || todayString(),
-        campaignId: draft.campaignId ?? null,
-        projectId: draft.projectId ?? null,
-        originType: draft.originType || 'RULE_BASED',
-      }),
-    })
-
-    actionMessage.value = 'Generated draft saved.'
-    await Promise.all([loadItems(), loadCampaigns()])
+    await apiFetch(`/api/marketing/publications/${publication.id}`, { method: 'DELETE' })
+    actionMessage.value = 'Publication deleted.'
+    if (selectedPublicationId.value === publication.id) {
+      selectedPublicationId.value = null
+    }
+    await refreshAll()
   } catch (error) {
     actionError.value = error.message
   }
 }
 
-async function clearFilters() {
-  searchTerm.value = ''
-  selectedStatus.value = 'ALL'
-  selectedContentType.value = 'ALL'
-  selectedCampaignId.value = 'ALL'
-  selectedProjectId.value = 'ALL'
-  await loadItems()
+async function deleteMetricSnapshot(snapshot) {
+  if (!selectedPublicationId.value) return
+  if (!window.confirm('Delete this metric snapshot?')) return
+  resetFeedback()
+
+  try {
+    await apiFetch(`/api/marketing/publications/${selectedPublicationId.value}/metrics/${snapshot.id}`, { method: 'DELETE' })
+    actionMessage.value = 'Metric snapshot deleted.'
+    await Promise.all([loadCampaigns(), loadPublications(), loadSelectedPublicationMetrics()])
+  } catch (error) {
+    actionError.value = error.message
+  }
 }
 
-onMounted(refreshData)
+function selectProject(projectId) {
+  selectedProjectId.value = projectId
+}
 
-watch(() => authStore.idEmpresaActual, refreshData)
-watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectId], loadItems)
+function selectCampaign(campaignId) {
+  selectedCampaignId.value = campaignId
+}
+
+function selectPublication(publicationId) {
+  selectedPublicationId.value = publicationId
+}
+
+onMounted(refreshAll)
+
+watch(() => authStore.idEmpresaActual, refreshAll)
+
+watch(selectedProjectId, () => {
+  const projectCampaignIds = campaigns.value
+    .filter((campaign) => campaign.projectId === selectedProjectId.value)
+    .map((campaign) => campaign.id)
+
+  if (!projectCampaignIds.includes(selectedCampaignId.value)) {
+    selectedCampaignId.value = projectCampaignIds[0] ?? null
+  }
+})
+
+watch(selectedCampaignId, () => {
+  const publicationIds = publications.value
+    .filter((publication) => publication.campaignId === selectedCampaignId.value)
+    .map((publication) => publication.id)
+
+  if (!publicationIds.includes(selectedPublicationId.value)) {
+    selectedPublicationId.value = publicationIds[0] ?? null
+  }
+})
+
+watch(selectedPublicationId, loadSelectedPublicationMetrics)
 </script>
 
 <template>
   <div class="marketing-root">
     <AppNavbar />
 
-    <BaseModal v-model="showItemModal" :title="editingItem ? 'Edit marketing item' : 'New marketing item'" max-width="760px">
-      <form class="modal-form" @submit.prevent="submitItem">
+    <BaseModal v-model="showCampaignModal" :title="editingCampaign ? 'Edit campaign' : 'New campaign'" max-width="720px">
+      <form class="modal-form" @submit.prevent="submitCampaign">
         <div class="form-row">
           <div class="form-field">
-            <label>Title</label>
-            <input v-model="itemForm.title" type="text" required placeholder="Spring retention push" />
-          </div>
-          <div class="form-field">
-            <label>Date</label>
-            <input v-model="itemForm.marketingDate" type="date" />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label>Content type</label>
-            <select v-model="itemForm.contentType">
-              <option v-for="option in CONTENT_TYPE_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Status</label>
-            <select v-model="itemForm.status">
-              <option v-for="option in ITEM_STATUS_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label>Campaign</label>
-            <select v-model="itemForm.campaignId" @change="syncProjectFromCampaign(itemForm)">
-              <option value="">No campaign</option>
-              <option v-for="campaign in campaigns" :key="campaign.id" :value="String(campaign.id)">
-                {{ campaign.name }}
-              </option>
-            </select>
+            <label>Name</label>
+            <input v-model="campaignForm.name" type="text" required placeholder="Summer launch campaign" />
           </div>
           <div class="form-field">
             <label>Project</label>
-            <select v-model="itemForm.projectId" :disabled="!hasProjects">
-              <option value="">No project</option>
+            <select v-model="campaignForm.projectId" required>
+              <option value="" disabled>Select a project</option>
               <option v-for="project in projects" :key="project.id_proyecto" :value="String(project.id_proyecto)">
                 {{ project.nombre }}
               </option>
@@ -584,69 +730,27 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
           </div>
         </div>
 
-        <div class="form-field">
-          <label>Description</label>
-          <textarea v-model="itemForm.description" rows="2" placeholder="Short summary for the team" />
-        </div>
-
-        <div class="form-field">
-          <label>Content</label>
-          <textarea v-model="itemForm.content" rows="8" required placeholder="Draft copy, concept, resource notes, or proposal body" />
-        </div>
-
-        <div class="form-field">
-          <label>Resource link</label>
-          <input v-model="itemForm.resourceLink" type="text" placeholder="Optional asset or external reference URL" />
-        </div>
-
-        <p v-if="itemModalError" class="modal-error">{{ itemModalError }}</p>
-
-        <div class="modal-actions">
-          <Button label="Cancel" type="button" backColor="transparent" hoverBack="rgba(255,255,255,0.08)" @click="showItemModal = false" />
-          <Button :label="itemModalLoading ? 'Saving...' : (editingItem ? 'Save changes' : 'Create item')" type="submit" :disabled="itemModalLoading" />
-        </div>
-      </form>
-    </BaseModal>
-
-    <BaseModal v-model="showCampaignModal" :title="editingCampaign ? 'Edit campaign' : 'New campaign'" max-width="680px">
-      <form class="modal-form" @submit.prevent="submitCampaign">
         <div class="form-row">
-          <div class="form-field">
-            <label>Name</label>
-            <input v-model="campaignForm.name" type="text" required placeholder="Q3 lead generation" />
-          </div>
           <div class="form-field">
             <label>Status</label>
             <select v-model="campaignForm.status">
               <option v-for="option in CAMPAIGN_STATUS_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-row">
           <div class="form-field">
             <label>Channel</label>
-            <input v-model="campaignForm.channel" type="text" placeholder="Email, LinkedIn, paid social" />
-          </div>
-          <div class="form-field">
-            <label>Linked project</label>
-            <select v-model="campaignForm.projectId" :disabled="!hasProjects">
-              <option value="">No project</option>
-              <option v-for="project in projects" :key="project.id_proyecto" :value="String(project.id_proyecto)">
-                {{ project.nombre }}
-              </option>
-            </select>
+            <input v-model="campaignForm.channel" type="text" placeholder="Instagram + LinkedIn + paid support" />
           </div>
         </div>
 
         <div class="form-field">
           <label>Objective</label>
-          <input v-model="campaignForm.objective" type="text" placeholder="Drive demos, launch a new offer, increase retention" />
+          <input v-model="campaignForm.objective" type="text" placeholder="Generate awareness and demos for the new launch" />
         </div>
 
         <div class="form-field">
           <label>Description</label>
-          <textarea v-model="campaignForm.description" rows="4" placeholder="Brief for collaborators, context, and constraints" />
+          <textarea v-model="campaignForm.description" rows="4" placeholder="Brief, concept, and campaign context" />
         </div>
 
         <div class="form-row">
@@ -669,44 +773,178 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
       </form>
     </BaseModal>
 
+    <BaseModal v-model="showPublicationModal" :title="editingPublication ? 'Edit publication' : 'New publication'" max-width="820px">
+      <form class="modal-form" @submit.prevent="submitPublication">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Title</label>
+            <input v-model="publicationForm.title" type="text" required placeholder="Launch teaser week 1" />
+          </div>
+          <div class="form-field">
+            <label>Campaign</label>
+            <select v-model="publicationForm.campaignId" required>
+              <option value="" disabled>Select a campaign</option>
+              <option v-for="campaign in campaignsBySelectedProject" :key="campaign.id" :value="String(campaign.id)">
+                {{ campaign.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Platform</label>
+            <select v-model="publicationForm.platform">
+              <option v-for="option in PLATFORM_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Format</label>
+            <select v-model="publicationForm.format">
+              <option v-for="option in FORMAT_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Status</label>
+            <select v-model="publicationForm.status">
+              <option v-for="option in PUBLICATION_STATUS_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Project</label>
+            <select v-model="publicationForm.projectId" required>
+              <option v-for="project in projects" :key="project.id_proyecto" :value="String(project.id_proyecto)">
+                {{ project.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Scheduled for</label>
+            <input v-model="publicationForm.scheduledFor" type="datetime-local" />
+          </div>
+          <div class="form-field">
+            <label>Published at</label>
+            <input v-model="publicationForm.publishedAt" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Caption</label>
+          <textarea v-model="publicationForm.caption" rows="5" placeholder="Copy, CTA, hashtags, and notes for the social team" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Asset URL</label>
+            <input v-model="publicationForm.assetUrl" type="text" placeholder="Drive, Canva, Figma, or CDN link" />
+          </div>
+          <div class="form-field">
+            <label>Publication URL</label>
+            <input v-model="publicationForm.publicationUrl" type="text" placeholder="Link to the live post when published" />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Notes</label>
+          <textarea v-model="publicationForm.notes" rows="3" placeholder="Dependencies, review notes, or reminders" />
+        </div>
+
+        <p v-if="publicationModalError" class="modal-error">{{ publicationModalError }}</p>
+
+        <div class="modal-actions">
+          <Button label="Cancel" type="button" backColor="transparent" hoverBack="rgba(255,255,255,0.08)" @click="showPublicationModal = false" />
+          <Button :label="publicationModalLoading ? 'Saving...' : (editingPublication ? 'Save publication' : 'Create publication')" type="submit" :disabled="publicationModalLoading" />
+        </div>
+      </form>
+    </BaseModal>
+
+    <BaseModal v-model="showMetricModal" :title="editingMetricSnapshot ? 'Edit metric snapshot' : 'New metric snapshot'" max-width="900px">
+      <form class="modal-form" @submit.prevent="submitMetricSnapshot">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Captured at</label>
+            <input v-model="metricForm.capturedAt" type="datetime-local" />
+          </div>
+          <div class="form-field">
+            <label>Spend</label>
+            <input v-model.number="metricForm.spend" type="number" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="form-field">
+            <label>Impressions</label>
+            <input v-model.number="metricForm.impressions" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Reach</label>
+            <input v-model.number="metricForm.reach" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Likes</label>
+            <input v-model.number="metricForm.likes" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Comments</label>
+            <input v-model.number="metricForm.comments" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Shares</label>
+            <input v-model.number="metricForm.shares" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Saves</label>
+            <input v-model.number="metricForm.saves" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Clicks</label>
+            <input v-model.number="metricForm.clicks" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Leads</label>
+            <input v-model.number="metricForm.leads" type="number" min="0" />
+          </div>
+          <div class="form-field">
+            <label>Followers gained</label>
+            <input v-model.number="metricForm.followersGained" type="number" min="0" />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Notes</label>
+          <textarea v-model="metricForm.notes" rows="3" placeholder="Context for this snapshot, paid push, creative change, etc." />
+        </div>
+
+        <p v-if="metricModalError" class="modal-error">{{ metricModalError }}</p>
+
+        <div class="modal-actions">
+          <Button label="Cancel" type="button" backColor="transparent" hoverBack="rgba(255,255,255,0.08)" @click="showMetricModal = false" />
+          <Button :label="metricModalLoading ? 'Saving...' : (editingMetricSnapshot ? 'Save snapshot' : 'Add snapshot')" type="submit" :disabled="metricModalLoading" />
+        </div>
+      </form>
+    </BaseModal>
+
     <div class="marketing-page">
       <section class="hero-card">
         <div>
-          <p class="eyebrow">Marketing Center</p>
-          <h1>Plan, draft, and organize campaign content in one place.</h1>
+          <p class="eyebrow">Project Marketing</p>
+          <h1>Campaigns and social tracking, organized by project.</h1>
           <p class="hero-copy">
-            Store ideas, posts, assets, and proposals by workspace, campaign, or project. Draft generation is ready now and the data model is prepared for future AI or external publishing integrations.
+            Each project in the company can own its campaigns, each campaign can own its publications, and each publication can accumulate metric snapshots over time so the team can track real progress instead of static status notes.
           </p>
         </div>
 
         <div class="hero-actions">
-          <button v-if="canManageMarketing" class="primary-action" @click="openNewItem">New item</button>
-          <button v-if="canManageMarketing" class="ghost-action" @click="openNewCampaign">New campaign</button>
-          <span v-else class="read-only-pill">Read-only access</span>
+          <button v-if="canManageMarketing" class="primary-action" @click="openNewCampaign">New campaign</button>
+          <button v-if="canManageMarketing && selectedCampaignId" class="ghost-action" @click="openNewPublication">New publication</button>
+          <span v-else-if="!canManageMarketing" class="read-only-pill">Read-only access</span>
         </div>
-      </section>
-
-      <section class="stats-grid">
-        <article class="stat-card">
-          <span class="stat-label">Items</span>
-          <strong class="stat-value">{{ stats.total }}</strong>
-          <p class="stat-meta">All marketing records in this workspace</p>
-        </article>
-        <article class="stat-card">
-          <span class="stat-label">Draft queue</span>
-          <strong class="stat-value">{{ stats.drafts }}</strong>
-          <p class="stat-meta">Concepts and pieces waiting for review</p>
-        </article>
-        <article class="stat-card">
-          <span class="stat-label">Scheduled</span>
-          <strong class="stat-value">{{ stats.scheduled }}</strong>
-          <p class="stat-meta">Content with a planned publication date</p>
-        </article>
-        <article class="stat-card">
-          <span class="stat-label">Published</span>
-          <strong class="stat-value">{{ stats.published }}</strong>
-          <p class="stat-meta">Live pieces already recorded in Kontrol</p>
-        </article>
       </section>
 
       <div v-if="actionMessage || actionError" class="feedback-strip" :class="{ error: actionError }">
@@ -714,269 +952,288 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
         <button class="mini-action" @click="resetFeedback">Dismiss</button>
       </div>
 
-      <div class="marketing-grid">
+      <div class="marketing-layout">
         <aside class="sidebar">
           <section class="panel">
             <div class="panel-head">
               <div>
-                <p class="panel-kicker">Campaigns</p>
-                <h2>{{ selectedCampaignName }}</h2>
+                <p class="panel-kicker">Projects</p>
+                <h2>{{ projects.length }} active workspaces</h2>
               </div>
-              <button v-if="canManageMarketing" class="mini-action" @click="openNewCampaign">Add</button>
             </div>
 
-            <div class="campaign-list">
-              <button class="campaign-pill" :class="{ active: selectedCampaignId === 'ALL' }" @click="selectedCampaignId = 'ALL'">
-                <span>All campaigns</span>
-                <strong>{{ campaigns.length }}</strong>
-              </button>
+            <div v-if="loading" class="state-card compact">
+              <p>Loading projects...</p>
+            </div>
 
+            <div v-else-if="errorMessage" class="state-card compact error-state">
+              <p>{{ errorMessage }}</p>
+            </div>
+
+            <div v-else class="project-list">
               <button
-                v-for="campaign in campaigns"
-                :key="campaign.id"
-                class="campaign-pill"
-                :class="{ active: String(selectedCampaignId) === String(campaign.id) }"
-                @click="selectedCampaignId = String(campaign.id)"
+                v-for="project in projectSummaries"
+                :key="project.id"
+                class="project-card"
+                :class="{ active: selectedProjectId === project.id }"
+                @click="selectProject(project.id)"
               >
-                <span>{{ campaign.name }}</span>
-                <strong>{{ campaign.itemsCount }}</strong>
+                <div class="project-top">
+                  <strong>{{ project.name }}</strong>
+                  <span>{{ project.campaignsCount }} campaigns</span>
+                </div>
+                <div class="project-meta">
+                  <span>{{ project.publicationsCount }} posts</span>
+                  <span>{{ project.publishedCount }} published</span>
+                </div>
+                <div class="project-metrics">
+                  <span>Reach {{ formatInteger(project.totals.reach) }}</span>
+                  <span>Leads {{ formatInteger(project.totals.leads) }}</span>
+                </div>
               </button>
             </div>
-
-            <div v-if="campaigns.length === 0" class="subtle-empty">
-              <p>No campaigns yet.</p>
-              <p>Create one to group ideas and content under a shared objective.</p>
-            </div>
-          </section>
-
-          <section v-if="canManageMarketing" class="panel generator-panel">
-            <div class="panel-head">
-              <div>
-                <p class="panel-kicker">Starter Generator</p>
-                <h2>Generate draft ideas</h2>
-              </div>
-            </div>
-
-            <form class="generator-form" @submit.prevent="generateDrafts">
-              <div class="form-field">
-                <label>Objective</label>
-                <input v-model="generatorForm.objective" type="text" required placeholder="Increase qualified demos for the month" />
-              </div>
-
-              <div class="form-field">
-                <label>Audience</label>
-                <input v-model="generatorForm.audience" type="text" placeholder="Operations leads at growing companies" />
-              </div>
-
-              <div class="form-field">
-                <label>Tone</label>
-                <input v-model="generatorForm.tone" type="text" placeholder="Direct, confident, practical" />
-              </div>
-
-              <div class="form-row">
-                <div class="form-field">
-                  <label>Channel</label>
-                  <input v-model="generatorForm.channel" type="text" placeholder="LinkedIn" />
-                </div>
-                <div class="form-field">
-                  <label>Type</label>
-                  <select v-model="generatorForm.contentType">
-                    <option v-for="option in CONTENT_TYPE_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-field">
-                  <label>Campaign</label>
-                  <select v-model="generatorForm.campaignId" @change="syncProjectFromCampaign(generatorForm)">
-                    <option value="">No campaign</option>
-                    <option v-for="campaign in campaigns" :key="campaign.id" :value="String(campaign.id)">
-                      {{ campaign.name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-field">
-                  <label>Project</label>
-                  <select v-model="generatorForm.projectId" :disabled="!hasProjects">
-                    <option value="">No project</option>
-                    <option v-for="project in projects" :key="project.id_proyecto" :value="String(project.id_proyecto)">
-                      {{ project.nombre }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-field">
-                <label>CTA</label>
-                <input v-model="generatorForm.callToAction" type="text" placeholder="Book a call" />
-              </div>
-
-              <div class="form-row">
-                <div class="form-field">
-                  <label>Product or offer</label>
-                  <input v-model="generatorForm.productName" type="text" placeholder="Kontrol Marketing Center" />
-                </div>
-                <div class="form-field">
-                  <label>Variations</label>
-                  <input v-model.number="generatorForm.quantity" type="number" min="1" max="5" />
-                </div>
-              </div>
-
-              <p v-if="generationError" class="modal-error">{{ generationError }}</p>
-
-              <Button :label="generatingDrafts ? 'Generating...' : 'Generate drafts'" type="submit" :disabled="generatingDrafts" />
-            </form>
-          </section>
-
-          <section class="panel info-panel">
-            <p class="panel-kicker">Future-ready</p>
-            <h2>Prepared for AI and external channels</h2>
-            <ul class="info-list">
-              <li>Each record stores origin, campaign linkage, project linkage, and optional resource references.</li>
-              <li>Rule-based generation is live now and can be replaced by AI providers later without reshaping the UI.</li>
-              <li>Integration fields are already present for external publication or sync flows in future iterations.</li>
-            </ul>
           </section>
         </aside>
 
-        <main class="content-panel">
-          <section class="toolbar panel">
-            <div class="toolbar-row">
-              <div class="search-wrap">
-                <input v-model="searchTerm" type="text" placeholder="Search title, content, project, or campaign" @keyup.enter="loadItems" />
-                <button class="mini-action" @click="loadItems">Search</button>
-              </div>
-              <button class="ghost-action compact" @click="refreshData">Refresh</button>
-            </div>
-
-            <div class="filter-grid">
-              <select v-model="selectedStatus">
-                <option value="ALL">All statuses</option>
-                <option v-for="option in ITEM_STATUS_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
-
-              <select v-model="selectedContentType">
-                <option value="ALL">All types</option>
-                <option v-for="option in CONTENT_TYPE_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
-
-              <select v-model="selectedProjectId">
-                <option value="ALL">All projects</option>
-                <option v-for="project in projects" :key="project.id_proyecto" :value="String(project.id_proyecto)">
-                  {{ project.nombre }}
-                </option>
-              </select>
-
-              <button class="mini-action align-left" @click="clearFilters">Clear filters</button>
-            </div>
+        <main class="content-column">
+          <section class="stats-grid">
+            <article class="stat-card">
+              <span class="stat-label">Campaigns</span>
+              <strong class="stat-value">{{ selectedProjectSummary?.campaignsCount ?? 0 }}</strong>
+              <p class="stat-meta">Campaigns linked to this project</p>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Publications</span>
+              <strong class="stat-value">{{ selectedProjectSummary?.publicationsCount ?? 0 }}</strong>
+              <p class="stat-meta">Social pieces planned or published</p>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Reach</span>
+              <strong class="stat-value">{{ formatInteger(selectedProjectSummary?.totals.reach ?? 0) }}</strong>
+              <p class="stat-meta">Latest reported reach across publications</p>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Leads</span>
+              <strong class="stat-value">{{ formatInteger(selectedProjectSummary?.totals.leads ?? 0) }}</strong>
+              <p class="stat-meta">Accumulated leads attributed to posts</p>
+            </article>
           </section>
 
-          <section v-if="generatedDrafts.length" class="panel generated-panel">
+          <section class="panel">
             <div class="panel-head">
               <div>
-                <p class="panel-kicker">Generated output</p>
-                <h2>{{ generatedDrafts.length }} draft starters ready</h2>
+                <p class="panel-kicker">Campaigns for {{ selectedProjectSummary?.name || 'project' }}</p>
+                <h2>Marketing execution plan</h2>
               </div>
+              <button v-if="canManageMarketing" class="mini-action solid" @click="openNewCampaign">Add campaign</button>
             </div>
 
-            <div class="generated-grid">
-              <article v-for="draft in generatedDrafts" :key="draft.title + draft.content" class="generated-card">
-                <div class="generated-topline">
-                  <span class="type-chip">{{ contentTypeLabel(draft.contentType) }}</span>
-                  <span class="status-chip brand">{{ statusLabel(draft.status) }}</span>
-                </div>
-                <h3>{{ draft.title }}</h3>
-                <p>{{ draft.description }}</p>
-                <pre>{{ draft.content }}</pre>
-                <div class="generated-actions">
-                  <button class="mini-action" @click="useDraft(draft)">Use in editor</button>
-                  <button class="mini-action solid" @click="saveDraft(draft)">Save draft</button>
-                </div>
-              </article>
-            </div>
-          </section>
-
-          <section class="items-section">
-            <div v-if="loading" class="state-card">
-              <p>Loading marketing records...</p>
+            <div v-if="campaignsBySelectedProject.length === 0" class="state-card compact">
+              <p>No campaigns yet for this project.</p>
             </div>
 
-            <div v-else-if="listError" class="state-card error-state">
-              <p>{{ listError }}</p>
-              <button class="mini-action solid" @click="refreshData">Retry</button>
-            </div>
-
-            <div v-else-if="items.length === 0" class="state-card">
-              <p>No marketing items match the current filters.</p>
-              <button v-if="canManageMarketing" class="mini-action solid" @click="openNewItem">Create the first item</button>
-            </div>
-
-            <div v-else class="items-grid">
-              <article v-for="item in items" :key="item.id" class="item-card">
-                <div class="item-card-top">
-                  <div class="item-meta">
-                    <span class="type-chip">{{ contentTypeLabel(item.contentType) }}</span>
-                    <span class="status-chip" :class="statusTone(item.status)">{{ statusLabel(item.status) }}</span>
-                  </div>
-                  <span class="item-date">{{ formatDate(item.marketingDate) }}</span>
+            <div v-else class="campaign-grid">
+              <article
+                v-for="campaign in campaignsBySelectedProject"
+                :key="campaign.id"
+                class="campaign-card"
+                :class="{ active: selectedCampaignId === campaign.id }"
+                @click="selectCampaign(campaign.id)"
+              >
+                <div class="campaign-topline">
+                  <span class="status-chip" :class="campaignTone(campaign.status)">{{ campaignStatusLabel(campaign.status) }}</span>
+                  <span class="campaign-channel">{{ campaign.channel || 'Multi-channel' }}</span>
                 </div>
-
-                <h3>{{ item.title }}</h3>
-                <p class="item-description">{{ item.description || 'No description provided.' }}</p>
-                <pre class="item-content">{{ previewText(item.content) }}</pre>
-
-                <div class="association-row">
-                  <span v-if="item.campaignName" class="association-badge">Campaign: {{ item.campaignName }}</span>
-                  <span v-if="item.projectName" class="association-badge">Project: {{ item.projectName }}</span>
-                  <span class="association-badge">Origin: {{ item.originType }}</span>
+                <h3>{{ campaign.name }}</h3>
+                <p>{{ campaign.objective || campaign.description || 'No campaign brief defined yet.' }}</p>
+                <div class="campaign-stats">
+                  <span>{{ campaign.publicationsCount }} publications</span>
+                  <span>{{ campaign.publishedCount }} published</span>
+                  <span>{{ formatInteger(campaign.totals.reach) }} reach</span>
                 </div>
-
-                <div v-if="item.resourceLink" class="resource-row">
-                  <a :href="item.resourceLink" target="_blank" rel="noreferrer">Open resource</a>
-                </div>
-
-                <div class="item-footer">
-                  <div class="item-audit">
-                    <span>Updated by {{ item.updatedByName }}</span>
-                    <span>{{ formatDateTime(item.updatedAt) }}</span>
-                  </div>
-
-                  <div v-if="canManageMarketing" class="item-actions">
-                    <button class="mini-action" @click="openEditItem(item)">Edit</button>
-                    <button v-if="canDeleteMarketing" class="mini-action danger" @click="deleteItem(item)">Delete</button>
+                <div class="campaign-footer">
+                  <span>{{ campaign.startDate ? `${formatDate(campaign.startDate)} - ${formatDate(campaign.endDate)}` : 'No schedule set' }}</span>
+                  <div v-if="canManageMarketing" class="inline-actions">
+                    <button class="mini-action" @click.stop="openEditCampaign(campaign)">Edit</button>
+                    <button v-if="canDeleteMarketing" class="mini-action danger" @click.stop="deleteCampaign(campaign)">Delete</button>
                   </div>
                 </div>
               </article>
             </div>
           </section>
 
-          <section v-if="campaigns.length" class="panel campaign-management">
+          <section class="panel">
             <div class="panel-head">
               <div>
-                <p class="panel-kicker">Campaign directory</p>
-                <h2>{{ campaigns.length }} campaigns in this workspace</h2>
+                <p class="panel-kicker">Publications</p>
+                <h2>{{ selectedCampaign?.name || 'Select a campaign' }}</h2>
               </div>
+              <button v-if="canManageMarketing && selectedCampaignId" class="mini-action solid" @click="openNewPublication">Add publication</button>
             </div>
 
-            <div class="campaign-table">
-              <article v-for="campaign in campaigns" :key="campaign.id" class="campaign-row">
+            <div v-if="!selectedCampaignId" class="state-card compact">
+              <p>Select a campaign to manage its publication calendar.</p>
+            </div>
+
+            <div v-else-if="publicationsBySelectedCampaign.length === 0" class="state-card compact">
+              <p>No publications registered for this campaign yet.</p>
+            </div>
+
+            <div v-else class="publication-grid">
+              <article
+                v-for="publication in publicationsBySelectedCampaign"
+                :key="publication.id"
+                class="publication-card"
+                :class="{ active: selectedPublicationId === publication.id }"
+                @click="selectPublication(publication.id)"
+              >
+                <div class="publication-topline">
+                  <div class="chip-row">
+                    <span class="type-chip">{{ platformLabel(publication.platform) }}</span>
+                    <span class="type-chip">{{ formatLabel(publication.format) }}</span>
+                  </div>
+                  <span class="status-chip" :class="publicationTone(publication.status)">{{ publicationStatusLabel(publication.status) }}</span>
+                </div>
+                <h3>{{ publication.title }}</h3>
+                <p class="publication-caption">{{ publication.caption || publication.notes || 'No caption or notes yet.' }}</p>
+                <div class="publication-metrics">
+                  <span>Reach {{ formatInteger(publication.latestMetrics.reach) }}</span>
+                  <span>Clicks {{ formatInteger(publication.latestMetrics.clicks) }}</span>
+                  <span>Leads {{ formatInteger(publication.latestMetrics.leads) }}</span>
+                </div>
+                <div class="publication-footer">
+                  <span>{{ publication.scheduledFor ? `Scheduled ${formatDateTime(publication.scheduledFor)}` : 'No schedule set' }}</span>
+                  <div v-if="canManageMarketing" class="inline-actions">
+                    <button class="mini-action" @click.stop="openEditPublication(publication)">Edit</button>
+                    <button v-if="canDeleteMarketing" class="mini-action danger" @click.stop="deletePublication(publication)">Delete</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="metrics-layout">
+            <section class="panel metrics-main">
+              <div class="panel-head">
                 <div>
-                  <h3>{{ campaign.name }}</h3>
-                  <p>{{ campaign.description || campaign.objective || 'No extra brief added yet.' }}</p>
-                  <div class="association-row">
-                    <span v-if="campaign.projectName" class="association-badge">Project: {{ campaign.projectName }}</span>
-                    <span class="association-badge">Items: {{ campaign.itemsCount }}</span>
-                    <span class="status-chip" :class="campaignTone(campaign.status)">{{ campaignStatusLabel(campaign.status) }}</span>
+                  <p class="panel-kicker">Performance tracking</p>
+                  <h2>{{ selectedPublication?.title || 'Select a publication' }}</h2>
+                </div>
+                <button v-if="canManageMarketing && selectedPublicationId" class="mini-action solid" @click="openNewMetricSnapshot">Add snapshot</button>
+              </div>
+
+              <div v-if="metricsLoading" class="state-card compact">
+                <p>Loading metrics...</p>
+              </div>
+
+              <div v-else-if="metricsError" class="state-card compact error-state">
+                <p>{{ metricsError }}</p>
+              </div>
+
+              <div v-else-if="!selectedPublicationId" class="state-card compact">
+                <p>Select a publication to review its metric history.</p>
+              </div>
+
+              <div v-else>
+                <div class="metrics-summary-grid">
+                  <article class="metric-card">
+                    <span class="metric-label">Impressions</span>
+                    <strong>{{ formatInteger(metricSummary.current?.impressions ?? 0) }}</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span class="metric-label">Reach</span>
+                    <strong>{{ formatInteger(metricSummary.current?.reach ?? 0) }}</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span class="metric-label">Engagement rate</span>
+                    <strong>{{ formatPercent(metricSummary.current?.engagementRate ?? 0) }}</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span class="metric-label">Leads</span>
+                    <strong>{{ formatInteger(metricSummary.current?.leads ?? 0) }}</strong>
+                  </article>
+                </div>
+
+                <div v-if="metricSummary.delta" class="delta-strip">
+                  <span>Delta vs previous snapshot</span>
+                  <div class="delta-values">
+                    <span>Reach {{ metricSummary.delta.reach >= 0 ? '+' : '' }}{{ formatInteger(metricSummary.delta.reach) }}</span>
+                    <span>Clicks {{ metricSummary.delta.clicks >= 0 ? '+' : '' }}{{ formatInteger(metricSummary.delta.clicks) }}</span>
+                    <span>Leads {{ metricSummary.delta.leads >= 0 ? '+' : '' }}{{ formatInteger(metricSummary.delta.leads) }}</span>
                   </div>
                 </div>
 
-                <div v-if="canManageMarketing" class="item-actions">
-                  <button class="mini-action" @click="openEditCampaign(campaign)">Edit</button>
-                  <button v-if="canDeleteMarketing" class="mini-action danger" @click="deleteCampaign(campaign)">Delete</button>
+                <div v-if="metricSnapshots.length === 0" class="state-card compact">
+                  <p>No metric snapshots yet for this publication.</p>
                 </div>
-              </article>
-            </div>
+
+                <div v-else class="snapshot-table">
+                  <article v-for="snapshot in metricSnapshots" :key="snapshot.id" class="snapshot-row">
+                    <div class="snapshot-when">
+                      <strong>{{ formatDateTime(snapshot.capturedAt) }}</strong>
+                      <span>Saved by {{ snapshot.createdByName }}</span>
+                    </div>
+                    <div class="snapshot-stats">
+                      <span>Reach {{ formatInteger(snapshot.reach) }}</span>
+                      <span>Engagements {{ formatInteger(snapshot.engagements) }}</span>
+                      <span>Clicks {{ formatInteger(snapshot.clicks) }}</span>
+                      <span>Leads {{ formatInteger(snapshot.leads) }}</span>
+                    </div>
+                    <div class="snapshot-actions">
+                      <button v-if="canManageMarketing" class="mini-action" @click="openEditMetricSnapshot(snapshot)">Edit</button>
+                      <button v-if="canDeleteMarketing" class="mini-action danger" @click="deleteMetricSnapshot(snapshot)">Delete</button>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel metrics-side">
+              <p class="panel-kicker">Current post summary</p>
+              <h2>{{ selectedPublication?.title || 'No publication selected' }}</h2>
+
+              <div v-if="selectedPublication" class="summary-list">
+                <div class="summary-row">
+                  <span>Status</span>
+                  <strong>{{ publicationStatusLabel(selectedPublication.status) }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Campaign</span>
+                  <strong>{{ selectedPublication.campaignName }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Platform</span>
+                  <strong>{{ platformLabel(selectedPublication.platform) }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Format</span>
+                  <strong>{{ formatLabel(selectedPublication.format) }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Scheduled</span>
+                  <strong>{{ selectedPublication.scheduledFor ? formatDateTime(selectedPublication.scheduledFor) : 'Not scheduled' }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Published</span>
+                  <strong>{{ selectedPublication.publishedAt ? formatDateTime(selectedPublication.publishedAt) : 'Not published yet' }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Snapshots</span>
+                  <strong>{{ selectedPublication.latestMetrics.snapshotsCount }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Spend</span>
+                  <strong>{{ formatMoney(selectedPublication.latestMetrics.spend) }}</strong>
+                </div>
+                <a v-if="selectedPublication.publicationUrl" class="external-link" :href="selectedPublication.publicationUrl" target="_blank" rel="noreferrer">
+                  Open live publication
+                </a>
+              </div>
+
+              <div v-else class="state-card compact">
+                <p>Select a publication card to inspect its metrics and history.</p>
+              </div>
+            </aside>
           </section>
         </main>
       </div>
@@ -990,24 +1247,24 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
 }
 
 .marketing-page {
-  max-width: 1400px;
+  max-width: 1480px;
   margin: 0 auto;
-  padding: 96px 24px 40px;
+  padding: 94px 20px 36px;
 }
 
 .hero-card,
 .panel,
 .stat-card,
-.item-card,
+.metric-card,
 .state-card {
-  background: linear-gradient(180deg, rgba(13, 13, 13, 0.96), rgba(9, 9, 9, 0.94));
+  background: linear-gradient(180deg, rgba(11, 11, 11, 0.96), rgba(8, 8, 8, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.24);
 }
 
 .hero-card {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.8fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.8fr);
   gap: 24px;
   padding: 28px 30px;
   align-items: center;
@@ -1015,7 +1272,8 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
 
 .eyebrow,
 .panel-kicker,
-.stat-label {
+.stat-label,
+.metric-label {
   margin: 0 0 8px;
   color: #c9a962;
   font-size: 12px;
@@ -1025,39 +1283,53 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
 
 .hero-card h1,
 .panel h2,
-.campaign-row h3,
-.item-card h3,
-.generated-card h3 {
+.campaign-card h3,
+.publication-card h3 {
   margin: 0;
   color: #faf8f5;
   font-family: 'Playfair Display', serif;
 }
 
 .hero-card h1 {
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-size: clamp(2.1rem, 4vw, 3.1rem);
   line-height: 1.05;
 }
 
 .hero-copy,
 .panel p,
-.item-description,
-.item-audit,
-.campaign-row p,
+.state-card p,
+.campaign-card p,
+.publication-caption,
 .stat-meta,
-.subtle-empty p {
+.summary-row span,
+.snapshot-when span {
   color: #beb8af;
 }
 
 .hero-copy {
-  margin: 16px 0 0;
-  max-width: 820px;
+  margin: 14px 0 0;
+  max-width: 840px;
   line-height: 1.6;
 }
 
-.hero-actions {
+.hero-actions,
+.panel-head,
+.publication-topline,
+.campaign-topline,
+.campaign-footer,
+.publication-footer,
+.snapshot-row,
+.summary-row,
+.delta-strip,
+.delta-values,
+.inline-actions,
+.snapshot-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 12px;
+}
+
+.hero-actions {
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -1065,9 +1337,9 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
 .primary-action,
 .ghost-action,
 .mini-action,
-.campaign-pill,
-.search-wrap input,
-.filter-grid select,
+.project-card,
+.campaign-card,
+.publication-card,
 .form-field input,
 .form-field textarea,
 .form-field select {
@@ -1077,28 +1349,37 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
 .primary-action,
 .ghost-action,
 .mini-action,
-.campaign-pill {
+.project-card,
+.campaign-card,
+.publication-card {
   border: 1px solid transparent;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.18s ease;
 }
 
 .primary-action {
   background: #c9a962;
-  color: #0a0a0a;
+  color: #0b0b0b;
   padding: 12px 18px;
   font-weight: 700;
 }
 
-.ghost-action {
+.ghost-action,
+.mini-action {
   background: transparent;
   color: #faf8f5;
   border-color: rgba(255, 255, 255, 0.14);
-  padding: 12px 18px;
+  padding: 10px 14px;
 }
 
-.ghost-action.compact {
-  padding: 10px 14px;
+.mini-action.solid {
+  background: rgba(201, 169, 98, 0.18);
+  color: #f5e3ae;
+}
+
+.mini-action.danger {
+  border-color: rgba(251, 113, 133, 0.28);
+  color: #ffb8c4;
 }
 
 .read-only-pill {
@@ -1110,11 +1391,106 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
   font-size: 12px;
 }
 
+.feedback-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  margin: 18px 0;
+  background: rgba(31, 98, 67, 0.16);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #d8fff0;
+}
+
+.feedback-strip.error {
+  background: rgba(113, 29, 41, 0.2);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #ffe4e8;
+}
+
+.marketing-layout {
+  display: grid;
+  grid-template-columns: minmax(270px, 320px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.sidebar,
+.content-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel {
+  padding: 22px;
+}
+
+.panel-head {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.project-list,
+.campaign-grid,
+.publication-grid,
+.snapshot-table {
+  display: grid;
+  gap: 12px;
+}
+
+.project-card,
+.campaign-card,
+.publication-card,
+.snapshot-row {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  text-align: left;
+}
+
+.project-card.active,
+.campaign-card.active,
+.publication-card.active {
+  border-color: rgba(201, 169, 98, 0.48);
+  background: rgba(201, 169, 98, 0.11);
+}
+
+.project-top,
+.project-meta,
+.project-metrics,
+.campaign-stats,
+.publication-metrics {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-top strong,
+.campaign-card h3,
+.publication-card h3,
+.snapshot-when strong,
+.summary-row strong {
+  color: #faf8f5;
+}
+
+.project-meta,
+.project-metrics,
+.campaign-stats,
+.publication-metrics,
+.campaign-channel,
+.campaign-footer span,
+.publication-footer span {
+  color: #ccc3b7;
+  font-size: 13px;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin: 20px 0;
 }
 
 .stat-card {
@@ -1128,243 +1504,44 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
   margin-bottom: 8px;
 }
 
-.stat-meta {
-  margin: 0;
-  line-height: 1.5;
+.campaign-grid,
+.publication-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-.feedback-strip {
-  display: flex;
+.campaign-topline,
+.publication-topline,
+.campaign-footer,
+.publication-footer {
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
-  margin-bottom: 18px;
-  background: rgba(31, 98, 67, 0.16);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  color: #d8fff0;
 }
 
-.feedback-strip.error {
-  background: rgba(113, 29, 41, 0.2);
-  border-color: rgba(251, 113, 133, 0.35);
-  color: #ffe4e8;
+.campaign-card p,
+.publication-caption {
+  margin: 10px 0 14px;
+  line-height: 1.55;
 }
 
-.marketing-grid {
-  display: grid;
-  grid-template-columns: minmax(290px, 350px) minmax(0, 1fr);
-  gap: 18px;
-}
-
-.sidebar,
-.content-panel {
+.chip-row {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.panel {
-  padding: 22px;
-}
-
-.panel-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.campaign-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.campaign-pill {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.06);
-  color: #faf8f5;
-  text-align: left;
-}
-
-.campaign-pill.active,
-.campaign-pill:hover,
-.primary-action:hover,
-.mini-action.solid,
-.ghost-action:hover {
-  border-color: rgba(201, 169, 98, 0.46);
-}
-
-.campaign-pill.active {
-  background: rgba(201, 169, 98, 0.14);
-}
-
-.subtle-empty {
-  margin-top: 14px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.subtle-empty p {
-  margin: 0 0 6px;
-}
-
-.generator-form,
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-}
-
-.form-field label {
-  color: #f5efe6;
-  font-size: 13px;
-}
-
-.form-field input,
-.form-field textarea,
-.form-field select,
-.filter-grid select,
-.search-wrap input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  color: #faf8f5;
-  padding: 12px 14px;
-  resize: vertical;
-}
-
-.info-list {
-  margin: 0;
-  padding-left: 18px;
-  color: #beb8af;
-  display: grid;
-  gap: 10px;
-  line-height: 1.5;
-}
-
-.toolbar-row {
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.search-wrap {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-}
-
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.align-left {
-  justify-self: start;
-}
-
-.state-card {
-  padding: 28px;
-  text-align: center;
-}
-
-.error-state {
-  color: #ffe4e8;
-}
-
-.generated-grid,
-.items-grid {
-  display: grid;
-  gap: 16px;
-}
-
-.generated-grid {
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-.items-grid {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-.generated-card,
-.campaign-row {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 18px;
-}
-
-.generated-topline,
-.item-card-top,
-.association-row,
-.item-footer,
-.generated-actions,
-.item-actions,
-.resource-row {
-  display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-}
-
-.item-card {
-  padding: 18px;
-}
-
-.item-card-top,
-.item-footer {
-  justify-content: space-between;
-  align-items: center;
-}
-
-.item-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
 .type-chip,
-.status-chip,
-.association-badge {
+.status-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   padding: 6px 10px;
   font-size: 12px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .type-chip {
   background: rgba(255, 255, 255, 0.06);
   color: #e8dfcf;
-}
-
-.association-badge {
-  background: rgba(255, 255, 255, 0.04);
-  color: #cfc5b8;
 }
 
 .status-chip {
@@ -1380,19 +1557,14 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
   color: #f5d27d;
 }
 
-.status-chip.info {
-  background: rgba(96, 165, 250, 0.14);
-  color: #9fc6ff;
-}
-
 .status-chip.brand {
   background: rgba(201, 169, 98, 0.18);
-  color: #e6c87f;
+  color: #f1d287;
 }
 
 .status-chip.success {
   background: rgba(52, 211, 153, 0.15);
-  color: #8bf1c7;
+  color: #91f4ca;
 }
 
 .status-chip.muted {
@@ -1400,83 +1572,117 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
   color: #d3d6de;
 }
 
-.item-date {
-  color: #c9c1b6;
-  font-size: 13px;
+.status-chip.danger {
+  background: rgba(251, 113, 133, 0.18);
+  color: #ffc1cd;
 }
 
-.item-description {
-  margin: 12px 0 14px;
-  line-height: 1.5;
+.metrics-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 18px;
 }
 
-.item-content,
-.generated-card pre {
-  margin: 0;
-  white-space: pre-wrap;
-  color: #f0ebe4;
-  line-height: 1.55;
-  font-family: 'Manrope', sans-serif;
+.metrics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.resource-row a {
-  color: #e6c87f;
+.metric-card {
+  padding: 16px;
 }
 
-.item-audit {
+.metric-card strong {
+  color: #faf8f5;
+  font-size: 1.6rem;
+}
+
+.delta-strip {
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #d7d0c5;
+}
+
+.delta-values {
+  flex-wrap: wrap;
+}
+
+.snapshot-row {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.snapshot-when,
+.snapshot-stats {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
+  gap: 6px;
 }
 
-.item-actions {
-  justify-content: flex-end;
+.snapshot-stats {
+  flex-direction: row;
+  flex-wrap: wrap;
+  color: #d7d0c5;
 }
 
-.mini-action {
-  background: transparent;
-  color: #faf8f5;
-  border-color: rgba(255, 255, 255, 0.16);
-  padding: 10px 12px;
-}
-
-.mini-action.solid {
-  background: rgba(201, 169, 98, 0.18);
-  color: #f5e3ae;
-}
-
-.mini-action.danger {
-  border-color: rgba(251, 113, 133, 0.3);
-  color: #ffb8c4;
-}
-
-.campaign-table {
+.summary-list {
   display: grid;
   gap: 12px;
 }
 
-.campaign-row {
-  display: flex;
+.summary-row {
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
 }
 
-.campaign-row p {
-  margin: 8px 0 12px;
-  line-height: 1.5;
+.external-link {
+  color: #e6c87f;
+  text-decoration: none;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 0 24px 24px;
+.form-row,
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metrics-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   padding: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  color: #f5efe6;
+  font-size: 13px;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #faf8f5;
+  padding: 12px 14px;
+  resize: vertical;
 }
 
 .modal-error {
@@ -1484,42 +1690,71 @@ watch([selectedStatus, selectedContentType, selectedCampaignId, selectedProjectI
   color: #ffb8c4;
 }
 
-@media (max-width: 1100px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
 
-  .marketing-grid,
+.state-card {
+  padding: 24px;
+  text-align: center;
+}
+
+.state-card.compact {
+  padding: 18px;
+}
+
+.error-state {
+  color: #ffe4e8;
+}
+
+@media (max-width: 1200px) {
+  .marketing-layout,
+  .metrics-layout,
   .hero-card {
     grid-template-columns: 1fr;
+  }
+
+  .stats-grid,
+  .metrics-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
   .marketing-page {
-    padding: 84px 14px 30px;
+    padding: 82px 14px 28px;
   }
 
   .stats-grid,
-  .filter-grid,
+  .campaign-grid,
+  .publication-grid,
+  .metrics-summary-grid,
   .form-row,
-  .generated-grid,
-  .items-grid {
+  .metrics-grid {
     grid-template-columns: 1fr;
   }
 
-  .toolbar-row,
-  .search-wrap,
-  .campaign-row,
-  .item-card-top,
-  .item-footer,
-  .hero-actions {
+  .panel-head,
+  .hero-actions,
+  .campaign-footer,
+  .publication-footer,
+  .snapshot-row,
+  .delta-strip {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .item-actions {
-    justify-content: flex-start;
+  .project-top,
+  .project-meta,
+  .project-metrics,
+  .campaign-stats,
+  .publication-metrics,
+  .snapshot-stats,
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>
