@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KONTROL · Deck para Canva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bungee&family=DM+Sans:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050505;
+        --bg-2: #0f0f0f;
+        --bg-3: #17130c;
+        --panel: rgba(15, 15, 15, 0.92);
+        --panel-soft: rgba(19, 16, 9, 0.9);
+        --line: rgba(202, 168, 96, 0.2);
+        --gold: #caa860;
+        --gold-2: #b27f2a;
+        --text: #faf8f5;
+        --muted: #a89a82;
+        --dim: #706452;
+        --green: #34d399;
+        --blue: #60a5fa;
+        --danger: #fb7185;
+        --shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(202, 168, 96, 0.12), transparent 26%),
+          radial-gradient(circle at bottom right, rgba(178, 127, 42, 0.08), transparent 28%),
+          linear-gradient(180deg, #090909 0%, #030303 100%);
+        color: var(--text);
+        font-family: "Manrope", sans-serif;
+      }
+
+      body {
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+
+      .deck {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 24px;
+        height: calc(100vh - 48px);
+        padding: 40px 44px 34px;
+        overflow: hidden;
+        border: 1px solid rgba(202, 168, 96, 0.18);
+        background:
+          linear-gradient(135deg, rgba(202, 168, 96, 0.06), transparent 28%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 100%),
+          rgba(4, 4, 4, 0.96);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(88px) scale(0.975);
+        filter: blur(10px);
+        transition:
+          opacity 0.5s ease,
+          transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.5s ease;
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 1px solid rgba(202, 168, 96, 0.08);
+        pointer-events: none;
+      }
+
+      .slide::after {
+        content: "";
+        position: absolute;
+        inset: auto 40px 40px auto;
+        width: 180px;
+        height: 180px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(202, 168, 96, 0.16), transparent 70%);
+        filter: blur(12px);
+        pointer-events: none;
+      }
+
+      .slide.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+        z-index: 2;
+      }
+
+      .slide.is-before {
+        transform: translateX(-88px) scale(0.975);
+      }
+
+      .slide.is-after {
+        transform: translateX(88px) scale(0.975);
+      }
+
+      .slide--cover {
+        display: grid;
+        grid-template-columns: 1.2fr 0.9fr;
+        gap: 40px;
+        align-items: stretch;
+      }
+
+      .cover-copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 46px;
+        height: 1px;
+        background: linear-gradient(90deg, var(--gold), transparent);
+      }
+
+      .brand {
+        margin: 24px 0 14px;
+        font-family: "Bungee", sans-serif;
+        font-size: clamp(56px, 7vw, 112px);
+        line-height: 0.92;
+        letter-spacing: 0.04em;
+      }
+
+      .brand span {
+        display: block;
+        color: var(--gold);
+      }
+
+      .lead {
+        max-width: 700px;
+        margin: 0;
+        color: #ede6dc;
+        font-size: 24px;
+        line-height: 1.45;
+      }
+
+      .cover-grid {
+        align-self: end;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .cover-tile,
+      .module-card,
+      .meta-card {
+        border: 1px solid rgba(202, 168, 96, 0.15);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 100%),
+          rgba(14, 14, 14, 0.9);
+      }
+
+      .cover-tile {
+        padding: 18px;
+        min-height: 124px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .tile-kicker {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+
+      .tile-name {
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .tile-foot {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .cover-side {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .module-card {
+        padding: 22px;
+      }
+
+      .module-card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .module-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .slide-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 22px;
+      }
+
+      .slide-index {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--gold);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .slide-index strong {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(202, 168, 96, 0.24);
+        border-radius: 999px;
+        color: var(--text);
+        font-size: 12px;
+      }
+
+      .slide-title {
+        margin: 10px 0 10px;
+        font-family: "Alfa Slab One", serif;
+        font-size: clamp(38px, 4vw, 64px);
+        font-weight: 400;
+        line-height: 1.02;
+        letter-spacing: 0.02em;
+      }
+
+      .slide-subtitle {
+        max-width: 620px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      .slide-body {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.44fr) minmax(0, 1.56fr);
+        gap: 22px;
+        height: calc(100% - 132px);
+      }
+
+      .meta-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .meta-card {
+        padding: 18px;
+      }
+
+      .meta-card h4 {
+        margin: 0 0 12px;
+        color: var(--gold);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .meta-card ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #efe8dc;
+        line-height: 1.58;
+        font-size: 14px;
+      }
+
+      .meta-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.58;
+        font-size: 14px;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid rgba(202, 168, 96, 0.14);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .pill::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--gold);
+      }
+
+      .video-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .browser {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        border: 1px solid rgba(202, 168, 96, 0.18);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 14%),
+          linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(12, 12, 12, 0.94));
+        overflow: hidden;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(202, 168, 96, 0.04);
+      }
+
+      .browser::after {
+        content: "";
+        position: absolute;
+        inset: auto 8% -80px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(202, 168, 96, 0.16), transparent 68%);
+        filter: blur(16px);
+        pointer-events: none;
+      }
+
+      .browser-top {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 14px;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(202, 168, 96, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .browser-dots {
+        display: flex;
+        gap: 8px;
+      }
+
+      .browser-dots span {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .browser-dots span:nth-child(1) { background: rgba(251, 113, 133, 0.7); }
+      .browser-dots span:nth-child(2) { background: rgba(202, 168, 96, 0.7); }
+      .browser-dots span:nth-child(3) { background: rgba(52, 211, 153, 0.7); }
+
+      .browser-url {
+        height: 34px;
+        border: 1px solid rgba(202, 168, 96, 0.12);
+        background: rgba(0, 0, 0, 0.26);
+      }
+
+      .browser-tag {
+        color: var(--dim);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .video-stage {
+        position: absolute;
+        inset: 70px 12px 12px;
+        border: 1px dashed rgba(202, 168, 96, 0.24);
+        background:
+          radial-gradient(circle at top left, rgba(202, 168, 96, 0.08), transparent 28%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0));
+        display: grid;
+        grid-template-rows: 1fr auto;
+      }
+
+      .stage-center {
+        display: grid;
+        place-items: center;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .stage-center strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 36px;
+        font-weight: 700;
+      }
+
+      .stage-center p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 16px;
+      }
+
+      .stage-ui {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        padding: 16px 18px;
+        border-top: 1px solid rgba(202, 168, 96, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .stage-lines,
+      .stage-bars {
+        display: grid;
+        gap: 10px;
+      }
+
+      .line {
+        height: 14px;
+        background: linear-gradient(90deg, rgba(202, 168, 96, 0.26), rgba(255, 255, 255, 0.04));
+      }
+
+      .line.short { width: 48%; }
+      .line.mid { width: 70%; }
+
+      .bar {
+        height: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+      }
+
+      .bar::after {
+        content: "";
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), rgba(202, 168, 96, 0.18));
+      }
+
+      .bar.b1::after { width: 82%; }
+      .bar.b2::after { width: 61%; }
+      .bar.b3::after { width: 44%; }
+
+      .video-notes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .note {
+        padding: 14px 16px;
+        border: 1px solid rgba(202, 168, 96, 0.12);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .note strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .note span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .optional {
+        color: var(--blue);
+      }
+
+      .slide--live-demo .slide-body {
+        grid-template-columns: minmax(250px, 0.36fr) minmax(0, 1.64fr);
+      }
+
+      .slide--live-demo .browser {
+        border-color: rgba(202, 168, 96, 0.28);
+        background:
+          radial-gradient(circle at top left, rgba(52, 211, 153, 0.08), transparent 24%),
+          radial-gradient(circle at top right, rgba(202, 168, 96, 0.12), transparent 24%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 12%),
+          linear-gradient(180deg, rgba(10, 10, 10, 0.98), rgba(12, 12, 12, 0.95));
+      }
+
+      .slide--live-demo .video-stage {
+        border-style: solid;
+        border-color: rgba(202, 168, 96, 0.2);
+      }
+
+      .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding: 10px 14px;
+        border: 1px solid rgba(52, 211, 153, 0.22);
+        background: rgba(52, 211, 153, 0.08);
+        color: #c8f8e8;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .live-badge::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--green);
+        box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.12);
+      }
+
+      .live-stage-copy {
+        max-width: 820px;
+      }
+
+      .live-stage-copy strong {
+        font-size: 48px;
+      }
+
+      .live-stage-copy p {
+        max-width: 760px;
+        font-size: 18px;
+      }
+
+      .live-flow {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .live-step {
+        padding: 18px 16px;
+        border: 1px solid rgba(202, 168, 96, 0.14);
+        background: rgba(255, 255, 255, 0.03);
+        text-align: left;
+      }
+
+      .live-step small {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dim);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .live-step span {
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+
+      .live-panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .live-panel {
+        padding: 16px;
+        border: 1px solid rgba(202, 168, 96, 0.12);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .live-panel h4 {
+        margin: 0 0 10px;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .live-panel ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #efe8dc;
+        font-size: 13px;
+        line-height: 1.58;
+      }
+
+      .deck-controls {
+        position: fixed;
+        left: 24px;
+        right: 24px;
+        bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        z-index: 20;
+        pointer-events: none;
+      }
+
+      .nav-arrow,
+      .deck-status {
+        pointer-events: auto;
+      }
+
+      .nav-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 68px;
+        height: 68px;
+        border: 1px solid rgba(202, 168, 96, 0.22);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
+          rgba(8, 8, 8, 0.9);
+        color: var(--text);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          background 0.25s ease,
+          opacity 0.25s ease;
+      }
+
+      .nav-arrow:hover:not(:disabled) {
+        transform: translateY(-2px) scale(1.03);
+        border-color: rgba(202, 168, 96, 0.42);
+        background:
+          linear-gradient(180deg, rgba(202, 168, 96, 0.12), rgba(255, 255, 255, 0.02)),
+          rgba(8, 8, 8, 0.96);
+      }
+
+      .nav-arrow:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .deck-status {
+        min-width: 360px;
+        max-width: min(52vw, 620px);
+        padding: 14px 18px;
+        border: 1px solid rgba(202, 168, 96, 0.16);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
+          rgba(8, 8, 8, 0.9);
+        box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
+        text-align: center;
+      }
+
+      .deck-status-kicker {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--dim);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .deck-status-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .deck-counter {
+        color: var(--gold);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+      }
+
+      .deck-label {
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .deck-hint {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 1200px) {
+        body {
+          overflow: hidden;
+        }
+
+        .slide {
+          inset: 16px;
+          height: calc(100vh - 32px);
+          padding: 24px 24px 28px;
+        }
+
+        .slide--cover,
+        .slide-body {
+          grid-template-columns: 1fr;
+        }
+
+        .slide-body {
+          height: calc(100% - 118px);
+        }
+
+        .slide-title {
+          font-size: clamp(28px, 6vw, 42px);
+        }
+
+        .slide-subtitle {
+          max-width: none;
+          font-size: 15px;
+        }
+
+        .stage-center strong {
+          font-size: 28px;
+        }
+
+        .stage-center p {
+          font-size: 14px;
+        }
+
+        .live-stage-copy strong {
+          font-size: 34px;
+        }
+
+        .live-stage-copy p {
+          font-size: 15px;
+        }
+
+        .live-flow,
+        .live-panel-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .video-stage {
+          inset: 66px 10px 10px;
+        }
+
+        .video-notes {
+          grid-template-columns: 1fr;
+        }
+
+        .deck-controls {
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+        }
+
+        .deck-status {
+          min-width: 0;
+          max-width: none;
+          flex: 1;
+        }
+
+        .nav-arrow {
+          width: 56px;
+          height: 56px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="slide slide--cover is-active">
+        <div class="cover-copy">
+          <div>
+            <span class="eyebrow">Deck Base 16:9 · Estilo Kontrol</span>
+            <h1 class="brand">KONTROL<span>PRODUCT DEMO</span></h1>
+            <p class="lead">
+              Presentación completa de la app con una diapositiva por panel o
+              sección principal, pensada para que cada pantalla se convierta en
+              un loop de video limpio, elegante y fácil de explicar.
+            </p>
+          </div>
+
+          <div class="cover-grid">
+            <article class="cover-tile">
+              <span class="tile-kicker">Núcleo</span>
+              <strong class="tile-name">Dashboard</strong>
+              <span class="tile-foot">Visión ejecutiva y salud operativa</span>
+            </article>
+            <article class="cover-tile">
+              <span class="tile-kicker">Operación</span>
+              <strong class="tile-name">Projects</strong>
+              <span class="tile-foot">Tareas, miembros y progreso</span>
+            </article>
+            <article class="cover-tile">
+              <span class="tile-kicker">Control</span>
+              <strong class="tile-name">Inventory + Budget</strong>
+              <span class="tile-foot">Stock, actividades y gasto</span>
+            </article>
+            <article class="cover-tile">
+              <span class="tile-kicker">Inteligencia</span>
+              <strong class="tile-name">Reports + AI</strong>
+              <span class="tile-foot">Análisis, chat e integraciones</span>
+            </article>
+          </div>
+        </div>
+
+        <div class="cover-side">
+          <article class="module-card">
+            <h3>Dirección visual</h3>
+            <p>
+              Negro profundo, dorado cálido, paneles premium, tipografía
+              contundente y mucho espacio para que el producto sea el
+              protagonista.
+            </p>
+          </article>
+          <article class="module-card">
+            <h3>Uso ideal</h3>
+            <p>
+              Montar cada slide en Canva y reemplazar el bloque central por un
+              MP4 o GIF en loop de 8 a 12 segundos mostrando una acción real.
+            </p>
+          </article>
+          <article class="module-card">
+            <h3>Orden sugerido</h3>
+            <p>
+              Dashboard, operación por proyecto, inventario, finanzas, reportes,
+              colaboración, IA, conexiones y administración.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>01</strong> Dashboard</span>
+            <h2 class="slide-title">Executive Overview</h2>
+            <p class="slide-subtitle">
+              Punto de entrada de Kontrol: KPIs, análisis de IA, tendencia
+              financiera, snapshot del portafolio y acceso a colaboradores.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué se muestra</h4>
+              <ul>
+                <li>Total spent, active projects y overrun alerts.</li>
+                <li>Bloque "Kontrol AI Analysis".</li>
+                <li>Financial performance trend y budget usage by project.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Tono visual</h4>
+              <div class="pill-row">
+                <span class="pill">Premium analytics</span>
+                <span class="pill">Glow dorado</span>
+                <span class="pill">Negro editorial</span>
+              </div>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">dashboard</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop Video Placeholder</strong>
+                    <p>Recorrido suave por KPIs, gráfico principal y bloque de IA.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-10 s, scroll mínimo.</span></div>
+              <div class="note"><strong>Acción</strong><span>Entrar, leer KPIs, bajar al trend y volver.</span></div>
+              <div class="note"><strong>Cierre</strong><span>Terminar en el mismo estado inicial.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>02</strong> Projects</span>
+            <h2 class="slide-title">My Projects</h2>
+            <p class="slide-subtitle">
+              Vista de gestión transversal con tabs, búsqueda, grid/list y
+              accesos rápidos a tareas, equipo, presupuesto y reportes.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué se cuenta</h4>
+              <ul>
+                <li>Organización de proyectos por estado y riesgo.</li>
+                <li>Búsqueda rápida y cambio entre vistas.</li>
+                <li>Navegación directa al detalle operativo.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Microcopy sugerido</h4>
+              <p>Todos los proyectos en una sola vista, con entrada directa a la ejecución.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">projects</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del listado de proyectos</strong>
+                    <p>Alternar tabs, escribir en la búsqueda y abrir un proyecto.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>9-11 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Tab active, búsqueda y switch grid/list.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Orden y control del portafolio.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>03</strong> Project Detail</span>
+            <h2 class="slide-title">Overview</h2>
+            <p class="slide-subtitle">
+              Radiografía completa de un proyecto: estado, fechas, presupuesto,
+              tareas, equipo, inventario y avance consolidado.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Piezas clave</h4>
+              <ul>
+                <li>Header con status badge y budget card.</li>
+                <li>Task progress, project progress y budget overview.</li>
+                <li>Inventory activity y team breakdown.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Objetivo narrativo</h4>
+              <p>Hacer evidente que el proyecto se entiende en segundos desde una sola pantalla.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">project / overview</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del overview del proyecto</strong>
+                    <p>Desplazamiento corto por métricas, budget y composición del equipo.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line mid"></div>
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Entrar por header y bajar a las cards.</span></div>
+              <div class="note"><strong>Clave</strong><span>Mostrar presupuesto y progreso a la vez.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>04</strong> Project Detail</span>
+            <h2 class="slide-title">Tasks</h2>
+            <p class="slide-subtitle">
+              Ejecución táctica del proyecto con filtros por estado y prioridad,
+              detalle de tareas y acciones de cierre o edición.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Se destaca</h4>
+              <ul>
+                <li>Toolbar de filtros.</li>
+                <li>Listado operativo de tareas.</li>
+                <li>Creación rápida de nuevas tareas.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Copy corto</h4>
+              <p>La ejecución baja al detalle sin salir del proyecto.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">project / tasks</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del tab Tasks</strong>
+                    <p>Filtrar, abrir tarea y cerrar el ciclo con una transición suave.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line mid"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b3"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-9 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Cambiar filtro y abrir una card.</span></div>
+              <div class="note"><strong>Mensaje</strong><span>Control fino de la ejecución.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>05</strong> Project Detail</span>
+            <h2 class="slide-title">Team</h2>
+            <p class="slide-subtitle">
+              Organización de equipos dentro del proyecto, con filtros por área
+              y entrada rápida al detalle de cada célula de trabajo.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Elementos</h4>
+              <ul>
+                <li>Búsqueda por nombre y filtro por área.</li>
+                <li>Listado de equipos con miembros y tareas.</li>
+                <li>Alta rápida de nuevo equipo.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Etiqueta sugerida</h4>
+              <p>Equipos visibles, comparables y accionables dentro del mismo flujo.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">project / team</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del tab Team</strong>
+                    <p>Filtrar por área y abrir un team detail modal o fila.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Buscar equipo y entrar al detalle.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Estructura y coordinación.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>06</strong> Project Detail</span>
+            <h2 class="slide-title">Members</h2>
+            <p class="slide-subtitle">
+              Asignación de participantes del proyecto y control de la capa
+              humana de colaboración.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué conviene mostrar</h4>
+              <ul>
+                <li>Alta o actualización de miembros.</li>
+                <li>Relación entre proyecto y participantes.</li>
+                <li>Claridad en colaboración y acceso.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Nota de estilo</h4>
+              <p>Esta slide funciona bien con mucho aire y un loop muy limpio, casi sin scroll.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">project / members</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del tab Members</strong>
+                    <p>Mostrar asignación o actualización de participantes sin movimientos bruscos.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b3"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-9 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Añadir o editar un miembro.</span></div>
+              <div class="note"><strong>Mensaje</strong><span>Colaboración controlada.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>07</strong> Project Detail</span>
+            <h2 class="slide-title">Progress</h2>
+            <p class="slide-subtitle">
+              Seguimiento temporal del proyecto con foco en hitos, bloqueos,
+              avances y lectura de estado consolidada.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Se muestra</h4>
+              <ul>
+                <li>Actualizaciones del proyecto.</li>
+                <li>Milestones y blockers.</li>
+                <li>Lectura del progreso en el tiempo.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Remate visual</h4>
+              <p>Conviene grabar un recorrido vertical corto que vuelva al primer hito para que el loop cierre bien.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">project / progress</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del tab Progress</strong>
+                    <p>Timeline o updates con movimiento sutil y lectura clara.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line mid"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Recorrer hitos y volver arriba.</span></div>
+              <div class="note"><strong>Idea</strong><span>Mostrar continuidad y control.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>08</strong> Teams</span>
+            <h2 class="slide-title">Team Administration</h2>
+            <p class="slide-subtitle">
+              Gestión de equipos a nivel compañía, con editor completo de líder,
+              miembros y proyectos asignados.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué conviene narrar</h4>
+              <ul>
+                <li>Lista de equipos en la izquierda.</li>
+                <li>Editor del equipo seleccionado en la derecha.</li>
+                <li>Asignación de miembros y proyectos.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Microcopy</h4>
+              <p>La estructura de la compañía se administra desde una sola superficie.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">teams</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop de Team Administration</strong>
+                    <p>Seleccionar equipo, editar líder o asignar un proyecto.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b3"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>9-11 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Click en un team y editar un dato.</span></div>
+              <div class="note"><strong>Clave</strong><span>Gestión transversal.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>09</strong> Inventory</span>
+            <h2 class="slide-title">Product Catalogue</h2>
+            <p class="slide-subtitle">
+              Catálogo de inventario por proyecto, con filtros por categoría,
+              búsqueda y alertas de stock a la vista.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Puntos fuertes</h4>
+              <ul>
+                <li>Selector de proyecto y categorías.</li>
+                <li>Cards con stock, precio y uso por proyecto.</li>
+                <li>Panel lateral de resumen y alertas.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Dirección visual</h4>
+              <div class="pill-row">
+                <span class="pill">Cards premium</span>
+                <span class="pill">Panel lateral</span>
+                <span class="pill">Alertas visibles</span>
+              </div>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">inventory</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del catálogo de inventario</strong>
+                    <p>Cambiar proyecto, tocar una categoría y abrir un producto.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>9-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Filtro de categoría y apertura de detalle.</span></div>
+              <div class="note"><strong>Mensaje</strong><span>Stock controlado en contexto.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>10</strong> Inventory Detail</span>
+            <h2 class="slide-title">Product View</h2>
+            <p class="slide-subtitle">
+              Vista detallada del producto, con precios, estado de stock y
+              proveedores vinculados.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Mostrar</h4>
+              <ul>
+                <li>Overview del producto.</li>
+                <li>Stock, minimum stock y status.</li>
+                <li>Listado de supplier quotes.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Texto corto</h4>
+              <p>El detalle del inventario combina datos financieros y abastecimiento en una sola vista.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">inventory / detail</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del detalle de producto</strong>
+                    <p>Scroll corto desde overview hasta suppliers y vuelta al inicio.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line mid"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-9 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Leer overview, bajar a suppliers, volver.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Profundidad de dato.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>11</strong> Budget</span>
+            <h2 class="slide-title">Budget Management</h2>
+            <p class="slide-subtitle">
+              Presupuesto por proyecto con fondos, actividades, gastos,
+              movimientos y salud financiera unificada.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Piezas del panel</h4>
+              <ul>
+                <li>Selector de proyecto y acciones de fondos, actividad y gasto.</li>
+                <li>Budget summary, activity distribution y product financials.</li>
+                <li>Budget health, alerts, funding history y spending breakdown.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Copy sugerido</h4>
+              <p>Kontrol conecta ejecución, inventario y presupuesto en el mismo flujo de trabajo.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">budget</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del panel financiero</strong>
+                    <p>Seleccionar proyecto, ver summary y bajar a actividades o breakdown.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>10-12 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Summary → activities → side cards → return.</span></div>
+              <div class="note"><strong>Mensaje</strong><span>Control financiero conectado a la operación.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>12</strong> Reports</span>
+            <h2 class="slide-title">Reports Center</h2>
+            <p class="slide-subtitle">
+              Capa analítica consolidada: KPIs, overview de proyectos, tabla de
+              reportes, performance chart e insights laterales.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué enseñar</h4>
+              <ul>
+                <li>KPIs y filters.</li>
+                <li>Projects overview table y reports table.</li>
+                <li>Project performance y panel AI lateral.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Idea de caption</h4>
+              <p>De la ejecución al análisis, sin salir del ecosistema de la app.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">reports</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop de Reports Center</strong>
+                    <p>Cambiar filtro, recorrer tabla y aterrizar en el gráfico principal.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line mid"></div>
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>9-11 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Filtro → tabla → chart → volver.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Lectura ejecutiva.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>13</strong> Reports</span>
+            <h2 class="slide-title">Report Detail</h2>
+            <p class="slide-subtitle">
+              Profundización por proyecto con grid de tarjetas, timeline y side
+              panel de salud general.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Bloques</h4>
+              <ul>
+                <li>Budget overview con donut.</li>
+                <li>Task management, team y timeline.</li>
+                <li>Project health y quick stats en el lateral.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Microcopy</h4>
+              <p>El reporte deja de ser una tabla y se convierte en una lectura visual del estado del proyecto.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">report / detail</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del detalle del reporte</strong>
+                    <p>Entrar al header, recorrer la grid y terminar en project health.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b3"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>9-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Grid de cards y panel lateral.</span></div>
+              <div class="note"><strong>Clave</strong><span>Diagnóstico visual del proyecto.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>14</strong> Chat</span>
+            <h2 class="slide-title">Real-Time Collaboration</h2>
+            <p class="slide-subtitle">
+              Conversaciones directas dentro de la plataforma, con adjuntos,
+              estados de escritura y soporte de videollamadas.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Vale la pena mostrar</h4>
+              <ul>
+                <li>Sidebar de conversaciones.</li>
+                <li>Selección de chat y envío de mensaje.</li>
+                <li>Adjuntos y señal de colaboración en tiempo real.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Tagline</h4>
+              <p>La conversación sucede en el mismo lugar donde ocurre la operación.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">chat</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del chat</strong>
+                    <p>Seleccionar conversación, escribir, enviar y volver al estado inicial.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line short"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-8 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Cambio de chat y envío de mensaje.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Colaboración nativa.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide slide--live-demo">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>15</strong> Chat</span>
+            <h2 class="slide-title">Live Demo</h2>
+            <p class="slide-subtitle">
+              Esta pantalla no lleva loop pregrabado: aquí el foco es la
+              demostración en vivo del flujo real de conversación dentro de
+              Kontrol.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Qué enseñar en directo</h4>
+              <ul>
+                <li>Abrir un chat activo desde la sidebar.</li>
+                <li>Enviar un mensaje corto y mostrar respuesta o confirmación.</li>
+                <li>Opcional: adjuntar archivo o iniciar videollamada.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Ritmo recomendado</h4>
+              <p>Hazla corta y muy clara: entrar, escribir, enviar, enseñar el valor y salir.</p>
+            </article>
+            <div class="live-panel-grid">
+              <article class="live-panel">
+                <h4>Operador</h4>
+                <ul>
+                  <li>Ten una conversación ya preparada.</li>
+                  <li>Usa un mensaje breve y visible.</li>
+                  <li>Evita scroll largo.</li>
+                </ul>
+              </article>
+              <article class="live-panel">
+                <h4>Mensaje</h4>
+                <ul>
+                  <li>Colaboración en tiempo real.</li>
+                  <li>Todo sucede dentro del producto.</li>
+                  <li>Sin cambiar de herramienta.</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">chat · live</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div class="live-stage-copy">
+                    <span class="live-badge">Demostración en vivo</span>
+                    <strong>En esta sección el producto se muestra en directo.</strong>
+                    <p>
+                      En vez de un video en loop, esta slide está pensada para
+                      dejar el chat como protagonista absoluto mientras haces la
+                      demo real frente a la audiencia.
+                    </p>
+                    <div class="live-flow">
+                      <div class="live-step">
+                        <small>Paso 01</small>
+                        <span>Abrir una conversación real</span>
+                      </div>
+                      <div class="live-step">
+                        <small>Paso 02</small>
+                        <span>Enviar mensaje o adjunto</span>
+                      </div>
+                      <div class="live-step">
+                        <small>Paso 03</small>
+                        <span>Enseñar colaboración instantánea</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Formato</strong><span>Demo en vivo, no loop.</span></div>
+              <div class="note"><strong>Duración</strong><span>20-40 s máximo para que no se caiga el ritmo.</span></div>
+              <div class="note"><strong>Clave</strong><span>El chat debe ocupar la atención principal de la slide.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>16</strong> AI Agent</span>
+            <h2 class="slide-title">Assistant Workspace</h2>
+            <p class="slide-subtitle">
+              Asistente de IA integrado para analizar presupuesto, resumir
+              proyectos y generar respuestas útiles en contexto.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>En el video</h4>
+              <ul>
+                <li>Quick actions del agente.</li>
+                <li>Prompt, respuesta y persistencia de conversaciones.</li>
+                <li>Sidebar con historial cuando está disponible.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Caption sugerido</h4>
+              <p>Kontrol no solo registra la operación: también la interpreta.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">agent</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del agente de IA</strong>
+                    <p>Disparar una quick action o enviar prompt corto y mostrar la respuesta.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b3"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-10 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Quick action → respuesta → reset visual.</span></div>
+              <div class="note"><strong>Clave</strong><span>IA útil, no decorativa.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>17</strong> Integrations</span>
+            <h2 class="slide-title">Connected Tools</h2>
+            <p class="slide-subtitle">
+              Integraciones por categoría con configuración, prueba de conexión,
+              activación, tutorial y feedback visual.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Mostrar</h4>
+              <ul>
+                <li>Grid de cards por categoría.</li>
+                <li>Configure, test connection y toggle de estado.</li>
+                <li>Feedback inline o modal de configuración.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Texto corto</h4>
+              <p>La plataforma se abre al ecosistema externo sin romper la experiencia visual.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">integrations</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop de integraciones</strong>
+                    <p>Cambiar categoría, abrir configuración o lanzar una prueba de conexión.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>8-9 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Filtrar y abrir configuración.</span></div>
+              <div class="note"><strong>Mensaje</strong><span>Escalabilidad y conexión.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>18</strong> Admin <span class="optional">· opcional</span></span>
+            <h2 class="slide-title">Overview</h2>
+            <p class="slide-subtitle">
+              Resumen global de plataforma con empresas, usuarios, proyectos y
+              visualizaciones comparativas.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Contenido</h4>
+              <ul>
+                <li>KPIs globales.</li>
+                <li>Top companies por proyectos y miembros.</li>
+                <li>Roles y estado de usuarios.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Uso</h4>
+              <p>Inclúyela solo si la presentación necesita mostrar gobierno de plataforma.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">admin / overview</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del admin overview</strong>
+                    <p>Paneo suave por KPIs y charts del panel administrativo.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b2"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-8 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Leer KPIs y bajar un poco a charts.</span></div>
+              <div class="note"><strong>Clave</strong><span>Visión institucional.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>19</strong> Admin <span class="optional">· opcional</span></span>
+            <h2 class="slide-title">Companies</h2>
+            <p class="slide-subtitle">
+              Gestión del catálogo completo de empresas registradas, con orden y
+              activación o desactivación de estados.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Mostrar</h4>
+              <ul>
+                <li>Tabla de compañías.</li>
+                <li>Sort controls por nombre, proyectos o ID.</li>
+                <li>Cambio de estado activo/inactivo.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Mensaje</h4>
+              <p>La administración se mantiene sobria, clara y consistente con el resto del sistema.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">admin / companies</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop de compañías</strong>
+                    <p>Ordenar la tabla y activar o desactivar una empresa.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                    <div class="line short"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                    <div class="bar b3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-8 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Sort y toggle de estado.</span></div>
+              <div class="note"><strong>Enfoque</strong><span>Gobierno de plataforma.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-head">
+          <div>
+            <span class="slide-index"><strong>20</strong> Admin <span class="optional">· opcional</span></span>
+            <h2 class="slide-title">Users</h2>
+            <p class="slide-subtitle">
+              Cierre del recorrido con la administración de usuarios,
+              compañías asociadas, roles y estado de las cuentas.
+            </p>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="meta-stack">
+            <article class="meta-card">
+              <h4>Mostrar</h4>
+              <ul>
+                <li>Tabla de usuarios y system role.</li>
+                <li>Sort controls y cantidad de compañías por usuario.</li>
+                <li>Activación o desactivación de cuentas.</li>
+              </ul>
+            </article>
+            <article class="meta-card">
+              <h4>Cierre sugerido</h4>
+              <p>Kontrol unifica operación, colaboración, análisis e IA en una sola plataforma.</p>
+            </article>
+          </div>
+          <div class="video-panel">
+            <div class="browser">
+              <div class="browser-top">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url"></div>
+                <span class="browser-tag">admin / users</span>
+              </div>
+              <div class="video-stage">
+                <div class="stage-center">
+                  <div>
+                    <strong>Loop del panel de usuarios</strong>
+                    <p>Ordenar, revisar roles y cerrar con una vista estable del listado.</p>
+                  </div>
+                </div>
+                <div class="stage-ui">
+                  <div class="stage-lines">
+                    <div class="line short"></div>
+                    <div class="line"></div>
+                    <div class="line mid"></div>
+                  </div>
+                  <div class="stage-bars">
+                    <div class="bar b3"></div>
+                    <div class="bar b1"></div>
+                    <div class="bar b2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="video-notes">
+              <div class="note"><strong>Loop</strong><span>7-8 s.</span></div>
+              <div class="note"><strong>Acción</strong><span>Sort y revisión de estado.</span></div>
+              <div class="note"><strong>Cierre</strong><span>Dejar la tabla quieta para fundir a negro.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="deck-controls" aria-label="Navegación de presentación">
+      <button class="nav-arrow nav-arrow--prev" type="button" aria-label="Slide anterior">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M14.5 5L8 12l6.5 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="deck-status" aria-live="polite">
+        <span class="deck-status-kicker">Presentación interactiva</span>
+        <div class="deck-status-main">
+          <span class="deck-counter">01 / 20</span>
+          <span class="deck-label">Dashboard</span>
+        </div>
+        <span class="deck-hint">Usa las flechas o el teclado `←` `→`</span>
+      </div>
+      <button class="nav-arrow nav-arrow--next" type="button" aria-label="Slide siguiente">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9.5 5L16 12l-6.5 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <script>
+      (() => {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const prevButton = document.querySelector(".nav-arrow--prev");
+        const nextButton = document.querySelector(".nav-arrow--next");
+        const counter = document.querySelector(".deck-counter");
+        const label = document.querySelector(".deck-label");
+
+        let currentIndex = 0;
+
+        function slideLabel(slide, index) {
+          const title = slide.querySelector(".slide-title")?.textContent?.trim();
+          const indexLabel = slide.querySelector(".slide-index")?.textContent?.replace(/\s+/g, " ").trim();
+          const brand = slide.querySelector(".brand")?.textContent?.replace(/\s+/g, " ").trim();
+
+          if (title && indexLabel) return `${indexLabel} · ${title}`;
+          if (brand) return brand;
+          return `Slide ${index + 1}`;
+        }
+
+        function renderSlides() {
+          slides.forEach((slide, index) => {
+            slide.classList.toggle("is-active", index === currentIndex);
+            slide.classList.toggle("is-before", index < currentIndex);
+            slide.classList.toggle("is-after", index > currentIndex);
+            slide.setAttribute("aria-hidden", index === currentIndex ? "false" : "true");
+          });
+
+          counter.textContent = `${String(currentIndex + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+          label.textContent = slideLabel(slides[currentIndex], currentIndex);
+          prevButton.disabled = currentIndex === 0;
+          nextButton.disabled = currentIndex === slides.length - 1;
+        }
+
+        function goToSlide(nextIndex) {
+          if (nextIndex < 0 || nextIndex >= slides.length || nextIndex === currentIndex) return;
+          currentIndex = nextIndex;
+          renderSlides();
+        }
+
+        prevButton.addEventListener("click", () => goToSlide(currentIndex - 1));
+        nextButton.addEventListener("click", () => goToSlide(currentIndex + 1));
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+            event.preventDefault();
+            goToSlide(Math.min(currentIndex + 1, slides.length - 1));
+          }
+
+          if (event.key === "ArrowLeft" || event.key === "PageUp") {
+            event.preventDefault();
+            goToSlide(Math.max(currentIndex - 1, 0));
+          }
+
+          if (event.key === "Home") {
+            event.preventDefault();
+            goToSlide(0);
+          }
+
+          if (event.key === "End") {
+            event.preventDefault();
+            goToSlide(slides.length - 1);
+          }
+        });
+
+        renderSlides();
+      })();
+    </script>
+  </body>
+</html>
