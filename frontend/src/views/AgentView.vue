@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth.js'
+import { renderMarkdown } from '../utils/markdown.js'
 import {
   sendAgentMessage,
   fetchAgentStatus,
@@ -423,7 +424,12 @@ function autoResizeEdit(e) {
             <!-- Normal view -->
             <template v-else>
               <div class="msg-bubble">
-                {{ msg.text }}
+                <div
+                  v-if="msg.role === 'assistant'"
+                  class="msg-md"
+                  v-html="renderMarkdown(msg.text)"
+                />
+                <template v-else>{{ msg.text }}</template>
                 <span v-if="msg.edited" class="msg-edited-tag">editado</span>
               </div>
 
@@ -1030,6 +1036,95 @@ function autoResizeEdit(e) {
   color: var(--TextDim, #5a5040);
   vertical-align: middle;
 }
+
+/* ── Rendered markdown inside assistant bubbles ──
+   v-html content is not touched by scoped CSS, so child rules use :deep(). */
+.msg-md {
+  white-space: normal;
+}
+
+.msg-md :deep(:first-child) { margin-top: 0; }
+.msg-md :deep(:last-child) { margin-bottom: 0; }
+
+.msg-md :deep(p) { margin: 0 0 8px; }
+
+.msg-md :deep(h1), .msg-md :deep(h2), .msg-md :deep(h3),
+.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) {
+  margin: 12px 0 6px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.msg-md :deep(h1) { font-size: 17px; }
+.msg-md :deep(h2) { font-size: 15px; }
+.msg-md :deep(h3) { font-size: 14px; }
+.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 13px; }
+
+.msg-md :deep(ul), .msg-md :deep(ol) {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+.msg-md :deep(li) { margin: 2px 0; }
+.msg-md :deep(li > p) { margin: 0; }
+
+.msg-md :deep(a) {
+  color: var(--Primary, #caa860);
+  text-decoration: underline;
+}
+
+.msg-md :deep(strong) { font-weight: 700; }
+.msg-md :deep(em) { font-style: italic; }
+
+.msg-md :deep(code) {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 1px 5px;
+}
+
+.msg-md :deep(pre) {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow-x: auto;
+}
+.msg-md :deep(pre code) {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.msg-md :deep(blockquote) {
+  margin: 0 0 8px;
+  padding: 4px 0 4px 12px;
+  border-left: 2px solid rgba(202, 168, 96, 0.4);
+  color: var(--TextMuted, #8a8070);
+}
+
+.msg-md :deep(hr) {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 12px 0;
+}
+
+.msg-md :deep(table) {
+  border-collapse: collapse;
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+.msg-md :deep(th), .msg-md :deep(td) {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 8px;
+  text-align: left;
+}
+.msg-md :deep(th) { background: rgba(255, 255, 255, 0.05); font-weight: 700; }
+
+.msg-md :deep(img) { max-width: 100%; border-radius: 2px; }
 
 /* Hover-revealed per-message actions */
 .msg-actions {

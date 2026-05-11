@@ -7,7 +7,7 @@ const messageSchema = z.object({
 
 export const agentChatSchema = z.object({
   messages: z.array(messageSchema).min(1).max(40),
-  conversationId: z.string().min(1).max(64).optional(),
+  conversationId: z.string().min(1).max(64).nullish(),
 })
 
 export const agentUpdateMessageSchema = z.object({
