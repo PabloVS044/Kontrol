@@ -198,7 +198,7 @@
             <div class="card-footer">
               <Anchor
                 label="View details"
-                :link="`/inventory/${product.id_producto}`"
+                :link="detailLink(product)"
                 textColor="#c9a962"
                 backColor="transparent"
                 hoverColor="rgba(201,169,98,0.05)"
@@ -296,6 +296,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
 import Anchor from '../components/UI/Button/Anchor.vue'
@@ -305,6 +306,7 @@ import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const route = useRoute()
 
 const products       = ref([])
 const stockAlerts    = ref([])
@@ -350,7 +352,12 @@ async function loadProjects() {
       ? allProjects
       : allProjects.filter((project) => inventoryProjectIds.includes(project.id_proyecto))
 
-    if (
+    const queryProjectId = Number(route.query.project)
+    if (queryProjectId) {
+      selectedProject.value = projects.value.find(
+        ({ id_proyecto }) => id_proyecto === queryProjectId
+      ) ?? null
+    } else if (
       selectedProject.value &&
       !projects.value.some(({ id_proyecto }) => id_proyecto === selectedProject.value.id_proyecto)
     ) {
@@ -399,13 +406,15 @@ onMounted(async () => {
   if (accessEmpresaId !== authStore.idEmpresaActual) {
     await authStore.loadAccessContext()
   }
-  await Promise.all([loadData(), loadProjects()])
+  await loadProjects()
+  await loadData()
 })
 
 watch(() => authStore.idEmpresaActual, async () => {
   selectedProject.value = null
   await authStore.loadAccessContext()
-  await Promise.all([loadData(), loadProjects()])
+  await loadProjects()
+  await loadData()
 })
 
 /* ── categorías dinámicas ── */
@@ -470,6 +479,13 @@ function stockNumClass(p) {
   if (p.stock_actual === 0) return 'red'
   if (p.stock_actual <= p.stock_minimo) return 'gold'
   return ''
+}
+
+function detailLink(product) {
+  const query = selectedProject.value
+    ? `?project=${selectedProject.value.id_proyecto}`
+    : ''
+  return `/inventory/${product.id_producto}${query}`
 }
 
 /* ── modal nuevo producto ── */

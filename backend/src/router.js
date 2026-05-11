@@ -10,6 +10,9 @@ import companyRoutes from './routes/companyRoutes.js'
 import reportsRoutes from './routes/reportsRoutes.js'
 import budgetRoutes from './routes/budgetRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
+import chatRoutes from './routes/chatRoutes.js'
+import agentRoutes from './routes/agentRoutes.js'
+import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
 
 
@@ -31,6 +34,8 @@ router.use('/reports', reportsRoutes)
 router.use('/budgets', budgetRoutes)
 router.use('/projects/:projectId/tasks', taskRoutes)
 router.use('/admin', adminRoutes)
-
+router.use('/chat', chatRoutes)
+router.use('/agent', agentRoutes)
+router.use('/uploadthing', uploadthingRouter)
 
 export default router

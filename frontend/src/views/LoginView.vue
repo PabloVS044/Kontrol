@@ -5,9 +5,9 @@
 
     <div class="login-layout">
 
-      <!-- Panel izquierdo: Logo -->
+      <!-- Panel izquierdo: Logo 3D -->
       <div class="login-logo-panel">
-        <img src="@/assets/img/kontrol.png" alt="Kontrol" class="login-logo-img" />
+        <KontrolLogo3D class="login-logo-3d" width="460px" height="460px" />
       </div>
 
       <!-- Panel derecho: Formulario -->
@@ -115,6 +115,7 @@ import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { MailIcon,  EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
+import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
 import { useAuthStore } from '@/stores/auth'
 import { loginUser, loginWithGoogle } from '@/services/auth'
 import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
