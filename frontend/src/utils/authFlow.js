@@ -22,6 +22,7 @@ export async function finalizeAuthenticatedSession({
 }
 
 export function getDefaultAuthenticatedRoute(authStore) {
+  if (authStore.isSuperUser) return { name: 'admin-dashboard' }
   return authStore.empresaActual
     ? { name: 'dashboard' }
     : { name: 'onboarding' }

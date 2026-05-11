@@ -231,7 +231,7 @@ const closeMenu = () => {
   transform: rotate(180deg);
 }
 
-/* Dropdown (rendered via Teleport to body) */
+/* Dropdown  */
 .empresa-backdrop {
   position: fixed;
   inset: 0;

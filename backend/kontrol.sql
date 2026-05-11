@@ -38,7 +38,8 @@ CREATE TABLE public.empresa (
   industria character varying,
   telefono character varying,
   direccion text,
-  email character varying NOT NULL UNIQUE
+  email character varying NOT NULL UNIQUE,
+  activo boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE public.categoria (
@@ -295,8 +296,9 @@ CREATE TABLE public.reporte (
 
 -- Roles de sistema (asignado a cada usuario de la plataforma)
 INSERT INTO public.rol (nombre_rol, descripcion) VALUES
-  ('admin',   'Administrador de la plataforma'),
-  ('usuario', 'Usuario estándar de la plataforma');
+  ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma'),
+  ('admin',      'Administrador de la plataforma'),
+  ('usuario',    'Usuario estándar de la plataforma');
 
 -- Permisos de empresa
 INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
