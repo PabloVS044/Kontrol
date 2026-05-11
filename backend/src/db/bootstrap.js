@@ -113,4 +113,57 @@ export const ensureDatabaseSchema = async () => {
     ON CONFLICT (nombre_permiso) DO UPDATE
     SET descripcion = EXCLUDED.descripcion
   `)
+
+  // Audit log for top-up additions / withdrawals against a project's allocated
+  // budget. Each row records who changed it, by how much, and why.
+  // Conceptually distinct from movimiento_inventario (which is a cash-flow
+  // ledger) — this records changes to the project's capital allocation.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.presupuesto_ajuste (
+      id_ajuste SERIAL PRIMARY KEY,
+      id_proyecto integer NOT NULL,
+      monto numeric NOT NULL CHECK (monto <> 0),
+      motivo text,
+      fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      id_usuario integer NOT NULL,
+      CONSTRAINT presupuesto_ajuste_proyecto_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
+      CONSTRAINT presupuesto_ajuste_usuario_fkey
+        FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS presupuesto_ajuste_proyecto_idx
+      ON public.presupuesto_ajuste (id_proyecto, fecha DESC)
+  `)
+
+  // Reuse movimiento_inventario as the source of truth for activity expenses:
+  // GASTO_ADMIN movements can now optionally link to a presupuesto_actividad
+  // so the activity row can show its own expense history without a parallel
+  // table. id_producto stays NULL for these (admin/services spend).
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS id_actividad integer
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'mi_actividad_fkey'
+          AND table_name = 'movimiento_inventario'
+      ) THEN
+        ALTER TABLE public.movimiento_inventario
+          ADD CONSTRAINT mi_actividad_fkey
+          FOREIGN KEY (id_actividad)
+          REFERENCES public.presupuesto_actividad(id_actividad)
+          ON DELETE SET NULL;
+      END IF;
+    END $$
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_actividad_idx
+      ON public.movimiento_inventario (id_actividad)
+      WHERE id_actividad IS NOT NULL
+  `)
 }

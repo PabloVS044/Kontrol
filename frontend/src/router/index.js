@@ -3,6 +3,7 @@ import LoginView     from '../views/LoginView.vue'
 import RegisterView  from '../views/RegisterView.vue'
 import LandingPage   from '../views/LandingPage.vue'
 import InventoryPage from '../views/InventoryPage.vue'
+import ProductDetailView from '../views/ProductDetailView.vue'
 import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import OnboardingView from '../views/OnboardingView.vue'
@@ -73,6 +74,12 @@ const router = createRouter({
       path: '/inventory',
       name: 'inventory',
       component: InventoryPage,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/inventory/:id',
+      name: 'inventory-detail',
+      component: ProductDetailView,
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
