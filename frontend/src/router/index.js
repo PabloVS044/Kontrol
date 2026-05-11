@@ -14,6 +14,7 @@ import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 import ChatView from '../views/ChatView.vue'
+import AgentView from '../views/AgentView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -103,6 +104,12 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',
       component: ChatView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/agent',
+      name: 'agent',
+      component: AgentView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
   ],
