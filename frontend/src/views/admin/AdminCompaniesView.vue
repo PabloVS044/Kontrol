@@ -111,7 +111,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.adm-page { max-width: 960px; }
+.adm-page { max-width: 100%; width: 100%; }
 
 
 .adm-header {  justify-content: space-between; padding-bottom: 2rem;}

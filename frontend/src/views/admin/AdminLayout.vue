@@ -17,7 +17,9 @@ import AdminNavbar from '@/components/admin/AdminNavbar.vue'
 }
 
 .admin-content {
-  padding: 80px 40px 40px;
+  padding: 88px 60px 60px;
+  max-width: 1500px;
+  margin: 0 auto;
 }
 
 @media (max-width: 640px) {

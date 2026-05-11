@@ -55,37 +55,32 @@
         </div>
 
         <!-- Users by role -->
-        <div class="chart-card">
+        <div class="chart-card chart-card-center">
           <p class="chart-title">Users by Role</p>
           <div class="donut-wrap">
-            <svg width="140" height="140" viewBox="0 0 140 140">
-              <circle cx="70" cy="70" r="52" fill="none" stroke="var(--Background3)" stroke-width="20"/>
+            <svg width="180" height="180" viewBox="0 0 180 180">
+              <circle cx="90" cy="90" r="68" fill="none" stroke="var(--Background3)" stroke-width="22"/>
               <circle
-                cx="70" cy="70" r="52"
+                cx="90" cy="90" r="68"
                 fill="none"
                 stroke="var(--Primary)"
-                stroke-width="20"
-                stroke-dasharray="326.7"
-                :stroke-dashoffset="adminOffset"
+                stroke-width="22"
+                stroke-dasharray="427.3"
+                :stroke-dashoffset="usuarioPctOffset"
                 stroke-linecap="butt"
-                transform="rotate(-90 70 70)"
+                transform="rotate(-90 90 90)"
               />
             </svg>
             <div class="donut-center">
-              <span class="donut-pct">{{ adminPct }}%</span>
-              <span class="donut-sub">admin</span>
+              <span class="donut-pct">{{ regularUsers.length }}</span>
+              <span class="donut-sub">users</span>
             </div>
           </div>
           <div class="legend">
-            <div class="legend-item">
-              <span class="legend-dot gold"></span>
-              <span class="legend-label">Admin</span>
-              <span class="legend-val">{{ roleCounts.admin }}</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-dot dim"></span>
-              <span class="legend-label">Usuario</span>
-              <span class="legend-val">{{ roleCounts.usuario }}</span>
+            <div v-for="(count, role) in roleCounts" :key="role" class="legend-item">
+              <span class="legend-dot" :class="role === 'usuario' ? 'dim' : 'gold'"></span>
+              <span class="legend-label">{{ role }}</span>
+              <span class="legend-val">{{ count }}</span>
             </div>
           </div>
         </div>
@@ -168,21 +163,22 @@ const topByMembers = computed(() =>
 const maxProjects = computed(() => Math.max(...topCompanies.value.map(c => c.total_proyectos), 1))
 const maxMembers  = computed(() => Math.max(...topByMembers.value.map(c => c.total_miembros), 1))
 
+const regularUsers = computed(() => users.value.filter(u => u.nombre_rol !== 'super_user'))
+
 const roleCounts = computed(() => {
-  const counts = { admin: 0, usuario: 0 }
-  for (const u of users.value) {
-    if (u.nombre_rol === 'admin') counts.admin++
-    else counts.usuario++
+  const counts = {}
+  for (const u of regularUsers.value) {
+    counts[u.nombre_rol] = (counts[u.nombre_rol] ?? 0) + 1
   }
   return counts
 })
 
-const adminPct = computed(() => {
-  const t = users.value.length
-  return t > 0 ? Math.round((roleCounts.value.admin / t) * 100) : 0
+const usuarioPct = computed(() => {
+  const t = regularUsers.value.length
+  return t > 0 ? Math.round(((roleCounts.value.usuario ?? 0) / t) * 100) : 0
 })
 
-const adminOffset = computed(() => 326.7 - (adminPct.value / 100) * 326.7)
+const usuarioPctOffset = computed(() => 427.3 - (usuarioPct.value / 100) * 427.3)
 
 function truncate(str, n) {
   return str.length > n ? str.slice(0, n - 1) + '…' : str
@@ -210,7 +206,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.adm-page { max-width: 1100px; }
+.adm-page { max-width: 1400px; width: 100%; }
 
 .adm-header { padding-bottom: 2rem; }
 
@@ -246,10 +242,10 @@ onMounted(async () => {
   background: var(--Background2);
   border: 1px solid var(--Border);
   border-radius: 10px;
-  padding: 24px 20px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .kpi-dim { opacity: 0.65; }
@@ -264,7 +260,7 @@ onMounted(async () => {
 }
 
 .kpi-value {
-  font-size: 2.4rem;
+  font-size: 3rem;
   font-weight: 700;
   color: var(--Primary);
   font-family: 'DM Sans', sans-serif;
@@ -280,7 +276,7 @@ onMounted(async () => {
 /* ── Charts row ── */
 .charts-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
@@ -288,7 +284,15 @@ onMounted(async () => {
   background: var(--Background2);
   border: 1px solid var(--Border);
   border-radius: 10px;
-  padding: 24px 20px;
+  padding: 32px 28px;
+  min-height: 320px;
+}
+
+.chart-card-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .chart-title {
@@ -374,7 +378,7 @@ onMounted(async () => {
 }
 
 .donut-pct {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: var(--Primary);
   font-family: 'DM Sans', sans-serif;
@@ -388,7 +392,7 @@ onMounted(async () => {
 }
 
 /* ── Legend ── */
-.legend { display: flex; flex-direction: column; gap: 8px; }
+.legend { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 
 .legend-item {
   display: flex;
