@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { notifyCompany } from '../services/notificationService.js'
 
 const ACTIVITY_SELECT = `
   pa.id_actividad, pa.nombre, pa.monto_planificado, pa.monto_real, pa.id_proyecto
@@ -494,6 +495,46 @@ export const registerExpense = async (req, res) => {
     )
 
     await client.query('COMMIT')
+
+    const totalBudget = parseFloat(project.rows[0].presupuesto_total)
+    const totalSpent = parseFloat(totals.rows[0].total_acumulado) || 0
+    const usageRatio = totalBudget > 0 ? totalSpent / totalBudget : 0
+
+    let alert = null
+    let alertLevel = null
+    if (totalSpent >= totalBudget && totalBudget > 0) {
+      alertLevel = 'CRITICO'
+      alert = 'CRITICAL: The total project budget has been reached or exceeded.'
+    } else if (usageRatio >= 0.8) {
+      alertLevel = 'ADVERTENCIA'
+      alert = 'WARNING: More than 80% of the available budget has been used.'
+    }
+
+    if (alertLevel) {
+      const projectName = project.rows[0].nombre ?? `#${projectId}`
+      const pct = Math.round(usageRatio * 100)
+      const isCritical = alertLevel === 'CRITICO'
+      notifyCompany(req.empresa?.id_empresa ?? req.company?.id_empresa, {
+        title: isCritical ? `🚨 Presupuesto crítico — ${projectName}` : `⚠️ Alerta de presupuesto — ${projectName}`,
+        text: isCritical
+          ? `El proyecto *${projectName}* ha alcanzado o superado su presupuesto total (${pct}% usado).`
+          : `El proyecto *${projectName}* ha consumido el ${pct}% de su presupuesto.`,
+        event: 'budget.alert',
+        data: { projectId, alertLevel, usageRatio, totalBudget, totalSpent },
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        total_proyecto: totalBudget,
+        gasto_actual: totalSpent,
+        disponible: totalBudget - totalSpent,
+        porcentaje_uso: Number(usageRatio.toFixed(4)),
+        alerta: alert,
+        alerta_nivel: alertLevel,
+      },
+    })
   } catch (error) {
     await client.query('ROLLBACK')
     client.release()
