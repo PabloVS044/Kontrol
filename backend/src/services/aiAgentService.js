@@ -6,32 +6,11 @@ import {
   executeReadOnly,
 } from './agentSql.js'
 
-/**
- * AI Agent service.
- *
- * Drives a JSON tool-call loop against an OpenAI-compatible chat-completions
- * endpoint (intended for vLLM / SGLang / TGI serving Qwen 3 in FP8).
- *
- * Required env vars:
- *   AGENT_API_URL   Base URL of the OpenAI-compatible API (e.g.
- *                   "https://my-inference.local/v1"). The "/chat/completions"
- *                   suffix is appended automatically if missing.
- *   AGENT_API_KEY   Bearer token. Optional — if empty, no Authorization
- *                   header is sent (vLLM allows this when started without
- *                   --api-key).
- *   AGENT_MODEL     Model identifier as served. Defaults to
- *                   "Qwen/Qwen3-27B-FP8".
- *
- * Optional:
- *   AGENT_TEMPERATURE  Default 0.2
- *   AGENT_MAX_TOKENS   Default 1024
- *   AGENT_MAX_STEPS    Max query→tool-result iterations per user turn.
- *                      Default 5.
- */
 
-const DEFAULT_MODEL = 'Qwen/Qwen3-27B-FP8'
+
+const DEFAULT_MODEL = 'Qwen/Qwen3.6-27B-FP8'
 const DEFAULT_TEMPERATURE = 0.2
-const DEFAULT_MAX_TOKENS = 1024
+const DEFAULT_MAX_TOKENS = 4096
 const DEFAULT_MAX_STEPS = 5
 const MAX_HISTORY = 12      // most recent user/assistant turns kept
 const MAX_USER_CHARS = 4000 // truncate oversized user messages
@@ -146,8 +125,22 @@ async function callLlm({ messages, signal }) {
   }
 
   const data = await response.json()
-  const content = data?.choices?.[0]?.message?.content
-  if (typeof content !== 'string') {
+  const choice = data?.choices?.[0]
+  const message = choice?.message
+  // Reasoning models (Qwen 3.6) emit the thinking trace in `reasoning` /
+  // `reasoning_content` and the actual turn in `content`. Fall back to those
+  // fields if `content` is empty.
+  const content =
+    message?.content ||
+    message?.reasoning_content ||
+    message?.reasoning ||
+    ''
+  if (typeof content !== 'string' || !content.trim()) {
+    if (choice?.finish_reason === 'length') {
+      throw new Error(
+        'AI inference server hit the token limit before producing an answer. Increase AGENT_MAX_TOKENS.'
+      )
+    }
     throw new Error('AI inference server returned a malformed response.')
   }
   return content
