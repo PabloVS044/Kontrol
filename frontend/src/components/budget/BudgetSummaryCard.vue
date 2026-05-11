@@ -1,0 +1,154 @@
+<template>
+  <section class="summary-card">
+    <div class="summary-info">
+      <h2 class="card-title">Budget Summary</h2>
+      <div class="amount-grid">
+        <div class="amount-group">
+          <span class="label">Total Allocated</span>
+          <h3 class="total-value">${{ formatMoney(totalAllocated) }}</h3>
+        </div>
+        <div class="amount-group">
+          <span class="label">Expenses</span>
+          <h3 class="spent-value">${{ formatMoney(totalSpent) }}</h3>
+        </div>
+        <div class="amount-group">
+          <span class="label income">Income</span>
+          <h3 class="income-value">${{ formatMoney(totalIncome) }}</h3>
+        </div>
+        <div class="amount-group">
+          <span class="label" :class="netClass">Net</span>
+          <h3 class="net-value" :class="netClass">
+            {{ netResult < 0 ? '-' : '' }}${{ formatMoney(Math.abs(netResult)) }}
+          </h3>
+        </div>
+        <div class="amount-group">
+          <span class="label" :class="remainingClass">Remaining</span>
+          <h3 class="remaining-value" :class="remainingClass">
+            {{ remaining < 0 ? '-' : '' }}${{ formatMoney(Math.abs(remaining)) }}
+          </h3>
+        </div>
+        <div class="amount-group">
+          <span class="label">Planned</span>
+          <h3 class="planned-value">${{ formatMoney(totalPlanned) }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-donut">
+      <svg viewBox="0 0 100 100">
+        <circle class="circle-bg" cx="50" cy="50" r="40" />
+        <circle
+          class="circle-progress"
+          cx="50" cy="50" r="40"
+          :stroke="progressColor"
+          :stroke-dasharray="CIRCUMFERENCE"
+          :stroke-dashoffset="CIRCUMFERENCE * (1 - Math.min(1, usageRatio))"
+        />
+      </svg>
+      <div class="donut-text">
+        <span class="p-label">Used</span>
+        <span class="p-value">{{ displayPct }}%</span>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  totalAllocated: { type: Number, default: 0 },
+  totalSpent:     { type: Number, default: 0 },
+  totalIncome:    { type: Number, default: 0 },
+  totalPlanned:   { type: Number, default: 0 },
+  remaining:      { type: Number, default: 0 },
+  netResult:      { type: Number, default: 0 },
+  usageRatio:     { type: Number, default: 0 },
+})
+
+const CIRCUMFERENCE = 2 * Math.PI * 40
+
+const displayPct = computed(() => {
+  const pct = props.usageRatio * 100
+  if (pct <= 0) return 0
+  if (pct < 1) return Math.round(pct * 10) / 10
+  return Math.round(Math.min(999, pct))
+})
+
+const remainingClass = computed(() => props.remaining < 0 ? 'danger' : 'gold')
+const netClass       = computed(() => props.netResult < 0 ? 'danger' : 'income')
+
+const progressColor = computed(() => {
+  if (props.usageRatio > 1)     return '#fb7185'
+  if (props.usageRatio >= 0.8)  return '#f97316'
+  if (props.usageRatio >= 0.6)  return '#facc15'
+  return '#c9a962'
+})
+
+function formatMoney(v) {
+  const n = Number(v || 0)
+  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+</script>
+
+<style scoped>
+.summary-card {
+  background: rgba(12,12,12,0.88);
+  border: 1px solid #2a2a2a;
+  padding: 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; gap: 32px; flex-wrap: wrap;
+}
+.summary-info { flex: 1; min-width: 280px; }
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; margin-bottom: 22px; color: #faf8f5;
+}
+.amount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 28px;
+}
+.amount-group { min-width: 0; }
+.label {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #a8a8a8; display: block; margin-bottom: 4px;
+}
+.label.gold,   .gold    { color: #c9a962; }
+.label.danger, .danger  { color: #fb7185; }
+.label.income, .income  { color: #34d399; }
+
+.total-value     { font-size: 26px; font-weight: 700; color: #faf8f5; font-variant-numeric: tabular-nums; }
+.spent-value     { font-size: 22px; font-weight: 600; color: #faf8f5; font-variant-numeric: tabular-nums; }
+.income-value    { font-size: 22px; font-weight: 700; color: #34d399; font-variant-numeric: tabular-nums; }
+.net-value       { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.remaining-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.planned-value   { font-size: 20px; font-weight: 600; color: #d4d4d4; font-variant-numeric: tabular-nums; }
+
+.chart-donut {
+  width: 180px; height: 180px; position: relative; flex-shrink: 0;
+}
+.chart-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.circle-bg       { fill: none; stroke: #242424; stroke-width: 8; }
+.circle-progress {
+  fill: none; stroke-width: 8; stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;
+}
+.donut-text {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); text-align: center;
+}
+.p-label { font-size: 10px; letter-spacing: 0.1em; color: #a8a8a8; display: block; }
+.p-value { font-size: 22px; font-weight: 700; color: #faf8f5; }
+
+@media (max-width: 800px) {
+  .amount-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .summary-card { padding: 24px; gap: 20px; }
+  .amount-grid { gap: 12px; }
+  .chart-donut { width: 150px; height: 150px; margin: 0 auto; }
+  .total-value { font-size: 22px; }
+  .net-value, .remaining-value, .income-value { font-size: 18px; }
+}
+</style>

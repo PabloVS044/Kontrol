@@ -38,7 +38,8 @@ CREATE TABLE public.empresa (
   industria character varying,
   telefono character varying,
   direccion text,
-  email character varying NOT NULL UNIQUE
+  email character varying NOT NULL UNIQUE,
+  activo boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE public.categoria (
@@ -189,6 +190,8 @@ CREATE TABLE public.producto_proveedor (
 -- id_producto es nullable: permite registrar gastos administrativos del proyecto
 -- que impactan el presupuesto sin corresponder a un item de inventario.
 -- cantidad también nullable por la misma razón (un gasto admin no tiene unidades).
+-- id_actividad opcional: enlaza un GASTO_ADMIN a una actividad de presupuesto
+-- para que la actividad pueda mostrar su historia de gastos sin tabla aparte.
 CREATE TABLE public.movimiento_inventario (
   id_movimiento SERIAL PRIMARY KEY,
   tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['ENTRADA', 'SALIDA', 'AJUSTE', 'GASTO_ADMIN'])),
@@ -201,11 +204,13 @@ CREATE TABLE public.movimiento_inventario (
   id_usuario integer NOT NULL,
   id_proyecto integer NOT NULL,
   id_proveedor integer,
+  id_actividad integer,
   -- FK compuesta: producto (si existe) debe pertenecer al mismo proyecto
   CONSTRAINT mi_producto_proyecto_fkey FOREIGN KEY (id_proyecto, id_producto) REFERENCES public.producto(id_proyecto, id_producto),
   CONSTRAINT mi_proyecto_empresa_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto),
   CONSTRAINT movimiento_inventario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario),
   CONSTRAINT movimiento_inventario_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor),
+  CONSTRAINT mi_actividad_fkey FOREIGN KEY (id_actividad) REFERENCES public.presupuesto_actividad(id_actividad) ON DELETE SET NULL,
   -- Coherencia: si es inventario, debe haber producto y cantidad; si es gasto admin, no.
   CONSTRAINT mi_tipo_producto_check CHECK (
     (tipo IN ('ENTRADA','SALIDA','AJUSTE') AND id_producto IS NOT NULL AND cantidad IS NOT NULL)
@@ -260,6 +265,21 @@ CREATE TABLE public.presupuesto_actividad (
   CONSTRAINT presupuesto_actividad_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto)
 );
 
+-- Audit log for top-up additions to a project's allocated budget.
+-- Positive monto = add funds; negative = withdraw (allowed for corrections).
+-- Distinct from movimiento_inventario because adjustments change the capital
+-- allocation, not the cash-flow ledger.
+CREATE TABLE public.presupuesto_ajuste (
+  id_ajuste SERIAL PRIMARY KEY,
+  id_proyecto integer NOT NULL,
+  monto numeric NOT NULL CHECK (monto <> 0),
+  motivo text,
+  fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id_usuario integer NOT NULL,
+  CONSTRAINT presupuesto_ajuste_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
+  CONSTRAINT presupuesto_ajuste_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+);
+
 CREATE TABLE public.reporte (
   id_reporte SERIAL PRIMARY KEY,
   titulo character varying NOT NULL,
@@ -272,116 +292,13 @@ CREATE TABLE public.reporte (
   CONSTRAINT reporte_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
 
-CREATE TABLE public.marketing_campaign (
-  id_campaign SERIAL PRIMARY KEY,
-  id_empresa integer NOT NULL,
-  id_proyecto integer,
-  name character varying(160) NOT NULL,
-  description text,
-  objective character varying(240),
-  channel character varying(120),
-  status character varying(20) NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED')),
-  start_date date,
-  end_date date,
-  created_by integer NOT NULL,
-  updated_by integer NOT NULL,
-  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT marketing_campaign_company_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-  CONSTRAINT marketing_campaign_project_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
-  CONSTRAINT marketing_campaign_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-  CONSTRAINT marketing_campaign_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
-);
-
-CREATE INDEX marketing_campaign_project_idx ON public.marketing_campaign (id_proyecto);
-
-CREATE TABLE public.marketing_item (
-  id_marketing_item SERIAL PRIMARY KEY,
-  id_empresa integer NOT NULL,
-  id_campaign integer,
-  id_proyecto integer,
-  title character varying(180) NOT NULL,
-  description text,
-  content text NOT NULL,
-  status character varying(20) NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED')),
-  content_type character varying(20) NOT NULL CHECK (content_type IN ('IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL')),
-  marketing_date date NOT NULL DEFAULT CURRENT_DATE,
-  resource_link character varying(500),
-  origin_type character varying(20) NOT NULL DEFAULT 'MANUAL' CHECK (origin_type IN ('MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL')),
-  integration_provider character varying(80),
-  integration_reference character varying(180),
-  integration_metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
-  created_by integer NOT NULL,
-  updated_by integer NOT NULL,
-  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT marketing_item_company_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-  CONSTRAINT marketing_item_campaign_fkey FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
-  CONSTRAINT marketing_item_project_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE SET NULL,
-  CONSTRAINT marketing_item_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-  CONSTRAINT marketing_item_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
-);
-
-CREATE TABLE public.marketing_publication (
-  id_publication SERIAL PRIMARY KEY,
-  id_empresa integer NOT NULL,
-  id_campaign integer,
-  id_proyecto integer NOT NULL,
-  title character varying(180) NOT NULL,
-  caption text,
-  platform character varying(20) NOT NULL CHECK (platform IN ('FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TIKTOK', 'X', 'YOUTUBE', 'WHATSAPP', 'OTHER')),
-  publication_format character varying(20) NOT NULL CHECK (publication_format IN ('POST', 'STORY', 'REEL', 'VIDEO', 'CAROUSEL', 'SHORT', 'AD', 'OTHER')),
-  status character varying(20) NOT NULL DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'IN_DESIGN', 'SCHEDULED', 'PUBLISHED', 'PAUSED', 'CANCELLED')),
-  scheduled_for timestamp without time zone,
-  published_at timestamp without time zone,
-  asset_url character varying(500),
-  publication_url character varying(500),
-  notes text,
-  created_by integer NOT NULL,
-  updated_by integer NOT NULL,
-  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT marketing_publication_company_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
-  CONSTRAINT marketing_publication_campaign_fkey FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
-  CONSTRAINT marketing_publication_project_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
-  CONSTRAINT marketing_publication_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
-  CONSTRAINT marketing_publication_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
-);
-
-CREATE INDEX marketing_publication_project_campaign_idx ON public.marketing_publication (id_proyecto, id_campaign);
-CREATE INDEX marketing_publication_status_idx ON public.marketing_publication (status, platform);
-
-CREATE TABLE public.marketing_publication_metric_snapshot (
-  id_metric_snapshot SERIAL PRIMARY KEY,
-  id_publication integer NOT NULL,
-  captured_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  impressions integer NOT NULL DEFAULT 0 CHECK (impressions >= 0),
-  reach integer NOT NULL DEFAULT 0 CHECK (reach >= 0),
-  likes integer NOT NULL DEFAULT 0 CHECK (likes >= 0),
-  comments integer NOT NULL DEFAULT 0 CHECK (comments >= 0),
-  shares integer NOT NULL DEFAULT 0 CHECK (shares >= 0),
-  saves integer NOT NULL DEFAULT 0 CHECK (saves >= 0),
-  clicks integer NOT NULL DEFAULT 0 CHECK (clicks >= 0),
-  leads integer NOT NULL DEFAULT 0 CHECK (leads >= 0),
-  followers_gained integer NOT NULL DEFAULT 0 CHECK (followers_gained >= 0),
-  spend numeric(12,2) NOT NULL DEFAULT 0 CHECK (spend >= 0::numeric),
-  notes text,
-  created_by integer NOT NULL,
-  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT marketing_metric_snapshot_publication_fkey FOREIGN KEY (id_publication) REFERENCES public.marketing_publication(id_publication) ON DELETE CASCADE,
-  CONSTRAINT marketing_metric_snapshot_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario)
-);
-
-CREATE INDEX marketing_metric_snapshot_publication_time_idx
-  ON public.marketing_publication_metric_snapshot (id_publication, captured_at DESC, id_metric_snapshot DESC);
-
 -- ─── SEED DATA ────────────────────────────────────────────────────────────────
 
 -- Roles de sistema (asignado a cada usuario de la plataforma)
 INSERT INTO public.rol (nombre_rol, descripcion) VALUES
-  ('admin',   'Administrador de la plataforma'),
-  ('usuario', 'Usuario estándar de la plataforma');
+  ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma'),
+  ('admin',      'Administrador de la plataforma'),
+  ('usuario',    'Usuario estándar de la plataforma');
 
 -- Permisos de empresa
 INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
@@ -393,9 +310,7 @@ INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
   ('ver_inventario',       'Ver inventario de la empresa'),
   ('gestionar_inventario', 'Gestionar inventario'),
   ('ver_reportes',         'Ver reportes'),
-  ('crear_reportes',       'Crear reportes'),
-  ('ver_marketing',        'Ver el centro de marketing'),
-  ('gestionar_marketing',  'Crear y editar contenido de marketing');
+  ('crear_reportes',       'Crear reportes');
 
 -- Permisos de proyecto
 INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
@@ -431,11 +346,37 @@ INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'manager'
-  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes','ver_marketing','gestionar_marketing');
+  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes');
 
 -- Permisos del rol collaborator
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'collaborator'
-  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes','ver_marketing');
+  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes');
+
+-- Tabla de Equipos
+CREATE TABLE public.equipo (
+  id_equipo SERIAL PRIMARY KEY,
+  nombre character varying NOT NULL,
+  descripcion text,
+  id_empresa integer NOT NULL,
+  id_lider integer NOT NULL, 
+  activo boolean NOT NULL DEFAULT true,
+  creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT equipo_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+  CONSTRAINT equipo_id_lider_fkey FOREIGN KEY (id_lider) REFERENCES public.usuario(id_usuario)
+);
+
+-- Miembros del equipo (Relación muchos a muchos)
+CREATE TABLE public.equipo_usuario (
+  id_equipo integer NOT NULL,
+  id_usuario integer NOT NULL,
+  PRIMARY KEY (id_equipo, id_usuario),
+  CONSTRAINT eq_u_id_equipo_fkey FOREIGN KEY (id_equipo) REFERENCES public.equipo(id_equipo) ON DELETE CASCADE,
+  CONSTRAINT eq_u_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- Relación Proyecto - Equipo
+ALTER TABLE public.proyecto 
+ADD COLUMN id_equipo integer REFERENCES public.equipo(id_equipo) ON DELETE SET NULL;

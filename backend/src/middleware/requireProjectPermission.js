@@ -1,5 +1,5 @@
 import pool from '../db/pool.js'
-import { ensureProjectAccess } from '../services/projectAccessService.js'
+import { ensureProjectAccess, DEFAULT_PROJECT_PERMISSION_NAMES } from '../services/projectAccessService.js'
 
 const resolveProjectId = (req) =>
   req.project?.id_proyecto ??
@@ -22,6 +22,24 @@ const requireProjectPermission = (...permissions) => async (req, res, next) => {
       success: false,
       message: 'Select a project to continue.',
     })
+  }
+
+  if (req.user?.nombre_rol === 'super_user') {
+    const projectResult = await pool.query(
+      'SELECT id_proyecto, nombre, estado, id_encargado FROM public.proyecto WHERE id_proyecto = $1 LIMIT 1',
+      [id_proyecto]
+    )
+    if (!projectResult.rows.length) {
+      return res.status(404).json({ success: false, message: 'Project not found.' })
+    }
+    const projectContext = {
+      ...(req.proyecto ?? {}),
+      id_proyecto: Number(id_proyecto),
+      permisos: [...DEFAULT_PROJECT_PERMISSION_NAMES],
+    }
+    req.project = projectContext
+    req.proyecto = projectContext
+    return next()
   }
 
   const access = await ensureProjectAccess({

@@ -32,7 +32,10 @@ export const getProjectMetrics = async (req, res) => {
         [id]
       ),
       pool.query(
-        `SELECT tipo, COUNT(*)::int AS count, SUM(precio_unitario * cantidad) AS total
+        `SELECT
+           tipo,
+           COUNT(*)::int AS count,
+           COALESCE(SUM(precio_unitario * COALESCE(cantidad, 1)), 0) AS total
          FROM public.movimiento_inventario
          WHERE id_proyecto = $1
          GROUP BY tipo`,
