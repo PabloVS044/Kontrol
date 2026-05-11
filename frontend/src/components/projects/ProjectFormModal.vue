@@ -94,7 +94,7 @@ import FormField from '../common/FormField.vue'
 import { ESTADOS } from '../../utils/projectConstants.js'
 
 
-const emit = defineEmits(['update:show', 'submit'])
+const emit = defineEmits(['update:modelValue', 'submit'])
 
 const props = defineProps({
   modelValue: Boolean,
@@ -119,7 +119,7 @@ watch(() => props.modelValue, (val) => {
 })
 
 watch(localShow, (val) => {
-  emit('update:show', val)
+  emit('update:modelValue', val)
 })
 
 function resetForm() {
