@@ -22,7 +22,7 @@ const router = Router()
 router.get(
   '/',
   requireAuth,
-  requireRole('admin'),
+  requireRole('admin', 'super_user'),
   validate(getUsersQuerySchema, 'query'),
   getUsers
 )
@@ -30,7 +30,7 @@ router.get(
 router.get(
   '/:id',
   requireAuth,
-  requireRole('admin'),
+  requireRole('admin', 'super_user'),
   validate(userIdParamSchema, 'params'),
   getUserById
 )
@@ -38,7 +38,7 @@ router.get(
 router.post(
   '/',
   requireAuth,
-  requireRole('admin'),
+  requireRole('admin', 'super_user'),
   validate(createUserSchema),
   createUser
 )
@@ -46,7 +46,7 @@ router.post(
 router.put(
   '/:id',
   requireAuth,
-  requireRole('admin'),
+  requireRole('admin', 'super_user'),
   validate(userIdParamSchema, 'params'),
   validate(updateUserSchema),
   updateUser
@@ -55,7 +55,7 @@ router.put(
 router.delete(
   '/:id',
   requireAuth,
-  requireRole('admin'),
+  requireRole('admin', 'super_user'),
   validate(userIdParamSchema, 'params'),
   deleteUser
 )
