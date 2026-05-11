@@ -61,6 +61,129 @@ const ensureActivityInCompany = async (client, activityId, id_empresa) => {
   return result.rows[0] ?? null
 }
 
+const buildProjectBudgetSummaryData = async (client, projectId, id_empresa) => {
+  const project = await ensureProjectInCompany(client, projectId, id_empresa)
+  if (!project) return null
+
+  const [activitiesResult, inventoryResult, adjustmentsResult] = await Promise.all([
+    client.query(
+      `SELECT
+         pa.id_actividad,
+         pa.nombre,
+         pa.monto_planificado,
+         pa.monto_real,
+         pa.id_proyecto,
+         COALESCE(SUM(m.precio_unitario) FILTER (WHERE m.tipo = 'GASTO_ADMIN'), 0)::numeric AS monto_movimientos,
+         COUNT(m.id_movimiento) FILTER (WHERE m.tipo = 'GASTO_ADMIN')::int AS gastos_count
+       FROM public.presupuesto_actividad pa
+       LEFT JOIN public.movimiento_inventario m
+         ON m.id_actividad = pa.id_actividad
+       WHERE pa.id_proyecto = $1
+       GROUP BY pa.id_actividad
+       ORDER BY pa.id_actividad`,
+      [projectId]
+    ),
+    client.query(
+      `SELECT
+         tipo,
+         COUNT(*)::int AS movimientos,
+         COALESCE(SUM(precio_unitario * COALESCE(cantidad, 1)), 0)::numeric AS total
+       FROM public.movimiento_inventario
+       WHERE id_proyecto = $1
+         AND id_empresa = $2
+         AND tipo IN ('ENTRADA', 'SALIDA', 'GASTO_ADMIN')
+       GROUP BY tipo`,
+      [projectId, id_empresa]
+    ),
+    client.query(
+      `SELECT
+         COALESCE(SUM(monto), 0)::numeric AS total_ajustes,
+         COUNT(*)::int AS ajustes_count
+       FROM public.presupuesto_ajuste
+       WHERE id_proyecto = $1`,
+      [projectId]
+    ),
+  ])
+
+  const activities = activitiesResult.rows.map((row) => {
+    const manual = parseFloat(row.monto_real || 0)
+    const auto = parseFloat(row.monto_movimientos || 0)
+
+    return {
+      id_actividad: row.id_actividad,
+      nombre: row.nombre,
+      monto_planificado: parseFloat(row.monto_planificado || 0),
+      monto_real: manual,
+      monto_movimientos: Number(auto.toFixed(2)),
+      monto_real_efectivo: Number((manual + auto).toFixed(2)),
+      gastos_count: Number(row.gastos_count) || 0,
+      id_proyecto: row.id_proyecto,
+    }
+  })
+
+  const totalAjustes = parseFloat(adjustmentsResult.rows[0]?.total_ajustes) || 0
+  const ajustesCount = Number(adjustmentsResult.rows[0]?.ajustes_count) || 0
+
+  const presupuestoBase = parseFloat(project.presupuesto_total) || 0
+  const totalBudget = presupuestoBase + totalAjustes
+  const totalPlanned = activities.reduce(
+    (sum, activity) => sum + activity.monto_planificado, 0
+  )
+  const totalActividades = activities.reduce(
+    (sum, activity) => sum + activity.monto_real, 0
+  )
+
+  const inv = {
+    ENTRADA: { total: 0, movimientos: 0 },
+    SALIDA: { total: 0, movimientos: 0 },
+    GASTO_ADMIN: { total: 0, movimientos: 0 },
+  }
+  for (const row of inventoryResult.rows) {
+    inv[row.tipo] = {
+      total: parseFloat(row.total) || 0,
+      movimientos: Number(row.movimientos) || 0,
+    }
+  }
+
+  const egresosInventario = inv.ENTRADA.total + inv.GASTO_ADMIN.total
+  const egresosTotales = totalActividades + egresosInventario
+  const ingresosTotales = inv.SALIDA.total
+  const resultadoNeto = ingresosTotales - egresosTotales
+  const disponible = totalBudget - egresosTotales
+  const usageRatio = totalBudget > 0 ? egresosTotales / totalBudget : 0
+
+  const { alerta, alerta_nivel } = computeAlert(usageRatio, totalBudget)
+
+  return {
+    proyecto: {
+      id_proyecto: project.id_proyecto,
+      nombre: project.nombre,
+    },
+    presupuesto_total: Number(totalBudget.toFixed(2)),
+    presupuesto_base: Number(presupuestoBase.toFixed(2)),
+    total_ajustes: Number(totalAjustes.toFixed(2)),
+    ajustes_count: ajustesCount,
+    total_planificado: Number(totalPlanned.toFixed(2)),
+    total_gastado: Number(egresosTotales.toFixed(2)),
+    total_gastado_actividades: Number(totalActividades.toFixed(2)),
+    total_gastado_inventario: Number(egresosInventario.toFixed(2)),
+    gasto_inventario_compras: Number(inv.ENTRADA.total.toFixed(2)),
+    gasto_inventario_admin: Number(inv.GASTO_ADMIN.total.toFixed(2)),
+    total_ingresos: Number(ingresosTotales.toFixed(2)),
+    ingresos_ventas: Number(inv.SALIDA.total.toFixed(2)),
+    resultado_neto: Number(resultadoNeto.toFixed(2)),
+    movimientos_compra: inv.ENTRADA.movimientos,
+    movimientos_venta: inv.SALIDA.movimientos,
+    movimientos_admin: inv.GASTO_ADMIN.movimientos,
+    disponible: Number(disponible.toFixed(2)),
+    porcentaje_uso: Number(usageRatio.toFixed(4)),
+    porcentaje_completado: Math.min(100, Math.round(usageRatio * 100)),
+    alerta,
+    alerta_nivel,
+    actividades: activities,
+  }
+}
+
 // GET /api/budgets
 // List budget activities scoped to current empresa, optionally filtered by project.
 export const getActivities = async (req, res) => {
@@ -198,142 +321,12 @@ export const getProjectBudgetSummary = async (req, res) => {
   const { projectId } = req.params
   const { id_empresa } = req.empresa
 
-  const project = await ensureProjectInCompany(pool, projectId, id_empresa)
-  if (!project) {
+  const summary = await buildProjectBudgetSummaryData(pool, projectId, id_empresa)
+  if (!summary) {
     return res.status(404).json({ success: false, message: 'Project not found.' })
   }
 
-  const [activitiesResult, inventoryResult, adjustmentsResult] = await Promise.all([
-    pool.query(
-      `SELECT
-         pa.id_actividad,
-         pa.nombre,
-         pa.monto_planificado,
-         pa.monto_real,
-         pa.id_proyecto,
-         COALESCE(SUM(m.precio_unitario) FILTER (WHERE m.tipo = 'GASTO_ADMIN'), 0)::numeric AS monto_movimientos,
-         COUNT(m.id_movimiento) FILTER (WHERE m.tipo = 'GASTO_ADMIN')::int AS gastos_count
-       FROM public.presupuesto_actividad pa
-       LEFT JOIN public.movimiento_inventario m
-         ON m.id_actividad = pa.id_actividad
-       WHERE pa.id_proyecto = $1
-       GROUP BY pa.id_actividad
-       ORDER BY pa.id_actividad`,
-      [projectId]
-    ),
-    pool.query(
-      `SELECT
-         tipo,
-         COUNT(*)::int AS movimientos,
-         COALESCE(SUM(precio_unitario * COALESCE(cantidad, 1)), 0)::numeric AS total
-       FROM public.movimiento_inventario
-       WHERE id_proyecto = $1
-         AND id_empresa = $2
-         AND tipo IN ('ENTRADA', 'SALIDA', 'GASTO_ADMIN')
-       GROUP BY tipo`,
-      [projectId, id_empresa]
-    ),
-    pool.query(
-      `SELECT
-         COALESCE(SUM(monto), 0)::numeric AS total_ajustes,
-         COUNT(*)::int AS ajustes_count
-       FROM public.presupuesto_ajuste
-       WHERE id_proyecto = $1`,
-      [projectId]
-    ),
-  ])
-
-  const activities = activitiesResult.rows.map((row) => {
-    const manual = parseFloat(row.monto_real || 0)
-    const auto   = parseFloat(row.monto_movimientos || 0)
-    return {
-      id_actividad: row.id_actividad,
-      nombre: row.nombre,
-      monto_planificado: parseFloat(row.monto_planificado || 0),
-      monto_real: manual,                    // manual override
-      monto_movimientos: Number(auto.toFixed(2)),  // sum of linked GASTO_ADMIN
-      monto_real_efectivo: Number((manual + auto).toFixed(2)),
-      gastos_count: Number(row.gastos_count) || 0,
-      id_proyecto: row.id_proyecto,
-    }
-  })
-
-  const totalAjustes = parseFloat(adjustmentsResult.rows[0]?.total_ajustes) || 0
-  const ajustesCount = Number(adjustmentsResult.rows[0]?.ajustes_count) || 0
-
-  const presupuestoBase = parseFloat(project.presupuesto_total) || 0
-  const totalBudget = presupuestoBase + totalAjustes
-  const totalPlanned = activities.reduce(
-    (sum, a) => sum + a.monto_planificado, 0
-  )
-  // Manual-only tracked spending — automatic (movement-based) is already
-  // counted under inventoryBreakdown.GASTO_ADMIN below.
-  const totalActividades = activities.reduce(
-    (sum, a) => sum + a.monto_real, 0
-  )
-
-  const inv = {
-    ENTRADA:     { total: 0, movimientos: 0 },
-    SALIDA:      { total: 0, movimientos: 0 },
-    GASTO_ADMIN: { total: 0, movimientos: 0 },
-  }
-  for (const row of inventoryResult.rows) {
-    inv[row.tipo] = {
-      total: parseFloat(row.total) || 0,
-      movimientos: Number(row.movimientos) || 0,
-    }
-  }
-
-  // Egresos (expenses) — money out
-  const egresosInventario = inv.ENTRADA.total + inv.GASTO_ADMIN.total
-  const egresosTotales    = totalActividades + egresosInventario
-
-  // Ingresos (income) — money in
-  const ingresosTotales   = inv.SALIDA.total
-
-  const resultadoNeto = ingresosTotales - egresosTotales
-  const disponible    = totalBudget - egresosTotales
-  const usageRatio    = totalBudget > 0 ? egresosTotales / totalBudget : 0
-
-  const { alerta, alerta_nivel } = computeAlert(usageRatio, totalBudget)
-
-  return res.json({
-    success: true,
-    data: {
-      proyecto: {
-        id_proyecto: project.id_proyecto,
-        nombre: project.nombre,
-      },
-      // Budget (base + cumulative adjustments)
-      presupuesto_total: Number(totalBudget.toFixed(2)),
-      presupuesto_base: Number(presupuestoBase.toFixed(2)),
-      total_ajustes:    Number(totalAjustes.toFixed(2)),
-      ajustes_count:    ajustesCount,
-      total_planificado: Number(totalPlanned.toFixed(2)),
-      // Expense totals (egresos)
-      total_gastado: Number(egresosTotales.toFixed(2)),
-      total_gastado_actividades: Number(totalActividades.toFixed(2)),
-      total_gastado_inventario: Number(egresosInventario.toFixed(2)),
-      gasto_inventario_compras: Number(inv.ENTRADA.total.toFixed(2)),
-      gasto_inventario_admin:   Number(inv.GASTO_ADMIN.total.toFixed(2)),
-      // Income (ingresos)
-      total_ingresos: Number(ingresosTotales.toFixed(2)),
-      ingresos_ventas: Number(inv.SALIDA.total.toFixed(2)),
-      // Net result
-      resultado_neto: Number(resultadoNeto.toFixed(2)),
-      // Movement counts (useful for UI labels)
-      movimientos_compra: inv.ENTRADA.movimientos,
-      movimientos_venta:  inv.SALIDA.movimientos,
-      movimientos_admin:  inv.GASTO_ADMIN.movimientos,
-      // Budget consumption
-      disponible: Number(disponible.toFixed(2)),
-      porcentaje_uso: Number(usageRatio.toFixed(4)),
-      porcentaje_completado: Math.min(100, Math.round(usageRatio * 100)),
-      alerta,
-      alerta_nivel,
-      actividades: activities,
-    },
-  })
+  return res.json({ success: true, data: summary })
 }
 
 // GET /api/budgets/project/:projectId/products-financial
@@ -454,7 +447,7 @@ export const registerExpense = async (req, res) => {
   try {
     await client.query('BEGIN')
 
-    const project = await client.query(
+    const projectLock = await client.query(
       `SELECT id_proyecto
        FROM public.proyecto
        WHERE id_proyecto = $1 AND id_empresa = $2
@@ -462,7 +455,7 @@ export const registerExpense = async (req, res) => {
       [projectId, id_empresa]
     )
 
-    if (!project.rows.length) {
+    if (!projectLock.rows.length) {
       await client.query('ROLLBACK')
       return res.status(404).json({ success: false, message: 'Project not found.' })
     }
@@ -495,56 +488,56 @@ export const registerExpense = async (req, res) => {
     )
 
     await client.query('COMMIT')
-
-    const totalBudget = parseFloat(project.rows[0].presupuesto_total)
-    const totalSpent = parseFloat(totals.rows[0].total_acumulado) || 0
-    const usageRatio = totalBudget > 0 ? totalSpent / totalBudget : 0
-
-    let alert = null
-    let alertLevel = null
-    if (totalSpent >= totalBudget && totalBudget > 0) {
-      alertLevel = 'CRITICO'
-      alert = 'CRITICAL: The total project budget has been reached or exceeded.'
-    } else if (usageRatio >= 0.8) {
-      alertLevel = 'ADVERTENCIA'
-      alert = 'WARNING: More than 80% of the available budget has been used.'
+  } catch (error) {
+    try {
+      await client.query('ROLLBACK')
+    } catch {
+      // Ignore rollback failures once the transaction has already finished.
     }
+    throw error
+  } finally {
+    client.release()
+  }
 
-    if (alertLevel) {
-      const projectName = project.rows[0].nombre ?? `#${projectId}`
-      const pct = Math.round(usageRatio * 100)
-      const isCritical = alertLevel === 'CRITICO'
-      notifyCompany(req.empresa?.id_empresa ?? req.company?.id_empresa, {
-        title: isCritical ? `🚨 Presupuesto crítico — ${projectName}` : `⚠️ Alerta de presupuesto — ${projectName}`,
-        text: isCritical
-          ? `El proyecto *${projectName}* ha alcanzado o superado su presupuesto total (${pct}% usado).`
+  const summary = await buildProjectBudgetSummaryData(pool, projectId, id_empresa)
+  if (!summary) {
+    return res.status(404).json({ success: false, message: 'Project not found.' })
+  }
+
+  const alertLevel = summary.alerta_nivel
+  if (['ADVERTENCIA', 'CRITICO', 'EXCEDIDO'].includes(alertLevel)) {
+    const projectName = summary.proyecto?.nombre ?? `#${projectId}`
+    const pct = Math.round(summary.porcentaje_uso * 100)
+    const isCritical = alertLevel === 'CRITICO' || alertLevel === 'EXCEDIDO'
+
+    notifyCompany(id_empresa, {
+      title: isCritical
+        ? `🚨 Presupuesto crítico — ${projectName}`
+        : `⚠️ Alerta de presupuesto — ${projectName}`,
+      text: alertLevel === 'EXCEDIDO'
+        ? `El proyecto *${projectName}* ha superado su presupuesto total (${pct}% usado).`
+        : isCritical
+          ? `El proyecto *${projectName}* ha alcanzado su presupuesto total (${pct}% usado).`
           : `El proyecto *${projectName}* ha consumido el ${pct}% de su presupuesto.`,
-        event: 'budget.alert',
-        data: { projectId, alertLevel, usageRatio, totalBudget, totalSpent },
-      })
-    }
-
-    return res.status(200).json({
-      success: true,
+      event: 'budget.alert',
       data: {
-        total_proyecto: totalBudget,
-        gasto_actual: totalSpent,
-        disponible: totalBudget - totalSpent,
-        porcentaje_uso: Number(usageRatio.toFixed(4)),
-        alerta: alert,
-        alerta_nivel: alertLevel,
+        projectId,
+        alertLevel,
+        usageRatio: summary.porcentaje_uso,
+        totalBudget: summary.presupuesto_total,
+        totalSpent: summary.total_gastado,
       },
     })
-  } catch (error) {
-    await client.query('ROLLBACK')
-    client.release()
-    throw error
   }
-  client.release()
 
-  // Recompute summary using the same logic so the client gets a consistent view.
-  req.params = { projectId }
-  return getProjectBudgetSummary(req, res)
+  return res.status(200).json({
+    success: true,
+    data: {
+      ...summary,
+      total_proyecto: summary.presupuesto_total,
+      gasto_actual: summary.total_gastado,
+    },
+  })
 }
 
 // POST /api/budgets/project/:projectId/funding
