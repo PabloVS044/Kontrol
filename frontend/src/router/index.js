@@ -12,6 +12,8 @@ import BudgetView from '../views/BudgetView.vue'
 import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
+import ChatView from '../views/ChatView.vue'
+import MarketingHubView from '../views/MarketingHubView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -89,6 +91,18 @@ const router = createRouter({
       path: '/budget',
       name: 'budget',
       component: BudgetView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: ChatView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/marketing',
+      name: 'marketing',
+      component: MarketingHubView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
   ],

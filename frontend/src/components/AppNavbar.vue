@@ -47,8 +47,10 @@
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
+        <RouterLink v-if="authStore.canViewMarketing" class="appnav-link" to="/marketing" @click="closeMenu">Marketing</RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
+        <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
       </div>
 
       <div class="appnav-end">
