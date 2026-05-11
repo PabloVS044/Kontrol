@@ -96,7 +96,6 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
-      // TODO(T-37): guard uses isSuperUser — update the role string there when T-37 merges
       path: '/admin',
       component: AdminLayout,
       meta: { requiresAuth: true, requiresSuperUser: true },
@@ -120,8 +119,14 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Authenticated but heading to a route that needs an empresa context
-  if (authStore.isLoggedIn && to.meta.requiresEmpresa) {
+  // Super user belongs only in the admin panel
+  if (authStore.isSuperUser && to.meta.requiresAuth && !to.meta.requiresSuperUser) {
+    next({ name: 'admin-dashboard' })
+    return
+  }
+
+  // Authenticated but heading to a route that needs an empresa context (super_user bypasses this)
+  if (authStore.isLoggedIn && to.meta.requiresEmpresa && !authStore.isSuperUser) {
     // Reload empresas if the list is empty (e.g. after a hard refresh with no localStorage)
     if (!authStore.empresas.length && !authStore.empresaActual) {
       await authStore.loadEmpresas()
