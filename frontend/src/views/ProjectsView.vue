@@ -2,290 +2,70 @@
   <div class="projects-root">
     <AppNavbar />
 
-    <BaseModal v-model="showModal" title="New project">
-      <form class="modal-form" @submit.prevent="submitProject">
-
-        <div class="form-field">
-          <label>Name <span class="req">*</span></label>
-          <input v-model="form.nombre" type="text" placeholder="Project name" required />
-        </div>
-
-        <div class="form-field">
-          <label>Description</label>
-          <textarea v-model="form.descripcion" placeholder="Optional description" rows="2" />
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label>Start date <span class="req">*</span></label>
-            <input v-model="form.fecha_inicio" type="date" required />
-          </div>
-          <div class="form-field">
-            <label>End date</label>
-            <input v-model="form.fecha_fin_planificada" type="date" />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label>Budget <span class="req">*</span></label>
-            <input v-model.number="form.presupuesto_total" type="number" min="0" step="0.01" placeholder="0.00" required />
-          </div>
-          <div class="form-field">
-            <label>Status</label>
-            <select v-model="form.estado">
-              <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
-            </select>
-          </div>
-        </div>
-
-        <p v-if="modalError" class="modal-error">{{ modalError }}</p>
-
-        <div class="modal-actions">
-          <Button label="Cancel" type="button" @click="showModal = false" />
-          <Button
-            :label="modalLoading ? 'Saving…' : 'Save project'"
-            type="submit"
-            :disabled="modalLoading"
-          />
-        </div>
-      </form>
-    </BaseModal>
+    <!-- Modal -->
+    <ProjectFormModal 
+      v-model="showModal" 
+      :loading="modalLoading"
+      :error="modalError"
+      @submit="submitProject"
+    />
 
     <div class="projects-layout">
-
-      <!-- Auth error -->
-      <div v-if="authError" class="state-screen">
-        <p class="state-title">Session required</p>
-        <p class="state-msg">You must be logged in to view your projects.</p>
-      </div>
-
-      <!-- Fetch error -->
-      <div v-else-if="fetchError" class="state-screen">
-        <p class="state-title">Could not load projects</p>
-        <p class="state-msg">{{ fetchError }}</p>
-        <button class="btn-primary" style="margin-top:16px" @click="loadData">
-          <span>Retry</span>
-        </button>
-      </div>
+      <!-- Estados de error y carga -->
+      <ErrorState v-if="authError" title="Session required" msg="You must be logged in." />
+      
+      <ErrorState v-else-if="fetchError" :title="'Could not load projects'" :msg="fetchError" @retry="loadData" />
 
       <template v-else>
-        <!-- Main panel -->
         <div class="main-panel">
-
-          <!-- Header -->
-          <div class="proj-header">
-            <div class="proj-header-left">
-              <h1 class="proj-title">My Projects</h1>
-              <p class="proj-subtitle">Projects you are enrolled in as admin or member</p>
-            </div>
-            <div class="proj-header-actions">
-              <button v-if="authStore.canCreateProjects" class="btn-primary" @click="openModal">
-                <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
-                </svg>
-                <span>New project</span>
-              </button>
-              <button class="icon-btn" title="Settings">
-                <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
-                  <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
-                </svg>
-              </button>
-              <button class="icon-btn" title="History">
-                <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
-                  <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+          
+          <!-- Encabezado -->
+          <PageHeader 
+            title="My Projects" 
+            subtitle="Projects you are enrolled in as admin or member"
+            showCreateButton
+            createLabel="+ Project"
+            :canCreate="authStore.canCreateProjects"
+            @create="openModal"
+          />
 
           <!-- Tabs -->
           <div class="tabs">
-            <button
-              v-for="tab in tabs"
-              :key="tab.key"
-              class="tab"
-              :class="{ active: activeTab === tab.key }"
-              @click="activeTab = tab.key"
-            >
+            <button v-for="tab in tabs" :key="tab.key" class="tab" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
               {{ tab.label }} ({{ tab.count }})
             </button>
           </div>
 
-          <!-- Section label -->
-          <div class="section-header">
-            <span class="section-title">
-              {{ activeTab === 'all' ? 'All Projects' :
-                 activeTab === 'active' ? 'Active Projects' :
-                 activeTab === 'risk' ? 'At Risk' :
-                 activeTab === 'completed' ? 'Completed' : 'Projects' }}
-            </span>
-            <span v-if="loading" class="section-meta">Loading…</span>
-            <span v-else class="section-meta">
-              {{ filteredProjects.length }} projects · Click any project to view details
-            </span>
-          </div>
+          <LoadingSkeleton v-if="loading" type="project-grid" :count="6" />
 
-          <!-- Skeleton -->
-          <div v-if="loading" class="project-grid">
-            <div v-for="n in 6" :key="n" class="project-card skeleton">
-              <div class="skeleton-accent"></div>
-              <div class="skeleton-body">
-                <div class="skeleton-line short"></div>
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line mid"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Grid -->
+          <!-- Grid de Proyectos -->
           <div v-else class="project-grid">
-            <div
+            <ProjectCard
               v-for="project in filteredProjects"
               :key="project.id_proyecto"
-              class="project-card"
-            >
-              <div class="card-accent" :style="{ backgroundColor: statusColor(project.estado) }"></div>
-              <div class="card-header">
-                <span class="card-name">{{ project.nombre }}</span>
-                <Pill
-                  :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
-                />
-              </div>
-              <div class="card-body">
-                <p class="card-desc">{{ project.descripcion || 'No description.' }}</p>
-                <div class="progress-wrap">
-                  <ProgressBar
-                    :pct="statusProgress(project.estado)"
-                    :color="statusColor(project.estado)"
-                    height="3px"
-                    style="flex:1"
-                  />
-                  <span class="progress-val">{{ statusProgress(project.estado) }}%</span>
-                </div>
-                <div class="budget-line">
-                  <div class="budget-labels">
-                    <span>Budget</span>
-                    <span class="budget-val">
-                      ${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}
-                    </span>
-                  </div>
-                  <div class="progress-bg">
-                    <div
-                      class="progress-fill"
-                      :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"
-                    ></div>
-                  </div>
-                  <div class="budget-meta">
-                    <span :style="{ color: budgetColor(project) }">{{ budgetPct(project) }}% used</span>
-                    <span v-if="budgetByProj[project.id_proyecto]?.alerta_nivel"
-                          class="alert-pill"
-                          :class="budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'critical' : 'warn'">
-                      {{ budgetByProj[project.id_proyecto].alerta_nivel === 'CRITICO' ? 'OVERRUN' : 'WARNING' }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="card-footer-row">
-                  <template v-if="canEditStatus(project)">
-                    <div
-                      class="status-select-wrap"
-                      :style="{ '--status-color': statusColor(project.estado) }"
-                    >
-                      <span class="status-dot-mark" :style="{ backgroundColor: statusColor(project.estado) }"></span>
-                      <select
-                        class="status-select"
-                        :value="project.estado"
-                        :disabled="statusUpdating[project.id_proyecto]"
-                        @change="updateProjectStatus(project, $event.target.value)"
-                      >
-                        <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
-                      </select>
-                    </div>
-                  </template>
-                  <Pill
-                    v-else
-                    :label="statusLabel(project.estado)"
-                    :btnColor="statusColor(project.estado) + '18'"
-                    :circleColor="statusColor(project.estado)"
-                    :textColor="statusColor(project.estado)"
-                  />
-                  <span class="due-date">
-                    {{ project.fecha_fin_planificada ? 'Due ' + formatDate(project.fecha_fin_planificada) : 'No due date' }}
-                  </span>
-                </div>
-                <p v-if="statusError[project.id_proyecto]" class="status-error">
-                  {{ statusError[project.id_proyecto] }}
-                </p>
-              </div>
-              <div class="card-open">
-                <Anchor
-                  label="→ Open project"
-                  :link="`/projects/${project.id_proyecto}`"
-                  textColor="#555"
-                  backColor="transparent"
-                  hoverColor="rgba(201,169,98,0.06)"
-                />
-                <a class="open-anchor" @click.prevent="openBudget(project)">→ Open budget</a>
-              </div>
-            </div>
-
-            <div v-if="!loading && filteredProjects.length === 0" class="empty-state">
-              <p>No projects in this category.</p>
+              :project="project"
+              :budgetSummary="budgetByProj[project.id_proyecto]"
+              :statusUpdating="statusUpdating[project.id_proyecto]"
+              :statusError="statusError[project.id_proyecto]"
+              :canEditStatus="canEditStatus(project)"
+              @update-status="updateProjectStatus"
+              @open-budget="openBudget"
+            />
+            
+            <div v-if="filteredProjects.length === 0" class="empty-state">
+              <p>No projects found.</p>
             </div>
           </div>
-
         </div>
 
-        <!-- Context panel -->
-        <aside class="context-panel">
-          <div class="ctx-title">Overview</div>
-          <div class="ctx-subtitle">Your project summary</div>
-
-          <div>
-            <p class="ctx-label">AT A GLANCE</p>
-            <div class="summary-grid">
-              <div class="summary-card">
-                <span class="s-value">{{ projects.length }}</span>
-                <span class="s-label">Total projects</span>
-                <span class="s-sub">{{ asAdminCount }} as admin</span>
-              </div>
-              <div class="summary-card">
-                <span class="s-value" style="color:#fb7185">{{ atRiskCount }}</span>
-                <span class="s-label">At risk</span>
-                <span class="s-sub red">Needs attention</span>
-              </div>
-              <div class="summary-card">
-                <span class="s-value">{{ completedCount }}</span>
-                <span class="s-label">Completed</span>
-                <span class="s-sub">This quarter</span>
-              </div>
-              <div class="summary-card">
-                <span class="s-value">{{ pausedCount }}</span>
-                <span class="s-label">Paused</span>
-                <span class="s-sub gold">Awaiting budget</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="ctx-label">QUICK ACTIONS</p>
-            <Button v-if="authStore.canCreateProjects" label="+ Create new project" @click="openModal" />
-            <Button label="↓ Export summary" />
-          </div>
-
-          <div class="data-source">
-            <div class="ds-label">DATA SOURCE</div>
-            <div class="ds-text">Projects database · Last sync: {{ lastSync }}</div>
-          </div>
-        </aside>
+        <!-- Panel derecho -->
+        <ProjectsSummaryPanel 
+          :projects="projects"
+          :stats="{ asAdminCount, atRiskCount, completedCount, pausedCount }"
+          :lastSync="lastSync"
+          @create="openModal"
+        />
       </template>
-
     </div>
   </div>
 </template>
@@ -294,13 +74,14 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
 import AppNavbar  from '../components/AppNavbar.vue'
-import BaseModal  from '../components/UI/Modal/BaseModal.vue'
-import ProgressBar from '../components/UI/ProgressBar/ProgressBar.vue'
-import Pill   from '../components/UI/Pill/Pill.vue'
-import Anchor from '../components/UI/Button/Anchor.vue'
-import Button from '../components/UI/Button/Button.vue'
-import { statusLabel, formatDate } from '../utils/statusHelpers.js'
+import PageHeader from '../components/common/PageHeader.vue'
+import ErrorState from '../components/common/ErrorState.vue'
+import LoadingSkeleton from '../components/common/LoadingSkeleton.vue'
+import ProjectCard from '../components/projects/ProjectCard.vue'
+import ProjectFormModal from '../components/projects/ProjectFormModal.vue'
+import ProjectsSummaryPanel from '../components/projects/ProjectSummaryPanel.vue'
 
 const router = useRouter()
 
@@ -311,51 +92,14 @@ const loading      = ref(true)
 const authError  = ref(false)
 const fetchError = ref(null)
 const activeTab  = ref('all')
-const lastSync   = ref('—')
+const lastSync   = ref('-')
 
-const ESTADOS = [
-  { value: 'PLANIFICADO', label: 'Planned'    },
-  { value: 'EN_PROGRESO', label: 'In Progress'},
-  { value: 'PAUSADO',     label: 'Paused'     },
-  { value: 'COMPLETADO',  label: 'Completed'  },
-  { value: 'CANCELADO',   label: 'Cancelled'  },
-]
-
-const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa',
-  EN_PROGRESO: '#34d399',
-  PAUSADO:     '#f97316',
-  COMPLETADO:  '#c9a962',
-  CANCELADO:   '#fb7185',
-}
-const STATUS_PROGRESS = {
-  PLANIFICADO: 10,
-  EN_PROGRESO: 60,
-  PAUSADO:     35,
-  COMPLETADO:  100,
-  CANCELADO:   5,
-}
-
-const statusColor    = (e) => STATUS_COLOR[e]    || '#666'
-const statusProgress = (e) => STATUS_PROGRESS[e] ?? 0
 const isAdmin        = (p) => p.id_encargado === authStore.idUsuario
 
-// ── Budget helpers ────────────────────────────────────────────────────────────
-const money = (v) => Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const budgetTotal  = (p) => money(budgetByProj.value[p.id_proyecto]?.presupuesto_total ?? p.presupuesto_total)
-const budgetSpent  = (p) => money(budgetByProj.value[p.id_proyecto]?.total_gastado ?? 0)
-const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_completado ?? 0
-const budgetColor  = (p) => {
-  const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
-  if (lvl === 'CRITICO')     return '#fb7185'
-  if (lvl === 'ADVERTENCIA') return '#f97316'
-  return '#c9a962'
-}
 function openBudget(p) {
   router.push({ name: 'budget', query: { project: p.id_proyecto } })
 }
-// ── API ───────────────────────────────────────────────────────────────────────
-
+// API
 function authHeader() {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
@@ -404,7 +148,7 @@ async function loadData() {
 onMounted(loadData)
 watch(() => authStore.idEmpresaActual, loadData)
 
-// ── Computed counts ───────────────────────────────────────────────────────────
+// Computed counts
 
 const asAdminCount   = computed(() => projects.value.filter(p => isAdmin(p)).length)
 const atRiskCount    = computed(() => projects.value.filter(p => ['PAUSADO', 'CANCELADO'].includes(p.estado)).length)
@@ -425,7 +169,7 @@ const filteredProjects = computed(() => {
   return projects.value
 })
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// Modal 
 
 const showModal    = ref(false)
 const modalLoading = ref(false)
@@ -563,14 +307,14 @@ async function submitProject() {
 .icon16 { width: 16px; height: 16px; flex-shrink: 0; }
 .icon18 { width: 18px; height: 18px; flex-shrink: 0; }
 
-.tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; }
+.tabs { display: flex; gap: 32px; border-bottom: 1px solid #1f1f1f; margin-bottom: 32px; padding: 0;}
 .tab {
-  background: none; border: none; cursor: pointer;
+  background: none !important; background-color: transparent !important; border: none !important; outline: none; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 13px; color: #555;
-  padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
+  padding-bottom: 12px; border-bottom: 2px solid transparent !important; transition: color 0.15s;
 }
-.tab.active { color: #c9a962; border-bottom-color: #c9a962; }
-.tab:hover:not(.active) { color: #888; }
+.tab.active { color: var(--Primary) !important; border-bottom-color: var(--Primary) !important; }
+.tab:hover:not(.active) { color: #faf8f5; }
 
 .section-header { display: flex; justify-content: space-between; align-items: center; }
 .section-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
