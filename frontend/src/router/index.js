@@ -14,6 +14,7 @@ import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
 import ChatView from '../views/ChatView.vue'
+import TeamsView from '../views/TeamsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,12 @@ const router = createRouter({
       name: 'project-detail',
       component: ProjectDetailView,
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
+    },
+    {
+      path: '/teams',
+      name: 'teams',
+      component: TeamsView,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
     },
     {
       path: '/inventory',
@@ -143,6 +150,11 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.requiresInventoryAccess && !authStore.canViewInventory) {
+    next({ name: 'dashboard' })
+    return
+  }
+
+  if (to.meta.requiresTeamManagement && !authStore.canManageTeams) {
     next({ name: 'dashboard' })
     return
   }
