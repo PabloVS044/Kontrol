@@ -6,86 +6,13 @@
 
       <!-- ── MAIN PANEL ──────────────────────────────────────────── -->
       <div class="main-panel">
-
-        <!-- Back + Header -->
-        <div class="detail-header">
-          <button class="back-btn" @click="$router.back()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
-            </svg>
-            All Reports
-          </button>
-
-          <div v-if="loading" class="header-skeleton">
-            <div class="skel-line long"></div>
-            <div class="skel-line short"></div>
-            <div class="skel-line mid"></div>
-          </div>
-
-          <div v-else-if="project" class="header-content">
-            <div class="header-top">
-              <div>
-                <h1 class="proj-name">{{ project.nombre }}</h1>
-                <p class="proj-desc">{{ project.descripcion || 'No description provided.' }}</p>
-              </div>
-              <div class="header-actions">
-                <Pill
-                  :label="statusPill(project.estado).label"
-                  :btnColor="statusPill(project.estado).bg"
-                  :circleColor="statusPill(project.estado).color"
-                  :textColor="statusPill(project.estado).color"
-                />
-                <button class="btn-outline">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 9V2M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
-                  </svg>
-                  Export
-                </button>
-              </div>
-            </div>
-
-            <div class="meta-row">
-              <div class="meta-item">
-                <span class="meta-label">Start Date</span>
-                <span class="meta-value">{{ formatDate(project.fecha_inicio) }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Due Date</span>
-                <span class="meta-value">{{ formatDate(project.fecha_fin_planificada) ?? 'Not set' }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Budget</span>
-                <span class="meta-value gold">{{ formatBudget(project.presupuesto_total) }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Progress</span>
-                <span class="meta-value">{{ mock.budgetUsedPct }}%</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Project ID</span>
-                <span class="meta-value dim">#{{ project.id_proyecto }}</span>
-              </div>
-            </div>
-
-            <!-- Overall progress bar -->
-            <div class="overall-progress">
-              <div class="op-track">
-                <div class="op-fill" :style="{ width: mock.budgetUsedPct + '%' }"></div>
-              </div>
-              <span class="op-label">{{ mock.budgetUsedPct }}% complete</span>
-            </div>
-          </div>
-
-          <div v-else class="error-state">
-            <p>Project not found.</p>
-            <button class="btn-outline" @click="$router.back()">Go back</button>
-          </div>
-        </div>
-
-        <!-- ── GRID OF SECTIONS ──────────────────────────────────── -->
+        <ReportDetailHeader
+          :project="project"
+          :loading="loading"
+          :progress="mock.budgetUsedPct"
+          @back="$router.back()"
+        />
         <div v-if="project" class="sections-grid">
-
-          <!-- Budget Overview -->
           <div class="detail-card">
             <div class="card-header">
               <span class="card-title">Budget Overview</span>
@@ -320,105 +247,16 @@
 
         </div>
       </div>
-
-      <!-- ── SIDE PANEL ──────────────────────────────────────────── -->
-      <aside v-if="project" class="side-panel">
-
-        <div class="side-section">
-          <p class="side-label">Project Health</p>
-          <div class="health-card" :class="healthClass">
-            <span class="health-dot"></span>
-            <div>
-              <span class="health-text">{{ healthText }}</span>
-              <span class="health-sub">{{ healthSub }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-divider"></div>
-
-        <div class="side-section">
-          <p class="side-label">Quick Stats</p>
-          <div class="qstat-list">
-            <div class="qstat">
-              <span class="qstat-label">Days Active</span>
-              <span class="qstat-val">{{ daysActive }}</span>
-            </div>
-            <div class="qstat">
-              <span class="qstat-label">Days Remaining</span>
-              <span class="qstat-val" :class="typeof daysRemaining === 'number' && daysRemaining < 7 ? 'red' : ''">
-                {{ daysRemaining }}
-              </span>
-            </div>
-            <div class="qstat">
-              <span class="qstat-label">Budget / Day</span>
-              <span class="qstat-val">{{ budgetPerDay }}</span>
-            </div>
-            <div class="qstat">
-              <span class="qstat-label">Velocity</span>
-              <span class="qstat-val gold">{{ mock.velocity }} t/w</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-divider"></div>
-
-        <div class="side-section">
-          <p class="side-label">Actions</p>
-          <div class="side-actions">
-            <Button label="Generate Report" />
-            <Button label="Add Member" />
-            <Button label="Settings" />
-          </div>
-        </div>
-
-        <div class="side-divider"></div>
-
-        <div class="side-section">
-          <p class="side-label">Project Info</p>
-          <div class="info-list">
-            <div class="info-row">
-              <span class="info-key">Status</span>
-              <Pill
-                :label="statusPill(project.estado).label"
-                :btnColor="statusPill(project.estado).bg"
-                :circleColor="statusPill(project.estado).color"
-                :textColor="statusPill(project.estado).color"
-              />
-            </div>
-            <div class="info-row">
-              <span class="info-key">Company</span>
-              <span class="info-val">#{{ project.id_empresa }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Manager</span>
-              <span class="info-val">#{{ project.id_encargado }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Budget</span>
-              <span class="info-val gold">{{ formatBudget(project.presupuesto_total) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="side-divider"></div>
-
-        <!-- Risk indicator -->
-        <div class="side-section">
-          <p class="side-label">Risk Level</p>
-          <div class="risk-bars">
-            <div v-for="r in mock.risks" :key="r.label" class="risk-row">
-              <span class="risk-label">{{ r.label }}</span>
-              <div class="risk-track">
-                <div class="risk-fill" :style="{ width: r.pct + '%', background: r.color }"></div>
-              </div>
-              <span class="risk-val" :style="{ color: r.color }">{{ r.level }}</span>
-            </div>
-          </div>
-        </div>
-
-      </aside>
-
+      <ReportDetailSidePanel
+        :project="project"
+        :mock="mock"
+        :health-class="healthClass"
+        :health-text="healthText"
+        :health-sub="healthSub"
+        :days-active="daysActive"
+        :days-remaining="daysRemaining"
+        :budget-per-day="budgetPerDay"
+      />
     </div>
   </div>
 </template>
@@ -427,8 +265,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
-import Pill       from '../components/UI/Pill/Pill.vue'
-import Button     from '../components/UI/Button/Button.vue'
+import ReportDetailHeader from '../components/reports/ReportDetailHeader.vue'
+import ReportDetailSidePanel from '../components/reports/ReportDetailSidePanel.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
 import { statusLabel, statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
@@ -656,147 +494,6 @@ const healthSub = computed(() => {
 }
 
 /* ─── Back btn ───────────────────────────────────────────────────────────── */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: #555;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  padding: 0;
-  transition: color .2s;
-}
-.back-btn:hover { color: #c9a962; }
-
-/* ─── Header ─────────────────────────────────────────────────────────────── */
-.detail-header {
-  margin-bottom: 28px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #1e1e1e;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.proj-name {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 700;
-  color: #faf8f5;
-  margin: 0 0 6px;
-}
-
-.proj-desc {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: var(--TextMuted);
-  margin: 0;
-  max-width: 560px;
-}
-
-.header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: transparent;
-  border: 1px solid #2a2a2a;
-  color: #888;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  cursor: pointer;
-  transition: border-color .2s, color .2s;
-}
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
-
-/* Meta row */
-.meta-row {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-.meta-item { display: flex; flex-direction: column; gap: 3px; }
-.meta-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  color: #444;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.meta-value {
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: #ccc;
-}
-.meta-value.gold { color: #c9a962; }
-.meta-value.dim  { color: #555; }
-
-/* Overall progress */
-.overall-progress { display: flex; align-items: center; gap: 12px; }
-.op-track {
-  flex: 1;
-  height: 4px;
-  background: #1a1a1a;
-  border-radius: 2px;
-  overflow: hidden;
-  max-width: 400px;
-}
-.op-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #b27f2a, #c9a962);
-  border-radius: 2px;
-  transition: width .6s ease;
-}
-.op-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: #555;
-  white-space: nowrap;
-}
-
-/* Pill sizing overrides */
-.header-actions :deep(.pill) {
-  padding: 4px 10px;
-  font-size: 11px;
-}
-.info-row :deep(.pill) {
-  padding: 3px 8px;
-  font-size: 10px;
-}
-
-/* Skeleton */
-.header-skeleton { display: flex; flex-direction: column; gap: 10px; }
-.skel-line {
-  height: 14px;
-  background: #1a1a1a;
-  border-radius: 2px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-.skel-line.long  { width: 40%; }
-.skel-line.mid   { width: 60%; }
-.skel-line.short { width: 25%; }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-
-/* Error */
-.error-state { display: flex; flex-direction: column; gap: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; font-size: 13px; }
 
 /* ─── Sections grid ──────────────────────────────────────────────────────── */
 .sections-grid {
@@ -1077,111 +774,6 @@ const healthSub = computed(() => {
 .tag-purple { color: #a78bfa; background: rgba(167,139,250,0.08); }
 .tag-blue   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
 
-/* ─── Side Panel ─────────────────────────────────────────────────────────── */
-.side-panel {
-  padding: 24px 20px;
-  background: rgba(10,10,10,0.9);
-  border-left: 1px solid #1e1e1e;
-  overflow-y: auto;
-}
-.side-section { margin-bottom: 16px; }
-.side-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  color: #444;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 0 0 10px;
-}
-.side-divider { height: 1px; background: #1a1a1a; margin: 16px 0; }
-
-/* Health */
-.health-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid #1e1e1e;
-  background: rgba(255,255,255,0.02);
-}
-.health-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0; }
-.health-text {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-  display: block;
-}
-.health-sub {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #333;
-  display: block;
-}
-.health-good .health-dot { background: #4ade80; }
-.health-good .health-text { color: #4ade80; }
-.health-warn .health-dot { background: #fb923c; }
-.health-warn .health-text { color: #fb923c; }
-.health-bad .health-dot { background: #fb7185; }
-.health-bad .health-text { color: #fb7185; }
-.health-neutral .health-dot { background: #60a5fa; }
-.health-neutral .health-text { color: #60a5fa; }
-
-/* Quick stats */
-.qstat-list { display: flex; flex-direction: column; gap: 0; }
-.qstat {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid #111;
-}
-.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
-.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: #aaa; }
-.qstat-val.gold { color: #c9a962; }
-.qstat-val.red  { color: #fb7185; }
-
-/* Side action buttons */
-.side-actions :deep(.btn) {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 8px 10px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid #1a1a1a;
-  color: #555;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  border-radius: 0;
-  margin-bottom: 6px;
-  transition: border-color .2s, color .2s;
-}
-.side-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
-}
-
-/* Info list */
-.info-list { display: flex; flex-direction: column; gap: 0; }
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid #111;
-}
-.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
-.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #999; }
-.info-val.gold { color: #c9a962; }
-
-/* Risk bars */
-.risk-bars { display: flex; flex-direction: column; gap: 8px; }
-.risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
-.risk-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
-.risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {
@@ -1189,13 +781,11 @@ const healthSub = computed(() => {
 }
 @media (max-width: 1100px) {
   .detail-layout { grid-template-columns: 1fr; }
-  .side-panel { border-left: none; border-top: 1px solid #1e1e1e; }
 }
 @media (max-width: 768px) {
   .sections-grid { grid-template-columns: 1fr; }
   .detail-card.span-2 { grid-column: span 1; }
   .main-panel { padding: 20px 16px 32px; }
-  .meta-row { gap: 16px; }
   .metrics-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

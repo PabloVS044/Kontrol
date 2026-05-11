@@ -11,37 +11,31 @@
 
     <div class="inventory-layout">
 
-    <!-- Estado: no autenticado -->
-    <div v-if="authError" class="state-screen">
-      <p class="state-title">Session required</p>
-      <p class="state-msg">You must be logged in to view the inventory.</p>
-    </div>
+      <ErrorState 
+        v-if="authError" 
+        title="Session required"
+        message="You must be logged in to view the inventory."
+      />
 
-    <!-- Estado: error genérico -->
-    <div v-else-if="fetchError" class="state-screen">
-      <p class="state-title">Could not load inventory</p>
-      <p class="state-msg">{{ fetchError }}</p>
-      <button class="btn-primary" style="margin-top:16px" @click="loadData">
-        <span>Retry</span>
-      </button>
-    </div>
+      <ErrorState 
+        v-else-if="fetchError" 
+        title="Could not load inventory"
+        message=""
+      >
+        <button class="btn-primary" style="margin-top:16px" @click="loadData">
+          <span>Retry</span>
+        </button>
+      </ErrorState>
 
-    <template v-else>
+      <template v-else>
 
-      <!-- Panel principal -->
-      <div class="main-panel">
+        <div class="main-panel">
 
-        <!-- Encabezado -->
-        <div class="inv-header">
-          <div class="inv-header-left">
-            <h1 class="inv-title">Inventory</h1>
-            <p class="inv-subtitle">Browse and manage your product catalogue</p>
-          </div>
-          <div class="inv-header-actions">
+          <PageHeader title="Inventory" subtitle="Browse and manage your product catalogue">
             <button
               class="btn-primary"
               :class="{ 'btn-disabled': !canCreateProduct }"
-              :title="canCreateProduct ? '' : selectedProject ? 'You do not have write access in this project' : 'Select a project first'"
+              :title="canCreateProduct ? '' : selectedProject ? 'You do not have write access in this project' : 'Select project first'"
               @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
@@ -61,8 +55,7 @@
                 <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
-          </div>
-        </div>
+          </PageHeader>
 
         <!-- Selector de proyecto -->
         <div class="project-filter">
@@ -124,170 +117,37 @@
           </span>
         </div>
 
-        <!-- Skeleton mientras carga -->
-        <div v-if="loading" class="product-grid">
-          <div v-for="n in 8" :key="n" class="product-card skeleton">
-            <div class="card-img skeleton-img"></div>
-            <div class="card-body" style="gap:10px">
-              <div class="skeleton-line short"></div>
-              <div class="skeleton-line"></div>
-              <div class="skeleton-line mid"></div>
-            </div>
-          </div>
-        </div>
+        <LoadingSkeleton 
+          v-if="loading" 
+          :count="8" 
+          card-class="product-card skeleton"
+        />
 
-        <!-- Grid de productos -->
         <div v-else class="product-grid">
-          <div
+          <ProductCard
             v-for="product in filteredProducts"
             :key="product.id_producto"
-            class="product-card"
-          >
-            <div class="card-img">
-              <div class="img-placeholder">
-                <!-- Ícono genérico de producto -->
-                <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-                  <rect x="10" y="8" width="28" height="34" rx="2" stroke="#faf8f5" stroke-width="1.5"/>
-                  <path d="M10 18h28M18 8v10" stroke="#faf8f5" stroke-width="1.5"/>
-                </svg>
-                <span>image</span>
-              </div>
-              <Pill
-                :label="stockLabel(product)"
-                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(201,169,98,0.12)' : 'rgba(52,211,153,0.12)'"
-                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
-                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
-              />
-            </div>
+            :product="product"
+            :show-project-tag="!selectedProject"
+            :show-usage="!!selectedProject"
+          />
 
-            <div class="card-body">
-              <span v-if="!selectedProject && product.proyecto_nombre" class="card-project-tag">{{ product.proyecto_nombre }}</span>
-              <span v-if="product.categoria" class="card-code">{{ product.categoria }}</span>
-              <span class="card-name">{{ product.nombre }}</span>
-              <div class="card-meta">
-                <div>
-                  <div class="card-price-label">Price</div>
-                  <div class="card-price">${{ Number(product.precio_venta).toFixed(2) }}</div>
-                </div>
-                <div class="card-stock">
-                  <div class="card-stock-num" :class="stockNumClass(product)">
-                    {{ product.stock_actual }}
-                  </div>
-                  <div class="card-stock-label">total stock</div>
-                </div>
-              </div>
-              <!-- Project-specific usage -->
-              <div v-if="selectedProject" class="card-proj-usage">
-                <div class="proj-usage-row">
-                  <span class="pu-label">Entries</span>
-                  <span class="pu-val green">+{{ product.entradas_proyecto ?? 0 }}</span>
-                </div>
-                <div class="proj-usage-row">
-                  <span class="pu-label">Exits</span>
-                  <span class="pu-val red">-{{ product.salidas_proyecto ?? 0 }}</span>
-                </div>
-                <div class="proj-usage-row">
-                  <span class="pu-label">Net</span>
-                  <span class="pu-val" :class="(product.neto_proyecto ?? 0) >= 0 ? 'green' : 'red'">
-                    {{ (product.neto_proyecto ?? 0) >= 0 ? '+' : '' }}{{ product.neto_proyecto ?? 0 }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-footer">
-              <Anchor
-                label="View details"
-                :link="`/inventory/${product.id_producto}`"
-                textColor="#c9a962"
-                backColor="transparent"
-                hoverColor="rgba(201,169,98,0.05)"
-              />
-            </div>
-          </div>
-
-          <!-- Sin resultados -->
-          <div v-if="!loading && filteredProducts.length === 0" class="empty-state">
+          <div v-if="filteredProducts.length === 0" class="empty-state">
             <p>No products match your filters.</p>
           </div>
         </div>
 
       </div>
 
-      <!-- Panel de contexto -->
-      <aside class="context-panel">
-
-        <div>
-          <div class="ctx-title">Summary</div>
-          <div class="ctx-subtitle">
-            {{ selectedProject ? selectedProject.nombre : 'All projects' }}
-          </div>
-        </div>
-
-        <!-- Stats generales -->
-        <div>
-          <p class="ctx-label">At a Glance</p>
-          <div class="summary-grid">
-            <div class="summary-card">
-              <span class="s-value">{{ stats.total }}</span>
-              <span class="s-label">Total products</span>
-            </div>
-            <div class="summary-card">
-              <span class="s-value">{{ stats.lowStock }}</span>
-              <span class="s-label">Low stock</span>
-              <span class="s-sub gold">Reorder soon</span>
-            </div>
-            <div class="summary-card">
-              <span class="s-value">{{ stats.outOfStock }}</span>
-              <span class="s-label">Out of stock</span>
-              <span class="s-sub red">Action needed</span>
-            </div>
-            <div class="summary-card">
-              <span class="s-value">${{ stats.totalValue }}</span>
-              <span class="s-label">Total value</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Por categoría -->
-        <div v-if="categoryStats.length">
-          <p class="ctx-label">By Category</p>
-          <template v-for="cat in categoryStats" :key="cat.name">
-            <div class="cat-row">
-              <span class="cat-name">{{ cat.name }}</span>
-              <span class="cat-count">{{ cat.count }}</span>
-            </div>
-            <div class="cat-bar-bg">
-              <div class="cat-bar-fill" :style="{ width: cat.pct + '%', background: cat.color }"></div>
-            </div>
-          </template>
-        </div>
-
-        <!-- Alertas de stock -->
-        <div v-if="stockAlerts.length">
-          <p class="ctx-label">Stock Alerts</p>
-          <div v-for="alert in stockAlerts" :key="alert.id_producto" class="alert-card">
-            <span class="alert-name">{{ alert.nombre }}</span>
-            <span class="alert-code">{{ alert.categoria }} · {{ alert.stock_actual }} units left</span>
-            <span class="alert-status" :class="alert.stock_actual === 0 ? 'red' : 'gold'">
-              {{ alert.stock_actual === 0 ? 'Out of stock' : alert.stock_actual <= alert.stock_minimo ? 'Critical stock' : 'Low stock — reorder soon' }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Acciones rápidas -->
-        <div>
-          <p class="ctx-label">Quick Actions</p>
-          <Button v-if="canCreateProduct" label="+ Add product" @click="openNewProduct" />
-          <Button label="↓ Export inventory" @click="exportInventory" />
-        </div>
-
-        <div class="data-source">
-          <div class="ds-label">Data Source</div>
-          <div class="ds-text">Inventory database · Live</div>
-        </div>
-
-      </aside>
+      <InventorySummaryPanel
+        :stats="stats"
+        :category-stats="categoryStats"
+        :stock-alerts="stockAlerts"
+        :selected-project="selectedProject"
+        :can-create-product="canCreateProduct"
+        @add-product="openNewProduct"
+        @export="exportInventory"
+      />
 
     </template>
   </div><!-- /.inventory-layout -->
@@ -296,13 +156,18 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import AppNavbar from '../components/AppNavbar.vue'
-import './InventoryPage.css'
-import Anchor from '../components/UI/Button/Anchor.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
-import Button from '../components/UI/Button/Button.vue'
-import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
+
+import AppNavbar from '../components/AppNavbar.vue'
+import PageHeader from '../components/common/PageHeader.vue'
+import ErrorState from '../components/common/ErrorState.vue'
+import LoadingSkeleton from '../components/common/LoadingSkeleton.vue'
+
+import ProductCard from '../components/inventory/ProductCard.vue'
+import InventorySummaryPanel from '../components/inventory/InventorySummaryPanel.vue'
+import ProductModal from '../components/inventory/ProductModal.vue'
+
+import './InventoryPage.css'
 
 const authStore = useAuthStore()
 
