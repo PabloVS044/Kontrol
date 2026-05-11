@@ -135,6 +135,11 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_campaign_project_idx
+      ON public.marketing_campaign (id_proyecto)
+  `)
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS public.marketing_item (
       id_marketing_item SERIAL PRIMARY KEY,
       id_empresa integer NOT NULL,
@@ -187,6 +192,96 @@ export const ensureDatabaseSchema = async () => {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS marketing_item_project_idx
       ON public.marketing_item (id_proyecto)
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.marketing_publication (
+      id_publication SERIAL PRIMARY KEY,
+      id_empresa integer NOT NULL,
+      id_campaign integer,
+      id_proyecto integer NOT NULL,
+      title character varying(180) NOT NULL,
+      caption text,
+      platform character varying(20) NOT NULL,
+      publication_format character varying(20) NOT NULL,
+      status character varying(20) NOT NULL DEFAULT 'PLANNED',
+      scheduled_for timestamp without time zone,
+      published_at timestamp without time zone,
+      asset_url character varying(500),
+      publication_url character varying(500),
+      notes text,
+      created_by integer NOT NULL,
+      updated_by integer NOT NULL,
+      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT marketing_publication_company_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT marketing_publication_campaign_fkey
+        FOREIGN KEY (id_campaign) REFERENCES public.marketing_campaign(id_campaign) ON DELETE SET NULL,
+      CONSTRAINT marketing_publication_project_fkey
+        FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto) ON DELETE CASCADE,
+      CONSTRAINT marketing_publication_created_by_fkey
+        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_publication_updated_by_fkey
+        FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_publication_status_check
+        CHECK (status IN ('PLANNED', 'IN_DESIGN', 'SCHEDULED', 'PUBLISHED', 'PAUSED', 'CANCELLED')),
+      CONSTRAINT marketing_publication_platform_check
+        CHECK (platform IN ('FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TIKTOK', 'X', 'YOUTUBE', 'WHATSAPP', 'OTHER')),
+      CONSTRAINT marketing_publication_format_check
+        CHECK (publication_format IN ('POST', 'STORY', 'REEL', 'VIDEO', 'CAROUSEL', 'SHORT', 'AD', 'OTHER'))
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_publication_project_campaign_idx
+      ON public.marketing_publication (id_proyecto, id_campaign)
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_publication_status_idx
+      ON public.marketing_publication (status, platform)
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.marketing_publication_metric_snapshot (
+      id_metric_snapshot SERIAL PRIMARY KEY,
+      id_publication integer NOT NULL,
+      captured_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      impressions integer NOT NULL DEFAULT 0,
+      reach integer NOT NULL DEFAULT 0,
+      likes integer NOT NULL DEFAULT 0,
+      comments integer NOT NULL DEFAULT 0,
+      shares integer NOT NULL DEFAULT 0,
+      saves integer NOT NULL DEFAULT 0,
+      clicks integer NOT NULL DEFAULT 0,
+      leads integer NOT NULL DEFAULT 0,
+      followers_gained integer NOT NULL DEFAULT 0,
+      spend numeric(12,2) NOT NULL DEFAULT 0,
+      notes text,
+      created_by integer NOT NULL,
+      created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT marketing_metric_snapshot_publication_fkey
+        FOREIGN KEY (id_publication) REFERENCES public.marketing_publication(id_publication) ON DELETE CASCADE,
+      CONSTRAINT marketing_metric_snapshot_created_by_fkey
+        FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT marketing_metric_snapshot_impressions_check CHECK (impressions >= 0),
+      CONSTRAINT marketing_metric_snapshot_reach_check CHECK (reach >= 0),
+      CONSTRAINT marketing_metric_snapshot_likes_check CHECK (likes >= 0),
+      CONSTRAINT marketing_metric_snapshot_comments_check CHECK (comments >= 0),
+      CONSTRAINT marketing_metric_snapshot_shares_check CHECK (shares >= 0),
+      CONSTRAINT marketing_metric_snapshot_saves_check CHECK (saves >= 0),
+      CONSTRAINT marketing_metric_snapshot_clicks_check CHECK (clicks >= 0),
+      CONSTRAINT marketing_metric_snapshot_leads_check CHECK (leads >= 0),
+      CONSTRAINT marketing_metric_snapshot_followers_check CHECK (followers_gained >= 0),
+      CONSTRAINT marketing_metric_snapshot_spend_check CHECK (spend >= 0)
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS marketing_metric_snapshot_publication_time_idx
+      ON public.marketing_publication_metric_snapshot (id_publication, captured_at DESC, id_metric_snapshot DESC)
   `)
 
   await pool.query(`
