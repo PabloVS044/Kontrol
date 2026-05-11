@@ -51,6 +51,13 @@
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
+        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">AI</RouterLink>
+        <RouterLink
+          v-if="isAdminOrOwner"
+          class="appnav-link"
+          to="/integrations"
+          @click="closeMenu"
+        >Integrations</RouterLink>
       </div>
 
       <div class="appnav-end">
@@ -81,6 +88,11 @@ const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
 const triggerEl     = ref(null)
 const isMenuOpen = ref(false)
+
+const isAdminOrOwner = computed(() => {
+  const rol = authStore.empresaActual?.rol
+  return rol === 'owner' || rol === 'admin'
+})
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
@@ -231,7 +243,7 @@ const closeMenu = () => {
   transform: rotate(180deg);
 }
 
-/* Dropdown (rendered via Teleport to body) */
+/* Dropdown  */
 .empresa-backdrop {
   position: fixed;
   inset: 0;
@@ -353,6 +365,15 @@ const closeMenu = () => {
 
 .appnav-link.router-link-active::after {
   transform: scaleX(1);
+}
+
+.appnav-link--agent {
+  color: #886911;
+}
+
+.appnav-link--agent:hover,
+.appnav-link--agent.router-link-active {
+  color: #c9a962;
 }
 
 /* ── End ── */

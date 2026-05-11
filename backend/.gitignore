@@ -1,5 +1,6 @@
 # Environment (real values, not the example)
 .env
+.http
 
 # Build output
 dist/

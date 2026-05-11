@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const VALID_ROLES = ['admin', 'manager', 'collaborator']
+export const VALID_ROLES = ['super_user', 'admin', 'manager', 'collaborator']
 
 /**
  * Query params for GET /api/users

@@ -2,6 +2,11 @@ import pool from './pool.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
+    ALTER TABLE public.empresa
+      ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
+  `)
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS public.empresa_invitacion (
       id_invitacion SERIAL PRIMARY KEY,
       id_empresa integer NOT NULL,
@@ -98,6 +103,32 @@ export const ensureDatabaseSchema = async () => {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS project_progress_entry_project_happened_idx
       ON public.project_progress_entry (id_proyecto, happened_at DESC, id_progress_entry DESC)
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.integracion (
+      id_integracion  SERIAL PRIMARY KEY,
+      id_empresa      INTEGER NOT NULL,
+      slug            VARCHAR(50) NOT NULL,
+      status          VARCHAR(20) NOT NULL DEFAULT 'inactive'
+                        CHECK (status IN ('active', 'inactive', 'error')),
+      credentials_enc TEXT,
+      config          JSONB NOT NULL DEFAULT '{}',
+      creado_por      INTEGER,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT integracion_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+      CONSTRAINT integracion_usuario_fkey
+        FOREIGN KEY (creado_por) REFERENCES public.usuario(id_usuario),
+      CONSTRAINT integracion_empresa_slug_unique UNIQUE (id_empresa, slug)
+    )
+  `)
+
+  await pool.query(`
+    INSERT INTO public.rol (nombre_rol, descripcion)
+    VALUES ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma')
+    ON CONFLICT (nombre_rol) DO NOTHING
   `)
 
   await pool.query(`
