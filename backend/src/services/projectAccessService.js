@@ -222,6 +222,8 @@ export const buildEmpresaAccessContext = async ({
         can_create_projects: true,
         can_view_inventory: true,
         can_manage_inventory: true,
+        can_view_marketing: true,
+        can_manage_marketing: true,
       },
     }
   }
@@ -246,6 +248,8 @@ export const buildEmpresaAccessContext = async ({
       can_manage_inventory: assignments.some(({ permisos }) =>
         INVENTORY_WRITE_PERMISSION_NAMES.some((permission) => permisos.includes(permission))
       ),
+      can_view_marketing: true,
+      can_manage_marketing: false,
     },
   }
 }
