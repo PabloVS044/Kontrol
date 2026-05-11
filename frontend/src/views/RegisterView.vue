@@ -28,6 +28,7 @@
                 class="register-input"
                 :class="{ 'register-input--error': errors.firstName }"
                 @blur="validate('firstName')"
+                @keyup.enter="handleRegister"
               />
               <span v-if="errors.firstName" class="register-field-error">{{ errors.firstName }}</span>
             </div>
@@ -40,6 +41,7 @@
                 class="register-input"
                 :class="{ 'register-input--error': errors.lastName }"
                 @blur="validate('lastName')"
+                @keyup.enter="handleRegister"
               />
               <span v-if="errors.lastName" class="register-field-error">{{ errors.lastName }}</span>
             </div>
@@ -56,6 +58,7 @@
                 class="register-input"
                 :class="{ 'register-input--error': errors.email }"
                 @blur="validate('email')"
+                @keyup.enter="handleRegister"
               />
               <MailIcon class="register-input-icon" :size="15" />
             </div>
@@ -73,6 +76,7 @@
                 class="register-input"
                 :class="{ 'register-input--error': errors.password }"
                 @blur="validate('password')"
+                @keyup.enter="handleRegister"
               />
               <component
                 :is="showPass ? EyeIcon : EyeOffIcon"

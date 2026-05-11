@@ -35,6 +35,7 @@
                 class="login-input"
                 :class="{ 'login-input--error': errors.email }"
                 @blur="validateEmail"
+                @keyup.enter="handleLogin"
               />
               <MailIcon class="login-input-icon" :size="15" />
             </div>
@@ -52,6 +53,7 @@
                 class="login-input"
                 :class="{ 'login-input--error': errors.password }"
                 @blur="validatePassword"
+                @keyup.enter="handleLogin"
               />
               <component
                 :is="showPass ? EyeIcon : EyeOffIcon"
