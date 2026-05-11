@@ -7,9 +7,8 @@
         <span>Kontrol</span>
       </RouterLink>
 
-      <!-- TODO(T-37): update badge label to 'Super User' when role is renamed -->
       <div class="admin-badge-wrap">
-        <span class="admin-badge">Admin</span>
+        <span class="admin-badge">Super User</span>
       </div>
 
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">

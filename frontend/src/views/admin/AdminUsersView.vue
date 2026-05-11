@@ -42,7 +42,6 @@
           </div>
           <span class="cell-email">{{ u.email }}</span>
           <div class="role-col">
-            <!-- TODO(T-37): 'admin' pill will change class to 'super_user' when T-37 renames the role -->
             <span class="role-pill" :class="u.nombre_rol">{{ u.nombre_rol }}</span>
           </div>
           <span class="list-cell-num">{{ u.total_empresas }}</span>
@@ -114,7 +113,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.adm-page { max-width: 1000px; }
+.adm-page { max-width: 100%; width: 100%; }
 
 .adm-title {
   font-family: 'Playfair Display', serif;
@@ -280,8 +279,7 @@ onMounted(async () => {
   width: fit-content;
 }
 
-/* TODO: add .super_user variant here when that role is added */
-.role-pill.admin {
+.role-pill.super_user {
   color: var(--Primary);
   border-color: var(--Secondary);
   background: var(--Background2);
