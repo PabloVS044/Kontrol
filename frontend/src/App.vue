@@ -21,20 +21,38 @@
     <div class="content">
       <RouterView />
     </div>
+    <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat'" />
+    <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { RouterView } from "vue-router";
+import { onMounted, watch } from 'vue'
+import { RouterView, useRoute } from "vue-router";
 import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
+import FloatingChat from "./components/chat/FloatingChat.vue";
+import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
 import { useAuthStore } from './stores/auth'
+import { useChatStore } from './stores/chat'
 
 const authStore = useAuthStore()
+const chatStore = useChatStore()
+const route = useRoute()
 
 onMounted(() => {
-  // Refresh empresa list on every page load so it stays in sync
-  if (authStore.isLoggedIn) authStore.loadEmpresas()
+  if (authStore.isLoggedIn) {
+    authStore.loadEmpresas()
+    if (authStore.hasEmpresa) chatStore.connect()
+  }
+})
+
+watch(() => authStore.isLoggedIn, (loggedIn) => {
+  if (loggedIn && authStore.hasEmpresa) chatStore.connect()
+  else chatStore.disconnect()
+})
+
+watch(() => authStore.hasEmpresa, (has) => {
+  if (has && authStore.isLoggedIn) chatStore.connect()
 })
 </script>
 

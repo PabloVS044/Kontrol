@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:\\\\Users\\\\Juan M - AL\\\\Desktop\\\\Monte\\\\Kontrol\\\\Kontrol\\\\frontend\\\\public\")",
+      "Bash(cp \"C:\\\\Users\\\\Juan M - AL\\\\Desktop\\\\Monte\\\\sample.glb\" \"C:\\\\Users\\\\Juan M - AL\\\\Desktop\\\\Monte\\\\Kontrol\\\\Kontrol\\\\frontend\\\\public\\\\kontrol-logo.glb\")",
+      "Bash(npm run *)"
+    ]
+  }
+}

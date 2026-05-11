@@ -3,6 +3,7 @@ import LoginView     from '../views/LoginView.vue'
 import RegisterView  from '../views/RegisterView.vue'
 import LandingPage   from '../views/LandingPage.vue'
 import InventoryPage from '../views/InventoryPage.vue'
+import ProductDetailView from '../views/ProductDetailView.vue'
 import ProjectsView  from '../views/ProjectsView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import OnboardingView from '../views/OnboardingView.vue'
@@ -12,6 +13,8 @@ import BudgetView from '../views/BudgetView.vue'
 import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
+import ChatView from '../views/ChatView.vue'
+import AgentView from '../views/AgentView.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
 import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
@@ -78,6 +81,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
+      path: '/inventory/:id',
+      name: 'inventory-detail',
+      component: ProductDetailView,
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
       path: '/reports',
       name: 'reports',
       component: ReportsView,
@@ -93,6 +102,18 @@ const router = createRouter({
       path: '/budget',
       name: 'budget',
       component: BudgetView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: ChatView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/agent',
+      name: 'agent',
+      component: AgentView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
