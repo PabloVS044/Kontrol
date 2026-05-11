@@ -65,7 +65,7 @@ export async function sendAgentMessage(messages, opts = {}) {
     headers: authHeaders(),
     body: JSON.stringify({
       messages,
-      conversationId: opts.conversationId,
+      ...(opts.conversationId ? { conversationId: opts.conversationId } : {}),
     }),
     signal: opts.signal,
   })
