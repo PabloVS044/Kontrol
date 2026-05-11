@@ -15,6 +15,14 @@ const DEFAULT_MAX_STEPS = 5
 const MAX_HISTORY = 12      // most recent user/assistant turns kept
 const MAX_USER_CHARS = 4000 // truncate oversized user messages
 
+function parseBooleanEnv(value, fallback = false) {
+  if (typeof value !== 'string') return fallback
+  const normalized = value.trim().toLowerCase()
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) return true
+  if (['0', 'false', 'no', 'off'].includes(normalized)) return false
+  return fallback
+}
+
 function getConfig() {
   const url = (process.env.AGENT_API_URL || '').trim().replace(/\/+$/, '')
   return {
@@ -24,6 +32,7 @@ function getConfig() {
     temperature: Number(process.env.AGENT_TEMPERATURE) || DEFAULT_TEMPERATURE,
     maxTokens: Number(process.env.AGENT_MAX_TOKENS) || DEFAULT_MAX_TOKENS,
     maxSteps: Number(process.env.AGENT_MAX_STEPS) || DEFAULT_MAX_STEPS,
+    disableThinking: parseBooleanEnv(process.env.AGENT_DISABLE_THINKING, false),
   }
 }
 
@@ -85,8 +94,72 @@ function tryParse(text) {
   }
 }
 
-async function callLlm({ messages, signal }) {
-  const cfg = getConfig()
+function normalizeUserText(text) {
+  return String(text || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+}
+
+function getLatestUserText(history) {
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    if (history[i]?.role === 'user' && typeof history[i].content === 'string') {
+      return history[i].content.trim()
+    }
+  }
+  return ''
+}
+
+function buildInstantReply(text) {
+  const normalized = normalizeUserText(text)
+  if (!normalized || normalized.length > 80) return null
+
+  const isSpanish = /\b(hola|buenas|gracias|ayuda|puedes|que puedes hacer|como estas)\b/.test(normalized)
+
+  if (/^(hola|hola!|holi|buenas|buenos dias|buenas tardes|buenas noches|hello|hi|hey)\b/.test(normalized)) {
+    return isSpanish
+      ? 'Hola. Puedo ayudarte con proyectos, presupuestos, inventario, tareas y reportes. Dime que quieres revisar.'
+      : 'Hi. I can help with projects, budgets, inventory, tasks, and reports. Tell me what you want to review.'
+  }
+
+  if (/^(gracias|muchas gracias|thanks|thank you)\b/.test(normalized)) {
+    return isSpanish
+      ? 'De nada. Si quieres, puedo revisar proyectos, presupuesto, inventario, tareas o reportes.'
+      : 'You are welcome. If you want, I can review projects, budgets, inventory, tasks, or reports.'
+  }
+
+  if (/^(ayuda|help|que puedes hacer|que haces|what can you do)\??$/.test(normalized)) {
+    return isSpanish
+      ? 'Puedo consultar tus datos en modo solo lectura: proyectos, presupuestos, inventario, movimientos, tareas y reportes. Dime que necesitas.'
+      : 'I can query your data in read-only mode: projects, budgets, inventory, movements, tasks, and reports. Tell me what you need.'
+  }
+
+  return null
+}
+
+function buildRequestProfile(history, cfg) {
+  const latestUserText = getLatestUserText(history)
+  const instantReply = buildInstantReply(latestUserText)
+  const normalized = normalizeUserText(latestUserText)
+  const looksAnalytical = /\b(project|projects|budget|budgets|inventory|stock|task|tasks|report|reports|company|companies|proyecto|proyectos|presupuesto|presupuestos|inventario|stock|tarea|tareas|reporte|reportes|empresa|empresas|movimiento|movimientos)\b/.test(normalized)
+
+  let maxTokens = cfg.maxTokens
+  if (!looksAnalytical && normalized.length <= 60) {
+    maxTokens = Math.min(cfg.maxTokens, 220)
+  } else if (!looksAnalytical && normalized.length <= 140) {
+    maxTokens = Math.min(cfg.maxTokens, 420)
+  }
+
+  return {
+    instantReply,
+    maxTokens,
+    disableThinking: cfg.disableThinking,
+  }
+}
+
+async function callLlm({ messages, signal, cfg, profile }) {
   const endpoint = resolveChatEndpoint(cfg.url)
   if (!endpoint) {
     throw new Error(
@@ -101,22 +174,44 @@ async function callLlm({ messages, signal }) {
     model: cfg.model,
     messages,
     temperature: cfg.temperature,
-    max_tokens: cfg.maxTokens,
+    max_tokens: profile.maxTokens,
     stream: false,
     // Some servers honor response_format; vLLM ignores unknown fields.
     response_format: { type: 'json_object' },
   }
+  if (profile.disableThinking) {
+    body.chat_template_kwargs = { enable_thinking: false }
+  }
 
-  let response
-  try {
-    response = await fetch(endpoint, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-      signal,
-    })
-  } catch (err) {
-    throw new Error(`Unable to reach the AI inference server: ${err.message}`)
+  async function send(payload) {
+    try {
+      return await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal,
+      })
+    } catch (err) {
+      throw new Error(`Unable to reach the AI inference server: ${err.message}`)
+    }
+  }
+
+  let response = await send(body)
+
+  if (!response.ok && body.chat_template_kwargs) {
+    const errText = await response.text().catch(() => '')
+    const unsupportedThinkingFlag =
+      response.status === 400 ||
+      response.status === 404 ||
+      response.status === 422
+
+    if (unsupportedThinkingFlag) {
+      const fallbackBody = { ...body }
+      delete fallbackBody.chat_template_kwargs
+      response = await send(fallbackBody)
+    } else {
+      throw new Error(`AI inference server returned ${response.status}: ${errText.slice(0, 500)}`)
+    }
   }
 
   if (!response.ok) {
@@ -208,7 +303,15 @@ export async function runAgentTurn({ history, user, company, signal }) {
   ]
 
   const cfg = getConfig()
+  const profile = buildRequestProfile(history, cfg)
   const queries = []
+
+  if (profile.instantReply) {
+    return {
+      answer: profile.instantReply,
+      queries,
+    }
+  }
 
   for (let step = 0; step < cfg.maxSteps + 1; step += 1) {
     if (signal?.aborted) {
@@ -216,7 +319,7 @@ export async function runAgentTurn({ history, user, company, signal }) {
       err.name = 'AbortError'
       throw err
     }
-    const raw = await callLlm({ messages, signal })
+    const raw = await callLlm({ messages, signal, cfg, profile })
     const turn = parseJsonTurn(raw)
 
     if (!turn || typeof turn.action !== 'string') {
