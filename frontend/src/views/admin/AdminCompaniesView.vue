@@ -293,7 +293,7 @@ onMounted(async () => {
   padding: 3px 8px;
   background: rgba(96,165,250,0.08);
   border: 1px solid rgba(96,165,250,0.2);
-  color: var(--Tertiary, #60a5fa);
+  color: #60a5fa;
   font-size: 11px;
   font-weight: 600;
   font-family: 'DM Sans', sans-serif;
