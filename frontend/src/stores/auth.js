@@ -20,6 +20,10 @@ export const useAuthStore = defineStore('auth', {
     canCreateProjects: (state) => state.accessContext?.capabilities?.can_create_projects === true,
     canViewInventory: (state) => state.accessContext?.capabilities?.can_view_inventory === true,
     canManageInventory: (state) => state.accessContext?.capabilities?.can_manage_inventory === true,
+    canManageTeams: (state) => {
+      const role = state.empresaActual?.rol ?? state.accessContext?.empresa?.rol_empresa
+      return ['owner', 'admin', 'manager'].includes(role)
+    },
     isSuperUser:     (state) => state.user?.nombre_rol === 'super_user',
     // Legacy alias kept for any remaining references
     idEmpresa:       (state) => state.empresaActual?.id_empresa ?? null,
