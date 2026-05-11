@@ -112,16 +112,47 @@ function getLatestUserText(history) {
   return ''
 }
 
+function isCapabilityPrompt(normalized) {
+  return /^(ayuda|help|que puedes hacer|que haces|como me puedes ayudar|como puedes ayudarme|what can you do|who are you|quien eres|para que sirves)\??$/.test(normalized)
+}
+
 function buildInstantReply(text) {
   const normalized = normalizeUserText(text)
   if (!normalized || normalized.length > 80) return null
 
-  const isSpanish = /\b(hola|buenas|gracias|ayuda|puedes|que puedes hacer|como estas)\b/.test(normalized)
+  const isSpanish = /\b(hola|buenas|gracias|ayuda|puedes|que puedes hacer|como estas|quien eres|para que sirves)\b/.test(normalized)
 
   if (/^(hola|hola!|holi|buenas|buenos dias|buenas tardes|buenas noches|hello|hi|hey)\b/.test(normalized)) {
     return isSpanish
-      ? 'Hola. Puedo ayudarte con proyectos, presupuestos, inventario, tareas y reportes. Dime que quieres revisar.'
-      : 'Hi. I can help with projects, budgets, inventory, tasks, and reports. Tell me what you want to review.'
+      ? [
+          'Hola. Soy **Kontrol AI**.',
+          '',
+          'Puedo ayudarte con:',
+          '- Estado de proyectos',
+          '- Presupuestos, gastos e ingresos',
+          '- Inventario, stock y movimientos',
+          '- Tareas, pendientes y atrasos',
+          '- Reportes y resúmenes operativos',
+          '',
+          'Trabajo en **modo solo lectura**, así que consulto datos pero no los modifico.',
+          '',
+          'Puedes probar con algo como:',
+          '- `¿Cómo van mis proyectos?`',
+          '- `¿Qué productos tienen bajo stock?`',
+          '- `¿Cómo va el presupuesto del proyecto X?`',
+        ].join('\n')
+      : [
+          'Hi. I am **Kontrol AI**.',
+          '',
+          'I can help with:',
+          '- Project status',
+          '- Budgets, expenses, and income',
+          '- Inventory, stock, and movements',
+          '- Tasks, pending work, and delays',
+          '- Reports and operational summaries',
+          '',
+          'I work in **read-only mode**, so I can query data but not modify it.',
+        ].join('\n')
   }
 
   if (/^(gracias|muchas gracias|thanks|thank you)\b/.test(normalized)) {
@@ -130,10 +161,35 @@ function buildInstantReply(text) {
       : 'You are welcome. If you want, I can review projects, budgets, inventory, tasks, or reports.'
   }
 
-  if (/^(ayuda|help|que puedes hacer|que haces|what can you do)\??$/.test(normalized)) {
+  if (isCapabilityPrompt(normalized)) {
     return isSpanish
-      ? 'Puedo consultar tus datos en modo solo lectura: proyectos, presupuestos, inventario, movimientos, tareas y reportes. Dime que necesitas.'
-      : 'I can query your data in read-only mode: projects, budgets, inventory, movements, tasks, and reports. Tell me what you need.'
+      ? [
+          'Puedo ayudarte a consultar información de **Kontrol** en modo **solo lectura**.',
+          '',
+          'Capacidades:',
+          '- Revisar proyectos y su estado',
+          '- Analizar presupuesto, gastos, ingresos y movimientos',
+          '- Detectar productos con stock bajo',
+          '- Ver tareas pendientes, vencidas o por prioridad',
+          '- Resumir reportes y actividad reciente',
+          '',
+          'Límites:',
+          '- No modifico datos',
+          '- No creo proyectos, tareas ni movimientos',
+          '- Si falta contexto, te pediré una aclaración corta',
+          '',
+          'Si quieres, hazme una consulta directa sobre tus datos.',
+        ].join('\n')
+      : [
+          'I can help you query **Kontrol** data in **read-only mode**.',
+          '',
+          'Capabilities:',
+          '- Review projects and their status',
+          '- Analyze budgets, expenses, income, and movements',
+          '- Detect low-stock products',
+          '- Review pending or overdue tasks',
+          '- Summarize reports and recent activity',
+        ].join('\n')
   }
 
   return null
@@ -144,6 +200,7 @@ function buildRequestProfile(history, cfg) {
   const instantReply = buildInstantReply(latestUserText)
   const normalized = normalizeUserText(latestUserText)
   const looksAnalytical = /\b(project|projects|budget|budgets|inventory|stock|task|tasks|report|reports|company|companies|proyecto|proyectos|presupuesto|presupuestos|inventario|stock|tarea|tareas|reporte|reportes|empresa|empresas|movimiento|movimientos)\b/.test(normalized)
+  const needsLiveData = /\b(cuanto|cuantos|cual|cuales|como va|estado|resumen|lista|listar|muestra|mostrar|dame|revisa|consulta|buscar|hay|tengo|tiene|pendiente|pendientes|atrasada|atrasadas|vencida|vencidas|stock|presupuesto|gasto|gastos|ingreso|ingresos|venta|ventas|compra|compras|movimiento|movimientos|producto|productos|tarea|tareas|proyecto|proyectos|reporte|reportes|empresa|empresas|recent|status|list|show|summary|budget|expense|expenses|income|sales|purchases|movement|movements|product|products|task|tasks|project|projects|report|reports|company|companies)\b/.test(normalized)
 
   let maxTokens = cfg.maxTokens
   if (!looksAnalytical && normalized.length <= 60) {
@@ -156,6 +213,145 @@ function buildRequestProfile(history, cfg) {
     instantReply,
     maxTokens,
     disableThinking: cfg.disableThinking,
+    requireQueryFirst: !instantReply && (looksAnalytical || needsLiveData),
+  }
+}
+
+function detectBuiltinDataIntent(text) {
+  const normalized = normalizeUserText(text)
+
+  const asksProjectSummary =
+    /\bproyectos?\b/.test(normalized) &&
+    /\b(como van|como va|estado|resumen|avance|status|summary|overview|how are|how is)\b/.test(normalized)
+
+  if (asksProjectSummary) {
+    return 'project_status_summary'
+  }
+
+  return null
+}
+
+function formatProjectStatusAnswer(rows, userText) {
+  const normalized = normalizeUserText(userText)
+  const isSpanish = !/\b(project|projects|status|summary|how are|how is)\b/.test(normalized)
+
+  if (!rows.length) {
+    return isSpanish
+      ? 'No encontré proyectos registrados para tu empresa.'
+      : 'I could not find any projects for your company.'
+  }
+
+  const counts = rows.reduce((acc, row) => {
+    acc[row.estado] = (acc[row.estado] || 0) + 1
+    return acc
+  }, {})
+
+  const statusSummary = Object.entries(counts)
+    .map(([status, count]) => `**${status}**: ${count}`)
+    .join(' · ')
+
+  const visibleRows = rows.slice(0, 10)
+  const hiddenCount = Math.max(0, rows.length - visibleRows.length)
+
+  if (isSpanish) {
+    const lines = [
+      `Tienes **${rows.length}** proyectos registrados.`,
+      '',
+      `Resumen por estado: ${statusSummary}.`,
+      '',
+      'Detalle:',
+      ...visibleRows.map((row) => {
+        const totalTasks = Number(row.total_tareas) || 0
+        const completedTasks = Number(row.tareas_completadas) || 0
+        const overdueTasks = Number(row.tareas_atrasadas) || 0
+        const progress = totalTasks > 0
+          ? Math.round((completedTasks / totalTasks) * 100)
+          : 0
+        const due = row.fecha_fin_planificada
+          ? ` · fin planificado: ${String(row.fecha_fin_planificada).slice(0, 10)}`
+          : ''
+        return `- **${row.nombre}** — ${row.estado}. Tareas: ${completedTasks}/${totalTasks} completadas (${progress}%) · atrasadas: ${overdueTasks}${due}`
+      }),
+    ]
+
+    if (hiddenCount > 0) {
+      lines.push('', `Y hay **${hiddenCount}** proyectos más que no mostré en este resumen.`)
+    }
+
+    return lines.join('\n')
+  }
+
+  const lines = [
+    `You have **${rows.length}** registered projects.`,
+    '',
+    `Status summary: ${statusSummary}.`,
+    '',
+    'Details:',
+    ...visibleRows.map((row) => {
+      const totalTasks = Number(row.total_tareas) || 0
+      const completedTasks = Number(row.tareas_completadas) || 0
+      const overdueTasks = Number(row.tareas_atrasadas) || 0
+      const progress = totalTasks > 0
+        ? Math.round((completedTasks / totalTasks) * 100)
+        : 0
+      const due = row.fecha_fin_planificada
+        ? ` · planned end: ${String(row.fecha_fin_planificada).slice(0, 10)}`
+        : ''
+      return `- **${row.nombre}** — ${row.estado}. Tasks: ${completedTasks}/${totalTasks} completed (${progress}%) · overdue: ${overdueTasks}${due}`
+    }),
+  ]
+
+  if (hiddenCount > 0) {
+    lines.push('', `There are **${hiddenCount}** more projects not shown in this summary.`)
+  }
+
+  return lines.join('\n')
+}
+
+async function runBuiltinDataIntent(intent, { userText, company, user }) {
+  if (intent !== 'project_status_summary') return null
+
+  const sql = `
+    SELECT
+      p.id_proyecto,
+      p.nombre,
+      p.estado,
+      p.presupuesto_total,
+      p.fecha_inicio,
+      p.fecha_fin_planificada,
+      COUNT(t.id_tarea)::int AS total_tareas,
+      COUNT(t.id_tarea) FILTER (WHERE t.estado = 'COMPLETADA')::int AS tareas_completadas,
+      COUNT(t.id_tarea) FILTER (
+        WHERE t.estado IN ('PENDIENTE', 'EN_PROGRESO')
+          AND t.fecha_vencimiento < CURRENT_DATE
+      )::int AS tareas_atrasadas
+    FROM public.proyecto p
+    LEFT JOIN public.tarea t
+      ON t.id_proyecto = p.id_proyecto
+    WHERE p.id_empresa = $1
+    GROUP BY p.id_proyecto
+    ORDER BY
+      CASE p.estado
+        WHEN 'EN_PROGRESO' THEN 1
+        WHEN 'PLANIFICADO' THEN 2
+        WHEN 'PAUSADO' THEN 3
+        WHEN 'COMPLETADO' THEN 4
+        WHEN 'CANCELADO' THEN 5
+        ELSE 6
+      END,
+      p.nombre ASC
+    LIMIT 20
+  `.trim()
+
+  const result = await executeReadOnly(sql, [company.id_empresa])
+
+  return {
+    answer: formatProjectStatusAnswer(result.rows, userText),
+    queries: [{
+      sql,
+      rowCount: result.rowCount,
+      rationale: 'Get current company project status with task progress and overdue counts.',
+    }],
   }
 }
 
@@ -287,6 +483,20 @@ export async function runAgentTurn({ history, user, company, signal }) {
     throw new Error('runAgentTurn requires a non-empty history ending with a user message.')
   }
 
+  const latestUserText = getLatestUserText(history)
+  const cfg = getConfig()
+  const profile = buildRequestProfile(history, cfg)
+  const builtinIntent = detectBuiltinDataIntent(latestUserText)
+
+  if (builtinIntent) {
+    const builtinResult = await runBuiltinDataIntent(builtinIntent, {
+      userText: latestUserText,
+      company,
+      user,
+    })
+    if (builtinResult) return builtinResult
+  }
+
   const empresaMeta = await loadEmpresaMeta(company.id_empresa, user.id_usuario)
   const systemPrompt = buildSystemPrompt({
     user,
@@ -302,8 +512,6 @@ export async function runAgentTurn({ history, user, company, signal }) {
     ...sanitizeHistory(history),
   ]
 
-  const cfg = getConfig()
-  const profile = buildRequestProfile(history, cfg)
   const queries = []
 
   if (profile.instantReply) {
@@ -331,6 +539,18 @@ export async function runAgentTurn({ history, user, company, signal }) {
     }
 
     if (turn.action === 'answer') {
+      if (profile.requireQueryFirst && queries.length === 0) {
+        messages.push({ role: 'assistant', content: JSON.stringify(turn) })
+        messages.push({
+          role: 'user',
+          content: JSON.stringify({
+            tool: 'protocol',
+            error: 'This request appears to need live company data. Run a read-only SQL query first, then answer.',
+          }),
+        })
+        continue
+      }
+
       return {
         answer: typeof turn.text === 'string' && turn.text.trim()
           ? turn.text.trim()

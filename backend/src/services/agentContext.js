@@ -143,6 +143,12 @@ HARD RULES — never break these:
 10. PRESENTATION: format the final answer with light Markdown — bullets
     for lists, **bold** for emphasis, GitHub-style tables for tabular
     results. Keep it concise; the user can ask for more detail.
+
+11. LIVE DATA FIRST: if the user asks about current company, project,
+    budget, inventory, task, movement, report, count, status, amount,
+    trend, or recent activity data, you MUST query the database before
+    answering. Only greetings, capabilities, and general product guidance
+    may be answered without a query.
 `.trim()
 
 export const TOOL_PROTOCOL = `
@@ -167,6 +173,8 @@ Workflow:
        if you need another query (you can run several) or are ready to
        answer.
      - If no: emit an "answer" object directly.
+     - If the user asks about live business data, do NOT answer from
+       general knowledge. Query first.
   3. When ready, emit a single "answer" object — that ends the turn.
 
 Hard cap: at most 5 query steps per user message.
