@@ -23,6 +23,8 @@
           <PageHeader 
             title="My Projects" 
             subtitle="Projects you are enrolled in as admin or member"
+            showCreateButton
+            createLabel="+ Project"
             :canCreate="authStore.canCreateProjects"
             @create="openModal"
           />
@@ -72,7 +74,6 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { statusLabel, formatDate } from '../utils/statusHelpers.js'
 
 import AppNavbar  from '../components/AppNavbar.vue'
 import PageHeader from '../components/common/PageHeader.vue'
@@ -81,13 +82,6 @@ import LoadingSkeleton from '../components/common/LoadingSkeleton.vue'
 import ProjectCard from '../components/projects/ProjectCard.vue'
 import ProjectFormModal from '../components/projects/ProjectFormModal.vue'
 import ProjectsSummaryPanel from '../components/projects/ProjectSummaryPanel.vue'
-
-import BaseModal  from '../components/UI/Modal/BaseModal.vue'
-import ProgressBar from '../components/UI/ProgressBar/ProgressBar.vue'
-import Pill   from '../components/UI/Pill/Pill.vue'
-import Anchor from '../components/UI/Button/Anchor.vue'
-import Button from '../components/UI/Button/Button.vue'
-import Card from '../components/UI/Card/Card.vue'
 
 const router = useRouter()
 
@@ -98,46 +92,10 @@ const loading      = ref(true)
 const authError  = ref(false)
 const fetchError = ref(null)
 const activeTab  = ref('all')
-const lastSync   = ref('—')
+const lastSync   = ref('-')
 
-const ESTADOS = [
-  { value: 'PLANIFICADO', label: 'Planned'    },
-  { value: 'EN_PROGRESO', label: 'In Progress'},
-  { value: 'PAUSADO',     label: 'Paused'     },
-  { value: 'COMPLETADO',  label: 'Completed'  },
-  { value: 'CANCELADO',   label: 'Cancelled'  },
-]
-
-const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa',
-  EN_PROGRESO: '#34d399',
-  PAUSADO:     '#f97316',
-  COMPLETADO:  '#c9a962',
-  CANCELADO:   '#fb7185',
-}
-const STATUS_PROGRESS = {
-  PLANIFICADO: 10,
-  EN_PROGRESO: 60,
-  PAUSADO:     35,
-  COMPLETADO:  100,
-  CANCELADO:   5,
-}
-
-const statusColor    = (e) => STATUS_COLOR[e]    || '#666'
-const statusProgress = (e) => STATUS_PROGRESS[e] ?? 0
 const isAdmin        = (p) => p.id_encargado === authStore.idUsuario
 
-// Budget helpers
-const money = (v) => Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const budgetTotal  = (p) => money(budgetByProj.value[p.id_proyecto]?.presupuesto_total ?? p.presupuesto_total)
-const budgetSpent  = (p) => money(budgetByProj.value[p.id_proyecto]?.total_gastado ?? 0)
-const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_completado ?? 0
-const budgetColor  = (p) => {
-  const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
-  if (lvl === 'CRITICO')     return '#fb7185'
-  if (lvl === 'ADVERTENCIA') return '#f97316'
-  return '#c9a962'
-}
 function openBudget(p) {
   router.push({ name: 'budget', query: { project: p.id_proyecto } })
 }
