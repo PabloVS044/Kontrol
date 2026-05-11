@@ -12,6 +12,10 @@ import BudgetView from '../views/BudgetView.vue'
 import ProjectDetailView from '../views/ProjectDetailView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import ReportDetailView from '../views/ReportDetailView.vue'
+import AdminLayout from '../views/admin/AdminLayout.vue'
+import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
+import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
+import AdminUsersView from '../views/admin/AdminUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -91,6 +95,17 @@ const router = createRouter({
       component: BudgetView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
+    {
+      // TODO(T-37): guard uses isSuperUser — update the role string there when T-37 merges
+      path: '/admin',
+      component: AdminLayout,
+      meta: { requiresAuth: true, requiresSuperUser: true },
+      children: [
+        { path: '',        name: 'admin-dashboard', component: AdminDashboardView },
+        { path: 'companies', name: 'admin-companies', component: AdminCompaniesView },
+        { path: 'users',     name: 'admin-users',     component: AdminUsersView },
+      ],
+    },
   ],
 })
 
@@ -130,6 +145,12 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresInventoryAccess && !authStore.canViewInventory) {
     next({ name: 'dashboard' })
+    return
+  }
+
+  // Block non-super-user access to admin panel
+  if (to.meta.requiresSuperUser && !authStore.isSuperUser) {
+    next({ name: authStore.isLoggedIn ? 'dashboard' : 'login' })
     return
   }
 
