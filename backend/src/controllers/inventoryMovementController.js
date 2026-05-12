@@ -203,10 +203,10 @@ export const createInventoryMovement = async (req, res) => {
     // Insert movement
     const inserted = await client.query(
       `INSERT INTO public.movimiento_inventario
-         (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_proveedor)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_proveedor, id_empresa)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id_movimiento`,
-      [tipo, cantidad, precio_unitario, motivo ?? null, id_producto, id_usuario, id_proyecto, id_proveedor ?? null]
+      [tipo, cantidad, precio_unitario, motivo ?? null, id_producto, id_usuario, id_proyecto, id_proveedor ?? null, id_empresa]
     )
 
     // Update stock
