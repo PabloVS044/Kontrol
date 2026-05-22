@@ -349,6 +349,12 @@ async function loadIntegrations() {
 
 async function handleToggle(integration) {
   const nextStatus = integration.status === 'active' ? 'inactive' : 'active'
+
+  if (nextStatus === 'active' && integration.status === 'error') {
+    setFeedback(integration.slug, 'error', 'La última conexión falló. Revisa las credenciales y usa "Probar conexión" antes de activar.')
+    return
+  }
+
   togglingSlug.value = integration.slug
   clearFeedback(integration.slug)
   try {
@@ -412,6 +418,7 @@ async function handleSave() {
     const idx = integrations.value.findIndex((i) => i.slug === modalIntegration.value.slug)
     if (idx !== -1) {
       integrations.value[idx].is_configured = true
+      integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
     if (isNewIntegration.value) {
@@ -451,7 +458,7 @@ const TUTORIALS = {
     'Ve a Settings → API Keys y haz clic en "Create API Key".',
     'Ponle un nombre descriptivo y selecciona el permiso "Restricted Access" → "Mail Send: Full Access".',
     'Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.',
-    'Pega la API Key y tu correo remitente en los campos de configuración.',
+    'Pega la API Key, tu correo remitente verificado en SendGrid y el correo destinatario que recibirá las alertas.',
   ],
   'microsoft-teams': [
     'Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.',

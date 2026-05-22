@@ -6,6 +6,10 @@ import {
   decryptCredentials,
   maskCredentials,
 } from '../services/integrationService.js'
+
+function getCatalogEntry(slug) {
+  return INTEGRATION_CATALOG.find((i) => i.slug === slug)
+}
 import { testSlackConnection } from '../services/slackService.js'
 import { testSendGridConnection } from '../services/sendgridService.js'
 import { testTeamsConnection } from '../services/teamsService.js'
@@ -102,14 +106,28 @@ export const saveIntegrationConfig = async (req, res) => {
     if (v && !v.includes('****')) merged[k] = v
   }
 
+  // Validate that all required fields for this integration are present
+  const catalogEntry = getCatalogEntry(slug)
+  const missingFields = catalogEntry.campos_credenciales
+    .filter((f) => f.required && !merged[f.key])
+    .map((f) => f.label)
+
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: `Faltan campos requeridos: ${missingFields.join(', ')}.`,
+    })
+  }
+
   const encrypted = encryptCredentials(merged)
 
   await pool.query(
-    `INSERT INTO public.integracion (id_empresa, slug, credentials_enc, config, creado_por, updated_at)
-     VALUES ($1, $2, $3, $4, $5, NOW())
+    `INSERT INTO public.integracion (id_empresa, slug, status, credentials_enc, config, creado_por, updated_at)
+     VALUES ($1, $2, 'inactive', $3, $4, $5, NOW())
      ON CONFLICT (id_empresa, slug) DO UPDATE SET
        credentials_enc = EXCLUDED.credentials_enc,
        config          = EXCLUDED.config,
+       status          = 'inactive',
        updated_at      = NOW()`,
     [id_empresa, slug, encrypted, JSON.stringify(config ?? {}), req.user.id_usuario],
   )
