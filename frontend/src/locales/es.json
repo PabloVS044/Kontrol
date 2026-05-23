@@ -1,0 +1,49 @@
+{
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "inviteBanner": "Esta sesión se vinculará a la invitación que recibiste.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "rememberMe": "Recuérdame",
+      "forgotPassword": "Olvidé mi contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "divider": "o",
+      "withGoogle": "Entrar con Google",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate",
+      "errors": {
+        "emailRequired": "El correo es requerido",
+        "emailInvalid": "Ingresa un correo válido",
+        "passwordRequired": "La contraseña es requerida",
+        "passwordMin": "Mínimo 6 caracteres",
+        "generic": "Algo salió mal. Por favor intenta de nuevo."
+      }
+    },
+    "register": {
+      "title": "Registro",
+      "inviteBanner": "Esta cuenta se vinculará automáticamente a la empresa invitada.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta...",
+      "divider": "o",
+      "withGoogle": "Registrarse con Google",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "signIn": "Inicia sesión",
+      "success": "¡Cuenta creada! Redirigiendo al login...",
+      "errors": {
+        "firstNameRequired": "El nombre es requerido",
+        "lastNameRequired": "El apellido es requerido",
+        "emailRequired": "El correo es requerido",
+        "emailInvalid": "Ingresa un correo válido",
+        "passwordRequired": "La contraseña es requerida",
+        "passwordMin": "Mínimo 6 caracteres",
+        "generic": "Algo salió mal. Por favor intenta de nuevo."
+      }
+    }
+  }
+}

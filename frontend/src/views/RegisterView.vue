@@ -8,23 +8,23 @@
       <!-- Panel izquierdo: Formulario -->
       <div class="register-form-panel">
         <div class="register-card">
-          <h2 class="register-title">Register</h2>
+          <h2 class="register-title">{{ $t('auth.register.title') }}</h2>
 
           <!-- Banners -->
           <div v-if="errorMessage" class="register-banner register-banner--error">{{ errorMessage }}</div>
           <div v-if="successMessage" class="register-banner register-banner--success">{{ successMessage }}</div>
           <div v-if="inviteToken" class="register-banner register-banner--success">
-            This account will automatically be linked to the invited company.
+            {{ $t('auth.register.inviteBanner') }}
           </div>
 
           <!-- First Name + Last Name -->
           <div class="register-row-two">
             <div class="register-field">
-              <label class="register-field-label">First Name</label>
+              <label class="register-field-label">{{ $t('auth.register.firstName') }}</label>
               <input
                 v-model="form.firstName"
                 type="text"
-                placeholder="First Name"
+                :placeholder="$t('auth.register.firstName')"
                 class="register-input"
                 :class="{ 'register-input--error': errors.firstName }"
                 @blur="validate('firstName')"
@@ -33,11 +33,11 @@
               <span v-if="errors.firstName" class="register-field-error">{{ errors.firstName }}</span>
             </div>
             <div class="register-field">
-              <label class="register-field-label">Last Name</label>
+              <label class="register-field-label">{{ $t('auth.register.lastName') }}</label>
               <input
                 v-model="form.lastName"
                 type="text"
-                placeholder="Last Name"
+                :placeholder="$t('auth.register.lastName')"
                 class="register-input"
                 :class="{ 'register-input--error': errors.lastName }"
                 @blur="validate('lastName')"
@@ -49,12 +49,12 @@
 
           <!-- Email -->
           <div class="register-field">
-            <label class="register-field-label">Email</label>
+            <label class="register-field-label">{{ $t('auth.register.email') }}</label>
             <div class="register-input-wrap">
               <input
                 v-model="form.email"
                 type="email"
-                placeholder="Email"
+                :placeholder="$t('auth.register.email')"
                 class="register-input"
                 :class="{ 'register-input--error': errors.email }"
                 @blur="validate('email')"
@@ -67,12 +67,12 @@
 
           <!-- Password -->
           <div class="register-field">
-            <label class="register-field-label">Password</label>
+            <label class="register-field-label">{{ $t('auth.register.password') }}</label>
             <div class="register-input-wrap">
               <input
                 v-model="form.password"
                 :type="showPass ? 'text' : 'password'"
-                placeholder="Password"
+                :placeholder="$t('auth.register.password')"
                 class="register-input"
                 :class="{ 'register-input--error': errors.password }"
                 @blur="validate('password')"
@@ -95,28 +95,28 @@
             @click="handleRegister"
           >
             <span v-if="isLoading" class="register-spinner" />
-            {{ isLoading ? 'Creating account...' : 'Create Account' }}
+            {{ isLoading ? $t('auth.register.submitting') : $t('auth.register.submit') }}
           </button>
 
           <!-- Divisor -->
-          <div class="register-divider"><span>or</span></div>
+          <div class="register-divider"><span>{{ $t('auth.register.divider') }}</span></div>
 
           <!-- OAuth -->
           <div class="register-oauth-row">
             <button class="register-btn-oauth" @click="handleGoogleRegister">
               <img src="https://img.icons8.com/ios11/512/FFFFFF/google-logo.png" alt="Google" class="register-oauth-logo" />
-              Sign up with Google
+              {{ $t('auth.register.withGoogle') }}
             </button>
           </div>
 
           <!-- Link a login -->
           <p class="register-switch">
-            Already have an account?
+            {{ $t('auth.register.hasAccount') }}
             <RouterLink
               :to="inviteToken ? { name: 'login', query: { invite: inviteToken } } : { name: 'login' }"
               class="register-switch-link"
             >
-              Sign in
+              {{ $t('auth.register.signIn') }}
             </RouterLink>
           </p>
 
@@ -135,6 +135,7 @@
 <script setup>
 import { computed, ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { MailIcon,  EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
@@ -144,6 +145,7 @@ import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/ut
 import { getInviteTokenFromQuery } from '@/utils/invitation'
 import './RegisterView.css'
 
+const { t }     = useI18n()
 const router    = useRouter()
 const route     = useRoute()
 const authStore = useAuthStore()
@@ -157,16 +159,16 @@ const showPass      = ref(false)
 const inviteToken   = computed(() => getInviteTokenFromQuery(route.query))
 
 const rules = {
-  firstName: () => !form.firstName.trim() ? 'First name is required' : '',
-  lastName:  () => !form.lastName.trim()  ? 'Last name is required' : '',
+  firstName: () => !form.firstName.trim() ? t('auth.register.errors.firstNameRequired') : '',
+  lastName:  () => !form.lastName.trim()  ? t('auth.register.errors.lastNameRequired') : '',
   email:     () => {
-    if (!form.email) return 'Email is required'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'Enter a valid email'
+    if (!form.email) return t('auth.register.errors.emailRequired')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return t('auth.register.errors.emailInvalid')
     return ''
   },
   password: () => {
-    if (!form.password) return 'Password is required'
-    if (form.password.length < 6) return 'Minimum 6 characters'
+    if (!form.password) return t('auth.register.errors.passwordRequired')
+    if (form.password.length < 6) return t('auth.register.errors.passwordMin')
     return ''
   },
 }
@@ -220,10 +222,10 @@ async function handleRegister() {
       return
     }
 
-    successMessage.value = 'Account created! Redirecting to login...'
+    successMessage.value = t('auth.register.success')
     setTimeout(() => router.push({ name: 'login' }), 1400)
   } catch (err) {
-    errorMessage.value = err.message || 'Something went wrong. Please try again.'
+    errorMessage.value = err.message || t('auth.register.errors.generic')
   } finally {
     isLoading.value = false
   }

@@ -1,0 +1,49 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "inviteBanner": "This session will be linked to the invitation you received.",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "divider": "or",
+      "withGoogle": "Sign in with Google",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up now",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Minimum 6 characters",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "register": {
+      "title": "Register",
+      "inviteBanner": "This account will automatically be linked to the invited company.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "divider": "or",
+      "withGoogle": "Sign up with Google",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "success": "Account created! Redirecting to login...",
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Minimum 6 characters",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  }
+}
