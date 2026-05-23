@@ -158,5 +158,96 @@
         "removeProjectAccess": "Could not remove project access."
       }
     }
+  },
+  "inventory": {
+    "authError": {
+      "title": "Session required",
+      "message": "You must be logged in to view the inventory."
+    },
+    "fetchError": {
+      "title": "Could not load inventory",
+      "retry": "Retry"
+    },
+    "header": {
+      "title": "Inventory",
+      "subtitle": "Browse and manage your product catalogue",
+      "newProduct": "New product",
+      "noWriteAccess": "No write access",
+      "selectProjectFirst": "Select project first",
+      "noWriteAccessTitle": "You do not have write access in this project",
+      "selectProjectTitle": "Select a project first",
+      "settings": "Settings",
+      "history": "History"
+    },
+    "projectFilter": {
+      "label": "Project",
+      "allProjects": "All projects",
+      "loading": "Loading…"
+    },
+    "search": {
+      "placeholder": "Search by name or category..."
+    },
+    "filter": {
+      "category": "Category",
+      "all": "All"
+    },
+    "section": {
+      "title": "Product Catalogue",
+      "loading": "Loading…",
+      "productCount": "{count} products · Click any card for details"
+    },
+    "card": {
+      "price": "Price",
+      "totalStock": "total stock",
+      "entries": "Entries",
+      "exits": "Exits",
+      "net": "Net",
+      "viewDetails": "View details"
+    },
+    "empty": "No products match your filters.",
+    "stock": {
+      "outOfStock": "Out of stock",
+      "lowStock": "Low stock",
+      "inStock": "In stock"
+    },
+    "context": {
+      "summary": "Summary",
+      "allProjects": "All projects",
+      "atAGlance": "At a Glance",
+      "totalProducts": "Total products",
+      "lowStock": "Low stock",
+      "reorderSoon": "Reorder soon",
+      "outOfStock": "Out of stock",
+      "actionNeeded": "Action needed",
+      "totalValue": "Total value",
+      "byCategory": "By Category",
+      "stockAlerts": "Stock Alerts",
+      "unitsLeft": "{count} units left",
+      "criticalStock": "Critical stock",
+      "lowStockReorder": "Low stock — reorder soon",
+      "quickActions": "Quick Actions",
+      "addProduct": "+ Add product",
+      "exportInventory": "↓ Export inventory",
+      "dataSource": "Data Source",
+      "dataSourceText": "Inventory database · Live"
+    },
+    "modal": {
+      "title": "New product",
+      "name": "Name",
+      "description": "Description",
+      "salePrice": "Sale price",
+      "costPrice": "Cost price",
+      "initialStock": "Initial stock",
+      "minStock": "Min. stock",
+      "namePlaceholder": "Product name",
+      "descriptionPlaceholder": "Optional description",
+      "cancel": "Cancel",
+      "save": "Save product",
+      "saving": "Saving…"
+    },
+    "errors": {
+      "selectProject": "Select a project before adding a product.",
+      "networkError": "Network error, try again."
+    }
   }
 }

@@ -158,5 +158,96 @@
         "removeProjectAccess": "No se pudo quitar el acceso al proyecto."
       }
     }
+  },
+  "inventory": {
+    "authError": {
+      "title": "Sesión requerida",
+      "message": "Debes iniciar sesión para ver el inventario."
+    },
+    "fetchError": {
+      "title": "No se pudo cargar el inventario",
+      "retry": "Reintentar"
+    },
+    "header": {
+      "title": "Inventario",
+      "subtitle": "Explora y gestiona tu catálogo de productos",
+      "newProduct": "Nuevo producto",
+      "noWriteAccess": "Sin acceso de escritura",
+      "selectProjectFirst": "Selecciona un proyecto",
+      "noWriteAccessTitle": "No tienes acceso de escritura en este proyecto",
+      "selectProjectTitle": "Selecciona un proyecto primero",
+      "settings": "Configuración",
+      "history": "Historial"
+    },
+    "projectFilter": {
+      "label": "Proyecto",
+      "allProjects": "Todos los proyectos",
+      "loading": "Cargando…"
+    },
+    "search": {
+      "placeholder": "Buscar por nombre o categoría..."
+    },
+    "filter": {
+      "category": "Categoría",
+      "all": "Todos"
+    },
+    "section": {
+      "title": "Catálogo de Productos",
+      "loading": "Cargando…",
+      "productCount": "{count} productos · Haz clic en cualquier tarjeta para ver detalles"
+    },
+    "card": {
+      "price": "Precio",
+      "totalStock": "stock total",
+      "entries": "Entradas",
+      "exits": "Salidas",
+      "net": "Neto",
+      "viewDetails": "Ver detalles"
+    },
+    "empty": "Ningún producto coincide con tus filtros.",
+    "stock": {
+      "outOfStock": "Sin stock",
+      "lowStock": "Stock bajo",
+      "inStock": "En stock"
+    },
+    "context": {
+      "summary": "Resumen",
+      "allProjects": "Todos los proyectos",
+      "atAGlance": "De un vistazo",
+      "totalProducts": "Productos totales",
+      "lowStock": "Stock bajo",
+      "reorderSoon": "Reordenar pronto",
+      "outOfStock": "Sin stock",
+      "actionNeeded": "Acción requerida",
+      "totalValue": "Valor total",
+      "byCategory": "Por Categoría",
+      "stockAlerts": "Alertas de Stock",
+      "unitsLeft": "{count} unidades restantes",
+      "criticalStock": "Stock crítico",
+      "lowStockReorder": "Stock bajo — reordenar pronto",
+      "quickActions": "Acciones Rápidas",
+      "addProduct": "+ Agregar producto",
+      "exportInventory": "↓ Exportar inventario",
+      "dataSource": "Fuente de Datos",
+      "dataSourceText": "Base de datos de inventario · En vivo"
+    },
+    "modal": {
+      "title": "Nuevo producto",
+      "name": "Nombre",
+      "description": "Descripción",
+      "salePrice": "Precio de venta",
+      "costPrice": "Precio de costo",
+      "initialStock": "Stock inicial",
+      "minStock": "Stock mínimo",
+      "namePlaceholder": "Nombre del producto",
+      "descriptionPlaceholder": "Descripción opcional",
+      "cancel": "Cancelar",
+      "save": "Guardar producto",
+      "saving": "Guardando…"
+    },
+    "errors": {
+      "selectProject": "Selecciona un proyecto antes de agregar un producto.",
+      "networkError": "Error de red, intenta de nuevo."
+    }
   }
 }
