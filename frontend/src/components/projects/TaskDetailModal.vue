@@ -7,31 +7,31 @@
       <span class="modal-title">{{ task?.nombre ?? '…' }}</span>
     </template>
 
-    <div v-if="loading" class="detail-loading">Loading…</div>
+    <div v-if="loading" class="detail-loading">{{ $t('projects.tasks.detail.loading') }}</div>
 
     <div v-else-if="task" class="modal-form">
       <div class="form-field">
-        <label>Description</label>
+        <label>{{ $t('projects.tasks.detail.description') }}</label>
         <p>{{ task.descripcion || '—' }}</p>
       </div>
       <div class="form-row">
         <div class="form-field">
-          <label>Priority</label>
+          <label>{{ $t('projects.tasks.detail.priority') }}</label>
           <p>{{ task.prioridad }}</p>
         </div>
         <div class="form-field" style="align-items: flex-start;">
-          <label>Status</label>
+          <label>{{ $t('projects.tasks.detail.status') }}</label>
           <span class="status-badge small" :style="statusStyle(task.estado)" style="width: fit-content;">
             {{ statusLabel(task.estado) }}
           </span>
         </div>
       </div>
       <div class="form-field">
-        <label>Due date</label>
+        <label>{{ $t('projects.tasks.detail.dueDate') }}</label>
         <p>{{ task.fecha_vencimiento?.substring(0, 10) || '—' }}</p>
       </div>
       <div class="form-field">
-        <label>Assigned to</label>
+        <label>{{ $t('projects.tasks.detail.assignedTo') }}</label>
         <p>{{ task.asignado_nombre ? `${task.asignado_nombre} ${task.asignado_apellido}` : '—' }}</p>
       </div>
     </div>
@@ -40,8 +40,11 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import { statusStyle, statusLabel, priorityColor } from '@/utils/statusHelpers.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },

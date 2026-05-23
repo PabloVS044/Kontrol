@@ -20,27 +20,30 @@
             v-if="task.fecha_vencimiento"
             class="due-badge"
             :class="{ overdue: isOverdue(task) }"
-          >Due {{ formatDate(task.fecha_vencimiento) }}</span>
+          >{{ $t('projects.tasks.card.due', { date: formatDate(task.fecha_vencimiento) }) }}</span>
           <span v-if="task.asignado" class="due-badge">{{ task.asignado }}</span>
         </div>
       </div>
     </div>
 
     <div v-if="canEdit" class="task-card-actions">
-      <button class="task-action-btn" @click="$emit('click-edit', task)">Edit</button>
+      <button class="task-action-btn" @click="$emit('click-edit', task)">{{ $t('projects.tasks.card.edit') }}</button>
       <button
         v-if="!isDone"
         class="task-action-btn task-action-btn--close"
         :disabled="closing"
         @click="$emit('click-close', task)"
-      >{{ closing ? '…' : 'Close' }}</button>
+      >{{ closing ? '…' : $t('projects.tasks.card.close') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { statusStyle, statusLabel, priorityColor, formatDate, isOverdue } from '@/utils/statusHelpers.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   task:      { type: Object, required: true },

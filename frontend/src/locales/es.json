@@ -159,6 +159,346 @@
       }
     }
   },
+  "projects": {
+    "statuses": {
+      "planned": "Planificado",
+      "inProgress": "En progreso",
+      "paused": "Pausado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "taskStatuses": {
+      "pending": "Pendiente",
+      "inProgress": "En progreso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "priorities": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "noDescription": "Sin descripción.",
+    "budget": "Presupuesto",
+    "budgetUsed": "{pct}% usado",
+    "overrun": "EXCEDIDO",
+    "warning": "ADVERTENCIA",
+    "dueDate": "Vence {date}",
+    "noDueDate": "Sin fecha de vencimiento",
+    "list": {
+      "title": "Mis Proyectos",
+      "subtitle": "Proyectos en los que estás inscrito como admin o miembro",
+      "newProject": "Nuevo proyecto",
+      "settings": "Configuración",
+      "history": "Historial",
+      "authError": {
+        "title": "Sesión requerida",
+        "message": "Debes iniciar sesión para ver tus proyectos."
+      },
+      "fetchError": {
+        "title": "No se pudieron cargar los proyectos",
+        "retry": "Reintentar"
+      },
+      "tabs": {
+        "all": "Todos",
+        "active": "Activos",
+        "atRisk": "En riesgo",
+        "completed": "Completados"
+      },
+      "section": {
+        "all": "Todos los proyectos",
+        "active": "Proyectos activos",
+        "atRisk": "En riesgo",
+        "completed": "Completados",
+        "default": "Proyectos"
+      },
+      "searchPlaceholder": "Buscar proyecto...",
+      "count": "{count} proyecto | {count} proyectos",
+      "loading": "Cargando...",
+      "listHeaders": {
+        "project": "Proyecto",
+        "progress": "Progreso",
+        "budget": "Presupuesto",
+        "due": "Vence",
+        "actions": "Acciones",
+        "role": "Rol"
+      },
+      "gridView": "Vista grid",
+      "listView": "Vista lista",
+      "quickActions": {
+        "tasks": "Tareas",
+        "team": "Equipo",
+        "budget": "Presupuesto",
+        "reports": "Reportes"
+      },
+      "empty": {
+        "title": "Sin proyectos aquí",
+        "search": "Ningún proyecto coincide con la búsqueda.",
+        "noFilter": "Cambia el filtro o crea un nuevo proyecto.",
+        "cta": "+ Nuevo proyecto"
+      },
+      "networkError": "Error de red",
+      "openProject": "→ Abrir proyecto",
+      "openBudget": "→ Abrir presupuesto",
+      "context": {
+        "title": "Resumen",
+        "subtitle": "Resumen de tus proyectos",
+        "atAGlance": "DE UN VISTAZO",
+        "totalProjects": "Proyectos totales",
+        "asAdmin": "{count} como admin",
+        "atRisk": "En riesgo",
+        "needsAttention": "Necesita atención",
+        "completed": "Completados",
+        "thisQuarter": "Este trimestre",
+        "paused": "Pausados",
+        "awaitingBudget": "Esperando presupuesto",
+        "quickActions": "ACCIONES RÁPIDAS",
+        "createNew": "+ Crear nuevo proyecto",
+        "export": "↓ Exportar resumen",
+        "dataSource": "FUENTE DE DATOS",
+        "dataSourceText": "Base de datos de proyectos · Última sync: {time}"
+      }
+    },
+    "form": {
+      "newTitle": "Nuevo proyecto",
+      "name": "Nombre",
+      "description": "Descripción",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "budget": "Presupuesto",
+      "status": "Estado",
+      "namePlaceholder": "Nombre del proyecto",
+      "descriptionPlaceholder": "Descripción opcional",
+      "cancel": "Cancelar",
+      "save": "Guardar proyecto",
+      "saving": "Guardando…"
+    },
+    "detail": {
+      "back": "Proyectos",
+      "overdue": "{n}d de retraso",
+      "remaining": "{n}d restantes",
+      "spent": "gastado",
+      "total": "total",
+      "error": {
+        "title": "No se pudo cargar el proyecto",
+        "retry": "Reintentar"
+      },
+      "tabs": {
+        "overview": "Resumen",
+        "tasks": "Tareas",
+        "team": "Equipo",
+        "members": "Miembros",
+        "progress": "Progreso"
+      },
+      "nav": {
+        "budget": "Presupuesto",
+        "reports": "Reportes"
+      },
+      "overview": {
+        "taskProgress": "Progreso de Tareas",
+        "tasksTotal": "{count} tareas en total",
+        "projectProgress": "Progreso del Proyecto",
+        "updates": "{count} actualizaciones",
+        "noUpdates": "Sin actualizaciones",
+        "basedOnTimeline": "Basado en actualizaciones de progreso",
+        "basedOnTasks": "Derivado de la completación de tareas",
+        "latestUpdate": "Última actualización {date}",
+        "noProgressYet": "No hay actualizaciones de progreso registradas aún.",
+        "tasksDone": "{pct}% tareas completadas",
+        "milestones": "{count} hitos",
+        "blockers": "{count} bloqueos",
+        "budgetOverview": "Resumen del Presupuesto",
+        "totalBudget": "Presupuesto total",
+        "budgetSpent": "Gastado",
+        "budgetOverrun": "Excedido",
+        "available": "Disponible",
+        "inventoryActivity": "Actividad de Inventario",
+        "noMovements": "No hay movimientos de inventario registrados.",
+        "teamBreakdown": "Desglose del Equipo",
+        "memberSingular": "1 miembro",
+        "memberPlural": "{count} miembros",
+        "noRoles": "No hay roles asignados a este proyecto aún."
+      }
+    },
+    "tasks": {
+      "allStatuses": "Todos los estados",
+      "allPriorities": "Todas las prioridades",
+      "count": "{count} tareas",
+      "newTask": "Nueva tarea",
+      "loading": "Cargando tareas…",
+      "emptyFilter": "Sin tareas con este filtro",
+      "emptyNoTasks": "Sin tareas aún",
+      "emptyFilterSub": "Prueba cambiando los filtros.",
+      "emptyNoTasksSub": "Crea la primera tarea del proyecto.",
+      "emptyCta": "Nueva tarea",
+      "card": {
+        "due": "Vence {date}",
+        "edit": "Editar",
+        "close": "Cerrar"
+      },
+      "modal": {
+        "newTitle": "Nueva tarea",
+        "editTitle": "Editar tarea",
+        "name": "Nombre",
+        "description": "Descripción",
+        "priority": "Prioridad",
+        "status": "Estado",
+        "initialStatus": "Estado inicial",
+        "assignTo": "Asignar a",
+        "dueDate": "Fecha de vencimiento",
+        "unassigned": "— Sin asignar —",
+        "namePlaceholder": "Nombre de la tarea",
+        "descriptionPlaceholder": "Descripción opcional",
+        "cancel": "Cancelar",
+        "saving": "Guardando…",
+        "update": "Actualizar tarea",
+        "create": "Crear tarea",
+        "networkError": "Error de red, intenta de nuevo."
+      },
+      "detail": {
+        "loading": "Cargando…",
+        "description": "Descripción",
+        "priority": "Prioridad",
+        "status": "Estado",
+        "dueDate": "Fecha de vencimiento",
+        "assignedTo": "Asignado a"
+      }
+    },
+    "team": {
+      "searchPlaceholder": "Buscar por nombre…",
+      "allAreas": "Todas las áreas",
+      "count": "{count} equipos",
+      "newTeam": "Nuevo equipo",
+      "emptyFilter": "Sin equipos con este filtro",
+      "emptyNoTeams": "Sin equipos aún",
+      "emptyFilterSub": "Prueba cambiando los filtros.",
+      "emptyNoTeamsSub": "Crea el primer equipo del proyecto.",
+      "emptyCta": "Nuevo equipo",
+      "listHeaders": {
+        "team": "Equipo",
+        "area": "Área",
+        "members": "Miembros",
+        "tasks": "Tareas"
+      },
+      "modal": {
+        "newTitle": "Nuevo equipo",
+        "editTitle": "Editar equipo",
+        "name": "Nombre",
+        "area": "Área",
+        "members": "Miembros",
+        "namePlaceholder": "Nombre del equipo",
+        "selectArea": "— Seleccionar área —",
+        "noMembers": "No hay miembros en el proyecto.",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "create": "Crear"
+      },
+      "detail": {
+        "area": "Área",
+        "members": "Miembros",
+        "tasksAssigned": "Tareas asignadas",
+        "tasks": "Tareas",
+        "noMembers": "No hay miembros asignados.",
+        "edit": "Editar",
+        "delete": "Eliminar"
+      }
+    },
+    "members": {
+      "eyebrow": "Miembros del Proyecto",
+      "subtitle": "Solo los usuarios de la empresa asignados a este proyecto se muestran aquí. Desde este panel puedes otorgar acceso y compartir una invitación específica del proyecto.",
+      "assigned": "{count} asignados",
+      "available": "{count} disponibles",
+      "activeInvitation": "Invitación activa",
+      "noActiveInvitation": "Sin invitación activa",
+      "loading": "Cargando miembros del proyecto...",
+      "readOnly": {
+        "title": "Vista de solo lectura",
+        "copy": "Puedes ver quién está asignado al proyecto, pero no tienes permiso para gestionar miembros o invitaciones."
+      },
+      "invite": {
+        "kicker": "Invitación al Proyecto",
+        "title": "Invitación del proyecto",
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "description": "Este enlace agrega al usuario como colaborador de la empresa si aún no pertenece, luego lo asigna a este proyecto con los permisos seleccionados.",
+        "permissionsLabel": "Permisos otorgados por esta invitación",
+        "saving": "Guardando...",
+        "update": "Actualizar invitación",
+        "generate": "Generar invitación",
+        "copyLink": "Copiar enlace",
+        "deactivate": "Desactivar enlace",
+        "deactivating": "Desactivando..."
+      },
+      "assignment": {
+        "kicker": "Asignación",
+        "title": "Agregar miembro existente",
+        "description": "Puedes tomar cualquier usuario que ya pertenezca a la empresa y asignarlo a este proyecto con permisos explícitos.",
+        "selectMember": "Seleccionar miembro de la empresa",
+        "assigning": "Asignando...",
+        "assign": "Asignar al proyecto",
+        "permissionsLabel": "Permisos iniciales para este miembro",
+        "allAssigned": "Todos los miembros elegibles de la empresa ya están asignados a este proyecto."
+      },
+      "assignedList": {
+        "kicker": "Miembros Asignados",
+        "title": "Miembros del proyecto",
+        "total": "{count} total",
+        "permissionsLabel": "Permisos del proyecto",
+        "saving": "Guardando...",
+        "savePermissions": "Guardar permisos",
+        "removing": "Quitando...",
+        "remove": "Quitar",
+        "noMembers": "No hay miembros asignados a este proyecto aún."
+      },
+      "actions": {
+        "inviteReady": "Invitación del proyecto lista para compartir.",
+        "inviteDeactivated": "La invitación del proyecto fue desactivada.",
+        "linkCopied": "Enlace copiado al portapapeles.",
+        "memberAssigned": "Miembro asignado al proyecto.",
+        "permissionsUpdated": "Permisos del miembro actualizados.",
+        "memberRemoved": "Miembro eliminado del proyecto."
+      },
+      "errors": {
+        "loadPanel": "No se pudo cargar el panel de miembros del proyecto.",
+        "saveInvite": "No se pudo guardar la invitación del proyecto.",
+        "deactivateInvite": "No se pudo desactivar la invitación del proyecto.",
+        "copyLink": "No se pudo copiar el enlace.",
+        "assignMember": "No se pudo asignar al miembro al proyecto.",
+        "savePermissions": "No se pudieron guardar los permisos del miembro.",
+        "removeMember": "No se pudo eliminar al miembro del proyecto."
+      }
+    },
+    "progress": {
+      "title": "Bitácora de avances",
+      "entriesCount": "{count} entradas registradas",
+      "add": "Agregar",
+      "loading": "Cargando bitácora...",
+      "empty": "No hay entradas registradas aún.",
+      "unknownAuthor": "Desconocido",
+      "modal": {
+        "title": "Nueva entrada de bitácora",
+        "descriptionLabel": "Descripción",
+        "detailsLabel": "Detalles adicionales",
+        "updateTypeLabel": "Tipo de entrada",
+        "progressLabel": "Progreso (%)",
+        "dateLabel": "Fecha",
+        "descriptionPlaceholder": "¿Qué avance se realizó?",
+        "detailsPlaceholder": "Contexto extra para el equipo (opcional)",
+        "typeUpdate": "Avance",
+        "typeMilestone": "Hito / Logro",
+        "typeBlocker": "Bloqueo",
+        "cancel": "Cancelar",
+        "saving": "Guardando…",
+        "submit": "Agregar entrada"
+      },
+      "errors": {
+        "load": "No se pudo cargar la bitácora.",
+        "save": "No se pudo guardar la entrada.",
+        "network": "Error de red, inténtalo de nuevo."
+      }
+    }
+  },
   "inventory": {
     "authError": {
       "title": "Sesión requerida",

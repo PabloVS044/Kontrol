@@ -7,29 +7,29 @@
       <span class="modal-title">{{ team?.nombre }}</span>
     </template>
     <template #header-actions>
-      <button class="task-action-btn" @click="$emit('edit', team)">Edit</button>
-      <button class="task-action-btn task-action-btn--close" @click="$emit('delete', team)">Delete</button>
+      <button class="task-action-btn" @click="$emit('edit', team)">{{ $t('projects.team.detail.edit') }}</button>
+      <button class="task-action-btn task-action-btn--close" @click="$emit('delete', team)">{{ $t('projects.team.detail.delete') }}</button>
     </template>
 
     <div v-if="team" class="modal-form">
       <div class="form-row">
         <div class="form-field">
-          <label>Area</label>
+          <label>{{ $t('projects.team.detail.area') }}</label>
           <span class="area-badge" style="width: fit-content;">{{ areaLabel(team.area) }}</span>
         </div>
         <div class="form-field">
-          <label>Members</label>
+          <label>{{ $t('projects.team.detail.members') }}</label>
           <p>{{ team.miembros.length }}</p>
         </div>
         <div class="form-field">
-          <label>Tasks assigned</label>
+          <label>{{ $t('projects.team.detail.tasksAssigned') }}</label>
           <p>{{ team.tareasAsignadas.length }}</p>
         </div>
       </div>
 
       <div class="form-field">
-        <label>Members</label>
-        <div v-if="team.miembros.length === 0" class="empty-hint">No members assigned.</div>
+        <label>{{ $t('projects.team.detail.members') }}</label>
+        <div v-if="team.miembros.length === 0" class="empty-hint">{{ $t('projects.team.detail.noMembers') }}</div>
         <div class="member-tags">
           <span v-for="m in team.miembros" :key="m.id_usuario" class="area-badge">
             {{ m.nombre }} {{ m.apellido }}
@@ -38,7 +38,7 @@
       </div>
 
       <div class="form-field">
-        <label>Tasks</label>
+        <label>{{ $t('projects.team.detail.tasks') }}</label>
         <div class="tasks-list">
           <TaskCard
             v-for="t in team.tareasAsignadas"
@@ -54,8 +54,11 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import TaskCard from '@/components/projects/TaskCard.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },

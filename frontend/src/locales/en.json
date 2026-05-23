@@ -159,6 +159,346 @@
       }
     }
   },
+  "projects": {
+    "statuses": {
+      "planned": "Planned",
+      "inProgress": "In Progress",
+      "paused": "Paused",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "taskStatuses": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "noDescription": "No description.",
+    "budget": "Budget",
+    "budgetUsed": "{pct}% used",
+    "overrun": "OVERRUN",
+    "warning": "WARNING",
+    "dueDate": "Due {date}",
+    "noDueDate": "No due date",
+    "list": {
+      "title": "My Projects",
+      "subtitle": "Projects you are enrolled in as admin or member",
+      "newProject": "New project",
+      "settings": "Settings",
+      "history": "History",
+      "authError": {
+        "title": "Session required",
+        "message": "You must be logged in to view your projects."
+      },
+      "fetchError": {
+        "title": "Could not load projects",
+        "retry": "Retry"
+      },
+      "tabs": {
+        "all": "All",
+        "active": "Active",
+        "atRisk": "At Risk",
+        "completed": "Completed"
+      },
+      "section": {
+        "all": "All Projects",
+        "active": "Active Projects",
+        "atRisk": "At Risk",
+        "completed": "Completed",
+        "default": "Projects"
+      },
+      "searchPlaceholder": "Search project...",
+      "count": "{count} project | {count} projects",
+      "loading": "Loading...",
+      "listHeaders": {
+        "project": "Project",
+        "progress": "Progress",
+        "budget": "Budget",
+        "due": "Due date",
+        "actions": "Actions",
+        "role": "Role"
+      },
+      "gridView": "Grid view",
+      "listView": "List view",
+      "quickActions": {
+        "tasks": "Tasks",
+        "team": "Team",
+        "budget": "Budget",
+        "reports": "Reports"
+      },
+      "empty": {
+        "title": "No projects here",
+        "search": "No project matches the search.",
+        "noFilter": "Change the filter or create a new project.",
+        "cta": "+ New project"
+      },
+      "networkError": "Network error",
+      "openProject": "→ Open project",
+      "openBudget": "→ Open budget",
+      "context": {
+        "title": "Overview",
+        "subtitle": "Your project summary",
+        "atAGlance": "AT A GLANCE",
+        "totalProjects": "Total projects",
+        "asAdmin": "{count} as admin",
+        "atRisk": "At risk",
+        "needsAttention": "Needs attention",
+        "completed": "Completed",
+        "thisQuarter": "This quarter",
+        "paused": "Paused",
+        "awaitingBudget": "Awaiting budget",
+        "quickActions": "QUICK ACTIONS",
+        "createNew": "+ Create new project",
+        "export": "↓ Export summary",
+        "dataSource": "DATA SOURCE",
+        "dataSourceText": "Projects database · Last sync: {time}"
+      }
+    },
+    "form": {
+      "newTitle": "New project",
+      "name": "Name",
+      "description": "Description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "budget": "Budget",
+      "status": "Status",
+      "namePlaceholder": "Project name",
+      "descriptionPlaceholder": "Optional description",
+      "cancel": "Cancel",
+      "save": "Save project",
+      "saving": "Saving…"
+    },
+    "detail": {
+      "back": "Projects",
+      "overdue": "{n}d overdue",
+      "remaining": "{n}d remaining",
+      "spent": "spent",
+      "total": "total",
+      "error": {
+        "title": "Could not load project",
+        "retry": "Retry"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "tasks": "Tasks",
+        "team": "Team",
+        "members": "Members",
+        "progress": "Progress"
+      },
+      "nav": {
+        "budget": "Budget",
+        "reports": "Reports"
+      },
+      "overview": {
+        "taskProgress": "Task Progress",
+        "tasksTotal": "{count} tasks total",
+        "projectProgress": "Project Progress",
+        "updates": "{count} updates",
+        "noUpdates": "No updates",
+        "basedOnTimeline": "Based on timeline updates",
+        "basedOnTasks": "Derived from task completion",
+        "latestUpdate": "Latest update {date}",
+        "noProgressYet": "No progress updates recorded yet.",
+        "tasksDone": "{pct}% tasks done",
+        "milestones": "{count} milestones",
+        "blockers": "{count} blockers",
+        "budgetOverview": "Budget Overview",
+        "totalBudget": "Total budget",
+        "budgetSpent": "Spent",
+        "budgetOverrun": "Overrun",
+        "available": "Available",
+        "inventoryActivity": "Inventory Activity",
+        "noMovements": "No inventory movements recorded.",
+        "teamBreakdown": "Team Breakdown",
+        "memberSingular": "1 member",
+        "memberPlural": "{count} members",
+        "noRoles": "No roles assigned to this project yet."
+      }
+    },
+    "tasks": {
+      "allStatuses": "All statuses",
+      "allPriorities": "All priorities",
+      "count": "{count} tasks",
+      "newTask": "New task",
+      "loading": "Loading tasks…",
+      "emptyFilter": "No tasks with this filter",
+      "emptyNoTasks": "No tasks yet",
+      "emptyFilterSub": "Try changing the filters.",
+      "emptyNoTasksSub": "Create the first task for this project.",
+      "emptyCta": "New task",
+      "card": {
+        "due": "Due {date}",
+        "edit": "Edit",
+        "close": "Close"
+      },
+      "modal": {
+        "newTitle": "New task",
+        "editTitle": "Edit task",
+        "name": "Name",
+        "description": "Description",
+        "priority": "Priority",
+        "status": "Status",
+        "initialStatus": "Initial status",
+        "assignTo": "Assign to",
+        "dueDate": "Due date",
+        "unassigned": "— Unassigned —",
+        "namePlaceholder": "Task name",
+        "descriptionPlaceholder": "Optional description",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "update": "Update task",
+        "create": "Create task",
+        "networkError": "Network error, try again."
+      },
+      "detail": {
+        "loading": "Loading…",
+        "description": "Description",
+        "priority": "Priority",
+        "status": "Status",
+        "dueDate": "Due date",
+        "assignedTo": "Assigned to"
+      }
+    },
+    "team": {
+      "searchPlaceholder": "Search by name…",
+      "allAreas": "All areas",
+      "count": "{count} teams",
+      "newTeam": "New team",
+      "emptyFilter": "No teams with this filter",
+      "emptyNoTeams": "No teams yet",
+      "emptyFilterSub": "Try changing the filters.",
+      "emptyNoTeamsSub": "Create the first team for this project.",
+      "emptyCta": "New team",
+      "listHeaders": {
+        "team": "Team",
+        "area": "Area",
+        "members": "Members",
+        "tasks": "Tasks"
+      },
+      "modal": {
+        "newTitle": "New team",
+        "editTitle": "Edit team",
+        "name": "Name",
+        "area": "Area",
+        "members": "Members",
+        "namePlaceholder": "Team name",
+        "selectArea": "— Select area —",
+        "noMembers": "No members in project.",
+        "cancel": "Cancel",
+        "save": "Save",
+        "create": "Create"
+      },
+      "detail": {
+        "area": "Area",
+        "members": "Members",
+        "tasksAssigned": "Tasks assigned",
+        "tasks": "Tasks",
+        "noMembers": "No members assigned.",
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "members": {
+      "eyebrow": "Project Members",
+      "subtitle": "Only company users assigned to this project are shown here. From this panel you can grant access and share a project-specific invitation.",
+      "assigned": "{count} assigned",
+      "available": "{count} available",
+      "activeInvitation": "Active invitation",
+      "noActiveInvitation": "No active invitation",
+      "loading": "Loading project members...",
+      "readOnly": {
+        "title": "Read-only view",
+        "copy": "You can review who is assigned to the project, but you do not have permission to manage members or invitations."
+      },
+      "invite": {
+        "kicker": "Project Invite",
+        "title": "Project invitation",
+        "active": "Active",
+        "inactive": "Inactive",
+        "description": "This link adds the user as a company collaborator if they do not belong yet, then assigns them to this project with the selected permissions.",
+        "permissionsLabel": "Permissions granted by this invitation",
+        "saving": "Saving...",
+        "update": "Update invitation",
+        "generate": "Generate invitation",
+        "copyLink": "Copy link",
+        "deactivate": "Deactivate link",
+        "deactivating": "Deactivating..."
+      },
+      "assignment": {
+        "kicker": "Assignment",
+        "title": "Add existing member",
+        "description": "You can take any user who already belongs to the company and assign them to this project with explicit permissions.",
+        "selectMember": "Select a company member",
+        "assigning": "Assigning...",
+        "assign": "Assign to project",
+        "permissionsLabel": "Initial permissions for this member",
+        "allAssigned": "All eligible company members are already assigned to this project."
+      },
+      "assignedList": {
+        "kicker": "Assigned Members",
+        "title": "Project members",
+        "total": "{count} total",
+        "permissionsLabel": "Project permissions",
+        "saving": "Saving...",
+        "savePermissions": "Save permissions",
+        "removing": "Removing...",
+        "remove": "Remove",
+        "noMembers": "No members are assigned to this project yet."
+      },
+      "actions": {
+        "inviteReady": "Project invitation ready to share.",
+        "inviteDeactivated": "The project invitation was deactivated.",
+        "linkCopied": "Link copied to clipboard.",
+        "memberAssigned": "Member assigned to the project.",
+        "permissionsUpdated": "Member permissions updated.",
+        "memberRemoved": "Member removed from the project."
+      },
+      "errors": {
+        "loadPanel": "Could not load the project members panel.",
+        "saveInvite": "Could not save the project invitation.",
+        "deactivateInvite": "Could not deactivate the project invitation.",
+        "copyLink": "Could not copy the link.",
+        "assignMember": "Could not assign the member to the project.",
+        "savePermissions": "Could not save the member permissions.",
+        "removeMember": "Could not remove the member from the project."
+      }
+    },
+    "progress": {
+      "title": "Progress log",
+      "entriesCount": "{count} entries recorded",
+      "add": "Add",
+      "loading": "Loading log...",
+      "empty": "No entries recorded yet.",
+      "unknownAuthor": "Unknown",
+      "modal": {
+        "title": "New progress entry",
+        "descriptionLabel": "Description",
+        "detailsLabel": "Additional details",
+        "updateTypeLabel": "Entry type",
+        "progressLabel": "Progress (%)",
+        "dateLabel": "Date",
+        "descriptionPlaceholder": "What progress was made?",
+        "detailsPlaceholder": "Extra context for the team (optional)",
+        "typeUpdate": "Progress",
+        "typeMilestone": "Milestone",
+        "typeBlocker": "Blocker",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "submit": "Add entry"
+      },
+      "errors": {
+        "load": "Could not load the progress log.",
+        "save": "Could not save the entry.",
+        "network": "Network error, please try again."
+      }
+    }
+  },
   "inventory": {
     "authError": {
       "title": "Session required",
