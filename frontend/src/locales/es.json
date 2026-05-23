@@ -45,5 +45,118 @@
         "generic": "Algo salió mal. Por favor intenta de nuevo."
       }
     }
+  },
+  "dashboard": {
+    "title": "Resumen Ejecutivo",
+    "welcome": "Bienvenido, {name}",
+    "pendingAccess": {
+      "eyebrow": "Acceso Pendiente",
+      "title": "Ya estás dentro de la empresa",
+      "subtitle": "Tu cuenta está vinculada a {company}, pero el propietario aún debe asignar proyectos y permisos antes de que puedas acceder a los paneles operativos."
+    },
+    "ai": {
+      "label": "ANÁLISIS KONTROL AI",
+      "reviewBudget": "VER PRESUPUESTO",
+      "noProjects": "Sin proyectos aún. Crea tu primer proyecto para comenzar a rastrear presupuestos y uso.",
+      "exceeded": "\"{name}\" ha superado su presupuesto asignado ({pct}% usado). Revisa los gastos y considera reasignar fondos.",
+      "approaching": "\"{name}\" está cerca de su límite ({pct}% usado). Monitorea los próximos gastos de cerca.",
+      "allGood": "Los {count} proyectos están dentro de sus presupuestos. El uso general es del {pct}%.",
+      "default": "Tienes {count} proyecto en gestión. Registra actividades y gastos para empezar a rastrear el estado del presupuesto. | Tienes {count} proyectos en gestión. Registra actividades y gastos para empezar a rastrear el estado del presupuesto."
+    },
+    "stats": {
+      "totalSpent": "Total Gastado",
+      "activeProjects": "Proyectos Activos",
+      "overrunAlerts": "Alertas de Sobreuso",
+      "ofBudget": "{pct}% del presupuesto",
+      "noBudget": "Sin presupuesto",
+      "totalProjects": "{count} total",
+      "warning": "{count} advertencia",
+      "critical": "Crítico",
+      "allHealthy": "Todo en orden"
+    },
+    "trend": {
+      "title": "Tendencia de Rendimiento Financiero",
+      "hint": "El presupuesto planificado (línea dorada) alcanza el total del proyecto en la fecha de cierre. La línea real es el gasto acumulado según los movimientos de inventario.",
+      "loading": "Cargando tendencia…",
+      "noProjects": "Sin proyectos con fecha de inicio, fecha de fin y presupuesto configurados.",
+      "noData": "Este proyecto necesita fecha de inicio, fecha de fin y presupuesto total.",
+      "today": "Hoy",
+      "legend": {
+        "planned": "Presupuesto planificado",
+        "actual": "Gasto real (movimientos)"
+      }
+    },
+    "budget": {
+      "title": "Uso de Presupuesto por Proyecto",
+      "loading": "Cargando presupuestos…",
+      "empty": "Sin proyectos con datos de presupuesto."
+    },
+    "snapshot": {
+      "title": "Resumen del Portafolio",
+      "allocated": "Asignado",
+      "spent": "Gastado",
+      "remaining": "Restante",
+      "summary": "{pct}% del presupuesto total usado en {count} proyecto. | {pct}% del presupuesto total usado en {count} proyectos."
+    },
+    "collaborators": {
+      "eyebrow": "Acceso a la Empresa",
+      "title": "Colaboradores",
+      "subtitle": "Gestiona el acceso a la empresa, la asignación de proyectos y los permisos por capacidad para cada colaborador.",
+      "membersCount": "{count} miembros",
+      "collaboratorsCount": "{count} colaboradores",
+      "managementCount": "{count} roles de gestión",
+      "loading": "Cargando colaboradores...",
+      "invite": {
+        "eyebrow": "Invitación Compartida",
+        "title": "Enlace de Invitación",
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "description": "El propietario puede compartir un enlace de acceso único para agregar colaboradores y desactivarlo cuando termine el proceso de incorporación.",
+        "ownerOnly": "Solo el propietario puede ver, generar o desactivar el enlace.",
+        "generate": "Generar enlace",
+        "generating": "Generando...",
+        "copy": "Copiar enlace",
+        "deactivate": "Desactivar enlace",
+        "deactivating": "Desactivando..."
+      },
+      "users": {
+        "eyebrow": "Miembros",
+        "title": "Usuarios de la Empresa",
+        "total": "{count} total"
+      },
+      "projectAccess": {
+        "title": "Acceso a Proyectos",
+        "subtitle": "Asignado sin permisos = pertenece al proyecto, pero no puede ver inventario ni escribir.",
+        "selectProject": "Seleccionar proyecto",
+        "assign": "Asignar proyecto",
+        "assigning": "Asignando...",
+        "remove": "Eliminar",
+        "removing": "Eliminando...",
+        "removeProject": "Quitar proyecto",
+        "savePermissions": "Guardar permisos",
+        "saving": "Guardando...",
+        "noProjects": "Este usuario ya pertenece a la empresa pero aún no tiene proyectos accesibles."
+      },
+      "actions": {
+        "roleUpdated": "Rol actualizado.",
+        "userRemoved": "Usuario eliminado.",
+        "projectAssigned": "Proyecto asignado. Ahora puedes configurar los permisos.",
+        "permissionsUpdated": "Permisos del proyecto actualizados.",
+        "inviteReady": "Enlace de invitación listo para compartir.",
+        "inviteDeactivated": "El enlace fue desactivado.",
+        "linkCopied": "Enlace copiado al portapapeles."
+      },
+      "errors": {
+        "loadPanel": "No se pudo cargar el panel de colaboradores.",
+        "generateInvite": "No se pudo generar el enlace.",
+        "deactivateInvite": "No se pudo desactivar el enlace.",
+        "copyLink": "No se pudo copiar el enlace.",
+        "updateRole": "No se pudo actualizar el rol.",
+        "removeUser": "No se pudo eliminar al usuario.",
+        "assignProject": "No se pudo asignar el proyecto.",
+        "savePermissions": "No se pudieron guardar los permisos del proyecto.",
+        "removeProjectAccess": "No se pudo quitar el acceso al proyecto."
+      }
+    }
   }
 }

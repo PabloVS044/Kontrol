@@ -45,5 +45,118 @@
         "generic": "Something went wrong. Please try again."
       }
     }
+  },
+  "dashboard": {
+    "title": "Executive Overview",
+    "welcome": "Welcome back, {name}",
+    "pendingAccess": {
+      "eyebrow": "Pending Access",
+      "title": "You are already inside the company",
+      "subtitle": "Your account is linked to {company}, but the owner still has to assign projects and permissions before you can open operational panels."
+    },
+    "ai": {
+      "label": "KONTROL AI ANALYSIS",
+      "reviewBudget": "REVIEW BUDGET",
+      "noProjects": "No projects yet. Create your first project to start tracking budgets and usage here.",
+      "exceeded": "\"{name}\" has exceeded its allocated budget ({pct}% used). Review expenses and consider reallocating funds.",
+      "approaching": "\"{name}\" is approaching its limit ({pct}% used). Monitor upcoming expenses closely.",
+      "allGood": "All {count} projects are within their budget allocations. Overall usage is {pct}%.",
+      "default": "You have {count} project under management. Register activities and expenses to start tracking budget health. | You have {count} projects under management. Register activities and expenses to start tracking budget health."
+    },
+    "stats": {
+      "totalSpent": "Total Spent",
+      "activeProjects": "Active Projects",
+      "overrunAlerts": "Overrun Alerts",
+      "ofBudget": "{pct}% of budget",
+      "noBudget": "No budget set",
+      "totalProjects": "{count} total",
+      "warning": "{count} warning",
+      "critical": "Critical",
+      "allHealthy": "All healthy"
+    },
+    "trend": {
+      "title": "Financial Performance Trend",
+      "hint": "Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.",
+      "loading": "Loading trend…",
+      "noProjects": "No projects with start date, end date and budget set yet.",
+      "noData": "This project needs start date, end date and total budget.",
+      "today": "Today",
+      "legend": {
+        "planned": "Planned budget",
+        "actual": "Actual spend (movements)"
+      }
+    },
+    "budget": {
+      "title": "Budget Usage by Project",
+      "loading": "Loading budgets…",
+      "empty": "No projects with budget data yet."
+    },
+    "snapshot": {
+      "title": "Portfolio Snapshot",
+      "allocated": "Allocated",
+      "spent": "Spent",
+      "remaining": "Remaining",
+      "summary": "{pct}% of total budget used across {count} project. | {pct}% of total budget used across {count} projects."
+    },
+    "collaborators": {
+      "eyebrow": "Company Access",
+      "title": "Collaborators",
+      "subtitle": "Manage company access, project assignment, and capability-based permissions for each collaborator.",
+      "membersCount": "{count} members",
+      "collaboratorsCount": "{count} collaborators",
+      "managementCount": "{count} management roles",
+      "loading": "Loading collaborators...",
+      "invite": {
+        "eyebrow": "Shared Invite",
+        "title": "Invitation Link",
+        "active": "Active",
+        "inactive": "Inactive",
+        "description": "The owner can share a single access link to add collaborators and deactivate it when onboarding closes.",
+        "ownerOnly": "Only the owner can view, generate, or deactivate the link.",
+        "generate": "Generate link",
+        "generating": "Generating...",
+        "copy": "Copy link",
+        "deactivate": "Deactivate link",
+        "deactivating": "Deactivating..."
+      },
+      "users": {
+        "eyebrow": "Members",
+        "title": "Company Users",
+        "total": "{count} total"
+      },
+      "projectAccess": {
+        "title": "Project Access",
+        "subtitle": "Assigned without permissions = belongs to the project, but cannot view inventory or write.",
+        "selectProject": "Select project",
+        "assign": "Assign project",
+        "assigning": "Assigning...",
+        "remove": "Remove",
+        "removing": "Removing...",
+        "removeProject": "Remove project",
+        "savePermissions": "Save permissions",
+        "saving": "Saving...",
+        "noProjects": "This user already belongs to the company but has no accessible projects yet."
+      },
+      "actions": {
+        "roleUpdated": "Role updated.",
+        "userRemoved": "User removed.",
+        "projectAssigned": "Project assigned. You can now configure permissions.",
+        "permissionsUpdated": "Project permissions updated.",
+        "inviteReady": "Invitation link ready to share.",
+        "inviteDeactivated": "The link was deactivated.",
+        "linkCopied": "Link copied to clipboard."
+      },
+      "errors": {
+        "loadPanel": "Could not load the collaborators panel.",
+        "generateInvite": "Could not generate the link.",
+        "deactivateInvite": "Could not deactivate the link.",
+        "copyLink": "Could not copy the link.",
+        "updateRole": "Could not update the role.",
+        "removeUser": "Could not remove the user.",
+        "assignProject": "Could not assign the project.",
+        "savePermissions": "Could not save project permissions.",
+        "removeProjectAccess": "Could not remove project access."
+      }
+    }
   }
 }
