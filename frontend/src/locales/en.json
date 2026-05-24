@@ -975,5 +975,64 @@
       "removeBtn": "Remove",
       "noProjects": "No projects assigned yet."
     }
+  },
+  "admin": {
+    "loading": "Loading...",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "dashboard": {
+      "title": "Overview",
+      "subtitle": "Global platform summary",
+      "kpi": {
+        "companies": "Companies",
+        "activeUsers": "Active Users",
+        "projects": "Projects",
+        "inactiveUsers": "Inactive Users",
+        "registered": "registered",
+        "activeRate": "{rate}% active",
+        "acrossCompanies": "across all companies",
+        "deactivated": "deactivated accounts"
+      },
+      "chart": {
+        "topByProjects": "Top Companies by Projects",
+        "usersByRole": "Users by Role",
+        "userStatus": "User Status",
+        "topByMembers": "Top Companies by Members",
+        "noData": "No data",
+        "active": "Active",
+        "inactive": "Inactive",
+        "users": "users"
+      }
+    },
+    "companies": {
+      "title": "Companies",
+      "subtitle": "All registered companies on the platform",
+      "sortName": "Name",
+      "sortProjects": "Projects",
+      "sortId": "ID",
+      "count": "{count} company | {count} companies",
+      "colName": "Name",
+      "colIndustry": "Industry",
+      "colEmail": "Email",
+      "colMembers": "Members",
+      "colProjects": "Projects",
+      "colStatus": "Status",
+      "empty": "No companies found."
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "All platform users and their system role",
+      "sortName": "Name",
+      "sortId": "ID",
+      "sortCompanies": "Companies",
+      "sortStatus": "Status",
+      "count": "{count} user | {count} users",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colRole": "Role",
+      "colCompanies": "Companies",
+      "colStatus": "Status",
+      "empty": "No users found."
+    }
   }
 }

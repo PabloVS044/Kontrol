@@ -1,35 +1,35 @@
 <template>
   <div class="adm-page">
     <div class="adm-header">
-      <h1 class="adm-title">Overview</h1>
-      <p class="adm-subtitle">Global platform summary</p>
+      <h1 class="adm-title">{{ $t('admin.dashboard.title') }}</h1>
+      <p class="adm-subtitle">{{ $t('admin.dashboard.subtitle') }}</p>
     </div>
 
-    <div v-if="loading" class="adm-loading">Loading...</div>
+    <div v-if="loading" class="adm-loading">{{ $t('admin.loading') }}</div>
     <div v-else-if="error" class="adm-error">{{ error }}</div>
 
     <template v-else>
       <!-- KPI row -->
       <div class="kpi-grid">
         <div class="kpi-card">
-          <span class="kpi-label">Companies</span>
+          <span class="kpi-label">{{ $t('admin.dashboard.kpi.companies') }}</span>
           <span class="kpi-value">{{ stats.total_empresas }}</span>
-          <span class="kpi-sub">registered</span>
+          <span class="kpi-sub">{{ $t('admin.dashboard.kpi.registered') }}</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Active Users</span>
+          <span class="kpi-label">{{ $t('admin.dashboard.kpi.activeUsers') }}</span>
           <span class="kpi-value">{{ stats.total_usuarios }}</span>
-          <span class="kpi-sub">{{ activeRate }}% active</span>
+          <span class="kpi-sub">{{ $t('admin.dashboard.kpi.activeRate', { rate: activeRate }) }}</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Projects</span>
+          <span class="kpi-label">{{ $t('admin.dashboard.kpi.projects') }}</span>
           <span class="kpi-value">{{ stats.total_proyectos }}</span>
-          <span class="kpi-sub">across all companies</span>
+          <span class="kpi-sub">{{ $t('admin.dashboard.kpi.acrossCompanies') }}</span>
         </div>
         <div class="kpi-card kpi-dim">
-          <span class="kpi-label">Inactive Users</span>
+          <span class="kpi-label">{{ $t('admin.dashboard.kpi.inactiveUsers') }}</span>
           <span class="kpi-value">{{ stats.total_usuarios_inactivos }}</span>
-          <span class="kpi-sub">deactivated accounts</span>
+          <span class="kpi-sub">{{ $t('admin.dashboard.kpi.deactivated') }}</span>
         </div>
       </div>
 
@@ -38,9 +38,9 @@
 
         <!-- Top companies by projects -->
         <div class="chart-card">
-          <p class="chart-title">Top Companies by Projects</p>
+          <p class="chart-title">{{ $t('admin.dashboard.chart.topByProjects') }}</p>
           <div class="bar-list">
-            <div v-if="!topCompanies.length" class="chart-empty">No data</div>
+            <div v-if="!topCompanies.length" class="chart-empty">{{ $t('admin.dashboard.chart.noData') }}</div>
             <div v-for="c in topCompanies" :key="c.id_empresa" class="bar-row">
               <span class="bar-label" :title="c.nombre">{{ truncate(c.nombre, 18) }}</span>
               <div class="bar-track">
@@ -56,7 +56,7 @@
 
         <!-- Users by role -->
         <div class="chart-card chart-card-center">
-          <p class="chart-title">Users by Role</p>
+          <p class="chart-title">{{ $t('admin.dashboard.chart.usersByRole') }}</p>
           <div class="donut-wrap">
             <svg width="180" height="180" viewBox="0 0 180 180">
               <circle cx="90" cy="90" r="68" fill="none" stroke="var(--Background3)" stroke-width="22"/>
@@ -73,7 +73,7 @@
             </svg>
             <div class="donut-center">
               <span class="donut-pct">{{ regularUsers.length }}</span>
-              <span class="donut-sub">users</span>
+              <span class="donut-sub">{{ $t('admin.dashboard.chart.users') }}</span>
             </div>
           </div>
           <div class="legend">
@@ -87,10 +87,10 @@
 
         <!-- Active vs Inactive -->
         <div class="chart-card">
-          <p class="chart-title">User Status</p>
+          <p class="chart-title">{{ $t('admin.dashboard.chart.userStatus') }}</p>
           <div class="status-bars">
             <div class="status-row">
-              <span class="status-lbl">Active</span>
+              <span class="status-lbl">{{ $t('admin.dashboard.chart.active') }}</span>
               <div class="bar-track">
                 <div
                   class="bar-fill green"
@@ -100,7 +100,7 @@
               <span class="bar-val">{{ stats.total_usuarios }}</span>
             </div>
             <div class="status-row">
-              <span class="status-lbl">Inactive</span>
+              <span class="status-lbl">{{ $t('admin.dashboard.chart.inactive') }}</span>
               <div class="bar-track">
                 <div
                   class="bar-fill red"
@@ -111,9 +111,9 @@
             </div>
           </div>
 
-          <p class="chart-title" style="margin-top: 28px">Top Companies by Members</p>
+          <p class="chart-title" style="margin-top: 28px">{{ $t('admin.dashboard.chart.topByMembers') }}</p>
           <div class="bar-list">
-            <div v-if="!topByMembers.length" class="chart-empty">No data</div>
+            <div v-if="!topByMembers.length" class="chart-empty">{{ $t('admin.dashboard.chart.noData') }}</div>
             <div v-for="c in topByMembers" :key="c.id_empresa" class="bar-row">
               <span class="bar-label" :title="c.nombre">{{ truncate(c.nombre, 18) }}</span>
               <div class="bar-track">

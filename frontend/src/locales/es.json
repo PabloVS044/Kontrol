@@ -975,5 +975,64 @@
       "removeBtn": "Eliminar",
       "noProjects": "No hay proyectos asignados aún."
     }
+  },
+  "admin": {
+    "loading": "Cargando...",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "dashboard": {
+      "title": "Resumen",
+      "subtitle": "Resumen global de la plataforma",
+      "kpi": {
+        "companies": "Empresas",
+        "activeUsers": "Usuarios Activos",
+        "projects": "Proyectos",
+        "inactiveUsers": "Usuarios Inactivos",
+        "registered": "registradas",
+        "activeRate": "{rate}% activos",
+        "acrossCompanies": "en todas las empresas",
+        "deactivated": "cuentas desactivadas"
+      },
+      "chart": {
+        "topByProjects": "Top Empresas por Proyectos",
+        "usersByRole": "Usuarios por Rol",
+        "userStatus": "Estado de Usuarios",
+        "topByMembers": "Top Empresas por Miembros",
+        "noData": "Sin datos",
+        "active": "Activos",
+        "inactive": "Inactivos",
+        "users": "usuarios"
+      }
+    },
+    "companies": {
+      "title": "Empresas",
+      "subtitle": "Todas las empresas registradas en la plataforma",
+      "sortName": "Nombre",
+      "sortProjects": "Proyectos",
+      "sortId": "ID",
+      "count": "{count} empresa | {count} empresas",
+      "colName": "Nombre",
+      "colIndustry": "Industria",
+      "colEmail": "Email",
+      "colMembers": "Miembros",
+      "colProjects": "Proyectos",
+      "colStatus": "Estado",
+      "empty": "No se encontraron empresas."
+    },
+    "users": {
+      "title": "Usuarios",
+      "subtitle": "Todos los usuarios de la plataforma y su rol en el sistema",
+      "sortName": "Nombre",
+      "sortId": "ID",
+      "sortCompanies": "Empresas",
+      "sortStatus": "Estado",
+      "count": "{count} usuario | {count} usuarios",
+      "colName": "Nombre",
+      "colEmail": "Email",
+      "colRole": "Rol",
+      "colCompanies": "Empresas",
+      "colStatus": "Estado",
+      "empty": "No se encontraron usuarios."
+    }
   }
 }
