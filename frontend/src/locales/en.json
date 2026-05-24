@@ -590,6 +590,150 @@
       "networkError": "Network error, try again."
     }
   },
+  "budget": {
+    "header": {
+      "title": "Budget Management",
+      "noProjects": "No projects available",
+      "addFunds": "+ Funds",
+      "addActivity": "+ Activity",
+      "addExpense": "↑ Expense"
+    },
+    "readOnlyHint": "Read-only view. Owners, admins and managers can register or modify expenses.",
+    "loading": "Loading…",
+    "noProject": "Select a project to view its budget.",
+    "deleteActivityConfirm": "Delete activity \"{name}\"?",
+    "movements": {
+      "purchases": "Purchases",
+      "sales": "Sales",
+      "admin": "Admin",
+      "hint": "Tracked automatically from inventory movements registered in this project."
+    },
+    "distribution": {
+      "title": "Budget Distribution by Activity",
+      "count": "{count} activity | {count} activities",
+      "planningLabel": "Planning coverage",
+      "planningValue": "{pct}% of total budget planned",
+      "empty": "No activities yet. Create one to start tracking your budget."
+    },
+    "health": {
+      "title": "Budget Health",
+      "projectPrefix": "Project",
+      "hasUsed": "has used",
+      "ofAllocated": "of its allocated budget (${spent} / ${total}).",
+      "includes": "Includes",
+      "inAdjustments": "in adjustments.",
+      "noBudget": "This project has no budget allocated yet.",
+      "salesLabel": "Sales:",
+      "loss": "loss",
+      "profit": "profit"
+    },
+    "summary": {
+      "title": "Budget Summary",
+      "totalAllocated": "Total Allocated",
+      "expenses": "Expenses",
+      "income": "Income",
+      "net": "Net",
+      "remaining": "Remaining",
+      "planned": "Planned",
+      "used": "Used"
+    },
+    "alertBox": {
+      "onTrack":  { "title": "On track.",  "message": "No budget overrun detected." },
+      "watching": { "title": "Watching",   "message": "Spending is approaching the warning threshold." },
+      "warning":  { "title": "Warning",    "message": "Budget usage is high." },
+      "critical": { "title": "Critical",   "message": "Budget fully consumed." },
+      "overrun":  { "title": "Overrun",    "message": "Spending has exceeded the budget." }
+    },
+    "activityModal": {
+      "editTitle": "Edit activity",
+      "newTitle": "New activity",
+      "name": "Name",
+      "namePlaceholder": "Activity name",
+      "planned": "Planned",
+      "actual": "Actual",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "save": "Save"
+    },
+    "expenseModal": {
+      "title": "Register expense",
+      "activity": "Activity",
+      "activityPlaceholder": "Existing or new activity",
+      "hint": "If the activity exists, the amount is accumulated into its actual spend. Otherwise a new activity is created with planned = 0.",
+      "amount": "Amount",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "register": "Register"
+    },
+    "fundsModal": {
+      "title": "Add funds to budget",
+      "amount": "Amount",
+      "hint": "Positive values add to the allocated budget. Negative values reduce it (corrections).",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why is the budget being adjusted?",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "register": "Register"
+    },
+    "activityRow": {
+      "hideDetails": "Hide details",
+      "showDetails": "Show expense details",
+      "noEntries": "No expense entries yet",
+      "planned": "Planned:",
+      "actual": "Actual:",
+      "overPlan": "+${amount} over plan",
+      "loading": "Loading…",
+      "manual": "Manual",
+      "directEntry": "Direct entry on the activity record",
+      "registeredExpense": "Registered expense",
+      "noEntriesYet": "No expense entries yet for this activity."
+    },
+    "fundingHistory": {
+      "title": "Funding History",
+      "adjustments": "adjustments",
+      "noAdjustments": "no adjustments",
+      "loading": "Loading…",
+      "empty": "No funding adjustments recorded.",
+      "by": "by {user}"
+    },
+    "breakdown": {
+      "title": "Cash Flow Breakdown",
+      "hint": "Inventory movements feed expenses (purchases & admin) and income (sales) automatically. Manual activities cover non-inventory spend (services, labor).",
+      "expensesLabel": "Expenses (egresos)",
+      "inventoryPurchases": "Inventory purchases",
+      "adminExpenses": "Admin expenses",
+      "activitiesManual": "Activities (manual)",
+      "totalExpenses": "Total expenses",
+      "incomeLabel": "Income (ingresos)",
+      "productSales": "Product sales",
+      "netResult": "Net result"
+    },
+    "productTable": {
+      "titleFinancials": "Product Financials",
+      "titleConsumption": "Inventory Consumption",
+      "hintFinancials": "Auto-generated from inventory movements. Purchases (ENTRADA) and sales (SALIDA) feed cost and revenue; profit uses weighted average cost.",
+      "hintConsumption": "No sales recorded — showing materials usage. Purchases (ENTRADA) and consumption (SALIDA) tracked per product. Useful for construction-type projects.",
+      "count": "{count} product | {count} products",
+      "loading": "Loading…",
+      "empty": "No product activity yet. Register inventory movements to see per-product results.",
+      "colProduct": "Product",
+      "colStock": "Stock",
+      "colBought": "Bought",
+      "colSold": "Sold",
+      "colUsed": "Used",
+      "colInvested": "Invested",
+      "colRevenue": "Revenue",
+      "colProfit": "Profit",
+      "colMargin": "Margin",
+      "colAvgCost": "Avg. cost",
+      "totalInvested": "Invested",
+      "totalSold": "Sold",
+      "totalGrossProfit": "Gross profit",
+      "totalMargin": "Margin",
+      "totalUnitsBought": "Units bought",
+      "totalUnitsUsed": "Units used"
+    }
+  },
   "teams": {
     "header": {
       "eyebrow": "Company Teams",

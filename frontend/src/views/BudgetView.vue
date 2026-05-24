@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar           from '@/components/AppNavbar.vue'
@@ -17,6 +18,7 @@ import AddFundsModal           from '@/components/budget/AddFundsModal.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const projects = ref([])
 const selectedProjectId = ref(null)
@@ -259,7 +261,7 @@ async function submitActivity(payload) {
 
 async function deleteActivity(act) {
   if (!canDeleteActivity.value) return
-  if (!confirm(`Delete activity "${act.nombre}"?`)) return
+  if (!confirm(t('budget.deleteActivityConfirm', { name: act.nombre }))) return
   try {
     await apiFetch(`/api/budgets/${act.id_actividad}`, { method: 'DELETE' })
     await refreshAllData()
@@ -354,7 +356,7 @@ async function submitFunds(payload) {
     <main class="content">
       <header class="header">
         <div class="header-titles">
-          <h1 class="title">Budget Management</h1>
+          <h1 class="title">{{ $t('budget.header.title') }}</h1>
           <p v-if="selectedProject" class="subtitle">
             {{ selectedProject.nombre }}
             <span v-if="selectedProject.estado" class="estado-tag">{{ selectedProject.estado }}</span>
@@ -366,24 +368,24 @@ async function submitFunds(payload) {
             class="project-select"
             :disabled="!projects.length"
           >
-            <option v-if="!projects.length" :value="null">No projects available</option>
+            <option v-if="!projects.length" :value="null">{{ $t('budget.header.noProjects') }}</option>
             <option v-for="p in projects" :key="p.id_proyecto" :value="p.id_proyecto">
               {{ p.nombre }}
             </option>
           </select>
           <Button
             v-if="canAddFunds"
-            label="+ Funds"
+            :label="$t('budget.header.addFunds')"
             :disabled="!selectedProjectId"
             @click="openAddFunds"
           />
           <Button
-            label="+ Activity"
+            :label="$t('budget.header.addActivity')"
             :disabled="!selectedProjectId || !canWriteBudget"
             @click="openNewActivity"
           />
           <Button
-            label="↑ Expense"
+            :label="$t('budget.header.addExpense')"
             :disabled="!selectedProjectId || !canWriteBudget"
             @click="openExpense"
           />
@@ -391,14 +393,14 @@ async function submitFunds(payload) {
       </header>
 
       <p v-if="!canWriteBudget && selectedProjectId" class="readonly-hint">
-        Read-only view. Owners, admins and managers can register or modify expenses.
+        {{ $t('budget.readOnlyHint') }}
       </p>
 
       <div v-if="error" class="state-msg error">{{ error }}</div>
-      <div v-if="loading" class="state-msg">Loading…</div>
+      <div v-if="loading" class="state-msg">{{ $t('budget.loading') }}</div>
 
       <div v-else-if="!selectedProjectId" class="state-msg">
-        Select a project to view its budget.
+        {{ $t('budget.noProject') }}
       </div>
 
       <template v-else-if="summary">
@@ -415,21 +417,21 @@ async function submitFunds(payload) {
         <div class="movements-strip" v-if="movimientosCompra + movimientosVenta + movimientosAdmin > 0">
           <div class="mv-chip">
             <span class="mv-dot purchase"></span>
-            <span class="mv-label">Purchases</span>
+            <span class="mv-label">{{ $t('budget.movements.purchases') }}</span>
             <span class="mv-count">{{ movimientosCompra }}</span>
           </div>
           <div class="mv-chip">
             <span class="mv-dot sale"></span>
-            <span class="mv-label">Sales</span>
+            <span class="mv-label">{{ $t('budget.movements.sales') }}</span>
             <span class="mv-count">{{ movimientosVenta }}</span>
           </div>
           <div class="mv-chip">
             <span class="mv-dot admin"></span>
-            <span class="mv-label">Admin</span>
+            <span class="mv-label">{{ $t('budget.movements.admin') }}</span>
             <span class="mv-count">{{ movimientosAdmin }}</span>
           </div>
           <p class="mv-hint">
-            Tracked automatically from inventory movements registered in this project.
+            {{ $t('budget.movements.hint') }}
           </p>
         </div>
 
@@ -438,22 +440,22 @@ async function submitFunds(payload) {
           <div class="left-panel">
             <section class="distribution-section">
               <div class="section-header">
-                <h2 class="section-subtitle">Budget Distribution by Activity</h2>
+                <h2 class="section-subtitle">{{ $t('budget.distribution.title') }}</h2>
                 <span class="activities-count" v-if="activities.length">
-                  {{ activities.length }} {{ activities.length === 1 ? 'activity' : 'activities' }}
+                  {{ $t('budget.distribution.count', { count: activities.length }) }}
                 </span>
               </div>
 
               <div v-if="totalAllocated > 0" class="planning-row">
                 <div class="planning-head">
-                  <span>Planning coverage</span>
-                  <span class="planning-value">{{ Math.round(plannedVsBudgetPct) }}% of total budget planned</span>
+                  <span>{{ $t('budget.distribution.planningLabel') }}</span>
+                  <span class="planning-value">{{ $t('budget.distribution.planningValue', { pct: Math.round(plannedVsBudgetPct) }) }}</span>
                 </div>
                 <ProgressBar :pct="plannedVsBudgetPct" color="#6b6b6b" height="4px" />
               </div>
 
               <div v-if="!activities.length" class="empty-hint">
-                No activities yet. Create one to start tracking your budget.
+                {{ $t('budget.distribution.empty') }}
               </div>
 
               <ActivityRow
@@ -478,24 +480,24 @@ async function submitFunds(payload) {
           <!-- RIGHT PANEL -->
           <div class="right-panel">
             <div class="ai-insight-box">
-              <h4 class="gold">Budget Health</h4>
+              <h4 class="gold">{{ $t('budget.health.title') }}</h4>
               <p v-if="totalAllocated > 0">
-                Project <strong>{{ summary.proyecto?.nombre }}</strong> has used
+                {{ $t('budget.health.projectPrefix') }} <strong>{{ summary.proyecto?.nombre }}</strong> {{ $t('budget.health.hasUsed') }}
                 <strong :class="usageRatio > 1 ? 'danger' : 'gold'">{{ completedPct }}%</strong>
-                of its allocated budget (${{ formatMoney(totalGastado) }} / ${{ formatMoney(totalAllocated) }}).
+                {{ $t('budget.health.ofAllocated', { spent: formatMoney(totalGastado), total: formatMoney(totalAllocated) }) }}
                 <span v-if="totalAjustes !== 0" class="muted">
-                  Includes
+                  {{ $t('budget.health.includes') }}
                   <span :class="totalAjustes < 0 ? 'danger' : 'income'">
                     {{ totalAjustes < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(totalAjustes)) }}
                   </span>
-                  in adjustments.
+                  {{ $t('budget.health.inAdjustments') }}
                 </span>
               </p>
-              <p v-else>This project has no budget allocated yet.</p>
+              <p v-else>{{ $t('budget.health.noBudget') }}</p>
               <p v-if="totalIngresos > 0" class="health-extra">
-                <span class="gold">Sales:</span> ${{ formatMoney(totalIngresos) }} —
+                <span class="gold">{{ $t('budget.health.salesLabel') }}</span> ${{ formatMoney(totalIngresos) }} —
                 <span :class="resultadoNeto < 0 ? 'danger' : 'income'">
-                  {{ resultadoNeto < 0 ? 'loss' : 'profit' }}
+                  {{ resultadoNeto < 0 ? $t('budget.health.loss') : $t('budget.health.profit') }}
                   ${{ formatMoney(Math.abs(resultadoNeto)) }}
                 </span>.
               </p>

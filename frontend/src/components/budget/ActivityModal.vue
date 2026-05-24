@@ -1,17 +1,17 @@
 <template>
-  <BaseModal v-model="show" :title="editingActivity ? 'Edit activity' : 'New activity'" max-width="460px">
+  <BaseModal v-model="show" :title="editingActivity ? $t('budget.activityModal.editTitle') : $t('budget.activityModal.newTitle')" max-width="460px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Name <span class="req">*</span></label>
-        <input v-model="form.nombre" type="text" placeholder="Activity name" required />
+        <label>{{ $t('budget.activityModal.name') }} <span class="req">*</span></label>
+        <input v-model="form.nombre" type="text" :placeholder="$t('budget.activityModal.namePlaceholder')" required />
       </div>
       <div class="form-row">
         <div class="form-field">
-          <label>Planned <span class="req">*</span></label>
+          <label>{{ $t('budget.activityModal.planned') }} <span class="req">*</span></label>
           <input v-model.number="form.monto_planificado" type="number" min="0" step="0.01" placeholder="0.00" required />
         </div>
         <div class="form-field">
-          <label>Actual</label>
+          <label>{{ $t('budget.activityModal.actual') }}</label>
           <input v-model.number="form.monto_real" type="number" min="0" step="0.01" placeholder="0.00" />
         </div>
       </div>
@@ -19,9 +19,9 @@
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('budget.activityModal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Saving…' : 'Save' }}
+          {{ submitting ? $t('budget.activityModal.saving') : $t('budget.activityModal.save') }}
         </button>
       </div>
     </form>

@@ -1,37 +1,34 @@
 <template>
-  <BaseModal v-model="show" title="Register expense" max-width="460px">
+  <BaseModal v-model="show" :title="$t('budget.expenseModal.title')" max-width="460px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Activity <span class="req">*</span></label>
+        <label>{{ $t('budget.expenseModal.activity') }} <span class="req">*</span></label>
         <input
           v-model="form.nombre_actividad"
           type="text"
           minlength="3"
           required
-          placeholder="Existing or new activity"
+          :placeholder="$t('budget.expenseModal.activityPlaceholder')"
           list="budget-activity-options"
           autocomplete="off"
         />
         <datalist id="budget-activity-options">
           <option v-for="a in activities" :key="a.id_actividad" :value="a.nombre" />
         </datalist>
-        <p class="hint">
-          If the activity exists, the amount is accumulated into its actual spend.
-          Otherwise a new activity is created with planned = 0.
-        </p>
+        <p class="hint">{{ $t('budget.expenseModal.hint') }}</p>
       </div>
 
       <div class="form-field">
-        <label>Amount <span class="req">*</span></label>
+        <label>{{ $t('budget.expenseModal.amount') }} <span class="req">*</span></label>
         <input v-model.number="form.monto_gasto" type="number" min="0.01" step="0.01" placeholder="0.00" required />
       </div>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('budget.expenseModal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Saving…' : 'Register' }}
+          {{ submitting ? $t('budget.expenseModal.saving') : $t('budget.expenseModal.register') }}
         </button>
       </div>
     </form>

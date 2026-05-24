@@ -590,6 +590,150 @@
       "networkError": "Error de red, intenta de nuevo."
     }
   },
+  "budget": {
+    "header": {
+      "title": "Gestión de Presupuesto",
+      "noProjects": "No hay proyectos disponibles",
+      "addFunds": "+ Fondos",
+      "addActivity": "+ Actividad",
+      "addExpense": "↑ Gasto"
+    },
+    "readOnlyHint": "Vista de solo lectura. Propietarios, admins y managers pueden registrar o modificar gastos.",
+    "loading": "Cargando…",
+    "noProject": "Selecciona un proyecto para ver su presupuesto.",
+    "deleteActivityConfirm": "¿Eliminar actividad \"{name}\"?",
+    "movements": {
+      "purchases": "Compras",
+      "sales": "Ventas",
+      "admin": "Admin",
+      "hint": "Registrado automáticamente desde los movimientos de inventario de este proyecto."
+    },
+    "distribution": {
+      "title": "Distribución del Presupuesto por Actividad",
+      "count": "{count} actividad | {count} actividades",
+      "planningLabel": "Cobertura de planificación",
+      "planningValue": "{pct}% del presupuesto total planificado",
+      "empty": "Sin actividades aún. Crea una para empezar a rastrear tu presupuesto."
+    },
+    "health": {
+      "title": "Salud del Presupuesto",
+      "projectPrefix": "El proyecto",
+      "hasUsed": "ha usado",
+      "ofAllocated": "de su presupuesto asignado (${spent} / ${total}).",
+      "includes": "Incluye",
+      "inAdjustments": "en ajustes.",
+      "noBudget": "Este proyecto no tiene presupuesto asignado aún.",
+      "salesLabel": "Ventas:",
+      "loss": "pérdida",
+      "profit": "ganancia"
+    },
+    "summary": {
+      "title": "Resumen de Presupuesto",
+      "totalAllocated": "Total Asignado",
+      "expenses": "Gastos",
+      "income": "Ingresos",
+      "net": "Neto",
+      "remaining": "Disponible",
+      "planned": "Planificado",
+      "used": "Usado"
+    },
+    "alertBox": {
+      "onTrack":  { "title": "En orden.",      "message": "No se detectó sobreuso del presupuesto." },
+      "watching": { "title": "En vigilancia",  "message": "El gasto se acerca al umbral de advertencia." },
+      "warning":  { "title": "Advertencia",    "message": "El uso del presupuesto es alto." },
+      "critical": { "title": "Crítico",        "message": "Presupuesto totalmente consumido." },
+      "overrun":  { "title": "Excedido",       "message": "El gasto ha superado el presupuesto." }
+    },
+    "activityModal": {
+      "editTitle": "Editar actividad",
+      "newTitle": "Nueva actividad",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre de la actividad",
+      "planned": "Planificado",
+      "actual": "Real",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "save": "Guardar"
+    },
+    "expenseModal": {
+      "title": "Registrar gasto",
+      "activity": "Actividad",
+      "activityPlaceholder": "Actividad existente o nueva",
+      "hint": "Si la actividad existe, el monto se acumula en su gasto real. De lo contrario, se crea una nueva actividad con planificado = 0.",
+      "amount": "Monto",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "register": "Registrar"
+    },
+    "fundsModal": {
+      "title": "Agregar fondos al presupuesto",
+      "amount": "Monto",
+      "hint": "Los valores positivos aumentan el presupuesto asignado. Los negativos lo reducen (correcciones).",
+      "reason": "Motivo",
+      "reasonPlaceholder": "¿Por qué se está ajustando el presupuesto?",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "register": "Registrar"
+    },
+    "activityRow": {
+      "hideDetails": "Ocultar detalles",
+      "showDetails": "Ver detalles de gastos",
+      "noEntries": "Sin entradas de gastos aún",
+      "planned": "Planificado:",
+      "actual": "Real:",
+      "overPlan": "+${amount} sobre lo planificado",
+      "loading": "Cargando…",
+      "manual": "Manual",
+      "directEntry": "Entrada directa en el registro de la actividad",
+      "registeredExpense": "Gasto registrado",
+      "noEntriesYet": "Sin entradas de gastos aún para esta actividad."
+    },
+    "fundingHistory": {
+      "title": "Historial de Fondos",
+      "adjustments": "ajustes",
+      "noAdjustments": "sin ajustes",
+      "loading": "Cargando…",
+      "empty": "No hay ajustes de fondos registrados.",
+      "by": "por {user}"
+    },
+    "breakdown": {
+      "title": "Desglose de Flujo de Caja",
+      "hint": "Los movimientos de inventario alimentan los gastos (compras y admin) e ingresos (ventas) automáticamente. Las actividades manuales cubren gastos no relacionados con inventario (servicios, mano de obra).",
+      "expensesLabel": "Gastos (egresos)",
+      "inventoryPurchases": "Compras de inventario",
+      "adminExpenses": "Gastos administrativos",
+      "activitiesManual": "Actividades (manual)",
+      "totalExpenses": "Total de gastos",
+      "incomeLabel": "Ingresos (ingresos)",
+      "productSales": "Ventas de productos",
+      "netResult": "Resultado neto"
+    },
+    "productTable": {
+      "titleFinancials": "Financieros del Producto",
+      "titleConsumption": "Consumo de Inventario",
+      "hintFinancials": "Generado automáticamente de los movimientos de inventario. Compras (ENTRADA) y ventas (SALIDA) alimentan el costo y los ingresos; la ganancia usa el costo promedio ponderado.",
+      "hintConsumption": "Sin ventas registradas — mostrando uso de materiales. Compras (ENTRADA) y consumo (SALIDA) rastreados por producto. Útil para proyectos de construcción.",
+      "count": "{count} producto | {count} productos",
+      "loading": "Cargando…",
+      "empty": "Sin actividad de productos aún. Registra movimientos de inventario para ver resultados por producto.",
+      "colProduct": "Producto",
+      "colStock": "Stock",
+      "colBought": "Comprado",
+      "colSold": "Vendido",
+      "colUsed": "Usado",
+      "colInvested": "Invertido",
+      "colRevenue": "Ingresos",
+      "colProfit": "Ganancia",
+      "colMargin": "Margen",
+      "colAvgCost": "Costo prom.",
+      "totalInvested": "Invertido",
+      "totalSold": "Vendido",
+      "totalGrossProfit": "Ganancia bruta",
+      "totalMargin": "Margen",
+      "totalUnitsBought": "Unidades compradas",
+      "totalUnitsUsed": "Unidades usadas"
+    }
+  },
   "teams": {
     "header": {
       "eyebrow": "Equipos de la Empresa",

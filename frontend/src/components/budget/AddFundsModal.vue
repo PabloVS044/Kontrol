@@ -1,8 +1,8 @@
 <template>
-  <BaseModal v-model="show" title="Add funds to budget" max-width="460px">
+  <BaseModal v-model="show" :title="$t('budget.fundsModal.title')" max-width="460px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Amount <span class="req">*</span></label>
+        <label>{{ $t('budget.fundsModal.amount') }} <span class="req">*</span></label>
         <input
           v-model.number="form.monto"
           type="number"
@@ -10,17 +10,15 @@
           placeholder="0.00"
           required
         />
-        <p class="hint">
-          Positive values add to the allocated budget. Negative values reduce it (corrections).
-        </p>
+        <p class="hint">{{ $t('budget.fundsModal.hint') }}</p>
       </div>
 
       <div class="form-field">
-        <label>Reason</label>
+        <label>{{ $t('budget.fundsModal.reason') }}</label>
         <textarea
           v-model="form.motivo"
           rows="2"
-          placeholder="Why is the budget being adjusted?"
+          :placeholder="$t('budget.fundsModal.reasonPlaceholder')"
           maxlength="500"
         ></textarea>
       </div>
@@ -28,9 +26,9 @@
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('budget.fundsModal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting || !isValid">
-          {{ submitting ? 'Saving…' : 'Register' }}
+          {{ submitting ? $t('budget.fundsModal.saving') : $t('budget.fundsModal.register') }}
         </button>
       </div>
     </form>
