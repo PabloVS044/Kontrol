@@ -589,5 +589,63 @@
       "selectProject": "Select a project before adding a product.",
       "networkError": "Network error, try again."
     }
+  },
+  "teams": {
+    "header": {
+      "eyebrow": "Company Teams",
+      "title": "Team Administration",
+      "subtitle": "Organize collaborators by company, define leaders and connect teams with projects.",
+      "newTeam": "New team"
+    },
+    "loading": "Loading teams...",
+    "empty": "No teams yet. Create the first one for this company.",
+    "list": {
+      "members": "{count} members",
+      "projects": "{count} projects"
+    },
+    "editor": {
+      "editTitle": "Edit team",
+      "createTitle": "Create team",
+      "newTeamName": "New team",
+      "delete": "Delete",
+      "deleteConfirm": "Delete team \"{name}\"? Projects will remain without a team."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Operations team",
+      "leader": "Leader",
+      "selectLeader": "Select leader",
+      "description": "Description",
+      "descriptionPlaceholder": "Team purpose, scope or notes"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "createTeam": "Create team"
+    },
+    "notices": {
+      "teamUpdated": "Team updated.",
+      "teamCreated": "Team created.",
+      "teamDeleted": "Team deleted.",
+      "memberAdded": "Member added.",
+      "memberRemoved": "Member removed.",
+      "projectAssigned": "Project assigned.",
+      "projectRemoved": "Project removed from team."
+    },
+    "members": {
+      "eyebrow": "Members",
+      "assigned": "{count} assigned",
+      "addMember": "Add member",
+      "addBtn": "Add",
+      "removeBtn": "Remove"
+    },
+    "projectsPanel": {
+      "eyebrow": "Projects",
+      "linked": "{count} linked",
+      "assignProject": "Assign project",
+      "assignBtn": "Assign",
+      "removeBtn": "Remove",
+      "noProjects": "No projects assigned yet."
+    }
   }
 }

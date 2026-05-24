@@ -589,5 +589,63 @@
       "selectProject": "Selecciona un proyecto antes de agregar un producto.",
       "networkError": "Error de red, intenta de nuevo."
     }
+  },
+  "teams": {
+    "header": {
+      "eyebrow": "Equipos de la Empresa",
+      "title": "Administración de Equipos",
+      "subtitle": "Organiza colaboradores por empresa, define líderes y conecta equipos con proyectos.",
+      "newTeam": "Nuevo equipo"
+    },
+    "loading": "Cargando equipos...",
+    "empty": "Sin equipos aún. Crea el primero para esta empresa.",
+    "list": {
+      "members": "{count} miembros",
+      "projects": "{count} proyectos"
+    },
+    "editor": {
+      "editTitle": "Editar equipo",
+      "createTitle": "Crear equipo",
+      "newTeamName": "Nuevo equipo",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar el equipo \"{name}\"? Los proyectos quedarán sin equipo."
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "Equipo de operaciones",
+      "leader": "Líder",
+      "selectLeader": "Seleccionar líder",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Propósito, alcance o notas del equipo"
+    },
+    "actions": {
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "createTeam": "Crear equipo"
+    },
+    "notices": {
+      "teamUpdated": "Equipo actualizado.",
+      "teamCreated": "Equipo creado.",
+      "teamDeleted": "Equipo eliminado.",
+      "memberAdded": "Miembro agregado.",
+      "memberRemoved": "Miembro eliminado.",
+      "projectAssigned": "Proyecto asignado.",
+      "projectRemoved": "Proyecto eliminado del equipo."
+    },
+    "members": {
+      "eyebrow": "Miembros",
+      "assigned": "{count} asignados",
+      "addMember": "Agregar miembro",
+      "addBtn": "Agregar",
+      "removeBtn": "Eliminar"
+    },
+    "projectsPanel": {
+      "eyebrow": "Proyectos",
+      "linked": "{count} vinculados",
+      "assignProject": "Asignar proyecto",
+      "assignBtn": "Asignar",
+      "removeBtn": "Eliminar",
+      "noProjects": "No hay proyectos asignados aún."
+    }
   }
 }
