@@ -22,9 +22,12 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Card from '../UI/Card/Card.vue'
 import Pill from '../UI/Pill/Pill.vue'
 import { formatBudget } from '../../utils/statusHelpers.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   loading: Boolean,
@@ -36,28 +39,28 @@ const props = defineProps({
 const metrics = computed(() => [
   {
     title: '32.5%',
-    subtitle: 'ROI Growth',
+    subtitle: t('reports.kpi.roiGrowth'),
     pill: '+12.3%',
     pillBg: 'rgba(74,222,128,0.1)',
     pillColor: '#4ade80',
   },
   {
     title: props.loading ? '-' : String(props.projectCount),
-    subtitle: 'Active Projects',
+    subtitle: t('reports.kpi.activeProjects'),
     pill: '+8.2%',
     pillBg: 'rgba(74,222,128,0.1)',
     pillColor: '#4ade80',
   },
   {
     title: props.loading ? '-' : String(props.completedCount),
-    subtitle: 'Completed',
+    subtitle: t('reports.kpi.completed'),
     pill: '+15',
     pillBg: 'rgba(167,139,250,0.1)',
     pillColor: '#a78bfa',
   },
   {
     title: props.loading ? '-' : formatBudget(props.totalBudget),
-    subtitle: 'Budget Total',
+    subtitle: t('reports.kpi.budgetTotal'),
     pill: '-2.1%',
     pillBg: 'rgba(251,113,133,0.1)',
     pillColor: '#fb7185',

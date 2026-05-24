@@ -10,28 +10,28 @@
         <!-- Header -->
         <div class="rep-header">
           <div class="rep-header-left">
-            <h1 class="rep-title">Reports Center</h1>
-            <p class="rep-subtitle">Analytics and performance overview for all your projects</p>
+            <h1 class="rep-title">{{ $t('reports.header.title') }}</h1>
+            <p class="rep-subtitle">{{ $t('reports.header.subtitle') }}</p>
           </div>
           <div class="rep-header-actions">
             <button class="btn-outline" @click="openCreateModal">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
-              Create Report
+              {{ $t('reports.header.createReport') }}
             </button>
             <button class="btn-outline">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/>
                 <path d="M5 7l1.5 1.5L9.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
               </svg>
-              Generate with AI
+              {{ $t('reports.header.generateAI') }}
             </button>
             <button class="btn-outline">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <path d="M7 10V2M4 7l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
-              Export
+              {{ $t('reports.header.export') }}
             </button>
           </div>
         </div>
@@ -52,31 +52,31 @@
         <!-- KPI Cards -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <span class="kpi-label">Avg Progress</span>
+            <span class="kpi-label">{{ $t('reports.view.kpi.avgProgress') }}</span>
             <span class="kpi-value">{{ loading ? '—' : avgProgress + '%' }}</span>
-            <span class="kpi-badge kpi-badge--green">{{ totales.total_proyectos }} projects</span>
+            <span class="kpi-badge kpi-badge--green">{{ $t('reports.view.kpi.projects', { count: totales.total_proyectos }) }}</span>
           </div>
           <div class="kpi-card">
-            <span class="kpi-label">Active Projects</span>
+            <span class="kpi-label">{{ $t('reports.view.kpi.activeProjects') }}</span>
             <span class="kpi-value">{{ loading ? '—' : totales.proyectos_activos }}</span>
-            <span class="kpi-badge kpi-badge--green">of {{ totales.total_proyectos }} total</span>
+            <span class="kpi-badge kpi-badge--green">{{ $t('reports.view.kpi.ofTotal', { total: totales.total_proyectos }) }}</span>
           </div>
           <div class="kpi-card">
-            <span class="kpi-label">Completed</span>
+            <span class="kpi-label">{{ $t('reports.view.kpi.completed') }}</span>
             <span class="kpi-value">{{ loading ? '—' : totales.proyectos_completados }}</span>
-            <span class="kpi-badge kpi-badge--purple">{{ completionRate }}% rate</span>
+            <span class="kpi-badge kpi-badge--purple">{{ $t('reports.view.kpi.completionRate', { pct: completionRate }) }}</span>
           </div>
           <div class="kpi-card">
-            <span class="kpi-label">Budget Total</span>
+            <span class="kpi-label">{{ $t('reports.view.kpi.budgetTotal') }}</span>
             <span class="kpi-value">{{ loading ? '—' : formatBudget(totales.presupuesto_total) }}</span>
-            <span class="kpi-badge" :class="budgetBadgeClass">{{ budgetPct }}% used</span>
+            <span class="kpi-badge" :class="budgetBadgeClass">{{ $t('reports.view.kpi.budgetUsed', { pct: budgetPct }) }}</span>
           </div>
         </div>
 
         <!-- Projects Overview Table -->
         <div class="section-block">
           <div class="section-header">
-            <span class="section-title">Projects Overview</span>
+            <span class="section-title">{{ $t('reports.view.projectsTitle') }}</span>
           </div>
 
           <div v-if="loading" class="table-skeleton">
@@ -93,10 +93,10 @@
             <table class="rep-table">
               <thead>
                 <tr>
-                  <th>Project Name</th>
-                  <th>Progress</th>
-                  <th>Status</th>
-                  <th>Start Date</th>
+                  <th>{{ $t('reports.view.colProjectName') }}</th>
+                  <th>{{ $t('reports.view.colProgress') }}</th>
+                  <th>{{ $t('reports.view.colStatus') }}</th>
+                  <th>{{ $t('reports.view.colStartDate') }}</th>
                   
                 </tr>
               </thead>
@@ -127,7 +127,7 @@
                   
                 </tr>
                 <tr v-if="displayedProjects.length === 0">
-                  <td colspan="5" class="empty-row">No projects found.</td>
+                  <td colspan="5" class="empty-row">{{ $t('reports.view.emptyProjects') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -137,8 +137,8 @@
         <!-- Manual Reports Table -->
         <div class="section-block">
           <div class="section-header">
-            <span class="section-title">Reports</span>
-            <span class="section-count">{{ reports.length }} report{{ reports.length !== 1 ? 's' : '' }}</span>
+            <span class="section-title">{{ $t('reports.view.reportsTitle') }}</span>
+            <span class="section-count">{{ $t('reports.view.reportsCount', { count: reports.length }) }}</span>
           </div>
 
           <div v-if="loadingReports" class="table-skeleton">
@@ -154,10 +154,10 @@
             <table class="rep-table">
               <thead>
                 <tr>
-                  <th>Title</th>
-                  <th>Type</th>
-                  <th>Project</th>
-                  <th>Date</th>
+                  <th>{{ $t('reports.view.colTitle') }}</th>
+                  <th>{{ $t('reports.view.colType') }}</th>
+                  <th>{{ $t('reports.view.colProject') }}</th>
+                  <th>{{ $t('reports.view.colDate') }}</th>
                   
                 </tr>
               </thead>
@@ -177,7 +177,7 @@
                   
                 </tr>
                 <tr v-if="reports.length === 0">
-                  <td colspan="5" class="empty-row">No reports created yet.</td>
+                  <td colspan="5" class="empty-row">{{ $t('reports.view.emptyReports') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -187,10 +187,10 @@
         <!-- Performance Chart -->
         <div class="section-block">
           <div class="section-header">
-            <span class="section-title">Project Performance</span>
+            <span class="section-title">{{ $t('reports.view.performanceTitle') }}</span>
             <div class="chart-legend">
-              <span class="legend-item"><span class="leg-dot gold"></span> Budget used %</span>
-              <span class="legend-item"><span class="leg-dot blue"></span> Progress %</span>
+              <span class="legend-item"><span class="leg-dot gold"></span> {{ $t('reports.view.legendBudget') }}</span>
+              <span class="legend-item"><span class="leg-dot blue"></span> {{ $t('reports.view.legendProgress') }}</span>
             </div>
           </div>
 
@@ -237,7 +237,7 @@
       <!-- ── CONTEXT PANEL ──────────────────────────────────────── -->
       <aside class="ctx-panel">
         <div class="ctx-top">
-          <span class="ctx-badge">Reports AI</span>
+          <span class="ctx-badge">{{ $t('reports.ai.badge') }}</span>
           <label class="toggle">
             <input type="checkbox" v-model="aiEnabled" />
             <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -245,29 +245,25 @@
         </div>
 
         <div class="ctx-section">
-          <p class="ctx-label">AI Insights</p>
-          <p class="ctx-insight">
-            Based on recent data, your top-performing project is consuming
-            72% of the budget with an estimated 12.5% ROI. Consider
-            reallocating budget to high-performing projects.
-          </p>
+          <p class="ctx-label">{{ $t('reports.ai.insights') }}</p>
+          <p class="ctx-insight">{{ $t('reports.ai.insightText') }}</p>
         </div>
 
         <div class="ctx-divider"></div>
 
         <div class="ctx-section">
-          <p class="ctx-label">Ask something, performance, ideas…</p>
+          <p class="ctx-label">{{ $t('reports.ai.askLabel') }}</p>
           <div class="ctx-input-wrap">
-            <input class="ctx-input" placeholder="Type your question…" disabled />
+            <input class="ctx-input" :placeholder="$t('reports.ai.askPlaceholder')" disabled />
           </div>
         </div>
 
         <div class="ctx-section">
-          <p class="ctx-label">Actions</p>
+          <p class="ctx-label">{{ $t('reports.ai.actionsLabel') }}</p>
           <div class="ctx-actions">
-            <Button label="Quick Summary of Q1 Project Launch" />
-            <Button label="Analyze Budget Deviation" />
-            <Button label="Compare to Last Year" />
+            <Button :label="$t('reports.ai.action1')" />
+            <Button :label="$t('reports.ai.action2')" />
+            <Button :label="$t('reports.ai.action3')" />
           </div>
         </div>
 
@@ -275,7 +271,7 @@
 
         <!-- Budget Donut -->
         <div class="ctx-section">
-          <p class="ctx-label">Budget Usage</p>
+          <p class="ctx-label">{{ $t('reports.ai.budgetUsageLabel') }}</p>
           <div class="donut-wrap">
             <DonutChart
               :pct="budgetPct"
@@ -286,8 +282,8 @@
             />
           </div>
           <div class="donut-legend">
-            <span class="dl-item"><span class="dl-dot gold"></span>Used ({{ budgetPct }}%)</span>
-            <span class="dl-item"><span class="dl-dot dim"></span>Remaining ({{ 100 - budgetPct }}%)</span>
+            <span class="dl-item"><span class="dl-dot gold"></span>{{ $t('reports.ai.used', { pct: budgetPct }) }}</span>
+            <span class="dl-item"><span class="dl-dot dim"></span>{{ $t('reports.ai.remaining', { pct: 100 - budgetPct }) }}</span>
           </div>
         </div>
 
@@ -295,7 +291,7 @@
 
         <!-- Task Completion -->
         <div class="ctx-section">
-          <p class="ctx-label">Task Completion</p>
+          <p class="ctx-label">{{ $t('reports.ai.taskCompletionLabel') }}</p>
           <div class="bar-list">
             <div class="bar-item">
               <div class="bar-track"><div class="bar-fill gold" :style="{ width: barPct(taskStats.completadas) }"></div></div>
@@ -311,9 +307,9 @@
             </div>
           </div>
           <div class="bar-labels">
-            <span>Completed</span>
-            <span>In Progress</span>
-            <span>Pending</span>
+            <span>{{ $t('reports.ai.completed') }}</span>
+            <span>{{ $t('reports.ai.inProgress') }}</span>
+            <span>{{ $t('reports.ai.pending') }}</span>
           </div>
         </div>
 
@@ -329,32 +325,32 @@
         </div>
         <div class="rdetail-body">
           <div class="rdetail-row">
-            <span class="rdetail-label">Type</span>
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelType') }}</span>
             <span class="type-tag">{{ reportDetail.tipo }}</span>
           </div>
           <div class="rdetail-row">
-            <span class="rdetail-label">Project</span>
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelProject') }}</span>
             <span class="rdetail-val">{{ projectNameById(reportDetail.id_proyecto) }}</span>
           </div>
           <div class="rdetail-row">
-            <span class="rdetail-label">Date</span>
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelDate') }}</span>
             <span class="rdetail-val">{{ formatDate(reportDetail.fecha_generacion) }}</span>
           </div>
           <div v-if="reportDetail.contenido_url" class="rdetail-row">
-            <span class="rdetail-label">Content URL</span>
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
             <a :href="reportDetail.contenido_url" target="_blank" rel="noopener" class="rdetail-link">
-              Open document →
+              {{ $t('reports.reportModal.openDocument') }}
             </a>
           </div>
           <div v-else class="rdetail-row">
-            <span class="rdetail-label">Content URL</span>
-            <span class="rdetail-val dim">Not provided</span>
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
+            <span class="rdetail-val dim">{{ $t('reports.reportModal.notProvided') }}</span>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-outline" @click="reportDetail = null">Close</button>
+          <button class="btn-outline" @click="reportDetail = null">{{ $t('reports.reportModal.close') }}</button>
           <button class="btn-outline" @click="goToDetail(reportDetail.id_proyecto); reportDetail = null">
-            View Project Metrics →
+            {{ $t('reports.reportModal.viewMetrics') }}
           </button>
         </div>
       </div>
@@ -364,40 +360,40 @@
     <div v-if="showCreateModal" class="modal-overlay" @click.self="closeCreateModal">
       <div class="modal-box">
         <div class="modal-header">
-          <span class="modal-title">New Report</span>
+          <span class="modal-title">{{ $t('reports.createModal.title') }}</span>
           <button class="modal-close" @click="closeCreateModal">✕</button>
         </div>
         <form class="modal-form" @submit.prevent="submitCreate">
           <div class="form-group">
-            <label class="form-label">Title</label>
-            <input v-model="createForm.titulo" class="form-input" placeholder="Report title" required maxlength="200" />
+            <label class="form-label">{{ $t('reports.createModal.labelTitle') }}</label>
+            <input v-model="createForm.titulo" class="form-input" :placeholder="$t('reports.createModal.titlePlaceholder')" required maxlength="200" />
           </div>
           <div class="form-group">
-            <label class="form-label">Type</label>
+            <label class="form-label">{{ $t('reports.createModal.labelType') }}</label>
             <select v-model="createForm.tipo" class="form-input" required>
-              <option value="">Select type…</option>
-              <option value="AVANCE">Progress</option>
-              <option value="PRESUPUESTO">Budget</option>
-              <option value="INCIDENTE">Incident</option>
-              <option value="CONSOLIDADO">Consolidated</option>
+              <option value="">{{ $t('reports.createModal.selectType') }}</option>
+              <option value="AVANCE">{{ $t('reports.createModal.typeProgress') }}</option>
+              <option value="PRESUPUESTO">{{ $t('reports.createModal.typeBudget') }}</option>
+              <option value="INCIDENTE">{{ $t('reports.createModal.typeIncident') }}</option>
+              <option value="CONSOLIDADO">{{ $t('reports.createModal.typeConsolidated') }}</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Project</label>
+            <label class="form-label">{{ $t('reports.createModal.labelProject') }}</label>
             <select v-model="createForm.id_proyecto" class="form-input" required>
-              <option value="">Select project…</option>
+              <option value="">{{ $t('reports.createModal.selectProject') }}</option>
               <option v-for="p in summary.proyectos" :key="p.id_proyecto" :value="p.id_proyecto">{{ p.nombre }}</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Content URL <span class="form-optional">(optional)</span></label>
-            <input v-model="createForm.contenido_url" class="form-input" placeholder="https://…" type="url" />
+            <label class="form-label">{{ $t('reports.createModal.labelUrl') }} <span class="form-optional">{{ $t('reports.createModal.optional') }}</span></label>
+            <input v-model="createForm.contenido_url" class="form-input" :placeholder="$t('reports.createModal.urlPlaceholder')" type="url" />
           </div>
           <p v-if="createError" class="form-error">{{ createError }}</p>
           <div class="modal-footer">
-            <button type="button" class="btn-outline" @click="closeCreateModal">Cancel</button>
+            <button type="button" class="btn-outline" @click="closeCreateModal">{{ $t('reports.createModal.cancel') }}</button>
             <button type="submit" class="btn-primary" :disabled="creating">
-              {{ creating ? 'Creating…' : 'Create Report' }}
+              {{ creating ? $t('reports.createModal.creating') : $t('reports.createModal.create') }}
             </button>
           </div>
         </form>
@@ -410,6 +406,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar  from '../components/AppNavbar.vue'
 import Button     from '../components/UI/Button/Button.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
@@ -418,6 +415,7 @@ import { useAuthStore } from '../stores/auth'
 
 const router    = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const summary    = ref({ totales: null, proyectos: [] })
 const loading    = ref(true)
@@ -434,12 +432,12 @@ const creating        = ref(false)
 const createError     = ref(null)
 const createForm      = ref({ titulo: '', tipo: '', id_proyecto: '', contenido_url: '' })
 
-const filters = [
-  { key: 'all',       label: 'All Projects' },
-  { key: 'active',    label: 'Active' },
-  { key: 'last30',    label: 'Last 30 Days' },
-  { key: 'completed', label: 'Completed' },
-]
+const filters = computed(() => [
+  { key: 'all',       label: t('reports.view.filters.all') },
+  { key: 'active',    label: t('reports.view.filters.active') },
+  { key: 'last30',    label: t('reports.view.filters.last30') },
+  { key: 'completed', label: t('reports.view.filters.completed') },
+])
 
 // ── API ────────────────────────────────────────────────────────────────────
 function authHeaders() {
@@ -614,13 +612,13 @@ async function submitCreate() {
     })
     if (!res.ok) {
       const err = await res.json()
-      createError.value = err.message ?? 'Failed to create report.'
+      createError.value = err.message ?? t('reports.createModal.errorFailed')
       return
     }
     closeCreateModal()
     await Promise.all([loadSummary(), loadReports()])
   } catch {
-    createError.value = 'Network error.'
+    createError.value = t('reports.createModal.errorNetwork')
   } finally {
     creating.value = false
   }
