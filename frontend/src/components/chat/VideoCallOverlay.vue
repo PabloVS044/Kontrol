@@ -18,70 +18,98 @@
     </div>
 
     <div v-if="chatStore.activeCall" class="call-backdrop call-backdrop--active">
-      <div class="call-shell">
-        <div class="call-stage">
-          <video ref="remoteVideoEl" class="call-remote-video" autoplay playsinline></video>
+      <div class="call-shell" :class="{ 'has-side-chat': showSideChat }">
 
-          <div v-if="!hasRemoteVideo" class="call-stage-placeholder">
-            <div class="call-stage-avatar">{{ activePeerAvatar }}</div>
-            <p class="call-stage-title">{{ activePeerName }}</p>
-            <p class="call-stage-status">{{ statusLabel }}</p>
+        <!-- área de vídeo (En la izquierda) -->
+        <div class="call-main-area">
+          <div class="call-stage">
+            <video ref="remoteVideoEl" class="call-remote-video" autoplay playsinline></video>
+
+            <div v-if="!hasRemoteVideo" class="call-stage-placeholder">
+              <div class="call-stage-avatar">{{ activePeerAvatar }}</div>
+              <p class="call-stage-title">{{ activePeerName }}</p>
+              <p class="call-stage-status">{{ statusLabel }}</p>
+            </div>
+
+            <div class="call-local-preview">
+              <video
+                ref="localVideoEl"
+                class="call-local-video"
+                :class="{ 'is-hidden': !chatStore.isCameraEnabled }"
+                autoplay
+                muted
+                playsinline
+              ></video>
+              <div v-if="!chatStore.isCameraEnabled" class="call-local-off">Camara apagada</div>
+            </div>
           </div>
+        
 
-          <div class="call-local-preview">
-            <video
-              ref="localVideoEl"
-              class="call-local-video"
-              :class="{ 'is-hidden': !chatStore.isCameraEnabled }"
-              autoplay
-              muted
-              playsinline
-            ></video>
-            <div v-if="!chatStore.isCameraEnabled" class="call-local-off">Camara apagada</div>
+          <div class="call-toolbar">
+            <div class="call-toolbar-copy">
+              <p class="call-kicker">Videollamada</p>
+              <h3 class="call-name">{{ activePeerName }}</h3>
+              <p class="call-sub">{{ statusLabel }}</p>
+              <p v-if="chatStore.callError" class="call-error">{{ chatStore.callError }}</p>
+            </div>
+
+            <div class="call-toolbar-actions">
+              <button
+                class="call-circle-btn"
+                :class="{ inactive: !chatStore.isMicrophoneEnabled }"
+                :title="chatStore.isMicrophoneEnabled ? 'Silenciar microfono' : 'Activar microfono'"
+                @click="chatStore.toggleCallMicrophone()"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3M8 22h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </button>
+
+              <button
+                class="call-circle-btn"
+                :class="{ inactive: !chatStore.isCameraEnabled }"
+                :title="chatStore.isCameraEnabled ? 'Apagar camara' : 'Encender camara'"
+                @click="chatStore.toggleCallCamera()"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                  <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+              </button>
+
+              <button 
+                class="call-circle-btn call-circle-btn--danger"
+                title="Colgar"
+                @click="chatStore.endVideoCall()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 15c1.7-1.4 4.3-2.5 8-2.5s6.3 1.1 8 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M8 14l-2 4M16 14l2 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </button>
+
+              <button 
+                class="call-circle-btn" 
+                :class="{ active: showSideChat }" 
+                title="Alternar chat" 
+                @click="showSideChat = !showSideChat">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" />
+                </svg>                
+              </button>
+            </div>
           </div>
         </div>
-
-        <div class="call-toolbar">
-          <div class="call-toolbar-copy">
-            <p class="call-kicker">Videollamada</p>
-            <h3 class="call-name">{{ activePeerName }}</h3>
-            <p class="call-sub">{{ statusLabel }}</p>
-            <p v-if="chatStore.callError" class="call-error">{{ chatStore.callError }}</p>
+        
+        <aside v-if="showSideChat" class="call-side-chat">
+          <div class="side-chat-header">
+            <span>Chat de la reunión</span>
+            <button @click="showSideChat = false" class="close-side-btn">×</button>
           </div>
-
-          <div class="call-toolbar-actions">
-            <button
-              class="call-circle-btn"
-              :class="{ inactive: !chatStore.isMicrophoneEnabled }"
-              :title="chatStore.isMicrophoneEnabled ? 'Silenciar microfono' : 'Activar microfono'"
-              @click="chatStore.toggleCallMicrophone()"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="1.8" />
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3M8 22h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-              </svg>
-            </button>
-
-            <button
-              class="call-circle-btn"
-              :class="{ inactive: !chatStore.isCameraEnabled }"
-              :title="chatStore.isCameraEnabled ? 'Apagar camara' : 'Encender camara'"
-              @click="chatStore.toggleCallCamera()"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
-                <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
-              </svg>
-            </button>
-
-            <button class="call-circle-btn call-circle-btn--danger" title="Colgar" @click="chatStore.endVideoCall()">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                <path d="M4 15c1.7-1.4 4.3-2.5 8-2.5s6.3 1.1 8 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                <path d="M8 14l-2 4M16 14l2 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-              </svg>
-            </button>
+          <div class="side-chat-body">
+            <p class="muted">El chat completo está disponible en este panel lateral.</p>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   </Teleport>
@@ -101,6 +129,8 @@ const incomingPeerName = computed(() => chatStore.incomingCall?.peerName || 'Usu
 const incomingPeerAvatar = computed(() => chatStore.incomingCall?.peerAvatar || '??')
 const activePeerName = computed(() => chatStore.activeCall?.peerName || 'Usuario')
 const activePeerAvatar = computed(() => chatStore.activeCall?.peerAvatar || '??')
+
+const showSideChat = ref(false) // Estado local para mostrar el chat durante la llamada
 
 const statusLabel = computed(() => {
   const status = chatStore.activeCall?.status
