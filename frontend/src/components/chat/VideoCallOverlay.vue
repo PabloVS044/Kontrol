@@ -142,6 +142,8 @@ const activePeerName = computed(() => chatStore.activeCall?.peerName || 'Usuario
 const activePeerAvatar = computed(() => chatStore.activeCall?.peerAvatar || '??')
 
 const showSideChat = ref(false) // Estado local para mostrar el chat durante la llamada
+const unreadCount = ref(0)
+const sideMsgEl = ref(null)
 const sideMessageInput = ref('')
 
 const statusLabel = computed(() => {
@@ -154,16 +156,12 @@ const statusLabel = computed(() => {
   return 'Preparando videollamada...'
 })
 
-const sideMsgEl = ref(null)
-
 function sendSideMessage() {
-  if (!sideMessageInput.value.trim() || !chatStore.activeCall?.conversationId) return
-
+  if (!sideMessageInput.value.trim()) return
   chatStore.sendMessage({
     conversationId: chatStore.activeCall.conversationId,
     text: sideMessageInput.value,
   })
-
   sideMessageInput.value = '' // Limpieza del campo
 }
 
@@ -197,16 +195,27 @@ watch(remoteVideoEl, (videoEl) => {
   bindVideoStream(videoEl, chatStore.remoteStream)
 })
 
-watch(() => chatStore.messages[chatStore.activeCall?.conversationId], () => {
+/* Notificaciones de mensajes nuevos cuando el chat esté cerrado */
+watch(() => chatStore.messages[chatStore.activeCall?.conversationId], (newMessages, oldMessages) => {
+  if (!showSideChat.value) {
+    unreadCount.value++
+  }
+  
+  /* Scroll suave */
   nextTick(() => {
     if (sideMsgEl.value) {
-      sideMsgEl.value.scrollTo({
-        top: sideMsgEl.value.scrollHeight,
-        behavior: 'smooth' // Desplazamiento suave
-      })
+      sideMsgEl.value.scrollTop = sideMsgEl.value.scrollHeight
     }
   })
 }, { deep: true })
+
+/* Limpieza del contador al abrir el chat */
+watch(showSideChat, (isOpen) => {
+  if (isOpen) unreadCount.value = 0
+})
+
+
+
 </script>
 
 <style scoped>
