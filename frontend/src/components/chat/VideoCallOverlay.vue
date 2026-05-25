@@ -392,6 +392,7 @@ watch(remoteVideoEl, (videoEl) => {
   padding: 18px 22px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(8, 8, 8, 0.94);
+  z-index: 100;
 }
 
 .call-toolbar-copy {
