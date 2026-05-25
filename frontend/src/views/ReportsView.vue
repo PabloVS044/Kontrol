@@ -10,28 +10,28 @@
         <!-- Header -->
         <div class="rep-header">
           <div class="rep-header-left">
-            <h1 class="rep-title">Reports Center</h1>
-            <p class="rep-subtitle">Analytics and performance overview for all your projects</p>
+            <h1 class="rep-title">{{ $t('reports.header.title') }}</h1>
+            <p class="rep-subtitle">{{ $t('reports.header.subtitle') }}</p>
           </div>
           <div class="rep-header-actions">
-            <button class="btn-outline">
+            <button class="btn-outline" @click="openCreateModal">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
-              Create Report
+              {{ $t('reports.header.createReport') }}
             </button>
             <button class="btn-outline">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/>
                 <path d="M5 7l1.5 1.5L9.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
               </svg>
-              Generate with AI
+              {{ $t('reports.header.generateAI') }}
             </button>
             <button class="btn-outline">
               <svg class="icon14" viewBox="0 0 14 14" fill="none">
                 <path d="M7 10V2M4 7l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
-              Export
+              {{ $t('reports.header.export') }}
             </button>
           </div>
         </div>
@@ -46,44 +46,37 @@
             @click="activeFilter = f.key"
           >
             {{ f.label }}
-            <svg class="icon10 chevron" viewBox="0 0 10 10" fill="none">
-              <path d="M3 4l2 2 2-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
-            </svg>
           </button>
         </div>
 
         <!-- KPI Cards -->
         <div class="kpi-grid">
-          <Card title="32.5%" subtitle="ROI Growth"
-            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
-            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
-            <Pill label="+12.3%" btnColor="rgba(74,222,128,0.1)" circleColor="#4ade80" textColor="#4ade80" />
-          </Card>
-
-          <Card :title="loading ? '—' : String(projects.length)" subtitle="Active Projects"
-            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
-            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
-            <Pill label="+8.2%" btnColor="rgba(74,222,128,0.1)" circleColor="#4ade80" textColor="#4ade80" />
-          </Card>
-
-          <Card :title="loading ? '—' : String(completedCount)" subtitle="Completed"
-            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
-            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
-            <Pill label="+15" btnColor="rgba(167,139,250,0.1)" circleColor="#a78bfa" textColor="#a78bfa" />
-          </Card>
-
-          <Card :title="loading ? '—' : formatBudget(totalBudget)" subtitle="Budget Total"
-            back="rgba(255,255,255,0.03)" titleColor="#faf8f5"
-            borderColor="#1e1e1e" shadowColor="rgba(0,0,0,0.25)">
-            <Pill label="-2.1%" btnColor="rgba(251,113,133,0.1)" circleColor="#fb7185" textColor="#fb7185" />
-          </Card>
+          <div class="kpi-card">
+            <span class="kpi-label">{{ $t('reports.view.kpi.avgProgress') }}</span>
+            <span class="kpi-value">{{ loading ? '—' : avgProgress + '%' }}</span>
+            <span class="kpi-badge kpi-badge--green">{{ $t('reports.view.kpi.projects', { count: totales.total_proyectos }) }}</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">{{ $t('reports.view.kpi.activeProjects') }}</span>
+            <span class="kpi-value">{{ loading ? '—' : totales.proyectos_activos }}</span>
+            <span class="kpi-badge kpi-badge--green">{{ $t('reports.view.kpi.ofTotal', { total: totales.total_proyectos }) }}</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">{{ $t('reports.view.kpi.completed') }}</span>
+            <span class="kpi-value">{{ loading ? '—' : totales.proyectos_completados }}</span>
+            <span class="kpi-badge kpi-badge--purple">{{ $t('reports.view.kpi.completionRate', { pct: completionRate }) }}</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">{{ $t('reports.view.kpi.budgetTotal') }}</span>
+            <span class="kpi-value">{{ loading ? '—' : formatBudget(totales.presupuesto_total) }}</span>
+            <span class="kpi-badge" :class="budgetBadgeClass">{{ $t('reports.view.kpi.budgetUsed', { pct: budgetPct }) }}</span>
+          </div>
         </div>
 
-        <!-- Active Reports Table -->
+        <!-- Projects Overview Table -->
         <div class="section-block">
           <div class="section-header">
-            <span class="section-title">Active Reports</span>
-            <button class="view-all-btn">View all reports →</button>
+            <span class="section-title">{{ $t('reports.view.projectsTitle') }}</span>
           </div>
 
           <div v-if="loading" class="table-skeleton">
@@ -92,7 +85,7 @@
               <div class="skel-cell" style="width:20%"></div>
               <div class="skel-cell" style="width:15%"></div>
               <div class="skel-cell" style="width:20%"></div>
-              <div class="skel-cell" style="width:15%"></div>
+              
             </div>
           </div>
 
@@ -100,11 +93,11 @@
             <table class="rep-table">
               <thead>
                 <tr>
-                  <th>Report Name</th>
-                  <th>Project</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Action</th>
+                  <th>{{ $t('reports.view.colProjectName') }}</th>
+                  <th>{{ $t('reports.view.colProgress') }}</th>
+                  <th>{{ $t('reports.view.colStatus') }}</th>
+                  <th>{{ $t('reports.view.colStartDate') }}</th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -116,7 +109,10 @@
                 >
                   <td class="td-name">{{ project.nombre }}</td>
                   <td class="td-project">
-                    <span class="proj-badge">{{ project.nombre }}</span>
+                    <div class="progress-cell">
+                      <div class="prog-track"><div class="prog-fill" :style="{ width: project.progreso_actual + '%' }"></div></div>
+                      <span class="prog-pct">{{ project.progreso_actual }}%</span>
+                    </div>
                   </td>
                   <td class="td-status">
                     <span class="status-tag" :style="{
@@ -128,14 +124,60 @@
                     </span>
                   </td>
                   <td class="td-date">{{ formatDate(project.fecha_inicio) }}</td>
-                  <td class="td-action">
-                    <button class="open-btn" @click.stop="goToDetail(project.id_proyecto)">
-                      Open →
-                    </button>
-                  </td>
+                  
                 </tr>
                 <tr v-if="displayedProjects.length === 0">
-                  <td colspan="5" class="empty-row">No projects found.</td>
+                  <td colspan="5" class="empty-row">{{ $t('reports.view.emptyProjects') }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Manual Reports Table -->
+        <div class="section-block">
+          <div class="section-header">
+            <span class="section-title">{{ $t('reports.view.reportsTitle') }}</span>
+            <span class="section-count">{{ $t('reports.view.reportsCount', { count: reports.length }) }}</span>
+          </div>
+
+          <div v-if="loadingReports" class="table-skeleton">
+            <div v-for="n in 3" :key="n" class="table-skel-row">
+              <div class="skel-cell" style="width:35%"></div>
+              <div class="skel-cell" style="width:15%"></div>
+              <div class="skel-cell" style="width:25%"></div>
+              
+            </div>
+          </div>
+
+          <div v-else class="rep-table-wrap">
+            <table class="rep-table">
+              <thead>
+                <tr>
+                  <th>{{ $t('reports.view.colTitle') }}</th>
+                  <th>{{ $t('reports.view.colType') }}</th>
+                  <th>{{ $t('reports.view.colProject') }}</th>
+                  <th>{{ $t('reports.view.colDate') }}</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="r in reports"
+                  :key="r.id_reporte"
+                  class="rep-row"
+                  @click="openReportDetail(r)"
+                >
+                  <td class="td-name">{{ r.titulo }}</td>
+                  <td><span class="type-tag">{{ r.tipo }}</span></td>
+                  <td class="td-project">
+                    <span class="proj-badge">{{ projectNameById(r.id_proyecto) }}</span>
+                  </td>
+                  <td class="td-date">{{ formatDate(r.fecha_generacion) }}</td>
+                  
+                </tr>
+                <tr v-if="reports.length === 0">
+                  <td colspan="5" class="empty-row">{{ $t('reports.view.emptyReports') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -145,15 +187,14 @@
         <!-- Performance Chart -->
         <div class="section-block">
           <div class="section-header">
-            <span class="section-title">Project Performance</span>
+            <span class="section-title">{{ $t('reports.view.performanceTitle') }}</span>
             <div class="chart-legend">
-              <span class="legend-item"><span class="leg-dot gold"></span> Budget</span>
-              <span class="legend-item"><span class="leg-dot blue"></span> Progress</span>
+              <span class="legend-item"><span class="leg-dot gold"></span> {{ $t('reports.view.legendBudget') }}</span>
+              <span class="legend-item"><span class="leg-dot blue"></span> {{ $t('reports.view.legendProgress') }}</span>
             </div>
           </div>
 
           <div class="chart-wrap">
-            <!-- Y axis labels -->
             <div class="y-axis">
               <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
             </div>
@@ -169,31 +210,23 @@
                     <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
                   </linearGradient>
                 </defs>
-                <!-- Grid lines -->
-                <line x1="0" y1="0" x2="600" y2="0" stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="40" x2="600" y2="40" stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="80" x2="600" y2="80" stroke="#1f1f1f" stroke-width="1"/>
+                <line x1="0" y1="0"   x2="600" y2="0"   stroke="#1f1f1f" stroke-width="1"/>
+                <line x1="0" y1="40"  x2="600" y2="40"  stroke="#1f1f1f" stroke-width="1"/>
+                <line x1="0" y1="80"  x2="600" y2="80"  stroke="#1f1f1f" stroke-width="1"/>
                 <line x1="0" y1="120" x2="600" y2="120" stroke="#1f1f1f" stroke-width="1"/>
                 <line x1="0" y1="160" x2="600" y2="160" stroke="#1f1f1f" stroke-width="1"/>
-                <!-- Gold area -->
-                <path d="M0,140 C60,120 120,100 180,80 C240,60 300,50 360,40 C420,30 480,20 600,15 L600,160 L0,160 Z" fill="url(#lineGrad)"/>
-                <!-- Gold line -->
-                <path d="M0,140 C60,120 120,100 180,80 C240,60 300,50 360,40 C420,30 480,20 600,15" fill="none" stroke="#c9a962" stroke-width="2"/>
-                <!-- Blue area -->
-                <path d="M0,155 C60,150 120,140 180,130 C240,120 300,105 360,90 C420,75 480,60 600,45 L600,160 L0,160 Z" fill="url(#lineGrad2)"/>
-                <!-- Blue line -->
-                <path d="M0,155 C60,150 120,140 180,130 C240,120 300,105 360,90 C420,75 480,60 600,45" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 3"/>
-                <!-- Dots on gold line -->
-                <circle cx="0" cy="140" r="3" fill="#c9a962"/>
-                <circle cx="120" cy="100" r="3" fill="#c9a962"/>
-                <circle cx="240" cy="60" r="3" fill="#c9a962"/>
-                <circle cx="360" cy="40" r="3" fill="#c9a962"/>
-                <circle cx="480" cy="20" r="3" fill="#c9a962"/>
-                <circle cx="600" cy="15" r="3" fill="#c9a962"/>
+                <template v-if="chartPoints.length">
+                  <path :d="svgAreaPath(chartPoints, 'budgetY')"   fill="url(#lineGrad)"/>
+                  <path :d="svgLinePath(chartPoints, 'budgetY')"   fill="none" stroke="#c9a962" stroke-width="2"/>
+                  <path :d="svgAreaPath(chartPoints, 'progressY')" fill="url(#lineGrad2)"/>
+                  <path :d="svgLinePath(chartPoints, 'progressY')" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 3"/>
+                  <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="#c9a962"/>
+                  <circle v-for="pt in chartPoints" :key="pt.x + '-p'" :cx="pt.x" :cy="pt.progressY" r="3" fill="#60a5fa"/>
+                </template>
+                <text v-else x="300" y="88" text-anchor="middle" fill="#333" font-size="11" font-family="Manrope, sans-serif">No data</text>
               </svg>
               <div class="x-axis">
-                <span>Jan</span><span>Feb</span><span>Mar</span>
-                <span>Apr</span><span>May</span><span>Jun</span>
+                <span v-for="pt in chartPoints" :key="pt.x" :title="pt.name">{{ truncName(pt.name) }}</span>
               </div>
             </div>
           </div>
@@ -204,7 +237,7 @@
       <!-- ── CONTEXT PANEL ──────────────────────────────────────── -->
       <aside class="ctx-panel">
         <div class="ctx-top">
-          <span class="ctx-badge">Reports AI</span>
+          <span class="ctx-badge">{{ $t('reports.ai.badge') }}</span>
           <label class="toggle">
             <input type="checkbox" v-model="aiEnabled" />
             <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -212,29 +245,25 @@
         </div>
 
         <div class="ctx-section">
-          <p class="ctx-label">AI Insights</p>
-          <p class="ctx-insight">
-            Based on recent data, your top-performing project is consuming
-            72% of the budget with an estimated 12.5% ROI. Consider
-            reallocating budget to high-performing projects.
-          </p>
+          <p class="ctx-label">{{ $t('reports.ai.insights') }}</p>
+          <p class="ctx-insight">{{ $t('reports.ai.insightText') }}</p>
         </div>
 
         <div class="ctx-divider"></div>
 
         <div class="ctx-section">
-          <p class="ctx-label">Ask something, performance, ideas…</p>
+          <p class="ctx-label">{{ $t('reports.ai.askLabel') }}</p>
           <div class="ctx-input-wrap">
-            <input class="ctx-input" placeholder="Type your question…" disabled />
+            <input class="ctx-input" :placeholder="$t('reports.ai.askPlaceholder')" disabled />
           </div>
         </div>
 
         <div class="ctx-section">
-          <p class="ctx-label">Actions</p>
+          <p class="ctx-label">{{ $t('reports.ai.actionsLabel') }}</p>
           <div class="ctx-actions">
-            <Button label="Quick Summary of Q1 Project Launch" />
-            <Button label="Analyze Budget Deviation" />
-            <Button label="Compare to Last Year" />
+            <Button :label="$t('reports.ai.action1')" />
+            <Button :label="$t('reports.ai.action2')" />
+            <Button :label="$t('reports.ai.action3')" />
           </div>
         </div>
 
@@ -242,19 +271,19 @@
 
         <!-- Budget Donut -->
         <div class="ctx-section">
-          <p class="ctx-label">Budget Usage</p>
+          <p class="ctx-label">{{ $t('reports.ai.budgetUsageLabel') }}</p>
           <div class="donut-wrap">
             <DonutChart
-              :pct="72"
+              :pct="budgetPct"
               color="#c9a962"
               :size="80" :radius="30" :stroke-width="10"
-              label="72%" label-color="#fff" :label-font-size="13" :label-offset-y="4"
+              :label="budgetPct + '%'" label-color="#fff" :label-font-size="13" :label-offset-y="4"
               display-width="90px"
             />
           </div>
           <div class="donut-legend">
-            <span class="dl-item"><span class="dl-dot gold"></span>Used (72%)</span>
-            <span class="dl-item"><span class="dl-dot dim"></span>Remaining (28%)</span>
+            <span class="dl-item"><span class="dl-dot gold"></span>{{ $t('reports.ai.used', { pct: budgetPct }) }}</span>
+            <span class="dl-item"><span class="dl-dot dim"></span>{{ $t('reports.ai.remaining', { pct: 100 - budgetPct }) }}</span>
           </div>
         </div>
 
@@ -262,75 +291,170 @@
 
         <!-- Task Completion -->
         <div class="ctx-section">
-          <p class="ctx-label">Task Completion</p>
+          <p class="ctx-label">{{ $t('reports.ai.taskCompletionLabel') }}</p>
           <div class="bar-list">
             <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill gold" style="width:75%"></div></div>
-              <span class="bar-val">245</span>
+              <div class="bar-track"><div class="bar-fill gold" :style="{ width: barPct(taskStats.completadas) }"></div></div>
+              <span class="bar-val">{{ taskStats.completadas }}</span>
             </div>
             <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill blue" style="width:30%"></div></div>
-              <span class="bar-val">42</span>
+              <div class="bar-track"><div class="bar-fill blue" :style="{ width: barPct(taskStats.enProgreso) }"></div></div>
+              <span class="bar-val">{{ taskStats.enProgreso }}</span>
             </div>
             <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill dim" style="width:18%"></div></div>
-              <span class="bar-val">18</span>
+              <div class="bar-track"><div class="bar-fill dim" :style="{ width: barPct(taskStats.pendientes) }"></div></div>
+              <span class="bar-val">{{ taskStats.pendientes }}</span>
             </div>
           </div>
           <div class="bar-labels">
-            <span>Completed</span>
-            <span>In Progress</span>
-            <span>Pending</span>
+            <span>{{ $t('reports.ai.completed') }}</span>
+            <span>{{ $t('reports.ai.inProgress') }}</span>
+            <span>{{ $t('reports.ai.pending') }}</span>
           </div>
         </div>
 
       </aside>
     </div>
+
+    <!-- ── REPORT DETAIL MODAL ──────────────────────────────── -->
+    <div v-if="reportDetail" class="modal-overlay" @click.self="reportDetail = null">
+      <div class="modal-box">
+        <div class="modal-header">
+          <span class="modal-title">{{ reportDetail.titulo }}</span>
+          <button class="modal-close" @click="reportDetail = null">✕</button>
+        </div>
+        <div class="rdetail-body">
+          <div class="rdetail-row">
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelType') }}</span>
+            <span class="type-tag">{{ reportDetail.tipo }}</span>
+          </div>
+          <div class="rdetail-row">
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelProject') }}</span>
+            <span class="rdetail-val">{{ projectNameById(reportDetail.id_proyecto) }}</span>
+          </div>
+          <div class="rdetail-row">
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelDate') }}</span>
+            <span class="rdetail-val">{{ formatDate(reportDetail.fecha_generacion) }}</span>
+          </div>
+          <div v-if="reportDetail.contenido_url" class="rdetail-row">
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
+            <a :href="reportDetail.contenido_url" target="_blank" rel="noopener" class="rdetail-link">
+              {{ $t('reports.reportModal.openDocument') }}
+            </a>
+          </div>
+          <div v-else class="rdetail-row">
+            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
+            <span class="rdetail-val dim">{{ $t('reports.reportModal.notProvided') }}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" @click="reportDetail = null">{{ $t('reports.reportModal.close') }}</button>
+          <button class="btn-outline" @click="goToDetail(reportDetail.id_proyecto); reportDetail = null">
+            {{ $t('reports.reportModal.viewMetrics') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CREATE REPORT MODAL ──────────────────────────────── -->
+    <div v-if="showCreateModal" class="modal-overlay" @click.self="closeCreateModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <span class="modal-title">{{ $t('reports.createModal.title') }}</span>
+          <button class="modal-close" @click="closeCreateModal">✕</button>
+        </div>
+        <form class="modal-form" @submit.prevent="submitCreate">
+          <div class="form-group">
+            <label class="form-label">{{ $t('reports.createModal.labelTitle') }}</label>
+            <input v-model="createForm.titulo" class="form-input" :placeholder="$t('reports.createModal.titlePlaceholder')" required maxlength="200" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ $t('reports.createModal.labelType') }}</label>
+            <select v-model="createForm.tipo" class="form-input" required>
+              <option value="">{{ $t('reports.createModal.selectType') }}</option>
+              <option value="AVANCE">{{ $t('reports.createModal.typeProgress') }}</option>
+              <option value="PRESUPUESTO">{{ $t('reports.createModal.typeBudget') }}</option>
+              <option value="INCIDENTE">{{ $t('reports.createModal.typeIncident') }}</option>
+              <option value="CONSOLIDADO">{{ $t('reports.createModal.typeConsolidated') }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ $t('reports.createModal.labelProject') }}</label>
+            <select v-model="createForm.id_proyecto" class="form-input" required>
+              <option value="">{{ $t('reports.createModal.selectProject') }}</option>
+              <option v-for="p in summary.proyectos" :key="p.id_proyecto" :value="p.id_proyecto">{{ p.nombre }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ $t('reports.createModal.labelUrl') }} <span class="form-optional">{{ $t('reports.createModal.optional') }}</span></label>
+            <input v-model="createForm.contenido_url" class="form-input" :placeholder="$t('reports.createModal.urlPlaceholder')" type="url" />
+          </div>
+          <p v-if="createError" class="form-error">{{ createError }}</p>
+          <div class="modal-footer">
+            <button type="button" class="btn-outline" @click="closeCreateModal">{{ $t('reports.createModal.cancel') }}</button>
+            <button type="submit" class="btn-primary" :disabled="creating">
+              {{ creating ? $t('reports.createModal.creating') : $t('reports.createModal.create') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar  from '../components/AppNavbar.vue'
-import Card       from '../components/UI/Card/Card.vue'
-import Pill       from '../components/UI/Pill/Pill.vue'
 import Button     from '../components/UI/Button/Button.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
 import { statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
 
-const router   = useRouter()
+const router    = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
-const projects   = ref([])
+const summary    = ref({ totales: null, proyectos: [] })
 const loading    = ref(true)
 const fetchError = ref(null)
 const activeFilter = ref('all')
 const aiEnabled    = ref(true)
 
-const filters = [
-  { key: 'all',       label: 'All Projects' },
-  { key: 'active',    label: 'Active' },
-  { key: 'last30',    label: 'Last 30 Days' },
-  { key: 'completed', label: 'Completed' },
-]
+const reports        = ref([])
+const loadingReports = ref(true)
+const reportDetail   = ref(null)
+
+const showCreateModal = ref(false)
+const creating        = ref(false)
+const createError     = ref(null)
+const createForm      = ref({ titulo: '', tipo: '', id_proyecto: '', contenido_url: '' })
+
+const filters = computed(() => [
+  { key: 'all',       label: t('reports.view.filters.all') },
+  { key: 'active',    label: t('reports.view.filters.active') },
+  { key: 'last30',    label: t('reports.view.filters.last30') },
+  { key: 'completed', label: t('reports.view.filters.completed') },
+])
 
 // ── API ────────────────────────────────────────────────────────────────────
-function authHeader() {
-  return { Authorization: `Bearer ${authStore.token}` }
+function authHeaders() {
+  return {
+    Authorization: `Bearer ${authStore.token}`,
+    'X-Company-ID': String(authStore.idEmpresa),
+  }
 }
 
-async function loadProjects() {
+async function loadSummary() {
   loading.value = true
   fetchError.value = null
   try {
-    const params = new URLSearchParams({ page: 1, limit: 50 })
-    if (authStore.idEmpresa) params.set('id_empresa', authStore.idEmpresa)
-    const res = await fetch(`/api/projects?${params}`, { headers: authHeader() })
+    const res = await fetch('/api/reports/summary', { headers: authHeaders() })
     if (!res.ok) throw new Error(`Error ${res.status}`)
     const json = await res.json()
-    projects.value = json.data ?? []
+    summary.value = json.data ?? { totales: null, proyectos: [] }
   } catch (e) {
     fetchError.value = e.message
   } finally {
@@ -338,35 +462,166 @@ async function loadProjects() {
   }
 }
 
-onMounted(loadProjects)
+async function loadReports() {
+  loadingReports.value = true
+  try {
+    const res = await fetch('/api/reports', { headers: authHeaders() })
+    if (!res.ok) throw new Error()
+    reports.value = (await res.json()).data ?? []
+  } catch {
+    reports.value = []
+  } finally {
+    loadingReports.value = false
+  }
+}
+
+onMounted(() => {
+  loadSummary()
+  loadReports()
+})
 
 // ── Computed ───────────────────────────────────────────────────────────────
 const displayedProjects = computed(() => {
-  if (activeFilter.value === 'active') {
-    return projects.value.filter(p => p.estado === 'EN_PROGRESO' || p.estado === 'PLANIFICADO' || p.estado === 'PAUSADO')
-  }
-  if (activeFilter.value === 'completed') {
-    return projects.value.filter(p => p.estado === 'COMPLETADO')
-  }
+  const list = summary.value.proyectos
+  if (activeFilter.value === 'active')
+    return list.filter(p => p.estado === 'EN_PROGRESO' || p.estado === 'PLANIFICADO' || p.estado === 'PAUSADO')
+  if (activeFilter.value === 'completed')
+    return list.filter(p => p.estado === 'COMPLETADO')
   if (activeFilter.value === 'last30') {
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - 30)
-    return projects.value.filter(p => new Date(p.fecha_inicio) >= cutoff)
+    return list.filter(p => new Date(p.fecha_inicio) >= cutoff)
   }
-  return projects.value
+  return list
 })
 
-const completedCount = computed(() =>
-  projects.value.filter(p => p.estado === 'COMPLETADO').length
+const totales = computed(() => summary.value.totales ?? {
+  total_proyectos: 0,
+  proyectos_activos: 0,
+  proyectos_completados: 0,
+  presupuesto_total: 0,
+})
+
+const avgProgress = computed(() => {
+  const list = summary.value.proyectos
+  if (!list.length) return 0
+  return Math.round(list.reduce((acc, p) => acc + Number(p.progreso_actual), 0) / list.length)
+})
+
+const budgetPct = computed(() => {
+  const list = summary.value.proyectos
+  const planificado = list.reduce((s, p) => s + Number(p.presupuesto_planificado), 0)
+  const real = list.reduce((s, p) => s + Number(p.presupuesto_real), 0)
+  if (!planificado) return 0
+  return Math.min(Math.round((real / planificado) * 100), 100)
+})
+
+const taskStats = computed(() => {
+  const list = summary.value.proyectos
+  const total       = list.reduce((s, p) => s + Number(p.total_tareas), 0)
+  const completadas = list.reduce((s, p) => s + Number(p.tareas_completadas), 0)
+  const enProgreso  = list.reduce((s, p) => s + Number(p.tareas_en_progreso), 0)
+  const pendientes  = list.reduce((s, p) => s + Number(p.tareas_pendientes), 0)
+  return { total, completadas, enProgreso, pendientes }
+})
+
+const completionRate = computed(() => {
+  const t = totales.value.total_proyectos
+  if (!t) return 0
+  return Math.round((totales.value.proyectos_completados / t) * 100)
+})
+
+const budgetBadgeClass = computed(() =>
+  budgetPct.value > 90 ? 'kpi-badge--red' : budgetPct.value > 70 ? 'kpi-badge--purple' : 'kpi-badge--green'
 )
 
-const totalBudget = computed(() =>
-  projects.value.reduce((sum, p) => sum + (parseFloat(p.presupuesto_total) || 0), 0)
-)
-
+function barPct(n) {
+  return taskStats.value.total ? Math.round((n / taskStats.value.total) * 100) + '%' : '0%'
+}
 
 function goToDetail(id) {
   router.push({ name: 'report-detail', params: { id } })
+}
+
+const chartPoints = computed(() => {
+  const list = summary.value.proyectos
+  if (!list.length) return []
+  const n = list.length
+  return list.map((p, i) => {
+    const x = n === 1 ? 300 : Math.round((i / (n - 1)) * 600)
+    const bTotal = Number(p.presupuesto_total)
+    const bReal  = Number(p.presupuesto_real)
+    const bPct   = bTotal > 0 ? Math.min(Math.round((bReal / bTotal) * 100), 100) : 0
+    const prog  = Number(p.progreso_actual)
+    return {
+      x,
+      budgetY:   Math.round(155 - (bPct / 100) * 150),
+      progressY: Math.round(155 - (prog / 100) * 150),
+      name: p.nombre,
+      budgetPct:   bPct,
+      progressPct: prog,
+    }
+  })
+})
+
+function svgLinePath(pts, yKey) {
+  return pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p[yKey]}`).join(' ')
+}
+
+function svgAreaPath(pts, yKey) {
+  const line = svgLinePath(pts, yKey)
+  return `${line} L${pts[pts.length - 1].x},160 L${pts[0].x},160 Z`
+}
+
+function truncName(name) {
+  return name.length > 13 ? name.slice(0, 12) + '…' : name
+}
+
+function projectNameById(id) {
+  return summary.value.proyectos.find(p => p.id_proyecto === id)?.nombre ?? '—'
+}
+
+function openReportDetail(r) {
+  reportDetail.value = r
+}
+
+function openCreateModal() {
+  createForm.value = { titulo: '', tipo: '', id_proyecto: '', contenido_url: '' }
+  createError.value = null
+  showCreateModal.value = true
+}
+
+function closeCreateModal() {
+  showCreateModal.value = false
+}
+
+async function submitCreate() {
+  creating.value = true
+  createError.value = null
+  try {
+    const body = {
+      titulo: createForm.value.titulo,
+      tipo: createForm.value.tipo,
+      id_proyecto: Number(createForm.value.id_proyecto),
+    }
+    if (createForm.value.contenido_url) body.contenido_url = createForm.value.contenido_url
+    const res = await fetch('/api/reports', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      createError.value = err.message ?? t('reports.createModal.errorFailed')
+      return
+    }
+    closeCreateModal()
+    await Promise.all([loadSummary(), loadReports()])
+  } catch {
+    createError.value = t('reports.createModal.errorNetwork')
+  } finally {
+    creating.value = false
+  }
 }
 </script>
 
@@ -452,34 +707,31 @@ function goToDetail(id) {
 /* ─── Filters ────────────────────────────────────────────────────────────── */
 .filter-bar {
   display: flex;
-  gap: 6px;
+  gap: 24px;
   margin-bottom: 24px;
+  border-bottom: 1px solid #1a1a1a;
   flex-wrap: wrap;
 }
 
 .filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 14px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid #1e1e1e;
-  color: #666;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #555;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all .2s;
+  transition: color .2s, border-color .2s;
 }
 
-.filter-btn:hover { border-color: rgba(255,255,255,0.15); color: #aaa; }
+.filter-btn:hover { color: #aaa; }
 
 .filter-btn.active {
-  background: rgba(201,169,98,0.1);
-  border-color: rgba(201,169,98,0.4);
+  border-bottom-color: #c9a962;
   color: #c9a962;
 }
-
-.chevron { opacity: 0.5; }
 
 /* ─── KPI Cards ──────────────────────────────────────────────────────────── */
 .kpi-grid {
@@ -489,35 +741,50 @@ function goToDetail(id) {
   margin-bottom: 28px;
 }
 
-.kpi-grid :deep(.card) {
-  max-width: none;
-  width: 100%;
-  margin: 0;
-  border-radius: 0;
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 16px;
-  gap: 10px;
-  transition: border-color .2s, background .2s;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1e1e1e;
+  transition: border-color .2s;
 }
 
-.kpi-grid :deep(.card:hover) {
-  border-color: rgba(201,169,98,0.3) !important;
+.kpi-card:hover {
+  border-color: rgba(201,169,98,0.3);
 }
 
-.kpi-grid :deep(.card-title) {
+.kpi-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kpi-value {
   font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #faf8f5;
   line-height: 1;
 }
 
-.kpi-grid :deep(.card-subtitle) {
-  font-size: 11px;
-  color: var(--TextMuted);
+.kpi-badge {
+  display: inline-block;
+  padding: 3px 10px;
   font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 2px;
+  width: fit-content;
 }
 
-.kpi-grid :deep(.pill) {
-  margin-top: 4px;
-}
+.kpi-badge--green  { background: rgba(74,222,128,0.1);  color: #4ade80; }
+.kpi-badge--purple { background: rgba(167,139,250,0.1); color: #a78bfa; }
+.kpi-badge--red    { background: rgba(251,113,133,0.1); color: #fb7185; }
 
 /* ─── Section blocks ─────────────────────────────────────────────────────── */
 .section-block {
@@ -618,6 +885,27 @@ function goToDetail(id) {
 }
 
 .td-date { color: #555; font-size: 11px; }
+
+.progress-cell { display: flex; align-items: center; gap: 7px; }
+.prog-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; min-width: 60px; }
+.prog-fill  { height: 100%; background: linear-gradient(90deg, #b27f2a, #c9a962); border-radius: 2px; }
+.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; min-width: 30px; }
+
+.type-tag {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+  background: rgba(167,139,250,0.08);
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+}
+
+.section-count {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  color: #444;
+}
 
 .open-btn {
   background: none;
@@ -900,6 +1188,148 @@ function goToDetail(id) {
   color: #444;
   padding-top: 2px;
 }
+
+/* ─── Create Report Modal ────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8e4de;
+  letter-spacing: 0.04em;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color .2s;
+}
+.modal-close:hover { color: #ccc; }
+
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+
+.form-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.form-optional {
+  font-weight: 400;
+  color: #444;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.form-input {
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #2a2a2a;
+  color: #ccc;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .2s;
+}
+.form-input:focus { border-color: rgba(201,169,98,0.4); }
+.form-input option { background: #111; }
+
+/* ─── Report Detail Modal ────────────────────────────────────────────────── */
+.rdetail-body { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+.rdetail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+.rdetail-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rdetail-val {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  color: #aaa;
+}
+.rdetail-val.dim { color: #444; }
+.rdetail-link {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  color: #c9a962;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+.rdetail-link:hover { opacity: 0.7; }
+
+.form-error {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  color: #fb7185;
+  margin: 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(201,169,98,0.12);
+  border: 1px solid rgba(201,169,98,0.3);
+  color: #c9a962;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-primary:hover:not(:disabled) { background: rgba(201,169,98,0.22); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {

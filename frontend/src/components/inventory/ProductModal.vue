@@ -1,34 +1,34 @@
 <template>
-  <BaseModal v-model="show" title="New product" max-width="480px">
+  <BaseModal v-model="show" :title="$t('inventory.modal.title')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Name <span class="req">*</span></label>
-        <input v-model="form.nombre" type="text" placeholder="Product name" required />
+        <label>{{ $t('inventory.modal.name') }} <span class="req">*</span></label>
+        <input v-model="form.nombre" type="text" :placeholder="$t('inventory.modal.namePlaceholder')" required />
       </div>
 
       <div class="form-field">
-        <label>Description</label>
-        <textarea v-model="form.descripcion" placeholder="Optional description" rows="2"></textarea>
+        <label>{{ $t('inventory.modal.description') }}</label>
+        <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
       </div>
 
       <div class="form-row">
         <div class="form-field">
-          <label>Sale price <span class="req">*</span></label>
+          <label>{{ $t('inventory.modal.salePrice') }} <span class="req">*</span></label>
           <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
         </div>
         <div class="form-field">
-          <label>Cost price <span class="req">*</span></label>
+          <label>{{ $t('inventory.modal.costPrice') }} <span class="req">*</span></label>
           <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" required />
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-field">
-          <label>Initial stock</label>
+          <label>{{ $t('inventory.modal.initialStock') }}</label>
           <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
         </div>
         <div class="form-field">
-          <label>Min. stock</label>
+          <label>{{ $t('inventory.modal.minStock') }}</label>
           <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
         </div>
       </div>
@@ -36,9 +36,9 @@
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('inventory.modal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Saving…' : 'Save product' }}
+          {{ submitting ? $t('inventory.modal.saving') : $t('inventory.modal.save') }}
         </button>
       </div>
     </form>
@@ -47,7 +47,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },

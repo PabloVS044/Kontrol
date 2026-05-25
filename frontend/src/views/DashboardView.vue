@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import Card from '../components/UI/Card/Card.vue'
 import Button from '../components/UI/Button/Button.vue'
@@ -8,12 +9,30 @@ import { useAuthStore } from '../stores/auth'
 import { statusLabel } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 
 const projects = ref([])
 const budgetByProj = ref({}) // id_proyecto -> summary
 const overviewLoading = ref(false)
 const overviewError = ref(null)
+
+const CRITICAL_BUDGET_LEVELS = ['CRITICO', 'EXCEDIDO']
+const WARNING_BUDGET_LEVELS = ['PRECAUCION', 'ADVERTENCIA']
+
+function isCriticalBudgetLevel(level) {
+  return CRITICAL_BUDGET_LEVELS.includes(level)
+}
+
+function isWarningBudgetLevel(level) {
+  return WARNING_BUDGET_LEVELS.includes(level)
+}
+
+function budgetLevelClass(level) {
+  if (isCriticalBudgetLevel(level)) return 'critico'
+  if (isWarningBudgetLevel(level)) return 'advertencia'
+  return ''
+}
 
 function money(n) {
   const num = Number(n || 0)
@@ -30,10 +49,10 @@ const activeProjectsCount = computed(() =>
   projects.value.filter(p => p.estado === 'EN_PROGRESO').length
 )
 const overrunCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'CRITICO').length
+  Object.values(budgetByProj.value).filter(b => isCriticalBudgetLevel(b?.alerta_nivel)).length
 )
 const warningCount = computed(() =>
-  Object.values(budgetByProj.value).filter(b => b?.alerta_nivel === 'ADVERTENCIA').length
+  Object.values(budgetByProj.value).filter(b => isWarningBudgetLevel(b?.alerta_nivel)).length
 )
 const spentPct = computed(() => {
   const t = totalAllocated.value
@@ -42,23 +61,23 @@ const spentPct = computed(() => {
 
 const stats = computed(() => [
   {
-    label: 'Total Spent',
+    label: t('dashboard.stats.totalSpent'),
     value: money(totalSpent.value),
-    trend: totalAllocated.value > 0 ? `${spentPct.value}% of budget` : 'No budget set',
+    trend: totalAllocated.value > 0 ? t('dashboard.stats.ofBudget', { pct: spentPct.value }) : t('dashboard.stats.noBudget'),
     trendColor: spentPct.value >= 80 ? '#fb7185' : '#34d399',
     back: 'rgba(15,15,15,0.85)',
   },
   {
-    label: 'Active Projects',
+    label: t('dashboard.stats.activeProjects'),
     value: String(activeProjectsCount.value),
-    trend: `${projects.value.length} total`,
+    trend: t('dashboard.stats.totalProjects', { count: projects.value.length }),
     trendColor: '#c9a962',
     back: 'rgba(15,15,15,0.85)',
   },
   {
-    label: 'Overrun Alerts',
+    label: t('dashboard.stats.overrunAlerts'),
     value: String(overrunCount.value),
-    trend: warningCount.value ? `${warningCount.value} warning` : (overrunCount.value ? 'Critical' : 'All healthy'),
+    trend: warningCount.value ? t('dashboard.stats.warning', { count: warningCount.value }) : (overrunCount.value ? t('dashboard.stats.critical') : t('dashboard.stats.allHealthy')),
     trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#c9a962' : '#34d399'),
     back: overrunCount.value ? 'rgba(25,10,10,0.85)' : 'rgba(15,15,15,0.85)',
   },
@@ -208,18 +227,18 @@ const worstProject = computed(() => {
 })
 
 const aiInsight = computed(() => {
-  if (!projects.value.length) return 'No projects yet. Create your first project to start tracking budgets and usage here.'
+  if (!projects.value.length) return t('dashboard.ai.noProjects')
   const w = worstProject.value
-  if (w && w.level === 'CRITICO') {
-    return `"${w.nombre}" has exceeded its allocated budget (${Math.round(w.pct * 100)}% used). Review expenses and consider reallocating funds.`
+  if (w && isCriticalBudgetLevel(w.level)) {
+    return t('dashboard.ai.exceeded', { name: w.nombre, pct: Math.round(w.pct * 100) })
   }
-  if (w && w.level === 'ADVERTENCIA') {
-    return `"${w.nombre}" is approaching its limit (${Math.round(w.pct * 100)}% used). Monitor upcoming expenses closely.`
+  if (w && isWarningBudgetLevel(w.level)) {
+    return t('dashboard.ai.approaching', { name: w.nombre, pct: Math.round(w.pct * 100) })
   }
   if (overrunCount.value === 0 && warningCount.value === 0 && totalAllocated.value > 0) {
-    return `All ${projects.value.length} projects are within their budget allocations. Overall usage is ${spentPct.value}%.`
+    return t('dashboard.ai.allGood', { count: projects.value.length, pct: spentPct.value })
   }
-  return `You have ${projects.value.length} project${projects.value.length === 1 ? '' : 's'} under management. Register activities and expenses to start tracking budget health.`
+  return t('dashboard.ai.default', projects.value.length, { named: { count: projects.value.length } })
 })
 
 async function loadOverview() {
@@ -323,7 +342,7 @@ async function loadPanel() {
     const payload = await res.json()
 
     if (!res.ok) {
-      errorMessage.value = payload.message || 'Could not load the collaborators panel.'
+      errorMessage.value = payload.message || t('dashboard.collaborators.errors.loadPanel')
       panel.value = null
       return
     }
@@ -331,7 +350,7 @@ async function loadPanel() {
     panel.value = payload.data
     syncProjectDrafts(payload.data.members ?? [])
   } catch {
-    errorMessage.value = 'Could not load the collaborators panel.'
+    errorMessage.value = t('dashboard.collaborators.errors.loadPanel')
     panel.value = null
   } finally {
     loading.value = false
@@ -351,16 +370,16 @@ async function generateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not generate the link.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.generateInvite')
       return
     }
 
     if (panel.value) {
       panel.value.invitation = payload.data
     }
-    actionMessage.value = 'Invitation link ready to share.'
+    actionMessage.value = t('dashboard.collaborators.actions.inviteReady')
   } catch {
-    actionError.value = 'Could not generate the link.'
+    actionError.value = t('dashboard.collaborators.errors.generateInvite')
   } finally {
     generatingInvite.value = false
   }
@@ -379,16 +398,16 @@ async function deactivateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not deactivate the link.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.deactivateInvite')
       return
     }
 
     if (panel.value) {
       panel.value.invitation = null
     }
-    actionMessage.value = payload.message || 'The link was deactivated.'
+    actionMessage.value = payload.message || t('dashboard.collaborators.actions.inviteDeactivated')
   } catch {
-    actionError.value = 'Could not deactivate the link.'
+    actionError.value = t('dashboard.collaborators.errors.deactivateInvite')
   } finally {
     deactivatingInvite.value = false
   }
@@ -402,9 +421,9 @@ async function copyInviteLink() {
 
   try {
     await navigator.clipboard.writeText(invitation.value.link)
-    actionMessage.value = 'Link copied to clipboard.'
+    actionMessage.value = t('dashboard.collaborators.actions.linkCopied')
   } catch {
-    actionError.value = 'Could not copy the link.'
+    actionError.value = t('dashboard.collaborators.errors.copyLink')
   }
 }
 
@@ -427,7 +446,7 @@ async function updateMemberRole(member, newRole) {
 
     const payload = await res.json()
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not update the role.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.updateRole')
       return
     }
 
@@ -436,9 +455,9 @@ async function updateMemberRole(member, newRole) {
         currentMember.id_usuario === member.id_usuario ? payload.data : currentMember
       )
     }
-    actionMessage.value = 'Role updated.'
+    actionMessage.value = t('dashboard.collaborators.actions.roleUpdated')
   } catch {
-    actionError.value = 'Could not update the role.'
+    actionError.value = t('dashboard.collaborators.errors.updateRole')
   } finally {
     updatingMemberId.value = null
   }
@@ -457,7 +476,7 @@ async function removeMember(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not remove the user.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.removeUser')
       return
     }
 
@@ -466,9 +485,9 @@ async function removeMember(member) {
         ({ id_usuario }) => id_usuario !== member.id_usuario
       )
     }
-    actionMessage.value = payload.message || 'User removed.'
+    actionMessage.value = payload.message || t('dashboard.collaborators.actions.userRemoved')
   } catch {
-    actionError.value = 'Could not remove the user.'
+    actionError.value = t('dashboard.collaborators.errors.removeUser')
   } finally {
     removingMemberId.value = null
   }
@@ -538,7 +557,7 @@ async function assignProjectToMember(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not assign the project.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.assignProject')
       return
     }
 
@@ -546,10 +565,10 @@ async function assignProjectToMember(member) {
       ...selectedProjectDrafts.value,
       [member.id_usuario]: '',
     }
-    actionMessage.value = 'Project assigned. You can now configure permissions.'
+    actionMessage.value = t('dashboard.collaborators.actions.projectAssigned')
     await loadPanel()
   } catch {
-    actionError.value = 'Could not assign the project.'
+    actionError.value = t('dashboard.collaborators.errors.assignProject')
   } finally {
     assigningProjectMemberId.value = null
   }
@@ -577,14 +596,14 @@ async function saveProjectPermissions(member, assignment) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not save project permissions.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.savePermissions')
       return
     }
 
-    actionMessage.value = 'Project permissions updated.'
+    actionMessage.value = t('dashboard.collaborators.actions.permissionsUpdated')
     await loadPanel()
   } catch {
-    actionError.value = 'Could not save project permissions.'
+    actionError.value = t('dashboard.collaborators.errors.savePermissions')
   } finally {
     savingProjectAccessKey.value = ''
   }
@@ -608,14 +627,14 @@ async function removeProjectAccess(member, assignment) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not remove project access.'
+      actionError.value = payload.message || t('dashboard.collaborators.errors.removeProjectAccess')
       return
     }
 
-    actionMessage.value = payload.message || 'Project access removed.'
+    actionMessage.value = payload.message || t('dashboard.collaborators.actions.permissionsUpdated')
     await loadPanel()
   } catch {
-    actionError.value = 'Could not remove project access.'
+    actionError.value = t('dashboard.collaborators.errors.removeProjectAccess')
   } finally {
     removingProjectAccessKey.value = ''
   }
@@ -633,18 +652,18 @@ watch(() => authStore.idEmpresaActual, () => {
 
     <main class="content">
       <header class="header">
-        <h1 class="title">Executive Overview</h1>
-        <p class="subtitle">Welcome back, {{ currentUserName }}</p>
+        <h1 class="title">{{ $t('dashboard.title') }}</h1>
+        <p class="subtitle">{{ $t('dashboard.welcome', { name: currentUserName }) }}</p>
       </header>
 
       <section
         v-if="authStore.accessContext && !authStore.canManageUsers && !authStore.canViewProjects && !authStore.canViewInventory"
         class="access-waiting"
       >
-        <p class="team-eyebrow">Pending Access</p>
-        <h2 class="access-waiting-title">You are already inside the company</h2>
+        <p class="team-eyebrow">{{ $t('dashboard.pendingAccess.eyebrow') }}</p>
+        <h2 class="access-waiting-title">{{ $t('dashboard.pendingAccess.title') }}</h2>
         <p class="team-subtitle">
-          Your account is linked to {{ authStore.empresaActual?.nombre || 'this company' }}, but the owner still has to assign projects and permissions before you can open operational panels.
+          {{ $t('dashboard.pendingAccess.subtitle', { company: authStore.empresaActual?.nombre || 'this company' }) }}
         </p>
       </section>
 
@@ -670,12 +689,12 @@ watch(() => authStore.idEmpresaActual, () => {
 
       <section class="ai-box">
         <div class="ai-content">
-          <h3 class="ai-title">KONTROL AI ANALYSIS</h3>
+          <h3 class="ai-title">{{ $t('dashboard.ai.label') }}</h3>
           <p class="ai-message">"{{ currentUserName }}, {{ aiInsight }}"</p>
         </div>
         <Button
           v-if="worstProject"
-          label="REVIEW BUDGET"
+          :label="$t('dashboard.ai.reviewBudget')"
           @click="$router.push({ name: 'budget', query: { project: worstProject.id } })"
         />
       </section>
@@ -683,8 +702,8 @@ watch(() => authStore.idEmpresaActual, () => {
       <section class="chart-card trend-card">
         <div class="trend-head">
           <div>
-            <h3>Financial Performance Trend</h3>
-            <p class="timeline-hint">Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.</p>
+            <h3>{{ $t('dashboard.trend.title') }}</h3>
+            <p class="timeline-hint">{{ $t('dashboard.trend.hint') }}</p>
           </div>
           <select
             v-if="trendEligibleProjects.length"
@@ -697,13 +716,13 @@ watch(() => authStore.idEmpresaActual, () => {
           </select>
         </div>
 
-        <div v-if="trendLoading" class="chart-state">Loading trend…</div>
+        <div v-if="trendLoading" class="chart-state">{{ $t('dashboard.trend.loading') }}</div>
         <div v-else-if="trendError" class="chart-state chart-state--error">{{ trendError }}</div>
         <div v-else-if="!trendEligibleProjects.length" class="chart-state">
-          No projects with start date, end date and budget set yet.
+          {{ $t('dashboard.trend.noProjects') }}
         </div>
         <div v-else-if="!chartData" class="chart-state">
-          This project needs fecha_inicio, fecha_fin_planificada and presupuesto_total.
+          {{ $t('dashboard.trend.noData') }}
         </div>
         <svg v-else class="trend-svg" :viewBox="`0 0 ${CHART.w} ${CHART.h}`" preserveAspectRatio="xMidYMid meet">
           <!-- Y grid -->
@@ -763,28 +782,28 @@ watch(() => authStore.idEmpresaActual, () => {
               :x="chartData.todayLine.x" :y="chartArea.y - 6"
               fill="#faf8f5" font-size="10" text-anchor="middle" opacity="0.8"
               font-family="Manrope, sans-serif"
-            >Today</text>
+            >{{ $t('dashboard.trend.today') }}</text>
           </template>
 
           <!-- Legend -->
           <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
             <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f"/>
             <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5"/>
-            <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Planned budget</text>
+            <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.planned') }}</text>
             <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2"/>
-            <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Actual spend (movements)</text>
+            <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.actual') }}</text>
           </g>
         </svg>
       </section>
 
       <div class="charts-container">
         <div class="chart-card main-chart">
-          <h3>Budget Usage by Project</h3>
+          <h3>{{ $t('dashboard.budget.title') }}</h3>
 
-          <div v-if="overviewLoading" class="chart-state">Loading budgets…</div>
+          <div v-if="overviewLoading" class="chart-state">{{ $t('dashboard.budget.loading') }}</div>
           <div v-else-if="overviewError" class="chart-state chart-state--error">{{ overviewError }}</div>
           <div v-else-if="!topBudgetProjects.length" class="chart-state">
-            No projects with budget data yet.
+            {{ $t('dashboard.budget.empty') }}
           </div>
           <div v-else class="project-bars">
             <div v-for="row in topBudgetProjects" :key="row.id_proyecto" class="project-bar-row">
@@ -792,54 +811,52 @@ watch(() => authStore.idEmpresaActual, () => {
                 <span class="project-bar-name">{{ row.nombre }}</span>
                 <span class="project-bar-meta">
                   <span>{{ money(row.spent) }} / {{ money(row.planned) }}</span>
-                  <span class="project-bar-pct" :class="row.level?.toLowerCase()">{{ row.pct }}%</span>
+                  <span class="project-bar-pct" :class="budgetLevelClass(row.level)">{{ row.pct }}%</span>
                 </span>
               </div>
               <div class="bar-bg">
-                <div class="bar-fill" :class="row.level?.toLowerCase()" :style="{ width: row.pct + '%' }"></div>
+                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: row.pct + '%' }"></div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="chart-card mini-chart">
-          <h3>Portfolio Snapshot</h3>
+          <h3>{{ $t('dashboard.snapshot.title') }}</h3>
           <div class="snapshot-row">
-            <span class="snapshot-label">Allocated</span>
+            <span class="snapshot-label">{{ $t('dashboard.snapshot.allocated') }}</span>
             <span class="snapshot-value">{{ money(totalAllocated) }}</span>
           </div>
           <div class="snapshot-row">
-            <span class="snapshot-label">Spent</span>
+            <span class="snapshot-label">{{ $t('dashboard.snapshot.spent') }}</span>
             <span class="snapshot-value">{{ money(totalSpent) }}</span>
           </div>
           <div class="snapshot-row">
-            <span class="snapshot-label">Remaining</span>
+            <span class="snapshot-label">{{ $t('dashboard.snapshot.remaining') }}</span>
             <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
           </div>
           <div class="snapshot-bar bar-bg">
             <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
           </div>
-          <p class="snapshot-foot">{{ spentPct }}% of total budget used across {{ projects.length }} project{{ projects.length === 1 ? '' : 's' }}.</p>
+          <p class="snapshot-foot">{{ $t('dashboard.snapshot.summary', projects.length, { named: { pct: spentPct, count: projects.length } }) }}</p>
         </div>
       </div>
 
       <section v-if="isOwner" class="company-collaborators">
         <div class="team-header">
           <div>
-            <p class="team-eyebrow">Company Access</p>
-            <h2 class="team-title">Collaborators</h2>
-            <p class="team-subtitle">
-              Manage company access, project assignment, and capability-based permissions for each collaborator.
-            </p>
+            <p class="team-eyebrow">{{ $t('dashboard.collaborators.eyebrow') }}</p>
+            <h2 class="team-title">{{ $t('dashboard.collaborators.title') }}</h2>
+            <p class="team-subtitle">{{ $t('dashboard.collaborators.subtitle') }}</p>
           </div>
           <div class="team-summary">
-            <span class="team-chip">{{ totalMembers }} members</span>
-            <span class="team-chip">{{ collaboratorCount }} collaborators</span>
-            <span class="team-chip">{{ adminLikeCount }} management roles</span>
+            <span class="team-chip">{{ $t('dashboard.collaborators.membersCount', { count: totalMembers }) }}</span>
+            <span class="team-chip">{{ $t('dashboard.collaborators.collaboratorsCount', { count: collaboratorCount }) }}</span>
+            <span class="team-chip">{{ $t('dashboard.collaborators.managementCount', { count: adminLikeCount }) }}</span>
           </div>
         </div>
 
-        <div v-if="loading" class="team-state">Loading collaborators...</div>
+        <div v-if="loading" class="team-state">{{ $t('dashboard.collaborators.loading') }}</div>
         <div v-else-if="errorMessage" class="team-state team-state--error">{{ errorMessage }}</div>
 
         <template v-else-if="panel">
@@ -847,17 +864,15 @@ watch(() => authStore.idEmpresaActual, () => {
             <article class="team-card invite-panel">
               <div class="team-card-head">
                 <div>
-                  <p class="team-card-kicker">Shared Invite</p>
-                  <h3>Invitation Link</h3>
+                  <p class="team-card-kicker">{{ $t('dashboard.collaborators.invite.eyebrow') }}</p>
+                  <h3>{{ $t('dashboard.collaborators.invite.title') }}</h3>
                 </div>
                 <span class="team-chip" :class="{ inactive: !invitation }">
-                  {{ invitation ? 'Active' : 'Inactive' }}
+                  {{ invitation ? $t('dashboard.collaborators.invite.active') : $t('dashboard.collaborators.invite.inactive') }}
                 </span>
               </div>
 
-              <p class="team-copy">
-                The owner can share a single access link to add collaborators and deactivate it when onboarding closes.
-              </p>
+              <p class="team-copy">{{ $t('dashboard.collaborators.invite.description') }}</p>
 
               <template v-if="isOwner">
                 <div v-if="invitation" class="invite-link-box">
@@ -871,27 +886,25 @@ watch(() => authStore.idEmpresaActual, () => {
                     :disabled="generatingInvite"
                     @click="generateInvite"
                   >
-                    {{ generatingInvite ? 'Generating...' : 'Generate link' }}
+                    {{ generatingInvite ? $t('dashboard.collaborators.invite.generating') : $t('dashboard.collaborators.invite.generate') }}
                   </button>
 
                   <template v-else>
                     <button class="team-btn team-btn--primary" @click="copyInviteLink">
-                      Copy link
+                      {{ $t('dashboard.collaborators.invite.copy') }}
                     </button>
                     <button
                       class="team-btn team-btn--secondary"
                       :disabled="deactivatingInvite"
                       @click="deactivateInvite"
                     >
-                      {{ deactivatingInvite ? 'Deactivating...' : 'Deactivate link' }}
+                      {{ deactivatingInvite ? $t('dashboard.collaborators.invite.deactivating') : $t('dashboard.collaborators.invite.deactivate') }}
                     </button>
                   </template>
                 </div>
               </template>
 
-              <p v-else class="team-copy muted">
-                Only the owner can view, generate, or deactivate the link.
-              </p>
+              <p v-else class="team-copy muted">{{ $t('dashboard.collaborators.invite.ownerOnly') }}</p>
 
               <p v-if="actionMessage" class="feedback feedback--ok">{{ actionMessage }}</p>
               <p v-if="actionError" class="feedback feedback--error">{{ actionError }}</p>
@@ -900,10 +913,10 @@ watch(() => authStore.idEmpresaActual, () => {
             <article class="team-card members-panel">
               <div class="team-card-head">
                 <div>
-                  <p class="team-card-kicker">Members</p>
-                  <h3>Company Users</h3>
+                  <p class="team-card-kicker">{{ $t('dashboard.collaborators.users.eyebrow') }}</p>
+                  <h3>{{ $t('dashboard.collaborators.users.title') }}</h3>
                 </div>
-                <span class="team-chip">{{ members.length }} total</span>
+                <span class="team-chip">{{ $t('dashboard.collaborators.users.total', { count: members.length }) }}</span>
               </div>
 
               <div class="members-list">
@@ -944,7 +957,7 @@ watch(() => authStore.idEmpresaActual, () => {
                         :disabled="removingMemberId === member.id_usuario"
                         @click="removeMember(member)"
                       >
-                        {{ removingMemberId === member.id_usuario ? 'Removing...' : 'Remove' }}
+                        {{ removingMemberId === member.id_usuario ? $t('dashboard.collaborators.projectAccess.removing') : $t('dashboard.collaborators.projectAccess.remove') }}
                       </button>
                     </template>
                   </div>
@@ -952,10 +965,8 @@ watch(() => authStore.idEmpresaActual, () => {
                   <div v-if="member.rol_empresa !== 'owner'" class="member-project-access">
                     <div class="member-project-access-head">
                       <div>
-                        <span class="member-project-access-title">Project Access</span>
-                        <p class="member-project-access-subtitle">
-                          Assigned without permissions = belongs to the project, but cannot view inventory or write.
-                        </p>
+                        <span class="member-project-access-title">{{ $t('dashboard.collaborators.projectAccess.title') }}</span>
+                        <p class="member-project-access-subtitle">{{ $t('dashboard.collaborators.projectAccess.subtitle') }}</p>
                       </div>
 
                       <div class="member-project-assignment-controls">
@@ -964,7 +975,7 @@ watch(() => authStore.idEmpresaActual, () => {
                           class="role-select"
                           :disabled="assigningProjectMemberId === member.id_usuario || !availableProjectsForMember(member).length"
                         >
-                          <option value="">Select project</option>
+                          <option value="">{{ $t('dashboard.collaborators.projectAccess.selectProject') }}</option>
                           <option
                             v-for="project in availableProjectsForMember(member)"
                             :key="project.id_proyecto"
@@ -979,7 +990,7 @@ watch(() => authStore.idEmpresaActual, () => {
                           :disabled="assigningProjectMemberId === member.id_usuario || !selectedProjectDrafts[member.id_usuario]"
                           @click="assignProjectToMember(member)"
                         >
-                          {{ assigningProjectMemberId === member.id_usuario ? 'Assigning...' : 'Assign project' }}
+                          {{ assigningProjectMemberId === member.id_usuario ? $t('dashboard.collaborators.projectAccess.assigning') : $t('dashboard.collaborators.projectAccess.assign') }}
                         </button>
                       </div>
                     </div>
@@ -1001,7 +1012,7 @@ watch(() => authStore.idEmpresaActual, () => {
                             :disabled="removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}`"
                             @click="removeProjectAccess(member, assignment)"
                           >
-                            {{ removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Removing...' : 'Remove project' }}
+                            {{ removingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? $t('dashboard.collaborators.projectAccess.removing') : $t('dashboard.collaborators.projectAccess.removeProject') }}
                           </button>
                         </div>
 
@@ -1027,15 +1038,13 @@ watch(() => authStore.idEmpresaActual, () => {
                             :disabled="savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}`"
                             @click="saveProjectPermissions(member, assignment)"
                           >
-                            {{ savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? 'Saving...' : 'Save permissions' }}
+                            {{ savingProjectAccessKey === `${member.id_usuario}:${assignment.id_proyecto}` ? $t('dashboard.collaborators.projectAccess.saving') : $t('dashboard.collaborators.projectAccess.savePermissions') }}
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    <p v-else class="team-copy muted">
-                      This user already belongs to the company but has no accessible projects yet.
-                    </p>
+                    <p v-else class="team-copy muted">{{ $t('dashboard.collaborators.projectAccess.noProjects') }}</p>
                   </div>
                 </div>
               </div>

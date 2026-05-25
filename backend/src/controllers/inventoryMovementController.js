@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { notifyCompany } from '../services/notificationService.js'
 import {
   ensureProjectAccess,
   getAccessibleProjectIds,
@@ -202,10 +203,10 @@ export const createInventoryMovement = async (req, res) => {
     // Insert movement
     const inserted = await client.query(
       `INSERT INTO public.movimiento_inventario
-         (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_proveedor)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_proveedor, id_empresa)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id_movimiento`,
-      [tipo, cantidad, precio_unitario, motivo ?? null, id_producto, id_usuario, id_proyecto, id_proveedor ?? null]
+      [tipo, cantidad, precio_unitario, motivo ?? null, id_producto, id_usuario, id_proyecto, id_proveedor ?? null, id_empresa]
     )
 
     // Update stock
@@ -235,6 +236,29 @@ export const createInventoryMovement = async (req, res) => {
     }
 
     await client.query('COMMIT')
+
+    // Alert if stock dropped below minimum after a SALIDA
+    if (tipo === 'SALIDA') {
+      const stockCheck = await pool.query(
+        `SELECT p.nombre, p.stock_actual, p.stock_minimo, pr.nombre AS proyecto_nombre
+         FROM public.producto p
+         JOIN public.proyecto pr ON pr.id_proyecto = p.id_proyecto
+         WHERE p.id_producto = $1`,
+        [id_producto],
+      )
+      const prod = stockCheck.rows[0]
+      if (prod && prod.stock_minimo != null && prod.stock_actual <= prod.stock_minimo) {
+        const isZero = prod.stock_actual === 0
+        notifyCompany(id_empresa, {
+          title: isZero ? `🔴 Sin stock — ${prod.nombre}` : `🟡 Stock bajo — ${prod.nombre}`,
+          text: isZero
+            ? `El producto *${prod.nombre}* (${prod.proyecto_nombre}) se quedó sin stock.`
+            : `El producto *${prod.nombre}* (${prod.proyecto_nombre}) tiene solo ${prod.stock_actual} unidades (mínimo: ${prod.stock_minimo}).`,
+          event: 'inventory.low_stock',
+          data: { id_producto, stock_actual: prod.stock_actual, stock_minimo: prod.stock_minimo },
+        })
+      }
+    }
 
     // Fetch the full movement with joins for the response
     const result = await pool.query(

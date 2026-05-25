@@ -1,41 +1,41 @@
 <template>
-  <BaseModal v-model="show" :title="editingTask ? 'Edit task' : 'New task'">
+  <BaseModal v-model="show" :title="editingTask ? $t('projects.tasks.modal.editTitle') : $t('projects.tasks.modal.newTitle')">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Name <span class="req">*</span></label>
-        <input v-model="form.nombre" type="text" placeholder="Task name" required />
+        <label>{{ $t('projects.tasks.modal.name') }} <span class="req">*</span></label>
+        <input v-model="form.nombre" type="text" :placeholder="$t('projects.tasks.modal.namePlaceholder')" required />
       </div>
 
       <div class="form-field">
-        <label>Description</label>
-        <textarea v-model="form.descripcion" placeholder="Optional description" rows="2"></textarea>
+        <label>{{ $t('projects.tasks.modal.description') }}</label>
+        <textarea v-model="form.descripcion" :placeholder="$t('projects.tasks.modal.descriptionPlaceholder')" rows="2"></textarea>
       </div>
 
       <div class="form-row">
         <div class="form-field">
-          <label>Priority</label>
+          <label>{{ $t('projects.tasks.modal.priority') }}</label>
           <select v-model="form.prioridad">
-            <option value="BAJA">Low</option>
-            <option value="MEDIA">Medium</option>
-            <option value="ALTA">High</option>
-            <option value="CRITICA">Critical</option>
+            <option value="BAJA">{{ $t('projects.priorities.low') }}</option>
+            <option value="MEDIA">{{ $t('projects.priorities.medium') }}</option>
+            <option value="ALTA">{{ $t('projects.priorities.high') }}</option>
+            <option value="CRITICA">{{ $t('projects.priorities.critical') }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>{{ editingTask ? 'Status' : 'Initial status' }}</label>
+          <label>{{ editingTask ? $t('projects.tasks.modal.status') : $t('projects.tasks.modal.initialStatus') }}</label>
           <select v-model="form.estado">
-            <option value="PENDIENTE">Pending</option>
-            <option value="EN_PROGRESO">In progress</option>
-            <option value="COMPLETADA">Completed</option>
-            <option value="CANCELADA">Cancelled</option>
+            <option value="PENDIENTE">{{ $t('projects.taskStatuses.pending') }}</option>
+            <option value="EN_PROGRESO">{{ $t('projects.taskStatuses.inProgress') }}</option>
+            <option value="COMPLETADA">{{ $t('projects.taskStatuses.completed') }}</option>
+            <option value="CANCELADA">{{ $t('projects.taskStatuses.cancelled') }}</option>
           </select>
         </div>
       </div>
 
       <div class="form-field">
-        <label>Assign to</label>
+        <label>{{ $t('projects.tasks.modal.assignTo') }}</label>
         <select v-model="form.id_asignado">
-          <option value="">— Unassigned —</option>
+          <option value="">{{ $t('projects.tasks.modal.unassigned') }}</option>
           <option v-for="m in members" :key="m.id_usuario" :value="m.id_usuario">
             {{ m.nombre }} {{ m.apellido }}
           </option>
@@ -43,16 +43,16 @@
       </div>
 
       <div class="form-field">
-        <label>Due date</label>
+        <label>{{ $t('projects.tasks.modal.dueDate') }}</label>
         <input v-model="form.fecha_vencimiento" type="date" />
       </div>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('projects.tasks.modal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Saving…' : editingTask ? 'Update task' : 'Create task' }}
+          {{ submitting ? $t('projects.tasks.modal.saving') : editingTask ? $t('projects.tasks.modal.update') : $t('projects.tasks.modal.create') }}
         </button>
       </div>
     </form>
@@ -61,7 +61,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue:  { type: Boolean, required: true },
