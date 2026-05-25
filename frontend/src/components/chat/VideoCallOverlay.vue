@@ -103,7 +103,11 @@
         <aside v-if="showSideChat" class="call-side-chat">
           <div class="side-chat-header">
             <span>Chat de la reunión</span>
-            <button @click="showSideChat = false" class="close-side-btn">×</button>
+            <button @click="showSideChat = false" class="close-side-btn">
+              <svg width="14" height="14" view-box="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
           </div>
 
           <div class="side-chat-body">
@@ -346,6 +350,32 @@ watch(remoteVideoEl, (videoEl) => {
   border-bottom: 1px solid rgba(201, 169, 98, 0.15);
 }
 
+.side-chat-header span {
+  font-family: 'Playfair Display', serif;
+  color: var(--Primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Botón X con estilo */
+.close-side-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #888;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.close-side-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
 .side-chat-body {
   flex: 1;
   overflow-y: auto;
@@ -358,6 +388,28 @@ watch(remoteVideoEl, (videoEl) => {
 /* Scrollbar */
 .side-chat-body::-webkit-scrollbar { width: 4px; }
 .side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 10px; }
+
+.mini-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mini-msg-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--Primary);
+  letter-spacing: 0.5px;
+}
+
+.mini-msg-text {
+  font-size: 13px;
+  color: #faf8f5;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 12px;
+  border-radius: 4px;
+  line-height: 1.5;
+}
 
 /* área de input */
 
