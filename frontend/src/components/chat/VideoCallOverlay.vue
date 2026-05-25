@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useChatStore } from '../../stores/chat.js'
 
 const chatStore = useChatStore()
