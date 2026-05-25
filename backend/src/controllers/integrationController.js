@@ -15,6 +15,7 @@ import { testSendGridConnection } from '../services/sendgridService.js'
 import { testTeamsConnection } from '../services/teamsService.js'
 import { testTelegramConnection } from '../services/telegramService.js'
 import { testTwilioSmsConnection } from '../services/twilioSmsService.js'
+import { testWhatsAppConnection } from '../services/whatsappService.js'
 import { testWebhookConnection } from '../services/webhookService.js'
 
 export const listIntegrations = async (req, res) => {
@@ -210,6 +211,7 @@ export const testIntegration = async (req, res) => {
     else if (slug === 'microsoft-teams') await testTeamsConnection(credentials)
     else if (slug === 'telegram')        await testTelegramConnection(credentials)
     else if (slug === 'twilio-sms')      await testTwilioSmsConnection(credentials)
+    else if (slug === 'whatsapp')        await testWhatsAppConnection(credentials)
     else if (slug === 'webhook')         await testWebhookConnection(credentials)
 
     await pool.query(

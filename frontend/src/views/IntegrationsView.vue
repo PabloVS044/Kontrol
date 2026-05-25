@@ -271,7 +271,6 @@ const testingSlug = ref(null)
 const inlineFeedback = ref({})
 
 const showSuccessAnimation = ref(false)
-const isNewIntegration = ref(false)
 
 const showTutorial = ref(false)
 const tutorialIntegration = ref(null)
@@ -371,11 +370,16 @@ async function handleToggle(integration) {
 async function handleTest(integration) {
   testingSlug.value = integration.slug
   clearFeedback(integration.slug)
+  const wasActive = integration.status === 'active'
   try {
     await testIntegration(...authArgs(), integration.slug)
-    setFeedback(integration.slug, 'success', 'Conexión exitosa')
     const idx = integrations.value.findIndex((i) => i.slug === integration.slug)
     if (idx !== -1) integrations.value[idx].status = 'active'
+    if (!wasActive) {
+      showSuccessAnimation.value = true
+    } else {
+      setFeedback(integration.slug, 'success', 'Conexión exitosa')
+    }
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
     const idx = integrations.value.findIndex((i) => i.slug === integration.slug)
@@ -387,7 +391,6 @@ async function handleTest(integration) {
 
 async function openConfigure(integration) {
   modalIntegration.value = integration
-  isNewIntegration.value = !integration.is_configured
   modalError.value = null
   modalSuccess.value = null
   formCredentials.value = {}
@@ -421,12 +424,7 @@ async function handleSave() {
       integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    if (isNewIntegration.value) {
-      showModal.value = false
-      showSuccessAnimation.value = true
-    } else {
-      setTimeout(() => { showModal.value = false }, 1200)
-    }
+    setTimeout(() => { showModal.value = false }, 1200)
   } catch (err) {
     modalError.value = err.message
   } finally {
@@ -479,6 +477,13 @@ const TUTORIALS = {
     'En el Dashboard principal verás tu Account SID y Auth Token. Cópialos.',
     'Ve a "Phone Numbers → Manage → Buy a number" para adquirir un número de Twilio desde donde se enviarán los SMS.',
     'Ingresa el Account SID, Auth Token, el número de Twilio y el número de destino en la configuración.',
+  ],
+  'whatsapp': [
+    'Ve a developers.facebook.com y crea una app de tipo "Business".',
+    'Agrega el producto "WhatsApp" a tu app y ve a WhatsApp → Primeros pasos.',
+    'Copia el "Phone Number ID" del número de prueba (o del número de producción si ya lo tienes).',
+    'Genera un Access Token temporal (desde el panel) o un token permanente desde Sistema → Usuarios del sistema.',
+    'En "Número de destinatario" ingresa el número que recibirá las alertas en formato E.164 (ejemplo: +50212345678).',
   ],
   'webhook': [
     'Prepara el servidor o servicio externo que recibirá los eventos (debe ser accesible públicamente).',
@@ -537,6 +542,7 @@ const ICON_PATHS = {
   'microsoft-teams': '/teams.png',
   'telegram':        '/telegram.png',
   'twilio-sms':      '/twilio.png',
+  'whatsapp':        '/whatsapp.png',
   'webhook':         '/webhook.png',
 }
 
