@@ -330,12 +330,24 @@ watch(remoteVideoEl, (videoEl) => {
 
 .call-side-chat {
   width: 350px;
-  background: rgba(10, 10, 10, 0.75);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(15px);
   border-left: 1px solid rgba(201, 169, 98, 0.2);
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
+}
+
+.mini-msg-name {
+  color: var(--Primary);
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.mini-msg-text {
+  color: #fff;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
 .call-stage {
