@@ -146,6 +146,7 @@ const activePeerName = computed(() => chatStore.activeCall?.peerName || 'Usuario
 const activePeerAvatar = computed(() => chatStore.activeCall?.peerAvatar || '??')
 
 const showSideChat = ref(false) // Estado local para mostrar el chat durante la llamada
+const sideMessageInput = ref('')
 
 const statusLabel = computed(() => {
   const status = chatStore.activeCall?.status
@@ -156,6 +157,17 @@ const statusLabel = computed(() => {
   if (status === 'ended') return chatStore.callError || 'Videollamada finalizada'
   return 'Preparando videollamada...'
 })
+
+function sendSideMessage() {
+  if (!sideMessageInput.value.trim()) return
+
+  chatStore.sendMessage({
+    conversationId: chatStore.activeCall.conversationId,
+    text: sideMessageInput.value,
+  })
+
+  sideMessageInput.value = '' // Limpieza del campo
+}
 
 function bindVideoStream(videoEl, stream) {
   if (!videoEl) return
