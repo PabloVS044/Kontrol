@@ -18,6 +18,15 @@
       </div>
 
       <div class="appnav-end">
+        <div ref="langBtnRef" class="lang-picker">
+          <button class="lang-btn" @click.stop="isLangOpen = !isLangOpen" :class="{ active: isLangOpen }">
+            <Languages :size="16" />
+          </button>
+          <div v-if="isLangOpen" class="lang-dropdown">
+            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="setLocale('en')">English</button>
+            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="setLocale('es')">Español</button>
+          </div>
+        </div>
         <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
         <button class="hamburger" @click="toggleMenu" aria-label="Menu">
           <span :class="{ line: true, 'line-top': isMenuOpen }"></span>
@@ -31,21 +40,51 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { Languages } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import logo from '@/assets/img/kontrol.png'
 
 const authStore  = useAuthStore()
 const router     = useRouter()
-const isMenuOpen = ref(false)
+const { locale } = useI18n()
+const isMenuOpen  = ref(false)
+const isLangOpen  = ref(false)
+const langBtnRef  = ref(null)
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
 
-function logout()      { authStore.logout(); router.push({ name: 'login' }) }
+function localeKey() { return `locale_${authStore.idUsuario}` }
+
+function setLocale(lang) {
+  locale.value = lang
+  localStorage.setItem(localeKey(), lang)
+  isLangOpen.value = false
+}
+
+function handleClickOutside(e) {
+  if (langBtnRef.value && !langBtnRef.value.contains(e.target)) {
+    isLangOpen.value = false
+  }
+}
+
+onMounted(() => {
+  const saved = localStorage.getItem(localeKey())
+  if (saved) locale.value = saved
+  document.addEventListener('click', handleClickOutside)
+})
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+
+function logout() {
+  authStore.logout()
+  locale.value = 'en'
+  router.push({ name: 'login' })
+}
 function toggleMenu()  { isMenuOpen.value = !isMenuOpen.value }
 function closeMenu()   { isMenuOpen.value = false }
 </script>
@@ -152,6 +191,57 @@ function closeMenu()   { isMenuOpen.value = false }
   align-items: center;
   gap: 16px;
 }
+
+.lang-picker {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.15s;
+  border-radius: 4px;
+}
+
+.lang-btn:hover,
+.lang-btn.active { color: #c9a962; }
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #0f0f0f;
+  border: 1px solid #1f1f1f;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 110px;
+  z-index: 200;
+}
+
+.lang-opt {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 7px 10px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.lang-opt:hover { color: #faf8f5; background: rgba(255,255,255,0.04); }
+.lang-opt.selected { color: #c9a962; }
 
 .appnav-avatar {
   width: 32px;
