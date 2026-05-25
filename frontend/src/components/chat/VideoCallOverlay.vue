@@ -326,8 +326,9 @@ watch(remoteVideoEl, (videoEl) => {
 
 .call-side-chat {
   width: 350px;
-  background: #0a0a0a;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(201, 169, 98, 0.2);
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
@@ -478,11 +479,18 @@ watch(remoteVideoEl, (videoEl) => {
   to { transform: translateX(0); }
 }
 
-.side-chat-header {
+.side-chat-header span {
   padding: 16px;
   font-family: 'Playfair Display', serif;
+  font-weight: 700;
   border-bottom: 1px solid #1a1a1a;
-  color: #c9a962;
+  color: var(--Primary);
+}
+
+.side-msg-text {
+  color: #FAF8F5;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* Ajuste Mobile */
