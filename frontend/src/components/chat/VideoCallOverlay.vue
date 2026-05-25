@@ -106,8 +106,23 @@
             <span>Chat de la reunión</span>
             <button @click="showSideChat = false" class="close-side-btn">×</button>
           </div>
-          <div class="side-chat-body">
-            <p class="muted">El chat completo está disponible en este panel lateral.</p>
+
+          <div class="side-chat-body" ref="sideMsgEl">
+            <div v-if="!chatStore.activeCallMessages?.length" class="empty-side-chat">
+              Sin mensajes en esta sesión.
+            </div>
+            <div v-for="msg in chatStore.activeCallMessages" :key="msg._id" class="side-msg-item">
+              <span class="side-msg-name">{{ msg.senderName }}:</span>
+              <p class="side-msg-text">{{ msg.text }}</p>
+            </div>
+          </div>
+
+          <div class="side-chat-input">
+            <input 
+              v-model="sideMessageInput" 
+              placeholder="Escribe aquí..." 
+              @keydown.enter="sendSideMessage"
+            />
           </div>
         </aside>
       </div>
