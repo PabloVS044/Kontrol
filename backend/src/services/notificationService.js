@@ -5,7 +5,6 @@ import { sendTeamsNotification } from './teamsService.js'
 import { sendTelegramMessage } from './telegramService.js'
 import { sendSms } from './twilioSmsService.js'
 import { sendEmail } from './sendgridService.js'
-import { sendWhatsAppMessage } from './whatsappService.js'
 import { sendWebhookEvent } from './webhookService.js'
 
 /**
@@ -90,9 +89,6 @@ async function dispatch(slug, creds, { title, text, message, event, data }) {
         subject: title ?? 'Notificación de Kontrol',
         text,
       })
-
-    case 'whatsapp':
-      return sendWhatsAppMessage(creds, message)
 
     case 'webhook':
       return sendWebhookEvent(creds, { event, data: { title, text, ...data } })

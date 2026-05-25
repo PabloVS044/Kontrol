@@ -102,17 +102,6 @@ export const INTEGRATION_CATALOG = [
     ],
   },
   {
-    slug: 'whatsapp',
-    nombre: 'WhatsApp',
-    descripcion: 'Envía notificaciones y alertas por WhatsApp vía Meta Cloud API.',
-    categoria: 'comunicacion',
-    campos_credenciales: [
-      { key: 'access_token', label: 'Access Token', type: 'password', required: true },
-      { key: 'phone_number_id', label: 'Phone Number ID', type: 'text', required: true },
-      { key: 'to_number', label: 'Número destinatario (E.164)', type: 'text', required: true },
-    ],
-  },
-  {
     slug: 'webhook',
     nombre: 'Webhook',
     descripcion: 'Envía eventos de Kontrol a cualquier URL externa (Zapier, Make, n8n, etc.).',
