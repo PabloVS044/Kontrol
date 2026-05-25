@@ -89,12 +89,17 @@
 
               <button 
                 class="call-circle-btn" 
-                :class="{ active: showSideChat }" 
+                :class="{ active: showSideChat, 'has-unread': unreadCount > 0 && !showSideChat }" 
                 title="Alternar chat" 
-                @click="showSideChat = !showSideChat">
+                @click="showSideChat = !showSideChat" >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" />
-                </svg>                
+                </svg>
+                
+                <!-- Burbuja de notificación -->
+                <span v-if="unreadCount > 0 && !showSideChat" class="unread-badge">
+                  {{ unreadCount }}
+                </span>
               </button>
             </div>
           </div>
@@ -306,6 +311,11 @@ watch(showSideChat, (isOpen) => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.call-toolbar-actions {
+  justify-content: center;
+  
 }
 
 .call-actions {
@@ -566,10 +576,6 @@ watch(showSideChat, (isOpen) => {
   .call-toolbar {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .call-toolbar-actions {
-    justify-content: center;
   }
 
   .call-local-preview {
