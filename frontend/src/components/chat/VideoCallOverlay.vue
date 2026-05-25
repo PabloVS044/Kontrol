@@ -151,7 +151,7 @@ const statusLabel = computed(() => {
 })
 
 function sendSideMessage() {
-  if (!sideMessageInput.value.trim()) return
+  if (!sideMessageInput.value.trim() || !chatStore.activeCall?.conversationId) return
 
   chatStore.sendMessage({
     conversationId: chatStore.activeCall.conversationId,
@@ -329,25 +329,58 @@ watch(remoteVideoEl, (videoEl) => {
 }
 
 .call-side-chat {
-  width: 350px;
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(15px);
-  border-left: 1px solid rgba(201, 169, 98, 0.2);
+  width: 380px;
+  background: rgba(12, 12, 12, 0.9);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease-out;
+  animation: 100%;
 }
 
-.mini-msg-name {
-  color: var(--Primary);
-  font-weight: bold;
-  font-size: 11px;
+.side-chat-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(201, 169, 98, 0.15);
 }
 
-.mini-msg-text {
+.side-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Scrollbar */
+.side-chat-body::-webkit-scrollbar { width: 4px; }
+.side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 10px; }
+
+/* área de input */
+
+.side-chat-input-area {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 10, 0.5);
+}
+
+.side-chat-input-area input {
+  width: 100%;
+  background: #000;
+  border: 1px solid #1f1f1f;
   color: #fff;
+  padding: 12px 16px;
+  font-family: 'Manrope', sans-serif;
   font-size: 13px;
-  margin-bottom: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.side-chat-input-area input:focus {
+  border-color: var(--Primary);
 }
 
 .call-stage {
@@ -493,14 +526,6 @@ watch(remoteVideoEl, (videoEl) => {
 @keyframes slideIn {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
-}
-
-.side-chat-header span {
-  padding: 16px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  border-bottom: 1px solid #1a1a1a;
-  color: var(--Primary);
 }
 
 .side-msg-text {
