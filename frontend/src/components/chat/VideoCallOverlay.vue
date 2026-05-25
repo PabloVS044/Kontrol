@@ -154,6 +154,8 @@ const statusLabel = computed(() => {
   return 'Preparando videollamada...'
 })
 
+const sideMsgEl = ref(null)
+
 function sendSideMessage() {
   if (!sideMessageInput.value.trim() || !chatStore.activeCall?.conversationId) return
 
@@ -194,6 +196,17 @@ watch(localVideoEl, (videoEl) => {
 watch(remoteVideoEl, (videoEl) => {
   bindVideoStream(videoEl, chatStore.remoteStream)
 })
+
+watch(() => chatStore.messages[chatStore.activeCall?.conversationId], () => {
+  nextTick(() => {
+    if (sideMsgEl.value) {
+      sideMsgEl.value.scrollTo({
+        top: sideMsgEl.value.scrollHeight,
+        behavior: 'smooth' // Desplazamiento suave
+      })
+    }
+  })
+}, { deep: true })
 </script>
 
 <style scoped>
