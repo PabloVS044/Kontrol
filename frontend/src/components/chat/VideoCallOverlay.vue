@@ -295,6 +295,27 @@ watch(remoteVideoEl, (videoEl) => {
 
 .call-shell {
   overflow: hidden;
+  display: flex;
+  transition: all 0.3s ease;
+}
+
+.call-shell.has-side-chat {
+  width: min(100%, 1400px);
+}
+
+.call-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column; 
+}
+
+.call-side-chat {
+  width: 350px;
+  background: #0a0a0a;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
 }
 
 .call-stage {
@@ -433,6 +454,29 @@ watch(remoteVideoEl, (videoEl) => {
 
   .call-stage-title {
     font-size: 28px;
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.side-chat-header {
+  padding: 16px;
+  font-family: 'Playfair Display', serif;
+  border-bottom: 1px solid #1a1a1a;
+  color: #c9a962;
+}
+
+/* Ajuste Mobile */
+@media (max-width: 900px) {
+  .call-shell.has-side-chat {
+    flex-direction: column;
+  }
+  .call-side-chat {
+    width: 100%;
+    height: 300px;
   }
 }
 </style>
