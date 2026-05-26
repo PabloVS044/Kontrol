@@ -352,6 +352,8 @@ watch(showSideChat, (isOpen) => {
   overflow: hidden;
   display: flex;
   transition: all 0.3s ease;
+  height: 80vh;
+  max-height: 800px;
 }
 
 .call-shell.has-side-chat {
@@ -362,10 +364,12 @@ watch(showSideChat, (isOpen) => {
   flex: 1;
   display: flex;
   flex-direction: column; 
+  min-width: 0;
 }
 
 .call-side-chat {
-  width: 380px;
+  width: 350px;
+  flex-shrink: 0;
   background: rgba(12, 12, 12, 0.9);
   backdrop-filter: blur(20px);
   border-left: 1px solid rgba(255, 255, 255, 0.08);
@@ -411,20 +415,47 @@ watch(showSideChat, (isOpen) => {
 .side-chat-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #fb7185;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid #0a0a0a;
+}
+
+.call-circle-btn.has-unread {
+  color: #fb7185;
+  box-shadow: 0 0 15px rgba(251, 113, 133, 0.3);
 }
 
 /* Scrollbar */
 .side-chat-body::-webkit-scrollbar { width: 4px; }
-.side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 10px; }
+.side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 4px; }
 
 .mini-msg {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.mini-msg:hover {
+  background: rgba(201, 169, 98, 0.05);
+  border-left-color: var(--Primary);
 }
 
 .mini-msg-name {
@@ -446,7 +477,8 @@ watch(showSideChat, (isOpen) => {
 /* área de input */
 
 .side-chat-input-area {
-  padding: 20px;
+  flex-shrink: 0;
+  padding: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(10, 10, 10, 0.5);
 }
