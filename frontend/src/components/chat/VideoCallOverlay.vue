@@ -205,6 +205,14 @@ watch(() => chatStore.messages[chatStore.activeCall?.conversationId], (newMessag
   if (!showSideChat.value) {
     unreadCount.value++
   }
+
+  watch(() => chatStore.activeCall, async (newCall) => {
+  if (newCall && newCall.conversationId) {
+    if (!chatStore.messages[newCall.conversationId]) {
+      await chatStore.loadMessages(newCall.conversationId);
+    }
+  }
+}, { immediate: true });
   
   /* Scroll suave */
   nextTick(() => {
