@@ -439,6 +439,7 @@ watch(showSideChat, (isOpen) => {
   padding: 2px 6px;
   border-radius: 10px;
   border: 2px solid #0a0a0a;
+  z-index: 10;
 }
 
 .call-circle-btn.has-unread {
