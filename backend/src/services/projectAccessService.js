@@ -249,9 +249,10 @@ export const buildEmpresaAccessContext = async ({
       can_manage_users: false,
       can_view_projects: assignments.length > 0,
       can_create_projects: false,
-      can_view_inventory: inventoryProjectIds.length > 0,
-      // Selling is open to every project member; product CRUD still needs gestionar_inventario.
-      can_sell_inventory: assignments.length > 0,
+      // Inventory is open to any workspace member — even without project
+      // assignments yet. The page itself just shows an empty state in that case.
+      can_view_inventory: true,
+      can_sell_inventory: true,
       can_manage_inventory: assignments.some(({ permisos }) =>
         INVENTORY_WRITE_PERMISSION_NAMES.some((permission) => permisos.includes(permission))
       ),
