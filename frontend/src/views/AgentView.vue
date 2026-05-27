@@ -14,6 +14,7 @@ import {
 } from '../services/agent.js'
 
 const authStore = useAuthStore()
+const CLIENT_HISTORY_LIMIT = 10
 
 const prompt = ref('')
 // Each message: { _id?, role, text, queries?, edited?, isLocal? }
@@ -141,6 +142,13 @@ function autoResize(e) {
   e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'
 }
 
+function buildHistoryPayload() {
+  return messages.value
+    .filter((m) => m.text && (m.role === 'user' || m.role === 'assistant'))
+    .slice(-CLIENT_HISTORY_LIMIT)
+    .map((m) => ({ role: m.role, content: m.text }))
+}
+
 async function submit() {
   const text = prompt.value.trim()
   if (!text || loading.value) return
@@ -153,9 +161,7 @@ async function submit() {
   prompt.value = ''
   loading.value = true
 
-  const history = messages.value
-    .filter((m) => m.text)
-    .map((m) => ({ role: m.role, content: m.text }))
+  const history = buildHistoryPayload()
 
   activeController = new AbortController()
   const wasNewConversation = !conversationId.value
@@ -362,7 +368,7 @@ function autoResizeEdit(e) {
 
       <main class="agent-main">
       <div v-if="!agentConfigured" class="agent-banner warn">
-        El agente aún no está configurado. Define <code>AGENT_API_URL</code> en el backend.
+        El agente aún no está configurado. Define <code>AGENT_API_KEY</code> en el backend. <code>AGENT_API_URL</code> es opcional y por defecto usa ClawStitch Qwen.
       </div>
       <div v-else-if="errorBanner" class="agent-banner error">
         {{ errorBanner }}
