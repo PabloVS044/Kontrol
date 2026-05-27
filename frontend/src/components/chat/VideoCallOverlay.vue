@@ -376,7 +376,7 @@ watch(showSideChat, async (isOpen) => {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.68);
+  background: #050505;
   backdrop-filter: blur(10px);
 }
 
@@ -388,9 +388,7 @@ watch(showSideChat, async (isOpen) => {
 .call-shell {
   width: min(100%, 1080px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(circle at top left, rgba(201, 169, 98, 0.2), transparent 32%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0.98), rgba(4, 4, 4, 0.98));
+  background: linear-gradient(180deg, #12100e, #070707);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
 }
 
@@ -406,8 +404,8 @@ watch(showSideChat, async (isOpen) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(201, 169, 98, 0.28);
-  background: rgba(201, 169, 98, 0.12);
+  border: 1px solid #3f3121;
+  background: #1f180f;
   color: #c9a962;
   font-family: 'Manrope', sans-serif;
   font-size: 18px;
@@ -483,7 +481,7 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .call-btn--ghost {
-  background: rgba(255, 255, 255, 0.06);
+  background: #171717;
   color: #d6d0c4;
 }
 
@@ -521,8 +519,7 @@ watch(showSideChat, async (isOpen) => {
 .call-side-chat {
   width: 360px;
   flex-shrink: 0;
-  background: rgba(12, 12, 12, 0.9);
-  backdrop-filter: blur(20px);
+  background: #0c0c0c;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
@@ -548,7 +545,7 @@ watch(showSideChat, async (isOpen) => {
 
 /* Botón X con estilo */
 .close-side-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: #121212;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #888;
   width: 28px;
@@ -561,7 +558,7 @@ watch(showSideChat, async (isOpen) => {
   transition: all 0.2s;
 }
 .close-side-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: #881a34;
   color: #ef4444;
 }
 
@@ -584,7 +581,7 @@ watch(showSideChat, async (isOpen) => {
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   border-radius: 8px;
 }
 
@@ -622,7 +619,7 @@ watch(showSideChat, async (isOpen) => {
 .side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 4px; }
 
 .mini-msg {
-  background: rgba(255, 255, 255, 0.06);
+  background: #111111;
   padding: 10px;
   border-radius: 4px;
   border-left: 2px solid transparent;
@@ -633,7 +630,7 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .mini-msg:hover {
-  background: rgba(201, 169, 98, 0.05);
+  background: #14110b;
   border-left-color: var(--Primary);
 }
 
@@ -647,7 +644,7 @@ watch(showSideChat, async (isOpen) => {
 .mini-msg-text {
   font-size: 13px;
   color: #faf8f5;
-  background: rgba(255, 255, 255, 0.06);
+  background: #111111;
   padding: 8px 12px;
   border-radius: 4px;
   line-height: 1.5;
@@ -659,12 +656,12 @@ watch(showSideChat, async (isOpen) => {
   flex-shrink: 0;
   padding: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 10, 10, 0.7);
+  background: #0a0a0a;
 }
 
 .side-chat-input-area input {
   width: 100%;
-  background: rgba(0,0,0,0.6);
+  background: #070707;
   border: 1px solid #1f1f1f;
   color: #fff;
   padding: 12px 16px;
@@ -728,7 +725,7 @@ watch(showSideChat, async (isOpen) => {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   color: #d0c8bb;
-  background: rgba(5, 5, 5, 0.9);
+  background: #050505;
 }
 
 .call-stage-placeholder {
@@ -757,7 +754,7 @@ watch(showSideChat, async (isOpen) => {
   gap: 20px;
   padding: 18px 22px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(8, 8, 8, 0.98);
+  background: #090909;
   z-index: 200;
   position: relative;
   /* Keep controls visible when scrolling messages or resizing */
@@ -774,7 +771,7 @@ watch(showSideChat, async (isOpen) => {
   height: 48px;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: #131313;
   color: #f2ede4;
   display: flex;
   align-items: center;
@@ -784,7 +781,7 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .call-circle-btn.inactive {
-  background: rgba(255, 255, 255, 0.04);
+  background: #101010;
   color: #777;
 }
 

@@ -539,7 +539,7 @@ watch(
 .pm-header,
 .pm-card,
 .pm-readonly {
-  background: rgba(12, 12, 12, 0.88);
+  background: #0c0c0c;
   border: 1px solid #1f1f1f;
 }
 
@@ -601,7 +601,7 @@ watch(
   justify-content: center;
   padding: 8px 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   color: #faf8f5;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
@@ -617,7 +617,7 @@ watch(
 .pm-feedback {
   padding: 16px 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   font-family: 'Manrope', sans-serif;
 }
 
@@ -664,7 +664,7 @@ watch(
 
 .pm-link-box {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   border: 1px dashed rgba(201, 169, 98, 0.28);
 }
 
@@ -706,7 +706,7 @@ watch(
   gap: 6px;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  background: #111111;
   cursor: pointer;
 }
 
@@ -757,13 +757,13 @@ watch(
 }
 
 .pm-btn--secondary {
-  background: transparent;
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #faf8f5;
 }
 
 .pm-btn--danger {
-  background: rgba(251, 113, 133, 0.12);
+  background: #fb7185;
   border: 1px solid rgba(251, 113, 133, 0.22);
   color: #fecdd3;
 }
@@ -777,7 +777,7 @@ watch(
 .pm-member {
   padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.025);
+  background: #111111;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -795,7 +795,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(201, 169, 98, 0.12);
+  background: #c9a962;
   border: 1px solid rgba(201, 169, 98, 0.2);
   color: #c9a962;
   font-weight: 700;

@@ -78,7 +78,7 @@ defineEmits(['open'])
 
 <style scoped>
 .section-block {
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1e1e1e;
   padding: 18px;
   margin-bottom: 24px;
@@ -100,7 +100,7 @@ defineEmits(['open'])
 
 .view-all-btn,
 .open-btn {
-  background: transparent;
+  background: #111111;
   border: none;
   color: #555;
   cursor: pointer;
@@ -142,7 +142,7 @@ defineEmits(['open'])
   border-top: 1px solid #161616;
 }
 
-.rep-row:hover { background: rgba(255,255,255,0.02); }
+.rep-row:hover { background: #111111; }
 .rep-table td { padding: 12px 0; color: #777; }
 .td-name { color: #faf8f5 !important; font-weight: 600; }
 .proj-badge {

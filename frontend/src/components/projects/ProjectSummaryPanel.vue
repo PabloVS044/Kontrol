@@ -66,7 +66,7 @@ defineEmits(['create-project'])
 .context-panel {
   width: 320px;
   flex: none;
-  background: rgba(10,10,10,0.9);
+  background: #0a0a0a;
   border-left: 1px solid #1a1a1a;
   padding: 48px 28px;
   display: flex;
@@ -137,7 +137,7 @@ defineEmits(['create-project'])
   color: #0a0a0a;
 }
 :deep(.btn):last-of-type {
-  background: transparent;
+  background: #111111;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }

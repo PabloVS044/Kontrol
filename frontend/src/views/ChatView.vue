@@ -651,7 +651,7 @@ onMounted(() => {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(0, 0, 0, 0.6);
+  background: #050505;
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -686,7 +686,7 @@ onMounted(() => {
   width: 26px;
   height: 26px;
   border: none;
-  background: transparent;
+  background: none;
   color: #555;
   cursor: pointer;
   display: flex;
@@ -703,13 +703,13 @@ onMounted(() => {
   gap: 8px;
   padding: 0 12px;
   margin: 10px 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   border: 1px solid #1f1f1f;
 }
 
 .ndm-search input {
   flex: 1;
-  background: transparent;
+  background: none;
   border: none;
   outline: none;
   color: #faf8f5;
@@ -738,7 +738,7 @@ onMounted(() => {
   transition: background 0.1s;
 }
 
-.ndm-user:hover { background: rgba(255, 255, 255, 0.03); }
+.ndm-user:hover { background: #151515; }
 
 .ndm-name {
   font-family: 'Manrope', sans-serif;

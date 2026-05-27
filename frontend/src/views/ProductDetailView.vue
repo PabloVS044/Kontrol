@@ -235,7 +235,8 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .product-detail-root {
   min-height: 100vh;
-  background: rgba(10,10,10,0.88);
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(10px);
   color: #faf8f5;
   font-family: 'Manrope', sans-serif;
 }
@@ -289,7 +290,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .ghost-link {
   color: #faf8f5;
   border: 1px solid #2a2a2a;
-  background: transparent;
+  background: #111111;
 }
 
 .btn-primary {
@@ -340,7 +341,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
 }
 
 .hero-grid {
@@ -352,13 +353,13 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .hero-card,
 .suppliers-card {
-  background: rgba(15,15,15,0.82);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   padding: 24px;
 }
 
 .hero-card.secondary {
-  background: rgba(12,12,12,0.92);
+  background: #0c0c0c;
 }
 
 .description {
@@ -377,7 +378,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .stat-box,
 .mini-stat {
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1f1f1f;
   padding: 14px;
   min-width: 0;
@@ -457,7 +458,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   gap: 16px;
   padding: 16px;
   border: 1px solid #1f1f1f;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
 }
 
 .supplier-name {

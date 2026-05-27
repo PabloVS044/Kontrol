@@ -649,7 +649,7 @@ async function submitCreate() {
   padding: 32px 32px 48px;
   border-right: 1px solid #1e1e1e;
   overflow-y: auto;
-  background: rgba(10,10,10,0.82);
+  background: rgba(10, 10, 10, 0.92);
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
@@ -688,7 +688,7 @@ async function submitCreate() {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
   font-family: 'Manrope', sans-serif;
@@ -717,7 +717,7 @@ async function submitCreate() {
 
 .filter-btn {
   padding: 6px 0;
-  background: transparent;
+  background: #111111;
   border: none;
   border-bottom: 2px solid transparent;
   color: #555;
@@ -748,7 +748,7 @@ async function submitCreate() {
   flex-direction: column;
   gap: 6px;
   padding: 16px;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #1e1e1e;
   transition: border-color .2s;
 }
@@ -784,13 +784,13 @@ async function submitCreate() {
   width: fit-content;
 }
 
-.kpi-badge--green  { background: rgba(74,222,128,0.1);  color: #4ade80; }
-.kpi-badge--purple { background: rgba(167,139,250,0.1); color: #a78bfa; }
-.kpi-badge--red    { background: rgba(251,113,133,0.1); color: #fb7185; }
+.kpi-badge--green  { background: #4ade80;  color: #4ade80; }
+.kpi-badge--purple { background: #a78bfa; color: #a78bfa; }
+.kpi-badge--red    { background: #fb7185; color: #fb7185; }
 
 /* ─── Section blocks ─────────────────────────────────────────────────────── */
 .section-block {
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #1e1e1e;
   padding: 20px;
   margin-bottom: 16px;
@@ -850,7 +850,7 @@ async function submitCreate() {
   transition: background .15s;
 }
 
-.rep-row:hover td { background: rgba(201,169,98,0.05); }
+.rep-row:hover td { background: #111111; }
 
 .rep-table td {
   padding: 12px 12px 12px 0;
@@ -862,7 +862,7 @@ async function submitCreate() {
 .td-name { color: #e8e4de; font-weight: 500; }
 
 .proj-badge {
-  background: rgba(255,255,255,0.04);
+  background: #111111;
   border: 1px solid #222;
   padding: 3px 8px;
   font-size: 11px;
@@ -898,7 +898,7 @@ async function submitCreate() {
   font-size: 10px;
   font-weight: 700;
   color: #a78bfa;
-  background: rgba(167,139,250,0.08);
+  background: #a78bfa;
   padding: 2px 7px;
   letter-spacing: 0.04em;
 }
@@ -1008,7 +1008,7 @@ async function submitCreate() {
 .ctx-panel {
   padding: 24px 20px;
   border-left: 1px solid #1e1e1e;
-  background: rgba(10,10,10,0.9);
+  background: rgba(10, 10, 10, 0.92);
   overflow-y: auto;
 }
 
@@ -1038,7 +1038,7 @@ async function submitCreate() {
   position: relative;
   transition: background .2s;
 }
-.toggle input:checked + .toggle-track { background: rgba(201,169,98,0.3); }
+.toggle input:checked + .toggle-track { background: #c9a962; }
 .toggle-thumb {
   position: absolute;
   top: 2px;
@@ -1084,7 +1084,7 @@ async function submitCreate() {
 .ctx-input {
   width: 100%;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #1e1e1e;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -1099,7 +1099,7 @@ async function submitCreate() {
   width: 100%;
   text-align: left;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -1195,7 +1195,7 @@ async function submitCreate() {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.72);
+  background: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1258,7 +1258,7 @@ async function submitCreate() {
 
 .form-input {
   padding: 8px 10px;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #ccc;
   font-family: 'Manrope', sans-serif;
@@ -1321,7 +1321,7 @@ async function submitCreate() {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  background: rgba(201,169,98,0.12);
+  background: #c9a962;
   border: 1px solid rgba(201,169,98,0.3);
   color: #c9a962;
   font-family: 'Manrope', sans-serif;
@@ -1330,7 +1330,7 @@ async function submitCreate() {
   cursor: pointer;
   transition: background .2s;
 }
-.btn-primary:hover:not(:disabled) { background: rgba(201,169,98,0.22); }
+.btn-primary:hover:not(:disabled) { background: #c9a962; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */

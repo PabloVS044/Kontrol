@@ -1,6 +1,6 @@
 .integrations-root {
   min-height: 100vh;
-  background: var(--Background, #000);
+  background: transparent;
   color: var(--Text, #fff);
   font-family: 'DM Sans', sans-serif;
 }
@@ -30,7 +30,7 @@
 
 .page-subtitle {
   font-size: 14px;
-  color: #666;
+  color: #999;
   margin: 0;
 }
 
@@ -46,9 +46,9 @@
   padding: 6px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: #aaa;
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.15s;
@@ -60,7 +60,7 @@
 }
 
 .chip.active {
-  background: rgba(202, 168, 96, 0.12);
+  background: #caa860;
   border-color: #caa860;
   color: #caa860;
 }
@@ -74,7 +74,7 @@
 
 /* ── Card ── */
 .integration-card {
-  background: #0c0c0c;
+  background: rgba(12, 12, 12, 0.94);
   border: 1px solid #1f1f1f;
   padding: 24px;
   display: flex;
@@ -126,14 +126,14 @@
 
 .cat-badge {
   font-size: 11px;
-  color: #666;
+  color: #999;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .card-description {
   font-size: 13px;
-  color: #888;
+  color: #aaa;
   line-height: 1.55;
   margin: 0;
 }
@@ -148,7 +148,7 @@
 
 .updated-at {
   font-size: 11px;
-  color: #444;
+  color: #888;
 }
 
 /* ── Toggle switch ── */
@@ -177,7 +177,7 @@
 }
 
 .toggle-on .toggle-track {
-  background: rgba(202, 168, 96, 0.25);
+  background: #caa860;
   border-color: #caa860;
 }
 
@@ -211,7 +211,7 @@
   padding: 8px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: rgba(202, 168, 96, 0.1);
+  background: #caa860;
   border: 1px solid rgba(202, 168, 96, 0.3);
   color: #caa860;
   cursor: pointer;
@@ -219,14 +219,14 @@
 }
 
 .btn-configure:hover {
-  background: rgba(202, 168, 96, 0.18);
+  background: #caa860;
 }
 
 .btn-test {
   padding: 8px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
   cursor: pointer;
@@ -251,13 +251,13 @@
 }
 
 .inline-feedback.success {
-  background: rgba(52, 211, 153, 0.08);
+  background: #34d399;
   color: #34d399;
   border-left: 2px solid #34d399;
 }
 
 .inline-feedback.error {
-  background: rgba(251, 113, 133, 0.08);
+  background: #fb7185;
   color: #fb7185;
   border-left: 2px solid #fb7185;
 }
@@ -356,7 +356,7 @@
 }
 
 .form-input {
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #faf8f5;
   padding: 10px 12px;
@@ -391,7 +391,7 @@
 .modal-error {
   font-size: 13px;
   color: #fb7185;
-  background: rgba(251, 113, 133, 0.08);
+  background: #fb7185;
   border-left: 2px solid #fb7185;
   padding: 8px 12px;
   margin: 0;
@@ -400,7 +400,7 @@
 .modal-success {
   font-size: 13px;
   color: #34d399;
-  background: rgba(52, 211, 153, 0.08);
+  background: #34d399;
   border-left: 2px solid #34d399;
   padding: 8px 12px;
   margin: 0;
@@ -458,7 +458,7 @@
   padding: 4px 10px;
   font-size: 12px;
   font-family: 'DM Sans', sans-serif;
-  background: rgba(251, 113, 133, 0.1);
+  background: #fb7185;
   border: 1px solid rgba(251, 113, 133, 0.35);
   color: #fb7185;
   cursor: pointer;
@@ -466,7 +466,7 @@
 }
 
 .btn-confirm-disconnect:hover:not(:disabled) {
-  background: rgba(251, 113, 133, 0.18);
+  background: #fb7185;
 }
 
 .btn-confirm-disconnect:disabled {
@@ -478,7 +478,7 @@
   padding: 4px 10px;
   font-size: 12px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #666;
   cursor: pointer;
@@ -525,7 +525,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(202, 168, 96, 0.1);
+  background: #caa860;
   border: 1px solid rgba(202, 168, 96, 0.25);
   color: #caa860;
   font-size: 12px;

@@ -97,7 +97,7 @@ const completionItems = [
 .ctx-panel {
   padding: 24px 20px;
   border-left: 1px solid #1e1e1e;
-  background: rgba(10,10,10,0.9);
+  background: #0a0a0a;
   overflow-y: auto;
 }
 
@@ -126,7 +126,7 @@ const completionItems = [
   position: relative;
   transition: background .2s;
 }
-.toggle input:checked + .toggle-track { background: rgba(201,169,98,0.3); }
+.toggle input:checked + .toggle-track { background: #c9a962; }
 .toggle-thumb {
   position: absolute;
   top: 2px;
@@ -171,7 +171,7 @@ const completionItems = [
 .ctx-input {
   width: 100%;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #1e1e1e;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -186,7 +186,7 @@ const completionItems = [
   width: 100%;
   text-align: left;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;

@@ -100,7 +100,7 @@ function handleSubmit() {
 .btn-primary:hover    { filter: brightness(1.1); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary {
-  background: transparent; border: 1px solid #1f1f1f; color: #faf8f5;
+  background: #111111; border: 1px solid #1f1f1f; color: #faf8f5;
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
   cursor: pointer; transition: border-color 0.15s;
 }

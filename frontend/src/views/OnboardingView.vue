@@ -240,7 +240,7 @@ function logout() {
 }
 
 .ob-card {
-  background: rgba(15,15,15,0.9);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   padding: 36px;
   display: flex;

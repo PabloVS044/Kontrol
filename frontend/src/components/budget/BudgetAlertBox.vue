@@ -45,7 +45,7 @@ const meta = computed(() => {
 }
 
 .alert-ok {
-  background: rgba(52,211,153,0.12);
+  background: #34d399;
   border: 1px solid rgba(52,211,153,0.4);
   padding: 14px 16px;
   font-size: 13px;
@@ -55,19 +55,19 @@ const meta = computed(() => {
 .alert-ok .alert-msg { color: #b8e8d4; font-weight: 400; }
 
 .alert-box.watching {
-  background: rgba(250,204,21,0.12);
+  background: #facc15;
   border: 1px solid rgba(250,204,21,0.45);
 }
 .alert-box.watching .alert-header { color: #facc15; }
 
 .alert-box.warning {
-  background: rgba(249,115,22,0.18);
+  background: #f97316;
   border: 1px solid rgba(249,115,22,0.55);
 }
 .alert-box.warning .alert-header { color: #fdba74; }
 
 .alert-box.critical {
-  background: rgba(251,113,133,0.18);
+  background: #fb7185;
   border: 1px solid rgba(251,113,133,0.6);
 }
 .alert-box.critical .alert-header { color: #fda4af; }

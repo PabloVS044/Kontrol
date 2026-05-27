@@ -438,7 +438,7 @@ h3 { font-size: 20px; }
 .teams-list,
 .team-editor,
 .panel-card {
-  background: rgba(12,12,12,0.88);
+  background: rgba(12, 12, 12, 0.94);
   border: 1px solid #1f1f1f;
 }
 
@@ -456,7 +456,7 @@ h3 { font-size: 20px; }
 
 .team-list-item:hover,
 .team-list-item.active {
-  background: rgba(201,169,98,0.06);
+  background: #111111;
   border-color: rgba(201,169,98,0.3);
 }
 
@@ -556,7 +556,7 @@ textarea:focus {
 
 .danger-action,
 .ghost-danger {
-  background: transparent;
+  background: #111111;
   border-color: rgba(251,113,133,0.4);
   color: #fb7185;
 }
@@ -585,7 +585,7 @@ button:disabled {
 }
 
 .stack-row {
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1d1d1d;
   padding: 12px;
 }
@@ -600,7 +600,7 @@ button:disabled {
 .state,
 .empty-card,
 .muted-row {
-  background: rgba(12,12,12,0.88);
+  background: #0c0c0c;
   border: 1px solid #1f1f1f;
   color: #888;
   margin-bottom: 16px;

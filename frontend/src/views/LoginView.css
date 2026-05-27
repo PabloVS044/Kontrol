@@ -66,7 +66,7 @@
 .login-card {
   width: 100%;
   max-width: 620px;
-  background: transparent;
+  background: #111111;
   border: none;
   border-radius: 0;
   padding: 0;
@@ -275,7 +275,7 @@
   font-size: 0.83rem;
   margin-bottom: 1rem;
 }
-.login-banner--error { background: rgba(224, 82, 82, 0.1); border: 1px solid var(--ErrorText); color: var(--ErrorText); }
+.login-banner--error { background: #e05252; border: 1px solid var(--ErrorText); color: var(--ErrorText); }
 
 /* ── Responsive ── */
 

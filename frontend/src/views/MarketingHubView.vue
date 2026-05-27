@@ -1366,14 +1366,14 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 
 .ghost-action,
 .mini-action {
-  background: transparent;
+  background: #111111;
   color: #faf8f5;
   border-color: rgba(255, 255, 255, 0.14);
   padding: 10px 14px;
 }
 
 .mini-action.solid {
-  background: rgba(201, 169, 98, 0.18);
+  background: #c9a962;
   color: #f5e3ae;
 }
 
@@ -1398,13 +1398,13 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
   gap: 12px;
   padding: 14px 18px;
   margin: 18px 0;
-  background: rgba(31, 98, 67, 0.16);
+  background: #1f6243;
   border: 1px solid rgba(52, 211, 153, 0.3);
   color: #d8fff0;
 }
 
 .feedback-strip.error {
-  background: rgba(113, 29, 41, 0.2);
+  background: #711d29;
   border-color: rgba(251, 113, 133, 0.35);
   color: #ffe4e8;
 }
@@ -1444,7 +1444,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .campaign-card,
 .publication-card,
 .snapshot-row {
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   border-color: rgba(255, 255, 255, 0.08);
   padding: 16px;
   text-align: left;
@@ -1454,7 +1454,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .campaign-card.active,
 .publication-card.active {
   border-color: rgba(201, 169, 98, 0.48);
-  background: rgba(201, 169, 98, 0.11);
+  background: #c9a962;
 }
 
 .project-top,
@@ -1540,7 +1540,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .type-chip {
-  background: rgba(255, 255, 255, 0.06);
+  background: #111111;
   color: #e8dfcf;
 }
 
@@ -1549,31 +1549,31 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip.neutral {
-  background: rgba(255, 255, 255, 0.08);
+  background: #111111;
 }
 
 .status-chip.warm {
-  background: rgba(251, 191, 36, 0.16);
+  background: #fbbf24;
   color: #f5d27d;
 }
 
 .status-chip.brand {
-  background: rgba(201, 169, 98, 0.18);
+  background: #c9a962;
   color: #f1d287;
 }
 
 .status-chip.success {
-  background: rgba(52, 211, 153, 0.15);
+  background: #34d399;
   color: #91f4ca;
 }
 
 .status-chip.muted {
-  background: rgba(113, 113, 122, 0.2);
+  background: #71717a;
   color: #d3d6de;
 }
 
 .status-chip.danger {
-  background: rgba(251, 113, 133, 0.18);
+  background: #fb7185;
   color: #ffc1cd;
 }
 
@@ -1604,7 +1604,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
   align-items: center;
   padding: 12px 14px;
   margin-bottom: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   color: #d7d0c5;
 }
 
@@ -1678,7 +1678,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .form-field textarea,
 .form-field select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: #faf8f5;
   padding: 12px 14px;

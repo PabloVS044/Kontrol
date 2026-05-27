@@ -536,13 +536,13 @@ async function submitFunds(payload) {
 .subtitle { font-size: 13px; color: #a8a8a8; display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
   font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #c9a962; background: rgba(201,169,98,0.1);
+  color: #c9a962; background: #c9a962;
   padding: 2px 8px; border: 1px solid rgba(201,169,98,0.2);
 }
 
 .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .project-select {
-  background: rgba(10,10,10,0.9); border: 1px solid #3a3a3a; color: #faf8f5;
+  background: #0a0a0a; border: 1px solid #3a3a3a; color: #faf8f5;
   padding: 10px 12px; font-size: 13px; font-family: 'Manrope', sans-serif;
   outline: none; min-width: 220px;
 }
@@ -552,7 +552,7 @@ async function submitFunds(payload) {
 
 .readonly-hint {
   font-size: 12px; color: #888;
-  background: rgba(255,255,255,0.03);
+  background: rgba(17, 17, 17, 0.92);
   border: 1px solid #1f1f1f; border-left: 2px solid #c9a962;
   padding: 10px 14px; margin-bottom: 20px;
   font-family: 'Manrope', sans-serif;
@@ -572,14 +572,14 @@ async function submitFunds(payload) {
 .movements-strip {
   display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
   padding: 12px 16px; margin-bottom: 24px;
-  background: rgba(10,10,10,0.6);
+  background: rgba(10, 10, 10, 0.92);
   border: 1px solid #1f1f1f;
   font-family: 'Manrope', sans-serif;
 }
 .mv-chip {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 4px 12px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1f1f1f;
   font-size: 11px;
 }
@@ -610,7 +610,7 @@ async function submitFunds(payload) {
 .muted { color: #888; display: block; margin-top: 6px; font-size: 11px; }
 
 /* Distribution */
-.distribution-section { background: rgba(12,12,12,0.85); border: 1px solid #2a2a2a; padding: 24px; }
+.distribution-section { background: rgba(12, 12, 12, 0.92); border: 1px solid #2a2a2a; padding: 24px; }
 .section-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 16px; gap: 12px;
@@ -637,7 +637,7 @@ async function submitFunds(payload) {
 
 /* AI Box */
 .ai-insight-box {
-  border: 1px dashed #4a4a4a; padding: 18px; background: rgba(10,10,10,0.85);
+  border: 1px dashed #4a4a4a; padding: 18px; background: rgba(10, 10, 10, 0.92);
   margin-bottom: 16px;
 }
 .ai-insight-box h4 {

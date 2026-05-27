@@ -178,7 +178,7 @@ function formatDate(v) {
 
 .bar-name-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; border: none; padding: 0;
+  background: #111111; border: none; padding: 0;
   color: #faf8f5; font-family: 'Manrope', sans-serif;
   font-size: 13px; font-weight: 500;
   cursor: pointer; min-width: 0; flex: 1;
@@ -198,7 +198,7 @@ function formatDate(v) {
 }
 .bar-count {
   font-size: 10px; color: #888;
-  background: rgba(255,255,255,0.05);
+  background: #111111;
   padding: 1px 6px;
   border: 1px solid #2a2a2a;
   flex-shrink: 0;
@@ -211,7 +211,7 @@ function formatDate(v) {
 }
 
 .row-btn {
-  background: transparent; border: 1px solid #2e2e2e; color: #b8b8b8;
+  background: #111111; border: 1px solid #2e2e2e; color: #b8b8b8;
   width: 26px; height: 26px; cursor: pointer; font-size: 12px; line-height: 1;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color 0.15s, border-color 0.15s;
@@ -236,7 +236,7 @@ function formatDate(v) {
 .bar-details {
   margin-top: 12px;
   padding: 12px 14px;
-  background: rgba(0,0,0,0.3);
+  background: #000000;
   border: 1px solid #1a1a1a;
   border-left: 2px solid #c9a962;
 }
@@ -266,7 +266,7 @@ function formatDate(v) {
 }
 .detail-tag {
   font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #c9a962; background: rgba(201,169,98,0.1);
+  color: #c9a962; background: #c9a962;
   padding: 1px 6px; border: 1px solid rgba(201,169,98,0.2);
   align-self: center;
 }

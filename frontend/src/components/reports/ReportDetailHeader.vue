@@ -138,7 +138,7 @@ defineEmits(['back'])
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
   font-family: 'Manrope', sans-serif;

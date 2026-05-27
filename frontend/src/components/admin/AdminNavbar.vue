@@ -55,7 +55,7 @@ function closeMenu()   { isMenuOpen.value = false }
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: rgba(10, 10, 10, 0.95);
+  background: #0a0a0a;
   border-bottom: 1px solid #1f1f1f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -104,7 +104,7 @@ function closeMenu()   { isMenuOpen.value = false }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #c9a962;
-  background: rgba(201,169,98,0.1);
+  background: #c9a962;
   padding: 2px 7px;
   border: 1px solid rgba(201,169,98,0.2);
 }
@@ -213,7 +213,7 @@ function closeMenu()   { isMenuOpen.value = false }
     position: fixed;
     top: 56px;
     left: 0; right: 0;
-    background: rgba(10, 10, 10, 0.98);
+    background: #0a0a0a;
     border-bottom: 1px solid #1f1f1f;
     flex-direction: column;
     padding: 20px 0;
