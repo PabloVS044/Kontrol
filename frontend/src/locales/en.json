@@ -1034,5 +1034,132 @@
       "colStatus": "Status",
       "empty": "No users found."
     }
+  },
+  "birdie": {
+    "tooltip": "Double-click me to hide · drag me to move",
+    "askQuestion": "Ask a question",
+    "faqTitle": "How can I help you?",
+    "onThisPage": "On this page",
+    "elsewhere": "Other sections",
+    "showMore": "More questions",
+    "showLess": "Hide other questions",
+    "noContext": "I don't have tips for this view yet — check the other sections below.",
+    "close": "Close",
+    "closeAssistant": "Send me back to the floating button",
+    "gotIt": "Got it",
+    "faqs": {
+      "dashboardOverview": {
+        "q": "What does this view show me?",
+        "a": "The Dashboard is your executive overview: total spent, active projects, overrun alerts and a portfolio snapshot. Use it as the daily landing page to spot which projects need attention."
+      },
+      "dashboardAi": {
+        "q": "What is the AI Analysis section?",
+        "a": "The AI Analysis block flags the project that most needs your attention right now — either because it's exceeding budget or approaching its limit — so you can jump straight into it."
+      },
+      "dashboardTrend": {
+        "q": "What does the financial trend chart show?",
+        "a": "The dashed gold line is the planned budget over time, and the solid line is the actual spend computed from inventory movements. When the solid line overtakes the dashed line you're spending faster than planned."
+      },
+      "projectsCreate": {
+        "q": "How do I create a project?",
+        "a": "Tap the highlighted New Project button to open the form. Fill in the name, dates and total budget, then save — your project will appear in the list and you can immediately add tasks, members and expenses to it."
+      },
+      "projectsSearch": {
+        "q": "How do I find a specific project?",
+        "a": "Use the search field here to filter projects by name, and the status pills to narrow down by state. Click any project card to open its full detail view."
+      },
+      "projectBudget": {
+        "q": "What does this budget card show?",
+        "a": "This card shows how much of the project's total budget has been spent so far. The colored bar turns yellow around 80% and red at 100%, so you can spot risk at a glance."
+      },
+      "projectTasks": {
+        "q": "How do I work with tasks?",
+        "a": "Open the Tasks tab to create, assign, filter by priority or status, and close tasks. Closed tasks update the project's progress automatically."
+      },
+      "projectMembers": {
+        "q": "How do I invite members?",
+        "a": "The Members tab lets you invite teammates by email and pick their role and permissions. They'll join the project as soon as they accept."
+      },
+      "projectProgress": {
+        "q": "What is the Progress tab for?",
+        "a": "Use Progress to log timeline updates — percentage complete, milestones and blockers. The dashboard and overview cards reflect these entries instead of just task counts."
+      },
+      "inventoryCreate": {
+        "q": "How do I add a product?",
+        "a": "Pick a project from the tabs above, then click New Product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
+      },
+      "inventorySell": {
+        "q": "How do I register a sale?",
+        "a": "Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+      },
+      "inventoryMovements": {
+        "q": "What inventory movement types exist?",
+        "a": "Movements record any change in stock: ENTRADA adds units, SALIDA removes them, AJUSTE corrects discrepancies and GASTO_ADMIN logs administrative expenses. To register one manually, open the product card. If what you actually need is a sale, ask me about that instead — it has a dedicated cart flow."
+      },
+      "inventoryFilter": {
+        "q": "How do I filter by project?",
+        "a": "These tabs let you scope the inventory to a single project or view all projects together. Switching the tab also scopes any new movement to that project."
+      },
+      "addFunds": {
+        "q": "What does the +Funds button do?",
+        "a": "+Funds lets you inject more budget into the selected project. Pick the project from the top selector, click +Funds, enter the amount and a short reason. The new total appears in the project budget cards instantly."
+      },
+      "addExpense": {
+        "q": "How do I record an expense?",
+        "a": "Use Add Expense to log a one-off cost (services, fees, admin overhead). It reduces the project's available budget straight away and is listed in the project's spending breakdown."
+      },
+      "addActivity": {
+        "q": "How do I create a budgeted activity?",
+        "a": "Activities are line items inside a project's budget (e.g. \"Construction\", \"Marketing\"). Create one here and you'll be able to attribute expenses and inventory movements to it for clearer reporting."
+      },
+      "budgetControl": {
+        "q": "How does budget control work?",
+        "a": "Each project has a total budget that decreases as you log expenses or outgoing movements. The colored bar turns yellow at 80% used and red at 100% — keep an eye on it from this page or the project detail header."
+      },
+      "reportsOverview": {
+        "q": "What reports can I see?",
+        "a": "Reports gathers KPIs, financial performance and inventory activity. Pick a project from the filter bar at the top and switch between performance, breakdown and detail views."
+      },
+      "chatStart": {
+        "q": "How do I start a conversation?",
+        "a": "Pick a teammate from the conversation list on the left or start a new chat — messages stream in real time and are linked to your workspace."
+      },
+      "chatCall": {
+        "q": "How do voice/video calls work?",
+        "a": "Inside any conversation, use the call buttons in the header to start a voice or video call powered by WebRTC. Both sides need to be online to connect."
+      },
+      "agentCapabilities": {
+        "q": "What can the AI agent do?",
+        "a": "The agent can read live data from your projects — budgets, tasks, inventory, progress — and answer questions in natural language. Ask things like \"which project is most overspent?\" or \"summarize team workload\"."
+      },
+      "teamsCreate": {
+        "q": "How do I create a team?",
+        "a": "Use New Team to group members by area (Development, Design, QA…). Teams can then be referenced from projects and tasks to organize work."
+      },
+      "integrationsList": {
+        "q": "What integrations are available?",
+        "a": "This view lists every third-party service you can connect — payments, productivity, communications. Click a card to start the connection flow."
+      },
+      "changeLanguage": {
+        "q": "How do I change the language?",
+        "a": "Click this language icon in the top bar and pick English or Español. Your choice is remembered per user account."
+      },
+      "switchWorkspace": {
+        "q": "How do I switch workspace?",
+        "a": "This selector at the top lets you jump between companies you belong to. The whole portal — projects, inventory, budget — reloads scoped to the chosen workspace."
+      },
+      "aiAgent": {
+        "q": "Where is the AI assistant?",
+        "a": "The AI link in the top navigation opens a conversational assistant that can query live project data, summarize budgets, and answer business questions about your workspace."
+      },
+      "chat": {
+        "q": "Where is the chat?",
+        "a": "The Chat section in the top nav gives you real-time conversations with teammates plus voice and video calls — useful for quickly aligning around a project or task without leaving Kontrol."
+      },
+      "budgetGlobal": {
+        "q": "Where do I manage budgets?",
+        "a": "The Budget section is your control center: pick a project, then add funds, activities, expenses, or review the funding history and spending breakdown."
+      }
+    }
   }
 }

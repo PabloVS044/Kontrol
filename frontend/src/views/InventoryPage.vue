@@ -39,6 +39,7 @@
           </div>
           <div class="inv-header-actions">
             <button
+              data-birdie="create-product"
               class="btn-primary"
               :class="{ 'btn-disabled': !canCreateProduct }"
               :title="canCreateProduct ? '' : selectedProject ? $t('inventory.header.noWriteAccessTitle') : $t('inventory.header.selectProjectTitle')"

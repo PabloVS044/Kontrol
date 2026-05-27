@@ -375,16 +375,19 @@ async function submitFunds(payload) {
           </select>
           <Button
             v-if="canAddFunds"
+            data-birdie="add-funds"
             :label="$t('budget.header.addFunds')"
             :disabled="!selectedProjectId"
             @click="openAddFunds"
           />
           <Button
+            data-birdie="add-activity"
             :label="$t('budget.header.addActivity')"
             :disabled="!selectedProjectId || !canWriteBudget"
             @click="openNewActivity"
           />
           <Button
+            data-birdie="add-expense"
             :label="$t('budget.header.addExpense')"
             :disabled="!selectedProjectId || !canWriteBudget"
             @click="openExpense"
