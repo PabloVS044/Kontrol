@@ -1177,6 +1177,18 @@
       "budgetGlobal": {
         "q": "¿Dónde administro presupuestos?",
         "a": "La sección Presupuesto es tu centro de control: selecciona un proyecto y desde ahí agrega fondos, actividades, gastos o revisa el historial de financiamiento y el desglose de gastos."
+      },
+      "reportsShortcut": {
+        "q": "¿Dónde veo los reportes?",
+        "a": "La sección Reportes reúne el desempeño financiero, la actividad de inventario y los KPIs de proyectos. Usa la barra de filtros de arriba para acotar por proyecto o rango de fechas y entra al detalle desde la lista."
+      },
+      "inventoryShortcut": {
+        "q": "¿Dónde está el inventario?",
+        "a": "La sección Inventario lista todos los productos de tus proyectos. Desde aquí puedes crear productos, registrar movimientos (entradas/salidas/ajustes) o iniciar una venta con el botón Vender de cualquier tarjeta de producto."
+      },
+      "dashboardShortcut": {
+        "q": "¿Dónde está el dashboard ejecutivo?",
+        "a": "El Dashboard es tu pantalla de inicio diaria: muestra el total gastado, los proyectos activos, las alertas de sobre-gasto y un análisis de IA que destaca el proyecto que más necesita tu atención ahora mismo."
       }
     }
   }

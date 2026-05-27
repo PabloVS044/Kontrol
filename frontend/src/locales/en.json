@@ -1177,6 +1177,18 @@
       "budgetGlobal": {
         "q": "Where do I manage budgets?",
         "a": "The Budget section is your control center: pick a project, then add funds, activities, expenses, or review the funding history and spending breakdown."
+      },
+      "reportsShortcut": {
+        "q": "Where do I see reports?",
+        "a": "The Reports section gathers financial performance, inventory activity and project KPIs. Use the filter bar at the top to scope by project or date range, then drill into a specific report from the list."
+      },
+      "inventoryShortcut": {
+        "q": "Where is inventory?",
+        "a": "The Inventory section lists every product across your projects. From here you can create products, register movements (entradas/salidas/ajustes) or kick off a sale using the Sell button on any product card."
+      },
+      "dashboardShortcut": {
+        "q": "Where is the executive dashboard?",
+        "a": "The Dashboard is your daily landing page: it surfaces total spent, active projects, overrun alerts and an AI-powered analysis of which project most needs your attention right now."
       }
     }
   }

@@ -201,6 +201,7 @@
               <!-- Sell button OR quantity stepper if product is already in cart -->
               <button
                 v-if="!getCartItem(product)"
+                data-birdie="sell-product"
                 class="sell-btn"
                 :disabled="!canSellProduct(product)"
                 :title="canSellProduct(product) ? '' : $t('inventory.card.cannotSell')"
@@ -279,6 +280,7 @@
           <p v-if="saleError" class="sale-error">{{ saleError }}</p>
 
           <button
+            data-birdie="sale-submit"
             class="sale-submit"
             :disabled="saleSubmitting || !canSubmitSale"
             @click="submitSale"

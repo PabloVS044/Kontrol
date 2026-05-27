@@ -23,12 +23,14 @@
         <div
           v-if="bubbleVisible"
           class="birdie-bubble"
-          :class="{
-            'birdie-bubble--wide': showFaqMenu || speechText,
-            'birdie-bubble--right': bubbleSide === 'right',
-            'birdie-bubble--below': !bubbleAbove,
-            'birdie-bubble--clickable': isIdleBubble,
-          }"
+          :class="[
+            `birdie-bubble--anchor-${bubbleAnchor}`,
+            {
+              'birdie-bubble--wide': showFaqMenu || speechText,
+              'birdie-bubble--below': !bubbleAbove,
+              'birdie-bubble--clickable': isIdleBubble,
+            },
+          ]"
           :role="isIdleBubble ? 'button' : null"
           :tabindex="isIdleBubble ? 0 : null"
           @mousedown.stop
@@ -172,8 +174,7 @@ const showMoreFaqs = ref(false)
 const speechText = ref('')
 const displayedSpeech = ref('')
 const speechComplete = ref(false)
-const bubbleSide = ref('left')
-const bubbleAbove = ref(true)
+const viewportBump = ref(0)         // bumped on resize so bubble computeds re-run
 
 // Drag tracking
 const isDragging = ref(false)
@@ -192,6 +193,58 @@ const exitClickCount = ref(0)
 
 const bubbleVisible = computed(() => !isFlying.value && !isDragging.value)
 const isIdleBubble = computed(() => !showFaqMenu.value && !speechText.value)
+
+// Approximate space (in px) the bubble needs based on its current contents.
+// Used to decide where to place it relative to the bird so it stays visible.
+// Constants chosen to match the actual rendered sizes; if you change padding
+// or font-size, revisit them.
+const FAQ_ITEM_HEIGHT       = 38
+const FAQ_SECTION_TITLE     = 24
+const FAQ_BASE              = 28 + 32 + 24  // title + close button + paddings
+const FAQ_TOGGLE_HEIGHT     = 40
+function estimateBubbleHeight() {
+  if (speechText.value) return 140
+  if (!showFaqMenu.value) return 60
+  const ctxCount = contextualFaqs.value.length
+  const secCount = secondaryFaqs.value.length
+  let h = FAQ_BASE
+  h += ctxCount > 0 ? (FAQ_SECTION_TITLE + ctxCount * FAQ_ITEM_HEIGHT) : 30
+  if (secCount > 0) {
+    h += FAQ_TOGGLE_HEIGHT
+    if (showMoreFaqs.value) h += FAQ_SECTION_TITLE + secCount * FAQ_ITEM_HEIGHT
+  }
+  return h
+}
+function estimateBubbleHalfWidth() {
+  if (showFaqMenu.value) return 170
+  if (speechText.value)  return 160
+  return 30
+}
+
+// Place the bubble above by default, but flip below when the bird is dragged
+// near the top of the viewport. Bumped by `viewportBump` so resize re-runs it.
+const bubbleAbove = computed(() => {
+  viewportBump.value
+  if (typeof window === 'undefined') return true
+  const needed = estimateBubbleHeight()
+  const spaceAbove = position.value.y - 20
+  const spaceBelow = window.innerHeight - (position.value.y + TALK_H) - 20
+  if (spaceAbove >= needed) return true
+  if (spaceBelow >= needed) return false
+  return spaceAbove >= spaceBelow
+})
+
+// Center the bubble above the bird when possible, otherwise anchor its left or
+// right edge to the bird's footprint so it never overflows the viewport.
+const bubbleAnchor = computed(() => {
+  viewportBump.value
+  if (typeof window === 'undefined') return 'center'
+  const halfW = estimateBubbleHalfWidth()
+  const birdCenterX = position.value.x + TALK_W / 2
+  if (birdCenterX - halfW < 12) return 'left'
+  if (birdCenterX + halfW > window.innerWidth - 12) return 'right'
+  return 'center'
+})
 
 function onBubbleClick() {
   if (isIdleBubble.value) openFaq()
@@ -405,13 +458,36 @@ const FAQ_CATALOG = [
     id: 'global-ai-shortcut',
     questionKey: 'birdie.faqs.aiAgent.q',
     answerKey:   'birdie.faqs.aiAgent.a',
-    target: '.appnav-link--agent',
+    route: '/agent',
+    target: '[data-birdie="agent-input"], .agent-input, textarea, .appnav-link--agent',
   },
   {
     id: 'global-chat-shortcut',
     questionKey: 'birdie.faqs.chat.q',
     answerKey:   'birdie.faqs.chat.a',
-    target: '.appnav-link[href="/chat"]',
+    route: '/chat',
+    target: '[data-birdie="chat-new"], .conversation-list, .appnav-link[href="/chat"]',
+  },
+  {
+    id: 'global-reports',
+    questionKey: 'birdie.faqs.reportsShortcut.q',
+    answerKey:   'birdie.faqs.reportsShortcut.a',
+    route: '/reports',
+    target: '[data-birdie="reports-list"], .reports-table, .reports-kpi, .appnav-link[href="/reports"]',
+  },
+  {
+    id: 'global-inventory',
+    questionKey: 'birdie.faqs.inventoryShortcut.q',
+    answerKey:   'birdie.faqs.inventoryShortcut.a',
+    route: '/inventory',
+    target: '.product-grid, .inv-header, [data-birdie="create-product"]',
+  },
+  {
+    id: 'global-dashboard',
+    questionKey: 'birdie.faqs.dashboardShortcut.q',
+    answerKey:   'birdie.faqs.dashboardShortcut.a',
+    route: '/dashboard',
+    target: '.kpi-grid, .ai-box',
   },
   {
     id: 'global-budget',
@@ -525,6 +601,38 @@ function clampToViewport(x, y) {
 
 function handleResize() {
   position.value = clampToViewport(position.value.x, position.value.y)
+  viewportBump.value += 1
+  ensureBubbleFits()
+}
+
+// If the bubble can't fit either above or below the bird at its current spot,
+// slide the bird to a position where it can — using the regular CSS glide so
+// it looks like the birdie is "moving out of the way" for the menu.
+// Skips during drag/fly so the user's interactions aren't fought.
+function ensureBubbleFits() {
+  if (typeof window === 'undefined') return
+  if (isDragging.value || isFlying.value) return
+  if (!showFaqMenu.value && !speechText.value) return
+
+  const needed = estimateBubbleHeight() + 24  // include the 14px gap + safety
+  const spaceAbove = position.value.y
+  const spaceBelow = window.innerHeight - (position.value.y + TALK_H)
+
+  // Fits where it is — nothing to do
+  if (spaceAbove >= needed || spaceBelow >= needed) return
+
+  // Neither side fits. Choose the side with more usable room and move the
+  // bird so the bubble can sit fully on that side.
+  const preferAbove = spaceAbove >= spaceBelow
+  let targetY
+  if (preferAbove) {
+    // Bird's top edge should be at `needed` from viewport top
+    targetY = needed + 4
+  } else {
+    // Bird's bottom should leave `needed` of space below
+    targetY = window.innerHeight - TALK_H - needed - 4
+  }
+  position.value = clampToViewport(position.value.x, targetY)
 }
 
 // Reset on open
@@ -542,8 +650,6 @@ watch(() => birdieStore.isOpen, (open) => {
     speechComplete.value = false
     wingsOpenForExit.value = false
     exitClickCount.value = 0
-    bubbleAbove.value = true
-    bubbleSide.value = 'left'
     // Snap to home without transition
     skipTransition.value = true
     position.value = loadHomePosition()
@@ -552,6 +658,12 @@ watch(() => birdieStore.isOpen, (open) => {
     })
     clearTargetHighlight()
   }
+})
+
+// React to bubble content changes — if opening the menu or expanding "More"
+// would push it off-screen at the current spot, slide the bird to make room.
+watch([showFaqMenu, showMoreFaqs, speechText], () => {
+  nextTick(() => ensureBubbleFits())
 })
 
 // While the user drags the bird, swap to fly mode and animate so it looks like
@@ -677,9 +789,6 @@ async function flyTo(targetEl) {
   const startCenterX = position.value.x + TALK_W / 2
   const destCenterX  = talkDest.x + TALK_W / 2
   facingLeft.value = destCenterX < startCenterX
-
-  bubbleSide.value = placeRight ? 'right' : 'left'
-  bubbleAbove.value = talkDest.y > 160
 
   const startX = position.value.x
   const startY = position.value.y
@@ -810,6 +919,9 @@ function onPointerUp() {
   isDragging.value = false
   dragStart.value = null
   cleanupDragListeners()
+  // If the bubble's content would be off-screen at the drop position, nudge
+  // the bird so the bubble stays usable.
+  nextTick(() => ensureBubbleFits())
 }
 
 function cleanupDragListeners() {
@@ -973,11 +1085,12 @@ function closeAssistant() {
 }
 
 /* ── Bubble ── */
+/* Default anchor: center. The bubble sits above the bird, centered on it.
+   --tail-offset tells the tail where the bird is (in px from the anchored
+   edge); it stays pointing at the bird across all anchor variants. */
 .birdie-bubble {
   position: absolute;
-  left: 50%;
   bottom: calc(100% + 14px);
-  transform: translateX(-50%);
   min-width: 64px;
   max-width: 320px;
   padding: 12px 14px;
@@ -995,6 +1108,20 @@ function closeAssistant() {
   z-index: 2;
 }
 
+/* Anchor variants — only one is active at a time */
+.birdie-bubble--anchor-center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.birdie-bubble--anchor-left {
+  left: 0;
+}
+
+.birdie-bubble--anchor-right {
+  right: 0;
+}
+
 .birdie-bubble--wide {
   min-width: 240px;
 }
@@ -1009,13 +1136,19 @@ function closeAssistant() {
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
+.birdie-bubble--clickable.birdie-bubble--anchor-center:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+.birdie-bubble--clickable.birdie-bubble--anchor-left:hover,
+.birdie-bubble--clickable.birdie-bubble--anchor-right:hover {
+  transform: translateY(-2px);
+}
 .birdie-bubble--clickable:hover {
   border-color: rgba(201, 169, 98, 0.85);
   box-shadow:
     0 14px 34px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(201, 169, 98, 0.35) inset,
     0 0 18px rgba(201, 169, 98, 0.25);
-  transform: translateX(-50%) translateY(-2px);
 }
 
 .birdie-bubble--clickable:hover .birdie-bubble-q {
@@ -1024,22 +1157,30 @@ function closeAssistant() {
   transform: scale(1.08);
 }
 
+/* Tail — points down toward the bird by default. Position adapts to each
+   anchor variant so the tail always lands above the bird's center. */
 .birdie-bubble-tail {
   position: absolute;
-  left: 50%;
   bottom: -7px;
-  transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
   background: linear-gradient(135deg, #161310 0%, #1f1a13 100%);
   border-right: 1px solid rgba(201, 169, 98, 0.55);
   border-bottom: 1px solid rgba(201, 169, 98, 0.55);
+  transform: rotate(45deg);
 }
 
-.birdie-bubble--right .birdie-bubble-tail {
-  left: auto;
-  right: 28px;
-  transform: rotate(45deg);
+.birdie-bubble--anchor-center .birdie-bubble-tail {
+  left: 50%;
+  margin-left: -6px;
+}
+
+.birdie-bubble--anchor-left .birdie-bubble-tail {
+  left: calc(62px - 6px);  /* TALK_W/2 minus half the tail width */
+}
+
+.birdie-bubble--anchor-right .birdie-bubble-tail {
+  right: calc(62px - 6px);
 }
 
 .birdie-bubble--below .birdie-bubble-tail {
