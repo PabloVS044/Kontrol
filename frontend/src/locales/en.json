@@ -542,7 +542,25 @@
       "entries": "Entries",
       "exits": "Exits",
       "net": "Net",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "sell": "Sell",
+      "increase": "Add one",
+      "decrease": "Remove one",
+      "cannotSell": "This product cannot be sold right now."
+    },
+    "sale": {
+      "title": "Current sale",
+      "multiProject": "Multiple projects",
+      "perUnit": "each",
+      "total": "Total",
+      "submit": "Realize sale",
+      "submitting": "Processing sale…",
+      "cancel": "Cancel sale",
+      "remove": "Remove item",
+      "movementReason": "POS sale from inventory",
+      "errors": {
+        "missingProject": "Could not determine the project for this product."
+      }
     },
     "empty": "No products match your filters.",
     "stock": {

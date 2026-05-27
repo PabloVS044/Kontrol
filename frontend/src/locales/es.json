@@ -542,7 +542,25 @@
       "entries": "Entradas",
       "exits": "Salidas",
       "net": "Neto",
-      "viewDetails": "Ver detalles"
+      "viewDetails": "Ver detalles",
+      "sell": "Vender",
+      "increase": "Agregar uno",
+      "decrease": "Quitar uno",
+      "cannotSell": "Este producto no puede venderse ahora."
+    },
+    "sale": {
+      "title": "Venta en curso",
+      "multiProject": "Varios proyectos",
+      "perUnit": "c/u",
+      "total": "Total",
+      "submit": "Realizar venta",
+      "submitting": "Procesando venta…",
+      "cancel": "Cancelar venta",
+      "remove": "Quitar artículo",
+      "movementReason": "Venta POS desde inventario",
+      "errors": {
+        "missingProject": "No se pudo determinar el proyecto del producto."
+      }
     },
     "empty": "Ningún producto coincide con tus filtros.",
     "stock": {

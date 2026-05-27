@@ -143,6 +143,7 @@
             v-for="product in filteredProducts"
             :key="product.id_producto"
             class="product-card"
+            @click="openDetail(product)"
           >
             <div class="card-img">
               <div class="img-placeholder">
@@ -196,14 +197,39 @@
               </div>
             </div>
 
-            <div class="card-footer">
-              <Anchor
-                :label="$t('inventory.card.viewDetails')"
-                :link="detailLink(product)"
-                textColor="#c9a962"
-                backColor="transparent"
-                hoverColor="rgba(201,169,98,0.05)"
-              />
+            <div class="card-footer" @click.stop>
+              <!-- Sell button OR quantity stepper if product is already in cart -->
+              <button
+                v-if="!getCartItem(product)"
+                class="sell-btn"
+                :disabled="!canSellProduct(product)"
+                :title="canSellProduct(product) ? '' : $t('inventory.card.cannotSell')"
+                @click="addToCart(product)"
+              >
+                {{ $t('inventory.card.sell') }}
+              </button>
+              <div v-else class="qty-stepper">
+                <button
+                  class="qty-btn"
+                  :aria-label="$t('inventory.card.decrease')"
+                  @click="decrementCart(product)"
+                >−</button>
+                <input
+                  class="qty-input"
+                  type="number"
+                  min="1"
+                  :max="product.stock_actual"
+                  :value="getCartItem(product).cantidad"
+                  @input="setCartQuantity(product, $event.target.value)"
+                  @click.stop
+                />
+                <button
+                  class="qty-btn"
+                  :aria-label="$t('inventory.card.increase')"
+                  :disabled="getCartItem(product).cantidad >= product.stock_actual"
+                  @click="incrementCart(product)"
+                >+</button>
+              </div>
             </div>
           </div>
 
@@ -218,6 +244,56 @@
       <!-- Panel de contexto -->
       <aside class="context-panel">
 
+        <!-- Sale cart (shown while there are items in the cart) -->
+        <template v-if="saleCart.length">
+          <div>
+            <div class="ctx-title">{{ $t('inventory.sale.title') }}</div>
+            <div class="ctx-subtitle">
+              {{ selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject') }}
+            </div>
+          </div>
+
+          <div class="sale-items">
+            <div
+              v-for="item in saleCart"
+              :key="item.product.id_producto"
+              class="sale-item"
+            >
+              <span class="sale-item-qty">{{ item.cantidad }}×</span>
+              <div class="sale-item-info">
+                <span class="sale-item-name">{{ item.product.nombre }}</span>
+                <span class="sale-item-unit">${{ Number(item.product.precio_venta).toFixed(2) }} {{ $t('inventory.sale.perUnit') }}</span>
+              </div>
+              <div class="sale-item-right">
+                <span class="sale-item-subtotal">${{ saleItemSubtotal(item).toFixed(2) }}</span>
+                <button class="sale-item-remove" :aria-label="$t('inventory.sale.remove')" @click="removeFromCart(item.product)">×</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sale-total-row">
+            <span class="sale-total-label">{{ $t('inventory.sale.total') }}</span>
+            <span class="sale-total-value">${{ saleTotal.toFixed(2) }}</span>
+          </div>
+
+          <p v-if="saleError" class="sale-error">{{ saleError }}</p>
+
+          <button
+            class="sale-submit"
+            :disabled="saleSubmitting || !canSubmitSale"
+            @click="submitSale"
+          >
+            <span v-if="saleSubmitting">{{ $t('inventory.sale.submitting') }}</span>
+            <span v-else>{{ $t('inventory.sale.submit') }}</span>
+          </button>
+
+          <button class="sale-cancel" :disabled="saleSubmitting" @click="clearSaleCart">
+            {{ $t('inventory.sale.cancel') }}
+          </button>
+        </template>
+
+        <!-- Summary (default view, shown when no sale is in progress) -->
+        <template v-else>
         <div>
           <div class="ctx-title">{{ $t('inventory.context.summary') }}</div>
           <div class="ctx-subtitle">
@@ -287,6 +363,7 @@
           <div class="ds-label">{{ $t('inventory.context.dataSource') }}</div>
           <div class="ds-text">{{ $t('inventory.context.dataSourceText') }}</div>
         </div>
+        </template>
 
       </aside>
 
@@ -297,11 +374,10 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
-import Anchor from '../components/UI/Button/Anchor.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ProductModal from '../components/inventory/ProductModal.vue'
@@ -310,6 +386,7 @@ import { useAuthStore } from '@/stores/auth'
 const { t } = useI18n()
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 
 const products       = ref([])
 const stockAlerts    = ref([])
@@ -490,6 +567,145 @@ function detailLink(product) {
     : ''
   return `/inventory/${product.id_producto}${query}`
 }
+
+function openDetail(product) {
+  router.push(detailLink(product))
+}
+
+/* ── carrito de venta ── */
+const saleCart        = ref([])
+const saleSubmitting  = ref(false)
+const saleError       = ref(null)
+
+function getCartItem(product) {
+  return saleCart.value.find((item) => item.product.id_producto === product.id_producto)
+}
+
+function canSellProduct(product) {
+  if (!authStore.canSellInventory) return false
+  return Number(product.stock_actual) > 0
+}
+
+function addToCart(product) {
+  if (!canSellProduct(product)) return
+  saleError.value = null
+  const existing = getCartItem(product)
+  if (existing) {
+    incrementCart(product)
+    return
+  }
+  saleCart.value.push({ product, cantidad: 1 })
+}
+
+function incrementCart(product) {
+  const item = getCartItem(product)
+  if (!item) return
+  if (item.cantidad < Number(product.stock_actual)) {
+    item.cantidad += 1
+  }
+}
+
+function decrementCart(product) {
+  const item = getCartItem(product)
+  if (!item) return
+  if (item.cantidad <= 1) {
+    removeFromCart(product)
+    return
+  }
+  item.cantidad -= 1
+}
+
+function setCartQuantity(product, rawValue) {
+  const item = getCartItem(product)
+  if (!item) return
+  const stock = Number(product.stock_actual)
+  let next = Math.floor(Number(rawValue))
+  if (!Number.isFinite(next) || next < 1) next = 1
+  if (next > stock) next = stock
+  item.cantidad = next
+}
+
+function removeFromCart(product) {
+  saleCart.value = saleCart.value.filter(
+    (item) => item.product.id_producto !== product.id_producto
+  )
+}
+
+function clearSaleCart() {
+  saleCart.value = []
+  saleError.value = null
+}
+
+function saleItemSubtotal(item) {
+  return Number(item.product.precio_venta) * Number(item.cantidad)
+}
+
+const saleTotal = computed(() =>
+  saleCart.value.reduce((acc, item) => acc + saleItemSubtotal(item), 0)
+)
+
+const canSubmitSale = computed(() => saleCart.value.length > 0)
+
+async function submitSale() {
+  if (!canSubmitSale.value || saleSubmitting.value) return
+  saleSubmitting.value = true
+  saleError.value = null
+
+  const items = saleCart.value.map((item) => ({ ...item }))
+
+  try {
+    for (const item of items) {
+      const projectId = item.product.id_proyecto ?? selectedProject.value?.id_proyecto
+      if (!projectId) {
+        throw new Error(t('inventory.sale.errors.missingProject'))
+      }
+
+      const res = await fetch('/api/inventory-movements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeader(),
+        },
+        body: JSON.stringify({
+          tipo: 'SALIDA',
+          cantidad: item.cantidad,
+          precio_unitario: Number(item.product.precio_venta),
+          motivo: t('inventory.sale.movementReason'),
+          id_producto: item.product.id_producto,
+          id_proyecto: projectId,
+        }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.message || `Error ${res.status}`)
+      }
+    }
+
+    clearSaleCart()
+    await loadData()
+  } catch (err) {
+    saleError.value = err.message || t('inventory.errors.networkError')
+  } finally {
+    saleSubmitting.value = false
+  }
+}
+
+// Keep cart in sync if products list updates — drop any cart entries that no
+// longer exist or refresh references so subtotal/stock checks stay correct.
+watch(products, (next) => {
+  if (!saleCart.value.length) return
+  saleCart.value = saleCart.value
+    .map((item) => {
+      const fresh = next.find((p) => p.id_producto === item.product.id_producto)
+      if (!fresh) return null
+      const stock = Number(fresh.stock_actual)
+      const cantidad = Math.max(1, Math.min(item.cantidad, stock))
+      if (stock <= 0) return null
+      return { product: fresh, cantidad }
+    })
+    .filter(Boolean)
+})
 
 /* ── modal nuevo producto ── */
 const showModal    = ref(false)

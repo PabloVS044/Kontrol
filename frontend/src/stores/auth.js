@@ -20,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
     canCreateProjects: (state) => state.accessContext?.capabilities?.can_create_projects === true,
     canViewInventory: (state) => state.accessContext?.capabilities?.can_view_inventory === true,
     canManageInventory: (state) => state.accessContext?.capabilities?.can_manage_inventory === true,
+    canSellInventory: (state) => state.accessContext?.capabilities?.can_sell_inventory === true,
     canManageTeams: (state) => {
       const role = state.empresaActual?.rol ?? state.accessContext?.empresa?.rol_empresa
       return ['owner', 'admin', 'manager'].includes(role)

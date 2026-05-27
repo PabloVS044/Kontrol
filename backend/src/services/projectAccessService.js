@@ -1,5 +1,7 @@
 export const EMPRESA_MANAGEMENT_ROLES = ['owner', 'admin', 'manager']
-export const INVENTORY_VIEW_PERMISSION_NAMES = ['ver_inventario', 'gestionar_inventario']
+// Inventory viewing is open to any project member (collaborators included).
+// Selling is also open by design — see inventoryMovementRoutes.
+export const INVENTORY_VIEW_PERMISSION_NAMES = []
 export const INVENTORY_WRITE_PERMISSION_NAMES = ['gestionar_inventario']
 export const DEFAULT_PROJECT_PERMISSION_NAMES = [
   'ver_inventario',
@@ -221,6 +223,7 @@ export const buildEmpresaAccessContext = async ({
         can_view_projects: true,
         can_create_projects: true,
         can_view_inventory: true,
+        can_sell_inventory: true,
         can_manage_inventory: true,
         can_view_marketing: true,
         can_manage_marketing: true,
@@ -229,11 +232,13 @@ export const buildEmpresaAccessContext = async ({
   }
 
   const assignments = await getUserProjectAssignments(client, { id_empresa, id_usuario })
-  const inventoryProjectIds = assignments
-    .filter(({ permisos }) =>
-      INVENTORY_VIEW_PERMISSION_NAMES.some((permission) => permisos.includes(permission))
-    )
-    .map(({ id_proyecto }) => id_proyecto)
+  const inventoryProjectIds = INVENTORY_VIEW_PERMISSION_NAMES.length
+    ? assignments
+      .filter(({ permisos }) =>
+        INVENTORY_VIEW_PERMISSION_NAMES.some((permission) => permisos.includes(permission))
+      )
+      .map(({ id_proyecto }) => id_proyecto)
+    : assignments.map(({ id_proyecto }) => id_proyecto)
 
   return {
     rol_empresa,
@@ -244,7 +249,10 @@ export const buildEmpresaAccessContext = async ({
       can_manage_users: false,
       can_view_projects: assignments.length > 0,
       can_create_projects: false,
-      can_view_inventory: inventoryProjectIds.length > 0,
+      // Inventory is open to any workspace member — even without project
+      // assignments yet. The page itself just shows an empty state in that case.
+      can_view_inventory: true,
+      can_sell_inventory: true,
       can_manage_inventory: assignments.some(({ permisos }) =>
         INVENTORY_WRITE_PERMISSION_NAMES.some((permission) => permisos.includes(permission))
       ),
