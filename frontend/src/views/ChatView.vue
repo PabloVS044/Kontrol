@@ -115,7 +115,8 @@ async function selectChat(conversation) {
   panelError.value = ''
   chatStore.markRead(conversation._id)
 
-  if (!chatStore.messages[conversation._id]) {
+  const cachedMessages = chatStore.messages[conversation._id]
+  if (!cachedMessages || cachedMessages.length === 0) {
     const response = await chatStore.loadMessages(conversation._id)
     if (!response.success) {
       panelError.value = response.message || 'No se pudo cargar la conversación.'
@@ -384,7 +385,11 @@ onMounted(() => {
           </div>
 
           <div class="messages-area" ref="messagesEl">
-            <template v-for="dateGroup in messageGroups" :key="dateGroup.date">
+            <div v-if="messageGroups.length === 0" class="chat-empty-messages">
+              No hay mensajes en esta conversación.
+            </div>
+
+            <template v-else v-for="dateGroup in messageGroups" :key="dateGroup.date">
               <div class="date-divider"><span>{{ dateGroup.date }}</span></div>
 
               <div
