@@ -1,27 +1,12 @@
 const slides = [...document.querySelectorAll(".slide")];
 const deck = document.getElementById("deck");
-const progressBar = document.getElementById("progress-bar");
-const currentSlideEl = document.getElementById("current-slide");
-const totalSlidesEl = document.getElementById("total-slides");
-const currentTitleEl = document.getElementById("current-title");
-const prevButton = document.getElementById("prev-button");
-const nextButton = document.getElementById("next-button");
 
 let currentIndex = 0;
-
-totalSlidesEl.textContent = String(slides.length);
 
 function updateSlideState() {
   slides.forEach((slide, index) => {
     slide.classList.toggle("is-active", index === currentIndex);
   });
-
-  currentSlideEl.textContent = String(currentIndex + 1);
-  currentTitleEl.textContent = slides[currentIndex].dataset.title || "";
-  progressBar.style.width = `${((currentIndex + 1) / slides.length) * 100}%`;
-
-  prevButton.disabled = currentIndex === 0;
-  nextButton.disabled = currentIndex === slides.length - 1;
 }
 
 function goToSlide(index) {
@@ -115,9 +100,6 @@ function hydrateMedia() {
     frame.replaceChildren(buildPlaceholder(label, src));
   });
 }
-
-prevButton.addEventListener("click", previousSlide);
-nextButton.addEventListener("click", nextSlide);
 
 deck.addEventListener("click", (event) => {
   const interactive = event.target.closest("button, video");

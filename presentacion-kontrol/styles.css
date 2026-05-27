@@ -58,8 +58,7 @@ body {
 .deck-shell {
   width: 100vw;
   height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  display: block;
 }
 
 .topbar,
@@ -157,15 +156,15 @@ body {
 
 .slide {
   position: absolute;
-  width: var(--content-width);
-  height: min(78vh, 780px);
-  border-radius: 34px;
-  border: 2px solid var(--Border);
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
   background:
     radial-gradient(circle at 16% 0%, rgba(202, 168, 96, 0.08), transparent 24%),
     linear-gradient(180deg, rgba(18, 15, 7, 0.96) 0%, rgba(0, 0, 0, 0.98) 100%);
-  box-shadow: var(--shadow);
-  padding: 40px;
+  box-shadow: none;
+  padding: 60px 80px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
