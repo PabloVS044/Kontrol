@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kontrol | Presentacion de Proyecto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bungee&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="deck-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img
+            class="brand-logo"
+            src="../frontend/src/assets/img/kontrol.png"
+            alt="Logo de Kontrol"
+          />
+          <div>
+            <p class="eyebrow">Presentacion tipo pitch</p>
+            <h1>Kontrol</h1>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="ghost-button" id="toggle-notes" type="button">
+            Notas: <span id="notes-state">Ocultas</span>
+          </button>
+          <p class="hint">Flechas, espacio o click para avanzar. Presiona N para notas.</p>
+        </div>
+      </header>
+
+      <main class="deck" id="deck">
+        <section class="slide is-active" data-title="Inicio">
+          <div class="slide-grid hero-grid visual-hero">
+            <div class="hero-copy-block">
+              <p class="slide-tag">Slide 1 · Apertura</p>
+              <h2 class="hero-title">Control total para la operacion de una empresa.</h2>
+              <p class="hero-copy short-copy">
+                Proyectos, presupuesto, inventario, equipos e IA en un solo sistema.
+              </p>
+
+              <div class="hero-pill-row">
+                <span class="solution-pill">PYMES</span>
+                <span class="solution-pill">Operacion</span>
+                <span class="solution-pill">IA</span>
+              </div>
+            </div>
+
+            <div class="hero-stage">
+              <div class="hero-orbit">
+                <div class="solution-core">KONTROL</div>
+                <div class="orbit-chip chip-1">Proyectos</div>
+                <div class="orbit-chip chip-2">Presupuesto</div>
+                <div class="orbit-chip chip-3">Inventario</div>
+                <div class="orbit-chip chip-4">Reportes</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Abran con energia. La idea es vender la propuesta en una frase y
+              no saturar de contexto desde el inicio.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Problema">
+          <div class="slide-grid problem-grid">
+            <div>
+              <p class="slide-tag">Slide 2 · Problema</p>
+              <h2>El caos operativo cuesta tiempo, dinero y visibilidad.</h2>
+            </div>
+
+            <div class="chaos-grid">
+              <article class="chaos-card">
+                <span class="metric-label">01</span>
+                <strong>Informacion dispersa</strong>
+                <p>Demasiadas herramientas separadas.</p>
+              </article>
+              <article class="chaos-card">
+                <span class="metric-label">02</span>
+                <strong>Poca trazabilidad</strong>
+                <p>Proyecto, gasto y recurso no siempre se conectan.</p>
+              </article>
+              <article class="chaos-card">
+                <span class="metric-label">03</span>
+                <strong>Decisiones lentas</strong>
+                <p>Se pierde tiempo buscando el dato correcto.</p>
+              </article>
+              <article class="chaos-card">
+                <span class="metric-label">04</span>
+                <strong>Seguimiento incompleto</strong>
+                <p>La operacion no queda centralizada.</p>
+              </article>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Aqui importa que el problema se entienda visualmente. No lean las
+              cuatro tarjetas completas; usenlas como apoyo.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Cliente final">
+          <div class="slide-grid audience-visual-grid">
+            <div class="audience-spotlight">
+              <p class="slide-tag">Slide 3 · Cliente final</p>
+              <span class="metric-label">Cliente final</span>
+              <h2>PYMES que necesitan orden operativo y control diario.</h2>
+            </div>
+
+            <div class="persona-grid">
+              <article class="persona-card">
+                <span class="metric-label">Usuario 1</span>
+                <strong>Administrador</strong>
+                <p>Control general y visibilidad.</p>
+              </article>
+              <article class="persona-card">
+                <span class="metric-label">Usuario 2</span>
+                <strong>Lider de proyecto</strong>
+                <p>Seguimiento del trabajo y recursos.</p>
+              </article>
+              <article class="persona-card">
+                <span class="metric-label">Usuario 3</span>
+                <strong>Equipo operativo</strong>
+                <p>Registro y actualizacion de movimientos.</p>
+              </article>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Dejen clara la diferencia entre empresa cliente y usuarios dentro
+              del sistema. Eso fue una instruccion explicita del maestro.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Solucion">
+          <div class="slide-grid solution-grid">
+            <div>
+              <p class="slide-tag">Slide 4 · Solucion</p>
+              <h2>Un centro de control para toda la operacion.</h2>
+              <p class="hero-copy short-copy">
+                Kontrol conecta trabajo, recursos y analisis dentro de un mismo flujo.
+              </p>
+            </div>
+
+            <div class="solution-map">
+              <div class="solution-core">Kontrol</div>
+              <div class="solution-pill">Proyectos</div>
+              <div class="solution-pill">Equipos</div>
+              <div class="solution-pill">Inventario</div>
+              <div class="solution-pill">Presupuesto</div>
+              <div class="solution-pill">Reportes</div>
+              <div class="solution-pill">Chat</div>
+              <div class="solution-pill">IA</div>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Esta slide sirve para definir el producto de forma visual, no para
+              describir cada modulo a fondo.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Flujo principal">
+          <div class="slide-grid flow-visual-grid">
+            <div>
+              <p class="slide-tag">Slide 5 · Flujo principal</p>
+              <h2>Asi se recorre Kontrol.</h2>
+            </div>
+
+            <div class="journey-strip">
+              <article class="journey-step">
+                <span>01</span>
+                <strong>Dashboard</strong>
+                <p>Panorama general.</p>
+              </article>
+              <article class="journey-step">
+                <span>02</span>
+                <strong>Proyectos</strong>
+                <p>Seguimiento del trabajo.</p>
+              </article>
+              <article class="journey-step">
+                <span>03</span>
+                <strong>Inventario y presupuesto</strong>
+                <p>Control de recursos y gastos.</p>
+              </article>
+              <article class="journey-step">
+                <span>04</span>
+                <strong>Reportes e IA</strong>
+                <p>Analisis y apoyo para decidir.</p>
+              </article>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Introduzcan aqui la demo guiada. La presentacion ya no depende de
+              mover la app libremente.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Dashboard">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <p class="slide-tag">Slide 6 · Demo</p>
+              <h2>Dashboard</h2>
+              <div class="showcase-bullets">
+                <span>Vista general</span>
+                <span>Alertas</span>
+                <span>Resumen ejecutivo</span>
+              </div>
+            </div>
+
+            <div
+              class="media-frame media-wide"
+              data-media-type="image"
+              data-src="media/screenshots/06-dashboard-overview.png"
+              data-label="Captura esperada: dashboard principal"
+            ></div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Expliquen rapido que aqui el usuario entiende el estado actual de
+              la empresa antes de entrar a un modulo especifico.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Proyectos">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <p class="slide-tag">Slide 7 · Demo</p>
+              <h2>Proyectos y tareas</h2>
+              <div class="showcase-bullets">
+                <span>Seguimiento</span>
+                <span>Responsables</span>
+                <span>Avance</span>
+              </div>
+            </div>
+
+            <div
+              class="media-frame media-wide"
+              data-media-type="image"
+              data-src="media/screenshots/07-projects-flow.png"
+              data-label="Captura esperada: proyectos y tareas"
+            ></div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Esta parte demuestra que la plataforma no se queda en un dashboard,
+              sino que baja a ejecucion real del trabajo.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Inventario y presupuesto">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <p class="slide-tag">Slide 8 · Demo</p>
+              <h2>Inventario y presupuesto</h2>
+              <div class="showcase-bullets">
+                <span>Stock</span>
+                <span>Movimientos</span>
+                <span>Gastos</span>
+              </div>
+            </div>
+
+            <div
+              class="media-frame media-wide"
+              data-media-type="image"
+              data-src="media/screenshots/08-inventory-budget.png"
+              data-label="Captura esperada: inventario y presupuesto"
+            ></div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Este slide vende la parte de control operativo real: recursos,
+              entradas, salidas y dinero dentro del proyecto.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Reportes e IA">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <p class="slide-tag">Slide 9 · Demo</p>
+              <h2>Reportes e IA</h2>
+              <div class="showcase-bullets">
+                <span>Analisis</span>
+                <span>Consultas</span>
+                <span>Apoyo en decisiones</span>
+              </div>
+            </div>
+
+            <div class="showcase-media-stack">
+              <div
+                class="media-frame media-large"
+                data-media-type="image"
+                data-src="media/screenshots/09-agent-reports.png"
+                data-label="Captura esperada: reportes o agente de IA"
+              ></div>
+              <div
+                class="media-frame media-video-inline"
+                data-media-type="video"
+                data-src="media/videos/09-demo-recorrido.mp4"
+                data-label="Video opcional: cierre de demo"
+              ></div>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Si usan video, reproduzcanlo aqui. Si no, basta con la captura y
+              una explicacion breve del valor del agente o los reportes.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Requisitos hechos">
+          <div class="slide-grid feature-visual-grid">
+            <div>
+              <p class="slide-tag">Slide 10 · Requisitos funcionales ya hechos</p>
+              <h2>La base funcional ya esta construida.</h2>
+            </div>
+
+            <div class="feature-tile-grid">
+              <article class="feature-tile"><strong>Auth</strong><p>Registro e ingreso.</p></article>
+              <article class="feature-tile"><strong>Empresa</strong><p>Contexto y roles.</p></article>
+              <article class="feature-tile"><strong>Proyectos</strong><p>Gestion y detalle.</p></article>
+              <article class="feature-tile"><strong>Tareas</strong><p>Asignacion y seguimiento.</p></article>
+              <article class="feature-tile"><strong>Equipos</strong><p>Permisos y colaboracion.</p></article>
+              <article class="feature-tile"><strong>Inventario</strong><p>Productos y stock.</p></article>
+              <article class="feature-tile"><strong>Presupuesto</strong><p>Gastos y alertas.</p></article>
+              <article class="feature-tile"><strong>Reportes</strong><p>Visibilidad ejecutiva.</p></article>
+              <article class="feature-tile"><strong>IA</strong><p>Consultas y analisis.</p></article>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Esta slide responde a los requisitos funcionales hechos, pero en
+              formato visual y rapido.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Futuros sprints">
+          <div class="slide-grid roadmap-grid">
+            <div>
+              <p class="slide-tag">Slide 11 · Futuros sprints</p>
+              <h2>La siguiente etapa es ampliar inteligencia y automatizacion.</h2>
+            </div>
+
+            <div class="roadmap-lanes">
+              <article class="roadmap-lane">
+                <span class="metric-label">Sprint proximo</span>
+                <strong>Marketing y mejor exposicion de modulos</strong>
+              </article>
+              <article class="roadmap-lane">
+                <span class="metric-label">Mediano plazo</span>
+                <strong>Mas integraciones y flujos automatizados</strong>
+              </article>
+              <article class="roadmap-lane">
+                <span class="metric-label">Vision</span>
+                <strong>Centro de control mas inteligente y predictivo</strong>
+              </article>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Presenten estos puntos como evolucion natural del producto, no como
+              algo que hizo falta terminar.
+            </p>
+          </aside>
+        </section>
+
+        <section class="slide" data-title="Cierre">
+          <div class="slide-grid closing-visual-grid">
+            <div class="closing-mark">
+              <span class="metric-label">Cierre</span>
+              <h2>Kontrol convierte operacion dispersa en control centralizado.</h2>
+              <p class="hero-copy short-copy">
+                Funcionalidad real hoy. Escalamiento claro para los siguientes sprints.
+              </p>
+            </div>
+
+            <div class="closing-actions">
+              <div class="closing-card compact">
+                <p class="panel-title">Mensaje final</p>
+                <p>
+                  Plataforma para PYMES con proyectos, recursos, reportes e IA
+                  integrados.
+                </p>
+              </div>
+              <div class="closing-card question">
+                <p class="panel-title">Preguntas</p>
+                <p class="question-prompt">Espacio para preguntas del maestro.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="speaker-notes">
+            <h3>Que decir</h3>
+            <p>
+              Terminen con una frase fuerte y pasen de inmediato a preguntas.
+            </p>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="controls">
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="controls-row">
+          <button class="nav-button" id="prev-button" type="button" aria-label="Anterior">
+            ←
+          </button>
+          <div class="slide-counter">
+            <span id="current-slide">1</span>
+            <span>/</span>
+            <span id="total-slides">9</span>
+            <span class="counter-label" id="current-title">Inicio</span>
+          </div>
+          <button class="nav-button" id="next-button" type="button" aria-label="Siguiente">
+            →
+          </button>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
