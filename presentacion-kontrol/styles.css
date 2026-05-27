@@ -628,6 +628,12 @@ h2 {
   display: block;
 }
 
+.loaded-media[src$=".mp4"],
+video.loaded-media {
+  object-fit: contain;
+  background: #000;
+}
+
 .speaker-notes {
   position: absolute;
   right: 24px;

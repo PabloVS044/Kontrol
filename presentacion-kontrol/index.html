@@ -152,9 +152,9 @@
 
             <div
               class="media-frame media-wide"
-              data-media-type="image"
-              data-src="media/screenshots/06-dashboard-overview.png"
-              data-label="Captura esperada: dashboard principal"
+              data-media-type="video"
+              data-src="media/videos/1-Dashboard-Executive.mp4"
+              data-label="Dashboard ejecutivo"
             ></div>
           </div>
         </section>
@@ -172,9 +172,9 @@
 
             <div
               class="media-frame media-wide"
-              data-media-type="image"
-              data-src="media/screenshots/07-projects-flow.png"
-              data-label="Captura esperada: proyectos y tareas"
+              data-media-type="video"
+              data-videos='["media/videos/Project-creation.mp4","media/videos/2-MyProjects.mp4","media/videos/3-ProjectDetailOverview.mp4"]'
+              data-label="Proyectos y tareas"
             ></div>
           </div>
         </section>
@@ -192,9 +192,29 @@
 
             <div
               class="media-frame media-wide"
-              data-media-type="image"
-              data-src="media/screenshots/08-inventory-budget.png"
-              data-label="Captura esperada: inventario y presupuesto"
+              data-media-type="video"
+              data-videos='["media/videos/9-Inventory registration.mp4","media/videos/11-Budget.mp4"]'
+              data-label="Inventario y presupuesto"
+            ></div>
+          </div>
+        </section>
+
+        <section class="slide" data-title="Punto de Venta">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <h2>Punto de Venta</h2>
+              <div class="showcase-bullets">
+                <span>Ventas rápidas</span>
+                <span>Descuento de stock</span>
+                <span>Registro en tiempo real</span>
+              </div>
+            </div>
+
+            <div
+              class="media-frame media-wide"
+              data-media-type="video"
+              data-src="media/videos/Sale point.mp4"
+              data-label="Punto de venta"
             ></div>
           </div>
         </section>
@@ -204,26 +224,38 @@
             <div class="showcase-copy">
               <h2>Reportes e IA</h2>
               <div class="showcase-bullets">
-                <span>Analisis</span>
-                <span>Consultas</span>
+                <span>Análisis</span>
+                <span>Creación de reportes</span>
                 <span>Apoyo en decisiones</span>
               </div>
             </div>
 
-            <div class="showcase-media-stack">
-              <div
-                class="media-frame media-large"
-                data-media-type="image"
-                data-src="media/screenshots/09-agent-reports.png"
-                data-label="Captura esperada: reportes o agente de IA"
-              ></div>
-              <div
-                class="media-frame media-video-inline"
-                data-media-type="video"
-                data-src="media/videos/09-demo-recorrido.mp4"
-                data-label="Video opcional: cierre de demo"
-              ></div>
+            <div
+              class="media-frame media-wide"
+              data-media-type="video"
+              data-videos='["media/videos/12-REport creation.mp4","media/videos/16-IA Agent.mp4"]'
+              data-label="Reportes e IA"
+            ></div>
+          </div>
+        </section>
+
+        <section class="slide" data-title="Kirdie IA">
+          <div class="slide-grid showcase-grid">
+            <div class="showcase-copy">
+              <h2>Kirdie: Asistente IA</h2>
+              <div class="showcase-bullets">
+                <span>Lenguaje natural</span>
+                <span>Análisis operativo</span>
+                <span>Apoyo en decisiones</span>
+              </div>
             </div>
+
+            <div
+              class="media-frame media-wide"
+              data-media-type="video"
+              data-src="media/videos/Kirdie IA Assistant.mp4"
+              data-label="Kirdie IA Assistant"
+            ></div>
           </div>
         </section>
 
@@ -231,42 +263,50 @@
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
             <h2 style="font-size: 3.8rem; margin-bottom: 60px;">Requisitos completados en este sprint</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%;">
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Auth</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Registro e ingreso seguros.</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%;">
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Auth</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Registro e ingreso seguros.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Empresa</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Contexto y roles definidos.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Empresa</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Contexto y roles definidos.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Proyectos</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Gestión y control de detalles.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Proyectos</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Gestión y control de detalles.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Tareas</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Asignación y seguimiento activo.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Tareas</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Asignación y seguimiento activo.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Equipos</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Permisos y colaboración.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Equipos</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Permisos y colaboración.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Inventario</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Control de productos y stock.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Inventario</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Control de productos y stock.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Presupuesto</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Gestión de gastos y alertas.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Punto de Venta</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Ventas y descuento de stock.</p>
               </article>
-              <article style="padding: 35px 20px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Reportes</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Visibilidad ejecutiva.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Presupuesto</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Gestión de gastos y alertas.</p>
               </article>
-              <article style="padding: 35px 20px; background: linear-gradient(135deg, rgba(202,168,96,0.15), rgba(202,168,96,0.03)); border: 1px solid var(--Primary); border-radius: var(--radius-lg); text-align: center; box-shadow: 0 0 25px rgba(202,168,96,0.15);">
-                <strong style="font-size: 1.6rem; color: var(--Primary); display: block; margin-bottom: 12px;">Agente IA</strong>
-                <p style="font-size: 1.2rem; color: var(--text); margin: 0;">Consultas y análisis profundo.</p>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Reportes</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Visibilidad ejecutiva.</p>
+              </article>
+              <article style="padding: 28px 16px; background: rgba(202,168,96,0.05); border: 1px solid var(--Border); border-radius: var(--radius-lg); text-align: center;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Agente IA</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Consultas y análisis profundo.</p>
+              </article>
+              <article style="padding: 28px 16px; background: linear-gradient(135deg, rgba(202,168,96,0.15), rgba(202,168,96,0.03)); border: 1px solid var(--Primary); border-radius: var(--radius-lg); text-align: center; box-shadow: 0 0 25px rgba(202,168,96,0.15); grid-column: span 2;">
+                <strong style="font-size: 1.4rem; color: var(--Primary); display: block; margin-bottom: 10px;">Kirdie IA</strong>
+                <p style="font-size: 1.1rem; color: var(--text); margin: 0;">Asistente inteligente integrado en toda la operación.</p>
               </article>
             </div>
           </div>
