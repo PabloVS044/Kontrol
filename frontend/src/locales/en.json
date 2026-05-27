@@ -1052,5 +1052,23 @@
       "colStatus": "Status",
       "empty": "No users found."
     }
+  },
+  "navbar": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "projects": "Projects",
+    "teams": "Teams",
+    "budget": "Budget",
+    "reports": "Reports",
+    "chat": "Chat",
+    "ai": "AI",
+    "integrations": "Integrations",
+    "yourWorkspaces": "YOUR WORKSPACES",
+    "createWorkspace": "+ Create new workspace",
+    "admin": {
+      "overview": "Overview",
+      "companies": "Companies",
+      "users": "Users"
+    }
   }
 }

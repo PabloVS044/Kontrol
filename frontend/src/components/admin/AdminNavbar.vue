@@ -12,9 +12,9 @@
       </div>
 
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
-        <RouterLink class="appnav-link" :to="{ name: 'admin-dashboard' }" @click="closeMenu">Overview</RouterLink>
-        <RouterLink class="appnav-link" :to="{ name: 'admin-companies' }" @click="closeMenu">Companies</RouterLink>
-        <RouterLink class="appnav-link" :to="{ name: 'admin-users' }"     @click="closeMenu">Users</RouterLink>
+        <RouterLink class="appnav-link" :to="{ name: 'admin-dashboard' }" @click="closeMenu">{{ $t('navbar.admin.overview') }}</RouterLink>
+        <RouterLink class="appnav-link" :to="{ name: 'admin-companies' }" @click="closeMenu">{{ $t('navbar.admin.companies') }}</RouterLink>
+        <RouterLink class="appnav-link" :to="{ name: 'admin-users' }"     @click="closeMenu">{{ $t('navbar.admin.users') }}</RouterLink>
       </div>
 
       <div class="appnav-end">
