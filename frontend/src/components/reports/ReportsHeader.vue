@@ -1,21 +1,21 @@
 <template>
   <div class="rep-header">
     <div class="rep-header-left">
-      <h1 class="rep-title">Reports Center</h1>
-      <p class="rep-subtitle">Analytics and performance overview for all your projects</p>
+      <h1 class="rep-title">{{ $t('reports.header.title') }}</h1>
+      <p class="rep-subtitle">{{ $t('reports.header.subtitle') }}</p>
     </div>
     <div class="rep-header-actions">
       <button class="btn-outline">
         <Plus :size="14" />
-        Create Report
+        {{ $t('reports.header.createReport') }}
       </button>
       <button class="btn-outline">
         <BadgeCheck :size="14" />
-        Generate with AI
+        {{ $t('reports.header.generateAI') }}
       </button>
       <button class="btn-outline">
         <Download :size="14" />
-        Export
+        {{ $t('reports.header.export') }}
       </button>
     </div>
   </div>

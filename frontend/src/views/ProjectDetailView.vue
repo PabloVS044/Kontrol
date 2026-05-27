@@ -10,10 +10,10 @@
 
       <!-- Error -->
       <div v-else-if="error" class="state-screen">
-        <p class="state-title">Could not load project</p>
+        <p class="state-title">{{ $t('projects.detail.error.title') }}</p>
         <p class="state-msg">{{ error }}</p>
         <button class="btn-primary" style="margin-top: 20px" @click="loadAll">
-          Retry
+          {{ $t('projects.detail.error.retry') }}
         </button>
       </div>
 
@@ -29,7 +29,7 @@
                 stroke-linecap="square"
               />
             </svg>
-            Projects
+            {{ $t('projects.detail.back') }}
           </RouterLink>
 
           <div class="pd-header-body">
@@ -79,8 +79,8 @@
                 >
                   {{
                     daysRemaining < 0
-                      ? `${Math.abs(daysRemaining)}d overdue`
-                      : `${daysRemaining}d remaining`
+                      ? $t('projects.detail.overdue', { n: Math.abs(daysRemaining) })
+                      : $t('projects.detail.remaining', { n: daysRemaining })
                   }}
                 </span>
               </div>
@@ -98,19 +98,19 @@
                     <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
                   </svg>
-                  Presupuesto
+                  {{ $t('projects.detail.nav.budget') }}
                 </button>
                 <button class="pd-nav-btn" @click="goToReports">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                     <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
-                  Reportes
+                  {{ $t('projects.detail.nav.reports') }}
                 </button>
               </div>
-              <div class="budget-card">
+              <div class="budget-card" data-birdie="budget-control">
                 <div class="budget-card-top">
-                  <span class="budget-label">Budget</span>
+                  <span class="budget-label">{{ $t('projects.budget') }}</span>
                   <span class="budget-pct" :style="{ color: budgetColor }"
                     >{{ budgetPct }}%</span
                   >
@@ -119,11 +119,11 @@
                 <div class="budget-amounts">
                   <span
                     >${{ formatMoney(spentBudget) }}
-                    <small>spent</small></span
+                    <small>{{ $t('projects.detail.spent') }}</small></span
                   >
                   <span
                     >${{ formatMoney(totalBudget) }}
-                    <small>total</small></span
+                    <small>{{ $t('projects.detail.total') }}</small></span
                   >
                 </div>
               </div>
@@ -138,6 +138,7 @@
             :key="tab.id"
             class="pd-tab"
             :class="{ active: activeTab === tab.id }"
+            :data-birdie="tab.id === 'tasks' ? 'tasks-tab' : (tab.id === 'members' ? 'invite-members' : null)"
             @click="activeTab = tab.id"
           >
             {{ tab.label }}
@@ -149,8 +150,8 @@
           <div class="overview-grid">
             <!-- Task progress -->
             <div class="metric-card">
-              <p class="metric-kicker">Task Progress</p>
-              <p class="metric-total">{{ totalTasks }} tasks total</p>
+              <p class="metric-kicker">{{ $t('projects.detail.overview.taskProgress') }}</p>
+              <p class="metric-total">{{ $t('projects.detail.overview.tasksTotal', { count: totalTasks }) }}</p>
               <div class="task-states">
                 <div
                   v-for="s in taskStateRows"
@@ -172,7 +173,7 @@
 
             <!-- Project progress -->
             <div class="metric-card">
-              <p class="metric-kicker">Project Progress</p>
+              <p class="metric-kicker">{{ $t('projects.detail.overview.projectProgress') }}</p>
               <div class="progress-overview-head">
                 <div>
                   <div class="progress-overview-value">{{ progressPercentage }}%</div>
@@ -186,27 +187,27 @@
                     background: `${progressSignalColor}14`,
                   }"
                 >
-                  {{ progressEntriesTotal ? `${progressEntriesTotal} updates` : 'No updates' }}
+                  {{ progressEntriesTotal ? $t('projects.detail.overview.updates', { count: progressEntriesTotal }) : $t('projects.detail.overview.noUpdates') }}
                 </span>
               </div>
               <ProgressBar :pct="progressPercentage" :color="progressSignalColor" />
               <div class="progress-overview-meta">
-                <span>{{ taskCompletionPercentage }}% tasks done</span>
-                <span>{{ progressMilestones }} milestones</span>
-                <span>{{ progressBlockers }} blockers</span>
+                <span>{{ $t('projects.detail.overview.tasksDone', { pct: taskCompletionPercentage }) }}</span>
+                <span>{{ $t('projects.detail.overview.milestones', { count: progressMilestones }) }}</span>
+                <span>{{ $t('projects.detail.overview.blockers', { count: progressBlockers }) }}</span>
               </div>
               <p class="metric-total">{{ progressLastUpdateLabel }}</p>
             </div>
 
             <!-- Budget detail -->
             <div class="metric-card">
-              <p class="metric-kicker">Budget Overview</p>
+              <p class="metric-kicker">{{ $t('projects.detail.overview.budgetOverview') }}</p>
               <div class="budget-detail-row">
                 <div class="budget-detail-cell">
                   <div class="budget-detail-val">
                     ${{ formatMoney(totalBudget) }}
                   </div>
-                  <div class="budget-detail-sub">Total budget</div>
+                  <div class="budget-detail-sub">{{ $t('projects.detail.overview.totalBudget') }}</div>
                 </div>
                 <div class="budget-detail-cell">
                   <div
@@ -215,7 +216,7 @@
                   >
                     ${{ formatMoney(spentBudget) }}
                   </div>
-                  <div class="budget-detail-sub">Spent</div>
+                  <div class="budget-detail-sub">{{ $t('projects.detail.overview.budgetSpent') }}</div>
                 </div>
                 <div class="budget-detail-cell">
                   <div
@@ -226,7 +227,7 @@
                   >
                     ${{ formatMoney(Math.abs(budgetRemaining)) }}
                   </div>
-                  <div class="budget-detail-sub">{{ budgetRemaining < 0 ? 'Overrun' : 'Available' }}</div>
+                  <div class="budget-detail-sub">{{ budgetRemaining < 0 ? $t('projects.detail.overview.budgetOverrun') : $t('projects.detail.overview.available') }}</div>
                 </div>
               </div>
               <ProgressBar :pct="budgetPct" :color="budgetColor" style="margin-top:16px" />
@@ -234,7 +235,7 @@
 
             <!-- Inventory movements -->
             <div class="metric-card">
-              <p class="metric-kicker">Inventory Activity</p>
+              <p class="metric-kicker">{{ $t('projects.detail.overview.inventoryActivity') }}</p>
               <template v-if="metrics?.movimientos?.length">
                 <div
                   v-for="mov in metrics.movimientos"
@@ -252,28 +253,24 @@
                   >
                 </div>
               </template>
-              <p v-else class="empty-hint">No inventory movements recorded.</p>
+              <p v-else class="empty-hint">{{ $t('projects.detail.overview.noMovements') }}</p>
             </div>
 
             <!-- Team -->
             <div class="metric-card">
-              <p class="metric-kicker">Team Breakdown</p>
+              <p class="metric-kicker">{{ $t('projects.detail.overview.teamBreakdown') }}</p>
               <template v-if="metrics?.equipo?.length">
                 <div v-for="role in metrics.equipo" :key="role.rol" class="team-role-row">
                   <div class="team-role-avatar">{{ role.total }}</div>
                   <div>
                     <div class="team-role-name">{{ role.rol }}</div>
                     <div class="team-role-sub">
-                      {{
-                        role.total === 1 ? "1 member" : `${role.total} members`
-                      }}
+                      {{ role.total === 1 ? $t('projects.detail.overview.memberSingular') : $t('projects.detail.overview.memberPlural', { count: role.total }) }}
                     </div>
                   </div>
                 </div>
               </template>
-              <p v-else class="empty-hint">
-                No roles assigned to this project yet.
-              </p>
+              <p v-else class="empty-hint">{{ $t('projects.detail.overview.noRoles') }}</p>
             </div>
           </div>
         </section>
@@ -283,20 +280,20 @@
           <div class="tasks-toolbar">
             <div class="tasks-filters">
               <select v-model="taskFilterEstado" class="filter-select">
-                <option value="">All statuses</option>
-                <option value="PENDIENTE">Pending</option>
-                <option value="EN_PROGRESO">In progress</option>
-                <option value="COMPLETADA">Completed</option>
-                <option value="CANCELADA">Cancelled</option>
+                <option value="">{{ $t('projects.tasks.allStatuses') }}</option>
+                <option value="PENDIENTE">{{ $t('projects.taskStatuses.pending') }}</option>
+                <option value="EN_PROGRESO">{{ $t('projects.taskStatuses.inProgress') }}</option>
+                <option value="COMPLETADA">{{ $t('projects.taskStatuses.completed') }}</option>
+                <option value="CANCELADA">{{ $t('projects.taskStatuses.cancelled') }}</option>
               </select>
               <select v-model="taskFilterPrioridad" class="filter-select">
-                <option value="">All priorities</option>
-                <option value="CRITICA">Critical</option>
-                <option value="ALTA">High</option>
-                <option value="MEDIA">Medium</option>
-                <option value="BAJA">Low</option>
+                <option value="">{{ $t('projects.tasks.allPriorities') }}</option>
+                <option value="CRITICA">{{ $t('projects.priorities.critical') }}</option>
+                <option value="ALTA">{{ $t('projects.priorities.high') }}</option>
+                <option value="MEDIA">{{ $t('projects.priorities.medium') }}</option>
+                <option value="BAJA">{{ $t('projects.priorities.low') }}</option>
               </select>
-              <span class="tasks-count">{{ filteredTasks.length }} tasks</span>
+              <span class="tasks-count">{{ $t('projects.tasks.count', { count: filteredTasks.length }) }}</span>
             </div>
 
             <button
@@ -312,11 +309,11 @@
                   stroke-linecap="square"
                 />
               </svg>
-              New task
+              {{ $t('projects.tasks.newTask') }}
             </button>
           </div>
 
-          <div v-if="tasksLoading" class="tasks-loading">Loading tasks…</div>
+          <div v-if="tasksLoading" class="tasks-loading">{{ $t('projects.tasks.loading') }}</div>
 
           <div v-else-if="filteredTasks.length === 0" class="tab-empty">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -325,16 +322,16 @@
               <path d="M11 20h14M11 24.5h8" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
             <p class="tab-empty-title">
-              {{ taskFilterEstado || taskFilterPrioridad ? 'Sin tareas con este filtro' : 'Sin tareas aún' }}
+              {{ taskFilterEstado || taskFilterPrioridad ? $t('projects.tasks.emptyFilter') : $t('projects.tasks.emptyNoTasks') }}
             </p>
             <p class="tab-empty-sub">
-              {{ taskFilterEstado || taskFilterPrioridad ? 'Prueba cambiando los filtros.' : 'Crea la primera tarea del proyecto.' }}
+              {{ taskFilterEstado || taskFilterPrioridad ? $t('projects.tasks.emptyFilterSub') : $t('projects.tasks.emptyNoTasksSub') }}
             </p>
             <button v-if="canManageTasks && !taskFilterEstado && !taskFilterPrioridad" class="btn-primary" @click="openCreateTask">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              Nueva tarea
+              {{ $t('projects.tasks.emptyCta') }}
             </button>
           </div>
 
@@ -359,22 +356,22 @@
               <input
                 v-model="teamFilterNombre"
                 type="text"
-                placeholder="Search by name…"
+                :placeholder="$t('projects.team.searchPlaceholder')"
                 class="filter-input"
               />
               <select v-model="teamFilterArea" class="filter-select">
-                <option value="">All areas</option>
+                <option value="">{{ $t('projects.team.allAreas') }}</option>
                 <option v-for="area in MOCK_AREAS" :key="area" :value="area">
                   {{ area }}
                 </option>
               </select>
-              <span class="tasks-count">{{ filteredTeams.length }} teams</span>
+              <span class="tasks-count">{{ $t('projects.team.count', { count: filteredTeams.length }) }}</span>
             </div>
             <button class="btn-primary" @click="openCreateTeam">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square" />
               </svg>
-              New team
+              {{ $t('projects.team.newTeam') }}
             </button>
           </div>
 
@@ -385,22 +382,25 @@
               <path d="M25 16c2.8.8 5 3.4 5 6.5M33 30c0-4-2.5-7.4-6-8.5" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
             <p class="tab-empty-title">
-              {{ teamFilterNombre || teamFilterArea ? 'Sin equipos con este filtro' : 'Sin equipos aún' }}
+              {{ teamFilterNombre || teamFilterArea ? $t('projects.team.emptyFilter') : $t('projects.team.emptyNoTeams') }}
             </p>
             <p class="tab-empty-sub">
-              {{ teamFilterNombre || teamFilterArea ? 'Prueba cambiando los filtros.' : 'Crea el primer equipo del proyecto.' }}
+              {{ teamFilterNombre || teamFilterArea ? $t('projects.team.emptyFilterSub') : $t('projects.team.emptyNoTeamsSub') }}
             </p>
             <button v-if="!teamFilterNombre && !teamFilterArea" class="btn-primary" @click="openCreateTeam">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              Nuevo equipo
+              {{ $t('projects.team.emptyCta') }}
             </button>
           </div>
 
           <div v-else class="tasks-list">
             <div class="list-header">
-              <span>Team</span><span>Area</span><span>Members</span><span>Tasks</span>
+              <span>{{ $t('projects.team.listHeaders.team') }}</span>
+              <span>{{ $t('projects.team.listHeaders.area') }}</span>
+              <span>{{ $t('projects.team.listHeaders.members') }}</span>
+              <span>{{ $t('projects.team.listHeaders.tasks') }}</span>
             </div>
             <div
               v-for="team in filteredTeams"
@@ -474,6 +474,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar       from '../components/AppNavbar.vue'
 import ProgressBar     from '../components/UI/ProgressBar/ProgressBar.vue'
 import ProgressTab     from '../components/DetailProject/ProgressTab.vue'
@@ -490,6 +491,7 @@ import {
 } from '../utils/statusHelpers.js'
 import './ProjectDetailsView.css'
 
+const { t } = useI18n()
 const route  = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
@@ -594,13 +596,13 @@ const teamError           = ref(null)
 const editingTeam         = ref(null)
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────
-const tabs = [
-  { id: "overview", label: "Overview" },
-  { id: "tasks",    label: "Tasks" },
-  { id: "team",     label: "Team" },
-  { id: "members",  label: "Members" },
-  { id: "progress", label: "Progress" },
-];
+const tabs = computed(() => [
+  { id: "overview", label: t('projects.detail.tabs.overview') },
+  { id: "tasks",    label: t('projects.detail.tabs.tasks')    },
+  { id: "team",     label: t('projects.detail.tabs.team')     },
+  { id: "members",  label: t('projects.detail.tabs.members')  },
+  { id: "progress", label: t('projects.detail.tabs.progress') },
+]);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -699,22 +701,22 @@ const progressSignalColor = computed(() => {
 
 const progressSourceLabel = computed(() =>
   progressSummary.value?.derived_from === "progress_entry"
-    ? "Based on timeline updates"
-    : "Derived from task completion",
+    ? t('projects.detail.overview.basedOnTimeline')
+    : t('projects.detail.overview.basedOnTasks'),
 );
 
 const progressLastUpdateLabel = computed(() =>
   progressSummary.value?.last_update_at
-    ? `Latest update ${formatDate(progressSummary.value.last_update_at)}`
-    : "No progress updates recorded yet.",
+    ? t('projects.detail.overview.latestUpdate', { date: formatDate(progressSummary.value.last_update_at) })
+    : t('projects.detail.overview.noProgressYet'),
 );
 
-const TASK_STATE_META = [
-  { estado: 'PENDIENTE',   label: 'Pending',    color: '#60a5fa' },
-  { estado: 'EN_PROGRESO', label: 'In Progress', color: '#34d399' },
-  { estado: 'COMPLETADA',  label: 'Completed',   color: '#c9a962' },
-  { estado: 'CANCELADA',   label: 'Cancelled',   color: '#fb7185' },
-]
+const TASK_STATE_META = computed(() => [
+  { estado: 'PENDIENTE',   label: t('projects.taskStatuses.pending'),    color: '#60a5fa' },
+  { estado: 'EN_PROGRESO', label: t('projects.taskStatuses.inProgress'), color: '#34d399' },
+  { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: '#c9a962' },
+  { estado: 'CANCELADA',   label: t('projects.taskStatuses.cancelled'),  color: '#fb7185' },
+])
 
 const totalTasks = computed(() =>
   (metrics.value?.tareas || []).reduce((acc, t) => acc + Number(t.count), 0),
@@ -722,7 +724,7 @@ const totalTasks = computed(() =>
 
 const taskStateRows = computed(() => {
   const total = totalTasks.value || 1;
-  return TASK_STATE_META.map((meta) => {
+  return TASK_STATE_META.value.map((meta) => {
     const found = (metrics.value?.tareas || []).find(
       (t) => t.estado === meta.estado,
     );

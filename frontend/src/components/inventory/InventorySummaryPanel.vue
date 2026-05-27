@@ -235,11 +235,11 @@ const lowStockColor = computed(() => {
   border-radius: 3px;
 }
 .alert-status.red {
-  background: #fb7185;
+  background: rgba(251,113,133,0.15);
   color: #fb7185;
 }
 .alert-status.gold {
-  background: #c9a962;
+  background: rgba(201,169,98,0.15);
   color: #c9a962;
 }
 

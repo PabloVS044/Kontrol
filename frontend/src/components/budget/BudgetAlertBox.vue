@@ -16,22 +16,25 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   level:   { type: String, default: null },
   message: { type: String, default: '' },
 })
 
-const LEVEL_META = {
-  SALUDABLE:   { kind: 'ok',       title: 'On track.',  message: 'No budget overrun detected.' },
-  PRECAUCION:  { kind: 'watching', title: 'Watching',   message: 'Spending is approaching the warning threshold.' },
-  ADVERTENCIA: { kind: 'warning',  title: 'Warning',    message: 'Budget usage is high.' },
-  CRITICO:     { kind: 'critical', title: 'Critical',   message: 'Budget fully consumed.' },
-  EXCEDIDO:    { kind: 'critical', title: 'Overrun',    message: 'Spending has exceeded the budget.' },
-}
+const { t } = useI18n()
+
+const LEVEL_META = computed(() => ({
+  SALUDABLE:   { kind: 'ok',       title: t('budget.alertBox.onTrack.title'),  message: t('budget.alertBox.onTrack.message') },
+  PRECAUCION:  { kind: 'watching', title: t('budget.alertBox.watching.title'), message: t('budget.alertBox.watching.message') },
+  ADVERTENCIA: { kind: 'warning',  title: t('budget.alertBox.warning.title'),  message: t('budget.alertBox.warning.message') },
+  CRITICO:     { kind: 'critical', title: t('budget.alertBox.critical.title'), message: t('budget.alertBox.critical.message') },
+  EXCEDIDO:    { kind: 'critical', title: t('budget.alertBox.overrun.title'),  message: t('budget.alertBox.overrun.message') },
+}))
 
 const meta = computed(() => {
-  const base = LEVEL_META[props.level] ?? LEVEL_META.SALUDABLE
+  const base = LEVEL_META.value[props.level] ?? LEVEL_META.value.SALUDABLE
   return { ...base, message: props.message || base.message }
 })
 </script>

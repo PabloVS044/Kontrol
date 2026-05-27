@@ -1,7 +1,7 @@
 <template>
   <aside v-if="project" class="side-panel">
     <div class="side-section">
-      <p class="side-label">Project Health</p>
+      <p class="side-label">{{ $t('reports.detail.sideHealth') }}</p>
       <div class="health-card" :class="healthClass">
         <span class="health-dot"></span>
         <div>
@@ -14,24 +14,24 @@
     <div class="side-divider"></div>
 
     <div class="side-section">
-      <p class="side-label">Quick Stats</p>
+      <p class="side-label">{{ $t('reports.detail.sideStats') }}</p>
       <div class="qstat-list">
         <div class="qstat">
-          <span class="qstat-label">Days Active</span>
+          <span class="qstat-label">{{ $t('reports.detail.sideDaysActive') }}</span>
           <span class="qstat-val">{{ daysActive }}</span>
         </div>
         <div class="qstat">
-          <span class="qstat-label">Days Remaining</span>
+          <span class="qstat-label">{{ $t('reports.detail.sideDaysRemaining') }}</span>
           <span class="qstat-val" :class="typeof daysRemaining === 'number' && daysRemaining < 7 ? 'red' : ''">
             {{ daysRemaining }}
           </span>
         </div>
         <div class="qstat">
-          <span class="qstat-label">Budget / Day</span>
+          <span class="qstat-label">{{ $t('reports.detail.sideBudgetPerDay') }}</span>
           <span class="qstat-val">{{ budgetPerDay }}</span>
         </div>
         <div class="qstat">
-          <span class="qstat-label">Velocity</span>
+          <span class="qstat-label">{{ $t('reports.detail.sideVelocity') }}</span>
           <span class="qstat-val gold">{{ mock.velocity }} t/w</span>
         </div>
       </div>
@@ -40,21 +40,21 @@
     <div class="side-divider"></div>
 
     <div class="side-section">
-      <p class="side-label">Actions</p>
+      <p class="side-label">{{ $t('reports.detail.sideActions') }}</p>
       <div class="side-actions">
-        <Button label="Generate Report" />
-        <Button label="Add Member" />
-        <Button label="Settings" />
+        <Button :label="$t('reports.detail.sideActionGenerate')" />
+        <Button :label="$t('reports.detail.sideActionAddMember')" />
+        <Button :label="$t('reports.detail.sideActionSettings')" />
       </div>
     </div>
 
     <div class="side-divider"></div>
 
     <div class="side-section">
-      <p class="side-label">Project Info</p>
+      <p class="side-label">{{ $t('reports.detail.sideProjectInfo') }}</p>
       <div class="info-list">
         <div class="info-row">
-          <span class="info-key">Status</span>
+          <span class="info-key">{{ $t('reports.detail.sideInfoStatus') }}</span>
           <Pill
             :label="statusPill(project.estado).label"
             :btnColor="statusPill(project.estado).bg"
@@ -63,15 +63,15 @@
           />
         </div>
         <div class="info-row">
-          <span class="info-key">Company</span>
+          <span class="info-key">{{ $t('reports.detail.sideInfoCompany') }}</span>
           <span class="info-val">#{{ project.id_empresa }}</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Manager</span>
+          <span class="info-key">{{ $t('reports.detail.sideInfoManager') }}</span>
           <span class="info-val">#{{ project.id_encargado }}</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Budget</span>
+          <span class="info-key">{{ $t('reports.detail.sideInfoBudget') }}</span>
           <span class="info-val gold">{{ formatBudget(project.presupuesto_total) }}</span>
         </div>
       </div>
@@ -80,7 +80,7 @@
     <div class="side-divider"></div>
 
     <div class="side-section">
-      <p class="side-label">Risk Level</p>
+      <p class="side-label">{{ $t('reports.detail.sideRiskLevel') }}</p>
       <div class="risk-bars">
         <div v-for="risk in mock.risks" :key="risk.label" class="risk-row">
           <span class="risk-label">{{ risk.label }}</span>

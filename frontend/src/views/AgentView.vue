@@ -14,6 +14,7 @@ import {
 } from '../services/agent.js'
 
 const authStore = useAuthStore()
+const CLIENT_HISTORY_LIMIT = 10
 
 const prompt = ref('')
 // Each message: { _id?, role, text, queries?, edited?, isLocal? }
@@ -141,6 +142,13 @@ function autoResize(e) {
   e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'
 }
 
+function buildHistoryPayload() {
+  return messages.value
+    .filter((m) => m.text && (m.role === 'user' || m.role === 'assistant'))
+    .slice(-CLIENT_HISTORY_LIMIT)
+    .map((m) => ({ role: m.role, content: m.text }))
+}
+
 async function submit() {
   const text = prompt.value.trim()
   if (!text || loading.value) return
@@ -153,9 +161,7 @@ async function submit() {
   prompt.value = ''
   loading.value = true
 
-  const history = messages.value
-    .filter((m) => m.text)
-    .map((m) => ({ role: m.role, content: m.text }))
+  const history = buildHistoryPayload()
 
   activeController = new AbortController()
   const wasNewConversation = !conversationId.value
@@ -362,7 +368,7 @@ function autoResizeEdit(e) {
 
       <main class="agent-main">
       <div v-if="!agentConfigured" class="agent-banner warn">
-        El agente aún no está configurado. Define <code>AGENT_API_URL</code> en el backend.
+        El agente aún no está configurado. Define <code>AGENT_API_KEY</code> en el backend. <code>AGENT_API_URL</code> es opcional y por defecto usa ClawStitch Qwen.
       </div>
       <div v-else-if="errorBanner" class="agent-banner error">
         {{ errorBanner }}
@@ -602,7 +608,7 @@ function autoResizeEdit(e) {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .sidebar-icon-btn:hover {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.08);
   color: var(--Primary, #caa860);
   border-color: rgba(202, 168, 96, 0.25);
 }
@@ -614,7 +620,7 @@ function autoResizeEdit(e) {
   gap: 8px;
   width: 100%;
   padding: 9px 12px;
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.08);
   border: 1px solid rgba(202, 168, 96, 0.28);
   border-radius: 2px;
   color: var(--Primary, #caa860);
@@ -625,7 +631,7 @@ function autoResizeEdit(e) {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .new-conv-btn:hover:not(:disabled) {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.16);
   border-color: rgba(202, 168, 96, 0.5);
 }
 .new-conv-btn:disabled {
@@ -675,7 +681,7 @@ function autoResizeEdit(e) {
   background: #111111;
 }
 .conv-item.active {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.12);
   border-color: rgba(202, 168, 96, 0.3);
 }
 .conv-item:disabled {
@@ -706,7 +712,7 @@ function autoResizeEdit(e) {
   opacity: 1;
 }
 .conv-delete:hover {
-  background: #dc5050;
+  background: rgba(220, 80, 80, 0.18);
   color: #e88080;
 }
 
@@ -717,7 +723,7 @@ function autoResizeEdit(e) {
   width: 28px;
   height: 28px;
   border-radius: 2px;
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.3);
   color: var(--Primary, #caa860);
   cursor: pointer;
@@ -728,7 +734,7 @@ function autoResizeEdit(e) {
   transition: background 0.15s;
 }
 .sidebar-reopen:hover {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.2);
 }
 
 .agent-main {
@@ -798,7 +804,7 @@ function autoResizeEdit(e) {
 }
 
 .agent-card:hover {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border-color: rgba(202, 168, 96, 0.28);
   box-shadow: inset 0 1px 0 rgba(202, 168, 96, 0.1), 0 2px 12px rgba(202, 168, 96, 0.06);
   transform: translateY(-1px);
@@ -946,12 +952,12 @@ function autoResizeEdit(e) {
 }
 
 .agent-send.stop {
-  background: #dc5050;
+  background: rgba(220, 80, 80, 0.16);
   border-color: rgba(220, 80, 80, 0.5);
   color: #e88080;
 }
 .agent-send.stop:hover {
-  background: #dc5050;
+  background: rgba(220, 80, 80, 0.26);
   color: #ffb0b0;
 }
 
@@ -997,7 +1003,7 @@ function autoResizeEdit(e) {
 .msg-avatar {
   width: 28px;
   height: 28px;
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.2);
   border-radius: 50%;
   display: flex;
@@ -1153,7 +1159,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-action-icon:hover {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border-color: rgba(202, 168, 96, 0.3);
   color: var(--Primary, #caa860);
 }
@@ -1218,7 +1224,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-row.user .msg-bubble {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.15);
   color: var(--Text, #faf8f5);
 }
@@ -1258,12 +1264,12 @@ function autoResizeEdit(e) {
   border: 1px solid;
 }
 .agent-banner.warn {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.08);
   border-color: rgba(202, 168, 96, 0.32);
   color: #caa860;
 }
 .agent-banner.error {
-  background: #dc5050;
+  background: rgba(220, 80, 80, 0.08);
   border-color: rgba(220, 80, 80, 0.32);
   color: #e88080;
 }

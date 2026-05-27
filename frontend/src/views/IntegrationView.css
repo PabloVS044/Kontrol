@@ -60,7 +60,7 @@
 }
 
 .chip.active {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.12);
   border-color: #caa860;
   color: #caa860;
 }
@@ -211,7 +211,7 @@
   padding: 8px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.3);
   color: #caa860;
   cursor: pointer;
@@ -219,7 +219,7 @@
 }
 
 .btn-configure:hover {
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.18);
 }
 
 .btn-test {
@@ -251,13 +251,13 @@
 }
 
 .inline-feedback.success {
-  background: #34d399;
+  background: rgba(52, 211, 153, 0.08);
   color: #34d399;
   border-left: 2px solid #34d399;
 }
 
 .inline-feedback.error {
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.08);
   color: #fb7185;
   border-left: 2px solid #fb7185;
 }
@@ -391,7 +391,7 @@
 .modal-error {
   font-size: 13px;
   color: #fb7185;
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.08);
   border-left: 2px solid #fb7185;
   padding: 8px 12px;
   margin: 0;
@@ -400,7 +400,7 @@
 .modal-success {
   font-size: 13px;
   color: #34d399;
-  background: #34d399;
+  background: rgba(52, 211, 153, 0.08);
   border-left: 2px solid #34d399;
   padding: 8px 12px;
   margin: 0;
@@ -458,7 +458,7 @@
   padding: 4px 10px;
   font-size: 12px;
   font-family: 'DM Sans', sans-serif;
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.1);
   border: 1px solid rgba(251, 113, 133, 0.35);
   color: #fb7185;
   cursor: pointer;
@@ -466,7 +466,7 @@
 }
 
 .btn-confirm-disconnect:hover:not(:disabled) {
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.18);
 }
 
 .btn-confirm-disconnect:disabled {
@@ -525,7 +525,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #caa860;
+  background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.25);
   color: #caa860;
   font-size: 12px;

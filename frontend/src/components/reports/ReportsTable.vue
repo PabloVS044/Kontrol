@@ -1,8 +1,8 @@
 <template>
   <div class="section-block">
     <div class="section-header">
-      <span class="section-title">Active Reports</span>
-      <button class="view-all-btn">View all reports -></button>
+      <span class="section-title">{{ $t('reports.table.title') }}</span>
+      <button class="view-all-btn">{{ $t('reports.table.viewAll') }}</button>
     </div>
 
     <div v-if="loading" class="table-skeleton">
@@ -19,11 +19,11 @@
       <table class="rep-table">
         <thead>
           <tr>
-            <th>Report Name</th>
-            <th>Project</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Action</th>
+            <th>{{ $t('reports.table.colName') }}</th>
+            <th>{{ $t('reports.table.colProject') }}</th>
+            <th>{{ $t('reports.table.colStatus') }}</th>
+            <th>{{ $t('reports.table.colDate') }}</th>
+            <th>{{ $t('reports.table.colAction') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -52,12 +52,12 @@
             <td class="td-date">{{ formatDate(project.fecha_inicio) }}</td>
             <td class="td-action">
               <button class="open-btn" @click.stop="$emit('open', project.id_proyecto)">
-                Open ->
+                {{ $t('reports.table.open') }}
               </button>
             </td>
           </tr>
           <tr v-if="projects.length === 0">
-            <td colspan="5" class="empty-row">No projects found.</td>
+            <td colspan="5" class="empty-row">{{ $t('reports.table.empty') }}</td>
           </tr>
         </tbody>
       </table>

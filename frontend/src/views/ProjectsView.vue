@@ -2,37 +2,37 @@
   <div class="projects-root">
     <AppNavbar />
 
-    <BaseModal v-model="showModal" title="New project">
+    <BaseModal v-model="showModal" :title="$t('projects.form.newTitle')">
       <form class="modal-form" @submit.prevent="submitProject">
 
         <div class="form-field">
-          <label>Name <span class="req">*</span></label>
-          <input v-model="form.nombre" type="text" placeholder="Project name" required />
+          <label>{{ $t('projects.form.name') }} <span class="req">*</span></label>
+          <input v-model="form.nombre" type="text" :placeholder="$t('projects.form.namePlaceholder')" required />
         </div>
 
         <div class="form-field">
-          <label>Description</label>
-          <textarea v-model="form.descripcion" placeholder="Optional description" rows="2" />
+          <label>{{ $t('projects.form.description') }}</label>
+          <textarea v-model="form.descripcion" :placeholder="$t('projects.form.descriptionPlaceholder')" rows="2" />
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label>Start date <span class="req">*</span></label>
+            <label>{{ $t('projects.form.startDate') }} <span class="req">*</span></label>
             <input v-model="form.fecha_inicio" type="date" required />
           </div>
           <div class="form-field">
-            <label>End date</label>
+            <label>{{ $t('projects.form.endDate') }}</label>
             <input v-model="form.fecha_fin_planificada" type="date" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label>Budget <span class="req">*</span></label>
+            <label>{{ $t('projects.form.budget') }} <span class="req">*</span></label>
             <input v-model.number="form.presupuesto_total" type="number" min="0" step="0.01" placeholder="0.00" required />
           </div>
           <div class="form-field">
-            <label>Status</label>
+            <label>{{ $t('projects.form.status') }}</label>
             <select v-model="form.estado">
               <option v-for="e in ESTADOS" :key="e.value" :value="e.value">{{ e.label }}</option>
             </select>
@@ -42,9 +42,9 @@
         <p v-if="modalError" class="modal-error">{{ modalError }}</p>
 
         <div class="modal-actions">
-          <Button label="Cancel" type="button" @click="showModal = false" />
+          <Button :label="$t('projects.form.cancel')" type="button" @click="showModal = false" />
           <Button
-            :label="modalLoading ? 'Saving…' : 'Save project'"
+            :label="modalLoading ? $t('projects.form.saving') : $t('projects.form.save')"
             type="submit"
             :disabled="modalLoading"
           />
@@ -56,16 +56,16 @@
 
       <!-- Auth error -->
       <div v-if="authError" class="state-screen">
-        <p class="state-title">Session required</p>
-        <p class="state-msg">You must be logged in to view your projects.</p>
+        <p class="state-title">{{ $t('projects.list.authError.title') }}</p>
+        <p class="state-msg">{{ $t('projects.list.authError.message') }}</p>
       </div>
 
       <!-- Fetch error -->
       <div v-else-if="fetchError" class="state-screen">
-        <p class="state-title">Could not load projects</p>
+        <p class="state-title">{{ $t('projects.list.fetchError.title') }}</p>
         <p class="state-msg">{{ fetchError }}</p>
         <button class="btn-primary" style="margin-top:16px" @click="loadData">
-          <span>Retry</span>
+          <span>{{ $t('projects.list.fetchError.retry') }}</span>
         </button>
       </div>
 
@@ -76,23 +76,23 @@
           <!-- Header -->
           <div class="proj-header">
             <div class="proj-header-left">
-              <h1 class="proj-title">My Projects</h1>
-              <p class="proj-subtitle">Projects you are enrolled in as admin or member</p>
+              <h1 class="proj-title">{{ $t('projects.list.title') }}</h1>
+              <p class="proj-subtitle">{{ $t('projects.list.subtitle') }}</p>
             </div>
             <div class="proj-header-actions">
-              <button v-if="authStore.canCreateProjects" class="btn-primary" @click="openModal">
+              <button v-if="authStore.canCreateProjects" data-birdie="create-project" class="btn-primary" @click="openModal">
                 <svg class="icon16" viewBox="0 0 16 16" fill="none">
                   <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
                 </svg>
-                <span>New project</span>
+                <span>{{ $t('projects.list.newProject') }}</span>
               </button>
-              <button class="icon-btn" title="Settings">
+              <button class="icon-btn" :title="$t('projects.list.settings')">
                 <svg class="icon18" viewBox="0 0 18 18" fill="none">
                   <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
                   <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
                 </svg>
               </button>
-              <button class="icon-btn" title="History">
+              <button class="icon-btn" :title="$t('projects.list.history')">
                 <svg class="icon18" viewBox="0 0 18 18" fill="none">
                   <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
                   <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
@@ -117,10 +117,10 @@
           <!-- Section label + controls -->
           <div class="section-header">
             <span class="section-title">
-              {{ activeTab === 'all' ? 'All Projects' :
-                 activeTab === 'active' ? 'Active Projects' :
-                 activeTab === 'risk' ? 'At Risk' :
-                 activeTab === 'completed' ? 'Completed' : 'Projects' }}
+              {{ activeTab === 'all' ? $t('projects.list.section.all') :
+                 activeTab === 'active' ? $t('projects.list.section.active') :
+                 activeTab === 'risk' ? $t('projects.list.section.atRisk') :
+                 activeTab === 'completed' ? $t('projects.list.section.completed') : $t('projects.list.section.default') }}
             </span>
             <div class="section-controls">
               <div class="search-wrap">
@@ -131,13 +131,13 @@
                 <input
                   v-model="searchQuery"
                   class="search-input"
-                  placeholder="Buscar proyecto…"
+                  :placeholder="$t('projects.list.searchPlaceholder')"
                   @keydown.escape="searchQuery = ''"
                 />
                 <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">×</button>
               </div>
               <div class="view-toggle">
-                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'" title="Vista grid">
+                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'" :title="$t('projects.list.gridView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                     <rect x="8" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
@@ -145,7 +145,7 @@
                     <rect x="8" y="8" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                   </svg>
                 </button>
-                <button class="vt-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'" title="Vista lista">
+                <button class="vt-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'" :title="$t('projects.list.listView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
@@ -154,8 +154,8 @@
             </div>
           </div>
           <p class="section-meta">
-            <span v-if="loading">Cargando…</span>
-            <span v-else>{{ filteredProjects.length }} proyecto{{ filteredProjects.length !== 1 ? 's' : '' }}</span>
+            <span v-if="loading">{{ $t('projects.list.loading') }}</span>
+            <span v-else>{{ $t('projects.list.count', { count: filteredProjects.length }) }}</span>
           </p>
 
           <!-- Skeleton -->
@@ -175,12 +175,12 @@
             <!-- Column headers -->
             <div class="list-header">
               <div class="lh-spacer"></div>
-              <div class="lh-col">Proyecto</div>
-              <div class="lh-col">Progreso</div>
-              <div class="lh-col">Presupuesto</div>
-              <div class="lh-col">Vence</div>
-              <div class="lh-col lh-center">Acciones</div>
-              <div class="lh-col lh-center">Rol</div>
+              <div class="lh-col">{{ $t('projects.list.listHeaders.project') }}</div>
+              <div class="lh-col">{{ $t('projects.list.listHeaders.progress') }}</div>
+              <div class="lh-col">{{ $t('projects.list.listHeaders.budget') }}</div>
+              <div class="lh-col">{{ $t('projects.list.listHeaders.due') }}</div>
+              <div class="lh-col lh-center">{{ $t('projects.list.listHeaders.actions') }}</div>
+              <div class="lh-col lh-center">{{ $t('projects.list.listHeaders.role') }}</div>
             </div>
 
             <div
@@ -198,7 +198,7 @@
                   <span class="lr-dot" :style="{ backgroundColor: statusColor(project.estado) }"></span>
                   <span class="lr-status-text" :style="{ color: statusColor(project.estado) }">{{ statusLabel(project.estado) }}</span>
                   <span class="lr-meta-sep">·</span>
-                  <span class="lr-desc">{{ project.descripcion || 'Sin descripción.' }}</span>
+                  <span class="lr-desc">{{ project.descripcion || $t('projects.noDescription') }}</span>
                 </div>
               </div>
 
@@ -222,26 +222,26 @@
 
               <!-- Quick actions -->
               <div class="lr-actions" @click.stop>
-                <button class="lr-btn" title="Tareas" @click="router.push(`/projects/${project.id_proyecto}?tab=tasks`)">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.tasks')" @click="router.push(`/projects/${project.id_proyecto}?tab=tasks`)">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
                 </button>
-                <button class="lr-btn" title="Equipo" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.team')" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                     <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                   </svg>
                 </button>
-                <button class="lr-btn" title="Presupuesto" @click="openBudget(project)">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.budget')" @click="openBudget(project)">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
                   </svg>
                 </button>
-                <button class="lr-btn" title="Reportes" @click="router.push({ name: 'reports', query: { project: project.id_proyecto } })">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.reports')" @click="router.push({ name: 'reports', query: { project: project.id_proyecto } })">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                     <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
@@ -265,10 +265,10 @@
                 <path d="M6 15h28M13 10V8M27 10V8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
                 <path d="M13 22h14M13 27h8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <p class="empty-title">Sin proyectos aquí</p>
-              <p class="empty-sub">{{ searchQuery ? 'Ningún proyecto coincide con la búsqueda.' : 'Cambia el filtro o crea un nuevo proyecto.' }}</p>
+              <p class="empty-title">{{ $t('projects.list.empty.title') }}</p>
+              <p class="empty-sub">{{ searchQuery ? $t('projects.list.empty.search') : $t('projects.list.empty.noFilter') }}</p>
               <button v-if="authStore.canCreateProjects && !searchQuery" class="btn-primary empty-cta" @click="openModal">
-                <span>+ Nuevo proyecto</span>
+                <span>{{ $t('projects.list.empty.cta') }}</span>
               </button>
             </div>
           </div>
@@ -300,7 +300,7 @@
               <!-- Name + Description (clickable → project detail) -->
               <div class="card-main" @click="router.push(`/projects/${project.id_proyecto}`)">
                 <p class="card-name">{{ project.nombre }}</p>
-                <p class="card-desc">{{ project.descripcion || 'Sin descripción.' }}</p>
+                <p class="card-desc">{{ project.descripcion || $t('projects.noDescription') }}</p>
               </div>
 
               <!-- Progress + Budget + Footer -->
@@ -314,18 +314,18 @@
 
                 <div class="budget-line">
                   <div class="budget-labels">
-                    <span>Budget</span>
+                    <span>{{ $t('projects.budget') }}</span>
                     <span class="budget-val">${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}</span>
                   </div>
                   <div class="progress-bg">
                     <div class="progress-fill" :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"></div>
                   </div>
                   <div class="budget-meta">
-                    <span :style="{ color: budgetColor(project) }">{{ budgetPct(project) }}% used</span>
+                    <span :style="{ color: budgetColor(project) }">{{ $t('projects.budgetUsed', { pct: budgetPct(project) }) }}</span>
                     <span v-if="budgetByProj[project.id_proyecto]?.alerta_nivel"
                           class="alert-pill"
                           :class="isCriticalBudgetLevel(budgetByProj[project.id_proyecto].alerta_nivel) ? 'critical' : 'warn'">
-                      {{ isCriticalBudgetLevel(budgetByProj[project.id_proyecto].alerta_nivel) ? 'OVERRUN' : 'WARNING' }}
+                      {{ isCriticalBudgetLevel(budgetByProj[project.id_proyecto].alerta_nivel) ? $t('projects.overrun') : $t('projects.warning') }}
                     </span>
                   </div>
                 </div>
@@ -352,7 +352,7 @@
                     :textColor="statusColor(project.estado)"
                   />
                   <span class="due-date">
-                    {{ project.fecha_fin_planificada ? 'Due ' + formatDate(project.fecha_fin_planificada) : 'No due date' }}
+                    {{ project.fecha_fin_planificada ? $t('projects.dueDate', { date: formatDate(project.fecha_fin_planificada) }) : $t('projects.noDueDate') }}
                   </span>
                 </div>
                 <p v-if="statusError[project.id_proyecto]" class="status-error">
@@ -366,7 +366,7 @@
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
-                  <span>Tareas</span>
+                  <span>{{ $t('projects.list.quickActions.tasks') }}</span>
                 </button>
                 <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -374,7 +374,7 @@
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                     <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                   </svg>
-                  <span>Equipo</span>
+                  <span>{{ $t('projects.list.quickActions.team') }}</span>
                 </button>
                 <button class="quick-btn" @click="openBudget(project)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -382,14 +382,14 @@
                     <path d="M6.5 4v.8M6.5 8.2V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     <path d="M5 7.8c0 .7.7 1.2 1.5 1.2S8 8.5 8 7.8C8 6.4 5 6.7 5 5.4 5 4.7 5.7 4.2 6.5 4.2S8 4.7 8 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
                   </svg>
-                  <span>Presupuesto</span>
+                  <span>{{ $t('projects.list.quickActions.budget') }}</span>
                 </button>
                 <button class="quick-btn" @click="router.push({ name: 'reports', query: { project: project.id_proyecto } })">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <path d="M2 11V7M4.5 11V4.5M7 11V2M9.5 11V6" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                     <path d="M1 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
-                  <span>Reportes</span>
+                  <span>{{ $t('projects.list.quickActions.reports') }}</span>
                 </button>
               </div>
             </div>
@@ -401,10 +401,10 @@
                 <path d="M6 15h28M13 10V8M27 10V8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
                 <path d="M13 22h14M13 27h8" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <p class="empty-title">Sin proyectos aquí</p>
-              <p class="empty-sub">{{ searchQuery ? 'Ningún proyecto coincide con la búsqueda.' : 'Cambia el filtro o crea un nuevo proyecto.' }}</p>
+              <p class="empty-title">{{ $t('projects.list.empty.title') }}</p>
+              <p class="empty-sub">{{ searchQuery ? $t('projects.list.empty.search') : $t('projects.list.empty.noFilter') }}</p>
               <button v-if="authStore.canCreateProjects && !searchQuery" class="btn-primary empty-cta" @click="openModal">
-                <span>+ Nuevo proyecto</span>
+                <span>{{ $t('projects.list.empty.cta') }}</span>
               </button>
             </div>
           </div>
@@ -413,44 +413,44 @@
 
         <!-- Context panel -->
         <aside class="context-panel">
-          <div class="ctx-title">Overview</div>
-          <div class="ctx-subtitle">Your project summary</div>
+          <div class="ctx-title">{{ $t('projects.list.context.title') }}</div>
+          <div class="ctx-subtitle">{{ $t('projects.list.context.subtitle') }}</div>
 
           <div>
-            <p class="ctx-label">AT A GLANCE</p>
+            <p class="ctx-label">{{ $t('projects.list.context.atAGlance') }}</p>
             <div class="summary-grid">
               <div class="summary-card">
                 <span class="s-value">{{ projects.length }}</span>
-                <span class="s-label">Total projects</span>
-                <span class="s-sub">{{ asAdminCount }} as admin</span>
+                <span class="s-label">{{ $t('projects.list.context.totalProjects') }}</span>
+                <span class="s-sub">{{ $t('projects.list.context.asAdmin', { count: asAdminCount }) }}</span>
               </div>
               <div class="summary-card">
                 <span class="s-value" style="color:#fb7185">{{ atRiskCount }}</span>
-                <span class="s-label">At risk</span>
-                <span class="s-sub red">Needs attention</span>
+                <span class="s-label">{{ $t('projects.list.context.atRisk') }}</span>
+                <span class="s-sub red">{{ $t('projects.list.context.needsAttention') }}</span>
               </div>
               <div class="summary-card">
                 <span class="s-value">{{ completedCount }}</span>
-                <span class="s-label">Completed</span>
-                <span class="s-sub">This quarter</span>
+                <span class="s-label">{{ $t('projects.list.context.completed') }}</span>
+                <span class="s-sub">{{ $t('projects.list.context.thisQuarter') }}</span>
               </div>
               <div class="summary-card">
                 <span class="s-value">{{ pausedCount }}</span>
-                <span class="s-label">Paused</span>
-                <span class="s-sub gold">Awaiting budget</span>
+                <span class="s-label">{{ $t('projects.list.context.paused') }}</span>
+                <span class="s-sub gold">{{ $t('projects.list.context.awaitingBudget') }}</span>
               </div>
             </div>
           </div>
 
           <div>
-            <p class="ctx-label">QUICK ACTIONS</p>
-            <Button v-if="authStore.canCreateProjects" label="+ Create new project" @click="openModal" />
-            <Button label="↓ Export summary" />
+            <p class="ctx-label">{{ $t('projects.list.context.quickActions') }}</p>
+            <Button v-if="authStore.canCreateProjects" :label="$t('projects.list.context.createNew')" @click="openModal" />
+            <Button :label="$t('projects.list.context.export')" />
           </div>
 
           <div class="data-source">
-            <div class="ds-label">DATA SOURCE</div>
-            <div class="ds-text">Projects database · Last sync: {{ lastSync }}</div>
+            <div class="ds-label">{{ $t('projects.list.context.dataSource') }}</div>
+            <div class="ds-text">{{ $t('projects.list.context.dataSourceText', { time: lastSync }) }}</div>
           </div>
         </aside>
       </template>
@@ -462,6 +462,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
@@ -469,6 +470,7 @@ import Pill      from '../components/UI/Pill/Pill.vue'
 import Button    from '../components/UI/Button/Button.vue'
 import { statusLabel, formatDate } from '../utils/statusHelpers.js'
 
+const { t } = useI18n()
 const router = useRouter()
 
 const authStore    = useAuthStore()
@@ -483,13 +485,13 @@ const fetchError = ref(null)
 const activeTab  = ref('all')
 const lastSync   = ref('—')
 
-const ESTADOS = [
-  { value: 'PLANIFICADO', label: 'Planned'    },
-  { value: 'EN_PROGRESO', label: 'In Progress'},
-  { value: 'PAUSADO',     label: 'Paused'     },
-  { value: 'COMPLETADO',  label: 'Completed'  },
-  { value: 'CANCELADO',   label: 'Cancelled'  },
-]
+const ESTADOS = computed(() => [
+  { value: 'PLANIFICADO', label: t('projects.statuses.planned')    },
+  { value: 'EN_PROGRESO', label: t('projects.statuses.inProgress') },
+  { value: 'PAUSADO',     label: t('projects.statuses.paused')     },
+  { value: 'COMPLETADO',  label: t('projects.statuses.completed')  },
+  { value: 'CANCELADO',   label: t('projects.statuses.cancelled')  },
+])
 
 const STATUS_COLOR = {
   PLANIFICADO: '#60a5fa',
@@ -590,10 +592,10 @@ const completedCount = computed(() => projects.value.filter(p => p.estado === 'C
 const pausedCount    = computed(() => projects.value.filter(p => p.estado === 'PAUSADO').length)
 
 const tabs = computed(() => [
-  { key: 'all',       label: 'All',       count: projects.value.length },
-  { key: 'active',    label: 'Active',    count: projects.value.filter(p => p.estado === 'EN_PROGRESO').length },
-  { key: 'risk',      label: 'At Risk',   count: atRiskCount.value },
-  { key: 'completed', label: 'Completed', count: completedCount.value },
+  { key: 'all',       label: t('projects.list.tabs.all'),       count: projects.value.length },
+  { key: 'active',    label: t('projects.list.tabs.active'),    count: projects.value.filter(p => p.estado === 'EN_PROGRESO').length },
+  { key: 'risk',      label: t('projects.list.tabs.atRisk'),    count: atRiskCount.value },
+  { key: 'completed', label: t('projects.list.tabs.completed'), count: completedCount.value },
 ])
 
 const filteredProjects = computed(() => {
@@ -658,7 +660,7 @@ async function updateProjectStatus(project, newEstado) {
     }
   } catch {
     project.estado = previous
-    statusError.value = { ...statusError.value, [project.id_proyecto]: 'Network error' }
+    statusError.value = { ...statusError.value, [project.id_proyecto]: t('projects.list.networkError') }
   } finally {
     statusUpdating.value = { ...statusUpdating.value, [project.id_proyecto]: false }
   }

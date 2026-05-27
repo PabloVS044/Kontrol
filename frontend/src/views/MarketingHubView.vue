@@ -1454,7 +1454,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .campaign-card.active,
 .publication-card.active {
   border-color: rgba(201, 169, 98, 0.48);
-  background: #c9a962;
+  background: rgba(201, 169, 98, 0.11);
 }
 
 .project-top,
@@ -1553,27 +1553,27 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip.warm {
-  background: #fbbf24;
+  background: rgba(251, 191, 36, 0.16);
   color: #f5d27d;
 }
 
 .status-chip.brand {
-  background: #c9a962;
+  background: rgba(201, 169, 98, 0.18);
   color: #f1d287;
 }
 
 .status-chip.success {
-  background: #34d399;
+  background: rgba(52, 211, 153, 0.15);
   color: #91f4ca;
 }
 
 .status-chip.muted {
-  background: #71717a;
+  background: rgba(113, 113, 122, 0.2);
   color: #d3d6de;
 }
 
 .status-chip.danger {
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.18);
   color: #ffc1cd;
 }
 

@@ -31,9 +31,18 @@ router.get(
   getInventoryMovementById
 )
 
+// SALIDA (sales) is open to any project member; other movement types still
+// require the gestionar_inventario permission.
+const movementPermissionGate = (req, res, next) => {
+  const middleware = req.body?.tipo === 'SALIDA'
+    ? requireProjectPermission()
+    : requireProjectPermission('gestionar_inventario')
+  return middleware(req, res, next)
+}
+
 router.post(
   '/',
-  requireProjectPermission('gestionar_inventario'),
+  movementPermissionGate,
   validate(createInventoryMovementSchema),
   createInventoryMovement
 )

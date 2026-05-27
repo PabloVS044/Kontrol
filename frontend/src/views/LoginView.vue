@@ -13,7 +13,7 @@
       <!-- Panel derecho: Formulario -->
       <div class="login-form-panel">
         <div class="login-card">
-          <h2 class="login-title">Login</h2>
+          <h2 class="login-title">{{ $t('auth.login.title') }}</h2>
 
           <!-- Error del servidor -->
           <div v-if="errorMessage" class="login-banner login-banner--error">
@@ -21,17 +21,17 @@
           </div>
 
           <div v-if="inviteToken" class="login-banner login-banner--success">
-            This session will be linked to the invitation you received.
+            {{ $t('auth.login.inviteBanner') }}
           </div>
 
           <!-- Email -->
           <div class="login-field">
-            <label class="login-field-label">Email</label>
+            <label class="login-field-label">{{ $t('auth.login.email') }}</label>
             <div class="login-input-wrap">
               <input
                 v-model="form.email"
                 type="email"
-                placeholder="Email"
+                :placeholder="$t('auth.login.email')"
                 class="login-input"
                 :class="{ 'login-input--error': errors.email }"
                 @blur="validateEmail"
@@ -44,12 +44,12 @@
 
           <!-- Password -->
           <div class="login-field">
-            <label class="login-field-label">Password</label>
+            <label class="login-field-label">{{ $t('auth.login.password') }}</label>
             <div class="login-input-wrap">
               <input
                 v-model="form.password"
                 :type="showPass ? 'text' : 'password'"
-                placeholder="Password"
+                :placeholder="$t('auth.login.password')"
                 class="login-input"
                 :class="{ 'login-input--error': errors.password }"
                 @blur="validatePassword"
@@ -69,9 +69,9 @@
           <div class="login-row-extras">
             <label class="login-remember">
               <input type="checkbox" v-model="rememberMe" />
-              Remember me
+              {{ $t('auth.login.rememberMe') }}
             </label>
-            <a href="#" class="login-forgot">Forgot password</a>
+            <a href="#" class="login-forgot">{{ $t('auth.login.forgotPassword') }}</a>
           </div>
 
           <!-- Botón principal -->
@@ -81,28 +81,28 @@
             @click="handleLogin"
           >
             <span v-if="isLoading" class="login-spinner" />
-            {{ isLoading ? 'Signing in...' : 'Sign In' }}
+            {{ isLoading ? $t('auth.login.submitting') : $t('auth.login.submit') }}
           </button>
 
           <!-- Divisor -->
-          <div class="login-divider"><span>or</span></div>
+          <div class="login-divider"><span>{{ $t('auth.login.divider') }}</span></div>
 
           <!-- OAuth -->
           <div class="login-oauth-row">
             <button class="login-btn-oauth" @click="handleGoogleLogin">
               <img src="https://img.icons8.com/ios11/512/FFFFFF/google-logo.png" alt="Google" class="login-oauth-logo" />
-              Sign in with Google
+              {{ $t('auth.login.withGoogle') }}
             </button>
           </div>
 
           <!-- Link a register -->
           <p class="login-switch">
-            Don't have an account?
+            {{ $t('auth.login.noAccount') }}
             <RouterLink
               :to="inviteToken ? { name: 'register', query: { invite: inviteToken } } : { name: 'register' }"
               class="login-switch-link"
             >
-              Sign up now
+              {{ $t('auth.login.signUp') }}
             </RouterLink>
           </p>
         </div>
@@ -115,6 +115,7 @@
 <script setup>
 import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { MailIcon,  EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import SoftParticle from '@/components/UI/Backgrounds/SoftParticles/SoftParticle.vue'
 import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
@@ -124,6 +125,7 @@ import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/ut
 import { getInviteTokenFromQuery } from '@/utils/invitation'
 import './LoginView.css'
 
+const { t }     = useI18n()
 const router    = useRouter()
 const route     = useRoute()
 const authStore = useAuthStore()
@@ -143,17 +145,17 @@ onMounted(() => {
 
 function validateEmail() {
   errors.email = !form.email
-    ? 'Email is required'
+    ? t('auth.login.errors.emailRequired')
     : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
-      ? 'Enter a valid email'
+      ? t('auth.login.errors.emailInvalid')
       : ''
 }
 
 function validatePassword() {
   errors.password = !form.password
-    ? 'Password is required'
+    ? t('auth.login.errors.passwordRequired')
     : form.password.length < 6
-      ? 'Minimum 6 characters'
+      ? t('auth.login.errors.passwordMin')
       : ''
 }
 
@@ -193,7 +195,7 @@ async function handleLogin() {
 
     router.push(getDefaultAuthenticatedRoute(authStore))
   } catch (err) {
-    errorMessage.value = err.message || 'Something went wrong. Please try again.'
+    errorMessage.value = err.message || t('auth.login.errors.generic')
   } finally {
     isLoading.value = false
   }

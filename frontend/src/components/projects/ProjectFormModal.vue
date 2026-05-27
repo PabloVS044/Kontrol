@@ -3,21 +3,21 @@
     <form class="modal-form" @submit.prevent="handleSubmit">
       
       <!-- Name -->
-      <FormField label="Name" :required="true">
-        <input 
-          v-model="localForm.nombre" 
-          type="text" 
-          placeholder="Project name" 
-          required 
+      <FormField :label="$t('projects.form.name')" :required="true">
+        <input
+          v-model="localForm.nombre"
+          type="text"
+          :placeholder="$t('projects.form.namePlaceholder')"
+          required
           :disabled="loading"
         />
       </FormField>
 
       <!-- Description -->
-      <FormField label="Description">
-        <textarea 
-          v-model="localForm.descripcion" 
-          placeholder="Optional description" 
+      <FormField :label="$t('projects.form.description')">
+        <textarea
+          v-model="localForm.descripcion"
+          :placeholder="$t('projects.form.descriptionPlaceholder')"
           rows="2"
           :disabled="loading"
         />
@@ -25,18 +25,18 @@
 
       <!-- Dates row -->
       <div class="form-row">
-        <FormField label="Start date" :required="true">
-          <input 
-            v-model="localForm.fecha_inicio" 
-            type="date" 
-            required 
+        <FormField :label="$t('projects.form.startDate')" :required="true">
+          <input
+            v-model="localForm.fecha_inicio"
+            type="date"
+            required
             :disabled="loading"
           />
         </FormField>
-        <FormField label="End date">
-          <input 
-            v-model="localForm.fecha_fin_planificada" 
-            type="date" 
+        <FormField :label="$t('projects.form.endDate')">
+          <input
+            v-model="localForm.fecha_fin_planificada"
+            type="date"
             :disabled="loading"
           />
         </FormField>
@@ -44,7 +44,7 @@
 
       <!-- Budget/Status row -->
       <div class="form-row">
-        <FormField label="Budget" :required="true">
+        <FormField :label="$t('projects.form.budget')" :required="true">
           <input
             v-model.number="localForm.presupuesto_total"
             type="number"
@@ -55,7 +55,7 @@
             :disabled="loading"
           />
         </FormField>
-        <FormField label="Status">
+        <FormField :label="$t('projects.form.status')">
           <select v-model="localForm.estado" :disabled="loading">
             <option v-for="e in ESTADOS" :key="e.value" :value="e.value">
               {{ e.label }}
@@ -70,14 +70,14 @@
 
       <!-- Actions -->
       <div class="modal-actions">
-        <Button 
-          label="Cancel" 
-          type="button" 
+        <Button
+          :label="$t('projects.form.cancel')"
+          type="button"
           @click="localShow = false"
           :disabled="loading"
         />
         <Button
-          :label="loading ? 'Saving…' : 'Save project'"
+          :label="loading ? $t('projects.form.saving') : $t('projects.form.save')"
           type="submit"
           :disabled="loading"
         />
@@ -87,14 +87,24 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '../UI/Modal/BaseModal.vue'
 import Button from '../UI/Button/Button.vue'
 import FormField from '../common/FormField.vue'
-import { ESTADOS } from '../../utils/projectConstants.js'
 
+
+const { t } = useI18n()
 
 const emit = defineEmits(['update:modelValue', 'submit'])
+
+const ESTADOS = computed(() => [
+  { value: 'PLANIFICADO', label: t('projects.statuses.planned')    },
+  { value: 'EN_PROGRESO', label: t('projects.statuses.inProgress') },
+  { value: 'PAUSADO',     label: t('projects.statuses.paused')     },
+  { value: 'COMPLETADO',  label: t('projects.statuses.completed')  },
+  { value: 'CANCELADO',   label: t('projects.statuses.cancelled')  },
+])
 
 const props = defineProps({
   modelValue: Boolean,

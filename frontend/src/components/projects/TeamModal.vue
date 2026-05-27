@@ -1,19 +1,19 @@
 <template>
-  <BaseModal v-model="show" :title="editingTeam ? 'Edit team' : 'New team'" max-width="480px">
+  <BaseModal v-model="show" :title="editingTeam ? $t('projects.team.modal.editTitle') : $t('projects.team.modal.newTitle')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
-        <label>Name <span class="req">*</span></label>
-        <input v-model="form.nombre" type="text" placeholder="Team name" required />
+        <label>{{ $t('projects.team.modal.name') }} <span class="req">*</span></label>
+        <input v-model="form.nombre" type="text" :placeholder="$t('projects.team.modal.namePlaceholder')" required />
       </div>
       <div class="form-field">
-        <label>Area <span class="req">*</span></label>
+        <label>{{ $t('projects.team.modal.area') }} <span class="req">*</span></label>
         <select v-model="form.area">
-          <option value="">— Select area —</option>
+          <option value="">{{ $t('projects.team.modal.selectArea') }}</option>
           <option v-for="area in MOCK_AREAS" :key="area" :value="area">{{ area }}</option>
         </select>
       </div>
       <div class="form-field">
-        <label>Members</label>
+        <label>{{ $t('projects.team.modal.members') }}</label>
         <div class="members-checklist">
           <label
             v-for="m in members"
@@ -23,16 +23,16 @@
             <input type="checkbox" :value="m.id_usuario" v-model="form.miembros" />
             {{ m.nombre }} {{ m.apellido }}
           </label>
-          <span v-if="members.length === 0" class="no-members">No members in project.</span>
+          <span v-if="members.length === 0" class="no-members">{{ $t('projects.team.modal.noMembers') }}</span>
         </div>
       </div>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">Cancel</button>
+        <button type="button" class="btn-secondary" @click="show = false">{{ $t('projects.team.modal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ editingTeam ? 'Save' : 'Create' }}
+          {{ editingTeam ? $t('projects.team.modal.save') : $t('projects.team.modal.create') }}
         </button>
       </div>
     </form>
@@ -41,7 +41,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+
+const { t } = useI18n()
 
 const AREA_LABELS = {
   Desarrollo: 'Engineering',

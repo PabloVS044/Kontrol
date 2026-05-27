@@ -2,55 +2,49 @@
   <section class="project-members">
     <div class="pm-header">
       <div>
-        <p class="pm-eyebrow">Project Members</p>
-        <h2 class="pm-title">{{ panel?.project?.nombre || 'Members' }}</h2>
-        <p class="pm-subtitle">
-          Only company users assigned to this project are shown here. From this panel you can grant access and share a project-specific invitation.
-        </p>
+        <p class="pm-eyebrow">{{ $t('projects.members.eyebrow') }}</p>
+        <h2 class="pm-title">{{ panel?.project?.nombre || $t('projects.members.eyebrow') }}</h2>
+        <p class="pm-subtitle">{{ $t('projects.members.subtitle') }}</p>
       </div>
 
       <div class="pm-summary">
-        <span class="pm-chip">{{ members.length }} assigned</span>
-        <span class="pm-chip">{{ availableCompanyMembers.length }} available</span>
+        <span class="pm-chip">{{ $t('projects.members.assigned', { count: members.length }) }}</span>
+        <span class="pm-chip">{{ $t('projects.members.available', { count: availableCompanyMembers.length }) }}</span>
         <span class="pm-chip" :class="{ inactive: !invitation }">
-          {{ invitation ? 'Active invitation' : 'No active invitation' }}
+          {{ invitation ? $t('projects.members.activeInvitation') : $t('projects.members.noActiveInvitation') }}
         </span>
       </div>
     </div>
 
-    <div v-if="loading" class="pm-state">Loading project members...</div>
+    <div v-if="loading" class="pm-state">{{ $t('projects.members.loading') }}</div>
     <div v-else-if="errorMessage" class="pm-state pm-state--error">{{ errorMessage }}</div>
 
     <template v-else-if="panel">
       <div v-if="!canManageMembers" class="pm-readonly">
-        <p class="pm-state-title">Read-only view</p>
-        <p class="pm-state-copy">
-          You can review who is assigned to the project, but you do not have permission to manage members or invitations.
-        </p>
+        <p class="pm-state-title">{{ $t('projects.members.readOnly.title') }}</p>
+        <p class="pm-state-copy">{{ $t('projects.members.readOnly.copy') }}</p>
       </div>
 
       <div class="pm-grid">
         <article class="pm-card pm-card--invite">
           <div class="pm-card-head">
             <div>
-              <p class="pm-card-kicker">Project Invite</p>
-              <h3>Project invitation</h3>
+              <p class="pm-card-kicker">{{ $t('projects.members.invite.kicker') }}</p>
+              <h3>{{ $t('projects.members.invite.title') }}</h3>
             </div>
             <span class="pm-chip" :class="{ inactive: !invitation }">
-              {{ invitation ? 'Active' : 'Inactive' }}
+              {{ invitation ? $t('projects.members.invite.active') : $t('projects.members.invite.inactive') }}
             </span>
           </div>
 
-          <p class="pm-copy">
-            This link adds the user as a company collaborator if they do not belong yet, then assigns them to this project with the selected permissions.
-          </p>
+          <p class="pm-copy">{{ $t('projects.members.invite.description') }}</p>
 
           <div v-if="invitation" class="pm-link-box">
             <span class="pm-link">{{ invitation.link }}</span>
           </div>
 
           <div class="pm-permission-block">
-            <span class="pm-label">Permissions granted by this invitation</span>
+            <span class="pm-label">{{ $t('projects.members.invite.permissionsLabel') }}</span>
             <div class="pm-permission-grid">
               <label
                 v-for="permission in projectPermissionCatalog"
@@ -76,7 +70,7 @@
               :disabled="generatingInvite"
               @click="generateInvite"
             >
-              {{ generatingInvite ? 'Saving...' : invitation ? 'Update invitation' : 'Generate invitation' }}
+              {{ generatingInvite ? $t('projects.members.invite.saving') : invitation ? $t('projects.members.invite.update') : $t('projects.members.invite.generate') }}
             </button>
 
             <button
@@ -84,7 +78,7 @@
               class="pm-btn pm-btn--secondary"
               @click="copyInviteLink"
             >
-              Copy link
+              {{ $t('projects.members.invite.copyLink') }}
             </button>
 
             <button
@@ -93,7 +87,7 @@
               :disabled="deactivatingInvite"
               @click="deactivateInvite"
             >
-              {{ deactivatingInvite ? 'Deactivating...' : 'Deactivate link' }}
+              {{ deactivatingInvite ? $t('projects.members.invite.deactivating') : $t('projects.members.invite.deactivate') }}
             </button>
           </div>
 
@@ -104,14 +98,12 @@
         <article class="pm-card">
           <div class="pm-card-head">
             <div>
-              <p class="pm-card-kicker">Assignment</p>
-              <h3>Add existing member</h3>
+              <p class="pm-card-kicker">{{ $t('projects.members.assignment.kicker') }}</p>
+              <h3>{{ $t('projects.members.assignment.title') }}</h3>
             </div>
           </div>
 
-          <p class="pm-copy">
-            You can take any user who already belongs to the company and assign them to this project with explicit permissions.
-          </p>
+          <p class="pm-copy">{{ $t('projects.members.assignment.description') }}</p>
 
           <div class="pm-inline-controls">
             <select
@@ -119,7 +111,7 @@
               class="pm-select"
               :disabled="!canManageMembers || !availableCompanyMembers.length || assigningMember"
             >
-              <option value="">Select a company member</option>
+              <option value="">{{ $t('projects.members.assignment.selectMember') }}</option>
               <option
                 v-for="member in availableCompanyMembers"
                 :key="member.id_usuario"
@@ -134,12 +126,12 @@
               :disabled="!canManageMembers || !selectedMemberId || assigningMember"
               @click="assignMember"
             >
-              {{ assigningMember ? 'Assigning...' : 'Assign to project' }}
+              {{ assigningMember ? $t('projects.members.assignment.assigning') : $t('projects.members.assignment.assign') }}
             </button>
           </div>
 
           <div class="pm-permission-block">
-            <span class="pm-label">Initial permissions for this member</span>
+            <span class="pm-label">{{ $t('projects.members.assignment.permissionsLabel') }}</span>
             <div class="pm-permission-grid">
               <label
                 v-for="permission in projectPermissionCatalog"
@@ -160,7 +152,7 @@
           </div>
 
           <p v-if="!availableCompanyMembers.length" class="pm-copy pm-copy--muted">
-            All eligible company members are already assigned to this project.
+            {{ $t('projects.members.assignment.allAssigned') }}
           </p>
         </article>
       </div>
@@ -168,10 +160,10 @@
       <article class="pm-card pm-card--members">
         <div class="pm-card-head">
           <div>
-            <p class="pm-card-kicker">Assigned Members</p>
-            <h3>Project members</h3>
+            <p class="pm-card-kicker">{{ $t('projects.members.assignedList.kicker') }}</p>
+            <h3>{{ $t('projects.members.assignedList.title') }}</h3>
           </div>
-          <span class="pm-chip">{{ members.length }} total</span>
+          <span class="pm-chip">{{ $t('projects.members.assignedList.total', { count: members.length }) }}</span>
         </div>
 
         <div v-if="members.length" class="pm-member-list">
@@ -200,12 +192,12 @@
                 :disabled="removingMemberId === member.id_usuario"
                 @click="removeMember(member)"
               >
-                {{ removingMemberId === member.id_usuario ? 'Quitando...' : 'Quitar' }}
+                {{ removingMemberId === member.id_usuario ? $t('projects.members.assignedList.removing') : $t('projects.members.assignedList.remove') }}
               </button>
             </div>
 
             <div class="pm-permission-block">
-              <span class="pm-label">Project permissions</span>
+              <span class="pm-label">{{ $t('projects.members.assignedList.permissionsLabel') }}</span>
               <div class="pm-permission-grid">
                 <label
                   v-for="permission in projectPermissionCatalog"
@@ -231,15 +223,13 @@
                 :disabled="savingMemberId === member.id_usuario"
                 @click="saveMemberPermissions(member)"
               >
-                {{ savingMemberId === member.id_usuario ? 'Saving...' : 'Save permissions' }}
+                {{ savingMemberId === member.id_usuario ? $t('projects.members.assignedList.saving') : $t('projects.members.assignedList.savePermissions') }}
               </button>
             </div>
           </div>
         </div>
 
-        <p v-else class="pm-copy pm-copy--muted">
-          No members are assigned to this project yet.
-        </p>
+        <p v-else class="pm-copy pm-copy--muted">{{ $t('projects.members.assignedList.noMembers') }}</p>
       </article>
     </template>
   </section>
@@ -247,6 +237,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { projectPermissionLabel } from '@/utils/projectAccessLabels'
 
@@ -259,6 +250,7 @@ const props = defineProps({
 
 const emit = defineEmits(['updated'])
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 
 const loading = ref(true)
@@ -319,7 +311,7 @@ async function loadPanel() {
 
     if (!res.ok) {
       panel.value = null
-      errorMessage.value = payload.message || 'Could not load the project members panel.'
+      errorMessage.value = payload.message || t('projects.members.errors.loadPanel')
       return
     }
 
@@ -327,7 +319,7 @@ async function loadPanel() {
     syncDrafts(payload.data)
   } catch {
     panel.value = null
-    errorMessage.value = 'Could not load the project members panel.'
+    errorMessage.value = t('projects.members.errors.loadPanel')
   } finally {
     loading.value = false
   }
@@ -376,7 +368,7 @@ async function generateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not save the project invitation.'
+      actionError.value = payload.message || t('projects.members.errors.saveInvite')
       return
     }
 
@@ -384,9 +376,9 @@ async function generateInvite() {
       panel.value.invitation = payload.data
     }
     invitePermissionDrafts.value = [...(payload.data?.permisos ?? [])]
-    actionMessage.value = 'Project invitation ready to share.'
+    actionMessage.value = t('projects.members.actions.inviteReady')
   } catch {
-    actionError.value = 'Could not save the project invitation.'
+    actionError.value = t('projects.members.errors.saveInvite')
   } finally {
     generatingInvite.value = false
   }
@@ -405,7 +397,7 @@ async function deactivateInvite() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not deactivate the project invitation.'
+      actionError.value = payload.message || t('projects.members.errors.deactivateInvite')
       return
     }
 
@@ -413,9 +405,9 @@ async function deactivateInvite() {
       panel.value.invitation = null
     }
     invitePermissionDrafts.value = []
-    actionMessage.value = payload.message || 'The project invitation was deactivated.'
+    actionMessage.value = t('projects.members.actions.inviteDeactivated')
   } catch {
-    actionError.value = 'Could not deactivate the project invitation.'
+    actionError.value = t('projects.members.errors.deactivateInvite')
   } finally {
     deactivatingInvite.value = false
   }
@@ -429,9 +421,9 @@ async function copyInviteLink() {
 
   try {
     await navigator.clipboard.writeText(invitation.value.link)
-    actionMessage.value = 'Link copied to clipboard.'
+    actionMessage.value = t('projects.members.actions.linkCopied')
   } catch {
-    actionError.value = 'Could not copy the link.'
+    actionError.value = t('projects.members.errors.copyLink')
   }
 }
 
@@ -451,17 +443,17 @@ async function assignMember() {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not assign the member to the project.'
+      actionError.value = payload.message || t('projects.members.errors.assignMember')
       return
     }
 
-    actionMessage.value = payload.message || 'Member assigned to the project.'
+    actionMessage.value = t('projects.members.actions.memberAssigned')
     selectedMemberId.value = ''
     assignPermissionDrafts.value = []
     await loadPanel()
     emit('updated')
   } catch {
-    actionError.value = 'Could not assign the member to the project.'
+    actionError.value = t('projects.members.errors.assignMember')
   } finally {
     assigningMemberId.value = null
   }
@@ -481,15 +473,15 @@ async function saveMemberPermissions(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not save the member permissions.'
+      actionError.value = payload.message || t('projects.members.errors.savePermissions')
       return
     }
 
-    actionMessage.value = payload.message || 'Member permissions updated.'
+    actionMessage.value = t('projects.members.actions.permissionsUpdated')
     await loadPanel()
     emit('updated')
   } catch {
-    actionError.value = 'Could not save the member permissions.'
+    actionError.value = t('projects.members.errors.savePermissions')
   } finally {
     savingMemberId.value = null
   }
@@ -508,15 +500,15 @@ async function removeMember(member) {
     const payload = await res.json()
 
     if (!res.ok) {
-      actionError.value = payload.message || 'Could not remove the member from the project.'
+      actionError.value = payload.message || t('projects.members.errors.removeMember')
       return
     }
 
-    actionMessage.value = payload.message || 'Member removed from the project.'
+    actionMessage.value = t('projects.members.actions.memberRemoved')
     await loadPanel()
     emit('updated')
   } catch {
-    actionError.value = 'Could not remove the member from the project.'
+    actionError.value = t('projects.members.errors.removeMember')
   } finally {
     removingMemberId.value = null
   }
@@ -763,7 +755,7 @@ watch(
 }
 
 .pm-btn--danger {
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.12);
   border: 1px solid rgba(251, 113, 133, 0.22);
   color: #fecdd3;
 }
@@ -795,7 +787,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #c9a962;
+  background: rgba(201, 169, 98, 0.12);
   border: 1px solid rgba(201, 169, 98, 0.2);
   color: #c9a962;
   font-weight: 700;

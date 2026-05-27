@@ -2,8 +2,8 @@
   <section class="chart-card trend-card">
     <div class="trend-head">
       <div>
-        <h3>Financial Performance Trend</h3>
-        <p class="timeline-hint">Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.</p>
+        <h3>{{ $t('dashboard.trend.title') }}</h3>
+        <p class="timeline-hint">{{ $t('dashboard.trend.hint') }}</p>
       </div>
       <select
         v-if="projects.length"
@@ -17,14 +17,10 @@
       </select>
     </div>
 
-    <div v-if="loading" class="chart-state">Loading trend...</div>
+    <div v-if="loading" class="chart-state">{{ $t('dashboard.trend.loading') }}</div>
     <div v-else-if="error" class="chart-state chart-state--error">{{ error }}</div>
-    <div v-else-if="!projects.length" class="chart-state">
-      No projects with start date, end date and budget set yet.
-    </div>
-    <div v-else-if="!chartData" class="chart-state">
-      This project needs fecha_inicio, fecha_fin_planificada and presupuesto_total.
-    </div>
+    <div v-else-if="!projects.length" class="chart-state">{{ $t('dashboard.trend.noProjects') }}</div>
+    <div v-else-if="!chartData" class="chart-state">{{ $t('dashboard.trend.noData') }}</div>
     <svg v-else class="trend-svg" :viewBox="`0 0 ${chart.w} ${chart.h}`" preserveAspectRatio="xMidYMid meet">
       <g>
         <line
@@ -90,21 +86,25 @@
           text-anchor="middle"
           opacity="0.8"
           font-family="Manrope, sans-serif"
-        >Today</text>
+        >{{ t('dashboard.trend.today') }}</text>
       </template>
 
       <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
         <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f" />
         <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5" />
-        <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Planned budget</text>
+        <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ t('dashboard.trend.legend.planned') }}</text>
         <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2" />
-        <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">Actual spend (movements)</text>
+        <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ t('dashboard.trend.legend.actual') }}</text>
       </g>
     </svg>
   </section>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   modelValue: { type: [Number, String, null], default: null },
   projects: { type: Array, default: () => [] },

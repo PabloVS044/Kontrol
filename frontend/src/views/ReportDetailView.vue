@@ -13,7 +13,7 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
-            All Reports
+            {{ $t('reports.detail.backBtn') }}
           </button>
 
           <div v-if="loading" class="header-skeleton">
@@ -26,7 +26,7 @@
             <div class="header-top">
               <div>
                 <h1 class="proj-name">{{ project.nombre }}</h1>
-                <p class="proj-desc">{{ project.descripcion || 'No description provided.' }}</p>
+                <p class="proj-desc">{{ project.descripcion || $t('reports.detail.noDescription') }}</p>
               </div>
               <div class="header-actions">
               
@@ -34,26 +34,26 @@
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M6 9V2M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                   </svg>
-                  Export
+                  {{ $t('reports.detail.export') }}
                 </button>
               </div>
             </div>
 
             <div class="meta-row">
               <div class="meta-item">
-                <span class="meta-label">Start Date</span>
+                <span class="meta-label">{{ $t('reports.detail.metaStartDate') }}</span>
                 <span class="meta-value">{{ formatDate(project.fecha_inicio) }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">Due Date</span>
-                <span class="meta-value">{{ formatDate(project.fecha_fin_planificada) ?? 'Not set' }}</span>
+                <span class="meta-label">{{ $t('reports.detail.metaDueDate') }}</span>
+                <span class="meta-value">{{ formatDate(project.fecha_fin_planificada) ?? $t('reports.detail.notSet') }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">Budget</span>
+                <span class="meta-label">{{ $t('reports.detail.metaBudget') }}</span>
                 <span class="meta-value gold">{{ formatBudget(project.presupuesto_total) }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">Progress</span>
+                <span class="meta-label">{{ $t('reports.detail.metaProgress') }}</span>
                 <span class="meta-value">{{ progressPct }}%</span>
               </div>
               
@@ -64,13 +64,13 @@
               <div class="op-track">
                 <div class="op-fill" :style="{ width: progressPct + '%' }"></div>
               </div>
-              <span class="op-label">{{ progressPct }}% complete</span>
+              <span class="op-label">{{ $t('reports.detail.complete', { pct: progressPct }) }}</span>
             </div>
           </div>
 
           <div v-else class="error-state">
-            <p>Project not found.</p>
-            <button class="btn-outline" @click="$router.back()">Go back</button>
+            <p>{{ $t('reports.detail.notFound') }}</p>
+            <button class="btn-outline" @click="$router.back()">{{ $t('reports.detail.goBack') }}</button>
           </div>
         </div>
 
@@ -80,8 +80,8 @@
           <!-- Budget Overview -->
           <div class="detail-card">
             <div class="card-header">
-              <span class="card-title">Budget Overview</span>
-              <span class="card-tag">{{ budgetData.pct }}% used</span>
+              <span class="card-title">{{ $t('reports.detail.budgetTitle') }}</span>
+              <span class="card-tag">{{ $t('reports.detail.budgetUsedTag', { pct: budgetData.pct }) }}</span>
             </div>
             <div class="budget-body">
               <div class="donut-wrap">
@@ -97,15 +97,15 @@
               <div class="budget-stats">
                 <div class="bstat">
                   <span class="bstat-val gold">{{ formatBudget(project.presupuesto_total) }}</span>
-                  <span class="bstat-label">Total Budget</span>
+                  <span class="bstat-label">{{ $t('reports.detail.totalBudget') }}</span>
                 </div>
                 <div class="bstat">
                   <span class="bstat-val">{{ formatBudget(budgetData.real) }}</span>
-                  <span class="bstat-label">Spent</span>
+                  <span class="bstat-label">{{ $t('reports.detail.spent') }}</span>
                 </div>
                 <div class="bstat">
                   <span class="bstat-val" style="color:#4ade80">{{ formatBudget(budgetData.remaining) }}</span>
-                  <span class="bstat-label">Remaining</span>
+                  <span class="bstat-label">{{ $t('reports.detail.remaining') }}</span>
                 </div>
               </div>
             </div>
@@ -114,8 +114,8 @@
           <!-- Task Management -->
           <div class="detail-card">
             <div class="card-header">
-              <span class="card-title">Task Management</span>
-              <span class="card-tag">{{ tasksByState.total }} tasks</span>
+              <span class="card-title">{{ $t('reports.detail.taskTitle') }}</span>
+              <span class="card-tag">{{ $t('reports.detail.taskCount', { count: tasksByState.total }) }}</span>
             </div>
             <div class="task-completion-circle">
               <DonutChart
@@ -128,13 +128,13 @@
               />
               <div class="task-summary">
                 <span class="ts-big">{{ tasksByState.completadas }} / {{ tasksByState.total }}</span>
-                <span class="ts-label">tasks completed</span>
+                <span class="ts-label">{{ $t('reports.detail.tasksCompleted') }}</span>
               </div>
             </div>
             <div class="task-list">
               <div class="tl-row">
                 <span class="tl-dot blue"></span>
-                <span class="tl-label">Pending</span>
+                <span class="tl-label">{{ $t('reports.detail.taskPending') }}</span>
                 <div class="tl-bar-wrap">
                   <div class="tl-track"><div class="tl-fill blue" :style="{ width: tasksByState.total ? (tasksByState.pendientes / tasksByState.total * 100) + '%' : '0%' }"></div></div>
                 </div>
@@ -142,15 +142,15 @@
               </div>
               <div class="tl-row">
                 <span class="tl-dot green"></span>
-                <span class="tl-label">In Progress</span>
+                <span class="tl-label">{{ $t('reports.detail.taskInProgress') }}</span>
                 <div class="tl-bar-wrap">
                   <div class="tl-track"><div class="tl-fill green" :style="{ width: tasksByState.total ? (tasksByState.enProgreso / tasksByState.total * 100) + '%' : '0%' }"></div></div>
                 </div>
                 <span class="tl-val">{{ tasksByState.enProgreso }}</span>
               </div>
               <div class="tl-row">
-                <span class="tl-dot gold"></span>    
-                <span class="tl-label">Completed</span>
+                <span class="tl-dot gold"></span>
+                <span class="tl-label">{{ $t('reports.detail.taskCompleted') }}</span>
                 <div class="tl-bar-wrap">
                   <div class="tl-track"><div class="tl-fill gold" :style="{ width: tasksByState.total ? (tasksByState.completadas / tasksByState.total * 100) + '%' : '0%' }"></div></div>
                 </div>
@@ -158,7 +158,7 @@
               </div>
               <div class="tl-row">
                 <span class="tl-dot red"></span>
-                <span class="tl-label">Cancelled</span>
+                <span class="tl-label">{{ $t('reports.detail.taskCancelled') }}</span>
                 <div class="tl-bar-wrap">
                   <div class="tl-track"><div class="tl-fill red" :style="{ width: tasksByState.total ? (tasksByState.canceladas / tasksByState.total * 100) + '%' : '0%' }"></div></div>
                 </div>
@@ -170,19 +170,19 @@
           <!-- Team -->
           <div class="detail-card">
             <div class="card-header">
-              <span class="card-title">Team</span>
-              <span class="card-tag">{{ teamTotal }} members</span>
+              <span class="card-title">{{ $t('reports.detail.teamTitle') }}</span>
+              <span class="card-tag">{{ $t('reports.detail.memberCount', { count: teamTotal }) }}</span>
             </div>
             <div class="team-list">
               <div v-for="role in teamRoles" :key="role.rol" class="member-row">
                 <div class="member-avatar">{{ role.total }}</div>
                 <div class="member-info">
                   <span class="member-name">{{ role.rol }}</span>
-                  <span class="member-role">{{ role.total }} member{{ role.total !== 1 ? 's' : '' }}</span>
+                  <span class="member-role">{{ $t('reports.detail.memberRole', { count: role.total }) }}</span>
                 </div>
               </div>
               <div v-if="!teamRoles.length" class="tl-label" style="color:#444; padding: 8px 0">
-                No team members assigned.
+                {{ $t('reports.detail.noTeamMembers') }}
               </div>
             </div>
           </div>
@@ -190,7 +190,7 @@
           <!-- Timeline -->
           <div class="detail-card">
             <div class="card-header">
-              <span class="card-title">Timeline</span>
+              <span class="card-title">{{ $t('reports.detail.timelineTitle') }}</span>
               <span class="card-tag">{{ timelineCurrentLabel }}</span>
             </div>
             <div class="timeline">
@@ -236,7 +236,7 @@
       <aside v-if="project" class="side-panel">
 
         <div class="side-section">
-          <p class="side-label">Project Health</p>
+          <p class="side-label">{{ $t('reports.detail.sideHealth') }}</p>
           <div class="health-card" :class="healthClass">
             <span class="health-dot"></span>
             <div>
@@ -249,25 +249,25 @@
         <div class="side-divider"></div>
 
         <div class="side-section">
-          <p class="side-label">Quick Stats</p>
-          
+          <p class="side-label">{{ $t('reports.detail.sideStats') }}</p>
+
           <div class="qstat-list">
             <div class="qstat">
-              <span class="qstat-label">Days Active</span>
+              <span class="qstat-label">{{ $t('reports.detail.sideDaysActive') }}</span>
               <span class="qstat-val">{{ daysActive }}</span>
             </div>
             <div class="qstat">
-              <span class="qstat-label">Days Remaining</span>
+              <span class="qstat-label">{{ $t('reports.detail.sideDaysRemaining') }}</span>
               <span class="qstat-val" :class="typeof daysRemaining === 'number' && daysRemaining < 7 ? 'red' : ''">
                 {{ daysRemaining }}
               </span>
             </div>
             <div class="qstat">
-              <span class="qstat-label">Budget / Day</span>
+              <span class="qstat-label">{{ $t('reports.detail.sideBudgetPerDay') }}</span>
               <span class="qstat-val">{{ budgetPerDay }}</span>
             </div>
             <div class="info-row">
-              <span class="info-key">Budget</span>
+              <span class="info-key">{{ $t('reports.detail.sideInfoBudget') }}</span>
               <span class="info-val gold">{{ formatBudget(project.presupuesto_total) }}</span>
             </div>
           </div>
@@ -287,6 +287,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import Pill       from '../components/UI/Pill/Pill.vue'
 import Button     from '../components/UI/Button/Button.vue'
@@ -296,6 +297,7 @@ import { useAuthStore } from '../stores/auth'
 
 const route     = useRoute()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const project = ref(null)
 const metrics = ref(null)
@@ -350,12 +352,12 @@ const teamRoles = computed(() => metrics.value?.equipo ?? [])
 const teamTotal = computed(() => teamRoles.value.reduce((s, r) => s + Number(r.total), 0))
 
 // ── Timeline ───────────────────────────────────────────────────────────────
-const TIMELINE_PHASES = [
-  { key: 'PLANIFICADO', label: 'Planning',  desc: 'Scope definition, resource allocation and goal setting.' },
-  { key: 'EN_PROGRESO', label: 'Execution', desc: 'Active development and task completion by the team.' },
-  { key: 'REVISION',    label: 'Review',    desc: 'Quality assurance, testing and stakeholder review.' },
-  { key: 'COMPLETADO',  label: 'Delivery',  desc: 'Final delivery, documentation and project closure.' },
-]
+const TIMELINE_PHASES = computed(() => [
+  { key: 'PLANIFICADO', label: t('reports.detail.timeline.planning.label'),  desc: t('reports.detail.timeline.planning.desc') },
+  { key: 'EN_PROGRESO', label: t('reports.detail.timeline.execution.label'), desc: t('reports.detail.timeline.execution.desc') },
+  { key: 'REVISION',    label: t('reports.detail.timeline.review.label'),    desc: t('reports.detail.timeline.review.desc') },
+  { key: 'COMPLETADO',  label: t('reports.detail.timeline.delivery.label'),  desc: t('reports.detail.timeline.delivery.desc') },
+])
 const ESTADO_ORDER = ['PLANIFICADO', 'EN_PROGRESO', 'REVISION', 'COMPLETADO']
 
 const timelinePhases = computed(() => {
@@ -366,7 +368,7 @@ const timelinePhases = computed(() => {
   let currentIdx = ESTADO_ORDER.indexOf(estado)
   if (currentIdx === -1) currentIdx = 1
 
-  return TIMELINE_PHASES.map((phase, i) => {
+  return TIMELINE_PHASES.value.map((phase, i) => {
     const phaseIdx = ESTADO_ORDER.indexOf(phase.key)
     let state = 'future'
     if (isCancelled)              state = phaseIdx === 0 ? 'done' : 'skip'
@@ -379,7 +381,7 @@ const timelinePhases = computed(() => {
     let dateStr = '—'
     if (state === 'done' || state === 'current') {
       dateStr = startDate ? formatDate(startDate) : '—'
-    } else if (state === 'future' && endDate && phaseIdx === TIMELINE_PHASES.length - 1) {
+    } else if (state === 'future' && endDate && phaseIdx === TIMELINE_PHASES.value.length - 1) {
       dateStr = formatDate(endDate)
     }
     return { ...phase, state, date: dateStr }
@@ -400,7 +402,7 @@ const daysActive = computed(() => {
 const daysRemaining = computed(() => {
   if (!project.value?.fecha_fin_planificada) return '—'
   const diff = new Date(project.value.fecha_fin_planificada).getTime() - Date.now()
-  return diff > 0 ? Math.ceil(diff / 86_400_000) : 'Overdue'
+  return diff > 0 ? Math.ceil(diff / 86_400_000) : t('reports.detail.overdue')
 })
 
 const budgetPerDay = computed(() => {
@@ -421,20 +423,20 @@ const healthClass = computed(() => {
 
 const healthText = computed(() => {
   const e = project.value?.estado
-  if (e === 'COMPLETADO')  return 'Completed'
-  if (e === 'EN_PROGRESO') return 'On Track'
-  if (e === 'PAUSADO')     return 'On Hold'
-  if (e === 'CANCELADO')   return 'Cancelled'
-  return 'Planned'
+  if (e === 'COMPLETADO')  return t('reports.detail.health.completed')
+  if (e === 'EN_PROGRESO') return t('reports.detail.health.onTrack')
+  if (e === 'PAUSADO')     return t('reports.detail.health.onHold')
+  if (e === 'CANCELADO')   return t('reports.detail.health.cancelled')
+  return t('reports.detail.health.planned')
 })
 
 const healthSub = computed(() => {
   const e = project.value?.estado
-  if (e === 'COMPLETADO')  return 'All objectives met'
-  if (e === 'EN_PROGRESO') return 'Progressing normally'
-  if (e === 'PAUSADO')     return 'Awaiting resolution'
-  if (e === 'CANCELADO')   return 'Project terminated'
-  return 'Not yet started'
+  if (e === 'COMPLETADO')  return t('reports.detail.health.allObjectivesMet')
+  if (e === 'EN_PROGRESO') return t('reports.detail.health.progressingNormally')
+  if (e === 'PAUSADO')     return t('reports.detail.health.awaitingResolution')
+  if (e === 'CANCELADO')   return t('reports.detail.health.terminated')
+  return t('reports.detail.health.notStarted')
 })
 </script>
 
@@ -743,9 +745,9 @@ const healthSub = computed(() => {
   padding: 2px 6px;
   letter-spacing: 0.05em;
 }
-.st-active  { color: #4ade80; background: #4ade80;  }
-.st-idle    { color: #888;    background: #111111; }
-.st-away    { color: #fb923c; background: #fb923c;  }
+.st-active  { color: #4ade80; background: rgba(74,222,128,0.08);  }
+.st-idle    { color: #888;    background: rgba(255,255,255,0.04); }
+.st-away    { color: #fb923c; background: rgba(251,146,60,0.08);  }
 
 /* ─── Timeline card ──────────────────────────────────────────────────────── */
 .timeline { display: flex; flex-direction: column; }
@@ -825,8 +827,8 @@ const healthSub = computed(() => {
   font-weight: 700;
   padding: 1px 4px;
 }
-.metric-delta.pos { color: #4ade80; background: #4ade80; }
-.metric-delta.neg { color: #fb7185; background: #fb7185; }
+.metric-delta.pos { color: #4ade80; background: rgba(74,222,128,0.08); }
+.metric-delta.neg { color: #fb7185; background: rgba(251,113,133,0.08); }
 .metric-label {
   font-family: 'Manrope', sans-serif;
   font-size: 9px;
@@ -880,10 +882,10 @@ const healthSub = computed(() => {
   letter-spacing: 0.05em;
   flex-shrink: 0;
 }
-.tag-green  { color: #4ade80; background: #4ade80;  }
-.tag-gold   { color: #c9a962; background: #c9a962;  }
-.tag-purple { color: #a78bfa; background: #a78bfa; }
-.tag-blue   { color: #60a5fa; background: #60a5fa;  }
+.tag-green  { color: #4ade80; background: rgba(74,222,128,0.08);  }
+.tag-gold   { color: #c9a962; background: rgba(201,169,98,0.08);  }
+.tag-purple { color: #a78bfa; background: rgba(167,139,250,0.08); }
+.tag-blue   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
 
 /* ─── Side Panel ─────────────────────────────────────────────────────────── */
 .side-panel {

@@ -338,7 +338,7 @@ watch(() => route.params.token, loadInvitation)
   width: fit-content;
   padding: 6px 10px;
   border: 1px solid rgba(52, 211, 153, 0.24);
-  background: #34d399;
+  background: rgba(52, 211, 153, 0.1);
   color: #34d399;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -347,7 +347,7 @@ watch(() => route.params.token, loadInvitation)
 
 .summary-pill.inactive {
   border-color: rgba(251, 113, 133, 0.24);
-  background: #fb7185;
+  background: rgba(251, 113, 133, 0.1);
   color: #fb7185;
 }
 
