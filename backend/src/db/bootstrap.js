@@ -126,6 +126,25 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.integracion_log (
+      id_log      SERIAL PRIMARY KEY,
+      id_empresa  INTEGER NOT NULL,
+      slug        VARCHAR(50) NOT NULL,
+      event       VARCHAR(100),
+      status      VARCHAR(20) NOT NULL CHECK (status IN ('success', 'error')),
+      error_msg   TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT integracion_log_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS integracion_log_empresa_slug_idx
+      ON public.integracion_log (id_empresa, slug, created_at DESC)
+  `)
+
+  await pool.query(`
     INSERT INTO public.rol (nombre_rol, descripcion)
     VALUES ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma')
     ON CONFLICT (nombre_rol) DO NOTHING
