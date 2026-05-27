@@ -17,8 +17,9 @@
       </div>
     </div>
 
-    <div v-if="chatStore.activeCall" class="call-backdrop call-backdrop--active">
+<div v-if="chatStore.activeCall" class="call-backdrop call-backdrop--active">
       <div class="call-shell" :class="{ 'has-side-chat': showSideChat }">
+
 
         <!-- área de vídeo (En la izquierda) -->
         <div class="call-main-area">
@@ -90,8 +91,8 @@
               <button 
                 class="call-circle-btn" 
                 :class="{ active: showSideChat, 'has-unread': unreadCount > 0 && !showSideChat }" 
-                title="Alternar chat" 
-                @click="showSideChat = !showSideChat" >
+                @click="showSideChat = !showSideChat" 
+                style="position: relative;" >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" />
                 </svg>
@@ -105,6 +106,7 @@
           </div>
         </div>
         
+        <!-- Panel lateral -->
         <aside v-if="showSideChat" class="call-side-chat">
           <div class="side-chat-header">
             <span>Chat de la reunión</span>
@@ -115,10 +117,30 @@
             </button>
           </div>
 
-          <div class="side-chat-body">
-            <div v-for="msg in chatStore.messages[chatStore.activeCall?.conversationId]" :key="msg._id" class="mini-msg">
-              <span class="mini-msg-name">{{ msg.senderName }}:</span>
-              <p class="mini-msg-text">{{ msg.text }}</p>
+          <div class="side-chat-body" ref="sideMsgEl">
+            <div v-if="sideChatLoading" class="side-chat-placeholder">
+              Cargando chat...
+            </div>
+
+            <div v-else-if="sideChatError" class="side-chat-placeholder side-chat-placeholder--error">
+              {{ sideChatError }}
+            </div>
+
+            <div v-else-if="!messages.length" class="side-chat-placeholder">
+              No hay mensajes disponibles para esta conversación.
+            </div>
+
+            <div v-else>
+              <div v-for="(msg, idx) in messages" :key="msg._id">
+                <div v-if="newMessagesIndexAtOpen >= 0 && idx === newMessagesIndexAtOpen" ref="newMessagesDividerEl" class="new-messages-divider">
+                  <span>Mensajes nuevos ({{ newMessagesCountAtOpen }})</span>
+                </div>
+
+                <div class="mini-msg">
+                  <span class="mini-msg-name">{{ msg.senderName }}:</span>
+                  <p class="mini-msg-text">{{ msg.text }}</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -134,8 +156,11 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
 import { useChatStore } from '../../stores/chat.js'
+import { useAuthStore } from '../../stores/auth.js'
 
 const chatStore = useChatStore()
+const authStore = useAuthStore()
+
 const localVideoEl = ref(null)
 const remoteVideoEl = ref(null)
 
@@ -146,10 +171,33 @@ const incomingPeerAvatar = computed(() => chatStore.incomingCall?.peerAvatar || 
 const activePeerName = computed(() => chatStore.activeCall?.peerName || 'Usuario')
 const activePeerAvatar = computed(() => chatStore.activeCall?.peerAvatar || '??')
 
-const showSideChat = ref(false) // Estado local para mostrar el chat durante la llamada
-const unreadCount = ref(0)
+const showSideChat = ref(false)
+
 const sideMsgEl = ref(null)
 const sideMessageInput = ref('')
+const sideChatLoading = ref(false)
+const sideChatError = ref('')
+
+const myId = computed(() => authStore.user?.id_usuario ?? null)
+
+const unreadCount = computed(() => {
+
+
+  const convId = chatStore.activeCall?.conversationId
+  const msgs = (convId && chatStore.messages[convId]) ? chatStore.messages[convId] : []
+  const id = myId.value
+  if (!id) return 0
+  return msgs.filter((m) => Array.isArray(m.readBy) && !m.readBy.includes(id)).length
+})
+const newMessagesCountAtOpen = ref(0)
+const newMessagesIndexAtOpen = ref(-1)
+
+const newMessagesDividerEl = ref(null)
+
+const messages = computed(() => {
+  const convId = chatStore.activeCall?.conversationId
+  return (convId && chatStore.messages[convId]) ? chatStore.messages[convId] : []
+})
 
 const statusLabel = computed(() => {
   const status = chatStore.activeCall?.status
@@ -163,8 +211,16 @@ const statusLabel = computed(() => {
 
 function sendSideMessage() {
   if (!sideMessageInput.value.trim()) return
+
+  const conversationId = chatStore.activeCall?.conversationId
+  if (!conversationId) {
+    sideChatError.value = 'No se encontro la conversacion asociada a la llamada.'
+    return
+  }
+
+  sideChatError.value = ''
   chatStore.sendMessage({
-    conversationId: chatStore.activeCall.conversationId,
+    conversationId,
     text: sideMessageInput.value,
   })
   sideMessageInput.value = '' // Limpieza del campo
@@ -174,6 +230,17 @@ function bindVideoStream(videoEl, stream) {
   if (!videoEl) return
   if (videoEl.srcObject === stream) return
   videoEl.srcObject = stream || null
+}
+
+function getDividerElement() {
+  const el = newMessagesDividerEl.value
+  return Array.isArray(el) ? el[0] : el
+}
+
+function scrollSideChatToBottom() {
+  if (sideMsgEl.value) {
+    sideMsgEl.value.scrollTop = sideMsgEl.value.scrollHeight
+  }
 }
 
 async function acceptCall() {
@@ -201,33 +268,102 @@ watch(remoteVideoEl, (videoEl) => {
 })
 
 /* Notificaciones de mensajes nuevos cuando el chat esté cerrado */
-watch(() => chatStore.messages[chatStore.activeCall?.conversationId], (newMessages, oldMessages) => {
-  if (!showSideChat.value) {
-    unreadCount.value++
+watch(() => chatStore.activeCall, async (newCall) => {
+  if (!newCall?.conversationId) {
+    sideChatError.value = ''
+    sideChatLoading.value = false
+    return
   }
 
-  watch(() => chatStore.activeCall, async (newCall) => {
-  if (newCall && newCall.conversationId) {
-    if (!chatStore.messages[newCall.conversationId]) {
-      await chatStore.loadMessages(newCall.conversationId);
-    }
+  sideChatLoading.value = true
+  sideChatError.value = ''
+
+  const response = await chatStore.loadMessages(newCall.conversationId)
+  sideChatLoading.value = false
+
+  if (!response.success) {
+    sideChatError.value = response.message || 'No se pudo cargar el chat de la llamada.'
   }
-}, { immediate: true });
-  
-  /* Scroll suave */
+
+  newMessagesCountAtOpen.value = 0
+  newMessagesIndexAtOpen.value = -1
+
   nextTick(() => {
+    if (sideMsgEl.value) sideMsgEl.value.scrollTop = sideMsgEl.value.scrollHeight
+  })
+}, { immediate: true });
+
+
+watch(
+  () => chatStore.messages[chatStore.activeCall?.conversationId]?.length,
+  async (newLength, oldLength) => {
+    const convId = chatStore.activeCall?.conversationId
+    if (showSideChat.value && convId && newLength > oldLength) {
+      chatStore.markRead(convId)
+    }
+
+    // Lógica de scroll
+    await nextTick()
     if (sideMsgEl.value) {
       sideMsgEl.value.scrollTop = sideMsgEl.value.scrollHeight
     }
-  })
-}, { deep: true })
+  }
+)
 
-/* Limpieza del contador al abrir el chat */
-watch(showSideChat, (isOpen) => {
-  if (isOpen) unreadCount.value = 0
+watch(showSideChat, async (isOpen) => {
+  try {
+    const convId = chatStore.activeCall?.conversationId
+    
+    if (isOpen && convId) {
+      sideChatError.value = ''
+      sideChatLoading.value = true
+
+      let msgs = (chatStore.messages[convId] || [])
+      if (!msgs.length) {
+        const loadResponse = await chatStore.loadMessages(convId)
+        if (!loadResponse.success) {
+          sideChatError.value = loadResponse.message || 'No se pudieron cargar los mensajes de la llamada.'
+        }
+        msgs = (chatStore.messages[convId] || [])
+      }
+
+      // Calculamos el índice del primer mensaje no leído *antes* de marcar como leído
+      const id = myId.value
+      let firstUnreadIndex = -1
+      if (id && Array.isArray(msgs)) {
+        firstUnreadIndex = msgs.findIndex((m) => Array.isArray(m.readBy) ? !m.readBy.includes(id) : true)
+      }
+
+      newMessagesIndexAtOpen.value = firstUnreadIndex
+      newMessagesCountAtOpen.value = firstUnreadIndex >= 0 ? (msgs.length - firstUnreadIndex) : 0
+
+      // Limpiamos en el store (marcar todo como leído)
+      try { chatStore.markRead(convId) } catch (err) { console.warn('markRead failed', err) }
+
+      await nextTick()
+      sideChatLoading.value = false
+
+      setTimeout(() => {
+        try {
+          const dividerEl = getDividerElement()
+          if (newMessagesIndexAtOpen.value >= 0 && dividerEl?.scrollIntoView) {
+            dividerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          }
+          scrollSideChatToBottom()
+        } catch (err) { console.warn('scroll error', err) }
+      }, 100)
+    } else {
+      // Al cerrar, reseteamos la referencia de la línea roja
+      newMessagesCountAtOpen.value = 0
+      newMessagesIndexAtOpen.value = -1
+    }
+  } catch (err) {
+    console.warn('Error handling showSideChat change:', err)
+    // Aseguramos que abrir/cerrar no rompa la UI
+    newMessagesCountAtOpen.value = 0
+    newMessagesIndexAtOpen.value = -1
+  }
 })
-
-
 
 </script>
 
@@ -240,7 +376,7 @@ watch(showSideChat, (isOpen) => {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.58);
+  background: rgba(0, 0, 0, 0.68);
   backdrop-filter: blur(10px);
 }
 
@@ -296,7 +432,7 @@ watch(showSideChat, (isOpen) => {
   margin: 0;
   font-family: 'Playfair Display', serif;
   font-size: 30px;
-  color: #faf8f5;
+  color: #ffffff;
 }
 
 .call-sub,
@@ -357,11 +493,16 @@ watch(showSideChat, (isOpen) => {
 }
 
 .call-shell {
-  overflow: hidden;
   display: flex;
-  transition: all 0.3s ease;
-  height: 80vh;
+  flex-direction: row;
+  height: 85vh;
   max-height: 800px;
+  width: min(95vw, 1300px);
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  position: relative;
 }
 
 .call-shell.has-side-chat {
@@ -373,10 +514,12 @@ watch(showSideChat, (isOpen) => {
   display: flex;
   flex-direction: column; 
   min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
 .call-side-chat {
-  width: 350px;
+  width: 360px;
   flex-shrink: 0;
   background: rgba(12, 12, 12, 0.9);
   backdrop-filter: blur(20px);
@@ -384,6 +527,8 @@ watch(showSideChat, (isOpen) => {
   display: flex;
   flex-direction: column;
   animation: 100%;
+  height: 100%;
+  z-index: 250;
 }
 
 .side-chat-header {
@@ -429,17 +574,42 @@ watch(showSideChat, (isOpen) => {
   gap: 12px;
 }
 
+.side-chat-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 12px;
+  color: #ccc;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+
+.side-chat-placeholder--error {
+  color: #fb7185;
+  border: 1px solid rgba(251, 113, 133, 0.25);
+}
+
 .unread-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -2px;
+  right: -2px;
   background: #fb7185;
   color: white;
   font-size: 10px;
+  min-width: 16px;
+  height: 16px;
   padding: 2px 6px;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 2px solid #0a0a0a;
-  z-index: 10;
+  font-weight: bold;
+  z-index: 300;
 }
 
 .call-circle-btn.has-unread {
@@ -452,7 +622,7 @@ watch(showSideChat, (isOpen) => {
 .side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 4px; }
 
 .mini-msg {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.06);
   padding: 10px;
   border-radius: 4px;
   border-left: 2px solid transparent;
@@ -477,7 +647,7 @@ watch(showSideChat, (isOpen) => {
 .mini-msg-text {
   font-size: 13px;
   color: #faf8f5;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.06);
   padding: 8px 12px;
   border-radius: 4px;
   line-height: 1.5;
@@ -489,12 +659,12 @@ watch(showSideChat, (isOpen) => {
   flex-shrink: 0;
   padding: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 10, 10, 0.5);
+  background: rgba(10, 10, 10, 0.7);
 }
 
 .side-chat-input-area input {
   width: 100%;
-  background: #000;
+  background: rgba(0,0,0,0.6);
   border: 1px solid #1f1f1f;
   color: #fff;
   padding: 12px 16px;
@@ -510,8 +680,10 @@ watch(showSideChat, (isOpen) => {
 
 .call-stage {
   position: relative;
-  min-height: 62vh;
+  flex: 1;
   background: linear-gradient(180deg, #050505, #0d0d0d);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .call-remote-video,
@@ -525,13 +697,17 @@ watch(showSideChat, (isOpen) => {
 .call-remote-video {
   display: block;
   min-height: 62vh;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #050505;
 }
 
 .call-local-preview {
   position: absolute;
   right: 20px;
   bottom: 20px;
-  width: min(26vw, 240px);
+  width: min(22vw, 220px);
   aspect-ratio: 4 / 3;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #050505;
@@ -580,9 +756,13 @@ watch(showSideChat, (isOpen) => {
   justify-content: space-between;
   gap: 20px;
   padding: 18px 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 8, 8, 0.94);
-  z-index: 100;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 8, 8, 0.98);
+  z-index: 200;
+  position: relative;
+  /* Keep controls visible when scrolling messages or resizing */
+  position: sticky;
+  bottom: 0;
 }
 
 .call-toolbar-copy {
@@ -594,7 +774,7 @@ watch(showSideChat, (isOpen) => {
   height: 48px;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   color: #f2ede4;
   display: flex;
   align-items: center;
@@ -612,6 +792,32 @@ watch(showSideChat, (isOpen) => {
   background: #e11d48;
   color: #fff6f8;
 }
+
+.new-messages-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #fb7185; /* Rojo Luxury */
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 20px 0;
+}
+
+.new-messages-divider span {
+  padding: 0 10px;
+}
+
+.new-messages-divider::before,
+.new-messages-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(251, 113, 133, 0.4);
+}
+
+.new-messages-divider:not(:empty)::before { margin-right: .5em; }
+.new-messages-divider:not(:empty)::after { margin-left: .5em; }
 
 @media (max-width: 900px) {
   .call-toolbar {
@@ -636,11 +842,11 @@ watch(showSideChat, (isOpen) => {
   }
 
   .call-stage {
-    min-height: 56vh;
+    min-height: 50vh;
   }
 
   .call-stage-title {
-    font-size: 28px;
+    font-size: 24px;
   }
 }
 
@@ -660,9 +866,33 @@ watch(showSideChat, (isOpen) => {
   .call-shell.has-side-chat {
     flex-direction: column;
   }
+
+  .call-main-area {
+    height: 60%;
+    flex: none;
+  }
+
   .call-side-chat {
     width: 100%;
-    height: 300px;
+    height: 40%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .call-toolbar {
+    padding: 10px;
+    /* On small screens, toolbar remains visible */
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+@media (max-height: 700px) {
+  .call-shell {
+    height: 95vh;
+  }
+  .call-stage-title {
+    font-size: 24px;
   }
 }
 </style>
