@@ -444,8 +444,7 @@ const healthSub = computed(() => {
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .detail-root {
   min-height: 100vh;
-  background: rgba(17, 17, 17, 0.75);
-  backdrop-filter: blur(10px);
+  background: transparent;
   padding-top: 56px;
 }
 
@@ -462,7 +461,7 @@ const healthSub = computed(() => {
   padding: 28px 32px 48px;
   border-right: 1px solid #1e1e1e;
   overflow-y: auto;
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.82);
 }
 
 /* ─── Back btn ───────────────────────────────────────────────────────────── */
@@ -521,7 +520,7 @@ const healthSub = computed(() => {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: #111111;
+  background: transparent;
   border: 1px solid #2a2a2a;
   color: #888;
   font-family: 'Manrope', sans-serif;
@@ -615,14 +614,14 @@ const healthSub = computed(() => {
   gap: 16px;
 }
 .detail-card {
-  background: #111111;
+  background: rgba(255,255,255,0.03);
   border: 1px solid #1e1e1e;
   padding: 20px;
   transition: border-color .2s, background .2s;
 }
 .detail-card:hover {
   border-color: rgba(201,169,98,0.2);
-  background: #111111;
+  background: rgba(201,169,98,0.02);
 }
 .detail-card.span-2 { grid-column: span 2; }
 
@@ -646,12 +645,12 @@ const healthSub = computed(() => {
   color: #c9a962;
   border: 1px solid rgba(201,169,98,0.2);
   padding: 2px 7px;
-  background: #111111;
+  background: rgba(201,169,98,0.05);
 }
 .card-header-right { display: flex; gap: 4px; }
 .period-btn {
   padding: 3px 8px;
-  background: #111111;
+  background: transparent;
   border: 1px solid #1e1e1e;
   color: #444;
   font-family: 'Manrope', sans-serif;
@@ -678,7 +677,7 @@ const healthSub = computed(() => {
 .budget-bars { display: flex; flex-direction: column; gap: 7px; }
 .bb-item { display: flex; align-items: center; gap: 8px; }
 .bb-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 70px; flex-shrink: 0; }
-.bb-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
+.bb-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
 .bb-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .bb-fill.gold   { background: #c9a962; }
 .bb-fill.blue   { background: #60a5fa; }
@@ -705,7 +704,7 @@ const healthSub = computed(() => {
 .tl-dot.red    { background: #fb7185; }
 .tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; width: 72px; flex-shrink: 0; }
 .tl-bar-wrap { flex: 1; }
-.tl-track { height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
+.tl-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
 .tl-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .tl-fill.green  { background: #4ade80; }
 .tl-fill.blue   { background: #60a5fa; }
@@ -765,9 +764,9 @@ const healthSub = computed(() => {
   transition: all .2s;
 }
 .phase-dot.done    { background: #c9a962; border: none; }
-.phase-dot.current { background: #c9a962; border: 1.5px solid #c9a962; }
-.phase-dot.future  { background: #111111; border: 1.5px solid #2a2a2a; }
-.phase-dot.skip    { background: #111111; border: 1.5px solid #1e1e1e; }
+.phase-dot.current { background: rgba(201,169,98,0.15); border: 1.5px solid #c9a962; }
+.phase-dot.future  { background: transparent; border: 1.5px solid #2a2a2a; }
+.phase-dot.skip    { background: transparent; border: 1.5px solid #1e1e1e; }
 .phase-connector {
   width: 1px;
   flex: 1;
@@ -799,14 +798,14 @@ const healthSub = computed(() => {
   gap: 12px;
 }
 .metric-card {
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   border: 1px solid #1e1e1e;
   border-top: 2px solid #1e1e1e;
   padding: 14px 12px 10px;
   transition: border-color .2s, background .2s;
 }
 .metric-card:hover {
-  background: #111111;
+  background: rgba(201,169,98,0.04);
   border-color: rgba(201,169,98,0.2);
   border-top-color: currentColor;
 }
@@ -890,7 +889,7 @@ const healthSub = computed(() => {
 /* ─── Side Panel ─────────────────────────────────────────────────────────── */
 .side-panel {
   padding: 24px 20px;
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.9);
   border-left: 1px solid #1e1e1e;
   overflow-y: auto;
 }
@@ -913,7 +912,7 @@ const healthSub = computed(() => {
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid #1e1e1e;
-  background: #111111;
+  background: rgba(255,255,255,0.02);
 }
 .health-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0; }
 .health-text {
@@ -958,7 +957,7 @@ const healthSub = computed(() => {
   width: 100%;
   text-align: left;
   padding: 8px 10px;
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -989,7 +988,7 @@ const healthSub = computed(() => {
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
 .risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
-.risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
+.risk-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
 

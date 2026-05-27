@@ -115,8 +115,7 @@ async function selectChat(conversation) {
   panelError.value = ''
   chatStore.markRead(conversation._id)
 
-  const cachedMessages = chatStore.messages[conversation._id]
-  if (!cachedMessages || cachedMessages.length === 0) {
+  if (!chatStore.messages[conversation._id]) {
     const response = await chatStore.loadMessages(conversation._id)
     if (!response.success) {
       panelError.value = response.message || 'No se pudo cargar la conversación.'
@@ -385,11 +384,7 @@ onMounted(() => {
           </div>
 
           <div class="messages-area" ref="messagesEl">
-            <div v-if="messageGroups.length === 0" class="chat-empty-messages">
-              No hay mensajes en esta conversación.
-            </div>
-
-            <template v-else v-for="dateGroup in messageGroups" :key="dateGroup.date">
+            <template v-for="dateGroup in messageGroups" :key="dateGroup.date">
               <div class="date-divider"><span>{{ dateGroup.date }}</span></div>
 
               <div
@@ -651,7 +646,7 @@ onMounted(() => {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: #050505;
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -686,7 +681,7 @@ onMounted(() => {
   width: 26px;
   height: 26px;
   border: none;
-  background: none;
+  background: transparent;
   color: #555;
   cursor: pointer;
   display: flex;
@@ -703,13 +698,13 @@ onMounted(() => {
   gap: 8px;
   padding: 0 12px;
   margin: 10px 12px;
-  background: #111111;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid #1f1f1f;
 }
 
 .ndm-search input {
   flex: 1;
-  background: none;
+  background: transparent;
   border: none;
   outline: none;
   color: #faf8f5;
@@ -738,7 +733,7 @@ onMounted(() => {
   transition: background 0.1s;
 }
 
-.ndm-user:hover { background: #151515; }
+.ndm-user:hover { background: rgba(255, 255, 255, 0.03); }
 
 .ndm-name {
   font-family: 'Manrope', sans-serif;

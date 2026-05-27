@@ -66,7 +66,7 @@ function formatDate(v) {
 
 <style scoped>
 .fh-card {
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.85);
   border: 1px solid #2a2a2a;
   margin-bottom: 16px;
 }
@@ -75,7 +75,7 @@ function formatDate(v) {
   padding: 14px 18px; cursor: pointer;
   transition: background 0.15s;
 }
-.fh-head:hover { background: #111111; }
+.fh-head:hover { background: rgba(255,255,255,0.02); }
 
 .section-subtitle {
   letter-spacing: 0.15em; font-size: 11px; color: #c9a962;

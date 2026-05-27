@@ -37,7 +37,7 @@ function close() {
 <style scoped>
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  background: #000000;
+  background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
 }

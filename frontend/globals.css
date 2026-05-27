@@ -6,7 +6,7 @@
   --Border: #312713;
   --PillBack: #120f07;
   --Text: #ffffff;
-  --Background: rgba(0, 0, 0, 0.92);
+  --Background: #000000;
   --Background2: #120f07;
   --Background3: #282825;
   --Success: rgb(15, 77, 15);
@@ -34,10 +34,6 @@ body,
   padding: 0;
   width: 100%;
   height: 100%;
-}
-
-html {
-  scrollbar-gutter: stable;
 }
 .hero-title {
   color: var(--Text);

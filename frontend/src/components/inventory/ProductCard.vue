@@ -118,7 +118,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 
 <style scoped>
 .product-card {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   display: flex;
   flex-direction: column;
@@ -141,7 +141,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   border: 1px dashed #2a2a2a;
   border-radius: 4px;
 }
@@ -161,7 +161,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 .card-project-tag {
   font-size: 11px;
   color: #60a5fa;
-  background: #60a5fa;
+  background: rgba(96,165,250,0.08);
   padding: 2px 6px;
   border-radius: 3px;
   align-self: flex-start;

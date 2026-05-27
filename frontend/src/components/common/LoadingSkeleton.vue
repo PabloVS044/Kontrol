@@ -30,7 +30,7 @@ defineProps({
   gap: 24px;
 }
 .skeleton-card {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   height: 200px;
   display: flex;

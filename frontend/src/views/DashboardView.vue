@@ -1070,7 +1070,7 @@ watch(() => authStore.idEmpresaActual, () => {
   flex: 1;
   padding: 80px 100px;
   color: var(--Text);
-  background: transparent;
+  background: rgba(10,10,10,0.82);
   margin-top: 56px;
 }
 
@@ -1096,7 +1096,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .access-waiting {
-  background: rgba(12, 10, 5, 0.92);
+  background: rgba(12,10,5,0.9);
   border: 1px dashed var(--Primary);
   padding: 28px 32px;
   margin-bottom: 32px;
@@ -1134,7 +1134,7 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(12, 10, 5, 0.92);
+  background: rgba(12,10,5,0.9);
   border: 1px dashed var(--Primary);
   padding: 40px;
   margin-bottom: 40px;
@@ -1181,7 +1181,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .chart-card {
-  background: rgba(12, 12, 12, 0.92);
+  background: rgba(12,12,12,0.85);
   border: 1px solid var(--Border);
   padding: 30px;
   flex: 1;
@@ -1331,7 +1331,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .company-collaborators {
-  background: rgba(12, 12, 12, 0.92);
+  background: rgba(12,12,12,0.88);
   border: 1px solid #1f1f1f;
   padding: 32px;
 }
@@ -1387,7 +1387,7 @@ watch(() => authStore.idEmpresaActual, () => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: 1px solid rgba(255,255,255,0.12);
-  background: #111111;
+  background: rgba(255,255,255,0.03);
   color: #faf8f5;
 }
 
@@ -1402,7 +1402,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .team-card {
-  background: #080808;
+  background: rgba(8,8,8,0.7);
   border: 1px solid #1f1f1f;
   padding: 24px;
   display: flex;
@@ -1426,7 +1426,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .invite-link-box {
   padding: 16px;
-  background: #111111;
+  background: rgba(255,255,255,0.03);
   border: 1px dashed rgba(201,169,98,0.28);
 }
 
@@ -1463,7 +1463,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .team-btn--secondary {
-  background: #111111;
+  background: transparent;
   border: 1px solid rgba(255,255,255,0.12);
   color: #faf8f5;
 }
@@ -1486,7 +1486,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .feedback {
   padding: 14px 16px;
   border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  background: rgba(255,255,255,0.03);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -1504,7 +1504,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-state {
   padding: 18px;
   border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  background: rgba(255,255,255,0.03);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -1520,7 +1520,7 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   gap: 20px;
   padding: 18px;
-  background: #111111;
+  background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -1582,7 +1582,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .project-assignment-card {
   padding: 16px;
   border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1608,7 +1608,7 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: 6px;
   padding: 12px;
   border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   cursor: pointer;
 }
 

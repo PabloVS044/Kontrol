@@ -546,7 +546,7 @@ function autoResizeEdit(e) {
 /* ── Page layout ── */
 .agent-page {
   min-height: 100vh;
-  background: transparent;
+  background: var(--Background, #0a0a0a);
   display: flex;
   flex-direction: column;
 }
@@ -566,7 +566,7 @@ function autoResizeEdit(e) {
 .agent-sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  background: rgba(17, 17, 17, 0.94);
+  background: rgba(255, 255, 255, 0.015);
   border-right: 1px solid rgba(202, 168, 96, 0.1);
   display: flex;
   flex-direction: column;
@@ -599,7 +599,7 @@ function autoResizeEdit(e) {
   height: 24px;
   border-radius: 2px;
   border: 1px solid transparent;
-  background: #111111;
+  background: transparent;
   color: var(--TextMuted, #8a8070);
   cursor: pointer;
   display: inline-flex;
@@ -667,7 +667,7 @@ function autoResizeEdit(e) {
   gap: 6px;
   width: 100%;
   padding: 8px 10px;
-  background: #111111;
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 2px;
   color: var(--Text, #faf8f5);
@@ -678,7 +678,7 @@ function autoResizeEdit(e) {
   transition: background 0.15s, border-color 0.15s;
 }
 .conv-item:hover:not(:disabled) {
-  background: #111111;
+  background: rgba(202, 168, 96, 0.06);
 }
 .conv-item.active {
   background: rgba(202, 168, 96, 0.12);
@@ -793,7 +793,7 @@ function autoResizeEdit(e) {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(17, 17, 17, 0.94);
+  background: rgba(202, 168, 96, 0.05);
   border: 1px solid rgba(202, 168, 96, 0.14);
   box-shadow: inset 0 1px 0 rgba(202, 168, 96, 0.06);
   padding: 16px;
@@ -910,7 +910,7 @@ function autoResizeEdit(e) {
 
 .agent-textarea {
   flex: 1;
-  background: #111111;
+  background: transparent;
   border: none;
   outline: none;
   color: var(--Text, #faf8f5);
@@ -936,7 +936,7 @@ function autoResizeEdit(e) {
   height: 36px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111111;
+  background: rgba(255, 255, 255, 0.04);
   color: #555;
   cursor: pointer;
   display: flex;
@@ -1083,7 +1083,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(code) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 12px;
-  background: #111111;
+  background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   padding: 1px 5px;
@@ -1092,7 +1092,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(pre) {
   margin: 0 0 8px;
   padding: 10px 12px;
-  background: #000000;
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   overflow-x: auto;
@@ -1128,7 +1128,7 @@ function autoResizeEdit(e) {
   padding: 4px 8px;
   text-align: left;
 }
-.msg-md :deep(th) { background: #111111; font-weight: 700; }
+.msg-md :deep(th) { background: rgba(255, 255, 255, 0.05); font-weight: 700; }
 
 .msg-md :deep(img) { max-width: 100%; border-radius: 2px; }
 
@@ -1150,7 +1150,7 @@ function autoResizeEdit(e) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #111111;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   color: var(--TextMuted, #8a8070);
@@ -1167,7 +1167,7 @@ function autoResizeEdit(e) {
 /* Inline edit */
 .msg-edit {
   width: 100%;
-  background: #111111;
+  background: rgba(202, 168, 96, 0.06);
   border: 1px solid rgba(202, 168, 96, 0.25);
   border-radius: 2px;
   padding: 8px;
@@ -1177,7 +1177,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-edit-textarea {
-  background: #111111;
+  background: transparent;
   border: none;
   outline: none;
   resize: none;
@@ -1200,7 +1200,7 @@ function autoResizeEdit(e) {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   padding: 4px 10px;
-  background: #111111;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--TextMuted, #8a8070);
   border-radius: 2px;
@@ -1230,7 +1230,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-row.assistant .msg-bubble {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--Text, #faf8f5);
 }
@@ -1274,7 +1274,7 @@ function autoResizeEdit(e) {
   color: #e88080;
 }
 .agent-banner code {
-  background: #000000;
+  background: rgba(0, 0, 0, 0.4);
   padding: 1px 6px;
   border-radius: 2px;
   font-size: 11px;

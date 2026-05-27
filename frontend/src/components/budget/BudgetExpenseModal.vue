@@ -52,7 +52,7 @@ defineEmits(['submit'])
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: #000000;
+  background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -134,7 +134,7 @@ defineEmits(['submit'])
   padding: 10px 18px;
 }
 .modal-actions :deep(.btn:first-child) {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }

@@ -802,14 +802,7 @@ export const useChatStore = defineStore('chat', () => {
     const existing = conversations.value.find((conversation) => conversation.otherUserId === targetUserId)
     if (existing) return existing
 
-    // Esperamos más tiempo por si el socket tarda en reconectarse
-    let ready = await waitForSocketReady(10000)
-    if (!ready || !socket.value) {
-      // Intentamos forzar reconexión rápida
-      try { connect() } catch {}
-      ready = await waitForSocketReady(10000)
-    }
-
+    const ready = await waitForSocketReady()
     if (!ready || !socket.value) {
       throw new Error(currentChatUnavailableMessage())
     }
@@ -820,7 +813,7 @@ export const useChatStore = defineStore('chat', () => {
       const timeoutId = window.setTimeout(() => {
         cleanup()
         reject(new Error(lastError.value || 'The conversation could not be created.'))
-      }, 15000)
+      }, 10000)
 
       const cleanup = () => {
         window.clearTimeout(timeoutId)
@@ -889,26 +882,6 @@ export const useChatStore = defineStore('chat', () => {
     if (conversation) {
       conversation.unread = 0
     }
-    // También actualizamos localmente los mensajes para reflejar que este usuario
-    // ha leído los mensajes (añadiendo su id a `readBy` cuando no esté presente).
-    try {
-      const myId = authStore.user?.id_usuario
-      if (myId) {
-        const current = messages.value[conversationId] ?? []
-        if (current.length) {
-          messages.value = {
-            ...messages.value,
-            [conversationId]: current.map((m) => {
-              if (!Array.isArray(m.readBy)) return { ...m, readBy: [myId] }
-              if (m.readBy.includes(myId)) return m
-              return { ...m, readBy: [...m.readBy, myId] }
-            }),
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('Failed to locally mark messages read:', err)
-    }
   }
 
   async function uploadFiles(fileList) {
@@ -966,12 +939,7 @@ export const useChatStore = defineStore('chat', () => {
       return { success: false, message: 'Conversation not found.' }
     }
 
-    let ready = await waitForSocketReady()
-    if (!ready) {
-      try { connect() } catch {}
-      ready = await waitForSocketReady(10000)
-    }
-
+    const ready = await waitForSocketReady()
     if (!ready) {
       const message = currentChatUnavailableMessage()
       callError.value = message

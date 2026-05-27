@@ -66,7 +66,7 @@ const isDone = computed(() =>
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   transition: border-color 0.15s;
 }
@@ -155,7 +155,7 @@ const isDone = computed(() =>
 }
 
 .task-action-btn {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #888;
   font-family: 'Manrope', sans-serif;

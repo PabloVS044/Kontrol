@@ -93,7 +93,7 @@ function formatMoney(v) {
 
 <style scoped>
 .summary-card {
-  background: #0c0c0c;
+  background: rgba(12,12,12,0.88);
   border: 1px solid #2a2a2a;
   padding: 32px;
   display: flex; justify-content: space-between; align-items: center;

@@ -266,7 +266,7 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .invite-card {
-  background: #0c0c0c;
+  background: rgba(12, 12, 12, 0.92);
   border: 1px solid rgba(201, 169, 98, 0.18);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
   padding: 44px;
@@ -313,7 +313,7 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .summary-row {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 18px;
   display: flex;
@@ -353,7 +353,7 @@ watch(() => route.params.token, loadInvitation)
 
 .invite-feedback,
 .invite-state {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 16px 18px;
   color: #ded7cc;
@@ -385,13 +385,13 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .secondary-btn {
-  background: #111111;
+  background: transparent;
   color: #faf8f5;
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .ghost-btn {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   color: #faf8f5;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }

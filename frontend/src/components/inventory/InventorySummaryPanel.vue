@@ -117,7 +117,7 @@ const lowStockColor = computed(() => {
 .context-panel {
   width: 320px;
   flex: none;
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.9);
   border-left: 1px solid #1a1a1a;
   padding: 48px 28px;
   display: flex;
@@ -213,7 +213,7 @@ const lowStockColor = computed(() => {
 }
 .alert-card {
   padding: 12px;
-  background: #111111;
+  background: rgba(251,113,133,0.05);
   border: 1px solid rgba(251,113,133,0.2);
   border-radius: 4px;
 }
@@ -259,7 +259,7 @@ const lowStockColor = computed(() => {
   color: #0a0a0a;
 }
 :deep(.btn):last-of-type {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }

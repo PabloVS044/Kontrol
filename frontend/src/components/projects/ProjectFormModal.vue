@@ -175,7 +175,7 @@ function handleSubmit() {
   padding: 10px 20px;
 }
 .modal-actions :deep(.btn):first-child {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }

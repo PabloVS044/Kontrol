@@ -21,7 +21,7 @@ defineProps({
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #0a0a0a;
+  background: rgba(10,10,10,0.82);
   min-height: 300px;
 }
 .state-title {

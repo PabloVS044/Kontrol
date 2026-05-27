@@ -3,9 +3,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .pd-root {
-  background: rgba(17, 17, 17, 0.75);
+  background: transparent;
   min-height: 100vh;
-  backdrop-filter: blur(10px);
 }
 
 .pd-layout {
@@ -13,7 +12,7 @@
   color: #faf8f5;
   min-height: calc(100vh - 56px);
   margin-top: 56px;
-  background: rgba(10, 10, 10, 0.78);
+  background: rgba(10,10,10,0.82);
   display: flex;
   flex-direction: column;
 }
@@ -138,7 +137,7 @@
 .pd-nav-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 14px;
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #666;
   font-size: 12px; font-family: 'Manrope', sans-serif;
@@ -148,7 +147,7 @@
 .pd-nav-btn:hover { color: #c9a962; border-color: rgba(201,169,98,0.4); }
 
 .budget-card {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.8);
   border: 1px solid #1f1f1f;
   padding: 20px 24px;
   min-width: 260px;
@@ -191,7 +190,7 @@
 }
 
 .pd-tab {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.8);
   border: 1px solid #1f1f1f;
   border-bottom: none;
   cursor: pointer;
@@ -203,7 +202,7 @@
   margin-right: 5px;
   transition: color 0.15s, background 0.15s;
 }
-.pd-tab.active { color: #c9a962; border-bottom: 2px solid #c9a962; background: #141414; }
+.pd-tab.active { color: #c9a962; border-bottom: 2px solid #c9a962; background: rgba(20,20,20,0.8); }
 .pd-tab:hover:not(.active) { color: #888; }
 
 /* ── Tab panels ── */
@@ -220,7 +219,7 @@
 }
 
 .metric-card {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   padding: 24px;
   display: flex;
@@ -338,7 +337,7 @@
 .team-role-row:last-child { border-bottom: none; }
 .team-role-avatar {
   width: 36px; height: 36px;
-  background: #c9a962;
+  background: rgba(201,169,98,0.1);
   border: 1px solid rgba(201,169,98,0.2);
   color: #c9a962;
   display: flex;
@@ -396,7 +395,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   transition: border-color 0.15s;
 }
@@ -468,7 +467,7 @@
 }
 
 .task-action-btn {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #888;
   font-family: 'Manrope', sans-serif;
@@ -499,7 +498,7 @@
 }
 
 .team-role-card {
-  background: #0f0f0f;
+  background: rgba(15,15,15,0.7);
   border: 1px solid #1f1f1f;
   padding: 28px 24px;
   display: flex;
@@ -536,7 +535,7 @@
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btn-secondary {
-  background: #111111;
+  background: transparent;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
   font-family: 'Manrope', sans-serif;
@@ -554,7 +553,7 @@
 /* ── Modal ── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  background: #000000;
+  background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
 }
@@ -648,7 +647,7 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  background: #60a5fa;
+  background: rgba(96,165,250,0.08);
   border: 1px solid rgba(96,165,250,0.2);
   color: #60a5fa;
   font-size: 11px;

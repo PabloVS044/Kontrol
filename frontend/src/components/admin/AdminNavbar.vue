@@ -94,7 +94,7 @@ function closeMenu()   { isMenuOpen.value = false }
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0a0a0a;
+  background: rgba(10, 10, 10, 0.95);
   border-bottom: 1px solid #1f1f1f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -303,7 +303,7 @@ function closeMenu()   { isMenuOpen.value = false }
     position: fixed;
     top: 56px;
     left: 0; right: 0;
-    background: #0a0a0a;
+    background: rgba(10, 10, 10, 0.98);
     border-bottom: 1px solid #1f1f1f;
     flex-direction: column;
     padding: 20px 0;

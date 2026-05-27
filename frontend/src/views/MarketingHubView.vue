@@ -1366,14 +1366,14 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 
 .ghost-action,
 .mini-action {
-  background: #111111;
+  background: transparent;
   color: #faf8f5;
   border-color: rgba(255, 255, 255, 0.14);
   padding: 10px 14px;
 }
 
 .mini-action.solid {
-  background: #c9a962;
+  background: rgba(201, 169, 98, 0.18);
   color: #f5e3ae;
 }
 
@@ -1398,13 +1398,13 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
   gap: 12px;
   padding: 14px 18px;
   margin: 18px 0;
-  background: #1f6243;
+  background: rgba(31, 98, 67, 0.16);
   border: 1px solid rgba(52, 211, 153, 0.3);
   color: #d8fff0;
 }
 
 .feedback-strip.error {
-  background: #711d29;
+  background: rgba(113, 29, 41, 0.2);
   border-color: rgba(251, 113, 133, 0.35);
   color: #ffe4e8;
 }
@@ -1444,7 +1444,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .campaign-card,
 .publication-card,
 .snapshot-row {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
   padding: 16px;
   text-align: left;
@@ -1540,7 +1540,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .type-chip {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.06);
   color: #e8dfcf;
 }
 
@@ -1549,7 +1549,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip.neutral {
-  background: #111111;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .status-chip.warm {
@@ -1604,7 +1604,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
   align-items: center;
   padding: 12px 14px;
   margin-bottom: 14px;
-  background: #111111;
+  background: rgba(255, 255, 255, 0.03);
   color: #d7d0c5;
 }
 
@@ -1678,7 +1678,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .form-field textarea,
 .form-field select {
   width: 100%;
-  background: #111111;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: #faf8f5;
   padding: 12px 14px;

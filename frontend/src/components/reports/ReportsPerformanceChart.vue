@@ -60,7 +60,7 @@ const dots = [
 
 <style scoped>
 .section-block {
-  background: #111111;
+  background: rgba(255,255,255,0.02);
   border: 1px solid #1e1e1e;
   padding: 18px;
   margin-bottom: 24px;

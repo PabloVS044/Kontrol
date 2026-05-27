@@ -111,7 +111,7 @@ function areaLabel(area) {
 
 .area-badge {
   font-size: 11px; color: #c9a962;
-  background: #c9a962; border: 1px solid rgba(201,169,98,0.2);
+  background: rgba(201,169,98,0.1); border: 1px solid rgba(201,169,98,0.2);
   padding: 3px 10px; white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }
@@ -121,7 +121,7 @@ function areaLabel(area) {
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
 .task-action-btn {
-  background: #111111; border: 1px solid #1f1f1f; color: #888;
+  background: transparent; border: 1px solid #1f1f1f; color: #888;
   font-family: 'Manrope', sans-serif; font-size: 11px;
   padding: 6px 12px; cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
