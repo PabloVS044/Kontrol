@@ -105,7 +105,12 @@
 
         <div v-else class="fp-mini-chat">
           <div class="fp-messages" ref="miniMsgEl">
+            <div v-if="activeMiniMessages.length === 0" class="fp-chat-placeholder">
+              <span>No hay mensajes en esta conversación.</span>
+            </div>
+
             <div
+              v-else
               v-for="message in activeMiniMessages"
               :key="message._id"
               class="fp-msg"
@@ -346,7 +351,8 @@ async function openChat(conversation) {
   panelError.value = ''
   chatStore.markRead(conversation._id)
 
-  if (!chatStore.messages[conversation._id]) {
+  const cachedMessages = chatStore.messages[conversation._id]
+  if (!cachedMessages || cachedMessages.length === 0) {
     const response = await chatStore.loadMessages(conversation._id)
     if (!response.success) {
       panelError.value = response.message || 'No se pudo cargar la conversación.'
@@ -715,6 +721,20 @@ watch(() => chatStore.lastError, (message) => {
 .fp-messages {
   flex: 1;
   overflow-y: auto;
+}
+
+.fp-chat-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px;
+  min-height: 120px;
+  color: #bbb;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
 }
 
 .fp-list::-webkit-scrollbar,
