@@ -45,54 +45,47 @@
         </section>
 
         <section class="slide" data-title="Problema">
-          <div class="slide-grid problem-grid">
-            <div>
-              <p class="slide-tag">Slide 2 · Problema</p>
-              <h2>El caos operativo cuesta tiempo, dinero y visibilidad.</h2>
-            </div>
-
-            <div class="chaos-grid">
-              <article class="chaos-card">
-                <span class="metric-label">01</span>
-                <strong>Informacion dispersa</strong>
-                <p>Demasiadas herramientas separadas.</p>
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
+            <p class="slide-tag">Slide 2 · Problema</p>
+            <h2 style="font-size: 4rem; max-width: 900px; margin: 20px 0; line-height: 1.1;">El caos operativo cuesta <span style="color: var(--danger);">tiempo y dinero</span>.</h2>
+            
+            <div style="display: flex; gap: 30px; margin-top: 50px; width: 100%;">
+              <article style="flex: 1; padding: 40px; background: rgba(224, 82, 82, 0.05); border: 1px solid rgba(224, 82, 82, 0.2); border-radius: var(--radius-lg); text-align: left;">
+                <span style="font-size: 3rem; font-family: var(--display-font); color: var(--danger); opacity: 0.5;">01</span>
+                <strong style="display: block; font-size: 1.8rem; margin: 15px 0;">Info Dispersa</strong>
+                <p style="font-size: 1.2rem; color: var(--muted); margin: 0;">Múltiples herramientas separadas generan islas de información.</p>
               </article>
-              <article class="chaos-card">
-                <span class="metric-label">02</span>
-                <strong>Poca trazabilidad</strong>
-                <p>Proyecto, gasto y recurso no siempre se conectan.</p>
+              <article style="flex: 1; padding: 40px; background: rgba(224, 82, 82, 0.05); border: 1px solid rgba(224, 82, 82, 0.2); border-radius: var(--radius-lg); text-align: left;">
+                <span style="font-size: 3rem; font-family: var(--display-font); color: var(--danger); opacity: 0.5;">02</span>
+                <strong style="display: block; font-size: 1.8rem; margin: 15px 0;">Sin Trazabilidad</strong>
+                <p style="font-size: 1.2rem; color: var(--muted); margin: 0;">Proyectos, gastos y recursos no se conectan entre sí.</p>
               </article>
-              <article class="chaos-card">
-                <span class="metric-label">03</span>
-                <strong>Decisiones lentas</strong>
-                <p>Se pierde tiempo buscando el dato correcto.</p>
-              </article>
-              <article class="chaos-card">
-                <span class="metric-label">04</span>
-                <strong>Seguimiento incompleto</strong>
-                <p>La operacion no queda centralizada.</p>
+              <article style="flex: 1; padding: 40px; background: rgba(224, 82, 82, 0.05); border: 1px solid rgba(224, 82, 82, 0.2); border-radius: var(--radius-lg); text-align: left;">
+                <span style="font-size: 3rem; font-family: var(--display-font); color: var(--danger); opacity: 0.5;">03</span>
+                <strong style="display: block; font-size: 1.8rem; margin: 15px 0;">Lentitud</strong>
+                <p style="font-size: 1.2rem; color: var(--muted); margin: 0;">La dificultad para encontrar datos retrasa la toma de decisiones.</p>
               </article>
             </div>
           </div>
         </section>
 
         <section class="slide" data-title="Cliente y Proyecto">
-          <div class="slide-grid problem-grid" style="align-content: center;">
-            <div style="text-align: center;">
+          <div style="display: flex; flex-direction: column; height: 100%;">
+            <div style="text-align: center; margin-bottom: 40px;">
               <p class="slide-tag">Slide 3 · Audiencia</p>
-              <h2 style="font-size: 3rem;">¿Para quién es Kontrol?</h2>
+              <h2 style="font-size: 4rem;">¿Para quién es Kontrol?</h2>
             </div>
 
-            <div class="chaos-grid" style="margin-top: 20px; gap: 40px;">
-              <article class="chaos-card" style="text-align: center; padding: 50px 30px; border-color: var(--Primary); background: rgba(202,168,96,0.05);">
-                <span class="metric-label" style="font-size: 1.2rem; color: var(--Primary);">El Cliente Final (Quién paga)</span>
-                <strong style="font-size: 2.2rem; margin: 20px 0;">PYMES</strong>
-                <p style="font-size: 1.2rem; color: var(--text);">Empresas que necesitan centralizar su gestión, finanzas y control operativo.</p>
+            <div style="display: flex; gap: 40px; flex: 1;">
+              <article style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px; background: linear-gradient(135deg, rgba(202,168,96,0.1), transparent); border: 2px solid var(--Primary); border-radius: var(--radius-xl);">
+                <span class="metric-label" style="font-size: 1.4rem; color: var(--Primary);">El Cliente Final (Quién paga)</span>
+                <strong style="font-size: 3.5rem; margin: 20px 0; line-height: 1;">PYMES</strong>
+                <p style="font-size: 1.5rem; color: var(--text); margin: 0; line-height: 1.4;">Empresas que necesitan centralizar su gestión, finanzas y control operativo en un solo lugar.</p>
               </article>
-              <article class="chaos-card" style="text-align: center; padding: 50px 30px; border-color: var(--Primary); background: rgba(202,168,96,0.05);">
-                <span class="metric-label" style="font-size: 1.2rem; color: var(--Primary);">El Usuario (Quién opera)</span>
-                <strong style="font-size: 2.2rem; margin: 20px 0;">Líderes y Equipos</strong>
-                <p style="font-size: 1.2rem; color: var(--text);">Personas que ejecutan proyectos, registran recursos y toman decisiones día a día.</p>
+              <article style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px; background: rgba(255,255,255,0.02); border: 2px solid rgba(255,255,255,0.1); border-radius: var(--radius-xl);">
+                <span class="metric-label" style="font-size: 1.4rem; color: var(--muted);">El Usuario (Quién opera)</span>
+                <strong style="font-size: 3.5rem; margin: 20px 0; line-height: 1;">Equipos</strong>
+                <p style="font-size: 1.5rem; color: var(--muted); margin: 0; line-height: 1.4;">Líderes y operadores que ejecutan proyectos y registran los recursos día a día.</p>
               </article>
             </div>
           </div>
@@ -116,31 +109,37 @@
         </section>
 
         <section class="slide" data-title="Flujo principal">
-          <div class="slide-grid" style="align-content: center; text-align: center;">
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
             <p class="slide-tag">Slide 5 · Flujo principal</p>
-            <h2 style="font-size: 3.5rem; margin-bottom: 60px;">La experiencia en Kontrol</h2>
+            <h2 style="font-size: 4rem; margin-bottom: 100px;">La experiencia en Kontrol</h2>
 
-            <div class="journey-strip" style="gap: 30px;">
-              <article class="journey-step" style="padding: 40px 20px; text-align: center; border-color: var(--Primary);">
-                <span style="width: 60px; height: 60px; font-size: 1.4rem; margin: 0 auto 15px auto;">1</span>
-                <strong style="font-size: 1.6rem; color: var(--Primary);">Panorama</strong>
-                <p style="font-size: 1.1rem; color: var(--text);">Dashboard global</p>
-              </article>
-              <article class="journey-step" style="padding: 40px 20px; text-align: center; border-color: var(--Primary);">
-                <span style="width: 60px; height: 60px; font-size: 1.4rem; margin: 0 auto 15px auto;">2</span>
-                <strong style="font-size: 1.6rem; color: var(--Primary);">Ejecución</strong>
-                <p style="font-size: 1.1rem; color: var(--text);">Proyectos y Tareas</p>
-              </article>
-              <article class="journey-step" style="padding: 40px 20px; text-align: center; border-color: var(--Primary);">
-                <span style="width: 60px; height: 60px; font-size: 1.4rem; margin: 0 auto 15px auto;">3</span>
-                <strong style="font-size: 1.6rem; color: var(--Primary);">Recursos</strong>
-                <p style="font-size: 1.1rem; color: var(--text);">Inventario y Presupuesto</p>
-              </article>
-              <article class="journey-step" style="padding: 40px 20px; text-align: center; border-color: var(--Primary);">
-                <span style="width: 60px; height: 60px; font-size: 1.4rem; margin: 0 auto 15px auto;">4</span>
-                <strong style="font-size: 1.6rem; color: var(--Primary);">Decisiones</strong>
-                <p style="font-size: 1.1rem; color: var(--text);">Inteligencia y Reportes</p>
-              </article>
+            <div style="display: flex; justify-content: space-between; width: 100%; position: relative;">
+              <!-- Linea conectora de fondo -->
+              <div style="position: absolute; top: 45px; left: 10%; right: 10%; height: 4px; background: linear-gradient(90deg, var(--Primary), rgba(202,168,96,0.1)); z-index: 0;"></div>
+              
+              <div style="position: relative; z-index: 1; text-align: center; width: 22%;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--Background); border: 4px solid var(--Primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-family: var(--display-font); color: var(--Primary); margin: 0 auto 20px auto; box-shadow: 0 0 20px rgba(202,168,96,0.2);">1</div>
+                <strong style="font-size: 2rem; display: block; margin-bottom: 10px;">Panorama</strong>
+                <p style="font-size: 1.3rem; color: var(--muted); margin: 0;">Dashboard global</p>
+              </div>
+
+              <div style="position: relative; z-index: 1; text-align: center; width: 22%;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--Background); border: 4px solid var(--Primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-family: var(--display-font); color: var(--Primary); margin: 0 auto 20px auto; box-shadow: 0 0 20px rgba(202,168,96,0.2);">2</div>
+                <strong style="font-size: 2rem; display: block; margin-bottom: 10px;">Ejecución</strong>
+                <p style="font-size: 1.3rem; color: var(--muted); margin: 0;">Proyectos y Tareas</p>
+              </div>
+
+              <div style="position: relative; z-index: 1; text-align: center; width: 22%;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--Background); border: 4px solid var(--Primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-family: var(--display-font); color: var(--Primary); margin: 0 auto 20px auto; box-shadow: 0 0 20px rgba(202,168,96,0.2);">3</div>
+                <strong style="font-size: 2rem; display: block; margin-bottom: 10px;">Recursos</strong>
+                <p style="font-size: 1.3rem; color: var(--muted); margin: 0;">Inventario y Presupuesto</p>
+              </div>
+
+              <div style="position: relative; z-index: 1; text-align: center; width: 22%;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--Primary); border: 4px solid var(--Primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-family: var(--display-font); color: var(--BtnText); margin: 0 auto 20px auto; box-shadow: 0 0 30px rgba(202,168,96,0.4);">4</div>
+                <strong style="font-size: 2rem; display: block; margin-bottom: 10px;">Decisiones</strong>
+                <p style="font-size: 1.3rem; color: var(--muted); margin: 0;">Inteligencia y Reportes</p>
+              </div>
             </div>
           </div>
         </section>
