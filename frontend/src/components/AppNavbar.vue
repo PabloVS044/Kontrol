@@ -24,7 +24,7 @@
             class="empresa-dropdown"
             :style="dropdownStyle"
           >
-            <p class="dd-label">YOUR WORKSPACES</p>
+            <p class="dd-label">{{ $t('navbar.yourWorkspaces') }}</p>
             <button
               v-for="empresa in authStore.empresas"
               :key="empresa.id_empresa"
@@ -37,27 +37,27 @@
             </button>
             <div class="dd-divider" />
             <RouterLink class="dd-new" to="/onboarding" @click="closeDropdown">
-              + Create new workspace
+              {{ $t('navbar.createWorkspace') }}
             </RouterLink>
           </div>
         </Teleport>
       </div>
 
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
-        <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">Dashboard</RouterLink>
-        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">Inventory</RouterLink>
-        <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">Projects</RouterLink>
-        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">Teams</RouterLink>
-        <RouterLink class="appnav-link" to="/budget" @click="closeMenu">Budget</RouterLink>
-        <RouterLink class="appnav-link" to="/reports" @click="closeMenu">Reports</RouterLink>
-        <RouterLink class="appnav-link" to="/chat" @click="closeMenu">Chat</RouterLink>
-        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">AI</RouterLink>
+        <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
+        <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
+        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/reports" @click="closeMenu">{{ $t('navbar.reports') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
+        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
         <RouterLink
           v-if="isAdminOrOwner"
           class="appnav-link"
           to="/integrations"
           @click="closeMenu"
-        >Integrations</RouterLink>
+        >{{ $t('navbar.integrations') }}</RouterLink>
       </div>
 
       <div class="appnav-end">
@@ -94,7 +94,7 @@ import logo from '../assets/img/kontrol.png'
 const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})

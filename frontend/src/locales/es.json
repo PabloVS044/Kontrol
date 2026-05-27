@@ -1191,5 +1191,23 @@
         "a": "El Dashboard es tu pantalla de inicio diaria: muestra el total gastado, los proyectos activos, las alertas de sobre-gasto y un análisis de IA que destaca el proyecto que más necesita tu atención ahora mismo."
       }
     }
+  },
+  "navbar": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventario",
+    "projects": "Proyectos",
+    "teams": "Equipos",
+    "budget": "Presupuesto",
+    "reports": "Reportes",
+    "chat": "Chat",
+    "ai": "IA",
+    "integrations": "Integraciones",
+    "yourWorkspaces": "TUS ESPACIOS DE TRABAJO",
+    "createWorkspace": "+ Crear nuevo espacio",
+    "admin": {
+      "overview": "Resumen",
+      "companies": "Empresas",
+      "users": "Usuarios"
+    }
   }
 }

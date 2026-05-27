@@ -271,7 +271,6 @@ const testingSlug = ref(null)
 const inlineFeedback = ref({})
 
 const showSuccessAnimation = ref(false)
-const isNewIntegration = ref(false)
 
 const showTutorial = ref(false)
 const tutorialIntegration = ref(null)
@@ -349,6 +348,12 @@ async function loadIntegrations() {
 
 async function handleToggle(integration) {
   const nextStatus = integration.status === 'active' ? 'inactive' : 'active'
+
+  if (nextStatus === 'active' && integration.status === 'error') {
+    setFeedback(integration.slug, 'error', 'La última conexión falló. Revisa las credenciales y usa "Probar conexión" antes de activar.')
+    return
+  }
+
   togglingSlug.value = integration.slug
   clearFeedback(integration.slug)
   try {
@@ -365,11 +370,16 @@ async function handleToggle(integration) {
 async function handleTest(integration) {
   testingSlug.value = integration.slug
   clearFeedback(integration.slug)
+  const wasActive = integration.status === 'active'
   try {
     await testIntegration(...authArgs(), integration.slug)
-    setFeedback(integration.slug, 'success', 'Conexión exitosa')
     const idx = integrations.value.findIndex((i) => i.slug === integration.slug)
     if (idx !== -1) integrations.value[idx].status = 'active'
+    if (!wasActive) {
+      showSuccessAnimation.value = true
+    } else {
+      setFeedback(integration.slug, 'success', 'Conexión exitosa')
+    }
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
     const idx = integrations.value.findIndex((i) => i.slug === integration.slug)
@@ -381,7 +391,6 @@ async function handleTest(integration) {
 
 async function openConfigure(integration) {
   modalIntegration.value = integration
-  isNewIntegration.value = !integration.is_configured
   modalError.value = null
   modalSuccess.value = null
   formCredentials.value = {}
@@ -412,14 +421,10 @@ async function handleSave() {
     const idx = integrations.value.findIndex((i) => i.slug === modalIntegration.value.slug)
     if (idx !== -1) {
       integrations.value[idx].is_configured = true
+      integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    if (isNewIntegration.value) {
-      showModal.value = false
-      showSuccessAnimation.value = true
-    } else {
-      setTimeout(() => { showModal.value = false }, 1200)
-    }
+    setTimeout(() => { showModal.value = false }, 1200)
   } catch (err) {
     modalError.value = err.message
   } finally {
@@ -451,7 +456,7 @@ const TUTORIALS = {
     'Ve a Settings → API Keys y haz clic en "Create API Key".',
     'Ponle un nombre descriptivo y selecciona el permiso "Restricted Access" → "Mail Send: Full Access".',
     'Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.',
-    'Pega la API Key y tu correo remitente en los campos de configuración.',
+    'Pega la API Key, tu correo remitente verificado en SendGrid y el correo destinatario que recibirá las alertas.',
   ],
   'microsoft-teams': [
     'Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.',

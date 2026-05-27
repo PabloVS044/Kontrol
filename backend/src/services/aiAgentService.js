@@ -1,5 +1,6 @@
 import pool from '../db/pool.js'
 import { buildSystemPrompt } from './agentContext.js'
+import { buildEmpresaAccessContext } from './projectAccessService.js'
 import {
   validateReadOnlySql,
   enforceLimit,
@@ -8,12 +9,14 @@ import {
 
 
 
+const DEFAULT_API_URL = 'https://model.clawstitch.com/v1'
 const DEFAULT_MODEL = 'Qwen/Qwen3.6-27B-FP8'
 const DEFAULT_TEMPERATURE = 0.2
 const DEFAULT_MAX_TOKENS = 4096
 const DEFAULT_MAX_STEPS = 5
-const MAX_HISTORY = 12      // most recent user/assistant turns kept
-const MAX_USER_CHARS = 4000 // truncate oversized user messages
+const MAX_HISTORY = 10      // most recent user/assistant turns kept
+const MAX_USER_CHARS = 3000 // truncate oversized user messages
+const QUERY_RESULT_SAMPLE_ROWS = 20
 
 function parseBooleanEnv(value, fallback = false) {
   if (typeof value !== 'string') return fallback
@@ -24,7 +27,7 @@ function parseBooleanEnv(value, fallback = false) {
 }
 
 function getConfig() {
-  const url = (process.env.AGENT_API_URL || '').trim().replace(/\/+$/, '')
+  const url = (process.env.AGENT_API_URL || DEFAULT_API_URL).trim().replace(/\/+$/, '')
   return {
     url,
     apiKey: (process.env.AGENT_API_KEY || '').trim(),
@@ -40,23 +43,6 @@ function resolveChatEndpoint(baseUrl) {
   if (!baseUrl) return null
   if (/\/chat\/completions\/?$/.test(baseUrl)) return baseUrl
   return `${baseUrl}/chat/completions`
-}
-
-/** Loads basic empresa metadata so the model can name the company. */
-async function loadEmpresaMeta(idEmpresa, idUsuario) {
-  const { rows } = await pool.query(
-    `SELECT e.id_empresa, e.nombre, e.industria,
-            re.nombre AS rol_empresa
-       FROM public.empresa e
-       LEFT JOIN public.empresa_usuario eu
-         ON eu.id_empresa = e.id_empresa AND eu.id_usuario = $2
-       LEFT JOIN public.rol_empresa re
-         ON re.id_rol_empresa = eu.id_rol_empresa
-      WHERE e.id_empresa = $1
-      LIMIT 1`,
-    [idEmpresa, idUsuario ?? null]
-  )
-  return rows[0] || { id_empresa: idEmpresa }
 }
 
 /**
@@ -110,6 +96,36 @@ function getLatestUserText(history) {
     }
   }
   return ''
+}
+
+function userPrefersSpanish(text) {
+  return !/\b(project|projects|budget|inventory|task|tasks|report|reports|low stock|overdue|late)\b/.test(
+    normalizeUserText(text)
+  )
+}
+
+function dedupeProjectIds(ids) {
+  if (!Array.isArray(ids)) return []
+  return [...new Set(
+    ids
+      .map((value) => Number(value))
+      .filter((value) => Number.isInteger(value) && value > 0)
+  )].sort((a, b) => a - b)
+}
+
+function buildAgentScope(company, user, accessContext) {
+  const projectIds = dedupeProjectIds(accessContext?.project_ids)
+  const inventoryProjectIds = dedupeProjectIds(accessContext?.inventory_project_ids)
+
+  return {
+    id_empresa: company.id_empresa,
+    id_usuario: user.id_usuario,
+    rol_empresa: company.rol_empresa,
+    management_access: accessContext?.capabilities?.can_create_projects === true,
+    project_ids: projectIds,
+    inventory_project_ids: inventoryProjectIds,
+    capabilities: accessContext?.capabilities ?? {},
+  }
 }
 
 function isCapabilityPrompt(normalized) {
@@ -203,22 +219,46 @@ function buildRequestProfile(history, cfg) {
   const needsLiveData = /\b(cuanto|cuantos|cual|cuales|como va|estado|resumen|lista|listar|muestra|mostrar|dame|revisa|consulta|buscar|hay|tengo|tiene|pendiente|pendientes|atrasada|atrasadas|vencida|vencidas|stock|presupuesto|gasto|gastos|ingreso|ingresos|venta|ventas|compra|compras|movimiento|movimientos|producto|productos|tarea|tareas|proyecto|proyectos|reporte|reportes|empresa|empresas|recent|status|list|show|summary|budget|expense|expenses|income|sales|purchases|movement|movements|product|products|task|tasks|project|projects|report|reports|company|companies)\b/.test(normalized)
 
   let maxTokens = cfg.maxTokens
+  let temperature = cfg.temperature
+
   if (!looksAnalytical && normalized.length <= 60) {
     maxTokens = Math.min(cfg.maxTokens, 220)
   } else if (!looksAnalytical && normalized.length <= 140) {
     maxTokens = Math.min(cfg.maxTokens, 420)
+  } else if (!looksAnalytical) {
+    maxTokens = Math.min(cfg.maxTokens, 700)
+  } else if (normalized.length <= 160) {
+    maxTokens = Math.min(cfg.maxTokens, 700)
+  } else if (normalized.length <= 320) {
+    maxTokens = Math.min(cfg.maxTokens, 950)
+  } else {
+    maxTokens = Math.min(cfg.maxTokens, 1200)
+  }
+
+  if (looksAnalytical || needsLiveData) {
+    temperature = Math.min(cfg.temperature, 0.15)
   }
 
   return {
     instantReply,
     maxTokens,
+    temperature,
     disableThinking: cfg.disableThinking,
+    querySampleRows: QUERY_RESULT_SAMPLE_ROWS,
     requireQueryFirst: !instantReply && (looksAnalytical || needsLiveData),
   }
 }
 
 function detectBuiltinDataIntent(text) {
   const normalized = normalizeUserText(text)
+
+  const asksBudget =
+    /\b(presupuesto|budget|gasto|gastos|costos|costes|ingresos|rentabilidad)\b/.test(normalized) &&
+    /\b(proyecto|proyectos|empresa|mi proyecto|mis proyectos|my project|my projects|company)\b/.test(normalized)
+
+  if (asksBudget) {
+    return 'budget_summary'
+  }
 
   const asksProjectSummary =
     /\bproyectos?\b/.test(normalized) &&
@@ -228,7 +268,130 @@ function detectBuiltinDataIntent(text) {
     return 'project_status_summary'
   }
 
+  const asksLowStock =
+    /\b(producto|productos|inventario|stock)\b/.test(normalized) &&
+    /\b(bajo|bajos|minimo|minimos|faltante|faltantes|agotado|agotados|low stock|understock|under stock)\b/.test(normalized)
+
+  if (asksLowStock) {
+    return 'low_stock_summary'
+  }
+
+  const asksOverdueTasks =
+    /\btareas?\b/.test(normalized) &&
+    /\b(atrasad|atrasadas|atrasados|vencid|vencidas|vencidos|overdue|late)\b/.test(normalized)
+
+  if (asksOverdueTasks) {
+    return 'overdue_tasks_summary'
+  }
+
   return null
+}
+
+async function resolveBudgetProject(userText, scope) {
+  if (!scope.project_ids.length) return { type: 'none' }
+
+  const result = await executeReadOnly(
+    `
+      SELECT id_proyecto, nombre
+      FROM public.proyecto
+      ORDER BY LOWER(nombre), id_proyecto
+      LIMIT 100
+    `.trim(),
+    [],
+    scope
+  )
+
+  const projects = result.rows
+  if (!projects.length) return { type: 'none' }
+  if (projects.length === 1) return { type: 'single', project: projects[0] }
+
+  const normalizedUserText = normalizeUserText(userText)
+  const matches = projects.filter((project) =>
+    normalizedUserText.includes(normalizeUserText(project.nombre))
+  )
+
+  if (matches.length === 1) {
+    return { type: 'single', project: matches[0] }
+  }
+
+  return { type: 'ambiguous', projects }
+}
+
+function formatBudgetSummaryAnswer(rows, userText, mode = 'single') {
+  const isSpanish = userPrefersSpanish(userText)
+
+  if (!rows.length) {
+    return isSpanish
+      ? 'No encontré datos de presupuesto para los proyectos visibles de este usuario.'
+      : 'I could not find budget data for this user\'s visible projects.'
+  }
+
+  if (mode === 'single') {
+    const row = rows[0]
+    const budgetTotal = Number(row.presupuesto_total) || 0
+    const spent = Number(row.total_gastado) || 0
+    const remaining = Number(row.disponible) || 0
+    const revenue = Number(row.total_ingresos) || 0
+    const usagePct = budgetTotal > 0 ? Math.round((spent / budgetTotal) * 100) : 0
+
+    if (isSpanish) {
+      return [
+        `El presupuesto de **${row.nombre}** va así:`,
+        '',
+        `- Presupuesto total: **${budgetTotal.toFixed(2)}**`,
+        `- Gastado: **${spent.toFixed(2)}** (${usagePct}%)`,
+        `- Disponible: **${remaining.toFixed(2)}**`,
+        `- Ingresos: **${revenue.toFixed(2)}**`,
+        `- Resultado neto: **${Number(row.resultado_neto || 0).toFixed(2)}**`,
+      ].join('\n')
+    }
+
+    return [
+      `The budget for **${row.nombre}** currently looks like this:`,
+      '',
+      `- Total budget: **${budgetTotal.toFixed(2)}**`,
+      `- Spent: **${spent.toFixed(2)}** (${usagePct}%)`,
+      `- Remaining: **${remaining.toFixed(2)}**`,
+      `- Revenue: **${revenue.toFixed(2)}**`,
+      `- Net result: **${Number(row.resultado_neto || 0).toFixed(2)}**`,
+    ].join('\n')
+  }
+
+  const totalBudget = rows.reduce((sum, row) => sum + (Number(row.presupuesto_total) || 0), 0)
+  const totalSpent = rows.reduce((sum, row) => sum + (Number(row.total_gastado) || 0), 0)
+  const totalRemaining = rows.reduce((sum, row) => sum + (Number(row.disponible) || 0), 0)
+  const totalRevenue = rows.reduce((sum, row) => sum + (Number(row.total_ingresos) || 0), 0)
+  const topRows = rows.slice(0, 5)
+
+  if (isSpanish) {
+    return [
+      `Resumen de presupuesto en **${rows.length}** proyectos visibles:`,
+      '',
+      `- Presupuesto total: **${totalBudget.toFixed(2)}**`,
+      `- Gastado: **${totalSpent.toFixed(2)}**`,
+      `- Disponible: **${totalRemaining.toFixed(2)}**`,
+      `- Ingresos: **${totalRevenue.toFixed(2)}**`,
+      '',
+      'Proyectos:',
+      ...topRows.map((row) =>
+        `- **${row.nombre}**: gastado ${Number(row.total_gastado || 0).toFixed(2)} de ${Number(row.presupuesto_total || 0).toFixed(2)}`
+      ),
+    ].join('\n')
+  }
+
+  return [
+    `Budget summary across **${rows.length}** visible projects:`,
+    '',
+    `- Total budget: **${totalBudget.toFixed(2)}**`,
+    `- Spent: **${totalSpent.toFixed(2)}**`,
+    `- Remaining: **${totalRemaining.toFixed(2)}**`,
+    `- Revenue: **${totalRevenue.toFixed(2)}**`,
+    '',
+    'Projects:',
+    ...topRows.map((row) =>
+      `- **${row.nombre}**: spent ${Number(row.total_gastado || 0).toFixed(2)} of ${Number(row.presupuesto_total || 0).toFixed(2)}`
+    ),
+  ].join('\n')
 }
 
 function formatProjectStatusAnswer(rows, userText) {
@@ -308,68 +471,366 @@ function formatProjectStatusAnswer(rows, userText) {
   return lines.join('\n')
 }
 
-async function runBuiltinDataIntent(intent, { userText, company, user }) {
-  if (intent !== 'project_status_summary') return null
+async function runBuiltinDataIntent(intent, { userText, company, scope }) {
+  if (intent === 'project_status_summary') {
+    const isSpanish = userPrefersSpanish(userText)
+    if (!scope.management_access && !scope.project_ids.length) {
+      return {
+        answer: isSpanish
+          ? 'No tienes proyectos asignados para consultar en este momento.'
+          : 'You do not have any assigned projects to query right now.',
+        queries: [],
+      }
+    }
 
-  const sql = `
-    SELECT
-      p.id_proyecto,
-      p.nombre,
-      p.estado,
-      p.presupuesto_total,
-      p.fecha_inicio,
-      p.fecha_fin_planificada,
-      COUNT(t.id_tarea)::int AS total_tareas,
-      COUNT(t.id_tarea) FILTER (WHERE t.estado = 'COMPLETADA')::int AS tareas_completadas,
-      COUNT(t.id_tarea) FILTER (
-        WHERE t.estado IN ('PENDIENTE', 'EN_PROGRESO')
-          AND t.fecha_vencimiento < CURRENT_DATE
-      )::int AS tareas_atrasadas
-    FROM public.proyecto p
-    LEFT JOIN public.tarea t
-      ON t.id_proyecto = p.id_proyecto
-    WHERE p.id_empresa = $1
-    GROUP BY p.id_proyecto
-    ORDER BY
-      CASE p.estado
-        WHEN 'EN_PROGRESO' THEN 1
-        WHEN 'PLANIFICADO' THEN 2
-        WHEN 'PAUSADO' THEN 3
-        WHEN 'COMPLETADO' THEN 4
-        WHEN 'CANCELADO' THEN 5
-        ELSE 6
-      END,
-      p.nombre ASC
-    LIMIT 20
-  `.trim()
+    const sql = `
+      SELECT
+        p.id_proyecto,
+        p.nombre,
+        p.estado,
+        p.presupuesto_total,
+        p.fecha_inicio,
+        p.fecha_fin_planificada,
+        COUNT(t.id_tarea)::int AS total_tareas,
+        COUNT(t.id_tarea) FILTER (WHERE t.estado = 'COMPLETADA')::int AS tareas_completadas,
+        COUNT(t.id_tarea) FILTER (
+          WHERE t.estado IN ('PENDIENTE', 'EN_PROGRESO')
+            AND t.fecha_vencimiento < CURRENT_DATE
+        )::int AS tareas_atrasadas
+      FROM public.proyecto p
+      LEFT JOIN public.tarea t
+        ON t.id_proyecto = p.id_proyecto
+      WHERE p.id_empresa = $1
+      GROUP BY
+        p.id_proyecto,
+        p.nombre,
+        p.estado,
+        p.presupuesto_total,
+        p.fecha_inicio,
+        p.fecha_fin_planificada
+      ORDER BY
+        CASE p.estado
+          WHEN 'EN_PROGRESO' THEN 1
+          WHEN 'PLANIFICADO' THEN 2
+          WHEN 'PAUSADO' THEN 3
+          WHEN 'COMPLETADO' THEN 4
+          WHEN 'CANCELADO' THEN 5
+          ELSE 6
+        END,
+        p.nombre ASC
+      LIMIT 20
+    `.trim()
 
-  const result = await executeReadOnly(sql, [company.id_empresa])
+    const result = await executeReadOnly(sql, [company.id_empresa], scope)
 
-  return {
-    answer: formatProjectStatusAnswer(result.rows, userText),
-    queries: [{
-      sql,
-      rowCount: result.rowCount,
-      rationale: 'Get current company project status with task progress and overdue counts.',
-    }],
+    return {
+      answer: formatProjectStatusAnswer(result.rows, userText),
+      queries: [{
+        sql,
+        rowCount: result.rowCount,
+        rationale: 'Get current company project status with task progress and overdue counts.',
+      }],
+    }
   }
+
+  if (intent === 'low_stock_summary') {
+    const isSpanish = userPrefersSpanish(userText)
+    if (!scope.capabilities?.can_view_inventory || !scope.inventory_project_ids.length) {
+      return {
+        answer: isSpanish
+          ? 'No tienes acceso al inventario de ningún proyecto asignado.'
+          : 'You do not have inventory access for any assigned project.',
+        queries: [],
+      }
+    }
+
+    const sql = `
+      SELECT
+        pr.nombre,
+        pr.stock_actual,
+        pr.stock_minimo,
+        (pr.stock_minimo - pr.stock_actual) AS deficit,
+        p.nombre AS proyecto_nombre
+      FROM public.producto pr
+      JOIN public.proyecto p
+        ON p.id_proyecto = pr.id_proyecto
+      WHERE p.id_empresa = $1
+        AND pr.id_proyecto = ANY($2::int[])
+        AND pr.stock_actual < pr.stock_minimo
+      ORDER BY deficit DESC, pr.stock_actual ASC, pr.nombre ASC
+      LIMIT 15
+    `.trim()
+
+    const result = await executeReadOnly(
+      sql,
+      [company.id_empresa, scope.inventory_project_ids],
+      scope
+    )
+    if (!result.rows.length) {
+      return {
+        answer: isSpanish
+          ? 'No encontré productos por debajo del stock mínimo en tu empresa.'
+          : 'I could not find products below minimum stock in your company.',
+        queries: [{
+          sql,
+          rowCount: result.rowCount,
+          rationale: 'List products below their minimum stock threshold.',
+        }],
+      }
+    }
+
+    const rows = result.rows
+    const lines = isSpanish
+      ? [
+          `Encontré **${rows.length}** productos con stock bajo.`,
+          '',
+          'Más urgentes:',
+          ...rows.map((row) =>
+            `- **${row.nombre}** (${row.proyecto_nombre}): ${row.stock_actual}/${row.stock_minimo} · faltan ${row.deficit}`
+          ),
+        ]
+      : [
+          `I found **${rows.length}** low-stock products.`,
+          '',
+          'Most urgent:',
+          ...rows.map((row) =>
+            `- **${row.nombre}** (${row.proyecto_nombre}): ${row.stock_actual}/${row.stock_minimo} · short by ${row.deficit}`
+          ),
+        ]
+
+    return {
+      answer: lines.join('\n'),
+      queries: [{
+        sql,
+        rowCount: result.rowCount,
+        rationale: 'List products below their minimum stock threshold.',
+      }],
+    }
+  }
+
+  if (intent === 'overdue_tasks_summary') {
+    const isSpanish = userPrefersSpanish(userText)
+    if (!scope.management_access && !scope.project_ids.length) {
+      return {
+        answer: isSpanish
+          ? 'No tienes proyectos asignados para consultar tareas en este momento.'
+          : 'You do not have any assigned projects to query tasks right now.',
+        queries: [],
+      }
+    }
+
+    const sql = `
+      SELECT
+        t.nombre,
+        t.estado,
+        t.prioridad,
+        t.fecha_vencimiento,
+        p.nombre AS proyecto_nombre
+      FROM public.tarea t
+      JOIN public.proyecto p
+        ON p.id_proyecto = t.id_proyecto
+      WHERE p.id_empresa = $1
+        AND t.estado IN ('PENDIENTE', 'EN_PROGRESO')
+        AND t.fecha_vencimiento < CURRENT_DATE
+      ORDER BY
+        CASE t.prioridad
+          WHEN 'CRITICA' THEN 1
+          WHEN 'ALTA' THEN 2
+          WHEN 'MEDIA' THEN 3
+          WHEN 'BAJA' THEN 4
+          ELSE 5
+        END,
+        t.fecha_vencimiento ASC,
+        t.nombre ASC
+      LIMIT 15
+    `.trim()
+
+    const result = await executeReadOnly(sql, [company.id_empresa], scope)
+    if (!result.rows.length) {
+      return {
+        answer: isSpanish
+          ? 'No encontré tareas atrasadas en este momento.'
+          : 'I could not find overdue tasks right now.',
+        queries: [{
+          sql,
+          rowCount: result.rowCount,
+          rationale: 'List overdue tasks for the current company.',
+        }],
+      }
+    }
+
+    const rows = result.rows
+    const lines = isSpanish
+      ? [
+          `Encontré **${rows.length}** tareas atrasadas.`,
+          '',
+          'Prioridad de atención:',
+          ...rows.map((row) =>
+            `- **${row.nombre}** (${row.proyecto_nombre}) · ${row.prioridad} · vencía ${String(row.fecha_vencimiento).slice(0, 10)} · estado: ${row.estado}`
+          ),
+        ]
+      : [
+          `I found **${rows.length}** overdue tasks.`,
+          '',
+          'Priority order:',
+          ...rows.map((row) =>
+            `- **${row.nombre}** (${row.proyecto_nombre}) · ${row.prioridad} · due ${String(row.fecha_vencimiento).slice(0, 10)} · status: ${row.estado}`
+          ),
+        ]
+
+    return {
+      answer: lines.join('\n'),
+      queries: [{
+        sql,
+        rowCount: result.rowCount,
+        rationale: 'List overdue tasks for the current company.',
+      }],
+    }
+  }
+
+  if (intent === 'budget_summary') {
+    const isSpanish = userPrefersSpanish(userText)
+    const normalized = normalizeUserText(userText)
+    const asksCompanyBudget = /\b(empresa|mis proyectos|my projects|company)\b/.test(normalized)
+
+    if (!scope.management_access && !scope.project_ids.length) {
+      return {
+        answer: isSpanish
+          ? 'No tienes proyectos asignados para consultar presupuesto.'
+          : 'You do not have any assigned projects to query budget data.',
+        queries: [],
+      }
+    }
+
+    const projectResolution = asksCompanyBudget
+      ? { type: 'aggregate' }
+      : await resolveBudgetProject(userText, scope)
+
+    if (projectResolution.type === 'none') {
+      return {
+        answer: isSpanish
+          ? 'No encontré proyectos visibles para consultar presupuesto.'
+          : 'I could not find any visible projects to query budget data.',
+        queries: [],
+      }
+    }
+
+    if (projectResolution.type === 'ambiguous') {
+      return {
+        answer: isSpanish
+          ? `Puedo revisar el presupuesto, pero necesito que me digas cuál proyecto. Veo varios accesibles: ${projectResolution.projects.slice(0, 5).map((p) => p.nombre).join(', ')}.`
+          : `I can review the budget, but I need the project name. I can currently see several accessible projects: ${projectResolution.projects.slice(0, 5).map((p) => p.nombre).join(', ')}.`,
+        queries: [],
+      }
+    }
+
+    const sql = `
+      WITH activity_totals AS (
+        SELECT
+          pa.id_proyecto,
+          COALESCE(SUM(pa.monto_planificado), 0)::numeric AS total_planificado,
+          COALESCE(SUM(pa.monto_real), 0)::numeric AS total_real_manual
+        FROM public.presupuesto_actividad pa
+        GROUP BY pa.id_proyecto
+      ),
+      movement_totals AS (
+        SELECT
+          mi.id_proyecto,
+          COALESCE(SUM(CASE WHEN mi.tipo = 'ENTRADA' THEN mi.precio_unitario * COALESCE(mi.cantidad, 1) ELSE 0 END), 0)::numeric AS gasto_compras,
+          COALESCE(SUM(CASE WHEN mi.tipo = 'GASTO_ADMIN' THEN mi.precio_unitario * COALESCE(mi.cantidad, 1) ELSE 0 END), 0)::numeric AS gasto_admin,
+          COALESCE(SUM(CASE WHEN mi.tipo = 'SALIDA' THEN mi.precio_unitario * COALESCE(mi.cantidad, 1) ELSE 0 END), 0)::numeric AS total_ingresos
+        FROM public.movimiento_inventario mi
+        GROUP BY mi.id_proyecto
+      ),
+      adjustment_totals AS (
+        SELECT
+          pa.id_proyecto,
+          COALESCE(SUM(pa.monto), 0)::numeric AS total_ajustes
+        FROM public.presupuesto_ajuste pa
+        GROUP BY pa.id_proyecto
+      )
+      SELECT
+        p.id_proyecto,
+        p.nombre,
+        (COALESCE(p.presupuesto_total, 0) + COALESCE(adj.total_ajustes, 0))::numeric AS presupuesto_total,
+        COALESCE(act.total_planificado, 0)::numeric AS total_planificado,
+        (
+          COALESCE(act.total_real_manual, 0)
+          + COALESCE(mov.gasto_compras, 0)
+          + COALESCE(mov.gasto_admin, 0)
+        )::numeric AS total_gastado,
+        COALESCE(mov.total_ingresos, 0)::numeric AS total_ingresos,
+        (
+          COALESCE(mov.total_ingresos, 0)
+          - (
+            COALESCE(act.total_real_manual, 0)
+            + COALESCE(mov.gasto_compras, 0)
+            + COALESCE(mov.gasto_admin, 0)
+          )
+        )::numeric AS resultado_neto,
+        (
+          (COALESCE(p.presupuesto_total, 0) + COALESCE(adj.total_ajustes, 0))
+          - (
+            COALESCE(act.total_real_manual, 0)
+            + COALESCE(mov.gasto_compras, 0)
+            + COALESCE(mov.gasto_admin, 0)
+          )
+        )::numeric AS disponible
+      FROM public.proyecto p
+      LEFT JOIN activity_totals act ON act.id_proyecto = p.id_proyecto
+      LEFT JOIN movement_totals mov ON mov.id_proyecto = p.id_proyecto
+      LEFT JOIN adjustment_totals adj ON adj.id_proyecto = p.id_proyecto
+      WHERE ($1::int IS NULL OR p.id_proyecto = $1)
+      ORDER BY LOWER(p.nombre), p.id_proyecto
+      LIMIT 20
+    `.trim()
+
+    const selectedProjectId = projectResolution.type === 'single'
+      ? Number(projectResolution.project.id_proyecto)
+      : null
+
+    const result = await executeReadOnly(sql, [selectedProjectId], scope)
+
+    return {
+      answer: formatBudgetSummaryAnswer(
+        result.rows,
+        userText,
+        projectResolution.type === 'single' ? 'single' : 'aggregate'
+      ),
+      queries: [{
+        sql,
+        rowCount: result.rowCount,
+        rationale: projectResolution.type === 'single'
+          ? 'Summarize budget health for the selected visible project.'
+          : 'Summarize budget health across visible projects.',
+      }],
+    }
+  }
+
+  return null
 }
 
 async function callLlm({ messages, signal, cfg, profile }) {
   const endpoint = resolveChatEndpoint(cfg.url)
   if (!endpoint) {
     throw new Error(
-      'AGENT_API_URL is not configured. Set it in your .env to the OpenAI-compatible base URL of your Qwen inference server.'
+      'AI agent endpoint is not configured. Set AGENT_API_URL or use the default ClawStitch Qwen endpoint.'
+    )
+  }
+
+  if (!cfg.apiKey) {
+    throw new Error(
+      'AGENT_API_KEY is not configured. Add the Bearer token for the ClawStitch Qwen endpoint in backend/.env.'
     )
   }
 
   const headers = { 'Content-Type': 'application/json' }
-  if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`
+  headers.Authorization = `Bearer ${cfg.apiKey}`
 
   const body = {
     model: cfg.model,
     messages,
-    temperature: cfg.temperature,
+    temperature: profile.temperature,
     max_tokens: profile.maxTokens,
     stream: false,
     // Some servers honor response_format; vLLM ignores unknown fields.
@@ -455,8 +916,8 @@ function sanitizeHistory(history) {
 }
 
 /** Compact a query result to a small JSON payload for the next model turn. */
-function summarizeQueryResult({ rowCount, rows, fields }) {
-  const sample = rows.slice(0, 50)
+function summarizeQueryResult({ rowCount, rows, fields }, maxRows = QUERY_RESULT_SAMPLE_ROWS) {
+  const sample = rows.slice(0, maxRows)
   return {
     columns: fields,
     row_count: rowCount,
@@ -472,7 +933,7 @@ function summarizeQueryResult({ rowCount, rows, fields }) {
  * @param {Array<{role:'user'|'assistant', content:string}>} params.history
  *        Prior conversation turns (already includes the latest user message).
  * @param {Object} params.user      { id_usuario, email, nombre_rol }
- * @param {Object} params.company   { id_empresa, rol_empresa }
+ * @param {Object} params.company   { id_empresa, nombre, rol_empresa }
  * @param {AbortSignal} [params.signal]
  *        If aborted (e.g. user clicked "Stop"), the in-flight LLM call is
  *        cancelled and runAgentTurn throws an AbortError.
@@ -487,24 +948,31 @@ export async function runAgentTurn({ history, user, company, signal }) {
   const cfg = getConfig()
   const profile = buildRequestProfile(history, cfg)
   const builtinIntent = detectBuiltinDataIntent(latestUserText)
+  const accessContext = await buildEmpresaAccessContext({
+    client: pool,
+    id_empresa: company.id_empresa,
+    id_usuario: user.id_usuario,
+    rol_empresa: company.rol_empresa,
+  })
+  const scope = buildAgentScope(company, user, accessContext)
 
   if (builtinIntent) {
     const builtinResult = await runBuiltinDataIntent(builtinIntent, {
       userText: latestUserText,
       company,
-      user,
+      scope,
     })
     if (builtinResult) return builtinResult
   }
 
-  const empresaMeta = await loadEmpresaMeta(company.id_empresa, user.id_usuario)
   const systemPrompt = buildSystemPrompt({
     user,
     empresa: {
-      id_empresa: empresaMeta.id_empresa,
-      nombre: empresaMeta.nombre,
-      rol_empresa: company.rol_empresa || empresaMeta.rol_empresa,
+      id_empresa: company.id_empresa,
+      nombre: company.nombre,
+      rol_empresa: company.rol_empresa,
     },
+    access: scope,
   })
 
   const messages = [
@@ -588,7 +1056,7 @@ export async function runAgentTurn({ history, user, company, signal }) {
         const result = await executeReadOnly(safeSql, [
           company.id_empresa,
           user.id_usuario,
-        ])
+        ], scope)
         queries.push({
           sql: safeSql,
           rowCount: result.rowCount,
@@ -596,7 +1064,10 @@ export async function runAgentTurn({ history, user, company, signal }) {
         })
         messages.push({
           role: 'user',
-          content: JSON.stringify({ tool: 'sql', result: summarizeQueryResult(result) }),
+          content: JSON.stringify({
+            tool: 'sql',
+            result: summarizeQueryResult(result, profile.querySampleRows),
+          }),
         })
       } catch (err) {
         queries.push({ sql: safeSql, error: err.message })
@@ -626,5 +1097,6 @@ export async function runAgentTurn({ history, user, company, signal }) {
 }
 
 export function isAgentConfigured() {
-  return Boolean(getConfig().url)
+  const cfg = getConfig()
+  return Boolean(cfg.url && cfg.apiKey)
 }

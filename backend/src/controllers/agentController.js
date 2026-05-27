@@ -77,7 +77,7 @@ export const chat = async (req, res) => {
   if (!isAgentConfigured()) {
     return res.status(503).json({
       success: false,
-      message: 'AI agent is not configured. Set AGENT_API_URL in the backend .env.',
+      message: 'AI agent is not configured. Set AGENT_API_KEY in backend/.env. AGENT_API_URL is optional and defaults to the ClawStitch Qwen endpoint.',
     })
   }
 
@@ -140,6 +140,7 @@ export const chat = async (req, res) => {
       },
       company: {
         id_empresa: empresaId,
+        nombre: req.company.nombre,
         rol_empresa: req.company.rol_empresa,
       },
       signal: ac.signal,
