@@ -6,11 +6,8 @@ const totalSlidesEl = document.getElementById("total-slides");
 const currentTitleEl = document.getElementById("current-title");
 const prevButton = document.getElementById("prev-button");
 const nextButton = document.getElementById("next-button");
-const toggleNotesButton = document.getElementById("toggle-notes");
-const notesState = document.getElementById("notes-state");
 
 let currentIndex = 0;
-let showNotes = false;
 
 totalSlidesEl.textContent = String(slides.length);
 
@@ -40,12 +37,6 @@ function nextSlide() {
 
 function previousSlide() {
   goToSlide(currentIndex - 1);
-}
-
-function setNotesVisibility(visible) {
-  showNotes = visible;
-  document.body.classList.toggle("show-notes", showNotes);
-  notesState.textContent = showNotes ? "Visibles" : "Ocultas";
 }
 
 function buildPlaceholder(label, src) {
@@ -127,10 +118,9 @@ function hydrateMedia() {
 
 prevButton.addEventListener("click", previousSlide);
 nextButton.addEventListener("click", nextSlide);
-toggleNotesButton.addEventListener("click", () => setNotesVisibility(!showNotes));
 
 deck.addEventListener("click", (event) => {
-  const interactive = event.target.closest("button, video, .speaker-notes");
+  const interactive = event.target.closest("button, video");
   if (interactive) return;
   nextSlide();
 });
@@ -146,11 +136,6 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
     previousSlide();
     return;
-  }
-
-  if (event.key.toLowerCase() === "n") {
-    event.preventDefault();
-    setNotesVisibility(!showNotes);
   }
 });
 
