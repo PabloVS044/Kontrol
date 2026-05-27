@@ -1053,6 +1053,145 @@
       "empty": "No se encontraron usuarios."
     }
   },
+  "birdie": {
+    "tooltip": "Doble clic para ocultarme · arrástrame para moverme",
+    "askQuestion": "Haz una pregunta",
+    "faqTitle": "¿En qué te puedo ayudar?",
+    "onThisPage": "En esta página",
+    "elsewhere": "Otras secciones",
+    "showMore": "Más preguntas",
+    "showLess": "Ocultar otras preguntas",
+    "noContext": "Aún no tengo tips para esta vista — revisa las otras secciones más abajo.",
+    "close": "Cerrar",
+    "closeAssistant": "Regresar al botón flotante",
+    "gotIt": "Entendido",
+    "faqs": {
+      "dashboardOverview": {
+        "q": "¿Qué muestra esta vista?",
+        "a": "El Dashboard es tu resumen ejecutivo: total gastado, proyectos activos, alertas de sobre-gasto y una vista global del portafolio. Úsalo como pantalla de inicio diaria para detectar qué proyectos necesitan atención."
+      },
+      "dashboardAi": {
+        "q": "¿Qué es el bloque de Análisis IA?",
+        "a": "El bloque de Análisis IA destaca el proyecto que más necesita tu atención ahora mismo — porque está excediendo presupuesto o se acerca al límite — para que puedas entrar directo a él."
+      },
+      "dashboardTrend": {
+        "q": "¿Qué muestra la gráfica de tendencia financiera?",
+        "a": "La línea dorada punteada es el presupuesto planificado en el tiempo, y la línea sólida es el gasto real calculado desde los movimientos de inventario. Cuando la sólida rebasa a la punteada, estás gastando más rápido de lo planeado."
+      },
+      "projectsCreate": {
+        "q": "¿Cómo creo un proyecto?",
+        "a": "Toca el botón Nuevo Proyecto que estoy resaltando para abrir el formulario. Llena el nombre, las fechas y el presupuesto total, y guarda — tu proyecto aparecerá en la lista y podrás agregarle tareas, miembros y gastos al instante."
+      },
+      "projectsSearch": {
+        "q": "¿Cómo encuentro un proyecto específico?",
+        "a": "Usa el campo de búsqueda para filtrar proyectos por nombre, y los chips de estado para acotar por situación. Haz clic en una tarjeta para abrir el detalle completo del proyecto."
+      },
+      "projectBudget": {
+        "q": "¿Qué muestra esta tarjeta de presupuesto?",
+        "a": "Esta tarjeta indica cuánto del presupuesto total del proyecto ya se ha gastado. La barra cambia a amarillo cerca del 80% y a rojo al 100%, para que detectes el riesgo de un vistazo."
+      },
+      "projectTasks": {
+        "q": "¿Cómo manejo las tareas?",
+        "a": "Abre la pestaña Tareas para crear, asignar, filtrar por prioridad o estado y cerrar tareas. Al cerrarlas, el progreso del proyecto se actualiza automáticamente."
+      },
+      "projectMembers": {
+        "q": "¿Cómo agrego miembros?",
+        "a": "La pestaña Miembros te permite invitar compañeros por correo y elegir su rol y permisos. Se unirán al proyecto en cuanto acepten la invitación."
+      },
+      "projectProgress": {
+        "q": "¿Para qué sirve la pestaña Progreso?",
+        "a": "Usa Progreso para registrar actualizaciones de avance — porcentaje completado, hitos y bloqueadores. El dashboard y las tarjetas de resumen reflejan estas entradas en vez de basarse solo en el conteo de tareas."
+      },
+      "inventoryCreate": {
+        "q": "¿Cómo agrego un producto?",
+        "a": "Elige un proyecto en las pestañas de arriba y haz clic en Nuevo Producto para registrar un ítem. Definirás nombre, categoría, unidad, stock inicial y el costo unitario que alimenta los cálculos de presupuesto."
+      },
+      "inventorySell": {
+        "q": "¿Cómo realizo una venta?",
+        "a": "Cada tarjeta de producto tiene un botón Vender. Tócalo en los productos que se lleva el cliente — aparecerán en el panel Venta en curso de la derecha, donde puedes ajustar la cantidad con los botones + / − o quitar artículos con la X. Cuando tengas el carrito listo, presiona Realizar venta: el sistema descuenta el stock y registra automáticamente un movimiento SALIDA por cada producto, impactando el presupuesto del proyecto correspondiente."
+      },
+      "inventoryMovements": {
+        "q": "¿Qué tipos de movimiento de inventario existen?",
+        "a": "Los movimientos registran cualquier cambio en el stock: ENTRADA suma unidades, SALIDA las descuenta, AJUSTE corrige diferencias y GASTO_ADMIN registra gastos administrativos. Para registrarlos manualmente, abre la tarjeta del producto. Si lo tuyo es una venta concreta, mejor pregúntame por el flujo de venta — tiene un carrito dedicado."
+      },
+      "inventoryFilter": {
+        "q": "¿Cómo filtro por proyecto?",
+        "a": "Estas pestañas acotan el inventario a un solo proyecto o muestran todos juntos. Cambiar de pestaña también enmarca cualquier nuevo movimiento dentro de ese proyecto."
+      },
+      "addFunds": {
+        "q": "¿Qué hace el botón +Fondos?",
+        "a": "+Fondos te permite inyectar más presupuesto al proyecto seleccionado. Elige el proyecto en el selector superior, haz clic en +Fondos, ingresa el monto y una breve razón. El nuevo total se reflejará al instante en las tarjetas de presupuesto."
+      },
+      "addExpense": {
+        "q": "¿Cómo registro un gasto?",
+        "a": "Usa Agregar Gasto para registrar un costo puntual (servicios, comisiones, gastos administrativos). Reduce de inmediato el presupuesto disponible del proyecto y aparece en el desglose de gastos."
+      },
+      "addActivity": {
+        "q": "¿Cómo creo una actividad presupuestada?",
+        "a": "Las actividades son rubros dentro del presupuesto de un proyecto (p. ej. \"Construcción\", \"Marketing\"). Crea una aquí y podrás atribuir gastos y movimientos de inventario a esa actividad para reportes más claros."
+      },
+      "budgetControl": {
+        "q": "¿Cómo funciona el control de presupuesto?",
+        "a": "Cada proyecto tiene un presupuesto total que va disminuyendo conforme registras gastos o salidas. La barra de color se pone amarilla al 80% y roja al 100% — vigílala desde esta página o desde el encabezado de detalle del proyecto."
+      },
+      "reportsOverview": {
+        "q": "¿Qué reportes puedo ver?",
+        "a": "Reportes concentra KPIs, desempeño financiero y actividad de inventario. Elige un proyecto en la barra superior y alterna entre vistas de desempeño, desglose y detalle."
+      },
+      "chatStart": {
+        "q": "¿Cómo inicio una conversación?",
+        "a": "Elige a un compañero en la lista de conversaciones de la izquierda o inicia un chat nuevo — los mensajes llegan en tiempo real y están ligados a tu workspace."
+      },
+      "chatCall": {
+        "q": "¿Cómo funcionan las llamadas de voz/video?",
+        "a": "Dentro de cualquier conversación, usa los botones de llamada en el encabezado para iniciar una llamada de voz o video con WebRTC. Ambas partes deben estar en línea para conectar."
+      },
+      "agentCapabilities": {
+        "q": "¿Qué puede hacer el agente IA?",
+        "a": "El agente puede leer datos en vivo de tus proyectos — presupuestos, tareas, inventario, progreso — y responder en lenguaje natural. Pregúntale cosas como \"¿qué proyecto está más sobre-gastado?\" o \"resume la carga de trabajo del equipo\"."
+      },
+      "teamsCreate": {
+        "q": "¿Cómo creo un equipo?",
+        "a": "Usa Nuevo Equipo para agrupar miembros por área (Desarrollo, Diseño, QA…). Los equipos luego se pueden referenciar desde proyectos y tareas para organizar el trabajo."
+      },
+      "integrationsList": {
+        "q": "¿Qué integraciones hay disponibles?",
+        "a": "Esta vista lista cada servicio de terceros que puedes conectar — pagos, productividad, comunicaciones. Haz clic en una tarjeta para iniciar el flujo de conexión."
+      },
+      "changeLanguage": {
+        "q": "¿Cómo cambio el idioma?",
+        "a": "Haz clic en este ícono de idioma en la barra superior y elige English o Español. Tu preferencia se recuerda por cuenta de usuario."
+      },
+      "switchWorkspace": {
+        "q": "¿Cómo cambio de workspace?",
+        "a": "Este selector en la parte superior te permite saltar entre empresas a las que perteneces. Todo el portal — proyectos, inventario, presupuesto — recarga con los datos del workspace elegido."
+      },
+      "aiAgent": {
+        "q": "¿Dónde está el asistente de IA?",
+        "a": "El enlace de IA en la navegación superior abre un asistente conversacional que puede consultar datos en vivo de tus proyectos, resumir presupuestos y responder preguntas de negocio sobre tu workspace."
+      },
+      "chat": {
+        "q": "¿Dónde está el chat?",
+        "a": "La sección Chat en la nav superior te ofrece conversaciones en tiempo real con tus compañeros, además de llamadas de voz y video — perfecta para alinearte rápidamente sobre un proyecto o tarea sin salir de Kontrol."
+      },
+      "budgetGlobal": {
+        "q": "¿Dónde administro presupuestos?",
+        "a": "La sección Presupuesto es tu centro de control: selecciona un proyecto y desde ahí agrega fondos, actividades, gastos o revisa el historial de financiamiento y el desglose de gastos."
+      },
+      "reportsShortcut": {
+        "q": "¿Dónde veo los reportes?",
+        "a": "La sección Reportes reúne el desempeño financiero, la actividad de inventario y los KPIs de proyectos. Usa la barra de filtros de arriba para acotar por proyecto o rango de fechas y entra al detalle desde la lista."
+      },
+      "inventoryShortcut": {
+        "q": "¿Dónde está el inventario?",
+        "a": "La sección Inventario lista todos los productos de tus proyectos. Desde aquí puedes crear productos, registrar movimientos (entradas/salidas/ajustes) o iniciar una venta con el botón Vender de cualquier tarjeta de producto."
+      },
+      "dashboardShortcut": {
+        "q": "¿Dónde está el dashboard ejecutivo?",
+        "a": "El Dashboard es tu pantalla de inicio diaria: muestra el total gastado, los proyectos activos, las alertas de sobre-gasto y un análisis de IA que destaca el proyecto que más necesita tu atención ahora mismo."
+      }
+    }
+  },
   "navbar": {
     "dashboard": "Dashboard",
     "inventory": "Inventario",

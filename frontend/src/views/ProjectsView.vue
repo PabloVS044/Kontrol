@@ -80,7 +80,7 @@
               <p class="proj-subtitle">{{ $t('projects.list.subtitle') }}</p>
             </div>
             <div class="proj-header-actions">
-              <button v-if="authStore.canCreateProjects" class="btn-primary" @click="openModal">
+              <button v-if="authStore.canCreateProjects" data-birdie="create-project" class="btn-primary" @click="openModal">
                 <svg class="icon16" viewBox="0 0 16 16" fill="none">
                   <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
                 </svg>

@@ -108,7 +108,7 @@
                   {{ $t('projects.detail.nav.reports') }}
                 </button>
               </div>
-              <div class="budget-card">
+              <div class="budget-card" data-birdie="budget-control">
                 <div class="budget-card-top">
                   <span class="budget-label">{{ $t('projects.budget') }}</span>
                   <span class="budget-pct" :style="{ color: budgetColor }"
@@ -138,6 +138,7 @@
             :key="tab.id"
             class="pd-tab"
             :class="{ active: activeTab === tab.id }"
+            :data-birdie="tab.id === 'tasks' ? 'tasks-tab' : (tab.id === 'members' ? 'invite-members' : null)"
             @click="activeTab = tab.id"
           >
             {{ tab.label }}

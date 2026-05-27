@@ -1,6 +1,7 @@
 <template>
   <Teleport to="body">
     <button
+      v-if="!birdieStore.isOpen"
       ref="btnRef"
       class="birdie-fab"
       :class="{ dragging: isDragging }"
@@ -25,6 +26,9 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import birdieProfile from '../../assets/img/birdie/birdie-profile.png'
 import birdieWink from '../../assets/img/birdie/birdie-wink.png'
+import { useBirdieStore } from '../../stores/birdie'
+
+const birdieStore = useBirdieStore()
 
 const STORAGE_KEY = 'birdie-fab-position'
 const SIZE = 60
@@ -159,7 +163,9 @@ function onClick(event) {
     event.preventDefault()
     event.stopPropagation()
     wasDragged.value = false
+    return
   }
+  birdieStore.open()
 }
 
 function handleResize() {
