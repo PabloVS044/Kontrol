@@ -173,7 +173,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 
 <style scoped>
 .project-card {
-  background: rgba(15,15,15,0.7);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   display: flex;
   flex-direction: column;
@@ -269,11 +269,11 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .alert-pill.warn { 
   color: #f97316; 
-  background: rgba(249,115,22,0.08); 
+  background: #f97316; 
 }
 .alert-pill.critical { 
   color: #fb7185; 
-  background: rgba(251,113,133,0.08); 
+  background: #fb7185; 
 }
 
 .card-footer-row {
@@ -304,7 +304,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   flex-shrink: 0;
 }
 .status-select {
-  background: transparent;
+  background: #111111;
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;

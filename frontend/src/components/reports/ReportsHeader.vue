@@ -60,7 +60,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: transparent;
+  background: #111111;
   border: 1px solid #1f1f1f;
   color: #888;
   padding: 9px 12px;

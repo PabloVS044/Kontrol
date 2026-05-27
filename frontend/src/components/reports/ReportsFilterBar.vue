@@ -37,7 +37,7 @@ defineEmits(['update:modelValue'])
   align-items: center;
   gap: 5px;
   padding: 8px 12px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1f1f1f;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -50,7 +50,7 @@ defineEmits(['update:modelValue'])
 .filter-btn:hover {
   color: #c9a962;
   border-color: rgba(201,169,98,0.35);
-  background: rgba(201,169,98,0.06);
+  background: #111111;
 }
 
 .chevron { opacity: .8; }

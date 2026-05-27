@@ -177,7 +177,7 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.6);
+  background: #111111;
   pointer-events: all;
 }
 

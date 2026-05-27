@@ -193,7 +193,7 @@ const closeMenu = () => {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: rgba(10, 10, 10, 0.95);
+  background: #0b0b0b;
   border-bottom: 1px solid #1f1f1f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -267,9 +267,9 @@ const closeMenu = () => {
   color: #c9a962;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: rgba(201,169,98,0.1);
+  background: #1e170d;
   padding: 1px 6px;
-  border: 1px solid rgba(201,169,98,0.2);
+  border: 1px solid #3d3322;
 }
 
 .chevron {
@@ -318,11 +318,11 @@ const closeMenu = () => {
 }
 
 :global(.dd-item:hover) {
-  background: rgba(255,255,255,0.04);
+  background: #111111;
 }
 
 :global(.dd-item.active) {
-  background: rgba(201,169,98,0.06);
+  background: #1a150f;
 }
 
 :global(.dd-item-name) {
@@ -359,7 +359,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-new:hover) {
-  background: rgba(201,169,98,0.06);
+  background: #1a150f;
 }
 
 /* ── Nav links ── */
@@ -549,7 +549,7 @@ const closeMenu = () => {
     top: 56px;
     left: 0;
     right: 0;
-    background: rgba(10, 10, 10, 0.98);
+    background: #090909;
     border-bottom: 1px solid #1f1f1f;
     flex-direction: column;
     padding: 20px 0;

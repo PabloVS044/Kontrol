@@ -716,14 +716,14 @@ async function submitProject() {
 .state-screen {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px;
-  background: rgba(10,10,10,0.82);
+  background: rgba(10, 10, 10, 0.92);
 }
 .state-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #faf8f5; }
 .state-msg   { font-size: 14px; color: #888; }
 
 .main-panel {
   flex: 1; display: flex; flex-direction: column; gap: 32px;
-  padding: 48px 56px; background: rgba(10,10,10,0.82);
+  padding: 32px 56px 48px; background: rgba(10, 10, 10, 0.92);
 }
 
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }
@@ -740,7 +740,7 @@ async function submitProject() {
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .icon-btn {
-  width: 40px; height: 40px; border: 1px solid #1f1f1f; background: transparent;
+  width: 40px; height: 40px; border: 1px solid #1f1f1f; background: #111111;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
 .icon16 { width: 16px; height: 16px; flex-shrink: 0; }
@@ -757,7 +757,7 @@ async function submitProject() {
 
 .section-header  { display: flex; justify-content: space-between; align-items: center; }
 .section-title   { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; }
-.section-meta    { font-size: 12px; color: #555; margin-top: -20px; }
+.section-meta    { font-size: 12px; color: #555; }
 .section-controls { display: flex; align-items: center; gap: 10px; }
 
 /* Search */
@@ -769,7 +769,7 @@ async function submitProject() {
 .search-wrap:focus-within { border-color: rgba(201,169,98,0.4); }
 .search-icon { color: #444; flex-shrink: 0; }
 .search-input {
-  background: transparent; border: none; outline: none;
+  background: #111111; border: none; outline: none;
   color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 13px; width: 180px;
 }
 .search-input::placeholder { color: #444; }
@@ -783,10 +783,10 @@ async function submitProject() {
 .view-toggle { display: flex; border: 1px solid #1f1f1f; }
 .vt-btn {
   width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; color: #444; cursor: pointer;
+  background: #111111; border: none; color: #444; cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
-.vt-btn.active { color: #c9a962; background: rgba(201,169,98,0.08); }
+.vt-btn.active { color: #0a0a0a; background: #c9a962; }
 .vt-btn:hover:not(.active) { color: #888; }
 
 .project-grid {
@@ -870,10 +870,10 @@ async function submitProject() {
 }
 .lr-btn {
   width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; color: #555; cursor: pointer;
+  background: #111111; border: none; color: #555; cursor: pointer;
   transition: color 0.15s, background 0.15s; border-radius: 2px;
 }
-.lr-btn:hover { color: #c9a962; background: rgba(201,169,98,0.08); }
+.lr-btn:hover { color: #c9a962; background: #c9a962; }
 
 .lr-pill-col {
   display: flex; align-items: center; justify-content: center;
@@ -930,14 +930,14 @@ async function submitProject() {
   font-size: 12px; padding: 2px 8px; letter-spacing: 0.05em; border-radius: 2px;
   border: 1px solid currentColor;
 }
-.alert-pill.warn     { color: #f97316; background: rgba(249,115,22,0.08); }
-.alert-pill.critical { color: #fb7185; background: rgba(251,113,133,0.08); }
+.alert-pill.warn     { color: #f97316; background: #f97316; }
+.alert-pill.critical { color: #fb7185; background: #fb7185; }
 
 /* Quick access row */
 .card-quick-row {
   display: flex;
   border-top: 1px solid rgba(201,169,98,0.15);
-  background: rgba(201,169,98,0.04);
+  background: #111111;
   margin-top: auto;
 }
 .quick-btn {
@@ -949,7 +949,7 @@ async function submitProject() {
   cursor: pointer; transition: color 0.2s, background 0.2s;
 }
 .quick-btn:last-child { border-right: none; }
-.quick-btn:hover { color: #c9a962; background: rgba(201,169,98,0.1); }
+.quick-btn:hover { color: #c9a962; background: #c9a962; }
 
 .card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .due-date { font-size: 14px; color: #555; }
@@ -970,7 +970,7 @@ async function submitProject() {
   flex-shrink: 0;
 }
 .status-select {
-  background: transparent;
+  background: #111111;
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;
@@ -1012,7 +1012,7 @@ async function submitProject() {
 .card-footer-row :deep(.dot) { width: 6px; height: 6px; margin-right: 6px; }
 
 .modal-actions :deep(.btn) { border-radius: 0; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; padding: 10px 20px; }
-.modal-actions :deep(.btn:first-child) { background: transparent; border: 1px solid #1f1f1f; color: #faf8f5; }
+.modal-actions :deep(.btn:first-child) { background: #111111; border: 1px solid #1f1f1f; color: #faf8f5; }
 .modal-actions :deep(.btn:last-child)  { background: #c9a962; color: #0a0a0a; }
 .modal-actions :deep(.btn:last-child:disabled) { opacity: 0.6; }
 
@@ -1022,7 +1022,7 @@ async function submitProject() {
   display: block; margin-bottom: 8px; text-align: left;
 }
 .context-panel :deep(.btn:first-of-type) { background: #c9a962; color: #0a0a0a; }
-.context-panel :deep(.btn:last-of-type)  { background: transparent; border: 1px solid #1f1f1f; color: #faf8f5; }
+.context-panel :deep(.btn:last-of-type)  { background: #111111; border: 1px solid #1f1f1f; color: #faf8f5; }
 
 .project-card.skeleton { pointer-events: none; }
 .skeleton-accent { height: 3px; background: #1f1f1f; }
@@ -1042,7 +1042,7 @@ async function submitProject() {
 
 .context-panel {
   width: 320px; flex: none;
-  background: rgba(10,10,10,0.9); border-left: 1px solid #1a1a1a;
+  background: rgba(10, 10, 10, 0.92); border-left: 1px solid #1a1a1a;
   padding: 48px 28px; display: flex; flex-direction: column; gap: 32px;
   position: sticky; top: 0; max-height: 100vh; overflow-y: auto;
 }

@@ -135,7 +135,7 @@ function formatMoney(v) {
 
 <style scoped>
 .pf-card {
-  background: rgba(12,12,12,0.85);
+  background: #0c0c0c;
   border: 1px solid #2a2a2a;
   padding: 24px;
   margin-bottom: 24px;
@@ -163,7 +163,7 @@ function formatMoney(v) {
 .pf-totals {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px; margin-bottom: 16px;
-  padding: 14px; background: rgba(0,0,0,0.25);
+  padding: 14px; background: #000000;
   border: 1px solid #1f1f1f;
 }
 .pf-totals.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -206,7 +206,7 @@ function formatMoney(v) {
   color: #faf8f5; font-weight: 500;
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.pf-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.pf-table tbody tr:hover { background: #111111; }
 .pf-table tbody tr:last-child td { border-bottom: none; }
 
 .income { color: #34d399; }

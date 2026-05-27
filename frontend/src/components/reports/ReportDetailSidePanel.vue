@@ -114,7 +114,7 @@ defineProps({
 <style scoped>
 .side-panel {
   padding: 24px 20px;
-  background: rgba(10,10,10,0.9);
+  background: #0a0a0a;
   border-left: 1px solid #1e1e1e;
   overflow-y: auto;
 }
@@ -136,7 +136,7 @@ defineProps({
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid #1e1e1e;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
 }
 .health-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0; }
 .health-text {
@@ -179,7 +179,7 @@ defineProps({
   width: 100%;
   text-align: left;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -212,7 +212,7 @@ defineProps({
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
 .risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
-.risk-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
 

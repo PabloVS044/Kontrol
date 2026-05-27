@@ -178,7 +178,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: transparent;
+  background: #111111;
   border: 1px solid var(--Border);
   color: var(--TextMuted);
   font-family: 'DM Sans', sans-serif;
@@ -222,7 +222,7 @@ onMounted(async () => {
 }
 
 .task-card {
-  background: rgba(15,15,15,0.7);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   border-top: none;
   transition: border-color 0.15s;
@@ -337,7 +337,7 @@ onMounted(async () => {
   padding: 4px 10px;
   border: 1px solid;
   cursor: pointer;
-  background: transparent;
+  background: #111111;
   transition: opacity 0.15s;
 }
 

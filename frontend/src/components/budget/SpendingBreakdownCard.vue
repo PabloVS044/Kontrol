@@ -94,7 +94,7 @@ function formatMoney(v) {
 
 <style scoped>
 .breakdown-card {
-  background: rgba(10,10,10,0.85);
+  background: #0a0a0a;
   border: 1px solid #2a2a2a;
   padding: 20px;
   margin-bottom: 16px;
@@ -150,11 +150,11 @@ function formatMoney(v) {
   font-family: 'Manrope', sans-serif;
 }
 .net-row.positive {
-  background: rgba(52,211,153,0.08);
+  background: #34d399;
   border: 1px solid rgba(52,211,153,0.3);
 }
 .net-row.negative {
-  background: rgba(251,113,133,0.08);
+  background: #fb7185;
   border: 1px solid rgba(251,113,133,0.3);
 }
 .net-label {
