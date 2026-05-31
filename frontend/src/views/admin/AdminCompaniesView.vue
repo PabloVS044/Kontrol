@@ -1,11 +1,11 @@
 <template>
   <div class="adm-page">
     <div class="adm-header">
-      <h1 class="adm-title">Companies</h1>
-      <p class="adm-subtitle">All registered companies on the platform</p>
+      <h1 class="adm-title">{{ $t('admin.companies.title') }}</h1>
+      <p class="adm-subtitle">{{ $t('admin.companies.subtitle') }}</p>
 
     </div>
-    <div v-if="loading" class="adm-loading">Loading...</div>
+    <div v-if="loading" class="adm-loading">{{ $t('admin.loading') }}</div>
     <div v-else-if="error" class="adm-error">{{ error }}</div>
 
     <template v-else>
@@ -21,18 +21,18 @@
           {{ opt.label }}
           <span v-if="sortKey === opt.key" class="sort-arrow">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
         </button>
-        <span class="sort-count">{{ sorted.length }} companies</span>
+        <span class="sort-count">{{ $t('admin.companies.count', { count: sorted.length }) }}</span>
       </div>
 
       <!-- Table -->
       <div class="tasks-list">
         <div class="list-header">
-          <span>Name</span>
-          <span>Industry</span>
-          <span>Email</span>
-          <span class="col-center">Members</span>
-          <span class="col-center">Projects</span>
-          <span class="col-center">Status</span>
+          <span>{{ $t('admin.companies.colName') }}</span>
+          <span>{{ $t('admin.companies.colIndustry') }}</span>
+          <span>{{ $t('admin.companies.colEmail') }}</span>
+          <span class="col-center">{{ $t('admin.companies.colMembers') }}</span>
+          <span class="col-center">{{ $t('admin.companies.colProjects') }}</span>
+          <span class="col-center">{{ $t('admin.companies.colStatus') }}</span>
         </div>
 
         <div v-for="c in sorted" :key="c.id_empresa" class="task-card list-row">
@@ -56,12 +56,12 @@
               :disabled="toggling === c.id_empresa"
               @click="toggleStatus(c)"
             >
-              {{ c.activo ? 'Deactivate' : 'Activate' }}
+              {{ c.activo ? $t('admin.deactivate') : $t('admin.activate') }}
             </button>
           </div>
         </div>
 
-        <div v-if="!sorted.length" class="adm-empty">No companies found.</div>
+        <div v-if="!sorted.length" class="adm-empty">{{ $t('admin.companies.empty') }}</div>
       </div>
     </template>
   </div>
@@ -69,7 +69,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+
+const { t } = useI18n()
 
 const authStore = useAuthStore()
 const companies = ref([])
@@ -99,11 +102,11 @@ async function toggleStatus(company) {
   }
 }
 
-const sortOptions = [
-  { key: 'nombre',          label: 'Name' },
-  { key: 'total_proyectos', label: 'Projects' },
-  { key: 'id',              label: 'ID' },
-]
+const sortOptions = computed(() => [
+  { key: 'nombre',          label: t('admin.companies.sortName') },
+  { key: 'total_proyectos', label: t('admin.companies.sortProjects') },
+  { key: 'id',              label: t('admin.companies.sortId') },
+])
 
 function toggleSort(key) {
   if (sortKey.value === key) {
@@ -180,7 +183,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: transparent;
+  background: #111111;
   border: 1px solid var(--Border);
   color: var(--TextMuted);
   font-family: 'DM Sans', sans-serif;
@@ -224,7 +227,7 @@ onMounted(async () => {
 }
 
 .task-card {
-  background: rgba(15,15,15,0.7);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   border-top: none;
   transition: border-color 0.15s;
@@ -333,7 +336,7 @@ onMounted(async () => {
   padding: 4px 10px;
   border: 1px solid;
   cursor: pointer;
-  background: transparent;
+  background: #111111;
   transition: opacity 0.15s;
 }
 

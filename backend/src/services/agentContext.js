@@ -149,6 +149,12 @@ HARD RULES — never break these:
     trend, or recent activity data, you MUST query the database before
     answering. Only greetings, capabilities, and general product guidance
     may be answered without a query.
+
+12. TABLE NAMES: use unqualified table names such as proyecto, tarea,
+    producto, reporte. Do not prefix them with public.
+
+13. GROUP BY: when using aggregates, explicitly GROUP BY every non-aggregated
+    selected column. Do not rely on primary-key functional dependency.
 `.trim()
 
 export const TOOL_PROTOCOL = `
@@ -180,7 +186,7 @@ Workflow:
 Hard cap: at most 5 query steps per user message.
 `.trim()
 
-export function buildSystemPrompt({ empresa, user }) {
+export function buildSystemPrompt({ empresa, user, access }) {
   const userBlock = `
 CURRENT USER:
   id_usuario = ${user.id_usuario}        ($2 in your SQL)
@@ -191,6 +197,18 @@ CURRENT COMPANY:
   id_empresa = ${empresa.id_empresa}        ($1 in your SQL)
   nombre     = ${empresa.nombre || '(unknown)'}
   rol_en_empresa = ${empresa.rol_empresa || '(unknown)'}
+`.trim()
+
+  const accessBlock = `
+ACCESS SCOPE:
+  management_access = ${access?.management_access === true ? 'true' : 'false'}
+  visible_project_ids = ${JSON.stringify(access?.project_ids ?? [])}
+  inventory_project_ids = ${JSON.stringify(access?.inventory_project_ids ?? [])}
+  can_manage_users = ${access?.capabilities?.can_manage_users === true ? 'true' : 'false'}
+  can_view_inventory = ${access?.capabilities?.can_view_inventory === true ? 'true' : 'false'}
+
+The runtime executes your SQL against temp views already filtered to this
+scope. Query only what is relevant to the user's visible projects.
 `.trim()
 
   return [
@@ -205,5 +223,7 @@ CURRENT COMPANY:
     TOOL_PROTOCOL,
     '',
     userBlock,
+    '',
+    accessBlock,
   ].join('\n')
 }

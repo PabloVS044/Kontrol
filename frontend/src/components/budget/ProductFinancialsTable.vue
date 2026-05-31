@@ -3,35 +3,35 @@
     <div class="pf-header">
       <h2 class="section-subtitle">{{ title }}</h2>
       <span class="pf-count" v-if="products.length">
-        {{ products.length }} {{ products.length === 1 ? 'product' : 'products' }}
+        {{ $t('budget.productTable.count', { count: products.length }) }}
       </span>
     </div>
     <p class="hint">{{ hintText }}</p>
 
-    <div v-if="loading" class="pf-empty">Loading…</div>
+    <div v-if="loading" class="pf-empty">{{ $t('budget.productTable.loading') }}</div>
     <div v-else-if="!products.length" class="pf-empty">
-      No product activity yet. Register inventory movements to see per-product results.
+      {{ $t('budget.productTable.empty') }}
     </div>
 
     <template v-else>
       <div class="pf-totals" :class="{ compact: !hasSales }">
         <div class="pf-total-cell">
-          <span class="pf-total-label">Invested</span>
+          <span class="pf-total-label">{{ $t('budget.productTable.totalInvested') }}</span>
           <span class="pf-total-value">${{ formatMoney(totals.total_invertido) }}</span>
         </div>
         <template v-if="hasSales">
           <div class="pf-total-cell">
-            <span class="pf-total-label">Sold</span>
+            <span class="pf-total-label">{{ $t('budget.productTable.totalSold') }}</span>
             <span class="pf-total-value income">${{ formatMoney(totals.total_vendido) }}</span>
           </div>
           <div class="pf-total-cell">
-            <span class="pf-total-label">Gross profit</span>
+            <span class="pf-total-label">{{ $t('budget.productTable.totalGrossProfit') }}</span>
             <span class="pf-total-value" :class="totals.utilidad_bruta < 0 ? 'danger' : 'income'">
               {{ totals.utilidad_bruta < 0 ? '-' : '' }}${{ formatMoney(Math.abs(totals.utilidad_bruta || 0)) }}
             </span>
           </div>
           <div class="pf-total-cell">
-            <span class="pf-total-label">Margin</span>
+            <span class="pf-total-label">{{ $t('budget.productTable.totalMargin') }}</span>
             <span class="pf-total-value" :class="totals.margen_pct < 0 ? 'danger' : 'gold'">
               {{ totals.margen_pct }}%
             </span>
@@ -39,11 +39,11 @@
         </template>
         <template v-else>
           <div class="pf-total-cell">
-            <span class="pf-total-label">Units bought</span>
+            <span class="pf-total-label">{{ $t('budget.productTable.totalUnitsBought') }}</span>
             <span class="pf-total-value">{{ totalUnitsBought }}</span>
           </div>
           <div class="pf-total-cell">
-            <span class="pf-total-label">Units used</span>
+            <span class="pf-total-label">{{ $t('budget.productTable.totalUnitsUsed') }}</span>
             <span class="pf-total-value">{{ totalUnitsUsed }}</span>
           </div>
         </template>
@@ -53,22 +53,22 @@
         <table class="pf-table">
           <thead>
             <tr v-if="hasSales">
-              <th class="left">Product</th>
-              <th>Stock</th>
-              <th>Bought</th>
-              <th>Sold</th>
-              <th>Invested</th>
-              <th>Revenue</th>
-              <th>Profit</th>
-              <th>Margin</th>
+              <th class="left">{{ $t('budget.productTable.colProduct') }}</th>
+              <th>{{ $t('budget.productTable.colStock') }}</th>
+              <th>{{ $t('budget.productTable.colBought') }}</th>
+              <th>{{ $t('budget.productTable.colSold') }}</th>
+              <th>{{ $t('budget.productTable.colInvested') }}</th>
+              <th>{{ $t('budget.productTable.colRevenue') }}</th>
+              <th>{{ $t('budget.productTable.colProfit') }}</th>
+              <th>{{ $t('budget.productTable.colMargin') }}</th>
             </tr>
             <tr v-else>
-              <th class="left">Product</th>
-              <th>Stock</th>
-              <th>Bought</th>
-              <th>Used</th>
-              <th>Invested</th>
-              <th>Avg. cost</th>
+              <th class="left">{{ $t('budget.productTable.colProduct') }}</th>
+              <th>{{ $t('budget.productTable.colStock') }}</th>
+              <th>{{ $t('budget.productTable.colBought') }}</th>
+              <th>{{ $t('budget.productTable.colUsed') }}</th>
+              <th>{{ $t('budget.productTable.colInvested') }}</th>
+              <th>{{ $t('budget.productTable.colAvgCost') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -100,6 +100,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   products: { type: Array, default: () => [] },
@@ -110,13 +113,11 @@ const props = defineProps({
 const hasSales = computed(() => Number(props.totals?.total_vendido || 0) > 0)
 
 const title = computed(() =>
-  hasSales.value ? 'Product Financials' : 'Inventory Consumption'
+  hasSales.value ? t('budget.productTable.titleFinancials') : t('budget.productTable.titleConsumption')
 )
 
 const hintText = computed(() =>
-  hasSales.value
-    ? 'Auto-generated from inventory movements. Purchases (ENTRADA) and sales (SALIDA) feed cost and revenue; profit uses weighted average cost.'
-    : 'No sales recorded — showing materials usage. Purchases (ENTRADA) and consumption (SALIDA) tracked per product. Useful for construction-type projects.'
+  hasSales.value ? t('budget.productTable.hintFinancials') : t('budget.productTable.hintConsumption')
 )
 
 const totalUnitsBought = computed(() =>
@@ -134,7 +135,7 @@ function formatMoney(v) {
 
 <style scoped>
 .pf-card {
-  background: rgba(12,12,12,0.85);
+  background: #0c0c0c;
   border: 1px solid #2a2a2a;
   padding: 24px;
   margin-bottom: 24px;
@@ -162,7 +163,7 @@ function formatMoney(v) {
 .pf-totals {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px; margin-bottom: 16px;
-  padding: 14px; background: rgba(0,0,0,0.25);
+  padding: 14px; background: #000000;
   border: 1px solid #1f1f1f;
 }
 .pf-totals.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -205,7 +206,7 @@ function formatMoney(v) {
   color: #faf8f5; font-weight: 500;
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.pf-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.pf-table tbody tr:hover { background: #111111; }
 .pf-table tbody tr:last-child td { border-bottom: none; }
 
 .income { color: #34d399; }

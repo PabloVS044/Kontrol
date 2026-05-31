@@ -1,6 +1,6 @@
 .integrations-root {
   min-height: 100vh;
-  background: var(--Background, #000);
+  background: transparent;
   color: var(--Text, #fff);
   font-family: 'DM Sans', sans-serif;
 }
@@ -30,7 +30,7 @@
 
 .page-subtitle {
   font-size: 14px;
-  color: #666;
+  color: #999;
   margin: 0;
 }
 
@@ -46,9 +46,9 @@
   padding: 6px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: #aaa;
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.15s;
@@ -74,7 +74,7 @@
 
 /* ── Card ── */
 .integration-card {
-  background: #0c0c0c;
+  background: rgba(12, 12, 12, 0.94);
   border: 1px solid #1f1f1f;
   padding: 24px;
   display: flex;
@@ -126,14 +126,14 @@
 
 .cat-badge {
   font-size: 11px;
-  color: #666;
+  color: #999;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .card-description {
   font-size: 13px;
-  color: #888;
+  color: #aaa;
   line-height: 1.55;
   margin: 0;
 }
@@ -148,7 +148,7 @@
 
 .updated-at {
   font-size: 11px;
-  color: #444;
+  color: #888;
 }
 
 /* ── Toggle switch ── */
@@ -177,7 +177,7 @@
 }
 
 .toggle-on .toggle-track {
-  background: rgba(202, 168, 96, 0.25);
+  background: #caa860;
   border-color: #caa860;
 }
 
@@ -226,7 +226,7 @@
   padding: 8px 14px;
   font-size: 13px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
   cursor: pointer;
@@ -356,7 +356,7 @@
 }
 
 .form-input {
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #faf8f5;
   padding: 10px 12px;
@@ -478,7 +478,7 @@
   padding: 4px 10px;
   font-size: 12px;
   font-family: 'DM Sans', sans-serif;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #666;
   cursor: pointer;

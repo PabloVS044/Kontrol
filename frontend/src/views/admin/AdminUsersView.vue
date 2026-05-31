@@ -1,9 +1,9 @@
 <template>
   <div class="adm-page">
-    <h1 class="adm-title">Users</h1>
-    <p class="adm-subtitle">All platform users and their system role</p>
+    <h1 class="adm-title">{{ $t('admin.users.title') }}</h1>
+    <p class="adm-subtitle">{{ $t('admin.users.subtitle') }}</p>
 
-    <div v-if="loading" class="adm-loading">Loading...</div>
+    <div v-if="loading" class="adm-loading">{{ $t('admin.loading') }}</div>
     <div v-else-if="error" class="adm-error">{{ error }}</div>
 
     <template v-else>
@@ -19,17 +19,17 @@
           {{ opt.label }}
           <span v-if="sortKey === opt.key" class="sort-arrow">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
         </button>
-        <span class="sort-count">{{ sorted.length }} users</span>
+        <span class="sort-count">{{ $t('admin.users.count', { count: sorted.length }) }}</span>
       </div>
 
       <!-- Table -->
       <div class="tasks-list">
         <div class="list-header">
-          <span>Name</span>
-          <span>Email</span>
-          <span>Role</span>
-          <span class="col-center">Companies</span>
-          <span class="col-center">Status</span>
+          <span>{{ $t('admin.users.colName') }}</span>
+          <span>{{ $t('admin.users.colEmail') }}</span>
+          <span>{{ $t('admin.users.colRole') }}</span>
+          <span class="col-center">{{ $t('admin.users.colCompanies') }}</span>
+          <span class="col-center">{{ $t('admin.users.colStatus') }}</span>
         </div>
 
         <div v-for="u in sorted" :key="u.id_usuario" class="task-card list-row">
@@ -52,12 +52,12 @@
               :disabled="toggling === u.id_usuario"
               @click="toggleStatus(u)"
             >
-              {{ u.activo ? 'Deactivate' : 'Activate' }}
+              {{ u.activo ? $t('admin.deactivate') : $t('admin.activate') }}
             </button>
           </div>
         </div>
 
-        <div v-if="!sorted.length" class="adm-empty">No users found.</div>
+        <div v-if="!sorted.length" class="adm-empty">{{ $t('admin.users.empty') }}</div>
       </div>
     </template>
   </div>
@@ -65,7 +65,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+
+const { t } = useI18n()
 
 const authStore = useAuthStore()
 const users     = ref([])
@@ -95,12 +98,12 @@ async function toggleStatus(user) {
   }
 }
 
-const sortOptions = [
-  { key: 'nombre',          label: 'Name' },
-  { key: 'id',              label: 'ID' },
-  { key: 'total_empresas',  label: 'Companies' },
-  { key: 'activo',          label: 'Status' },
-]
+const sortOptions = computed(() => [
+  { key: 'nombre',          label: t('admin.users.sortName') },
+  { key: 'id',              label: t('admin.users.sortId') },
+  { key: 'total_empresas',  label: t('admin.users.sortCompanies') },
+  { key: 'activo',          label: t('admin.users.sortStatus') },
+])
 
 function toggleSort(key) {
   if (sortKey.value === key) {
@@ -175,7 +178,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: transparent;
+  background: #111111;
   border: 1px solid var(--Border);
   color: var(--TextMuted);
   font-family: 'DM Sans', sans-serif;
@@ -219,7 +222,7 @@ onMounted(async () => {
 }
 
 .task-card {
-  background: rgba(15,15,15,0.7);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   border-top: none;
   transition: border-color 0.15s;
@@ -334,7 +337,7 @@ onMounted(async () => {
   padding: 4px 10px;
   border: 1px solid;
   cursor: pointer;
-  background: transparent;
+  background: #111111;
   transition: opacity 0.15s;
 }
 

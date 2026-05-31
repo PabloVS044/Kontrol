@@ -2,15 +2,15 @@
   <section class="fh-card">
     <header class="fh-head" @click="open = !open" :class="{ open }">
       <div>
-        <h3 class="section-subtitle">Funding History</h3>
+        <h3 class="section-subtitle">{{ $t('budget.fundingHistory.title') }}</h3>
         <p class="fh-meta">
           Base ${{ formatMoney(presupuestoBase) }}
           <template v-if="totalAjustes !== 0">
             <span :class="totalAjustes < 0 ? 'danger' : 'income'">
-              {{ totalAjustes < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(totalAjustes)) }} adjustments
+              {{ totalAjustes < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(totalAjustes)) }} {{ $t('budget.fundingHistory.adjustments') }}
             </span>
           </template>
-          <span v-else class="muted">no adjustments</span>
+          <span v-else class="muted">{{ $t('budget.fundingHistory.noAdjustments') }}</span>
         </p>
       </div>
       <svg class="chev" :class="{ open }" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -19,8 +19,8 @@
     </header>
 
     <div v-if="open" class="fh-body">
-      <div v-if="loading" class="fh-empty">Loading…</div>
-      <div v-else-if="!history.length" class="fh-empty">No funding adjustments recorded.</div>
+      <div v-if="loading" class="fh-empty">{{ $t('budget.fundingHistory.loading') }}</div>
+      <div v-else-if="!history.length" class="fh-empty">{{ $t('budget.fundingHistory.empty') }}</div>
       <ul v-else class="fh-list">
         <li v-for="row in history" :key="row.id_ajuste" class="fh-item">
           <div class="fh-item-top">
@@ -30,7 +30,7 @@
             <span class="fh-date">{{ formatDate(row.fecha) }}</span>
           </div>
           <p v-if="row.motivo" class="fh-motivo">{{ row.motivo }}</p>
-          <span v-if="row.usuario" class="fh-user">by {{ row.usuario }}</span>
+          <span v-if="row.usuario" class="fh-user">{{ $t('budget.fundingHistory.by', { user: row.usuario }) }}</span>
         </li>
       </ul>
     </div>
@@ -39,6 +39,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   history:         { type: Array, default: () => [] },
@@ -63,7 +66,7 @@ function formatDate(v) {
 
 <style scoped>
 .fh-card {
-  background: rgba(10,10,10,0.85);
+  background: #0a0a0a;
   border: 1px solid #2a2a2a;
   margin-bottom: 16px;
 }
@@ -72,7 +75,7 @@ function formatDate(v) {
   padding: 14px 18px; cursor: pointer;
   transition: background 0.15s;
 }
-.fh-head:hover { background: rgba(255,255,255,0.02); }
+.fh-head:hover { background: #111111; }
 
 .section-subtitle {
   letter-spacing: 0.15em; font-size: 11px; color: #c9a962;

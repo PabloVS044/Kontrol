@@ -1,53 +1,56 @@
 <template>
   <aside class="context-panel">
-    <div class="ctx-title">Overview</div>
-    <div class="ctx-subtitle">Your project summary</div>
+    <div class="ctx-title">{{ $t('projects.list.context.title') }}</div>
+    <div class="ctx-subtitle">{{ $t('projects.list.context.subtitle') }}</div>
 
     <div>
-      <p class="ctx-label">AT A GLANCE</p>
+      <p class="ctx-label">{{ $t('projects.list.context.atAGlance') }}</p>
       <div class="summary-grid">
         <div class="summary-card">
           <span class="s-value">{{ totalProjects }}</span>
-          <span class="s-label">Total projects</span>
-          <span class="s-sub">{{ adminCount }} as admin</span>
+          <span class="s-label">{{ $t('projects.list.context.totalProjects') }}</span>
+          <span class="s-sub">{{ $t('projects.list.context.asAdmin', { count: adminCount }) }}</span>
         </div>
         <div class="summary-card">
           <span class="s-value" style="color:#fb7185">{{ atRiskCount }}</span>
-          <span class="s-label">At risk</span>
-          <span class="s-sub red">Needs attention</span>
+          <span class="s-label">{{ $t('projects.list.context.atRisk') }}</span>
+          <span class="s-sub red">{{ $t('projects.list.context.needsAttention') }}</span>
         </div>
         <div class="summary-card">
           <span class="s-value">{{ completedCount }}</span>
-          <span class="s-label">Completed</span>
-          <span class="s-sub">This quarter</span>
+          <span class="s-label">{{ $t('projects.list.context.completed') }}</span>
+          <span class="s-sub">{{ $t('projects.list.context.thisQuarter') }}</span>
         </div>
         <div class="summary-card">
           <span class="s-value">{{ pausedCount }}</span>
-          <span class="s-label">Paused</span>
-          <span class="s-sub gold">Awaiting budget</span>
+          <span class="s-label">{{ $t('projects.list.context.paused') }}</span>
+          <span class="s-sub gold">{{ $t('projects.list.context.awaitingBudget') }}</span>
         </div>
       </div>
     </div>
 
     <div>
-      <p class="ctx-label">QUICK ACTIONS</p>
-      <Button 
-        v-if="canCreateProjects" 
-        label="+ Create new project" 
+      <p class="ctx-label">{{ $t('projects.list.context.quickActions') }}</p>
+      <Button
+        v-if="canCreateProjects"
+        :label="$t('projects.list.context.createNew')"
         @click="$emit('create-project')"
       />
-      <Button label="↓ Export summary" />
+      <Button :label="$t('projects.list.context.export')" />
     </div>
 
     <div class="data-source">
-      <div class="ds-label">DATA SOURCE</div>
-      <div class="ds-text">Projects database · Last sync: {{ lastSync }}</div>
+      <div class="ds-label">{{ $t('projects.list.context.dataSource') }}</div>
+      <div class="ds-text">{{ $t('projects.list.context.dataSourceText', { time: lastSync }) }}</div>
     </div>
   </aside>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import Button from '../UI/Button/Button.vue'
+
+const { t } = useI18n()
 
 defineProps({
   totalProjects: Number,
@@ -66,7 +69,7 @@ defineEmits(['create-project'])
 .context-panel {
   width: 320px;
   flex: none;
-  background: rgba(10,10,10,0.9);
+  background: #0a0a0a;
   border-left: 1px solid #1a1a1a;
   padding: 48px 28px;
   display: flex;
@@ -137,7 +140,7 @@ defineEmits(['create-project'])
   color: #0a0a0a;
 }
 :deep(.btn):last-of-type {
-  background: transparent;
+  background: #111111;
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }

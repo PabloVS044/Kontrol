@@ -14,6 +14,7 @@ import {
 } from '../services/agent.js'
 
 const authStore = useAuthStore()
+const CLIENT_HISTORY_LIMIT = 10
 
 const prompt = ref('')
 // Each message: { _id?, role, text, queries?, edited?, isLocal? }
@@ -141,6 +142,13 @@ function autoResize(e) {
   e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'
 }
 
+function buildHistoryPayload() {
+  return messages.value
+    .filter((m) => m.text && (m.role === 'user' || m.role === 'assistant'))
+    .slice(-CLIENT_HISTORY_LIMIT)
+    .map((m) => ({ role: m.role, content: m.text }))
+}
+
 async function submit() {
   const text = prompt.value.trim()
   if (!text || loading.value) return
@@ -153,9 +161,7 @@ async function submit() {
   prompt.value = ''
   loading.value = true
 
-  const history = messages.value
-    .filter((m) => m.text)
-    .map((m) => ({ role: m.role, content: m.text }))
+  const history = buildHistoryPayload()
 
   activeController = new AbortController()
   const wasNewConversation = !conversationId.value
@@ -362,7 +368,7 @@ function autoResizeEdit(e) {
 
       <main class="agent-main">
       <div v-if="!agentConfigured" class="agent-banner warn">
-        El agente aún no está configurado. Define <code>AGENT_API_URL</code> en el backend.
+        El agente aún no está configurado. Define <code>AGENT_API_KEY</code> en el backend. <code>AGENT_API_URL</code> es opcional y por defecto usa ClawStitch Qwen.
       </div>
       <div v-else-if="errorBanner" class="agent-banner error">
         {{ errorBanner }}
@@ -540,7 +546,7 @@ function autoResizeEdit(e) {
 /* ── Page layout ── */
 .agent-page {
   min-height: 100vh;
-  background: var(--Background, #0a0a0a);
+  background: transparent;
   display: flex;
   flex-direction: column;
 }
@@ -560,7 +566,7 @@ function autoResizeEdit(e) {
 .agent-sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(17, 17, 17, 0.94);
   border-right: 1px solid rgba(202, 168, 96, 0.1);
   display: flex;
   flex-direction: column;
@@ -593,7 +599,7 @@ function autoResizeEdit(e) {
   height: 24px;
   border-radius: 2px;
   border: 1px solid transparent;
-  background: transparent;
+  background: #111111;
   color: var(--TextMuted, #8a8070);
   cursor: pointer;
   display: inline-flex;
@@ -661,7 +667,7 @@ function autoResizeEdit(e) {
   gap: 6px;
   width: 100%;
   padding: 8px 10px;
-  background: transparent;
+  background: #111111;
   border: 1px solid transparent;
   border-radius: 2px;
   color: var(--Text, #faf8f5);
@@ -672,7 +678,7 @@ function autoResizeEdit(e) {
   transition: background 0.15s, border-color 0.15s;
 }
 .conv-item:hover:not(:disabled) {
-  background: rgba(202, 168, 96, 0.06);
+  background: #111111;
 }
 .conv-item.active {
   background: rgba(202, 168, 96, 0.12);
@@ -787,7 +793,7 @@ function autoResizeEdit(e) {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(202, 168, 96, 0.05);
+  background: rgba(17, 17, 17, 0.94);
   border: 1px solid rgba(202, 168, 96, 0.14);
   box-shadow: inset 0 1px 0 rgba(202, 168, 96, 0.06);
   padding: 16px;
@@ -904,7 +910,7 @@ function autoResizeEdit(e) {
 
 .agent-textarea {
   flex: 1;
-  background: transparent;
+  background: #111111;
   border: none;
   outline: none;
   color: var(--Text, #faf8f5);
@@ -930,7 +936,7 @@ function autoResizeEdit(e) {
   height: 36px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: #111111;
   color: #555;
   cursor: pointer;
   display: flex;
@@ -1077,7 +1083,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(code) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.07);
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   padding: 1px 5px;
@@ -1086,7 +1092,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(pre) {
   margin: 0 0 8px;
   padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.35);
+  background: #000000;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   overflow-x: auto;
@@ -1122,7 +1128,7 @@ function autoResizeEdit(e) {
   padding: 4px 8px;
   text-align: left;
 }
-.msg-md :deep(th) { background: rgba(255, 255, 255, 0.05); font-weight: 700; }
+.msg-md :deep(th) { background: #111111; font-weight: 700; }
 
 .msg-md :deep(img) { max-width: 100%; border-radius: 2px; }
 
@@ -1144,7 +1150,7 @@ function autoResizeEdit(e) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   color: var(--TextMuted, #8a8070);
@@ -1161,7 +1167,7 @@ function autoResizeEdit(e) {
 /* Inline edit */
 .msg-edit {
   width: 100%;
-  background: rgba(202, 168, 96, 0.06);
+  background: #111111;
   border: 1px solid rgba(202, 168, 96, 0.25);
   border-radius: 2px;
   padding: 8px;
@@ -1171,7 +1177,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-edit-textarea {
-  background: transparent;
+  background: #111111;
   border: none;
   outline: none;
   resize: none;
@@ -1194,7 +1200,7 @@ function autoResizeEdit(e) {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   padding: 4px 10px;
-  background: transparent;
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--TextMuted, #8a8070);
   border-radius: 2px;
@@ -1224,7 +1230,7 @@ function autoResizeEdit(e) {
 }
 
 .msg-row.assistant .msg-bubble {
-  background: rgba(255, 255, 255, 0.03);
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--Text, #faf8f5);
 }
@@ -1268,7 +1274,7 @@ function autoResizeEdit(e) {
   color: #e88080;
 }
 .agent-banner code {
-  background: rgba(0, 0, 0, 0.4);
+  background: #000000;
   padding: 1px 6px;
   border-radius: 2px;
   font-size: 11px;

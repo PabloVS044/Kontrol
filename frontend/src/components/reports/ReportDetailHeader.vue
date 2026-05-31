@@ -2,7 +2,7 @@
   <div class="detail-header">
     <button class="back-btn" @click="$emit('back')">
       <ChevronLeft :size="14" />
-      All Reports
+      {{ $t('reports.detail.backBtn') }}
     </button>
 
     <div v-if="loading" class="header-skeleton">
@@ -15,7 +15,7 @@
       <div class="header-top">
         <div>
           <h1 class="proj-name">{{ project.nombre }}</h1>
-          <p class="proj-desc">{{ project.descripcion || 'No description provided.' }}</p>
+          <p class="proj-desc">{{ project.descripcion || $t('reports.detail.noDescription') }}</p>
         </div>
         <div class="header-actions">
           <Pill
@@ -26,30 +26,30 @@
           />
           <button class="btn-outline">
             <Download :size="12" />
-            Export
+            {{ $t('reports.detail.export') }}
           </button>
         </div>
       </div>
 
       <div class="meta-row">
         <div class="meta-item">
-          <span class="meta-label">Start Date</span>
+          <span class="meta-label">{{ $t('reports.detail.metaStartDate') }}</span>
           <span class="meta-value">{{ formatDate(project.fecha_inicio) }}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Due Date</span>
-          <span class="meta-value">{{ formatDate(project.fecha_fin_planificada) ?? 'Not set' }}</span>
+          <span class="meta-label">{{ $t('reports.detail.metaDueDate') }}</span>
+          <span class="meta-value">{{ formatDate(project.fecha_fin_planificada) ?? $t('reports.detail.notSet') }}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Budget</span>
+          <span class="meta-label">{{ $t('reports.detail.metaBudget') }}</span>
           <span class="meta-value gold">{{ formatBudget(project.presupuesto_total) }}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Progress</span>
+          <span class="meta-label">{{ $t('reports.detail.metaProgress') }}</span>
           <span class="meta-value">{{ progress }}%</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Project ID</span>
+          <span class="meta-label">{{ $t('reports.detail.metaProjectId') }}</span>
           <span class="meta-value dim">#{{ project.id_proyecto }}</span>
         </div>
       </div>
@@ -58,13 +58,13 @@
         <div class="op-track">
           <div class="op-fill" :style="{ width: progress + '%' }"></div>
         </div>
-        <span class="op-label">{{ progress }}% complete</span>
+        <span class="op-label">{{ $t('reports.detail.complete', { pct: progress }) }}</span>
       </div>
     </div>
 
     <div v-else class="error-state">
-      <p>Project not found.</p>
-      <button class="btn-outline" @click="$emit('back')">Go back</button>
+      <p>{{ $t('reports.detail.notFound') }}</p>
+      <button class="btn-outline" @click="$emit('back')">{{ $t('reports.detail.goBack') }}</button>
     </div>
   </div>
 </template>
@@ -138,7 +138,7 @@ defineEmits(['back'])
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: transparent;
+  background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
   font-family: 'Manrope', sans-serif;

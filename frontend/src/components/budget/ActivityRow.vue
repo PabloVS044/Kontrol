@@ -5,7 +5,7 @@
         class="bar-name-btn"
         :class="{ disabled: !hasDetails }"
         :disabled="!hasDetails"
-        :title="hasDetails ? (expanded ? 'Hide details' : 'Show expense details') : 'No expense entries yet'"
+        :title="hasDetails ? (expanded ? $t('budget.activityRow.hideDetails') : $t('budget.activityRow.showDetails')) : $t('budget.activityRow.noEntries')"
         @click="toggle"
       >
         <svg
@@ -39,8 +39,8 @@
     </div>
 
     <div class="bar-amounts">
-      <span><span class="amt-label">Planned:</span> ${{ formatMoney(activity.monto_planificado) }}</span>
-      <span><span class="amt-label">Actual:</span> ${{ formatMoney(efectivo) }}</span>
+      <span><span class="amt-label">{{ $t('budget.activityRow.planned') }}</span> ${{ formatMoney(activity.monto_planificado) }}</span>
+      <span><span class="amt-label">{{ $t('budget.activityRow.actual') }}</span> ${{ formatMoney(efectivo) }}</span>
     </div>
     <ProgressBar
       :pct="Math.min(100, usagePct)"
@@ -48,24 +48,24 @@
       height="10px"
     />
     <div v-if="usagePct > 100" class="bar-overrun">
-      +${{ formatMoney(efectivo - Number(activity.monto_planificado || 0)) }} over plan
+      {{ $t('budget.activityRow.overPlan', { amount: formatMoney(efectivo - Number(activity.monto_planificado || 0)) }) }}
     </div>
 
     <!-- Expandable history -->
     <transition name="fade">
       <div v-if="expanded" class="bar-details">
-        <div v-if="historyLoading" class="bar-details-empty">Loading…</div>
+        <div v-if="historyLoading" class="bar-details-empty">{{ $t('budget.activityRow.loading') }}</div>
 
         <div v-else-if="history && history.length" class="bar-details-list">
           <div v-if="manualReal > 0" class="detail-row manual">
-            <span class="detail-tag">Manual</span>
-            <span class="detail-text">Direct entry on the activity record</span>
+            <span class="detail-tag">{{ $t('budget.activityRow.manual') }}</span>
+            <span class="detail-text">{{ $t('budget.activityRow.directEntry') }}</span>
             <span class="detail-amount">${{ formatMoney(manualReal) }}</span>
           </div>
           <div v-for="g in history" :key="g.id_movimiento" class="detail-row">
             <span class="detail-date">{{ formatDate(g.fecha) }}</span>
             <span class="detail-text">
-              {{ g.motivo || 'Registered expense' }}
+              {{ g.motivo || t('budget.activityRow.registeredExpense') }}
               <span v-if="g.usuario" class="detail-user">— {{ g.usuario }}</span>
             </span>
             <span class="detail-amount">${{ formatMoney(g.monto) }}</span>
@@ -74,14 +74,14 @@
 
         <div v-else-if="manualReal > 0" class="bar-details-list">
           <div class="detail-row manual">
-            <span class="detail-tag">Manual</span>
-            <span class="detail-text">Direct entry on the activity record</span>
+            <span class="detail-tag">{{ $t('budget.activityRow.manual') }}</span>
+            <span class="detail-text">{{ $t('budget.activityRow.directEntry') }}</span>
             <span class="detail-amount">${{ formatMoney(manualReal) }}</span>
           </div>
         </div>
 
         <div v-else class="bar-details-empty">
-          No expense entries yet for this activity.
+          {{ $t('budget.activityRow.noEntriesYet') }}
         </div>
       </div>
     </transition>
@@ -90,7 +90,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProgressBar from '@/components/UI/ProgressBar/ProgressBar.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   activity:    { type: Object, required: true },
@@ -178,7 +181,7 @@ function formatDate(v) {
 
 .bar-name-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; border: none; padding: 0;
+  background: #111111; border: none; padding: 0;
   color: #faf8f5; font-family: 'Manrope', sans-serif;
   font-size: 13px; font-weight: 500;
   cursor: pointer; min-width: 0; flex: 1;
@@ -198,7 +201,7 @@ function formatDate(v) {
 }
 .bar-count {
   font-size: 10px; color: #888;
-  background: rgba(255,255,255,0.05);
+  background: #111111;
   padding: 1px 6px;
   border: 1px solid #2a2a2a;
   flex-shrink: 0;
@@ -211,7 +214,7 @@ function formatDate(v) {
 }
 
 .row-btn {
-  background: transparent; border: 1px solid #2e2e2e; color: #b8b8b8;
+  background: #111111; border: 1px solid #2e2e2e; color: #b8b8b8;
   width: 26px; height: 26px; cursor: pointer; font-size: 12px; line-height: 1;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color 0.15s, border-color 0.15s;
@@ -236,7 +239,7 @@ function formatDate(v) {
 .bar-details {
   margin-top: 12px;
   padding: 12px 14px;
-  background: rgba(0,0,0,0.3);
+  background: #000000;
   border: 1px solid #1a1a1a;
   border-left: 2px solid #c9a962;
 }
@@ -266,7 +269,7 @@ function formatDate(v) {
 }
 .detail-tag {
   font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #c9a962; background: rgba(201,169,98,0.1);
+  color: #c9a962; background: #c9a962;
   padding: 1px 6px; border: 1px solid rgba(201,169,98,0.2);
   align-self: center;
 }

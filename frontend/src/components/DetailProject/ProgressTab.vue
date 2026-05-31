@@ -4,24 +4,24 @@
       <div class="logo-indicator">
         <Clock />
       </div>
-      <h3>Bitácora de avances</h3>
-      <p>{{ entries.length }} entradas registradas</p>
+      <h3>{{ $t('projects.progress.title') }}</h3>
+      <p>{{ $t('projects.progress.entriesCount', { count: entries.length }) }}</p>
       <div class="btn-add">
         <Button
           v-if="canManageProgress"
-          label="Agregar"
+          :label="$t('projects.progress.add')"
           type="button"
           @click="openModal"
         />
       </div>
     </div>
 
-    <div v-if="loading" class="pt-state">Cargando bitácora...</div>
+    <div v-if="loading" class="pt-state">{{ $t('projects.progress.loading') }}</div>
     <div v-else-if="errorMessage" class="pt-state pt-state--error">{{ errorMessage }}</div>
 
     <template v-else>
       <div v-if="entries.length === 0" class="pt-empty">
-        No hay entradas registradas aún.
+        {{ $t('projects.progress.empty') }}
       </div>
       <div v-else class="progress-items">
         <ProgressCard
@@ -43,6 +43,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Clock } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import ProgressCard from './ProgressCard.vue'
@@ -59,6 +60,7 @@ const props = defineProps({
 
 const emit = defineEmits(['updated'])
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 
 const loading = ref(true)
@@ -93,14 +95,14 @@ async function loadProgress() {
     const payload = await res.json()
 
     if (!res.ok) {
-      errorMessage.value = payload.message || 'No se pudo cargar la bitácora.'
+      errorMessage.value = payload.message || t('projects.progress.errors.load')
       return
     }
 
     entries.value = payload.data?.entries ?? []
     canManageProgress.value = payload.data?.canManageProgress === true
   } catch {
-    errorMessage.value = 'No se pudo cargar la bitácora.'
+    errorMessage.value = t('projects.progress.errors.load')
   } finally {
     loading.value = false
   }
@@ -131,7 +133,7 @@ async function handleSubmit(formData) {
     const body = await res.json()
 
     if (!res.ok) {
-      modalError.value = body.message || 'No se pudo guardar la entrada.'
+      modalError.value = body.message || t('projects.progress.errors.save')
       return
     }
 
@@ -139,7 +141,7 @@ async function handleSubmit(formData) {
     await loadProgress()
     emit('updated')
   } catch {
-    modalError.value = 'Error de red, inténtalo de nuevo.'
+    modalError.value = t('projects.progress.errors.network')
   } finally {
     submitting.value = false
   }

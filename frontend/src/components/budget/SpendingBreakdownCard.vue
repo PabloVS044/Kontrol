@@ -1,12 +1,9 @@
 <template>
   <section class="breakdown-card">
-    <h2 class="section-subtitle">Cash Flow Breakdown</h2>
-    <p class="hint">
-      Inventory movements feed expenses (purchases &amp; admin) and income (sales)
-      automatically. Manual activities cover non-inventory spend (services, labor).
-    </p>
+    <h2 class="section-subtitle">{{ $t('budget.breakdown.title') }}</h2>
+    <p class="hint">{{ $t('budget.breakdown.hint') }}</p>
 
-    <div class="group-label">Expenses (egresos)</div>
+    <div class="group-label">{{ $t('budget.breakdown.expensesLabel') }}</div>
     <div class="row" v-for="src in expenseSources" :key="src.key">
       <div class="row-head">
         <span class="row-label">
@@ -23,16 +20,16 @@
     </div>
 
     <div class="subtotal-row">
-      <span>Total expenses</span>
+      <span>{{ $t('budget.breakdown.totalExpenses') }}</span>
       <span class="subtotal-value">${{ formatMoney(totalExpenses) }}</span>
     </div>
 
-    <div class="group-label" style="margin-top: 18px">Income (ingresos)</div>
+    <div class="group-label" style="margin-top: 18px">{{ $t('budget.breakdown.incomeLabel') }}</div>
     <div class="row">
       <div class="row-head">
         <span class="row-label">
           <span class="row-dot" style="background: #34d399"></span>
-          Product sales
+          {{ $t('budget.breakdown.productSales') }}
         </span>
         <span class="row-amount income">${{ formatMoney(totalIncome) }}</span>
       </div>
@@ -44,7 +41,7 @@
     </div>
 
     <div class="net-row" :class="netClass">
-      <span class="net-label">Net result</span>
+      <span class="net-label">{{ $t('budget.breakdown.netResult') }}</span>
       <span class="net-value">
         {{ netResult < 0 ? '-' : '' }}${{ formatMoney(Math.abs(netResult)) }}
       </span>
@@ -54,7 +51,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProgressBar from '@/components/UI/ProgressBar/ProgressBar.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   totalBudget:           { type: Number, default: 0 },
@@ -65,9 +65,9 @@ const props = defineProps({
 })
 
 const expenseSources = computed(() => [
-  { key: 'stock',      label: 'Inventory purchases',   value: props.totalInventoryStock,  color: '#c9a962' },
-  { key: 'admin',      label: 'Admin expenses',        value: props.totalInventoryAdmin,  color: '#60a5fa' },
-  { key: 'activities', label: 'Activities (manual)',   value: props.totalActivities,      color: '#a78bfa' },
+  { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: '#c9a962' },
+  { key: 'admin',      label: t('budget.breakdown.adminExpenses'),      value: props.totalInventoryAdmin, color: '#60a5fa' },
+  { key: 'activities', label: t('budget.breakdown.activitiesManual'),   value: props.totalActivities,     color: '#a78bfa' },
 ])
 
 const totalExpenses = computed(() =>
@@ -94,7 +94,7 @@ function formatMoney(v) {
 
 <style scoped>
 .breakdown-card {
-  background: rgba(10,10,10,0.85);
+  background: #0a0a0a;
   border: 1px solid #2a2a2a;
   padding: 20px;
   margin-bottom: 16px;
@@ -150,11 +150,11 @@ function formatMoney(v) {
   font-family: 'Manrope', sans-serif;
 }
 .net-row.positive {
-  background: rgba(52,211,153,0.08);
+  background: #34d399;
   border: 1px solid rgba(52,211,153,0.3);
 }
 .net-row.negative {
-  background: rgba(251,113,133,0.08);
+  background: #fb7185;
   border: 1px solid rgba(251,113,133,0.3);
 }
 .net-label {

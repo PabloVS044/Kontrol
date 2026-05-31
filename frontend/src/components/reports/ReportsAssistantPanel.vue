@@ -1,7 +1,7 @@
 <template>
   <aside class="ctx-panel">
     <div class="ctx-top">
-      <span class="ctx-badge">Reports AI</span>
+      <span class="ctx-badge">{{ $t('reports.ai.badge') }}</span>
       <label class="toggle">
         <input :checked="modelValue" type="checkbox" @change="$emit('update:modelValue', $event.target.checked)" />
         <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -9,36 +9,32 @@
     </div>
 
     <div class="ctx-section">
-      <p class="ctx-label">AI Insights</p>
-      <p class="ctx-insight">
-        Based on recent data, your top-performing project is consuming
-        72% of the budget with an estimated 12.5% ROI. Consider
-        reallocating budget to high-performing projects.
-      </p>
+      <p class="ctx-label">{{ $t('reports.ai.insights') }}</p>
+      <p class="ctx-insight">{{ $t('reports.ai.insightText') }}</p>
     </div>
 
     <div class="ctx-divider"></div>
 
     <div class="ctx-section">
-      <p class="ctx-label">Ask something, performance, ideas...</p>
+      <p class="ctx-label">{{ $t('reports.ai.askLabel') }}</p>
       <div class="ctx-input-wrap">
-        <input class="ctx-input" placeholder="Type your question..." disabled />
+        <input class="ctx-input" :placeholder="$t('reports.ai.askPlaceholder')" disabled />
       </div>
     </div>
 
     <div class="ctx-section">
-      <p class="ctx-label">Actions</p>
+      <p class="ctx-label">{{ $t('reports.ai.actionsLabel') }}</p>
       <div class="ctx-actions">
-        <Button label="Quick Summary of Q1 Project Launch" />
-        <Button label="Analyze Budget Deviation" />
-        <Button label="Compare to Last Year" />
+        <Button :label="$t('reports.ai.action1')" />
+        <Button :label="$t('reports.ai.action2')" />
+        <Button :label="$t('reports.ai.action3')" />
       </div>
     </div>
 
     <div class="ctx-divider"></div>
 
     <div class="ctx-section">
-      <p class="ctx-label">Budget Usage</p>
+      <p class="ctx-label">{{ $t('reports.ai.budgetUsageLabel') }}</p>
       <div class="donut-wrap">
         <DonutChart
           :pct="72"
@@ -54,15 +50,15 @@
         />
       </div>
       <div class="donut-legend">
-        <span class="dl-item"><span class="dl-dot gold"></span>Used (72%)</span>
-        <span class="dl-item"><span class="dl-dot dim"></span>Remaining (28%)</span>
+        <span class="dl-item"><span class="dl-dot gold"></span>{{ $t('reports.ai.used', { pct: 72 }) }}</span>
+        <span class="dl-item"><span class="dl-dot dim"></span>{{ $t('reports.ai.remaining', { pct: 28 }) }}</span>
       </div>
     </div>
 
     <div class="ctx-divider"></div>
 
     <div class="ctx-section">
-      <p class="ctx-label">Task Completion</p>
+      <p class="ctx-label">{{ $t('reports.ai.taskCompletionLabel') }}</p>
       <div class="bar-list">
         <div v-for="item in completionItems" :key="item.label" class="bar-item">
           <div class="bar-track"><div class="bar-fill" :class="item.color" :style="{ width: item.width }"></div></div>
@@ -97,7 +93,7 @@ const completionItems = [
 .ctx-panel {
   padding: 24px 20px;
   border-left: 1px solid #1e1e1e;
-  background: rgba(10,10,10,0.9);
+  background: #0a0a0a;
   overflow-y: auto;
 }
 
@@ -126,7 +122,7 @@ const completionItems = [
   position: relative;
   transition: background .2s;
 }
-.toggle input:checked + .toggle-track { background: rgba(201,169,98,0.3); }
+.toggle input:checked + .toggle-track { background: #c9a962; }
 .toggle-thumb {
   position: absolute;
   top: 2px;
@@ -171,7 +167,7 @@ const completionItems = [
 .ctx-input {
   width: 100%;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.03);
+  background: #111111;
   border: 1px solid #1e1e1e;
   color: #555;
   font-family: 'Manrope', sans-serif;
@@ -186,7 +182,7 @@ const completionItems = [
   width: 100%;
   text-align: left;
   padding: 8px 10px;
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1a1a1a;
   color: #555;
   font-family: 'Manrope', sans-serif;

@@ -97,6 +97,7 @@ export const INTEGRATION_CATALOG = [
     campos_credenciales: [
       { key: 'api_key', label: 'API Key', type: 'password', required: true },
       { key: 'from_email', label: 'Email remitente', type: 'email', required: true },
+      { key: 'to_email', label: 'Email destinatario', type: 'email', required: true },
       { key: 'from_name', label: 'Nombre remitente', type: 'text', required: false },
     ],
   },

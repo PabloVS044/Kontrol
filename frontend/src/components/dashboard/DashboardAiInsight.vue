@@ -29,7 +29,7 @@ defineEmits(['review-budget'])
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(12,10,5,0.9);
+  background: #0c0a05;
   border: 1px dashed var(--Primary);
   padding: 40px;
   margin-bottom: 40px;

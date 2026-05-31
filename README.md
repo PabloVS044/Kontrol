@@ -115,7 +115,8 @@ Todas viven en `backend/.env` (copiado desde `backend/.env.example`). **Nunca** 
 | `MONGODB_URI` | sí | Conexión a MongoDB (chat). En Docker el host es `mongo`. |
 | `INTEGRATION_ENCRYPTION_KEY` | — | Clave para cifrar API keys/webhooks guardados. Si falta, usa `JWT_SECRET`. |
 | `UPLOADTHING_TOKEN` | para adjuntos | Token de [UploadThing](https://uploadthing.com) (subida de archivos/imágenes/audio en el chat). |
-| `AGENT_API_URL` / `AGENT_API_KEY` | para el agente IA | Endpoint compatible con OpenAI del servidor Qwen (vLLM). |
+| `AGENT_API_KEY` | para el agente IA | Token Bearer del endpoint Qwen de ClawStitch. |
+| `AGENT_API_URL` | — | Override opcional de la base OpenAI-compatible del agente. Default: `https://model.clawstitch.com/v1`. |
 | `AGENT_MODEL` | — | Modelo del agente (default `Qwen/Qwen3.6-27B-FP8`). |
 | `AGENT_TEMPERATURE` / `AGENT_MAX_TOKENS` / `AGENT_MAX_STEPS` | — | Parámetros de inferencia del agente. |
 

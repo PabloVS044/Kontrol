@@ -1,0 +1,1213 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "inviteBanner": "This session will be linked to the invitation you received.",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "divider": "or",
+      "withGoogle": "Sign in with Google",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up now",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Minimum 6 characters",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "register": {
+      "title": "Register",
+      "inviteBanner": "This account will automatically be linked to the invited company.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "divider": "or",
+      "withGoogle": "Sign up with Google",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "success": "Account created! Redirecting to login...",
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Minimum 6 characters",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Executive Overview",
+    "welcome": "Welcome back, {name}",
+    "pendingAccess": {
+      "eyebrow": "Pending Access",
+      "title": "You are already inside the company",
+      "subtitle": "Your account is linked to {company}, but the owner still has to assign projects and permissions before you can open operational panels."
+    },
+    "ai": {
+      "label": "KONTROL AI ANALYSIS",
+      "reviewBudget": "REVIEW BUDGET",
+      "noProjects": "No projects yet. Create your first project to start tracking budgets and usage here.",
+      "exceeded": "\"{name}\" has exceeded its allocated budget ({pct}% used). Review expenses and consider reallocating funds.",
+      "approaching": "\"{name}\" is approaching its limit ({pct}% used). Monitor upcoming expenses closely.",
+      "allGood": "All {count} projects are within their budget allocations. Overall usage is {pct}%.",
+      "default": "You have {count} project under management. Register activities and expenses to start tracking budget health. | You have {count} projects under management. Register activities and expenses to start tracking budget health."
+    },
+    "stats": {
+      "totalSpent": "Total Spent",
+      "activeProjects": "Active Projects",
+      "overrunAlerts": "Overrun Alerts",
+      "ofBudget": "{pct}% of budget",
+      "noBudget": "No budget set",
+      "totalProjects": "{count} total",
+      "warning": "{count} warning",
+      "critical": "Critical",
+      "allHealthy": "All healthy"
+    },
+    "trend": {
+      "title": "Financial Performance Trend",
+      "hint": "Planned budget (gold dashed) reaches the project total by the end date. Actual line is cumulative spend based on inventory movements.",
+      "loading": "Loading trend…",
+      "noProjects": "No projects with start date, end date and budget set yet.",
+      "noData": "This project needs start date, end date and total budget.",
+      "today": "Today",
+      "legend": {
+        "planned": "Planned budget",
+        "actual": "Actual spend (movements)"
+      }
+    },
+    "budget": {
+      "title": "Budget Usage by Project",
+      "loading": "Loading budgets…",
+      "empty": "No projects with budget data yet."
+    },
+    "snapshot": {
+      "title": "Portfolio Snapshot",
+      "allocated": "Allocated",
+      "spent": "Spent",
+      "remaining": "Remaining",
+      "summary": "{pct}% of total budget used across {count} project. | {pct}% of total budget used across {count} projects."
+    },
+    "collaborators": {
+      "eyebrow": "Company Access",
+      "title": "Collaborators",
+      "subtitle": "Manage company access, project assignment, and capability-based permissions for each collaborator.",
+      "membersCount": "{count} members",
+      "collaboratorsCount": "{count} collaborators",
+      "managementCount": "{count} management roles",
+      "loading": "Loading collaborators...",
+      "invite": {
+        "eyebrow": "Shared Invite",
+        "title": "Invitation Link",
+        "active": "Active",
+        "inactive": "Inactive",
+        "description": "The owner can share a single access link to add collaborators and deactivate it when onboarding closes.",
+        "ownerOnly": "Only the owner can view, generate, or deactivate the link.",
+        "generate": "Generate link",
+        "generating": "Generating...",
+        "copy": "Copy link",
+        "deactivate": "Deactivate link",
+        "deactivating": "Deactivating..."
+      },
+      "users": {
+        "eyebrow": "Members",
+        "title": "Company Users",
+        "total": "{count} total"
+      },
+      "projectAccess": {
+        "title": "Project Access",
+        "subtitle": "Assigned without permissions = belongs to the project, but cannot view inventory or write.",
+        "selectProject": "Select project",
+        "assign": "Assign project",
+        "assigning": "Assigning...",
+        "remove": "Remove",
+        "removing": "Removing...",
+        "removeProject": "Remove project",
+        "savePermissions": "Save permissions",
+        "saving": "Saving...",
+        "noProjects": "This user already belongs to the company but has no accessible projects yet."
+      },
+      "actions": {
+        "roleUpdated": "Role updated.",
+        "userRemoved": "User removed.",
+        "projectAssigned": "Project assigned. You can now configure permissions.",
+        "permissionsUpdated": "Project permissions updated.",
+        "inviteReady": "Invitation link ready to share.",
+        "inviteDeactivated": "The link was deactivated.",
+        "linkCopied": "Link copied to clipboard."
+      },
+      "errors": {
+        "loadPanel": "Could not load the collaborators panel.",
+        "generateInvite": "Could not generate the link.",
+        "deactivateInvite": "Could not deactivate the link.",
+        "copyLink": "Could not copy the link.",
+        "updateRole": "Could not update the role.",
+        "removeUser": "Could not remove the user.",
+        "assignProject": "Could not assign the project.",
+        "savePermissions": "Could not save project permissions.",
+        "removeProjectAccess": "Could not remove project access."
+      }
+    }
+  },
+  "projects": {
+    "statuses": {
+      "planned": "Planned",
+      "inProgress": "In Progress",
+      "paused": "Paused",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "taskStatuses": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "noDescription": "No description.",
+    "budget": "Budget",
+    "budgetUsed": "{pct}% used",
+    "overrun": "OVERRUN",
+    "warning": "WARNING",
+    "dueDate": "Due {date}",
+    "noDueDate": "No due date",
+    "list": {
+      "title": "My Projects",
+      "subtitle": "Projects you are enrolled in as admin or member",
+      "newProject": "New project",
+      "settings": "Settings",
+      "history": "History",
+      "authError": {
+        "title": "Session required",
+        "message": "You must be logged in to view your projects."
+      },
+      "fetchError": {
+        "title": "Could not load projects",
+        "retry": "Retry"
+      },
+      "tabs": {
+        "all": "All",
+        "active": "Active",
+        "atRisk": "At Risk",
+        "completed": "Completed"
+      },
+      "section": {
+        "all": "All Projects",
+        "active": "Active Projects",
+        "atRisk": "At Risk",
+        "completed": "Completed",
+        "default": "Projects"
+      },
+      "searchPlaceholder": "Search project...",
+      "count": "{count} project | {count} projects",
+      "loading": "Loading...",
+      "listHeaders": {
+        "project": "Project",
+        "progress": "Progress",
+        "budget": "Budget",
+        "due": "Due date",
+        "actions": "Actions",
+        "role": "Role"
+      },
+      "gridView": "Grid view",
+      "listView": "List view",
+      "quickActions": {
+        "tasks": "Tasks",
+        "team": "Team",
+        "budget": "Budget",
+        "reports": "Reports"
+      },
+      "empty": {
+        "title": "No projects here",
+        "search": "No project matches the search.",
+        "noFilter": "Change the filter or create a new project.",
+        "cta": "+ New project"
+      },
+      "networkError": "Network error",
+      "openProject": "→ Open project",
+      "openBudget": "→ Open budget",
+      "context": {
+        "title": "Overview",
+        "subtitle": "Your project summary",
+        "atAGlance": "AT A GLANCE",
+        "totalProjects": "Total projects",
+        "asAdmin": "{count} as admin",
+        "atRisk": "At risk",
+        "needsAttention": "Needs attention",
+        "completed": "Completed",
+        "thisQuarter": "This quarter",
+        "paused": "Paused",
+        "awaitingBudget": "Awaiting budget",
+        "quickActions": "QUICK ACTIONS",
+        "createNew": "+ Create new project",
+        "export": "↓ Export summary",
+        "dataSource": "DATA SOURCE",
+        "dataSourceText": "Projects database · Last sync: {time}"
+      }
+    },
+    "form": {
+      "newTitle": "New project",
+      "name": "Name",
+      "description": "Description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "budget": "Budget",
+      "status": "Status",
+      "namePlaceholder": "Project name",
+      "descriptionPlaceholder": "Optional description",
+      "cancel": "Cancel",
+      "save": "Save project",
+      "saving": "Saving…"
+    },
+    "detail": {
+      "back": "Projects",
+      "overdue": "{n}d overdue",
+      "remaining": "{n}d remaining",
+      "spent": "spent",
+      "total": "total",
+      "error": {
+        "title": "Could not load project",
+        "retry": "Retry"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "tasks": "Tasks",
+        "team": "Team",
+        "members": "Members",
+        "progress": "Progress"
+      },
+      "nav": {
+        "budget": "Budget",
+        "reports": "Reports"
+      },
+      "overview": {
+        "taskProgress": "Task Progress",
+        "tasksTotal": "{count} tasks total",
+        "projectProgress": "Project Progress",
+        "updates": "{count} updates",
+        "noUpdates": "No updates",
+        "basedOnTimeline": "Based on timeline updates",
+        "basedOnTasks": "Derived from task completion",
+        "latestUpdate": "Latest update {date}",
+        "noProgressYet": "No progress updates recorded yet.",
+        "tasksDone": "{pct}% tasks done",
+        "milestones": "{count} milestones",
+        "blockers": "{count} blockers",
+        "budgetOverview": "Budget Overview",
+        "totalBudget": "Total budget",
+        "budgetSpent": "Spent",
+        "budgetOverrun": "Overrun",
+        "available": "Available",
+        "inventoryActivity": "Inventory Activity",
+        "noMovements": "No inventory movements recorded.",
+        "teamBreakdown": "Team Breakdown",
+        "memberSingular": "1 member",
+        "memberPlural": "{count} members",
+        "noRoles": "No roles assigned to this project yet."
+      }
+    },
+    "tasks": {
+      "allStatuses": "All statuses",
+      "allPriorities": "All priorities",
+      "count": "{count} tasks",
+      "newTask": "New task",
+      "loading": "Loading tasks…",
+      "emptyFilter": "No tasks with this filter",
+      "emptyNoTasks": "No tasks yet",
+      "emptyFilterSub": "Try changing the filters.",
+      "emptyNoTasksSub": "Create the first task for this project.",
+      "emptyCta": "New task",
+      "card": {
+        "due": "Due {date}",
+        "edit": "Edit",
+        "close": "Close"
+      },
+      "modal": {
+        "newTitle": "New task",
+        "editTitle": "Edit task",
+        "name": "Name",
+        "description": "Description",
+        "priority": "Priority",
+        "status": "Status",
+        "initialStatus": "Initial status",
+        "assignTo": "Assign to",
+        "dueDate": "Due date",
+        "unassigned": "— Unassigned —",
+        "namePlaceholder": "Task name",
+        "descriptionPlaceholder": "Optional description",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "update": "Update task",
+        "create": "Create task",
+        "networkError": "Network error, try again."
+      },
+      "detail": {
+        "loading": "Loading…",
+        "description": "Description",
+        "priority": "Priority",
+        "status": "Status",
+        "dueDate": "Due date",
+        "assignedTo": "Assigned to"
+      }
+    },
+    "team": {
+      "searchPlaceholder": "Search by name…",
+      "allAreas": "All areas",
+      "count": "{count} teams",
+      "newTeam": "New team",
+      "emptyFilter": "No teams with this filter",
+      "emptyNoTeams": "No teams yet",
+      "emptyFilterSub": "Try changing the filters.",
+      "emptyNoTeamsSub": "Create the first team for this project.",
+      "emptyCta": "New team",
+      "listHeaders": {
+        "team": "Team",
+        "area": "Area",
+        "members": "Members",
+        "tasks": "Tasks"
+      },
+      "modal": {
+        "newTitle": "New team",
+        "editTitle": "Edit team",
+        "name": "Name",
+        "area": "Area",
+        "members": "Members",
+        "namePlaceholder": "Team name",
+        "selectArea": "— Select area —",
+        "noMembers": "No members in project.",
+        "cancel": "Cancel",
+        "save": "Save",
+        "create": "Create"
+      },
+      "detail": {
+        "area": "Area",
+        "members": "Members",
+        "tasksAssigned": "Tasks assigned",
+        "tasks": "Tasks",
+        "noMembers": "No members assigned.",
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "members": {
+      "eyebrow": "Project Members",
+      "subtitle": "Only company users assigned to this project are shown here. From this panel you can grant access and share a project-specific invitation.",
+      "assigned": "{count} assigned",
+      "available": "{count} available",
+      "activeInvitation": "Active invitation",
+      "noActiveInvitation": "No active invitation",
+      "loading": "Loading project members...",
+      "readOnly": {
+        "title": "Read-only view",
+        "copy": "You can review who is assigned to the project, but you do not have permission to manage members or invitations."
+      },
+      "invite": {
+        "kicker": "Project Invite",
+        "title": "Project invitation",
+        "active": "Active",
+        "inactive": "Inactive",
+        "description": "This link adds the user as a company collaborator if they do not belong yet, then assigns them to this project with the selected permissions.",
+        "permissionsLabel": "Permissions granted by this invitation",
+        "saving": "Saving...",
+        "update": "Update invitation",
+        "generate": "Generate invitation",
+        "copyLink": "Copy link",
+        "deactivate": "Deactivate link",
+        "deactivating": "Deactivating..."
+      },
+      "assignment": {
+        "kicker": "Assignment",
+        "title": "Add existing member",
+        "description": "You can take any user who already belongs to the company and assign them to this project with explicit permissions.",
+        "selectMember": "Select a company member",
+        "assigning": "Assigning...",
+        "assign": "Assign to project",
+        "permissionsLabel": "Initial permissions for this member",
+        "allAssigned": "All eligible company members are already assigned to this project."
+      },
+      "assignedList": {
+        "kicker": "Assigned Members",
+        "title": "Project members",
+        "total": "{count} total",
+        "permissionsLabel": "Project permissions",
+        "saving": "Saving...",
+        "savePermissions": "Save permissions",
+        "removing": "Removing...",
+        "remove": "Remove",
+        "noMembers": "No members are assigned to this project yet."
+      },
+      "actions": {
+        "inviteReady": "Project invitation ready to share.",
+        "inviteDeactivated": "The project invitation was deactivated.",
+        "linkCopied": "Link copied to clipboard.",
+        "memberAssigned": "Member assigned to the project.",
+        "permissionsUpdated": "Member permissions updated.",
+        "memberRemoved": "Member removed from the project."
+      },
+      "errors": {
+        "loadPanel": "Could not load the project members panel.",
+        "saveInvite": "Could not save the project invitation.",
+        "deactivateInvite": "Could not deactivate the project invitation.",
+        "copyLink": "Could not copy the link.",
+        "assignMember": "Could not assign the member to the project.",
+        "savePermissions": "Could not save the member permissions.",
+        "removeMember": "Could not remove the member from the project."
+      }
+    },
+    "progress": {
+      "title": "Progress log",
+      "entriesCount": "{count} entries recorded",
+      "add": "Add",
+      "loading": "Loading log...",
+      "empty": "No entries recorded yet.",
+      "unknownAuthor": "Unknown",
+      "modal": {
+        "title": "New progress entry",
+        "descriptionLabel": "Description",
+        "detailsLabel": "Additional details",
+        "updateTypeLabel": "Entry type",
+        "progressLabel": "Progress (%)",
+        "dateLabel": "Date",
+        "descriptionPlaceholder": "What progress was made?",
+        "detailsPlaceholder": "Extra context for the team (optional)",
+        "typeUpdate": "Progress",
+        "typeMilestone": "Milestone",
+        "typeBlocker": "Blocker",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "submit": "Add entry"
+      },
+      "errors": {
+        "load": "Could not load the progress log.",
+        "save": "Could not save the entry.",
+        "network": "Network error, please try again."
+      }
+    }
+  },
+  "inventory": {
+    "authError": {
+      "title": "Session required",
+      "message": "You must be logged in to view the inventory."
+    },
+    "fetchError": {
+      "title": "Could not load inventory",
+      "retry": "Retry"
+    },
+    "header": {
+      "title": "Inventory",
+      "subtitle": "Browse and manage your product catalogue",
+      "newProduct": "New product",
+      "noWriteAccess": "No write access",
+      "selectProjectFirst": "Select project first",
+      "noWriteAccessTitle": "You do not have write access in this project",
+      "selectProjectTitle": "Select a project first",
+      "settings": "Settings",
+      "history": "History"
+    },
+    "projectFilter": {
+      "label": "Project",
+      "allProjects": "All projects",
+      "loading": "Loading…"
+    },
+    "search": {
+      "placeholder": "Search by name or category..."
+    },
+    "filter": {
+      "category": "Category",
+      "all": "All"
+    },
+    "section": {
+      "title": "Product Catalogue",
+      "loading": "Loading…",
+      "productCount": "{count} products · Click any card for details"
+    },
+    "card": {
+      "price": "Price",
+      "totalStock": "total stock",
+      "entries": "Entries",
+      "exits": "Exits",
+      "net": "Net",
+      "viewDetails": "View details",
+      "sell": "Sell",
+      "increase": "Add one",
+      "decrease": "Remove one",
+      "cannotSell": "This product cannot be sold right now."
+    },
+    "sale": {
+      "title": "Current sale",
+      "multiProject": "Multiple projects",
+      "perUnit": "each",
+      "total": "Total",
+      "submit": "Realize sale",
+      "submitting": "Processing sale…",
+      "cancel": "Cancel sale",
+      "remove": "Remove item",
+      "movementReason": "POS sale from inventory",
+      "errors": {
+        "missingProject": "Could not determine the project for this product."
+      }
+    },
+    "empty": "No products match your filters.",
+    "stock": {
+      "outOfStock": "Out of stock",
+      "lowStock": "Low stock",
+      "inStock": "In stock"
+    },
+    "context": {
+      "summary": "Summary",
+      "allProjects": "All projects",
+      "atAGlance": "At a Glance",
+      "totalProducts": "Total products",
+      "lowStock": "Low stock",
+      "reorderSoon": "Reorder soon",
+      "outOfStock": "Out of stock",
+      "actionNeeded": "Action needed",
+      "totalValue": "Total value",
+      "byCategory": "By Category",
+      "stockAlerts": "Stock Alerts",
+      "unitsLeft": "{count} units left",
+      "criticalStock": "Critical stock",
+      "lowStockReorder": "Low stock — reorder soon",
+      "quickActions": "Quick Actions",
+      "addProduct": "+ Add product",
+      "exportInventory": "↓ Export inventory",
+      "dataSource": "Data Source",
+      "dataSourceText": "Inventory database · Live"
+    },
+    "modal": {
+      "title": "New product",
+      "name": "Name",
+      "description": "Description",
+      "salePrice": "Sale price",
+      "costPrice": "Cost price",
+      "initialStock": "Initial stock",
+      "minStock": "Min. stock",
+      "namePlaceholder": "Product name",
+      "descriptionPlaceholder": "Optional description",
+      "cancel": "Cancel",
+      "save": "Save product",
+      "saving": "Saving…"
+    },
+    "errors": {
+      "selectProject": "Select a project before adding a product.",
+      "networkError": "Network error, try again."
+    }
+  },
+  "budget": {
+    "header": {
+      "title": "Budget Management",
+      "noProjects": "No projects available",
+      "addFunds": "+ Funds",
+      "addActivity": "+ Activity",
+      "addExpense": "↑ Expense"
+    },
+    "readOnlyHint": "Read-only view. Owners, admins and managers can register or modify expenses.",
+    "loading": "Loading…",
+    "noProject": "Select a project to view its budget.",
+    "deleteActivityConfirm": "Delete activity \"{name}\"?",
+    "movements": {
+      "purchases": "Purchases",
+      "sales": "Sales",
+      "admin": "Admin",
+      "hint": "Tracked automatically from inventory movements registered in this project."
+    },
+    "distribution": {
+      "title": "Budget Distribution by Activity",
+      "count": "{count} activity | {count} activities",
+      "planningLabel": "Planning coverage",
+      "planningValue": "{pct}% of total budget planned",
+      "empty": "No activities yet. Create one to start tracking your budget."
+    },
+    "health": {
+      "title": "Budget Health",
+      "projectPrefix": "Project",
+      "hasUsed": "has used",
+      "ofAllocated": "of its allocated budget (${spent} / ${total}).",
+      "includes": "Includes",
+      "inAdjustments": "in adjustments.",
+      "noBudget": "This project has no budget allocated yet.",
+      "salesLabel": "Sales:",
+      "loss": "loss",
+      "profit": "profit"
+    },
+    "summary": {
+      "title": "Budget Summary",
+      "totalAllocated": "Total Allocated",
+      "expenses": "Expenses",
+      "income": "Income",
+      "net": "Net",
+      "remaining": "Remaining",
+      "planned": "Planned",
+      "used": "Used"
+    },
+    "alertBox": {
+      "onTrack":  { "title": "On track.",  "message": "No budget overrun detected." },
+      "watching": { "title": "Watching",   "message": "Spending is approaching the warning threshold." },
+      "warning":  { "title": "Warning",    "message": "Budget usage is high." },
+      "critical": { "title": "Critical",   "message": "Budget fully consumed." },
+      "overrun":  { "title": "Overrun",    "message": "Spending has exceeded the budget." }
+    },
+    "activityModal": {
+      "editTitle": "Edit activity",
+      "newTitle": "New activity",
+      "name": "Name",
+      "namePlaceholder": "Activity name",
+      "planned": "Planned",
+      "actual": "Actual",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "save": "Save"
+    },
+    "expenseModal": {
+      "title": "Register expense",
+      "activity": "Activity",
+      "activityPlaceholder": "Existing or new activity",
+      "hint": "If the activity exists, the amount is accumulated into its actual spend. Otherwise a new activity is created with planned = 0.",
+      "amount": "Amount",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "register": "Register"
+    },
+    "fundsModal": {
+      "title": "Add funds to budget",
+      "amount": "Amount",
+      "hint": "Positive values add to the allocated budget. Negative values reduce it (corrections).",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why is the budget being adjusted?",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "register": "Register"
+    },
+    "activityRow": {
+      "hideDetails": "Hide details",
+      "showDetails": "Show expense details",
+      "noEntries": "No expense entries yet",
+      "planned": "Planned:",
+      "actual": "Actual:",
+      "overPlan": "+${amount} over plan",
+      "loading": "Loading…",
+      "manual": "Manual",
+      "directEntry": "Direct entry on the activity record",
+      "registeredExpense": "Registered expense",
+      "noEntriesYet": "No expense entries yet for this activity."
+    },
+    "fundingHistory": {
+      "title": "Funding History",
+      "adjustments": "adjustments",
+      "noAdjustments": "no adjustments",
+      "loading": "Loading…",
+      "empty": "No funding adjustments recorded.",
+      "by": "by {user}"
+    },
+    "breakdown": {
+      "title": "Cash Flow Breakdown",
+      "hint": "Inventory movements feed expenses (purchases & admin) and income (sales) automatically. Manual activities cover non-inventory spend (services, labor).",
+      "expensesLabel": "Expenses (egresos)",
+      "inventoryPurchases": "Inventory purchases",
+      "adminExpenses": "Admin expenses",
+      "activitiesManual": "Activities (manual)",
+      "totalExpenses": "Total expenses",
+      "incomeLabel": "Income (ingresos)",
+      "productSales": "Product sales",
+      "netResult": "Net result"
+    },
+    "productTable": {
+      "titleFinancials": "Product Financials",
+      "titleConsumption": "Inventory Consumption",
+      "hintFinancials": "Auto-generated from inventory movements. Purchases (ENTRADA) and sales (SALIDA) feed cost and revenue; profit uses weighted average cost.",
+      "hintConsumption": "No sales recorded — showing materials usage. Purchases (ENTRADA) and consumption (SALIDA) tracked per product. Useful for construction-type projects.",
+      "count": "{count} product | {count} products",
+      "loading": "Loading…",
+      "empty": "No product activity yet. Register inventory movements to see per-product results.",
+      "colProduct": "Product",
+      "colStock": "Stock",
+      "colBought": "Bought",
+      "colSold": "Sold",
+      "colUsed": "Used",
+      "colInvested": "Invested",
+      "colRevenue": "Revenue",
+      "colProfit": "Profit",
+      "colMargin": "Margin",
+      "colAvgCost": "Avg. cost",
+      "totalInvested": "Invested",
+      "totalSold": "Sold",
+      "totalGrossProfit": "Gross profit",
+      "totalMargin": "Margin",
+      "totalUnitsBought": "Units bought",
+      "totalUnitsUsed": "Units used"
+    }
+  },
+  "reports": {
+    "header": {
+      "title": "Reports Center",
+      "subtitle": "Analytics and performance overview for all your projects",
+      "createReport": "Create Report",
+      "generateAI": "Generate with AI",
+      "export": "Export"
+    },
+    "view": {
+      "filters": {
+        "all": "All Projects",
+        "active": "Active",
+        "last30": "Last 30 Days",
+        "completed": "Completed"
+      },
+      "kpi": {
+        "avgProgress": "Avg Progress",
+        "projects": "{count} projects",
+        "activeProjects": "Active Projects",
+        "ofTotal": "of {total} total",
+        "completed": "Completed",
+        "completionRate": "{pct}% rate",
+        "budgetTotal": "Budget Total",
+        "budgetUsed": "{pct}% used"
+      },
+      "projectsTitle": "Projects Overview",
+      "reportsTitle": "Reports",
+      "reportsCount": "{count} report | {count} reports",
+      "performanceTitle": "Project Performance",
+      "legendBudget": "Budget used %",
+      "legendProgress": "Progress %",
+      "colProjectName": "Project Name",
+      "colProgress": "Progress",
+      "colStatus": "Status",
+      "colStartDate": "Start Date",
+      "colTitle": "Title",
+      "colType": "Type",
+      "colProject": "Project",
+      "colDate": "Date",
+      "emptyProjects": "No projects found.",
+      "emptyReports": "No reports created yet."
+    },
+    "ai": {
+      "badge": "Reports AI",
+      "insights": "AI Insights",
+      "insightText": "Based on recent data, your top-performing project is consuming 72% of the budget with an estimated 12.5% ROI. Consider reallocating budget to high-performing projects.",
+      "askLabel": "Ask something, performance, ideas…",
+      "askPlaceholder": "Type your question…",
+      "actionsLabel": "Actions",
+      "action1": "Quick Summary of Q1 Project Launch",
+      "action2": "Analyze Budget Deviation",
+      "action3": "Compare to Last Year",
+      "budgetUsageLabel": "Budget Usage",
+      "used": "Used ({pct}%)",
+      "remaining": "Remaining ({pct}%)",
+      "taskCompletionLabel": "Task Completion",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending"
+    },
+    "reportModal": {
+      "labelType": "Type",
+      "labelProject": "Project",
+      "labelDate": "Date",
+      "labelContentUrl": "Content URL",
+      "openDocument": "Open document →",
+      "notProvided": "Not provided",
+      "close": "Close",
+      "viewMetrics": "View Project Metrics →"
+    },
+    "createModal": {
+      "title": "New Report",
+      "labelTitle": "Title",
+      "labelType": "Type",
+      "labelProject": "Project",
+      "labelUrl": "Content URL",
+      "optional": "(optional)",
+      "titlePlaceholder": "Report title",
+      "selectType": "Select type…",
+      "selectProject": "Select project…",
+      "urlPlaceholder": "https://…",
+      "typeProgress": "Progress",
+      "typeBudget": "Budget",
+      "typeIncident": "Incident",
+      "typeConsolidated": "Consolidated",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "create": "Create Report",
+      "errorFailed": "Failed to create report.",
+      "errorNetwork": "Network error."
+    },
+    "kpi": {
+      "roiGrowth": "ROI Growth",
+      "activeProjects": "Active Projects",
+      "completed": "Completed",
+      "budgetTotal": "Budget Total"
+    },
+    "chart": {
+      "title": "Project Performance",
+      "legendBudget": "Budget",
+      "legendProgress": "Progress",
+      "months": {
+        "jan": "Jan", "feb": "Feb", "mar": "Mar",
+        "apr": "Apr", "may": "May", "jun": "Jun"
+      }
+    },
+    "table": {
+      "title": "Active Reports",
+      "viewAll": "View all reports →",
+      "colName": "Report Name",
+      "colProject": "Project",
+      "colStatus": "Status",
+      "colDate": "Date",
+      "colAction": "Action",
+      "open": "Open →",
+      "empty": "No projects found."
+    },
+    "detail": {
+      "backBtn": "All Reports",
+      "export": "Export",
+      "noDescription": "No description provided.",
+      "metaStartDate": "Start Date",
+      "metaDueDate": "Due Date",
+      "metaBudget": "Budget",
+      "metaProgress": "Progress",
+      "metaProjectId": "Project ID",
+      "notSet": "Not set",
+      "complete": "{pct}% complete",
+      "notFound": "Project not found.",
+      "goBack": "Go back",
+      "budgetTitle": "Budget Overview",
+      "budgetUsedTag": "{pct}% used",
+      "totalBudget": "Total Budget",
+      "spent": "Spent",
+      "remaining": "Remaining",
+      "taskTitle": "Task Management",
+      "taskCount": "{count} tasks",
+      "tasksCompleted": "tasks completed",
+      "taskPending": "Pending",
+      "taskInProgress": "In Progress",
+      "taskCompleted": "Completed",
+      "taskCancelled": "Cancelled",
+      "teamTitle": "Team",
+      "memberCount": "{count} members",
+      "memberRole": "{count} member | {count} members",
+      "noTeamMembers": "No team members assigned.",
+      "timelineTitle": "Timeline",
+      "overdue": "Overdue",
+      "timeline": {
+        "planning": { "label": "Planning",  "desc": "Scope definition, resource allocation and goal setting." },
+        "execution": { "label": "Execution", "desc": "Active development and task completion by the team." },
+        "review":    { "label": "Review",    "desc": "Quality assurance, testing and stakeholder review." },
+        "delivery":  { "label": "Delivery",  "desc": "Final delivery, documentation and project closure." }
+      },
+      "health": {
+        "completed": "Completed",
+        "onTrack": "On Track",
+        "onHold": "On Hold",
+        "cancelled": "Cancelled",
+        "planned": "Planned",
+        "allObjectivesMet": "All objectives met",
+        "progressingNormally": "Progressing normally",
+        "awaitingResolution": "Awaiting resolution",
+        "terminated": "Project terminated",
+        "notStarted": "Not yet started"
+      },
+      "sideHealth": "Project Health",
+      "sideStats": "Quick Stats",
+      "sideDaysActive": "Days Active",
+      "sideDaysRemaining": "Days Remaining",
+      "sideBudgetPerDay": "Budget / Day",
+      "sideVelocity": "Velocity",
+      "sideActions": "Actions",
+      "sideActionGenerate": "Generate Report",
+      "sideActionAddMember": "Add Member",
+      "sideActionSettings": "Settings",
+      "sideProjectInfo": "Project Info",
+      "sideInfoStatus": "Status",
+      "sideInfoCompany": "Company",
+      "sideInfoManager": "Manager",
+      "sideInfoBudget": "Budget",
+      "sideRiskLevel": "Risk Level"
+    }
+  },
+  "teams": {
+    "header": {
+      "eyebrow": "Company Teams",
+      "title": "Team Administration",
+      "subtitle": "Organize collaborators by company, define leaders and connect teams with projects.",
+      "newTeam": "New team"
+    },
+    "loading": "Loading teams...",
+    "empty": "No teams yet. Create the first one for this company.",
+    "list": {
+      "members": "{count} members",
+      "projects": "{count} projects"
+    },
+    "editor": {
+      "editTitle": "Edit team",
+      "createTitle": "Create team",
+      "newTeamName": "New team",
+      "delete": "Delete",
+      "deleteConfirm": "Delete team \"{name}\"? Projects will remain without a team."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Operations team",
+      "leader": "Leader",
+      "selectLeader": "Select leader",
+      "description": "Description",
+      "descriptionPlaceholder": "Team purpose, scope or notes"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "createTeam": "Create team"
+    },
+    "notices": {
+      "teamUpdated": "Team updated.",
+      "teamCreated": "Team created.",
+      "teamDeleted": "Team deleted.",
+      "memberAdded": "Member added.",
+      "memberRemoved": "Member removed.",
+      "projectAssigned": "Project assigned.",
+      "projectRemoved": "Project removed from team."
+    },
+    "members": {
+      "eyebrow": "Members",
+      "assigned": "{count} assigned",
+      "addMember": "Add member",
+      "addBtn": "Add",
+      "removeBtn": "Remove"
+    },
+    "projectsPanel": {
+      "eyebrow": "Projects",
+      "linked": "{count} linked",
+      "assignProject": "Assign project",
+      "assignBtn": "Assign",
+      "removeBtn": "Remove",
+      "noProjects": "No projects assigned yet."
+    }
+  },
+  "admin": {
+    "loading": "Loading...",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "dashboard": {
+      "title": "Overview",
+      "subtitle": "Global platform summary",
+      "kpi": {
+        "companies": "Companies",
+        "activeUsers": "Active Users",
+        "projects": "Projects",
+        "inactiveUsers": "Inactive Users",
+        "registered": "registered",
+        "activeRate": "{rate}% active",
+        "acrossCompanies": "across all companies",
+        "deactivated": "deactivated accounts"
+      },
+      "chart": {
+        "topByProjects": "Top Companies by Projects",
+        "usersByRole": "Users by Role",
+        "userStatus": "User Status",
+        "topByMembers": "Top Companies by Members",
+        "noData": "No data",
+        "active": "Active",
+        "inactive": "Inactive",
+        "users": "users"
+      }
+    },
+    "companies": {
+      "title": "Companies",
+      "subtitle": "All registered companies on the platform",
+      "sortName": "Name",
+      "sortProjects": "Projects",
+      "sortId": "ID",
+      "count": "{count} company | {count} companies",
+      "colName": "Name",
+      "colIndustry": "Industry",
+      "colEmail": "Email",
+      "colMembers": "Members",
+      "colProjects": "Projects",
+      "colStatus": "Status",
+      "empty": "No companies found."
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "All platform users and their system role",
+      "sortName": "Name",
+      "sortId": "ID",
+      "sortCompanies": "Companies",
+      "sortStatus": "Status",
+      "count": "{count} user | {count} users",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colRole": "Role",
+      "colCompanies": "Companies",
+      "colStatus": "Status",
+      "empty": "No users found."
+    }
+  },
+  "birdie": {
+    "tooltip": "Double-click me to hide · drag me to move",
+    "askQuestion": "Ask a question",
+    "faqTitle": "How can I help you?",
+    "onThisPage": "On this page",
+    "elsewhere": "Other sections",
+    "showMore": "More questions",
+    "showLess": "Hide other questions",
+    "noContext": "I don't have tips for this view yet — check the other sections below.",
+    "close": "Close",
+    "closeAssistant": "Send me back to the floating button",
+    "gotIt": "Got it",
+    "faqs": {
+      "dashboardOverview": {
+        "q": "What does this view show me?",
+        "a": "The Dashboard is your executive overview: total spent, active projects, overrun alerts and a portfolio snapshot. Use it as the daily landing page to spot which projects need attention."
+      },
+      "dashboardAi": {
+        "q": "What is the AI Analysis section?",
+        "a": "The AI Analysis block flags the project that most needs your attention right now — either because it's exceeding budget or approaching its limit — so you can jump straight into it."
+      },
+      "dashboardTrend": {
+        "q": "What does the financial trend chart show?",
+        "a": "The dashed gold line is the planned budget over time, and the solid line is the actual spend computed from inventory movements. When the solid line overtakes the dashed line you're spending faster than planned."
+      },
+      "projectsCreate": {
+        "q": "How do I create a project?",
+        "a": "Tap the highlighted New Project button to open the form. Fill in the name, dates and total budget, then save — your project will appear in the list and you can immediately add tasks, members and expenses to it."
+      },
+      "projectsSearch": {
+        "q": "How do I find a specific project?",
+        "a": "Use the search field here to filter projects by name, and the status pills to narrow down by state. Click any project card to open its full detail view."
+      },
+      "projectBudget": {
+        "q": "What does this budget card show?",
+        "a": "This card shows how much of the project's total budget has been spent so far. The colored bar turns yellow around 80% and red at 100%, so you can spot risk at a glance."
+      },
+      "projectTasks": {
+        "q": "How do I work with tasks?",
+        "a": "Open the Tasks tab to create, assign, filter by priority or status, and close tasks. Closed tasks update the project's progress automatically."
+      },
+      "projectMembers": {
+        "q": "How do I invite members?",
+        "a": "The Members tab lets you invite teammates by email and pick their role and permissions. They'll join the project as soon as they accept."
+      },
+      "projectProgress": {
+        "q": "What is the Progress tab for?",
+        "a": "Use Progress to log timeline updates — percentage complete, milestones and blockers. The dashboard and overview cards reflect these entries instead of just task counts."
+      },
+      "inventoryCreate": {
+        "q": "How do I add a product?",
+        "a": "Pick a project from the tabs above, then click New Product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
+      },
+      "inventorySell": {
+        "q": "How do I register a sale?",
+        "a": "Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+      },
+      "inventoryMovements": {
+        "q": "What inventory movement types exist?",
+        "a": "Movements record any change in stock: ENTRADA adds units, SALIDA removes them, AJUSTE corrects discrepancies and GASTO_ADMIN logs administrative expenses. To register one manually, open the product card. If what you actually need is a sale, ask me about that instead — it has a dedicated cart flow."
+      },
+      "inventoryFilter": {
+        "q": "How do I filter by project?",
+        "a": "These tabs let you scope the inventory to a single project or view all projects together. Switching the tab also scopes any new movement to that project."
+      },
+      "addFunds": {
+        "q": "What does the +Funds button do?",
+        "a": "+Funds lets you inject more budget into the selected project. Pick the project from the top selector, click +Funds, enter the amount and a short reason. The new total appears in the project budget cards instantly."
+      },
+      "addExpense": {
+        "q": "How do I record an expense?",
+        "a": "Use Add Expense to log a one-off cost (services, fees, admin overhead). It reduces the project's available budget straight away and is listed in the project's spending breakdown."
+      },
+      "addActivity": {
+        "q": "How do I create a budgeted activity?",
+        "a": "Activities are line items inside a project's budget (e.g. \"Construction\", \"Marketing\"). Create one here and you'll be able to attribute expenses and inventory movements to it for clearer reporting."
+      },
+      "budgetControl": {
+        "q": "How does budget control work?",
+        "a": "Each project has a total budget that decreases as you log expenses or outgoing movements. The colored bar turns yellow at 80% used and red at 100% — keep an eye on it from this page or the project detail header."
+      },
+      "reportsOverview": {
+        "q": "What reports can I see?",
+        "a": "Reports gathers KPIs, financial performance and inventory activity. Pick a project from the filter bar at the top and switch between performance, breakdown and detail views."
+      },
+      "chatStart": {
+        "q": "How do I start a conversation?",
+        "a": "Pick a teammate from the conversation list on the left or start a new chat — messages stream in real time and are linked to your workspace."
+      },
+      "chatCall": {
+        "q": "How do voice/video calls work?",
+        "a": "Inside any conversation, use the call buttons in the header to start a voice or video call powered by WebRTC. Both sides need to be online to connect."
+      },
+      "agentCapabilities": {
+        "q": "What can the AI agent do?",
+        "a": "The agent can read live data from your projects — budgets, tasks, inventory, progress — and answer questions in natural language. Ask things like \"which project is most overspent?\" or \"summarize team workload\"."
+      },
+      "teamsCreate": {
+        "q": "How do I create a team?",
+        "a": "Use New Team to group members by area (Development, Design, QA…). Teams can then be referenced from projects and tasks to organize work."
+      },
+      "integrationsList": {
+        "q": "What integrations are available?",
+        "a": "This view lists every third-party service you can connect — payments, productivity, communications. Click a card to start the connection flow."
+      },
+      "changeLanguage": {
+        "q": "How do I change the language?",
+        "a": "Click this language icon in the top bar and pick English or Español. Your choice is remembered per user account."
+      },
+      "switchWorkspace": {
+        "q": "How do I switch workspace?",
+        "a": "This selector at the top lets you jump between companies you belong to. The whole portal — projects, inventory, budget — reloads scoped to the chosen workspace."
+      },
+      "aiAgent": {
+        "q": "Where is the AI assistant?",
+        "a": "The AI link in the top navigation opens a conversational assistant that can query live project data, summarize budgets, and answer business questions about your workspace."
+      },
+      "chat": {
+        "q": "Where is the chat?",
+        "a": "The Chat section in the top nav gives you real-time conversations with teammates plus voice and video calls — useful for quickly aligning around a project or task without leaving Kontrol."
+      },
+      "budgetGlobal": {
+        "q": "Where do I manage budgets?",
+        "a": "The Budget section is your control center: pick a project, then add funds, activities, expenses, or review the funding history and spending breakdown."
+      },
+      "reportsShortcut": {
+        "q": "Where do I see reports?",
+        "a": "The Reports section gathers financial performance, inventory activity and project KPIs. Use the filter bar at the top to scope by project or date range, then drill into a specific report from the list."
+      },
+      "inventoryShortcut": {
+        "q": "Where is inventory?",
+        "a": "The Inventory section lists every product across your projects. From here you can create products, register movements (entradas/salidas/ajustes) or kick off a sale using the Sell button on any product card."
+      },
+      "dashboardShortcut": {
+        "q": "Where is the executive dashboard?",
+        "a": "The Dashboard is your daily landing page: it surfaces total spent, active projects, overrun alerts and an AI-powered analysis of which project most needs your attention right now."
+      }
+    }
+  },
+  "navbar": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "projects": "Projects",
+    "teams": "Teams",
+    "budget": "Budget",
+    "reports": "Reports",
+    "chat": "Chat",
+    "ai": "AI",
+    "integrations": "Integrations",
+    "yourWorkspaces": "YOUR WORKSPACES",
+    "createWorkspace": "+ Create new workspace",
+    "admin": {
+      "overview": "Overview",
+      "companies": "Companies",
+      "users": "Users"
+    }
+  }
+}

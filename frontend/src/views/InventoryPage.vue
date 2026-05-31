@@ -13,16 +13,16 @@
 
     <!-- Estado: no autenticado -->
     <div v-if="authError" class="state-screen">
-      <p class="state-title">Session required</p>
-      <p class="state-msg">You must be logged in to view the inventory.</p>
+      <p class="state-title">{{ $t('inventory.authError.title') }}</p>
+      <p class="state-msg">{{ $t('inventory.authError.message') }}</p>
     </div>
 
     <!-- Estado: error genérico -->
     <div v-else-if="fetchError" class="state-screen">
-      <p class="state-title">Could not load inventory</p>
+      <p class="state-title">{{ $t('inventory.fetchError.title') }}</p>
       <p class="state-msg">{{ fetchError }}</p>
       <button class="btn-primary" style="margin-top:16px" @click="loadData">
-        <span>Retry</span>
+        <span>{{ $t('inventory.fetchError.retry') }}</span>
       </button>
     </div>
 
@@ -34,28 +34,29 @@
         <!-- Encabezado -->
         <div class="inv-header">
           <div class="inv-header-left">
-            <h1 class="inv-title">Inventory</h1>
-            <p class="inv-subtitle">Browse and manage your product catalogue</p>
+            <h1 class="inv-title">{{ $t('inventory.header.title') }}</h1>
+            <p class="inv-subtitle">{{ $t('inventory.header.subtitle') }}</p>
           </div>
           <div class="inv-header-actions">
             <button
+              data-birdie="create-product"
               class="btn-primary"
               :class="{ 'btn-disabled': !canCreateProduct }"
-              :title="canCreateProduct ? '' : selectedProject ? 'You do not have write access in this project' : 'Select a project first'"
+              :title="canCreateProduct ? '' : selectedProject ? $t('inventory.header.noWriteAccessTitle') : $t('inventory.header.selectProjectTitle')"
               @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <span>{{ canCreateProduct ? 'New product' : selectedProject ? 'No write access' : 'Select project first' }}</span>
+              <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : selectedProject ? $t('inventory.header.noWriteAccess') : $t('inventory.header.selectProjectFirst') }}</span>
             </button>
-            <button class="icon-btn" title="Settings">
+            <button class="icon-btn" :title="$t('inventory.header.settings')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
                 <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
                 <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
-            <button class="icon-btn" title="History">
+            <button class="icon-btn" :title="$t('inventory.header.history')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
                 <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
                 <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
@@ -66,13 +67,13 @@
 
         <!-- Selector de proyecto -->
         <div class="project-filter">
-          <span class="pf-label">Project</span>
+          <span class="pf-label">{{ $t('inventory.projectFilter.label') }}</span>
           <div class="pf-tabs">
             <button
               class="pf-tab"
               :class="{ active: !selectedProject }"
               @click="selectProject(null)"
-            >All projects</button>
+            >{{ $t('inventory.projectFilter.allProjects') }}</button>
             <button
               v-for="p in projects"
               :key="p.id_proyecto"
@@ -81,7 +82,7 @@
               @click="selectProject(p)"
             >{{ p.nombre }}</button>
           </div>
-          <span v-if="projectsLoading" class="pf-loading">Loading…</span>
+          <span v-if="projectsLoading" class="pf-loading">{{ $t('inventory.projectFilter.loading') }}</span>
         </div>
 
         <!-- Búsqueda -->
@@ -94,7 +95,7 @@
             v-model="searchQuery"
             class="search-input"
             type="text"
-            placeholder="Search by name or category..."
+            :placeholder="$t('inventory.search.placeholder')"
           />
           <button class="search-submit">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -105,22 +106,22 @@
 
         <!-- Filtros por categoría (dinámicos desde la API) -->
         <div class="filter-row">
-          <span class="filter-label">Category</span>
+          <span class="filter-label">{{ $t('inventory.filter.category') }}</span>
           <button
             v-for="cat in categories"
             :key="cat"
             class="chip"
             :class="{ active: activeCategory === cat }"
             @click="activeCategory = cat"
-          >{{ cat }}</button>
+          >{{ cat === 'All' ? $t('inventory.filter.all') : cat }}</button>
         </div>
 
         <!-- Encabezado de sección -->
         <div class="section-header">
-          <span class="section-title">Product Catalogue</span>
-          <span v-if="loading" class="section-meta">Loading…</span>
+          <span class="section-title">{{ $t('inventory.section.title') }}</span>
+          <span v-if="loading" class="section-meta">{{ $t('inventory.section.loading') }}</span>
           <span v-else class="section-meta">
-            {{ filteredProducts.length }} products · Click any card for details
+            {{ $t('inventory.section.productCount', { count: filteredProducts.length }) }}
           </span>
         </div>
 
@@ -142,6 +143,7 @@
             v-for="product in filteredProducts"
             :key="product.id_producto"
             class="product-card"
+            @click="openDetail(product)"
           >
             <div class="card-img">
               <div class="img-placeholder">
@@ -166,28 +168,28 @@
               <span class="card-name">{{ product.nombre }}</span>
               <div class="card-meta">
                 <div>
-                  <div class="card-price-label">Price</div>
+                  <div class="card-price-label">{{ $t('inventory.card.price') }}</div>
                   <div class="card-price">${{ Number(product.precio_venta).toFixed(2) }}</div>
                 </div>
                 <div class="card-stock">
                   <div class="card-stock-num" :class="stockNumClass(product)">
                     {{ product.stock_actual }}
                   </div>
-                  <div class="card-stock-label">total stock</div>
+                  <div class="card-stock-label">{{ $t('inventory.card.totalStock') }}</div>
                 </div>
               </div>
               <!-- Project-specific usage -->
               <div v-if="selectedProject" class="card-proj-usage">
                 <div class="proj-usage-row">
-                  <span class="pu-label">Entries</span>
+                  <span class="pu-label">{{ $t('inventory.card.entries') }}</span>
                   <span class="pu-val green">+{{ product.entradas_proyecto ?? 0 }}</span>
                 </div>
                 <div class="proj-usage-row">
-                  <span class="pu-label">Exits</span>
+                  <span class="pu-label">{{ $t('inventory.card.exits') }}</span>
                   <span class="pu-val red">-{{ product.salidas_proyecto ?? 0 }}</span>
                 </div>
                 <div class="proj-usage-row">
-                  <span class="pu-label">Net</span>
+                  <span class="pu-label">{{ $t('inventory.card.net') }}</span>
                   <span class="pu-val" :class="(product.neto_proyecto ?? 0) >= 0 ? 'green' : 'red'">
                     {{ (product.neto_proyecto ?? 0) >= 0 ? '+' : '' }}{{ product.neto_proyecto ?? 0 }}
                   </span>
@@ -195,20 +197,46 @@
               </div>
             </div>
 
-            <div class="card-footer">
-              <Anchor
-                label="View details"
-                :link="detailLink(product)"
-                textColor="#c9a962"
-                backColor="transparent"
-                hoverColor="rgba(201,169,98,0.05)"
-              />
+            <div class="card-footer" @click.stop>
+              <!-- Sell button OR quantity stepper if product is already in cart -->
+              <button
+                v-if="!getCartItem(product)"
+                data-birdie="sell-product"
+                class="sell-btn"
+                :disabled="!canSellProduct(product)"
+                :title="canSellProduct(product) ? '' : $t('inventory.card.cannotSell')"
+                @click="addToCart(product)"
+              >
+                {{ $t('inventory.card.sell') }}
+              </button>
+              <div v-else class="qty-stepper">
+                <button
+                  class="qty-btn"
+                  :aria-label="$t('inventory.card.decrease')"
+                  @click="decrementCart(product)"
+                >−</button>
+                <input
+                  class="qty-input"
+                  type="number"
+                  min="1"
+                  :max="product.stock_actual"
+                  :value="getCartItem(product).cantidad"
+                  @input="setCartQuantity(product, $event.target.value)"
+                  @click.stop
+                />
+                <button
+                  class="qty-btn"
+                  :aria-label="$t('inventory.card.increase')"
+                  :disabled="getCartItem(product).cantidad >= product.stock_actual"
+                  @click="incrementCart(product)"
+                >+</button>
+              </div>
             </div>
           </div>
 
           <!-- Sin resultados -->
           <div v-if="!loading && filteredProducts.length === 0" class="empty-state">
-            <p>No products match your filters.</p>
+            <p>{{ $t('inventory.empty') }}</p>
           </div>
         </div>
 
@@ -217,41 +245,92 @@
       <!-- Panel de contexto -->
       <aside class="context-panel">
 
+        <!-- Sale cart (shown while there are items in the cart) -->
+        <template v-if="saleCart.length">
+          <div>
+            <div class="ctx-title">{{ $t('inventory.sale.title') }}</div>
+            <div class="ctx-subtitle">
+              {{ selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject') }}
+            </div>
+          </div>
+
+          <div class="sale-items">
+            <div
+              v-for="item in saleCart"
+              :key="item.product.id_producto"
+              class="sale-item"
+            >
+              <span class="sale-item-qty">{{ item.cantidad }}×</span>
+              <div class="sale-item-info">
+                <span class="sale-item-name">{{ item.product.nombre }}</span>
+                <span class="sale-item-unit">${{ Number(item.product.precio_venta).toFixed(2) }} {{ $t('inventory.sale.perUnit') }}</span>
+              </div>
+              <div class="sale-item-right">
+                <span class="sale-item-subtotal">${{ saleItemSubtotal(item).toFixed(2) }}</span>
+                <button class="sale-item-remove" :aria-label="$t('inventory.sale.remove')" @click="removeFromCart(item.product)">×</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sale-total-row">
+            <span class="sale-total-label">{{ $t('inventory.sale.total') }}</span>
+            <span class="sale-total-value">${{ saleTotal.toFixed(2) }}</span>
+          </div>
+
+          <p v-if="saleError" class="sale-error">{{ saleError }}</p>
+
+          <button
+            data-birdie="sale-submit"
+            class="sale-submit"
+            :disabled="saleSubmitting || !canSubmitSale"
+            @click="submitSale"
+          >
+            <span v-if="saleSubmitting">{{ $t('inventory.sale.submitting') }}</span>
+            <span v-else>{{ $t('inventory.sale.submit') }}</span>
+          </button>
+
+          <button class="sale-cancel" :disabled="saleSubmitting" @click="clearSaleCart">
+            {{ $t('inventory.sale.cancel') }}
+          </button>
+        </template>
+
+        <!-- Summary (default view, shown when no sale is in progress) -->
+        <template v-else>
         <div>
-          <div class="ctx-title">Summary</div>
+          <div class="ctx-title">{{ $t('inventory.context.summary') }}</div>
           <div class="ctx-subtitle">
-            {{ selectedProject ? selectedProject.nombre : 'All projects' }}
+            {{ selectedProject ? selectedProject.nombre : $t('inventory.context.allProjects') }}
           </div>
         </div>
 
         <!-- Stats generales -->
         <div>
-          <p class="ctx-label">At a Glance</p>
+          <p class="ctx-label">{{ $t('inventory.context.atAGlance') }}</p>
           <div class="summary-grid">
             <div class="summary-card">
               <span class="s-value">{{ stats.total }}</span>
-              <span class="s-label">Total products</span>
+              <span class="s-label">{{ $t('inventory.context.totalProducts') }}</span>
             </div>
             <div class="summary-card">
               <span class="s-value">{{ stats.lowStock }}</span>
-              <span class="s-label">Low stock</span>
-              <span class="s-sub gold">Reorder soon</span>
+              <span class="s-label">{{ $t('inventory.context.lowStock') }}</span>
+              <span class="s-sub gold">{{ $t('inventory.context.reorderSoon') }}</span>
             </div>
             <div class="summary-card">
               <span class="s-value">{{ stats.outOfStock }}</span>
-              <span class="s-label">Out of stock</span>
-              <span class="s-sub red">Action needed</span>
+              <span class="s-label">{{ $t('inventory.context.outOfStock') }}</span>
+              <span class="s-sub red">{{ $t('inventory.context.actionNeeded') }}</span>
             </div>
             <div class="summary-card">
               <span class="s-value">${{ stats.totalValue }}</span>
-              <span class="s-label">Total value</span>
+              <span class="s-label">{{ $t('inventory.context.totalValue') }}</span>
             </div>
           </div>
         </div>
 
         <!-- Por categoría -->
         <div v-if="categoryStats.length">
-          <p class="ctx-label">By Category</p>
+          <p class="ctx-label">{{ $t('inventory.context.byCategory') }}</p>
           <template v-for="cat in categoryStats" :key="cat.name">
             <div class="cat-row">
               <span class="cat-name">{{ cat.name }}</span>
@@ -265,27 +344,28 @@
 
         <!-- Alertas de stock -->
         <div v-if="stockAlerts.length">
-          <p class="ctx-label">Stock Alerts</p>
+          <p class="ctx-label">{{ $t('inventory.context.stockAlerts') }}</p>
           <div v-for="alert in stockAlerts" :key="alert.id_producto" class="alert-card">
             <span class="alert-name">{{ alert.nombre }}</span>
-            <span class="alert-code">{{ alert.categoria }} · {{ alert.stock_actual }} units left</span>
+            <span class="alert-code">{{ alert.categoria }} · {{ $t('inventory.context.unitsLeft', { count: alert.stock_actual }) }}</span>
             <span class="alert-status" :class="alert.stock_actual === 0 ? 'red' : 'gold'">
-              {{ alert.stock_actual === 0 ? 'Out of stock' : alert.stock_actual <= alert.stock_minimo ? 'Critical stock' : 'Low stock — reorder soon' }}
+              {{ alert.stock_actual === 0 ? $t('inventory.stock.outOfStock') : alert.stock_actual <= alert.stock_minimo ? $t('inventory.context.criticalStock') : $t('inventory.context.lowStockReorder') }}
             </span>
           </div>
         </div>
 
         <!-- Acciones rápidas -->
         <div>
-          <p class="ctx-label">Quick Actions</p>
-          <Button v-if="canCreateProduct" label="+ Add product" @click="openNewProduct" />
-          <Button label="↓ Export inventory" @click="exportInventory" />
+          <p class="ctx-label">{{ $t('inventory.context.quickActions') }}</p>
+          <Button v-if="canCreateProduct" :label="$t('inventory.context.addProduct')" @click="openNewProduct" />
+          <Button :label="$t('inventory.context.exportInventory')" @click="exportInventory" />
         </div>
 
         <div class="data-source">
-          <div class="ds-label">Data Source</div>
-          <div class="ds-text">Inventory database · Live</div>
+          <div class="ds-label">{{ $t('inventory.context.dataSource') }}</div>
+          <div class="ds-text">{{ $t('inventory.context.dataSourceText') }}</div>
         </div>
+        </template>
 
       </aside>
 
@@ -296,17 +376,19 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import './InventoryPage.css'
-import Anchor from '../components/UI/Button/Anchor.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 
 const products       = ref([])
 const stockAlerts    = ref([])
@@ -470,9 +552,9 @@ function stockBadgeClass(p) {
 }
 
 function stockLabel(p) {
-  if (p.stock_actual === 0) return 'Out of stock'
-  if (p.stock_actual <= p.stock_minimo) return 'Low stock'
-  return 'In stock'
+  if (p.stock_actual === 0) return t('inventory.stock.outOfStock')
+  if (p.stock_actual <= p.stock_minimo) return t('inventory.stock.lowStock')
+  return t('inventory.stock.inStock')
 }
 
 function stockNumClass(p) {
@@ -488,6 +570,145 @@ function detailLink(product) {
   return `/inventory/${product.id_producto}${query}`
 }
 
+function openDetail(product) {
+  router.push(detailLink(product))
+}
+
+/* ── carrito de venta ── */
+const saleCart        = ref([])
+const saleSubmitting  = ref(false)
+const saleError       = ref(null)
+
+function getCartItem(product) {
+  return saleCart.value.find((item) => item.product.id_producto === product.id_producto)
+}
+
+function canSellProduct(product) {
+  if (!authStore.canSellInventory) return false
+  return Number(product.stock_actual) > 0
+}
+
+function addToCart(product) {
+  if (!canSellProduct(product)) return
+  saleError.value = null
+  const existing = getCartItem(product)
+  if (existing) {
+    incrementCart(product)
+    return
+  }
+  saleCart.value.push({ product, cantidad: 1 })
+}
+
+function incrementCart(product) {
+  const item = getCartItem(product)
+  if (!item) return
+  if (item.cantidad < Number(product.stock_actual)) {
+    item.cantidad += 1
+  }
+}
+
+function decrementCart(product) {
+  const item = getCartItem(product)
+  if (!item) return
+  if (item.cantidad <= 1) {
+    removeFromCart(product)
+    return
+  }
+  item.cantidad -= 1
+}
+
+function setCartQuantity(product, rawValue) {
+  const item = getCartItem(product)
+  if (!item) return
+  const stock = Number(product.stock_actual)
+  let next = Math.floor(Number(rawValue))
+  if (!Number.isFinite(next) || next < 1) next = 1
+  if (next > stock) next = stock
+  item.cantidad = next
+}
+
+function removeFromCart(product) {
+  saleCart.value = saleCart.value.filter(
+    (item) => item.product.id_producto !== product.id_producto
+  )
+}
+
+function clearSaleCart() {
+  saleCart.value = []
+  saleError.value = null
+}
+
+function saleItemSubtotal(item) {
+  return Number(item.product.precio_venta) * Number(item.cantidad)
+}
+
+const saleTotal = computed(() =>
+  saleCart.value.reduce((acc, item) => acc + saleItemSubtotal(item), 0)
+)
+
+const canSubmitSale = computed(() => saleCart.value.length > 0)
+
+async function submitSale() {
+  if (!canSubmitSale.value || saleSubmitting.value) return
+  saleSubmitting.value = true
+  saleError.value = null
+
+  const items = saleCart.value.map((item) => ({ ...item }))
+
+  try {
+    for (const item of items) {
+      const projectId = item.product.id_proyecto ?? selectedProject.value?.id_proyecto
+      if (!projectId) {
+        throw new Error(t('inventory.sale.errors.missingProject'))
+      }
+
+      const res = await fetch('/api/inventory-movements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeader(),
+        },
+        body: JSON.stringify({
+          tipo: 'SALIDA',
+          cantidad: item.cantidad,
+          precio_unitario: Number(item.product.precio_venta),
+          motivo: t('inventory.sale.movementReason'),
+          id_producto: item.product.id_producto,
+          id_proyecto: projectId,
+        }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.message || `Error ${res.status}`)
+      }
+    }
+
+    clearSaleCart()
+    await loadData()
+  } catch (err) {
+    saleError.value = err.message || t('inventory.errors.networkError')
+  } finally {
+    saleSubmitting.value = false
+  }
+}
+
+// Keep cart in sync if products list updates — drop any cart entries that no
+// longer exist or refresh references so subtotal/stock checks stay correct.
+watch(products, (next) => {
+  if (!saleCart.value.length) return
+  saleCart.value = saleCart.value
+    .map((item) => {
+      const fresh = next.find((p) => p.id_producto === item.product.id_producto)
+      if (!fresh) return null
+      const stock = Number(fresh.stock_actual)
+      const cantidad = Math.max(1, Math.min(item.cantidad, stock))
+      if (stock <= 0) return null
+      return { product: fresh, cantidad }
+    })
+    .filter(Boolean)
+})
+
 /* ── modal nuevo producto ── */
 const showModal    = ref(false)
 const modalLoading = ref(false)
@@ -501,7 +722,7 @@ function openNewProduct() {
 
 async function submitProduct(formData) {
   if (!selectedProject.value) {
-    modalError.value = 'Select a project before adding a product.'
+    modalError.value = t('inventory.errors.selectProject')
     return
   }
   modalLoading.value = true
@@ -527,7 +748,7 @@ async function submitProduct(formData) {
     showModal.value = false
     await loadData()
   } catch {
-    modalError.value = 'Network error, try again.'
+    modalError.value = t('inventory.errors.networkError')
   } finally {
     modalLoading.value = false
   }

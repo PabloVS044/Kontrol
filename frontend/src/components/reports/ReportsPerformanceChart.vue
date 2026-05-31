@@ -1,10 +1,10 @@
 <template>
   <div class="section-block">
     <div class="section-header">
-      <span class="section-title">Project Performance</span>
+      <span class="section-title">{{ $t('reports.chart.title') }}</span>
       <div class="chart-legend">
-        <span class="legend-item"><span class="leg-dot gold"></span> Budget</span>
-        <span class="legend-item"><span class="leg-dot blue"></span> Progress</span>
+        <span class="legend-item"><span class="leg-dot gold"></span> {{ $t('reports.chart.legendBudget') }}</span>
+        <span class="legend-item"><span class="leg-dot blue"></span> {{ $t('reports.chart.legendProgress') }}</span>
       </div>
     </div>
 
@@ -40,7 +40,14 @@
 </template>
 
 <script setup>
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+const months = computed(() =>
+  ['jan', 'feb', 'mar', 'apr', 'may', 'jun'].map(k => t(`reports.chart.months.${k}`))
+)
 const dots = [
   { x: 0, y: 140 },
   { x: 120, y: 100 },
@@ -53,7 +60,7 @@ const dots = [
 
 <style scoped>
 .section-block {
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1e1e1e;
   padding: 18px;
   margin-bottom: 24px;

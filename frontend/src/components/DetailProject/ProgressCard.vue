@@ -24,7 +24,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import './ProgressCard.css'
+
+const { t } = useI18n()
 
 const props = defineProps({
   entry: {
@@ -41,7 +44,7 @@ const UPDATE_TYPE_MAP = {
 
 const nombre = computed(() => {
   const { firstName, lastName, email } = props.entry.author ?? {}
-  return [firstName, lastName].filter(Boolean).join(' ') || email || 'Desconocido'
+  return [firstName, lastName].filter(Boolean).join(' ') || email || t('projects.progress.unknownAuthor')
 })
 
 const tipo = computed(() => UPDATE_TYPE_MAP[props.entry.updateType] ?? 'warning')

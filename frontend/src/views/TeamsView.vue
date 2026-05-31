@@ -1,9 +1,11 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const teams = ref([])
 const members = ref([])
@@ -121,14 +123,14 @@ async function saveTeam() {
         method: 'PUT',
         body: JSON.stringify(body),
       })
-      notice.value = 'Team updated.'
+      notice.value = t('teams.notices.teamUpdated')
     } else {
       const res = await apiFetch('/api/teams', {
         method: 'POST',
         body: JSON.stringify(body),
       })
       selectedTeamId.value = res.data.id_equipo
-      notice.value = 'Team created.'
+      notice.value = t('teams.notices.teamCreated')
     }
     await loadData()
   } catch (err) {
@@ -140,12 +142,12 @@ async function saveTeam() {
 
 async function deleteTeam() {
   if (!selectedTeam.value) return
-  if (!confirm(`Delete team "${selectedTeam.value.nombre}"? Projects will remain without a team.`)) return
+  if (!confirm(t('teams.editor.deleteConfirm', { name: selectedTeam.value.nombre }))) return
   saving.value = true
   error.value = ''
   try {
     await apiFetch(`/api/teams/${selectedTeam.value.id_equipo}`, { method: 'DELETE' })
-    notice.value = 'Team deleted.'
+    notice.value = t('teams.notices.teamDeleted')
     resetForm()
     await loadData()
   } catch (err) {
@@ -160,7 +162,7 @@ async function addMember() {
   await runTeamAction(
     `/api/teams/${selectedTeam.value.id_equipo}/members/${selectedMemberId.value}`,
     'POST',
-    'Member added.'
+    t('teams.notices.memberAdded')
   )
   selectedMemberId.value = ''
 }
@@ -170,7 +172,7 @@ async function removeMember(member) {
   await runTeamAction(
     `/api/teams/${selectedTeam.value.id_equipo}/members/${member.id_usuario}`,
     'DELETE',
-    'Member removed.'
+    t('teams.notices.memberRemoved')
   )
 }
 
@@ -179,7 +181,7 @@ async function assignProject() {
   await runTeamAction(
     `/api/teams/${selectedTeam.value.id_equipo}/projects/${selectedProjectId.value}`,
     'POST',
-    'Project assigned.'
+    t('teams.notices.projectAssigned')
   )
   selectedProjectId.value = ''
 }
@@ -189,7 +191,7 @@ async function removeProject(project) {
   await runTeamAction(
     `/api/teams/${selectedTeam.value.id_equipo}/projects/${project.id_proyecto}`,
     'DELETE',
-    'Project removed from team.'
+    t('teams.notices.projectRemoved')
   )
 }
 
@@ -226,17 +228,17 @@ watch(() => authStore.idEmpresaActual, () => {
     <main class="teams-shell">
       <header class="teams-header">
         <div>
-          <p class="eyebrow">Company Teams</p>
-          <h1>Team Administration</h1>
-          <p>Organize collaborators by company, define leaders and connect teams with projects.</p>
+          <p class="eyebrow">{{ $t('teams.header.eyebrow') }}</p>
+          <h1>{{ $t('teams.header.title') }}</h1>
+          <p>{{ $t('teams.header.subtitle') }}</p>
         </div>
-        <button class="primary-action" @click="resetForm">New team</button>
+        <button class="primary-action" @click="resetForm">{{ $t('teams.header.newTeam') }}</button>
       </header>
 
       <div v-if="error" class="state state-error">{{ error }}</div>
       <div v-if="notice" class="state state-ok">{{ notice }}</div>
 
-      <div v-if="loading" class="state">Loading teams...</div>
+      <div v-if="loading" class="state">{{ $t('teams.loading') }}</div>
 
       <div v-else class="teams-layout">
         <aside class="teams-list">
@@ -249,13 +251,13 @@ watch(() => authStore.idEmpresaActual, () => {
           >
             <div>
               <strong>{{ team.nombre }}</strong>
-              <span>{{ team.miembros.length }} members</span>
+              <span>{{ $t('teams.list.members', { count: team.miembros.length }) }}</span>
             </div>
-            <small>{{ team.proyectos.length }} projects</small>
+            <small>{{ $t('teams.list.projects', { count: team.proyectos.length }) }}</small>
           </div>
 
           <div v-if="!teams.length" class="empty-card">
-            No teams yet. Create the first one for this company.
+            {{ $t('teams.empty') }}
           </div>
         </aside>
 
@@ -263,23 +265,23 @@ watch(() => authStore.idEmpresaActual, () => {
           <form class="team-form" @submit.prevent="saveTeam">
             <div class="editor-head">
               <div>
-                <p class="eyebrow">{{ isEditing ? 'Edit team' : 'Create team' }}</p>
-                <h2>{{ isEditing ? form.nombre : 'New team' }}</h2>
+                <p class="eyebrow">{{ isEditing ? $t('teams.editor.editTitle') : $t('teams.editor.createTitle') }}</p>
+                <h2>{{ isEditing ? form.nombre : $t('teams.editor.newTeamName') }}</h2>
               </div>
               <button v-if="isEditing" type="button" class="danger-action" :disabled="saving" @click="deleteTeam">
-                Delete
+                {{ $t('teams.editor.delete') }}
               </button>
             </div>
 
             <div class="form-grid">
               <label>
-                <span>Name</span>
-                <input v-model="form.nombre" type="text" required minlength="3" placeholder="Operations team" />
+                <span>{{ $t('teams.form.name') }}</span>
+                <input v-model="form.nombre" type="text" required minlength="3" :placeholder="$t('teams.form.namePlaceholder')" />
               </label>
               <label>
-                <span>Leader</span>
+                <span>{{ $t('teams.form.leader') }}</span>
                 <select v-model="form.id_lider" required>
-                  <option value="">Select leader</option>
+                  <option value="">{{ $t('teams.form.selectLeader') }}</option>
                   <option v-for="member in members" :key="member.id_usuario" :value="member.id_usuario">
                     {{ userName(member) }}
                   </option>
@@ -288,13 +290,13 @@ watch(() => authStore.idEmpresaActual, () => {
             </div>
 
             <label>
-              <span>Description</span>
-              <textarea v-model="form.descripcion" rows="3" placeholder="Team purpose, scope or notes"></textarea>
+              <span>{{ $t('teams.form.description') }}</span>
+              <textarea v-model="form.descripcion" rows="3" :placeholder="$t('teams.form.descriptionPlaceholder')"></textarea>
             </label>
 
             <div class="form-actions">
               <button type="submit" class="primary-action" :disabled="saving">
-                {{ saving ? 'Saving...' : isEditing ? 'Save changes' : 'Create team' }}
+                {{ saving ? $t('teams.actions.saving') : isEditing ? $t('teams.actions.saveChanges') : $t('teams.actions.createTeam') }}
               </button>
             </div>
           </form>
@@ -303,19 +305,19 @@ watch(() => authStore.idEmpresaActual, () => {
             <section class="panel-card">
               <div class="panel-head">
                 <div>
-                  <p class="eyebrow">Members</p>
-                  <h3>{{ selectedTeam.miembros.length }} assigned</h3>
+                  <p class="eyebrow">{{ $t('teams.members.eyebrow') }}</p>
+                  <h3>{{ $t('teams.members.assigned', { count: selectedTeam.miembros.length }) }}</h3>
                 </div>
               </div>
 
               <div class="inline-form">
                 <select v-model="selectedMemberId" :disabled="!availableMembers.length">
-                  <option value="">Add member</option>
+                  <option value="">{{ $t('teams.members.addMember') }}</option>
                   <option v-for="member in availableMembers" :key="member.id_usuario" :value="member.id_usuario">
                     {{ userName(member) }}
                   </option>
                 </select>
-                <button class="secondary-action" :disabled="!selectedMemberId || saving" @click="addMember">Add</button>
+                <button class="secondary-action" :disabled="!selectedMemberId || saving" @click="addMember">{{ $t('teams.members.addBtn') }}</button>
               </div>
 
               <div class="stack-list">
@@ -329,7 +331,7 @@ watch(() => authStore.idEmpresaActual, () => {
                     :disabled="member.id_usuario === selectedTeam.id_lider || saving"
                     @click="removeMember(member)"
                   >
-                    Remove
+                    {{ $t('teams.members.removeBtn') }}
                   </button>
                 </div>
               </div>
@@ -338,19 +340,19 @@ watch(() => authStore.idEmpresaActual, () => {
             <section class="panel-card">
               <div class="panel-head">
                 <div>
-                  <p class="eyebrow">Projects</p>
-                  <h3>{{ selectedTeam.proyectos.length }} linked</h3>
+                  <p class="eyebrow">{{ $t('teams.projectsPanel.eyebrow') }}</p>
+                  <h3>{{ $t('teams.projectsPanel.linked', { count: selectedTeam.proyectos.length }) }}</h3>
                 </div>
               </div>
 
               <div class="inline-form">
                 <select v-model="selectedProjectId" :disabled="!availableProjects.length">
-                  <option value="">Assign project</option>
+                  <option value="">{{ $t('teams.projectsPanel.assignProject') }}</option>
                   <option v-for="project in availableProjects" :key="project.id_proyecto" :value="project.id_proyecto">
                     {{ project.nombre }}
                   </option>
                 </select>
-                <button class="secondary-action" :disabled="!selectedProjectId || saving" @click="assignProject">Assign</button>
+                <button class="secondary-action" :disabled="!selectedProjectId || saving" @click="assignProject">{{ $t('teams.projectsPanel.assignBtn') }}</button>
               </div>
 
               <div class="stack-list">
@@ -359,9 +361,9 @@ watch(() => authStore.idEmpresaActual, () => {
                     <strong>{{ project.nombre }}</strong>
                     <span>{{ project.estado }}</span>
                   </div>
-                  <button class="ghost-danger" :disabled="saving" @click="removeProject(project)">Remove</button>
+                  <button class="ghost-danger" :disabled="saving" @click="removeProject(project)">{{ $t('teams.projectsPanel.removeBtn') }}</button>
                 </div>
-                <div v-if="!selectedTeam.proyectos.length" class="muted-row">No projects assigned yet.</div>
+                <div v-if="!selectedTeam.proyectos.length" class="muted-row">{{ $t('teams.projectsPanel.noProjects') }}</div>
               </div>
             </section>
           </div>
@@ -438,7 +440,7 @@ h3 { font-size: 20px; }
 .teams-list,
 .team-editor,
 .panel-card {
-  background: rgba(12,12,12,0.88);
+  background: rgba(12, 12, 12, 0.94);
   border: 1px solid #1f1f1f;
 }
 
@@ -456,7 +458,7 @@ h3 { font-size: 20px; }
 
 .team-list-item:hover,
 .team-list-item.active {
-  background: rgba(201,169,98,0.06);
+  background: #111111;
   border-color: rgba(201,169,98,0.3);
 }
 
@@ -556,7 +558,7 @@ textarea:focus {
 
 .danger-action,
 .ghost-danger {
-  background: transparent;
+  background: #111111;
   border-color: rgba(251,113,133,0.4);
   color: #fb7185;
 }
@@ -585,7 +587,7 @@ button:disabled {
 }
 
 .stack-row {
-  background: rgba(255,255,255,0.02);
+  background: #111111;
   border: 1px solid #1d1d1d;
   padding: 12px;
 }
@@ -600,7 +602,7 @@ button:disabled {
 .state,
 .empty-card,
 .muted-row {
-  background: rgba(12,12,12,0.88);
+  background: #0c0c0c;
   border: 1px solid #1f1f1f;
   color: #888;
   margin-bottom: 16px;

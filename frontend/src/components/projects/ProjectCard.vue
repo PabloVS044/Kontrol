@@ -16,7 +16,7 @@
     </div>
 
     <div class="card-body">
-      <p class="card-desc">{{ project.descripcion || 'No description.' }}</p>
+      <p class="card-desc">{{ project.descripcion || $t('projects.noDescription') }}</p>
       
       <!-- Progress bar -->
       <div class="progress-wrap">
@@ -32,7 +32,7 @@
       <!-- Budget line -->
       <div class="budget-line">
         <div class="budget-labels">
-          <span>Budget</span>
+          <span>{{ $t('projects.budget') }}</span>
           <span class="budget-val">{{ budgetDisplay }}</span>
         </div>
         <div class="progress-bg">
@@ -45,13 +45,13 @@
           ></div>
         </div>
         <div class="budget-meta">
-          <span :style="{ color: budgetColor }">{{ budgetPct }}% used</span>
-          <span 
+          <span :style="{ color: budgetColor }">{{ $t('projects.budgetUsed', { pct: budgetPct }) }}</span>
+          <span
             v-if="budgetAlert"
             class="alert-pill"
             :class="budgetAlert === 'CRITICO' ? 'critical' : 'warn'"
           >
-            {{ budgetAlert === 'CRITICO' ? 'OVERRUN' : 'WARNING' }}
+            {{ budgetAlert === 'CRITICO' ? $t('projects.overrun') : $t('projects.warning') }}
           </span>
         </div>
       </div>
@@ -98,13 +98,13 @@
 
     <div class="card-open">
       <Anchor
-        label="→ Open project"
+        :label="$t('projects.list.openProject')"
         :link="projectLink"
         textColor="#555"
         backColor="transparent"
         hoverColor="rgba(201,169,98,0.06)"
       />
-      <a class="open-anchor" @click="$emit('open-budget', project)">→ Open budget</a>
+      <a class="open-anchor" @click="$emit('open-budget', project)">{{ $t('projects.list.openBudget') }}</a>
     </div>
   </div>
 </template>
@@ -112,14 +112,24 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Pill from '../UI/Pill/Pill.vue'
 import ProgressBar from '../UI/ProgressBar/ProgressBar.vue'
 import Anchor from '../UI/Button/Anchor.vue'
 import { statusLabel, formatDate } from '../../utils/statusHelpers.js'
 import { useAuthStore } from '../../stores/auth.js'
-import { ESTADOS, STATUS_COLOR, STATUS_PROGRESS } from '../../utils/projectConstants.js'
+import { STATUS_COLOR, STATUS_PROGRESS } from '../../utils/projectConstants.js'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
+
+const ESTADOS = computed(() => [
+  { value: 'PLANIFICADO', label: t('projects.statuses.planned')    },
+  { value: 'EN_PROGRESO', label: t('projects.statuses.inProgress') },
+  { value: 'PAUSADO',     label: t('projects.statuses.paused')     },
+  { value: 'COMPLETADO',  label: t('projects.statuses.completed')  },
+  { value: 'CANCELADO',   label: t('projects.statuses.cancelled')  },
+])
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -155,7 +165,7 @@ const budgetDisplay = computed(() => {
 
 const dueDateText = computed(() => {
   const date = props.project.fecha_fin_planificada
-  return date ? `Due ${formatDate(date)}` : 'No due date'
+  return date ? t('projects.dueDate', { date: formatDate(date) }) : t('projects.noDueDate')
 })
 
 const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
@@ -163,7 +173,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 
 <style scoped>
 .project-card {
-  background: rgba(15,15,15,0.7);
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
   display: flex;
   flex-direction: column;
@@ -259,11 +269,11 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .alert-pill.warn { 
   color: #f97316; 
-  background: rgba(249,115,22,0.08); 
+  background: #f97316; 
 }
 .alert-pill.critical { 
   color: #fb7185; 
-  background: rgba(251,113,133,0.08); 
+  background: #fb7185; 
 }
 
 .card-footer-row {
@@ -294,7 +304,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   flex-shrink: 0;
 }
 .status-select {
-  background: transparent;
+  background: #111111;
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;

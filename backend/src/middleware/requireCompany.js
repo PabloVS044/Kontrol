@@ -13,20 +13,24 @@ const requireCompany = async (req, res, next) => {
 
   if (req.user?.nombre_rol === 'super_user') {
     const companyCheck = await pool.query(
-      'SELECT id_empresa FROM public.empresa WHERE id_empresa = $1',
+      'SELECT id_empresa, nombre FROM public.empresa WHERE id_empresa = $1',
       [id_empresa]
     )
     if (!companyCheck.rows.length) {
       return res.status(404).json({ success: false, message: 'Company not found.' })
     }
-    const companyContext = { id_empresa: parseInt(id_empresa), rol_empresa: 'super_user' }
+    const companyContext = {
+      id_empresa: parseInt(id_empresa),
+      nombre: companyCheck.rows[0].nombre,
+      rol_empresa: 'super_user',
+    }
     req.company = companyContext
     req.empresa = companyContext
     return next()
   }
 
   const result = await pool.query(
-    `SELECT eu.id_rol_empresa, re.nombre AS rol_empresa, e.activo
+    `SELECT eu.id_rol_empresa, re.nombre AS rol_empresa, e.activo, e.nombre
      FROM public.empresa_usuario eu
      JOIN public.rol_empresa re ON re.id_rol_empresa = eu.id_rol_empresa
      JOIN public.empresa e ON e.id_empresa = eu.id_empresa
@@ -44,6 +48,7 @@ const requireCompany = async (req, res, next) => {
 
   const companyContext = {
     id_empresa: parseInt(id_empresa),
+    nombre: result.rows[0].nombre,
     rol_empresa: result.rows[0].rol_empresa,
   }
   req.company = companyContext

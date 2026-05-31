@@ -1,34 +1,34 @@
 <template>
   <section class="summary-card">
     <div class="summary-info">
-      <h2 class="card-title">Budget Summary</h2>
+      <h2 class="card-title">{{ $t('budget.summary.title') }}</h2>
       <div class="amount-grid">
         <div class="amount-group">
-          <span class="label">Total Allocated</span>
+          <span class="label">{{ $t('budget.summary.totalAllocated') }}</span>
           <h3 class="total-value">${{ formatMoney(totalAllocated) }}</h3>
         </div>
         <div class="amount-group">
-          <span class="label">Expenses</span>
+          <span class="label">{{ $t('budget.summary.expenses') }}</span>
           <h3 class="spent-value">${{ formatMoney(totalSpent) }}</h3>
         </div>
         <div class="amount-group">
-          <span class="label income">Income</span>
+          <span class="label income">{{ $t('budget.summary.income') }}</span>
           <h3 class="income-value">${{ formatMoney(totalIncome) }}</h3>
         </div>
         <div class="amount-group">
-          <span class="label" :class="netClass">Net</span>
+          <span class="label" :class="netClass">{{ $t('budget.summary.net') }}</span>
           <h3 class="net-value" :class="netClass">
             {{ netResult < 0 ? '-' : '' }}${{ formatMoney(Math.abs(netResult)) }}
           </h3>
         </div>
         <div class="amount-group">
-          <span class="label" :class="remainingClass">Remaining</span>
+          <span class="label" :class="remainingClass">{{ $t('budget.summary.remaining') }}</span>
           <h3 class="remaining-value" :class="remainingClass">
             {{ remaining < 0 ? '-' : '' }}${{ formatMoney(Math.abs(remaining)) }}
           </h3>
         </div>
         <div class="amount-group">
-          <span class="label">Planned</span>
+          <span class="label">{{ $t('budget.summary.planned') }}</span>
           <h3 class="planned-value">${{ formatMoney(totalPlanned) }}</h3>
         </div>
       </div>
@@ -46,7 +46,7 @@
         />
       </svg>
       <div class="donut-text">
-        <span class="p-label">Used</span>
+        <span class="p-label">{{ $t('budget.summary.used') }}</span>
         <span class="p-value">{{ displayPct }}%</span>
       </div>
     </div>
@@ -93,7 +93,7 @@ function formatMoney(v) {
 
 <style scoped>
 .summary-card {
-  background: rgba(12,12,12,0.88);
+  background: #0c0c0c;
   border: 1px solid #2a2a2a;
   padding: 32px;
   display: flex; justify-content: space-between; align-items: center;

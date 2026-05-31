@@ -67,7 +67,7 @@ defineProps({
 }
 
 .chart-card {
-  background: rgba(12,12,12,0.85);
+  background: #0c0c0c;
   border: 1px solid var(--Border);
   padding: 30px;
   flex: 1;
