@@ -8,12 +8,14 @@ import {
   getInventorySalesStatsQuerySchema,
   inventoryMovementIdParamSchema,
   createInventoryMovementSchema,
+  createSaleSchema,
 } from '../schemas/inventoryMovementSchemas.js'
 import {
   getInventoryMovements,
   getInventorySalesStats,
   getInventoryMovementById,
   createInventoryMovement,
+  createSale,
 } from '../controllers/inventoryMovementController.js'
 
 const router = Router()
@@ -54,6 +56,14 @@ router.post(
   movementPermissionGate,
   validate(createInventoryMovementSchema),
   createInventoryMovement
+)
+
+// Atomic multi-line POS sale. Project access is validated per-item in the
+// controller (cart may span projects), so no single-project gate here.
+router.post(
+  '/sale',
+  validate(createSaleSchema),
+  createSale
 )
 
 export default router

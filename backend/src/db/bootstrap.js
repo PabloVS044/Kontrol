@@ -240,6 +240,18 @@ export const ensureDatabaseSchema = async () => {
       WHERE codigo_barras IS NOT NULL
   `)
 
+  // Indexes for the sales/finance analytics + movement listings, which filter
+  // by project + date range and by product. Avoids full scans as the ledger grows.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_proyecto_fecha_idx
+      ON public.movimiento_inventario (id_proyecto, fecha)
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_producto_idx
+      ON public.movimiento_inventario (id_producto)
+      WHERE id_producto IS NOT NULL
+  `)
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS public.equipo (
       id_equipo SERIAL PRIMARY KEY,

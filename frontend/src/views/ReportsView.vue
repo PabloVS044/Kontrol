@@ -238,170 +238,24 @@
       </div>
 
       <!-- ── CONTEXT PANEL ──────────────────────────────────────── -->
-      <aside class="ctx-panel">
-        <div class="ctx-top">
-          <span class="ctx-badge">{{ $t('reports.ai.badge') }}</span>
-          <label class="toggle">
-            <input type="checkbox" v-model="aiEnabled" />
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
-        </div>
-
-        <div class="ctx-section">
-          <p class="ctx-label">{{ $t('reports.ai.insights') }}</p>
-          <p class="ctx-insight">{{ $t('reports.ai.insightText') }}</p>
-        </div>
-
-        <div class="ctx-divider"></div>
-
-        <div class="ctx-section">
-          <p class="ctx-label">{{ $t('reports.ai.askLabel') }}</p>
-          <div class="ctx-input-wrap">
-            <input class="ctx-input" :placeholder="$t('reports.ai.askPlaceholder')" disabled />
-          </div>
-        </div>
-
-        <div class="ctx-section">
-          <p class="ctx-label">{{ $t('reports.ai.actionsLabel') }}</p>
-          <div class="ctx-actions">
-            <Button :label="$t('reports.ai.action1')" />
-            <Button :label="$t('reports.ai.action2')" />
-            <Button :label="$t('reports.ai.action3')" />
-          </div>
-        </div>
-
-        <div class="ctx-divider"></div>
-
-        <!-- Budget Donut -->
-        <div class="ctx-section">
-          <p class="ctx-label">{{ $t('reports.ai.budgetUsageLabel') }}</p>
-          <div class="donut-wrap">
-            <DonutChart
-              :pct="budgetPct"
-              color="#c9a962"
-              :size="80" :radius="30" :stroke-width="10"
-              :label="budgetPct + '%'" label-color="#fff" :label-font-size="13" :label-offset-y="4"
-              display-width="90px"
-            />
-          </div>
-          <div class="donut-legend">
-            <span class="dl-item"><span class="dl-dot gold"></span>{{ $t('reports.ai.used', { pct: budgetPct }) }}</span>
-            <span class="dl-item"><span class="dl-dot dim"></span>{{ $t('reports.ai.remaining', { pct: 100 - budgetPct }) }}</span>
-          </div>
-        </div>
-
-        <div class="ctx-divider"></div>
-
-        <!-- Task Completion -->
-        <div class="ctx-section">
-          <p class="ctx-label">{{ $t('reports.ai.taskCompletionLabel') }}</p>
-          <div class="bar-list">
-            <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill gold" :style="{ width: barPct(taskStats.completadas) }"></div></div>
-              <span class="bar-val">{{ taskStats.completadas }}</span>
-            </div>
-            <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill blue" :style="{ width: barPct(taskStats.enProgreso) }"></div></div>
-              <span class="bar-val">{{ taskStats.enProgreso }}</span>
-            </div>
-            <div class="bar-item">
-              <div class="bar-track"><div class="bar-fill dim" :style="{ width: barPct(taskStats.pendientes) }"></div></div>
-              <span class="bar-val">{{ taskStats.pendientes }}</span>
-            </div>
-          </div>
-          <div class="bar-labels">
-            <span>{{ $t('reports.ai.completed') }}</span>
-            <span>{{ $t('reports.ai.inProgress') }}</span>
-            <span>{{ $t('reports.ai.pending') }}</span>
-          </div>
-        </div>
-
-      </aside>
+      <ReportsAiPanel :budget-pct="budgetPct" :task-stats="taskStats" />
     </div>
 
-    <!-- ── REPORT DETAIL MODAL ──────────────────────────────── -->
-    <div v-if="reportDetail" class="modal-overlay" @click.self="reportDetail = null">
-      <div class="modal-box">
-        <div class="modal-header">
-          <span class="modal-title">{{ reportDetail.titulo }}</span>
-          <button class="modal-close" @click="reportDetail = null">✕</button>
-        </div>
-        <div class="rdetail-body">
-          <div class="rdetail-row">
-            <span class="rdetail-label">{{ $t('reports.reportModal.labelType') }}</span>
-            <span class="type-tag">{{ reportDetail.tipo }}</span>
-          </div>
-          <div class="rdetail-row">
-            <span class="rdetail-label">{{ $t('reports.reportModal.labelProject') }}</span>
-            <span class="rdetail-val">{{ projectNameById(reportDetail.id_proyecto) }}</span>
-          </div>
-          <div class="rdetail-row">
-            <span class="rdetail-label">{{ $t('reports.reportModal.labelDate') }}</span>
-            <span class="rdetail-val">{{ formatDate(reportDetail.fecha_generacion) }}</span>
-          </div>
-          <div v-if="reportDetail.contenido_url" class="rdetail-row">
-            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
-            <a :href="reportDetail.contenido_url" target="_blank" rel="noopener" class="rdetail-link">
-              {{ $t('reports.reportModal.openDocument') }}
-            </a>
-          </div>
-          <div v-else class="rdetail-row">
-            <span class="rdetail-label">{{ $t('reports.reportModal.labelContentUrl') }}</span>
-            <span class="rdetail-val dim">{{ $t('reports.reportModal.notProvided') }}</span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-outline" @click="reportDetail = null">{{ $t('reports.reportModal.close') }}</button>
-          <button class="btn-outline" @click="goToDetail(reportDetail.id_proyecto); reportDetail = null">
-            {{ $t('reports.reportModal.viewMetrics') }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <ReportDetailModal
+      :report="reportDetail"
+      :projects="summary.proyectos"
+      @close="reportDetail = null"
+      @view-metrics="onViewMetrics"
+    />
 
-    <!-- ── CREATE REPORT MODAL ──────────────────────────────── -->
-    <div v-if="showCreateModal" class="modal-overlay" @click.self="closeCreateModal">
-      <div class="modal-box">
-        <div class="modal-header">
-          <span class="modal-title">{{ $t('reports.createModal.title') }}</span>
-          <button class="modal-close" @click="closeCreateModal">✕</button>
-        </div>
-        <form class="modal-form" @submit.prevent="submitCreate">
-          <div class="form-group">
-            <label class="form-label">{{ $t('reports.createModal.labelTitle') }}</label>
-            <input v-model="createForm.titulo" class="form-input" :placeholder="$t('reports.createModal.titlePlaceholder')" required maxlength="200" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ $t('reports.createModal.labelType') }}</label>
-            <select v-model="createForm.tipo" class="form-input" required>
-              <option value="">{{ $t('reports.createModal.selectType') }}</option>
-              <option value="AVANCE">{{ $t('reports.createModal.typeProgress') }}</option>
-              <option value="PRESUPUESTO">{{ $t('reports.createModal.typeBudget') }}</option>
-              <option value="INCIDENTE">{{ $t('reports.createModal.typeIncident') }}</option>
-              <option value="CONSOLIDADO">{{ $t('reports.createModal.typeConsolidated') }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ $t('reports.createModal.labelProject') }}</label>
-            <select v-model="createForm.id_proyecto" class="form-input" required>
-              <option value="">{{ $t('reports.createModal.selectProject') }}</option>
-              <option v-for="p in summary.proyectos" :key="p.id_proyecto" :value="p.id_proyecto">{{ p.nombre }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ $t('reports.createModal.labelUrl') }} <span class="form-optional">{{ $t('reports.createModal.optional') }}</span></label>
-            <input v-model="createForm.contenido_url" class="form-input" :placeholder="$t('reports.createModal.urlPlaceholder')" type="url" />
-          </div>
-          <p v-if="createError" class="form-error">{{ createError }}</p>
-          <div class="modal-footer">
-            <button type="button" class="btn-outline" @click="closeCreateModal">{{ $t('reports.createModal.cancel') }}</button>
-            <button type="submit" class="btn-primary" :disabled="creating">
-              {{ creating ? $t('reports.createModal.creating') : $t('reports.createModal.create') }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <ReportCreateModal
+      :show="showCreateModal"
+      :projects="summary.proyectos"
+      :creating="creating"
+      :error="createError"
+      @close="closeCreateModal"
+      @submit="submitCreate"
+    />
 
   </div>
 </template>
@@ -411,9 +265,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar  from '../components/AppNavbar.vue'
-import Button     from '../components/UI/Button/Button.vue'
-import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
 import SalesFinanceSection from '../components/reports/SalesFinanceSection.vue'
+import ReportsAiPanel from '../components/reports/ReportsAiPanel.vue'
+import ReportCreateModal from '../components/reports/ReportCreateModal.vue'
+import ReportDetailModal from '../components/reports/ReportDetailModal.vue'
 import { statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
 
@@ -425,7 +280,6 @@ const summary    = ref({ totales: null, proyectos: [] })
 const loading    = ref(true)
 const fetchError = ref(null)
 const activeFilter = ref('all')
-const aiEnabled    = ref(true)
 
 const reports        = ref([])
 const loadingReports = ref(true)
@@ -434,7 +288,6 @@ const reportDetail   = ref(null)
 const showCreateModal = ref(false)
 const creating        = ref(false)
 const createError     = ref(null)
-const createForm      = ref({ titulo: '', tipo: '', id_proyecto: '', contenido_url: '' })
 
 const filters = computed(() => [
   { key: 'all',       label: t('reports.view.filters.all') },
@@ -539,12 +392,13 @@ const budgetBadgeClass = computed(() =>
   budgetPct.value > 90 ? 'kpi-badge--red' : budgetPct.value > 70 ? 'kpi-badge--purple' : 'kpi-badge--green'
 )
 
-function barPct(n) {
-  return taskStats.value.total ? Math.round((n / taskStats.value.total) * 100) + '%' : '0%'
-}
-
 function goToDetail(id) {
   router.push({ name: 'report-detail', params: { id } })
+}
+
+function onViewMetrics(id) {
+  reportDetail.value = null
+  goToDetail(id)
 }
 
 const chartPoints = computed(() => {
@@ -590,7 +444,6 @@ function openReportDetail(r) {
 }
 
 function openCreateModal() {
-  createForm.value = { titulo: '', tipo: '', id_proyecto: '', contenido_url: '' }
   createError.value = null
   showCreateModal.value = true
 }
@@ -599,20 +452,14 @@ function closeCreateModal() {
   showCreateModal.value = false
 }
 
-async function submitCreate() {
+async function submitCreate(payload) {
   creating.value = true
   createError.value = null
   try {
-    const body = {
-      titulo: createForm.value.titulo,
-      tipo: createForm.value.tipo,
-      id_proyecto: Number(createForm.value.id_proyecto),
-    }
-    if (createForm.value.contenido_url) body.contenido_url = createForm.value.contenido_url
     const res = await fetch('/api/reports', {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     })
     if (!res.ok) {
       const err = await res.json()
@@ -1006,339 +853,9 @@ async function submitCreate() {
   color: #333;
 }
 
-/* ─── Context Panel ──────────────────────────────────────────────────────── */
-.ctx-panel {
-  padding: 24px 20px;
-  border-left: 1px solid #1e1e1e;
-  background: rgba(10, 10, 10, 0.92);
-  overflow-y: auto;
-}
-
-.ctx-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.ctx-badge {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: #c9a962;
-  letter-spacing: 0.04em;
-}
-
-/* Toggle */
-.toggle { display: flex; align-items: center; cursor: pointer; }
-.toggle input { display: none; }
-.toggle-track {
-  width: 30px;
-  height: 16px;
-  background: #1e1e1e;
-  border-radius: 8px;
-  position: relative;
-  transition: background .2s;
-}
-.toggle input:checked + .toggle-track { background: #c9a962; }
-.toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #444;
-  transition: transform .2s, background .2s;
-}
-.toggle input:checked + .toggle-track .toggle-thumb {
-  transform: translateX(14px);
-  background: #c9a962;
-}
-
-.ctx-section { margin-bottom: 16px; }
-
-.ctx-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  color: #444;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 0 0 8px;
-}
-
-.ctx-insight {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: #666;
-  line-height: 1.7;
-  margin: 0;
-}
-
-.ctx-divider {
-  height: 1px;
-  background: #141414;
-  margin: 16px 0;
-}
-
-.ctx-input-wrap { margin-top: 4px; }
-.ctx-input {
-  width: 100%;
-  padding: 8px 10px;
-  background: #111111;
-  border: 1px solid #1e1e1e;
-  color: #555;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  outline: none;
-  cursor: not-allowed;
-  box-sizing: border-box;
-}
-
-.ctx-actions :deep(.btn) {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 8px 10px;
-  background: #111111;
-  border: 1px solid #1a1a1a;
-  color: #555;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  border-radius: 0;
-  margin-bottom: 6px;
-  transition: border-color .2s, color .2s;
-}
-
-.ctx-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
-}
-
-/* ─── Donut Chart ────────────────────────────────────────────────────────── */
-.donut-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-
-.donut-legend {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.dl-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #555;
-}
-
-.dl-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-.dl-dot.gold { background: #c9a962; }
-.dl-dot.dim  { background: #333; }
-
-/* ─── Bar Chart ──────────────────────────────────────────────────────────── */
-.bar-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
-
-.bar-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bar-track {
-  flex: 1;
-  height: 6px;
-  background: #1a1a1a;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 3px;
-}
-.bar-fill.gold { background: #c9a962; }
-.bar-fill.blue { background: #60a5fa; }
-.bar-fill.dim  { background: #444;    }
-
-.bar-val {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #555;
-  min-width: 24px;
-  text-align: right;
-}
-
-.bar-labels {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.bar-labels span {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #444;
-  padding-top: 2px;
-}
-
-/* ─── Create Report Modal ────────────────────────────────────────────────── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-box {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  width: 100%;
-  max-width: 440px;
-  padding: 24px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modal-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: #e8e4de;
-  letter-spacing: 0.04em;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  color: #555;
-  font-size: 14px;
-  cursor: pointer;
-  line-height: 1;
-  transition: color .2s;
-}
-.modal-close:hover { color: #ccc; }
-
-.modal-form { display: flex; flex-direction: column; gap: 14px; }
-
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-
-.form-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: #555;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.form-optional {
-  font-weight: 400;
-  color: #444;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.form-input {
-  padding: 8px 10px;
-  background: #111111;
-  border: 1px solid #2a2a2a;
-  color: #ccc;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color .2s;
-}
-.form-input:focus { border-color: rgba(201,169,98,0.4); }
-.form-input option { background: #111; }
-
-/* ─── Report Detail Modal ────────────────────────────────────────────────── */
-.rdetail-body { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
-.rdetail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #1a1a1a;
-}
-.rdetail-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: #555;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.rdetail-val {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #aaa;
-}
-.rdetail-val.dim { color: #444; }
-.rdetail-link {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #c9a962;
-  text-decoration: none;
-  transition: opacity .2s;
-}
-.rdetail-link:hover { opacity: 0.7; }
-
-.form-error {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: #fb7185;
-  margin: 0;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  background: rgba(201,169,98,0.12);
-  border: 1px solid rgba(201,169,98,0.3);
-  color: #c9a962;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .2s;
-}
-.btn-primary:hover:not(:disabled) { background: rgba(201,169,98,0.22); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .reports-layout { grid-template-columns: 1fr; }
-  .ctx-panel { border-left: none; border-top: 1px solid #181818; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
 

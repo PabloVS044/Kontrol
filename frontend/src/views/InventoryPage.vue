@@ -725,36 +725,27 @@ async function submitSale() {
   saleSubmitting.value = true
   saleError.value = null
 
-  const items = saleCart.value.map((item) => ({ ...item }))
-
   try {
-    for (const item of items) {
-      const projectId = item.product.id_proyecto ?? selectedProject.value?.id_proyecto
-      if (!projectId) {
-        throw new Error(t('inventory.sale.errors.missingProject'))
+    const items = saleCart.value.map((item) => {
+      const id_proyecto = item.product.id_proyecto ?? selectedProject.value?.id_proyecto
+      if (!id_proyecto) throw new Error(t('inventory.sale.errors.missingProject'))
+      return {
+        id_producto: item.product.id_producto,
+        id_proyecto,
+        cantidad: item.cantidad,
+        precio_unitario: Number(item.product.precio_venta),
       }
+    })
 
-      const res = await fetch('/api/inventory-movements', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeader(),
-        },
-        body: JSON.stringify({
-          tipo: 'SALIDA',
-          cantidad: item.cantidad,
-          precio_unitario: Number(item.product.precio_venta),
-          motivo: t('inventory.sale.movementReason'),
-          id_producto: item.product.id_producto,
-          id_proyecto: projectId,
-        }),
-      })
+    // Single atomic request: the whole sale commits or nothing does.
+    const res = await fetch('/api/inventory-movements/sale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ items, motivo: t('inventory.sale.movementReason') }),
+    })
 
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        throw new Error(data.message || `Error ${res.status}`)
-      }
-    }
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(data.message || `Error ${res.status}`)
 
     clearSaleCart()
     await loadData()

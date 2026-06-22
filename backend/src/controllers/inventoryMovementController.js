@@ -286,6 +286,119 @@ export const createInventoryMovement = async (req, res) => {
   }
 }
 
+/**
+ * POST /api/inventory-movements/sale
+ *
+ * Atomic multi-line POS sale. Takes the whole cart and creates every SALIDA in
+ * a single transaction: either the full sale commits or nothing does (fixes the
+ * previous per-line POST loop that could leave a sale half-applied). Because all
+ * lines share one transaction, they also share one CURRENT_TIMESTAMP, which makes
+ * the "operaciones_venta" grouping in the stats endpoint exact.
+ *
+ * Body: { items: [{ id_producto, id_proyecto, cantidad, precio_unitario }], motivo? }
+ * Access: selling requires access to each project in the cart (no specific
+ * permission), mirroring the single-movement SALIDA gate.
+ */
+export const createSale = async (req, res) => {
+  const { items, motivo } = req.body
+  const id_usuario = req.user.id_usuario
+  const { id_empresa } = req.empresa
+
+  // Per-project access check (a cart may span projects in the "all projects" view).
+  const isSuper = req.user?.nombre_rol === 'super_user'
+  if (!isSuper) {
+    const projectIds = [...new Set(items.map((i) => i.id_proyecto))]
+    for (const id_proyecto of projectIds) {
+      const access = await ensureProjectAccess({
+        client: pool,
+        id_empresa,
+        id_usuario,
+        rol_empresa: req.empresa.rol_empresa,
+        id_proyecto,
+        requiredPermissions: [],
+      })
+      if (!access.allowed) {
+        return res.status(403).json({ success: false, message: 'You do not have access to one of the projects in this sale.' })
+      }
+    }
+  }
+
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+
+    const createdIds = []
+    const lowStock = []
+
+    for (const item of items) {
+      const productoResult = await client.query(
+        `SELECT p.id_producto, p.stock_actual, p.costo_promedio_ponderado,
+                p.nombre, p.stock_minimo, pr.nombre AS proyecto_nombre
+         FROM public.producto p
+         JOIN public.proyecto pr ON pr.id_proyecto = p.id_proyecto
+         WHERE p.id_producto = $1 AND p.id_proyecto = $2 AND pr.id_empresa = $3
+         FOR UPDATE`,
+        [item.id_producto, item.id_proyecto, id_empresa]
+      )
+
+      if (!productoResult.rows.length) {
+        await client.query('ROLLBACK')
+        return res.status(404).json({ success: false, message: `Product ${item.id_producto} not found in this project.` })
+      }
+
+      const producto = productoResult.rows[0]
+      if (producto.stock_actual < item.cantidad) {
+        await client.query('ROLLBACK')
+        return res.status(409).json({
+          success: false,
+          message: `Insufficient stock for ${producto.nombre}. Available: ${producto.stock_actual}, requested: ${item.cantidad}.`,
+        })
+      }
+
+      const inserted = await client.query(
+        `INSERT INTO public.movimiento_inventario
+           (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_empresa, costo_unitario_venta)
+         VALUES ('SALIDA', $1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id_movimiento`,
+        [item.cantidad, item.precio_unitario ?? 0, motivo ?? null, item.id_producto, id_usuario, item.id_proyecto, id_empresa, producto.costo_promedio_ponderado]
+      )
+      createdIds.push(inserted.rows[0].id_movimiento)
+
+      await client.query(
+        'UPDATE public.producto SET stock_actual = stock_actual - $1 WHERE id_producto = $2',
+        [item.cantidad, item.id_producto]
+      )
+
+      const newStock = producto.stock_actual - item.cantidad
+      if (producto.stock_minimo != null && newStock <= producto.stock_minimo) {
+        lowStock.push({ ...producto, stock_actual: newStock })
+      }
+    }
+
+    await client.query('COMMIT')
+
+    // Low-stock alerts after the sale is durable.
+    for (const prod of lowStock) {
+      const isZero = prod.stock_actual === 0
+      notifyCompany(id_empresa, {
+        title: isZero ? `🔴 Sin stock — ${prod.nombre}` : `🟡 Stock bajo — ${prod.nombre}`,
+        text: isZero
+          ? `El producto *${prod.nombre}* (${prod.proyecto_nombre}) se quedó sin stock.`
+          : `El producto *${prod.nombre}* (${prod.proyecto_nombre}) tiene solo ${prod.stock_actual} unidades (mínimo: ${prod.stock_minimo}).`,
+        event: 'inventory.low_stock',
+        data: { id_producto: prod.id_producto, stock_actual: prod.stock_actual, stock_minimo: prod.stock_minimo },
+      })
+    }
+
+    return res.status(201).json({ success: true, data: { id_movimientos: createdIds, count: createdIds.length } })
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
 const BUCKET_TRUNC = { hour: 'hour', day: 'day', week: 'week', month: 'month' }
 
 /**

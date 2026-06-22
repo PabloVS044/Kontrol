@@ -19,7 +19,8 @@
 <script setup>
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { BrowserMultiFormatReader } from '@zxing/browser'
+// @zxing is loaded on demand (dynamic import inside start) so it ships as its
+// own chunk and never weighs down the inventory route's initial load.
 
 const { t } = useI18n()
 
@@ -43,8 +44,9 @@ async function start() {
   cameraError.value = null
   await nextTick()
   if (!videoEl.value) return
-  reader = new BrowserMultiFormatReader()
   try {
+    const { BrowserMultiFormatReader } = await import('@zxing/browser')
+    reader = new BrowserMultiFormatReader()
     controls = await reader.decodeFromConstraints(
       { video: { facingMode: { ideal: 'environment' } } },
       videoEl.value,
