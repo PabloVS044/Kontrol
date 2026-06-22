@@ -121,7 +121,19 @@
 .card-stock-label { font-size: 10px; color: #999; }
 
 /* Pie de tarjeta */
-.card-footer { border-top: 1px solid #1f1f1f; }
+.card-footer { border-top: 1px solid #1f1f1f; display: flex; align-items: stretch; }
+.card-footer .sell-btn,
+.card-footer .qty-stepper { flex: 1; }
+
+/* Restock (ingresar stock) — acción secundaria en el pie de tarjeta */
+.restock-btn {
+  flex: 0 0 auto; padding: 10px 14px; background: transparent; border: none;
+  border-right: 1px solid #1f1f1f; cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: .04em; color: #8f8f8f; white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.restock-btn:hover { background: rgba(201,169,98,0.08); color: #c9a962; }
 .card-btn-full {
   width: 100%; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;
   font-size: 11px; font-weight: 500; color: #c9a962; cursor: pointer; background: #111111; border: none;
@@ -534,4 +546,71 @@
   padding: 1px 6px;
   display: inline-block;
   margin-bottom: 4px;
+}
+
+/* ── POS móvil: barra de carrito fija + drawer ── */
+/* Ocultos en desktop; se activan en el media query ≤900px. */
+.mobile-cart-bar { display: none; }
+.cart-drawer-overlay { display: none; }
+
+@keyframes cartSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  /* En móvil el carrito vive en la barra/drawer, no en el panel lateral. */
+  .context-panel.has-sale { display: none; }
+  /* Espacio para que la barra fija no tape el contenido. */
+  .main-panel { padding-bottom: 92px; }
+
+  .mobile-cart-bar {
+    display: flex; align-items: center; gap: 12px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 150;
+    width: 100%; padding: 16px 20px;
+    background: #c9a962; border: none; cursor: pointer;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.4);
+  }
+  .mcb-count {
+    flex: 0 0 auto; min-width: 28px; height: 28px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #0a0a0a; color: #c9a962;
+    font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+  }
+  .mcb-label {
+    flex: 1; text-align: left; color: #0a0a0a;
+    font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .mcb-total {
+    flex: 0 0 auto; color: #0a0a0a;
+    font-family: 'Playfair Display', serif; font-size: 22px;
+  }
+
+  .cart-drawer-overlay {
+    display: block; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.65);
+  }
+  .cart-drawer {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #0e0e0e; border-top: 1px solid #1f1f1f;
+    padding: 10px 20px 28px; max-height: 85vh; overflow-y: auto;
+    animation: cartSlideUp .22s ease;
+  }
+  .cart-drawer-handle {
+    width: 44px; height: 4px; border-radius: 2px; background: #333;
+    margin: 4px auto 16px; cursor: pointer;
+  }
+
+  /* Tap targets más cómodos para vender desde el celular. */
+  .sell-btn { min-height: 48px; font-size: 13px; }
+  .qty-stepper { height: 48px; }
+  .qty-btn { flex-basis: 48px; font-size: 20px; }
+  .restock-btn { min-height: 48px; }
+
+  /* Búsqueda y filtros pegados arriba al hacer scroll del catálogo. */
+  .search-bar {
+    position: sticky; top: 56px; z-index: 40;
+    background: #111111;
+  }
 }

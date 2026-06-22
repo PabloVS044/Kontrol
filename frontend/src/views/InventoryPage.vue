@@ -9,6 +9,14 @@
       @submit="submitProduct"
     />
 
+    <RestockModal
+      v-model="showRestock"
+      :product="restockProduct"
+      :submitting="restockLoading"
+      :error="restockError"
+      @submit="submitRestock"
+    />
+
     <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
@@ -198,6 +206,14 @@
             </div>
 
             <div class="card-footer" @click.stop>
+              <button
+                v-if="canRestock(product)"
+                class="restock-btn"
+                :title="$t('inventory.card.restock')"
+                @click="openRestock(product)"
+              >
+                + {{ $t('inventory.card.restock') }}
+              </button>
               <!-- Sell button OR quantity stepper if product is already in cart -->
               <button
                 v-if="!getCartItem(product)"
@@ -243,56 +259,20 @@
       </div>
 
       <!-- Panel de contexto -->
-      <aside class="context-panel">
+      <aside class="context-panel" :class="{ 'has-sale': saleCart.length }">
 
         <!-- Sale cart (shown while there are items in the cart) -->
-        <template v-if="saleCart.length">
-          <div>
-            <div class="ctx-title">{{ $t('inventory.sale.title') }}</div>
-            <div class="ctx-subtitle">
-              {{ selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject') }}
-            </div>
-          </div>
-
-          <div class="sale-items">
-            <div
-              v-for="item in saleCart"
-              :key="item.product.id_producto"
-              class="sale-item"
-            >
-              <span class="sale-item-qty">{{ item.cantidad }}×</span>
-              <div class="sale-item-info">
-                <span class="sale-item-name">{{ item.product.nombre }}</span>
-                <span class="sale-item-unit">${{ Number(item.product.precio_venta).toFixed(2) }} {{ $t('inventory.sale.perUnit') }}</span>
-              </div>
-              <div class="sale-item-right">
-                <span class="sale-item-subtotal">${{ saleItemSubtotal(item).toFixed(2) }}</span>
-                <button class="sale-item-remove" :aria-label="$t('inventory.sale.remove')" @click="removeFromCart(item.product)">×</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="sale-total-row">
-            <span class="sale-total-label">{{ $t('inventory.sale.total') }}</span>
-            <span class="sale-total-value">${{ saleTotal.toFixed(2) }}</span>
-          </div>
-
-          <p v-if="saleError" class="sale-error">{{ saleError }}</p>
-
-          <button
-            data-birdie="sale-submit"
-            class="sale-submit"
-            :disabled="saleSubmitting || !canSubmitSale"
-            @click="submitSale"
-          >
-            <span v-if="saleSubmitting">{{ $t('inventory.sale.submitting') }}</span>
-            <span v-else>{{ $t('inventory.sale.submit') }}</span>
-          </button>
-
-          <button class="sale-cancel" :disabled="saleSubmitting" @click="clearSaleCart">
-            {{ $t('inventory.sale.cancel') }}
-          </button>
-        </template>
+        <SaleCartPanel
+          v-if="saleCart.length"
+          :items="saleCart"
+          :total="saleTotal"
+          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :error="saleError"
+          :submitting="saleSubmitting"
+          @remove="removeFromCart"
+          @submit="submitSale"
+          @cancel="clearSaleCart"
+        />
 
         <!-- Summary (default view, shown when no sale is in progress) -->
         <template v-else>
@@ -371,6 +351,31 @@
 
     </template>
   </div><!-- /.inventory-layout -->
+
+  <!-- Mobile sale bar + drawer (POS): only visible ≤900px via CSS -->
+  <template v-if="saleCart.length">
+    <button class="mobile-cart-bar" @click="cartExpanded = true">
+      <span class="mcb-count">{{ saleItemCount }}</span>
+      <span class="mcb-label">{{ $t('inventory.sale.viewSale') }}</span>
+      <span class="mcb-total">${{ saleTotal.toFixed(2) }}</span>
+    </button>
+
+    <div v-if="cartExpanded" class="cart-drawer-overlay" @click.self="cartExpanded = false">
+      <div class="cart-drawer">
+        <div class="cart-drawer-handle" @click="cartExpanded = false"></div>
+        <SaleCartPanel
+          :items="saleCart"
+          :total="saleTotal"
+          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :error="saleError"
+          :submitting="saleSubmitting"
+          @remove="removeFromCart"
+          @submit="submitSale"
+          @cancel="clearSaleCart"
+        />
+      </div>
+    </div>
+  </template>
   </div><!-- /.inventory-root -->
 </template>
 
@@ -383,6 +388,8 @@ import './InventoryPage.css'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ProductModal from '../components/inventory/ProductModal.vue'
+import RestockModal from '../components/inventory/RestockModal.vue'
+import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
@@ -406,6 +413,14 @@ const canCreateProduct = computed(() => {
   if (authStore.canManageInventory) return true
   return (selectedProject.value.mis_permisos || []).includes('gestionar_inventario')
 })
+
+// Restock requires write access on the product's *own* project (works in the
+// "all projects" view too, where each product carries its id_proyecto).
+function canRestock(product) {
+  if (authStore.canManageInventory) return true
+  const proj = projects.value.find((p) => p.id_proyecto === product.id_proyecto)
+  return (proj?.mis_permisos || []).includes('gestionar_inventario')
+}
 
 /* ── helpers API ── */
 function authHeader(includeProyecto = false) {
@@ -578,6 +593,11 @@ function openDetail(product) {
 const saleCart        = ref([])
 const saleSubmitting  = ref(false)
 const saleError       = ref(null)
+const cartExpanded    = ref(false)  // mobile drawer open state
+
+const saleItemCount = computed(() =>
+  saleCart.value.reduce((acc, item) => acc + Number(item.cantidad), 0)
+)
 
 function getCartItem(product) {
   return saleCart.value.find((item) => item.product.id_producto === product.id_producto)
@@ -636,6 +656,7 @@ function removeFromCart(product) {
 function clearSaleCart() {
   saleCart.value = []
   saleError.value = null
+  cartExpanded.value = false
 }
 
 function saleItemSubtotal(item) {
@@ -756,5 +777,50 @@ async function submitProduct(formData) {
 
 function exportInventory() {
   // TODO: exportar CSV
+}
+
+/* ── restock (ENTRADA) ── */
+const showRestock    = ref(false)
+const restockProduct = ref(null)
+const restockLoading = ref(false)
+const restockError   = ref(null)
+
+function openRestock(product) {
+  if (!canRestock(product)) return
+  restockProduct.value = product
+  restockError.value   = null
+  showRestock.value    = true
+}
+
+async function submitRestock(payload) {
+  const product = restockProduct.value
+  if (!product) return
+  restockLoading.value = true
+  restockError.value   = null
+  try {
+    const res = await fetch('/api/inventory-movements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({
+        tipo: 'ENTRADA',
+        cantidad: payload.cantidad,
+        precio_unitario: payload.precio_unitario,
+        motivo: payload.motivo ?? t('inventory.restock.defaultReason'),
+        id_producto: product.id_producto,
+        id_proyecto: product.id_proyecto,
+      }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      restockError.value = data.message || `Error ${res.status}`
+      return
+    }
+    showRestock.value = false
+    await loadData()
+  } catch {
+    restockError.value = t('inventory.errors.networkError')
+  } finally {
+    restockLoading.value = false
+  }
 }
 </script>

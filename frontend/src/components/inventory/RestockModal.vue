@@ -1,30 +1,16 @@
 <template>
-  <BaseModal v-model="show" :title="$t('inventory.modal.title')" max-width="480px">
+  <BaseModal v-model="show" :title="$t('inventory.restock.title')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.name') }} <span class="req">*</span></label>
-        <input v-model="form.nombre" type="text" :placeholder="$t('inventory.modal.namePlaceholder')" required />
+      <div v-if="product" class="restock-product">
+        <span class="rp-name">{{ product.nombre }}</span>
+        <span class="rp-meta">
+          {{ $t('inventory.restock.currentStock', { count: product.stock_actual }) }}
+          · {{ $t('inventory.restock.avgCost', { cost: Number(product.costo_promedio_ponderado ?? product.precio_costo ?? 0).toFixed(2) }) }}
+        </span>
       </div>
 
       <div class="form-field">
-        <label>{{ $t('inventory.modal.description') }}</label>
-        <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
-      </div>
-
-      <div class="form-row">
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.salePrice') }} <span class="req">*</span></label>
-          <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
-        </div>
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.minStock') }}</label>
-          <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
-        </div>
-      </div>
-
-      <!-- Costo y stock inicial: por unidad o por caja -->
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.costAndStock') }}</label>
+        <label>{{ $t('inventory.restock.entryMode') }}</label>
         <div class="mode-toggle">
           <button
             type="button"
@@ -44,12 +30,12 @@
       <template v-if="form.modo === 'unidad'">
         <div class="form-row">
           <div class="form-field">
-            <label>{{ $t('inventory.modal.initialStock') }}</label>
-            <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
+            <label>{{ $t('inventory.restock.units') }} <span class="req">*</span></label>
+            <input v-model.number="form.unidades" type="number" min="1" placeholder="0" />
           </div>
           <div class="form-field">
-            <label>{{ $t('inventory.modal.costPrice') }} <span class="req">*</span></label>
-            <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" />
+            <label>{{ $t('inventory.restock.unitCost') }} <span class="req">*</span></label>
+            <input v-model.number="form.precio_unitario" type="number" min="0" step="0.01" placeholder="0.00" />
           </div>
         </div>
       </template>
@@ -57,8 +43,8 @@
       <template v-else>
         <div class="form-row">
           <div class="form-field">
-            <label>{{ $t('inventory.modal.boxes') }}</label>
-            <input v-model.number="form.cajas" type="number" min="0" placeholder="0" />
+            <label>{{ $t('inventory.modal.boxes') }} <span class="req">*</span></label>
+            <input v-model.number="form.cajas" type="number" min="1" placeholder="0" />
           </div>
           <div class="form-field">
             <label>{{ $t('inventory.modal.unitsPerBox') }} <span class="req">*</span></label>
@@ -74,12 +60,17 @@
         </p>
       </template>
 
+      <div class="form-field">
+        <label>{{ $t('inventory.restock.reason') }}</label>
+        <input v-model="form.motivo" type="text" :placeholder="$t('inventory.restock.reasonPlaceholder')" />
+      </div>
+
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
         <button type="button" class="btn-secondary" @click="show = false">{{ $t('inventory.modal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting || !canSubmit">
-          {{ submitting ? $t('inventory.modal.saving') : $t('inventory.modal.save') }}
+          {{ submitting ? $t('inventory.restock.saving') : $t('inventory.restock.save') }}
         </button>
       </div>
     </form>
@@ -93,6 +84,7 @@ import { resolveStockEntry } from '@/utils/boxPricing'
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
+  product:    { type: Object, default: null },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
 })
@@ -106,11 +98,10 @@ const show = computed({
 
 function emptyForm() {
   return {
-    nombre: '', descripcion: '',
-    precio_venta: null, precio_costo: null,
-    stock_minimo: 0, stock_inicial: 0,
     modo: 'unidad',
+    unidades: null, precio_unitario: null,
     cajas: null, unidades_por_caja: null, precio_caja: null,
+    motivo: '',
   }
 }
 
@@ -120,36 +111,27 @@ watch(() => props.modelValue, (open) => {
   if (open) form.value = emptyForm()
 })
 
-// Live resolution of units + per-unit cost from the box inputs.
 const resolved = computed(() =>
   resolveStockEntry({
     modo: form.value.modo,
-    unidades: form.value.stock_inicial,
-    precioUnitario: form.value.precio_costo,
+    unidades: form.value.unidades,
+    precioUnitario: form.value.precio_unitario,
     cajas: form.value.cajas,
     unidadesPorCaja: form.value.unidades_por_caja,
     precioCaja: form.value.precio_caja,
   })
 )
 
-const canSubmit = computed(() => {
-  if (!form.value.nombre || form.value.precio_venta == null) return false
-  if (form.value.modo === 'caja') {
-    return resolved.value.cantidad != null && resolved.value.costoUnitario != null
-  }
-  return form.value.precio_costo != null && form.value.precio_costo >= 0
-})
+const canSubmit = computed(() =>
+  resolved.value.cantidad != null && resolved.value.costoUnitario != null
+)
 
 function handleSubmit() {
   if (!canSubmit.value) return
-  const isBox = form.value.modo === 'caja'
   emit('submit', {
-    nombre: form.value.nombre,
-    descripcion: form.value.descripcion,
-    precio_venta: form.value.precio_venta,
-    precio_costo: isBox ? resolved.value.costoUnitario : form.value.precio_costo,
-    stock_minimo: form.value.stock_minimo ?? 0,
-    stock_inicial: isBox ? resolved.value.cantidad : (form.value.stock_inicial ?? 0),
+    cantidad: resolved.value.cantidad,
+    precio_unitario: resolved.value.costoUnitario,
+    motivo: form.value.motivo?.trim() || undefined,
   })
 }
 </script>
@@ -159,21 +141,22 @@ function handleSubmit() {
 .form-field  { display: flex; flex-direction: column; gap: 6px; }
 .form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .form-field label { font-size: 11px; color: #888; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field input,
-.form-field textarea,
-.form-field select {
+.form-field input {
   background: #0a0a0a; border: 1px solid #1f1f1f;
   color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none; resize: vertical;
+  padding: 10px 12px; outline: none;
   transition: border-color 0.15s;
 }
-.form-field input:focus,
-.form-field textarea:focus { border-color: #c9a962; }
+.form-field input:focus { border-color: #c9a962; }
 .req { color: #c9a962; }
-.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
-/* Unit / box mode toggle */
+.restock-product {
+  display: flex; flex-direction: column; gap: 3px;
+  border: 1px solid #1f1f1f; background: rgba(15,15,15,0.7); padding: 12px 14px;
+}
+.rp-name { font-family: 'Playfair Display', serif; font-size: 15px; color: #faf8f5; }
+.rp-meta { font-size: 11px; color: #888; font-family: 'Manrope', sans-serif; }
+
 .mode-toggle { display: flex; border: 1px solid #1f1f1f; }
 .mode-btn {
   flex: 1; padding: 9px 12px; background: #0a0a0a; border: none; cursor: pointer;
@@ -182,11 +165,15 @@ function handleSubmit() {
 }
 .mode-btn + .mode-btn { border-left: 1px solid #1f1f1f; }
 .mode-btn.active { background: #c9a962; color: #0a0a0a; }
+
 .box-preview {
   font-size: 12px; color: #c9a962; font-family: 'Manrope', sans-serif;
   background: rgba(201,169,98,0.08); border: 1px solid rgba(201,169,98,0.2);
   padding: 8px 12px;
 }
+
+.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
 .btn-primary {
   background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;

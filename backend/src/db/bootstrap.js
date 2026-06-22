@@ -217,6 +217,16 @@ export const ensureDatabaseSchema = async () => {
       WHERE id_actividad IS NOT NULL
   `)
 
+  // Snapshot of the product's weighted-average cost at the moment of a SALIDA.
+  // Lets sales/profit analytics compute COGS against the cost that actually
+  // applied when the sale happened, instead of the product's current cost
+  // (which drifts as new stock comes in). Nullable: only SALIDA rows set it,
+  // and pre-existing rows fall back to costo_promedio_ponderado at query time.
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS costo_unitario_venta numeric
+  `)
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS public.equipo (
       id_equipo SERIAL PRIMARY KEY,

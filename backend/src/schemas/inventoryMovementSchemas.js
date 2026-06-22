@@ -10,6 +10,13 @@ export const getInventoryMovementsQuerySchema = z.object({
   hasta:       z.string().optional(),
 })
 
+export const getInventorySalesStatsQuerySchema = z.object({
+  projectId: z.coerce.number().int().positive().optional(),
+  desde:     z.string().optional(),
+  hasta:     z.string().optional(),
+  bucket:    z.enum(['hour', 'day', 'week', 'month']).optional(),
+})
+
 export const inventoryMovementIdParamSchema = z.object({
   id: z.coerce.number().int().positive({ message: 'The id must be a positive integer.' }),
 })

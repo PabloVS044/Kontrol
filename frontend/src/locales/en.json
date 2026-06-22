@@ -544,6 +544,7 @@
       "net": "Net",
       "viewDetails": "View details",
       "sell": "Sell",
+      "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
       "cannotSell": "This product cannot be sold right now."
@@ -556,6 +557,7 @@
       "submit": "Realize sale",
       "submitting": "Processing sale…",
       "cancel": "Cancel sale",
+      "viewSale": "View sale",
       "remove": "Remove item",
       "movementReason": "POS sale from inventory",
       "errors": {
@@ -601,7 +603,29 @@
       "descriptionPlaceholder": "Optional description",
       "cancel": "Cancel",
       "save": "Save product",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "costAndStock": "Cost & initial stock",
+      "stockMode": {
+        "unit": "By unit",
+        "box": "By box"
+      },
+      "boxes": "Boxes",
+      "unitsPerBox": "Units per box",
+      "boxPrice": "Price per box",
+      "boxPreview": "→ {units} units · cost ${cost}/u"
+    },
+    "restock": {
+      "title": "Add stock",
+      "currentStock": "Current stock: {count}",
+      "avgCost": "Avg. cost ${cost}/u",
+      "entryMode": "Entry mode",
+      "units": "Units",
+      "unitCost": "Cost per unit",
+      "reason": "Reason",
+      "reasonPlaceholder": "Purchase, restock…",
+      "defaultReason": "Stock entry",
+      "save": "Add stock",
+      "saving": "Adding…"
     },
     "errors": {
       "selectProject": "Select a project before adding a product.",
@@ -753,6 +777,34 @@
     }
   },
   "reports": {
+    "sales": {
+      "title": "Sales & Finance",
+      "allProjects": "All projects",
+      "from": "From",
+      "to": "To",
+      "presets": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "custom": "Range"
+      },
+      "kpi": {
+        "grossIncome": "Gross income",
+        "cogs": "Cost of sales",
+        "grossProfit": "Gross profit",
+        "adminExpenses": "Admin expenses",
+        "netProfit": "Net profit",
+        "unitsSold": "Units sold",
+        "purchases": "Purchases",
+        "avgTicket": "Avg. ticket"
+      },
+      "legendIncome": "Income",
+      "legendProfit": "Profit",
+      "loading": "Loading…",
+      "noData": "No sales in this period.",
+      "topProducts": "Top selling products",
+      "unitsShort": "{count} u"
+    },
     "header": {
       "title": "Reports Center",
       "subtitle": "Analytics and performance overview for all your projects",

@@ -544,6 +544,7 @@
       "net": "Neto",
       "viewDetails": "Ver detalles",
       "sell": "Vender",
+      "restock": "Ingresar",
       "increase": "Agregar uno",
       "decrease": "Quitar uno",
       "cannotSell": "Este producto no puede venderse ahora."
@@ -556,6 +557,7 @@
       "submit": "Realizar venta",
       "submitting": "Procesando venta…",
       "cancel": "Cancelar venta",
+      "viewSale": "Ver venta",
       "remove": "Quitar artículo",
       "movementReason": "Venta POS desde inventario",
       "errors": {
@@ -601,7 +603,29 @@
       "descriptionPlaceholder": "Descripción opcional",
       "cancel": "Cancelar",
       "save": "Guardar producto",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "costAndStock": "Costo y stock inicial",
+      "stockMode": {
+        "unit": "Por unidad",
+        "box": "Por caja"
+      },
+      "boxes": "Cajas",
+      "unitsPerBox": "Unidades por caja",
+      "boxPrice": "Precio por caja",
+      "boxPreview": "→ {units} unidades · costo ${cost}/u"
+    },
+    "restock": {
+      "title": "Ingresar stock",
+      "currentStock": "Stock actual: {count}",
+      "avgCost": "Costo prom. ${cost}/u",
+      "entryMode": "Modo de ingreso",
+      "units": "Unidades",
+      "unitCost": "Costo por unidad",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Compra, reabastecimiento…",
+      "defaultReason": "Ingreso de stock",
+      "save": "Ingresar stock",
+      "saving": "Ingresando…"
     },
     "errors": {
       "selectProject": "Selecciona un proyecto antes de agregar un producto.",
@@ -753,6 +777,34 @@
     }
   },
   "reports": {
+    "sales": {
+      "title": "Ventas y Finanzas",
+      "allProjects": "Todos los proyectos",
+      "from": "Desde",
+      "to": "Hasta",
+      "presets": {
+        "day": "Día",
+        "week": "Semana",
+        "month": "Mes",
+        "custom": "Rango"
+      },
+      "kpi": {
+        "grossIncome": "Ingreso bruto",
+        "cogs": "Costo de ventas",
+        "grossProfit": "Ganancia bruta",
+        "adminExpenses": "Gastos admin",
+        "netProfit": "Ganancia neta",
+        "unitsSold": "Unidades vendidas",
+        "purchases": "Compras",
+        "avgTicket": "Ticket promedio"
+      },
+      "legendIncome": "Ingreso",
+      "legendProfit": "Ganancia",
+      "loading": "Cargando…",
+      "noData": "Sin ventas en este período.",
+      "topProducts": "Productos más vendidos",
+      "unitsShort": "{count} uds"
+    },
     "header": {
       "title": "Centro de Reportes",
       "subtitle": "Análisis y resumen de rendimiento de todos tus proyectos",

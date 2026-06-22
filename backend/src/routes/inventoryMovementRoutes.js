@@ -5,11 +5,13 @@ import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
 import {
   getInventoryMovementsQuerySchema,
+  getInventorySalesStatsQuerySchema,
   inventoryMovementIdParamSchema,
   createInventoryMovementSchema,
 } from '../schemas/inventoryMovementSchemas.js'
 import {
   getInventoryMovements,
+  getInventorySalesStats,
   getInventoryMovementById,
   createInventoryMovement,
 } from '../controllers/inventoryMovementController.js'
@@ -23,6 +25,13 @@ router.get(
   '/',
   validate(getInventoryMovementsQuerySchema, 'query'),
   getInventoryMovements
+)
+
+// Must be registered before '/:id' so the literal path wins over the param.
+router.get(
+  '/stats',
+  validate(getInventorySalesStatsQuerySchema, 'query'),
+  getInventorySalesStats
 )
 
 router.get(

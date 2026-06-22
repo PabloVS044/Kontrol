@@ -73,6 +73,9 @@
           </div>
         </div>
 
+        <!-- Sales & Finance (inventory) — scoped per project -->
+        <SalesFinanceSection :projects="summary.proyectos" />
+
         <!-- Projects Overview Table -->
         <div class="section-block">
           <div class="section-header">
@@ -410,6 +413,7 @@ import { useI18n } from 'vue-i18n'
 import AppNavbar  from '../components/AppNavbar.vue'
 import Button     from '../components/UI/Button/Button.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
+import SalesFinanceSection from '../components/reports/SalesFinanceSection.vue'
 import { statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
 import { useAuthStore } from '../stores/auth'
 
