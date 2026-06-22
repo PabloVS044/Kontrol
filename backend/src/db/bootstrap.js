@@ -227,6 +227,19 @@ export const ensureDatabaseSchema = async () => {
       ADD COLUMN IF NOT EXISTS costo_unitario_venta numeric
   `)
 
+  // Barcode for camera-scan POS. Nullable; unique per project so the same
+  // physical product can live in several projects' inventories, but a code
+  // resolves unambiguously within one project.
+  await pool.query(`
+    ALTER TABLE public.producto
+      ADD COLUMN IF NOT EXISTS codigo_barras varchar
+  `)
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS producto_codigo_barras_unique
+      ON public.producto (id_proyecto, codigo_barras)
+      WHERE codigo_barras IS NOT NULL
+  `)
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS public.equipo (
       id_equipo SERIAL PRIMARY KEY,

@@ -11,6 +11,21 @@
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
       </div>
 
+      <div class="form-field">
+        <label>{{ $t('inventory.modal.barcode') }}</label>
+        <div class="barcode-row">
+          <input v-model="form.codigo_barras" type="text" :placeholder="$t('inventory.modal.barcodePlaceholder')" />
+          <button type="button" class="barcode-scan" :title="$t('inventory.scanner.scan')" @click="showScanner = true">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <BarcodeScanner v-model="showScanner" @detected="onBarcodeDetected" />
+
       <div class="form-row">
         <div class="form-field">
           <label>{{ $t('inventory.modal.salePrice') }} <span class="req">*</span></label>
@@ -89,6 +104,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+import BarcodeScanner from '@/components/inventory/BarcodeScanner.vue'
 import { resolveStockEntry } from '@/utils/boxPricing'
 
 const props = defineProps({
@@ -106,7 +122,7 @@ const show = computed({
 
 function emptyForm() {
   return {
-    nombre: '', descripcion: '',
+    nombre: '', descripcion: '', codigo_barras: '',
     precio_venta: null, precio_costo: null,
     stock_minimo: 0, stock_inicial: 0,
     modo: 'unidad',
@@ -115,6 +131,12 @@ function emptyForm() {
 }
 
 const form = ref(emptyForm())
+const showScanner = ref(false)
+
+function onBarcodeDetected(code) {
+  form.value.codigo_barras = code
+  showScanner.value = false
+}
 
 watch(() => props.modelValue, (open) => {
   if (open) form.value = emptyForm()
@@ -150,6 +172,7 @@ function handleSubmit() {
     precio_costo: isBox ? resolved.value.costoUnitario : form.value.precio_costo,
     stock_minimo: form.value.stock_minimo ?? 0,
     stock_inicial: isBox ? resolved.value.cantidad : (form.value.stock_inicial ?? 0),
+    codigo_barras: form.value.codigo_barras?.trim() || undefined,
   })
 }
 </script>
@@ -187,6 +210,15 @@ function handleSubmit() {
   background: rgba(201,169,98,0.08); border: 1px solid rgba(201,169,98,0.2);
   padding: 8px 12px;
 }
+
+.barcode-row { display: flex; gap: 8px; }
+.barcode-row input { flex: 1; }
+.barcode-scan {
+  flex: 0 0 auto; width: 42px; background: #0a0a0a; border: 1px solid #1f1f1f;
+  color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color .15s, color .15s;
+}
+.barcode-scan:hover { border-color: #c9a962; color: #c9a962; }
 
 .btn-primary {
   background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;

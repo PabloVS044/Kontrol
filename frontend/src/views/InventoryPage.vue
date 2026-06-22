@@ -17,6 +17,12 @@
       @submit="submitRestock"
     />
 
+    <BarcodeScanner
+      v-model="showScanner"
+      :feedback="scanFeedback"
+      @detected="handleScan"
+    />
+
     <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
@@ -105,6 +111,17 @@
             type="text"
             :placeholder="$t('inventory.search.placeholder')"
           />
+          <button
+            class="scan-btn"
+            :title="$t('inventory.scanner.scan')"
+            :disabled="!authStore.canSellInventory"
+            @click="openScanner"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="#666" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </button>
           <button class="search-submit">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
@@ -390,6 +407,7 @@ import Button from '../components/UI/Button/Button.vue'
 import ProductModal from '../components/inventory/ProductModal.vue'
 import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
+import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
@@ -599,6 +617,39 @@ const saleItemCount = computed(() =>
   saleCart.value.reduce((acc, item) => acc + Number(item.cantidad), 0)
 )
 
+/* ── escaneo de código de barras (POS) ── */
+const showScanner  = ref(false)
+const scanFeedback = ref(null)
+let scanFeedbackTimer = null
+
+function openScanner() {
+  if (!authStore.canSellInventory) return
+  scanFeedback.value = null
+  showScanner.value = true
+}
+
+function flashScanFeedback(type, msg) {
+  scanFeedback.value = { type, msg }
+  clearTimeout(scanFeedbackTimer)
+  scanFeedbackTimer = setTimeout(() => { scanFeedback.value = null }, 1800)
+}
+
+function handleScan(code) {
+  const match = products.value.find(
+    (p) => p.codigo_barras && String(p.codigo_barras) === String(code)
+  )
+  if (!match) {
+    flashScanFeedback('err', t('inventory.scanner.notFound', { code }))
+    return
+  }
+  if (!canSellProduct(match)) {
+    flashScanFeedback('err', t('inventory.card.cannotSell'))
+    return
+  }
+  addToCart(match)
+  flashScanFeedback('ok', t('inventory.scanner.added', { name: match.nombre }))
+}
+
 function getCartItem(product) {
   return saleCart.value.find((item) => item.product.id_producto === product.id_producto)
 }
@@ -759,6 +810,7 @@ async function submitProduct(formData) {
         precio_costo:  formData.precio_costo,
         stock_minimo:  formData.stock_minimo ?? 0,
         stock_inicial: formData.stock_inicial ?? 0,
+        codigo_barras: formData.codigo_barras || undefined,
       }),
     })
     const data = await res.json()

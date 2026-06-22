@@ -66,6 +66,16 @@
   border: none;
 }
 
+/* Scan button inside the search bar */
+.scan-btn {
+  background: #0a0a0a; border: 1px solid #1f1f1f; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  transition: border-color .15s;
+}
+.scan-btn:hover:not(:disabled) { border-color: #c9a962; }
+.scan-btn:hover:not(:disabled) svg path { stroke: #c9a962; }
+.scan-btn:disabled { opacity: .4; cursor: not-allowed; }
+
 /* Filtros */
 .filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .filter-label { font-size: 11px; font-weight: 500; color: #888; margin-right: 4px; }

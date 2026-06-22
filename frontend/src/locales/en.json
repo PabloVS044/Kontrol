@@ -612,7 +612,19 @@
       "boxes": "Boxes",
       "unitsPerBox": "Units per box",
       "boxPrice": "Price per box",
-      "boxPreview": "→ {units} units · cost ${cost}/u"
+      "boxPreview": "→ {units} units · cost ${cost}/u",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "Scan or type the code"
+    },
+    "scanner": {
+      "scan": "Scan barcode",
+      "title": "Scan barcode",
+      "hint": "Point the camera at the product's barcode.",
+      "close": "Close",
+      "permissionError": "Camera permission denied. Enable it to scan.",
+      "noCamera": "Could not access the camera.",
+      "notFound": "No product for code {code}.",
+      "added": "Added: {name}"
     },
     "restock": {
       "title": "Add stock",

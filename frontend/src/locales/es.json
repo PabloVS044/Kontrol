@@ -612,7 +612,19 @@
       "boxes": "Cajas",
       "unitsPerBox": "Unidades por caja",
       "boxPrice": "Precio por caja",
-      "boxPreview": "→ {units} unidades · costo ${cost}/u"
+      "boxPreview": "→ {units} unidades · costo ${cost}/u",
+      "barcode": "Código de barras",
+      "barcodePlaceholder": "Escanea o escribe el código"
+    },
+    "scanner": {
+      "scan": "Escanear código",
+      "title": "Escanear código de barras",
+      "hint": "Apunta la cámara al código de barras del producto.",
+      "close": "Cerrar",
+      "permissionError": "Permiso de cámara denegado. Habilítalo para escanear.",
+      "noCamera": "No se pudo acceder a la cámara.",
+      "notFound": "Sin producto para el código {code}.",
+      "added": "Agregado: {name}"
     },
     "restock": {
       "title": "Ingresar stock",
