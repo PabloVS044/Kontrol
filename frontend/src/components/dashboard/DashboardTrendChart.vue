@@ -64,7 +64,7 @@
         font-family="Manrope, sans-serif"
       >{{ tick.label }}</text>
 
-      <path :d="chartData.plannedPath" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5" opacity="0.75" />
+      <path :d="chartData.plannedPath" fill="none" stroke="#caa860" stroke-width="1.5" stroke-dasharray="6,5" opacity="0.75" />
       <path :d="chartData.actualPath" fill="none" stroke="#34d399" stroke-width="2" />
 
       <template v-if="chartData.todayLine">
@@ -91,7 +91,7 @@
 
       <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
         <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f" />
-        <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5" />
+        <line x1="10" y1="14" x2="32" y2="14" stroke="#caa860" stroke-width="1.5" stroke-dasharray="6,5" />
         <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ t('dashboard.trend.legend.planned') }}</text>
         <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2" />
         <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ t('dashboard.trend.legend.actual') }}</text>
@@ -127,7 +127,7 @@ defineEmits(['update:modelValue'])
 }
 
 .chart-card h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: #888;

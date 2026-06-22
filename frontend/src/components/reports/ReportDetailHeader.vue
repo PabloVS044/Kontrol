@@ -98,7 +98,7 @@ defineEmits(['back'])
   padding: 0;
   transition: color .2s;
 }
-.back-btn:hover { color: #c9a962; }
+.back-btn:hover { color: #caa860; }
 
 .detail-header {
   margin-bottom: 28px;
@@ -146,7 +146,7 @@ defineEmits(['back'])
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
+.btn-outline:hover { border-color: #caa860; color: #caa860; }
 
 .meta-row {
   display: flex;
@@ -157,7 +157,7 @@ defineEmits(['back'])
 .meta-item { display: flex; flex-direction: column; gap: 3px; }
 .meta-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: #444;
   letter-spacing: 0.1em;
@@ -169,7 +169,7 @@ defineEmits(['back'])
   font-weight: 600;
   color: #ccc;
 }
-.meta-value.gold { color: #c9a962; }
+.meta-value.gold { color: #caa860; }
 .meta-value.dim { color: #555; }
 
 .overall-progress { display: flex; align-items: center; gap: 12px; }
@@ -183,7 +183,7 @@ defineEmits(['back'])
 }
 .op-fill {
   height: 100%;
-  background: linear-gradient(90deg, #b27f2a, #c9a962);
+  background: linear-gradient(90deg, #b27f2a, #caa860);
   border-radius: 2px;
   transition: width .6s ease;
 }

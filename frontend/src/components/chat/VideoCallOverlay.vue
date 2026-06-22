@@ -406,7 +406,7 @@ watch(showSideChat, async (isOpen) => {
   justify-content: center;
   border: 1px solid #3f3121;
   background: #1f180f;
-  color: #c9a962;
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -486,7 +486,7 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .call-btn--primary {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 
@@ -533,7 +533,7 @@ watch(showSideChat, async (isOpen) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+  border-bottom: 1px solid rgba(202, 168, 96, 0.15);
 }
 
 .side-chat-header span {
@@ -596,7 +596,7 @@ watch(showSideChat, async (isOpen) => {
   right: -2px;
   background: #fb7185;
   color: white;
-  font-size: 10px;
+  font-size: 11px;
   min-width: 16px;
   height: 16px;
   padding: 2px 6px;
@@ -795,7 +795,7 @@ watch(showSideChat, async (isOpen) => {
   align-items: center;
   text-align: center;
   color: #fb7185; /* Rojo Luxury */
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;

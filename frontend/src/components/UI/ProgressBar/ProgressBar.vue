@@ -7,7 +7,7 @@
 <script setup>
 defineProps({
   pct:    { type: Number, default: 0 },
-  color:  { type: String, default: '#c9a962' },
+  color:  { type: String, default: '#caa860' },
   height: { type: String, default: '4px' },
 })
 </script>

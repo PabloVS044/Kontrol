@@ -108,7 +108,7 @@ const props = defineProps({
 defineEmits(['add-product', 'export'])
 
 const lowStockColor = computed(() => {
-  return props.stats.lowStock > 0 ? '#c9a962' : '#555'
+  return props.stats.lowStock > 0 ? '#caa860' : '#555'
 })
 
 </script>
@@ -137,7 +137,7 @@ const lowStockColor = computed(() => {
 }
 
 .ctx-label {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #444;
   margin-bottom: 12px;
@@ -168,10 +168,10 @@ const lowStockColor = computed(() => {
   color: #555;
 }
 .s-sub {
-  font-size: 10px;
+  font-size: 11px;
   color: #444;
 }
-.s-sub.gold { color: #c9a962; }
+.s-sub.gold { color: #caa860; }
 .s-sub.red { color: #fb7185; }
 
 .category-section {
@@ -239,8 +239,8 @@ const lowStockColor = computed(() => {
   color: #fb7185;
 }
 .alert-status.gold {
-  background: rgba(201,169,98,0.15);
-  color: #c9a962;
+  background: rgba(202,168,96,0.15);
+  color: #caa860;
 }
 
 :deep(.btn) {
@@ -255,7 +255,7 @@ const lowStockColor = computed(() => {
   text-align: left;
 }
 :deep(.btn):first-of-type {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 :deep(.btn):last-of-type {
@@ -268,7 +268,7 @@ const lowStockColor = computed(() => {
   margin-top: auto;
 }
 .ds-label {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #333;
   margin-bottom: 4px;

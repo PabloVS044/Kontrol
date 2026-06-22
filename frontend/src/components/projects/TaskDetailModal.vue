@@ -78,5 +78,5 @@ const show = computed({
   letter-spacing: 0.08em; text-transform: uppercase;
   font-family: 'Manrope', sans-serif;
 }
-.status-badge.small { font-size: 10px; padding: 2px 8px; }
+.status-badge.small { font-size: 11px; padding: 2px 8px; }
 </style>

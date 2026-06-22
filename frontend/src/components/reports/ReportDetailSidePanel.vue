@@ -121,7 +121,7 @@ defineProps({
 .side-section { margin-bottom: 16px; }
 .side-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: #444;
   letter-spacing: 0.1em;
@@ -148,7 +148,7 @@ defineProps({
 }
 .health-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #333;
   display: block;
 }
@@ -171,7 +171,7 @@ defineProps({
 }
 .qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
 .qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: #aaa; }
-.qstat-val.gold { color: #c9a962; }
+.qstat-val.gold { color: #caa860; }
 .qstat-val.red { color: #fb7185; }
 
 .side-actions :deep(.btn) {
@@ -189,8 +189,8 @@ defineProps({
   transition: border-color .2s, color .2s;
 }
 .side-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
+  border-color: rgba(202,168,96,0.3);
+  color: #caa860;
 }
 
 .info-list { display: flex; flex-direction: column; gap: 0; }
@@ -203,18 +203,18 @@ defineProps({
 }
 .info-row :deep(.pill) {
   padding: 3px 8px;
-  font-size: 10px;
+  font-size: 11px;
 }
 .info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
 .info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #999; }
-.info-val.gold { color: #c9a962; }
+.info-val.gold { color: #caa860; }
 
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
+.risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
 
 @media (max-width: 1100px) {
   .side-panel { border-left: none; border-top: 1px solid #1e1e1e; }

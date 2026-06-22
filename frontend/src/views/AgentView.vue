@@ -1037,7 +1037,7 @@ function autoResizeEdit(e) {
 .msg-edited-tag {
   display: inline-block;
   margin-left: 6px;
-  font-size: 10px;
+  font-size: 11px;
   font-style: italic;
   color: var(--TextDim, #5a5040);
   vertical-align: middle;

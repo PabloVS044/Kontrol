@@ -693,7 +693,7 @@ const progressBlockers = computed(() =>
 
 const progressSignalColor = computed(() => {
   if (progressBlockers.value > 0) return "#fb7185";
-  if (progressPercentage.value >= 100) return "#c9a962";
+  if (progressPercentage.value >= 100) return "#caa860";
   if (progressPercentage.value >= 60) return "#34d399";
   if (progressPercentage.value > 0) return "#60a5fa";
   return "#666";
@@ -714,7 +714,7 @@ const progressLastUpdateLabel = computed(() =>
 const TASK_STATE_META = computed(() => [
   { estado: 'PENDIENTE',   label: t('projects.taskStatuses.pending'),    color: '#60a5fa' },
   { estado: 'EN_PROGRESO', label: t('projects.taskStatuses.inProgress'), color: '#34d399' },
-  { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: '#c9a962' },
+  { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: '#caa860' },
   { estado: 'CANCELADA',   label: t('projects.taskStatuses.cancelled'),  color: '#fb7185' },
 ])
 
@@ -892,7 +892,7 @@ async function handleProjectMembersUpdated() {
 // ── Team modal ────────────────────────────────────────────────────────────────
 
 function areaColor(area) {
-  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "#34d399", Infraestructura: "#f97316", Gestión: "#c9a962" }[area] || "#555")
+  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "#34d399", Infraestructura: "#f97316", Gestión: "#caa860" }[area] || "#555")
 }
 
 function openCreateTeam() {

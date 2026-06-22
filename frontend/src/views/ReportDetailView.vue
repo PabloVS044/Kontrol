@@ -87,9 +87,9 @@
               <div class="donut-wrap">
                 <DonutChart
                   :pct="budgetData.pct"
-                  color="#c9a962"
+                  color="#caa860"
                   :size="70" :radius="28" :stroke-width="10"
-                  :label="`${budgetData.pct}%`" label-color="#c9a962" :label-font-size="11" :label-offset-y="3"
+                  :label="`${budgetData.pct}%`" label-color="#caa860" :label-font-size="11" :label-offset-y="3"
                   sublabel="used" :sublabel-font-size="6" :sublabel-offset-y="10"
                   display-width="120px"
                 />
@@ -480,7 +480,7 @@ const healthSub = computed(() => {
   padding: 0;
   transition: color .2s;
 }
-.back-btn:hover { color: #c9a962; }
+.back-btn:hover { color: #caa860; }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 .detail-header {
@@ -529,7 +529,7 @@ const healthSub = computed(() => {
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
+.btn-outline:hover { border-color: #caa860; color: #caa860; }
 
 /* Meta row */
 .meta-row {
@@ -541,7 +541,7 @@ const healthSub = computed(() => {
 .meta-item { display: flex; flex-direction: column; gap: 3px; }
 .meta-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: #444;
   letter-spacing: 0.1em;
@@ -553,7 +553,7 @@ const healthSub = computed(() => {
   font-weight: 600;
   color: #ccc;
 }
-.meta-value.gold { color: #c9a962; }
+.meta-value.gold { color: #caa860; }
 .meta-value.dim  { color: #555; }
 
 /* Overall progress */
@@ -568,7 +568,7 @@ const healthSub = computed(() => {
 }
 .op-fill {
   height: 100%;
-  background: linear-gradient(90deg, #b27f2a, #c9a962);
+  background: linear-gradient(90deg, #b27f2a, #caa860);
   border-radius: 2px;
   transition: width .6s ease;
 }
@@ -586,7 +586,7 @@ const healthSub = computed(() => {
 }
 .info-row :deep(.pill) {
   padding: 3px 8px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 /* Skeleton */
@@ -621,7 +621,7 @@ const healthSub = computed(() => {
   transition: border-color .2s, background .2s;
 }
 .detail-card:hover {
-  border-color: rgba(201,169,98,0.2);
+  border-color: rgba(202,168,96,0.2);
   background: #111111;
 }
 .detail-card.span-2 { grid-column: span 2; }
@@ -642,9 +642,9 @@ const healthSub = computed(() => {
 }
 .card-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #c9a962;
-  border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px;
+  color: #caa860;
+  border: 1px solid rgba(202,168,96,0.2);
   padding: 2px 7px;
   background: #111111;
 }
@@ -655,11 +655,11 @@ const healthSub = computed(() => {
   border: 1px solid #1e1e1e;
   color: #444;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   transition: all .15s;
 }
-.period-btn.active { border-color: rgba(201,169,98,0.4); color: #c9a962; }
+.period-btn.active { border-color: rgba(202,168,96,0.4); color: #caa860; }
 
 /* ─── Budget card ────────────────────────────────────────────────────────── */
 .budget-body { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
@@ -673,17 +673,17 @@ const healthSub = computed(() => {
   color: #bbb;
 }
 .bstat-val.gold { color: #d4b06a; }
-.bstat-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
+.bstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
 
 .budget-bars { display: flex; flex-direction: column; gap: 7px; }
 .bb-item { display: flex; align-items: center; gap: 8px; }
-.bb-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 70px; flex-shrink: 0; }
+.bb-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; width: 70px; flex-shrink: 0; }
 .bb-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .bb-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.bb-fill.gold   { background: #c9a962; }
+.bb-fill.gold   { background: #caa860; }
 .bb-fill.blue   { background: #60a5fa; }
 .bb-fill.purple { background: #a78bfa; }
-.bb-pct { font-family: 'Manrope', sans-serif; font-size: 10px; color: #444; min-width: 28px; text-align: right; }
+.bb-pct { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; min-width: 28px; text-align: right; }
 
 /* ─── Task card ──────────────────────────────────────────────────────────── */
 .task-completion-circle {
@@ -694,14 +694,14 @@ const healthSub = computed(() => {
 }
 .task-summary { display: flex; flex-direction: column; gap: 3px; }
 .ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #faf8f5; }
-.ts-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; }
+.ts-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
 
 .task-list { display: flex; flex-direction: column; gap: 7px; }
 .tl-row { display: flex; align-items: center; gap: 7px; }
 .tl-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .tl-dot.green  { background: #4ade80; }
 .tl-dot.blue   { background: #60a5fa; }
-.tl-dot.gold   { background: #c9a962; }
+.tl-dot.gold   { background: #caa860; }
 .tl-dot.red    { background: #fb7185; }
 .tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; width: 72px; flex-shrink: 0; }
 .tl-bar-wrap { flex: 1; }
@@ -709,9 +709,9 @@ const healthSub = computed(() => {
 .tl-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .tl-fill.green  { background: #4ade80; }
 .tl-fill.blue   { background: #60a5fa; }
-.tl-fill.gold   { background: #c9a962; }
+.tl-fill.gold   { background: #caa860; }
 .tl-fill.red    { background: #fb7185; }
-.tl-val { font-family: 'Manrope', sans-serif; font-size: 10px; color: #444; min-width: 20px; text-align: right; }
+.tl-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; min-width: 20px; text-align: right; }
 
 /* ─── Team card ──────────────────────────────────────────────────────────── */
 .team-list { display: flex; flex-direction: column; gap: 4px; }
@@ -729,7 +729,7 @@ const healthSub = computed(() => {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #aaa;
   flex-shrink: 0;
@@ -737,10 +737,10 @@ const healthSub = computed(() => {
 }
 .member-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
 .member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ccc; font-weight: 500; }
-.member-role { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; }
+.member-role { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
 .member-status {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 2px 6px;
   letter-spacing: 0.05em;
@@ -764,8 +764,8 @@ const healthSub = computed(() => {
   flex-shrink: 0;
   transition: all .2s;
 }
-.phase-dot.done    { background: #c9a962; border: none; }
-.phase-dot.current { background: #c9a962; border: 1.5px solid #c9a962; }
+.phase-dot.done    { background: #caa860; border: none; }
+.phase-dot.current { background: #caa860; border: 1.5px solid #caa860; }
 .phase-dot.future  { background: #111111; border: 1.5px solid #2a2a2a; }
 .phase-dot.skip    { background: #111111; border: 1.5px solid #1e1e1e; }
 .phase-connector {
@@ -775,7 +775,7 @@ const healthSub = computed(() => {
   background: #1e1e1e;
   margin: 3px 0;
 }
-.phase-connector.filled { background: #c9a962; opacity: 0.4; }
+.phase-connector.filled { background: #caa860; opacity: 0.4; }
 
 .phase-content { flex: 1; padding-bottom: 18px; }
 .phase-name-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
@@ -789,8 +789,8 @@ const healthSub = computed(() => {
 .phase-name.current { color: #faf8f5; }
 .phase-name.future  { color: #444; }
 .phase-name.skip    { color: #2e2e2e; }
-.phase-date { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
-.phase-desc { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; line-height: 1.5; }
+.phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
+.phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; line-height: 1.5; }
 
 /* ─── Metrics card ───────────────────────────────────────────────────────── */
 .metrics-grid {
@@ -807,7 +807,7 @@ const healthSub = computed(() => {
 }
 .metric-card:hover {
   background: #111111;
-  border-color: rgba(201,169,98,0.2);
+  border-color: rgba(202,168,96,0.2);
   border-top-color: currentColor;
 }
 .metric-top {
@@ -823,7 +823,7 @@ const healthSub = computed(() => {
 }
 .metric-delta {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 1px 4px;
 }
@@ -831,7 +831,7 @@ const healthSub = computed(() => {
 .metric-delta.neg { color: #fb7185; background: rgba(251,113,133,0.08); }
 .metric-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   color: #666;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -844,7 +844,7 @@ const healthSub = computed(() => {
 .view-all-btn {
   background: none;
   border: none;
-  color: #c9a962;
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -873,17 +873,17 @@ const healthSub = computed(() => {
 }
 .act-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: #aaa; }
-.act-meta { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
+.act-meta { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
 .act-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 2px 7px;
   letter-spacing: 0.05em;
   flex-shrink: 0;
 }
 .tag-green  { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.tag-gold   { color: #c9a962; background: rgba(201,169,98,0.08);  }
+.tag-gold   { color: #caa860; background: rgba(202,168,96,0.08);  }
 .tag-purple { color: #a78bfa; background: rgba(167,139,250,0.08); }
 .tag-blue   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
 
@@ -897,7 +897,7 @@ const healthSub = computed(() => {
 .side-section { margin-bottom: 16px; }
 .side-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: #444;
   letter-spacing: 0.1em;
@@ -925,7 +925,7 @@ const healthSub = computed(() => {
 }
 .health-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #333;
   display: block;
 }
@@ -949,7 +949,7 @@ const healthSub = computed(() => {
 }
 .qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
 .qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: #aaa; }
-.qstat-val.gold { color: #c9a962; }
+.qstat-val.gold { color: #caa860; }
 .qstat-val.red  { color: #fb7185; }
 
 /* Side action buttons */
@@ -968,8 +968,8 @@ const healthSub = computed(() => {
   transition: border-color .2s, color .2s;
 }
 .side-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
+  border-color: rgba(202,168,96,0.3);
+  color: #caa860;
 }
 
 /* Info list */
@@ -983,15 +983,15 @@ const healthSub = computed(() => {
 }
 .info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
 .info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #999; }
-.info-val.gold { color: #c9a962; }
+.info-val.gold { color: #caa860; }
 
 /* Risk bars */
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
+.risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {

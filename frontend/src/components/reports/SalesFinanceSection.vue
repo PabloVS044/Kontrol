@@ -77,12 +77,12 @@
         <svg v-else class="sf-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
           <line v-for="g in 4" :key="g" x1="0" :y1="g * 36" x2="600" :y2="g * 36" stroke="#1a1a1a" stroke-width="1" />
           <path :d="areaPath('ingreso')" fill="url(#sfIncomeGrad)" />
-          <path :d="linePath('ingreso')" fill="none" stroke="#c9a962" stroke-width="2" />
+          <path :d="linePath('ingreso')" fill="none" stroke="#caa860" stroke-width="2" />
           <path :d="linePath('ganancia')" fill="none" stroke="#34d399" stroke-width="1.6" stroke-dasharray="5 3" />
           <defs>
             <linearGradient id="sfIncomeGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#c9a962" stop-opacity="0.25" />
-              <stop offset="100%" stop-color="#c9a962" stop-opacity="0" />
+              <stop offset="0%" stop-color="#caa860" stop-opacity="0.25" />
+              <stop offset="100%" stop-color="#caa860" stop-opacity="0" />
             </linearGradient>
           </defs>
         </svg>
@@ -254,7 +254,7 @@ function areaPath(key) {
   padding: 6px 12px; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
 }
 .sf-preset:hover { color: #ccc; }
-.sf-preset.active { color: #c9a962; border-color: #c9a962; background: #1a150f; }
+.sf-preset.active { color: #caa860; border-color: #caa860; background: #1a150f; }
 
 .sf-custom-range { display: flex; gap: 16px; flex-wrap: wrap; }
 .sf-custom-range label {
@@ -273,9 +273,9 @@ function areaPath(key) {
   display: flex; flex-direction: column; gap: 6px;
   padding: 14px; background: #0c0c0c; border: 1px solid #1e1e1e;
 }
-.sf-kpi--accent { border-color: rgba(201,169,98,0.35); }
+.sf-kpi--accent { border-color: rgba(202,168,96,0.35); }
 .sf-kpi-label {
-  font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700;
+  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
   color: #555; letter-spacing: 0.06em; text-transform: uppercase;
 }
 .sf-kpi-value {
@@ -288,18 +288,18 @@ function areaPath(key) {
 .sf-chart-legend { display: flex; gap: 16px; }
 .leg { display: flex; align-items: center; gap: 6px; font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; }
 .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
-.leg-dot.gold { background: #c9a962; }
+.leg-dot.gold { background: #caa860; }
 .leg-dot.green { background: #34d399; }
 .sf-svg { width: 100%; height: 180px; display: block; }
 .sf-x-axis { display: flex; justify-content: space-between; }
-.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 9px; color: #444; }
+.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; }
 
 .sf-state { padding: 24px 0; color: #777; font-family: 'Manrope', sans-serif; font-size: 12px; text-align: center; }
 .sf-state--error { color: #fb7185; }
 
 .sf-top { display: flex; flex-direction: column; gap: 6px; }
 .sf-top-title {
-  font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700;
+  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
   color: #555; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
 }
 .sf-top-row {
@@ -308,7 +308,7 @@ function areaPath(key) {
 }
 .sf-top-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ddd; }
 .sf-top-units { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; }
-.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: #c9a962; }
+.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: #caa860; }
 
 @media (max-width: 900px) {
   .sf-kpi-grid { grid-template-columns: repeat(2, 1fr); }

@@ -124,7 +124,7 @@ const usageColor = computed(() => {
   if (usagePct.value > 100) return '#fb7185'
   if (usagePct.value >= 80) return '#f97316'
   if (usagePct.value >= 60) return '#facc15'
-  return '#c9a962'
+  return '#caa860'
 })
 
 async function toggle() {
@@ -186,7 +186,7 @@ function formatDate(v) {
   font-size: 13px; font-weight: 500;
   cursor: pointer; min-width: 0; flex: 1;
 }
-.bar-name-btn:hover:not(.disabled) { color: #c9a962; }
+.bar-name-btn:hover:not(.disabled) { color: #caa860; }
 .bar-name-btn.disabled { cursor: default; opacity: 1; }
 .bar-name-btn:disabled { cursor: default; }
 
@@ -200,7 +200,7 @@ function formatDate(v) {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bar-count {
-  font-size: 10px; color: #888;
+  font-size: 11px; color: #888;
   background: #111111;
   padding: 1px 6px;
   border: 1px solid #2a2a2a;
@@ -220,7 +220,7 @@ function formatDate(v) {
   transition: color 0.15s, border-color 0.15s;
   font-family: 'Manrope', sans-serif;
 }
-.row-btn:hover { color: #c9a962; border-color: #c9a962; }
+.row-btn:hover { color: #caa860; border-color: #caa860; }
 .row-btn.danger:hover { color: #fb7185; border-color: #fb7185; }
 
 .bar-amounts {
@@ -228,7 +228,7 @@ function formatDate(v) {
   font-size: 12px; color: #bcbcbc; margin-bottom: 6px;
 }
 .amt-label {
-  font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
   color: #888; margin-right: 4px;
 }
 .bar-overrun {
@@ -241,7 +241,7 @@ function formatDate(v) {
   padding: 12px 14px;
   background: #000000;
   border: 1px solid #1a1a1a;
-  border-left: 2px solid #c9a962;
+  border-left: 2px solid #caa860;
 }
 .bar-details-empty {
   font-size: 12px; color: #888; text-align: center;
@@ -263,14 +263,14 @@ function formatDate(v) {
 .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
 
 .detail-date {
-  font-size: 10px; color: #888; letter-spacing: 0.05em;
+  font-size: 11px; color: #888; letter-spacing: 0.05em;
   text-transform: uppercase;
   min-width: 56px;
 }
 .detail-tag {
-  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #c9a962; background: #c9a962;
-  padding: 1px 6px; border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #caa860; background: #caa860;
+  padding: 1px 6px; border: 1px solid rgba(202,168,96,0.2);
   align-self: center;
 }
 .detail-text {

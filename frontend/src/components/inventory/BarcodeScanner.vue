@@ -115,7 +115,7 @@ onBeforeUnmount(stop)
 .scanner-frame {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: min(72vw, 320px); height: min(40vw, 180px);
-  border: 2px solid #c9a962; border-radius: 8px;
+  border: 2px solid #caa860; border-radius: 8px;
   box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
 }
 

@@ -404,8 +404,8 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .eyebrow {
-  color: #c9a962;
-  font-size: 10px;
+  color: #caa860;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   margin: 0 0 8px;
@@ -459,7 +459,7 @@ h3 { font-size: 20px; }
 .team-list-item:hover,
 .team-list-item.active {
   background: #111111;
-  border-color: rgba(201,169,98,0.3);
+  border-color: rgba(202,168,96,0.3);
 }
 
 .team-list-item div {
@@ -524,7 +524,7 @@ textarea { resize: vertical; }
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #c9a962;
+  border-color: #caa860;
 }
 
 .form-actions {
@@ -548,7 +548,7 @@ textarea:focus {
 
 .primary-action,
 .secondary-action {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 

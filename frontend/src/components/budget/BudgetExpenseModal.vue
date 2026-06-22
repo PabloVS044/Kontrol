@@ -121,8 +121,8 @@ defineEmits(['submit'])
   outline: none;
 }
 
-.form-field input:focus { border-color: #c9a962; }
-.req { color: #c9a962; }
+.form-field input:focus { border-color: #caa860; }
+.req { color: #caa860; }
 .hint { font-size: 11px; color: #a8a8a8; line-height: 1.4; margin: 0; }
 .modal-error { font-size: 12px; color: #fb7185; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
@@ -138,6 +138,6 @@ defineEmits(['submit'])
   border: 1px solid #1f1f1f;
   color: #faf8f5;
 }
-.modal-actions :deep(.btn:last-child) { background: #c9a962; color: #0a0a0a; }
+.modal-actions :deep(.btn:last-child) { background: #caa860; color: #0a0a0a; }
 .modal-actions :deep(.btn:last-child:disabled) { opacity: 0.6; }
 </style>

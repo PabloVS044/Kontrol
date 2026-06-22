@@ -136,10 +136,10 @@ const isDone = computed(() =>
   white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }
-.status-badge.small { font-size: 10px; padding: 2px 8px; }
+.status-badge.small { font-size: 11px; padding: 2px 8px; }
 
 .priority-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   font-family: 'Manrope', sans-serif;

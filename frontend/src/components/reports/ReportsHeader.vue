@@ -71,8 +71,8 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
 }
 
 .btn-outline:hover {
-  color: #c9a962;
-  border-color: rgba(201,169,98,0.45);
+  color: #caa860;
+  border-color: rgba(202,168,96,0.45);
 }
 
 @media (max-width: 640px) {

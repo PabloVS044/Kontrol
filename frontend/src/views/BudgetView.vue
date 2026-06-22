@@ -540,9 +540,9 @@ async function submitFunds(payload) {
 .title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; color: #faf8f5; }
 .subtitle { font-size: 13px; color: #a8a8a8; display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #c9a962; background: rgba(201,169,98,0.1);
-  padding: 2px 8px; border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #caa860; background: rgba(202,168,96,0.1);
+  padding: 2px 8px; border: 1px solid rgba(202,168,96,0.2);
 }
 
 .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -551,14 +551,14 @@ async function submitFunds(payload) {
   padding: 10px 12px; font-size: 13px; font-family: 'Manrope', sans-serif;
   outline: none; min-width: 220px;
 }
-.project-select:focus    { border-color: #c9a962; }
+.project-select:focus    { border-color: #caa860; }
 .project-select:disabled { opacity: 0.5; cursor: not-allowed; }
 .project-select option   { background: #0f0f0f; }
 
 .readonly-hint {
   font-size: 12px; color: #888;
   background: rgba(17, 17, 17, 0.92);
-  border: 1px solid #1f1f1f; border-left: 2px solid #c9a962;
+  border: 1px solid #1f1f1f; border-left: 2px solid #caa860;
   padding: 10px 14px; margin-bottom: 20px;
   font-family: 'Manrope', sans-serif;
 }
@@ -591,7 +591,7 @@ async function submitFunds(payload) {
 .mv-dot {
   width: 8px; height: 8px; border-radius: 50%; display: inline-block;
 }
-.mv-dot.purchase { background: #c9a962; }
+.mv-dot.purchase { background: #caa860; }
 .mv-dot.sale     { background: #34d399; }
 .mv-dot.admin    { background: #60a5fa; }
 .mv-label  { color: #d4d4d4; letter-spacing: 0.05em; }
@@ -621,7 +621,7 @@ async function submitFunds(payload) {
   margin-bottom: 16px; gap: 12px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #c9a962;
+  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
   font-weight: 600; text-transform: uppercase;
 }
 .activities-count { font-size: 11px; color: #888; }
@@ -647,15 +647,15 @@ async function submitFunds(payload) {
 }
 .ai-insight-box h4 {
   font-size: 12px; margin-bottom: 8px; letter-spacing: 0.1em;
-  color: #c9a962; text-transform: uppercase;
+  color: #caa860; text-transform: uppercase;
 }
 .ai-insight-box p  { font-size: 12px; color: #d4d4d4; line-height: 1.6; margin: 0; }
-.gold   { color: #c9a962; }
+.gold   { color: #caa860; }
 .danger { color: #fb7185; }
 
 .header-actions :deep(.btn) {
   border-radius: 0; font-size: 12px; font-weight: 600;
-  padding: 10px 16px; background: #c9a962; color: #0a0a0a;
+  padding: 10px 16px; background: #caa860; color: #0a0a0a;
 }
 .header-actions :deep(.btn:disabled) { opacity: 0.4; cursor: not-allowed; }
 

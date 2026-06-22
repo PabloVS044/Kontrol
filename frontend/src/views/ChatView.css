@@ -77,7 +77,7 @@
   border: 1px solid #202020;
   transition: border-color 0.15s;
 }
-.sidebar-search:focus-within { border-color: rgba(201,169,98,0.3); }
+.sidebar-search:focus-within { border-color: rgba(202,168,96,0.3); }
 .sidebar-search input {
   flex: 1;
   background: none;
@@ -121,7 +121,7 @@
 .section-label {
   flex: 1;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -129,7 +129,7 @@
 }
 .section-count {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #555;
 }
 .section-chevron {
@@ -152,7 +152,7 @@
 .conv-item:hover { background: #111111; }
 .conv-item.active {
   background: #1a150f;
-  border-left-color: #c9a962;
+  border-left-color: #caa860;
 }
 .conv-item.active .conv-name { color: #faf8f5; }
 
@@ -169,7 +169,7 @@
 }
 
 /* Avatar colors by type */
-.conv-avatar.at-dm      { background: #1f180f; border: 1px solid #2f2418; color: #c9a962; }
+.conv-avatar.at-dm      { background: #1f180f; border: 1px solid #2f2418; color: #caa860; }
 .conv-avatar.at-project { background: #122b22; border: 1px solid #245f4d; color: #34d399; }
 .conv-avatar.at-team    { background: #11213c; border: 1px solid #1d3d66; color: #60a5fa; }
 .conv-avatar.at-company { background: #1d173f; border: 1px solid #392f6b; color: #a78bfa; }
@@ -205,7 +205,7 @@
 }
 .conv-time {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #585858;
   flex-shrink: 0;
 }
@@ -227,10 +227,10 @@
   flex-shrink: 0;
   min-width: 17px;
   height: 17px;
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   border-radius: 9px;
   display: flex;
@@ -346,14 +346,14 @@
 /* Type badges */
 .type-badge {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 3px;
 }
-.badge-dm      { background: #1f180f; border: 1px solid #2f2418; color: #c9a962; }
+.badge-dm      { background: #1f180f; border: 1px solid #2f2418; color: #caa860; }
 .badge-project { background: #122b22; border: 1px solid #245f4d; color: #34d399; }
 .badge-team    { background: #11213c; border: 1px solid #1d3d66; color: #60a5fa; }
 .badge-company { background: #1d173f; border: 1px solid #392f6b; color: #a78bfa; }
@@ -425,7 +425,7 @@
 }
 .date-divider span {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -449,7 +449,7 @@
   border-radius: 50%;
   background: #1f180f;
   border: 1px solid #2f2418;
-  color: #c9a962;
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
@@ -473,7 +473,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  color: #c9a962;
+  color: #caa860;
   margin-bottom: 2px;
   display: block;
 }
@@ -508,7 +508,7 @@
 
 .msg-time {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #505050;
   padding: 0 3px;
 }
@@ -535,7 +535,7 @@
   justify-content: center;
   background: #1b150d;
   border: 1px solid #2f2418;
-  color: #c9a962;
+  color: #caa860;
 }
 .attach-file-info { flex: 1; min-width: 0; }
 .attach-file-name {
@@ -550,7 +550,7 @@
 }
 .attach-file-size {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
 }
 .attach-dl-btn {
@@ -606,7 +606,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #c9a962;
+  background: #caa860;
   border: none;
   cursor: pointer;
   display: flex;
@@ -626,7 +626,7 @@
 }
 .wave-bar {
   width: 2.5px;
-  background: #c9a962;
+  background: #caa860;
   border-radius: 2px;
   flex-shrink: 0;
   transition: background 0.12s;
@@ -664,7 +664,7 @@
   border-radius: 50%;
   background: #3a2a1c;
   border: 1px solid #5e4a2f;
-  color: #c9a962;
+  color: #caa860;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -700,15 +700,15 @@
 }
 .integration-app-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #c9a962;
+  color: #caa860;
 }
 .integration-type-badge {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -749,13 +749,13 @@
 }
 .integration-progress-fill {
   height: 100%;
-  background: #c9a962;
+  background: #caa860;
   border-radius: 2px;
 }
 .integration-pct {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #c9a962;
+  font-size: 11px;
+  color: #caa860;
   font-weight: 600;
 }
 
@@ -813,7 +813,7 @@
   line-height: 1.5;
   transition: border-color 0.15s;
 }
-.chat-textarea:focus { border-color: rgba(201,169,98,0.35); }
+.chat-textarea:focus { border-color: rgba(202,168,96,0.35); }
 .chat-textarea::placeholder { color: #444; }
 
 .send-btn {
@@ -829,7 +829,7 @@
   justify-content: center;
   transition: all 0.15s;
 }
-.send-btn.active { background: #c9a962; border-color: #c9a962; color: #0a0a0a; }
+.send-btn.active { background: #caa860; border-color: #caa860; color: #0a0a0a; }
 .send-btn:not(.active):hover { border-color: #3a3a3a; color: #888; }
 .send-btn:disabled { opacity: 0.3; cursor: default; }
 

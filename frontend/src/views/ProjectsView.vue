@@ -253,9 +253,9 @@
               <div class="lr-pill-col" @click.stop>
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(202,168,96,0.12)' : 'rgba(96,165,250,0.08)'"
+                  :circleColor="isAdmin(project) ? '#caa860' : '#60a5fa'"
+                  :textColor="isAdmin(project) ? '#caa860' : '#60a5fa'"
                 />
               </div>
             </div>
@@ -291,9 +291,9 @@
                 </div>
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? '#c9a962' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(202,168,96,0.12)' : 'rgba(96,165,250,0.08)'"
+                  :circleColor="isAdmin(project) ? '#caa860' : '#60a5fa'"
+                  :textColor="isAdmin(project) ? '#caa860' : '#60a5fa'"
                 />
               </div>
 
@@ -497,7 +497,7 @@ const STATUS_COLOR = {
   PLANIFICADO: '#60a5fa',
   EN_PROGRESO: '#34d399',
   PAUSADO:     '#f97316',
-  COMPLETADO:  '#c9a962',
+  COMPLETADO:  '#caa860',
   CANCELADO:   '#fb7185',
 }
 const STATUS_PROGRESS = {
@@ -529,7 +529,7 @@ const budgetColor  = (p) => {
   const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
   if (isCriticalBudgetLevel(lvl)) return '#fb7185'
   if (isWarningBudgetLevel(lvl)) return '#f97316'
-  return '#c9a962'
+  return '#caa860'
 }
 function openBudget(p) {
   router.push({ name: 'budget', query: { project: p.id_proyecto } })
@@ -734,7 +734,7 @@ async function submitProject() {
 
 .btn-primary {
   display: flex; align-items: center; gap: 8px;
-  background: #c9a962; padding: 10px 18px; cursor: pointer; border: none;
+  background: #caa860; padding: 10px 18px; cursor: pointer; border: none;
 }
 .btn-primary span { font-size: 12px; color: #0a0a0a; white-space: nowrap; font-family: 'Manrope', sans-serif; }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -752,7 +752,7 @@ async function submitProject() {
   font-family: 'Manrope', sans-serif; font-size: 15px; color: #777;
   padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
 }
-.tab.active { color: #c9a962; border-bottom-color: #c9a962; }
+.tab.active { color: #caa860; border-bottom-color: #caa860; }
 .tab:hover:not(.active) { color: #aaa; }
 
 .section-header  { display: flex; justify-content: space-between; align-items: center; }
@@ -766,7 +766,7 @@ async function submitProject() {
   border: 1px solid #1f1f1f; background: #0a0a0a;
   padding: 6px 12px; transition: border-color 0.15s;
 }
-.search-wrap:focus-within { border-color: rgba(201,169,98,0.4); }
+.search-wrap:focus-within { border-color: rgba(202,168,96,0.4); }
 .search-icon { color: #444; flex-shrink: 0; }
 .search-input {
   background: #111111; border: none; outline: none;
@@ -786,7 +786,7 @@ async function submitProject() {
   background: #111111; border: none; color: #444; cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
-.vt-btn.active { color: #0a0a0a; background: #c9a962; }
+.vt-btn.active { color: #0a0a0a; background: #caa860; }
 .vt-btn:hover:not(.active) { color: #888; }
 
 .project-grid {
@@ -834,7 +834,7 @@ async function submitProject() {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: color 0.15s; margin-bottom: 4px;
 }
-.list-row:hover .lr-name { color: #c9a962; }
+.list-row:hover .lr-name { color: #caa860; }
 .lr-meta { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .lr-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .lr-status-text { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
@@ -873,14 +873,14 @@ async function submitProject() {
   background: #111111; border: none; color: #555; cursor: pointer;
   transition: color 0.15s, background 0.15s; border-radius: 2px;
 }
-.lr-btn:hover { color: #c9a962; background: #c9a962; }
+.lr-btn:hover { color: #caa860; background: #caa860; }
 
 .lr-pill-col {
   display: flex; align-items: center; justify-content: center;
   padding: 0 16px; border-left: 1px solid #1a1a1a;
 }
 .lr-pill-col :deep(.pill) { height: 20px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
-.lr-pill-col :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
+.lr-pill-col :deep(.pill-text) { font-size: 11px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
 .lr-pill-col :deep(.dot) { display: none; }
 
 .project-card {
@@ -910,7 +910,7 @@ async function submitProject() {
   line-height: 1.2; margin-bottom: 8px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.card-main:hover .card-name { color: #c9a962; }
+.card-main:hover .card-name { color: #caa860; }
 
 .card-body { padding: 10px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
 .card-desc { font-size: 15px; color: #666; line-height: 1.55;
@@ -936,7 +936,7 @@ async function submitProject() {
 /* Quick access row */
 .card-quick-row {
   display: flex;
-  border-top: 1px solid rgba(201,169,98,0.15);
+  border-top: 1px solid rgba(202,168,96,0.15);
   background: #111111;
   margin-top: auto;
 }
@@ -944,12 +944,12 @@ async function submitProject() {
   flex: 1;
   display: flex; flex-direction: column; align-items: center; gap: 5px;
   padding: 13px 4px;
-  background: none; border: none; border-right: 1px solid rgba(201,169,98,0.1);
+  background: none; border: none; border-right: 1px solid rgba(202,168,96,0.1);
   color: #999; font-size: 14px; font-family: 'Manrope', sans-serif;
   cursor: pointer; transition: color 0.2s, background 0.2s;
 }
 .quick-btn:last-child { border-right: none; }
-.quick-btn:hover { color: #c9a962; background: #c9a962; }
+.quick-btn:hover { color: #caa860; background: #caa860; }
 
 .card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .due-date { font-size: 14px; color: #555; }
@@ -1001,19 +1001,19 @@ async function submitProject() {
   padding: 10px 16px;
 }
 .open-link { font-size: 12px; color: #555; cursor: pointer; transition: color 0.15s; }
-.project-card:hover .open-link { color: #c9a962; }
+.project-card:hover .open-link { color: #caa860; }
 
 .card-status-row :deep(.pill) { height: 20px; padding: 0 10px; border-radius: 3px; border: 1px solid currentColor; }
-.card-status-row :deep(.pill-text) { font-size: 10px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
+.card-status-row :deep(.pill-text) { font-size: 11px; letter-spacing: 0.06em; font-family: 'Manrope', sans-serif; }
 .card-status-row :deep(.dot) { display: none; }
 
 .card-footer-row :deep(.pill) { height: 20px; padding: 0 8px; border-radius: 3px; border: 1px solid currentColor; }
-.card-footer-row :deep(.pill-text) { font-size: 10px; font-family: 'Manrope', sans-serif; }
+.card-footer-row :deep(.pill-text) { font-size: 11px; font-family: 'Manrope', sans-serif; }
 .card-footer-row :deep(.dot) { width: 6px; height: 6px; margin-right: 6px; }
 
 .modal-actions :deep(.btn) { border-radius: 0; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; padding: 10px 20px; }
 .modal-actions :deep(.btn:first-child) { background: #111111; border: 1px solid #1f1f1f; color: #faf8f5; }
-.modal-actions :deep(.btn:last-child)  { background: #c9a962; color: #0a0a0a; }
+.modal-actions :deep(.btn:last-child)  { background: #caa860; color: #0a0a0a; }
 .modal-actions :deep(.btn:last-child:disabled) { opacity: 0.6; }
 
 .context-panel :deep(.btn) {
@@ -1021,7 +1021,7 @@ async function submitProject() {
   font-size: 12px; font-weight: 600; padding: 12px 16px;
   display: block; margin-bottom: 8px; text-align: left;
 }
-.context-panel :deep(.btn:first-of-type) { background: #c9a962; color: #0a0a0a; }
+.context-panel :deep(.btn:first-of-type) { background: #caa860; color: #0a0a0a; }
 .context-panel :deep(.btn:last-of-type)  { background: #111111; border: 1px solid #1f1f1f; color: #faf8f5; }
 
 .project-card.skeleton { pointer-events: none; }
@@ -1049,7 +1049,7 @@ async function submitProject() {
 
 .ctx-title    { font-family: 'Playfair Display', serif; font-size: 28px; color: #faf8f5; }
 .ctx-subtitle { font-size: 13px; color: #555; margin-top: 4px; }
-.ctx-label    { font-size: 10px; letter-spacing: 0.1em; color: #444; margin-bottom: 12px; }
+.ctx-label    { font-size: 11px; letter-spacing: 0.1em; color: #444; margin-bottom: 12px; }
 
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .summary-card {
@@ -1058,12 +1058,12 @@ async function submitProject() {
 }
 .s-value { font-size: 28px; font-weight: 700; color: #faf8f5; line-height: 1; }
 .s-label { font-size: 11px; color: #555; }
-.s-sub   { font-size: 10px; color: #444; }
-.s-sub.gold { color: #c9a962; }
+.s-sub   { font-size: 11px; color: #444; }
+.s-sub.gold { color: #caa860; }
 .s-sub.red  { color: #fb7185; }
 
 .data-source { margin-top: auto; }
-.ds-label { font-size: 10px; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
+.ds-label { font-size: 11px; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
 .ds-text  { font-size: 11px; color: #444; }
 
 /* Modal form styles */
@@ -1079,10 +1079,10 @@ async function submitProject() {
 }
 .form-field input:focus,
 .form-field textarea:focus,
-.form-field select:focus { border-color: #c9a962; }
+.form-field select:focus { border-color: #caa860; }
 .form-field select option { background: #0f0f0f; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.req { color: #c9a962; }
+.req { color: #caa860; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .modal-error   { font-size: 12px; color: #fb7185; }
 

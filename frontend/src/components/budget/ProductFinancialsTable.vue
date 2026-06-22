@@ -146,7 +146,7 @@ function formatMoney(v) {
   gap: 12px; margin-bottom: 8px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #c9a962;
+  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
   font-weight: 600; text-transform: uppercase;
 }
 .pf-count { font-size: 11px; color: #888; }
@@ -171,7 +171,7 @@ function formatMoney(v) {
   display: flex; flex-direction: column; gap: 4px; min-width: 0;
 }
 .pf-total-label {
-  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
   color: #888;
 }
 .pf-total-value {
@@ -188,7 +188,7 @@ function formatMoney(v) {
 }
 .pf-table th {
   text-align: right; padding: 10px 12px;
-  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
   color: #888; border-bottom: 1px solid #1f1f1f;
   font-weight: 600;
   white-space: nowrap;
@@ -211,7 +211,7 @@ function formatMoney(v) {
 
 .income { color: #34d399; }
 .danger { color: #fb7185; }
-.gold   { color: #c9a962; }
+.gold   { color: #caa860; }
 
 @media (max-width: 800px) {
   .pf-totals,

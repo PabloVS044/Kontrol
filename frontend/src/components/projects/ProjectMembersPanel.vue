@@ -554,7 +554,7 @@ watch(
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #c9a962;
+  color: #caa860;
 }
 
 .pm-title,
@@ -657,7 +657,7 @@ watch(
 .pm-link-box {
   padding: 16px;
   background: #111111;
-  border: 1px dashed rgba(201, 169, 98, 0.28);
+  border: 1px dashed rgba(202, 168, 96, 0.28);
 }
 
 .pm-link {
@@ -708,7 +708,7 @@ watch(
 }
 
 .pm-permission input {
-  accent-color: #c9a962;
+  accent-color: #caa860;
 }
 
 .pm-permission-name {
@@ -743,7 +743,7 @@ watch(
 }
 
 .pm-btn--primary {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
   font-weight: 700;
 }
@@ -787,9 +787,9 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(201, 169, 98, 0.12);
-  border: 1px solid rgba(201, 169, 98, 0.2);
-  color: #c9a962;
+  background: rgba(202, 168, 96, 0.12);
+  border: 1px solid rgba(202, 168, 96, 0.2);
+  color: #caa860;
   font-weight: 700;
 }
 

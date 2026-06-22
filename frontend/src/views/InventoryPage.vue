@@ -181,9 +181,9 @@
               </div>
               <Pill
                 :label="stockLabel(product)"
-                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(201,169,98,0.12)' : 'rgba(52,211,153,0.12)'"
-                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
-                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#c9a962' : '#34d399'"
+                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(202,168,96,0.12)' : 'rgba(52,211,153,0.12)'"
+                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
+                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
               />
             </div>
 
@@ -560,7 +560,7 @@ const stats = computed(() => {
   return { total, lowStock, outOfStock, totalValue: formatted }
 })
 
-const CAT_COLORS = ['#c9a962', '#60a5fa', '#a78bfa', '#34d399', '#f97316', '#fb7185', '#e879f9']
+const CAT_COLORS = ['#caa860', '#60a5fa', '#a78bfa', '#34d399', '#f97316', '#fb7185', '#e879f9']
 
 const categoryStats = computed(() => {
   const totals = {}

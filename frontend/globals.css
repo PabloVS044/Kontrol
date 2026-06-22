@@ -26,6 +26,30 @@
   --InputBg: rgba(255, 255, 255, 0.04);
   --InputFocusBg: rgba(202, 168, 96, 0.05);
   --BtnText: #0e0c08;
+
+  /* ─── Tipografía de marca ─────────────────────────────────────────────── */
+  /* Playfair Display = display/títulos (serif).  Manrope = cuerpo/UI (sans). */
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+
+  /* Escala tipográfica — piso de legibilidad 11px, paso ~1.2 */
+  --text-2xs: 0.6875rem; /* 11px — mínimo legible (labels, meta, pills) */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.875rem; /* 14px — cuerpo UI */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 2rem; /* 32px */
+  --text-3xl: 2.625rem; /* 42px */
+
+  /* Interlineado y tracking */
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --tracking-tight: -0.01em;
+  --tracking-caps: 0.08em; /* labels en mayúsculas */
 }
 html,
 body,
@@ -39,6 +63,25 @@ body,
 html {
   scrollbar-gutter: stable;
 }
+
+/* Base: todo hereda Manrope salvo override explícito en componentes. */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--Text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos sin clase propia caen en el display serif de marca. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+}
 .hero-title {
   color: var(--Text);
   font-family: "Alfa Slab One";
@@ -48,7 +91,7 @@ html {
 }
 
 p {
-  font-family: "DM Sans";
+  font-family: var(--font-sans);
   font-size: clamp(0.95rem, 1.5vw, 1.2rem);
   color: var(--Text);
   z-index: 20;

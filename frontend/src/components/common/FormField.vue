@@ -30,7 +30,7 @@ defineProps({
   font-family: 'Manrope', sans-serif;
 }
 .req {
-  color: #c9a962;
+  color: #caa860;
 }
 input,
 textarea,
@@ -48,8 +48,8 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #c9a962;
-  box-shadow: 0 0 0 2px rgba(201,169,98,0.1);
+  border-color: #caa860;
+  box-shadow: 0 0 0 2px rgba(202,168,96,0.1);
 }
 .field-error {
   font-size: 12px;

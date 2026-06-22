@@ -191,8 +191,8 @@ function handleSubmit() {
   transition: border-color 0.15s;
 }
 .form-field input:focus,
-.form-field textarea:focus { border-color: #c9a962; }
-.req { color: #c9a962; }
+.form-field textarea:focus { border-color: #caa860; }
+.req { color: #caa860; }
 .modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
@@ -204,10 +204,10 @@ function handleSubmit() {
   transition: background 0.15s, color 0.15s;
 }
 .mode-btn + .mode-btn { border-left: 1px solid #1f1f1f; }
-.mode-btn.active { background: #c9a962; color: #0a0a0a; }
+.mode-btn.active { background: #caa860; color: #0a0a0a; }
 .box-preview {
-  font-size: 12px; color: #c9a962; font-family: 'Manrope', sans-serif;
-  background: rgba(201,169,98,0.08); border: 1px solid rgba(201,169,98,0.2);
+  font-size: 12px; color: #caa860; font-family: 'Manrope', sans-serif;
+  background: rgba(202,168,96,0.08); border: 1px solid rgba(202,168,96,0.2);
   padding: 8px 12px;
 }
 
@@ -218,10 +218,10 @@ function handleSubmit() {
   color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.barcode-scan:hover { border-color: #c9a962; color: #c9a962; }
+.barcode-scan:hover { border-color: #caa860; color: #caa860; }
 
 .btn-primary {
-  background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;
+  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
   color: #0a0a0a; transition: filter 0.15s;
 }

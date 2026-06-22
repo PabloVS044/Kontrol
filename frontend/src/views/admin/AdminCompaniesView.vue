@@ -163,12 +163,12 @@ onMounted(async () => {
   padding-top: 0.5rem;
   font-size: 14px;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   margin: 0;
 }
 
-.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: 'DM Sans', sans-serif; }
-.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: 'DM Sans', sans-serif; }
+.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: var(--font-sans); }
+.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: var(--font-sans); }
 
 /* Sort bar */
 .sort-bar {
@@ -186,7 +186,7 @@ onMounted(async () => {
   background: #111111;
   border: 1px solid var(--Border);
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -208,7 +208,7 @@ onMounted(async () => {
   font-size: 12px;
   color: var(--TextDim);
   margin-left: 4px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 
@@ -219,11 +219,11 @@ onMounted(async () => {
   grid-template-columns: 2fr 1fr 2fr 90px 90px 110px;
   gap: 12px;
   padding: 8px 16px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--TextDim);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .task-card {
@@ -270,7 +270,7 @@ onMounted(async () => {
 
 .task-name {
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   color: var(--Text);
   white-space: nowrap;
@@ -281,7 +281,7 @@ onMounted(async () => {
 .task-id {
   font-size: 11px;
   color: var(--TextDim);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* fit-content so it doesn't stretch across the column */
@@ -299,7 +299,7 @@ onMounted(async () => {
   color: #60a5fa;
   font-size: 11px;
   font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   white-space: nowrap;
   width: fit-content;
 }
@@ -307,7 +307,7 @@ onMounted(async () => {
 .cell-email {
   font-size: 12px;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -317,7 +317,7 @@ onMounted(async () => {
   font-size: 13px;
   color: var(--TextMuted);
   text-align: center;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .col-center { text-align: center; }
@@ -331,7 +331,7 @@ onMounted(async () => {
 .toggle-btn {
   font-size: 11px;
   font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   letter-spacing: 0.04em;
   padding: 4px 10px;
   border: 1px solid;
@@ -349,7 +349,7 @@ onMounted(async () => {
   text-align: center;
   color: var(--TextDim);
   padding: 40px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   background: var(--Background2);
   border: 1px solid var(--Border);

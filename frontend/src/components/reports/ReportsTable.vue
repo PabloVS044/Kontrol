@@ -109,7 +109,7 @@ defineEmits(['open'])
 }
 
 .view-all-btn:hover,
-.open-btn:hover { color: #c9a962; }
+.open-btn:hover { color: #caa860; }
 
 .table-skeleton { display: flex; flex-direction: column; gap: 10px; }
 .table-skel-row { display: flex; gap: 12px; }
@@ -131,7 +131,7 @@ defineEmits(['open'])
 .rep-table th {
   text-align: left;
   color: #444;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
   padding: 0 0 10px;
@@ -158,7 +158,7 @@ defineEmits(['open'])
   gap: 6px;
   padding: 4px 8px;
   border-radius: 2px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .04em;
 }
 

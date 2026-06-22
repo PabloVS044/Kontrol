@@ -1275,7 +1275,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .stat-label,
 .metric-label {
   margin: 0 0 8px;
-  color: #c9a962;
+  color: #caa860;
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1358,7 +1358,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .primary-action {
-  background: #c9a962;
+  background: #caa860;
   color: #0b0b0b;
   padding: 12px 18px;
   font-weight: 700;
@@ -1373,7 +1373,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .mini-action.solid {
-  background: #c9a962;
+  background: #caa860;
   color: #f5e3ae;
 }
 
@@ -1453,8 +1453,8 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .project-card.active,
 .campaign-card.active,
 .publication-card.active {
-  border-color: rgba(201, 169, 98, 0.48);
-  background: rgba(201, 169, 98, 0.11);
+  border-color: rgba(202, 168, 96, 0.48);
+  background: rgba(202, 168, 96, 0.11);
 }
 
 .project-top,
@@ -1558,7 +1558,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip.brand {
-  background: rgba(201, 169, 98, 0.18);
+  background: rgba(202, 168, 96, 0.18);
   color: #f1d287;
 }
 

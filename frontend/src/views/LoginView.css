@@ -4,7 +4,7 @@
   position: relative;
   min-height: 100vh;
   display: flex;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .login-layout {
@@ -106,7 +106,7 @@
   border-radius: 6px;
   color: var(--Text);
   font-size: 0.92rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   outline: none;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -163,7 +163,7 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   font-weight: 700;
   font-size: 0.98rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   border: 1px solid rgba(255, 220, 150, 0.35);
   border-radius: 8px;
   cursor: pointer;
@@ -237,7 +237,7 @@
   border-radius: 8px;
   color: #ffffff;
   font-size: 0.82rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: border-color 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;

@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: transparent;
   color: var(--Text, #fff);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .integrations-layout {
@@ -45,7 +45,7 @@
 .chip {
   padding: 6px 14px;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
   color: #aaa;
@@ -210,7 +210,7 @@
   flex: 1;
   padding: 8px 14px;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.3);
   color: #caa860;
@@ -225,7 +225,7 @@
 .btn-test {
   padding: 8px 14px;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
   color: #888;
@@ -361,7 +361,7 @@
   color: #faf8f5;
   padding: 10px 12px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   outline: none;
   transition: border-color 0.15s;
   width: 100%;
@@ -381,7 +381,7 @@
   color: #555;
   font-size: 12px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .toggle-pass:hover {
@@ -427,7 +427,7 @@
   border: none;
   color: #555;
   font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   padding: 0;
   transition: color 0.15s;
@@ -443,7 +443,7 @@
   border: none;
   color: #555;
   font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   padding: 0;
   transition: color 0.15s;
@@ -457,7 +457,7 @@
   margin-left: auto;
   padding: 4px 10px;
   font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: rgba(251, 113, 133, 0.1);
   border: 1px solid rgba(251, 113, 133, 0.35);
   color: #fb7185;
@@ -477,7 +477,7 @@
 .btn-cancel-disconnect {
   padding: 4px 10px;
   font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
   color: #666;

@@ -60,9 +60,9 @@
       <Anchor
         label="View details"
         :link="detailLink"
-        textColor="#c9a962"
+        textColor="#caa860"
         backColor="transparent"
-        hoverColor="rgba(201,169,98,0.05)"
+        hoverColor="rgba(202,168,96,0.05)"
       />
     </div>
   </div>
@@ -87,13 +87,13 @@ const stockLabel = computed(() => {
 
 const pillColor = computed(() => {
   if (props.product.stock_actual === 0) return 'rgba(251,113,133,0.12)'
-  if (props.product.stock_actual <= props.product.stock_minimo) return 'rgba(201,169,98,0.12)'
+  if (props.product.stock_actual <= props.product.stock_minimo) return 'rgba(202,168,96,0.12)'
   return 'rgba(52,211,153,0.12)'
 })
 
 const pillColorText = computed(() => {
   if (props.product.stock_actual === 0) return '#fb7185'
-  if (props.product.stock_actual <= props.product.stock_minimo) return '#c9a962'
+  if (props.product.stock_actual <= props.product.stock_minimo) return '#caa860'
   return '#34d399'
 })
 
@@ -146,7 +146,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   border-radius: 4px;
 }
 .img-placeholder span {
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
   letter-spacing: 0.05em;
 }
@@ -188,7 +188,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   border-top: 1px solid #1a1a1a;
 }
 .card-price-label {
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
 }
 .card-price {
@@ -206,9 +206,9 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   line-height: 1;
 }
 .card-stock-num.red { color: #fb7185; }
-.card-stock-num.gold { color: #c9a962; }
+.card-stock-num.gold { color: #caa860; }
 .card-stock-label {
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
 }
 

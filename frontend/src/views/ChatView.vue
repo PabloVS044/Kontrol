@@ -580,7 +580,7 @@ onMounted(() => {
 .chat-typing-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #c9a962;
+  color: #caa860;
   font-style: italic;
 }
 
@@ -611,7 +611,7 @@ onMounted(() => {
 .upload-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #c9a962;
+  color: #caa860;
   padding-left: 8px;
 }
 

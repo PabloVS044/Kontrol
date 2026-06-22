@@ -205,8 +205,8 @@
               <svg viewBox="0 0 600 160" preserveAspectRatio="none" class="perf-svg">
                 <defs>
                   <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#c9a962" stop-opacity="0.3"/>
-                    <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
+                    <stop offset="0%" stop-color="#caa860" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#caa860" stop-opacity="0"/>
                   </linearGradient>
                   <linearGradient id="lineGrad2" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.2"/>
@@ -220,10 +220,10 @@
                 <line x1="0" y1="160" x2="600" y2="160" stroke="#1f1f1f" stroke-width="1"/>
                 <template v-if="chartPoints.length">
                   <path :d="svgAreaPath(chartPoints, 'budgetY')"   fill="url(#lineGrad)"/>
-                  <path :d="svgLinePath(chartPoints, 'budgetY')"   fill="none" stroke="#c9a962" stroke-width="2"/>
+                  <path :d="svgLinePath(chartPoints, 'budgetY')"   fill="none" stroke="#caa860" stroke-width="2"/>
                   <path :d="svgAreaPath(chartPoints, 'progressY')" fill="url(#lineGrad2)"/>
                   <path :d="svgLinePath(chartPoints, 'progressY')" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 3"/>
-                  <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="#c9a962"/>
+                  <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="#caa860"/>
                   <circle v-for="pt in chartPoints" :key="pt.x + '-p'" :cx="pt.x" :cy="pt.progressY" r="3" fill="#60a5fa"/>
                 </template>
                 <text v-else x="300" y="88" text-anchor="middle" fill="#333" font-size="11" font-family="Manrope, sans-serif">No data</text>
@@ -548,8 +548,8 @@ async function submitCreate(payload) {
 }
 
 .btn-outline:hover {
-  border-color: #c9a962;
-  color: #c9a962;
+  border-color: #caa860;
+  color: #caa860;
 }
 
 .icon14 { width: 14px; height: 14px; }
@@ -580,8 +580,8 @@ async function submitCreate(payload) {
 .filter-btn:hover { color: #aaa; }
 
 .filter-btn.active {
-  border-bottom-color: #c9a962;
-  color: #c9a962;
+  border-bottom-color: #caa860;
+  color: #caa860;
 }
 
 /* ─── KPI Cards ──────────────────────────────────────────────────────────── */
@@ -603,12 +603,12 @@ async function submitCreate(payload) {
 }
 
 .kpi-card:hover {
-  border-color: rgba(201,169,98,0.3);
+  border-color: rgba(202,168,96,0.3);
 }
 
 .kpi-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #555;
   letter-spacing: 0.08em;
@@ -664,7 +664,7 @@ async function submitCreate(payload) {
 .view-all-btn {
   background: none;
   border: none;
-  color: #c9a962;
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -689,7 +689,7 @@ async function submitCreate(payload) {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 11px;
   padding: 0 12px 10px 0;
   border-bottom: 1px solid #1a1a1a;
 }
@@ -739,12 +739,12 @@ async function submitCreate(payload) {
 
 .progress-cell { display: flex; align-items: center; gap: 7px; }
 .prog-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; min-width: 60px; }
-.prog-fill  { height: 100%; background: linear-gradient(90deg, #b27f2a, #c9a962); border-radius: 2px; }
-.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; min-width: 30px; }
+.prog-fill  { height: 100%; background: linear-gradient(90deg, #b27f2a, #caa860); border-radius: 2px; }
+.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; min-width: 30px; }
 
 .type-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #a78bfa;
   background: rgba(167,139,250,0.08);
@@ -767,7 +767,7 @@ async function submitCreate(payload) {
   cursor: pointer;
   transition: color .2s;
 }
-.open-btn:hover { color: #c9a962; }
+.open-btn:hover { color: #caa860; }
 
 .empty-row {
   text-align: center;
@@ -811,7 +811,7 @@ async function submitCreate(payload) {
   height: 6px;
   border-radius: 50%;
 }
-.leg-dot.gold { background: #c9a962; }
+.leg-dot.gold { background: #caa860; }
 .leg-dot.blue { background: #60a5fa; }
 
 .chart-wrap {
@@ -829,7 +829,7 @@ async function submitCreate(payload) {
 
 .y-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   color: #333;
 }
 
@@ -849,7 +849,7 @@ async function submitCreate(payload) {
 
 .x-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #333;
 }
 

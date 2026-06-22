@@ -84,14 +84,14 @@ function submit() {
 .modal-close:hover { color: #ccc; }
 .modal-form { display: flex; flex-direction: column; gap: 14px; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-label { font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700; color: #555; letter-spacing: 0.08em; text-transform: uppercase; }
+.form-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: #555; letter-spacing: 0.08em; text-transform: uppercase; }
 .form-optional { font-weight: 400; color: #444; text-transform: none; letter-spacing: 0; }
 .form-input {
   padding: 8px 10px; background: #111111; border: 1px solid #2a2a2a; color: #ccc;
   font-family: 'Manrope', sans-serif; font-size: 12px; outline: none; width: 100%;
   box-sizing: border-box; transition: border-color .2s;
 }
-.form-input:focus { border-color: rgba(201,169,98,0.4); }
+.form-input:focus { border-color: rgba(202,168,96,0.4); }
 .form-input option { background: #111; }
 .form-error { font-family: 'Manrope', sans-serif; font-size: 11px; color: #fb7185; margin: 0; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
@@ -100,12 +100,12 @@ function submit() {
   border: 1px solid #2a2a2a; color: #888; font-family: 'Manrope', sans-serif; font-size: 12px;
   font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
+.btn-outline:hover { border-color: #caa860; color: #caa860; }
 .btn-primary {
-  display: flex; align-items: center; padding: 8px 16px; background: rgba(201,169,98,0.12);
-  border: 1px solid rgba(201,169,98,0.3); color: #c9a962; font-family: 'Manrope', sans-serif;
+  display: flex; align-items: center; padding: 8px 16px; background: rgba(202,168,96,0.12);
+  border: 1px solid rgba(202,168,96,0.3); color: #caa860; font-family: 'Manrope', sans-serif;
   font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s;
 }
-.btn-primary:hover:not(:disabled) { background: rgba(201,169,98,0.22); }
+.btn-primary:hover:not(:disabled) { background: rgba(202,168,96,0.22); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

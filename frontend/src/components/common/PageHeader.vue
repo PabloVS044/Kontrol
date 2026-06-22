@@ -67,7 +67,7 @@ defineEmits(['create'])
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #c9a962;
+  background: #caa860;
   border: none;
   color: #0a0a0a;
   cursor: pointer;

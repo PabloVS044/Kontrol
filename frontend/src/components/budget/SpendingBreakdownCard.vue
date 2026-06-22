@@ -65,7 +65,7 @@ const props = defineProps({
 })
 
 const expenseSources = computed(() => [
-  { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: '#c9a962' },
+  { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: '#caa860' },
   { key: 'admin',      label: t('budget.breakdown.adminExpenses'),      value: props.totalInventoryAdmin, color: '#60a5fa' },
   { key: 'activities', label: t('budget.breakdown.activitiesManual'),   value: props.totalActivities,     color: '#a78bfa' },
 ])
@@ -100,7 +100,7 @@ function formatMoney(v) {
   margin-bottom: 16px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #c9a962;
+  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
   font-weight: 600; margin-bottom: 8px; text-transform: uppercase;
 }
 .hint {
@@ -109,7 +109,7 @@ function formatMoney(v) {
 }
 
 .group-label {
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
   color: #888; margin-bottom: 10px;
   font-family: 'Manrope', sans-serif;
 }

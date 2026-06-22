@@ -226,7 +226,7 @@ function logout() {
 .ob-dot {
   width: 6px;
   height: 6px;
-  background: #c9a962;
+  background: #caa860;
   flex-shrink: 0;
 }
 
@@ -291,7 +291,7 @@ function logout() {
 }
 
 .ob-field input:focus {
-  border-color: #c9a962;
+  border-color: #caa860;
 }
 
 .ob-field input:disabled {
@@ -305,7 +305,7 @@ function logout() {
   gap: 12px;
 }
 
-.req { color: #c9a962; }
+.req { color: #caa860; }
 
 .ob-error {
   font-size: 12px;
@@ -313,7 +313,7 @@ function logout() {
 }
 
 .ob-submit {
-  background: #c9a962;
+  background: #caa860;
   border: none;
   color: #0a0a0a;
   font-family: 'Manrope', sans-serif;

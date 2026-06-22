@@ -74,7 +74,7 @@ defineProps({
 }
 
 .chart-card h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: #888;
@@ -119,7 +119,7 @@ defineProps({
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.project-bar-pct { color: #c9a962; font-weight: 600; }
+.project-bar-pct { color: #caa860; font-weight: 600; }
 .project-bar-pct.advertencia { color: #f59e0b; }
 .project-bar-pct.critico { color: #fb7185; }
 

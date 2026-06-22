@@ -263,8 +263,8 @@ const closeMenu = () => {
 }
 
 .empresa-role {
-  font-size: 10px;
-  color: #c9a962;
+  font-size: 11px;
+  color: #caa860;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   background: #1e170d;
@@ -298,7 +298,7 @@ const closeMenu = () => {
 
 :global(.dd-label) {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #333;
   padding: 12px 16px 6px;
@@ -336,7 +336,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-item-role) {
-  font-size: 10px;
+  font-size: 11px;
   color: #555;
   flex-shrink: 0;
   text-transform: capitalize;
@@ -351,7 +351,7 @@ const closeMenu = () => {
 :global(.dd-new) {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #c9a962;
+  color: #caa860;
   padding: 10px 16px;
   text-decoration: none;
   display: block;
@@ -389,7 +389,7 @@ const closeMenu = () => {
   position: absolute;
   bottom: 0; left: 16px; right: 16px;
   height: 2px;
-  background: #c9a962;
+  background: #caa860;
   transform: scaleX(0);
   transition: transform .2s ease;
 }
@@ -397,7 +397,7 @@ const closeMenu = () => {
 .appnav-link:hover { color: #faf8f5; }
 
 .appnav-link.router-link-active {
-  color: #c9a962;
+  color: #caa860;
 }
 
 .appnav-link.router-link-active::after {
@@ -410,7 +410,7 @@ const closeMenu = () => {
 
 .appnav-link--agent:hover,
 .appnav-link--agent.router-link-active {
-  color: #c9a962;
+  color: #caa860;
 }
 
 /* ── End ── */
@@ -442,7 +442,7 @@ const closeMenu = () => {
 }
 
 .lang-btn:hover,
-.lang-btn.active { color: #c9a962; }
+.lang-btn.active { color: #caa860; }
 
 .lang-dropdown {
   position: absolute;
@@ -471,7 +471,7 @@ const closeMenu = () => {
 }
 
 .lang-opt:hover { color: #faf8f5; background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: #c9a962; }
+.lang-opt.selected { color: #caa860; }
 
 .appnav-avatar {
   width: 32px;
@@ -483,7 +483,7 @@ const closeMenu = () => {
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: #c9a962;
+  color: #caa860;
   cursor: pointer;
   transition: border-color 0.15s;
 }

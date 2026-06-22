@@ -359,7 +359,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .btn-primary {
   border: none;
   cursor: pointer;
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 
@@ -380,7 +380,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .eyebrow,
 .section-kicker {
-  color: #c9a962;
+  color: #caa860;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -451,7 +451,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .mini-label {
   display: block;
   color: #8f8f8f;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -486,7 +486,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   outline: none;
   min-width: 0;
 }
-.barcode-input:focus { border-color: #c9a962; }
+.barcode-input:focus { border-color: #caa860; }
 .barcode-scan-btn {
   flex: 0 0 auto;
   width: 44px;
@@ -499,10 +499,10 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.barcode-scan-btn:hover { border-color: #c9a962; color: #c9a962; }
+.barcode-scan-btn:hover { border-color: #caa860; color: #caa860; }
 .barcode-save-btn {
   flex: 0 0 auto;
-  background: #c9a962;
+  background: #caa860;
   border: none;
   color: #0a0a0a;
   font-family: 'Manrope', sans-serif;
@@ -611,7 +611,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .warning {
-  color: #c9a962;
+  color: #caa860;
 }
 
 .danger {

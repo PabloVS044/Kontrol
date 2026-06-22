@@ -9,9 +9,9 @@
       <span class="card-name">{{ project.nombre }}</span>
       <Pill
         :label="isAdmin ? 'ADMIN' : 'MEMBER'"
-        :btnColor="isAdmin ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
-        :circleColor="isAdmin ? '#c9a962' : '#60a5fa'"
-        :textColor="isAdmin ? '#c9a962' : '#60a5fa'"
+        :btnColor="isAdmin ? 'rgba(202,168,96,0.12)' : 'rgba(96,165,250,0.08)'"
+        :circleColor="isAdmin ? '#caa860' : '#60a5fa'"
+        :textColor="isAdmin ? '#caa860' : '#60a5fa'"
       />
     </div>
 
@@ -102,7 +102,7 @@
         :link="projectLink"
         textColor="#555"
         backColor="transparent"
-        hoverColor="rgba(201,169,98,0.06)"
+        hoverColor="rgba(202,168,96,0.06)"
       />
       <a class="open-anchor" @click="$emit('open-budget', project)">{{ $t('projects.list.openBudget') }}</a>
     </div>
@@ -154,7 +154,7 @@ const budgetColor = computed(() => {
   const lvl = budgetSummary.value?.alerta_nivel
   if (lvl === 'CRITICO') return '#fb7185'
   if (lvl === 'ADVERTENCIA') return '#f97316'
-  return '#c9a962'
+  return '#caa860'
 })
 const budgetAlert = computed(() => budgetSummary.value?.alerta_nivel)
 const budgetDisplay = computed(() => {
@@ -257,11 +257,11 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #555;
 }
 .alert-pill {
-  font-size: 9px;
+  font-size: 11px;
   padding: 2px 6px;
   letter-spacing: 0.08em;
   border-radius: 2px;
@@ -308,7 +308,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.04em;
   padding: 0;
   padding-right: 14px;
@@ -346,7 +346,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   transition: color 0.15s;
   text-decoration: none;
 }
-.open-anchor:hover { color: #c9a962; }
+.open-anchor:hover { color: #caa860; }
 
 :deep(.pill) {
   height: 22px;
@@ -355,7 +355,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: 1px solid currentColor;
 }
 :deep(.pill-text) {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   font-family: 'Manrope', sans-serif;
 }

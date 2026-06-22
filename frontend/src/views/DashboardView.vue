@@ -71,14 +71,14 @@ const stats = computed(() => [
     label: t('dashboard.stats.activeProjects'),
     value: String(activeProjectsCount.value),
     trend: t('dashboard.stats.totalProjects', { count: projects.value.length }),
-    trendColor: '#c9a962',
+    trendColor: '#caa860',
     back: 'rgba(15,15,15,0.85)',
   },
   {
     label: t('dashboard.stats.overrunAlerts'),
     value: String(overrunCount.value),
     trend: warningCount.value ? t('dashboard.stats.warning', { count: warningCount.value }) : (overrunCount.value ? t('dashboard.stats.critical') : t('dashboard.stats.allHealthy')),
-    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#c9a962' : '#34d399'),
+    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#caa860' : '#34d399'),
     back: overrunCount.value ? 'rgba(25,10,10,0.85)' : 'rgba(15,15,15,0.85)',
   },
 ])
@@ -761,7 +761,7 @@ watch(() => authStore.idEmpresaActual, () => {
           <!-- Planned line (dashed gold) -->
           <path
             :d="chartData.plannedPath"
-            fill="none" stroke="#c9a962" stroke-width="1.5"
+            fill="none" stroke="#caa860" stroke-width="1.5"
             stroke-dasharray="6,5" opacity="0.75"
           />
 
@@ -788,7 +788,7 @@ watch(() => authStore.idEmpresaActual, () => {
           <!-- Legend -->
           <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
             <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f"/>
-            <line x1="10" y1="14" x2="32" y2="14" stroke="#c9a962" stroke-width="1.5" stroke-dasharray="6,5"/>
+            <line x1="10" y1="14" x2="32" y2="14" stroke="#caa860" stroke-width="1.5" stroke-dasharray="6,5"/>
             <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.planned') }}</text>
             <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2"/>
             <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.actual') }}</text>
@@ -1057,7 +1057,7 @@ watch(() => authStore.idEmpresaActual, () => {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Manrope:wght@400;500;600;700&display=swap');
 
 .dashboard-layout {
   display: flex;
@@ -1083,7 +1083,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .subtitle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   color: #666;
   margin-bottom: 40px;
 }
@@ -1146,7 +1146,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: 12px;
   letter-spacing: 0.1em;
   margin-bottom: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .ai-message {
@@ -1154,13 +1154,13 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: 1.05rem;
   max-width: 800px;
   line-height: 1.6;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .ai-box :deep(.btn) {
   background: var(--Primary);
   color: #0a0a0a;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -1188,7 +1188,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .chart-card h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: #888;
@@ -1211,8 +1211,8 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   margin-top: 10px;
   color: #444;
-  font-size: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-family: var(--font-sans);
 }
 
 .bar-group {
@@ -1224,7 +1224,7 @@ watch(() => authStore.idEmpresaActual, () => {
   display: block;
   margin-bottom: 8px;
   color: #888;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .bar-bg {
@@ -1279,7 +1279,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.project-bar-pct { color: #c9a962; font-weight: 600; }
+.project-bar-pct { color: #caa860; font-weight: 600; }
 .project-bar-pct.advertencia { color: #f59e0b; }
 .project-bar-pct.critico     { color: #fb7185; }
 
@@ -1346,7 +1346,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-eyebrow,
 .team-card-kicker {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1382,7 +1382,7 @@ watch(() => authStore.idEmpresaActual, () => {
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1427,7 +1427,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .invite-link-box {
   padding: 16px;
   background: #111111;
-  border: 1px dashed rgba(201,169,98,0.28);
+  border: 1px dashed rgba(202,168,96,0.28);
 }
 
 .invite-link {
@@ -1552,7 +1552,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .member-project-access-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1613,7 +1613,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .permission-toggle input {
-  accent-color: #c9a962;
+  accent-color: #caa860;
 }
 
 .permission-name {
@@ -1635,9 +1635,9 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(201,169,98,0.12);
-  border: 1px solid rgba(201,169,98,0.2);
-  color: #c9a962;
+  background: rgba(202,168,96,0.12);
+  border: 1px solid rgba(202,168,96,0.2);
+  color: #caa860;
   font-weight: 700;
 }
 
@@ -1652,7 +1652,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .role-chip.owner {
-  color: #c9a962;
+  color: #caa860;
 }
 
 .role-chip.admin {

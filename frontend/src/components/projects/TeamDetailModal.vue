@@ -79,12 +79,12 @@ function areaColor(area) {
     Design: '#60a5fa',
     Quality: '#34d399',
     Infrastructure: '#f97316',
-    Management: '#c9a962',
+    Management: '#caa860',
     Desarrollo: '#60a5fa',
     Diseño: '#60a5fa',
     Calidad: '#34d399',
     Infraestructura: '#f97316',
-    Gestión: '#c9a962',
+    Gestión: '#caa860',
   }[area] || '#555'
 }
 
@@ -110,8 +110,8 @@ function areaLabel(area) {
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 .area-badge {
-  font-size: 11px; color: #c9a962;
-  background: #c9a962; border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px; color: #caa860;
+  background: #caa860; border: 1px solid rgba(202,168,96,0.2);
   padding: 3px 10px; white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }

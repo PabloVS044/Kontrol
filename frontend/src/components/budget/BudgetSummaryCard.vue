@@ -82,7 +82,7 @@ const progressColor = computed(() => {
   if (props.usageRatio > 1)     return '#fb7185'
   if (props.usageRatio >= 0.8)  return '#f97316'
   if (props.usageRatio >= 0.6)  return '#facc15'
-  return '#c9a962'
+  return '#caa860'
 })
 
 function formatMoney(v) {
@@ -111,10 +111,10 @@ function formatMoney(v) {
 }
 .amount-group { min-width: 0; }
 .label {
-  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
   color: #a8a8a8; display: block; margin-bottom: 4px;
 }
-.label.gold,   .gold    { color: #c9a962; }
+.label.gold,   .gold    { color: #caa860; }
 .label.danger, .danger  { color: #fb7185; }
 .label.income, .income  { color: #34d399; }
 
@@ -138,7 +138,7 @@ function formatMoney(v) {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%); text-align: center;
 }
-.p-label { font-size: 10px; letter-spacing: 0.1em; color: #a8a8a8; display: block; }
+.p-label { font-size: 11px; letter-spacing: 0.1em; color: #a8a8a8; display: block; }
 .p-value { font-size: 22px; font-weight: 700; color: #faf8f5; }
 
 @media (max-width: 800px) {

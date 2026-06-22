@@ -32,7 +32,7 @@
 .card-title {
   font-size: 32px;
   font-weight: 700;
-  font-family: "DM Sans";
+  font-family: var(--font-sans);
   color: var(--titleColor);
   margin: 0;
   line-height: 1.2;

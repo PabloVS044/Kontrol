@@ -81,12 +81,12 @@ function handleSubmit() {
   font-family: 'Manrope', sans-serif; font-size: 13px;
   padding: 10px 12px; outline: none; transition: border-color 0.15s;
 }
-.form-field input:focus { border-color: #c9a962; }
-.req { color: #c9a962; }
+.form-field input:focus { border-color: #caa860; }
+.req { color: #caa860; }
 .modal-error { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .btn-primary {
-  background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;
+  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
   color: #0a0a0a; transition: filter 0.15s;
 }

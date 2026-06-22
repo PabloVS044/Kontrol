@@ -180,7 +180,7 @@ function handleSubmit() {
   color: #faf8f5;
 }
 .modal-actions :deep(.btn):last-child {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 .modal-actions :deep(.btn):last-child:disabled {

@@ -78,7 +78,7 @@ function formatDate(v) {
 .fh-head:hover { background: #111111; }
 
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #c9a962;
+  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
   font-weight: 600; margin: 0 0 4px; text-transform: uppercase;
 }
 .fh-meta {
@@ -119,5 +119,5 @@ function formatDate(v) {
   font-size: 12px; color: #d4d4d4; margin: 4px 0 0;
   line-height: 1.4;
 }
-.fh-user { font-size: 10px; color: #666; }
+.fh-user { font-size: 11px; color: #666; }
 </style>

@@ -122,16 +122,16 @@ function handleSubmit() {
 }
 .form-field input:focus,
 .form-field textarea:focus,
-.form-field select:focus { border-color: #c9a962; }
+.form-field select:focus { border-color: #caa860; }
 .form-field select option { background: #0f0f0f; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.req { color: #c9a962; }
+.req { color: #caa860; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
 
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
-  background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;
+  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
   color: #0a0a0a; transition: filter 0.15s;
 }

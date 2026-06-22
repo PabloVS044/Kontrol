@@ -67,13 +67,13 @@ const projectName = computed(() =>
 .modal-close:hover { color: #ccc; }
 .rdetail-body { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
 .rdetail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
-.rdetail-label { font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700; color: #555; letter-spacing: 0.06em; text-transform: uppercase; }
+.rdetail-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: #555; letter-spacing: 0.06em; text-transform: uppercase; }
 .rdetail-val { font-family: 'Manrope', sans-serif; font-size: 12px; color: #aaa; }
 .rdetail-val.dim { color: #444; }
-.rdetail-link { font-family: 'Manrope', sans-serif; font-size: 12px; color: #c9a962; text-decoration: none; transition: opacity .2s; }
+.rdetail-link { font-family: 'Manrope', sans-serif; font-size: 12px; color: #caa860; text-decoration: none; transition: opacity .2s; }
 .rdetail-link:hover { opacity: 0.7; }
 .type-tag {
-  font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700; color: #a78bfa;
+  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: #a78bfa;
   background: rgba(167,139,250,0.08); padding: 2px 7px; letter-spacing: 0.04em;
 }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
@@ -82,5 +82,5 @@ const projectName = computed(() =>
   border: 1px solid #2a2a2a; color: #888; font-family: 'Manrope', sans-serif; font-size: 12px;
   font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
+.btn-outline:hover { border-color: #caa860; color: #caa860; }
 </style>

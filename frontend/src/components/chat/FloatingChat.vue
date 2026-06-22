@@ -514,13 +514,13 @@ watch(() => chatStore.lastError, (message) => {
   height: 52px;
   border: none;
   border-radius: 50%;
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(201, 169, 98, 0.3);
+  box-shadow: 0 4px 20px rgba(202, 168, 96, 0.3);
   transition: transform 0.15s, filter 0.15s;
 }
 
@@ -550,7 +550,7 @@ watch(() => chatStore.lastError, (message) => {
   padding: 0 4px;
   border: 2px solid #0a0a0a;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -606,10 +606,10 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-total-unread {
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     background: #232017;
-    color: #c9a962;
+    color: #caa860;
     border: 1px solid #3e3926;
     padding: 1px 7px;
     border-radius: 10px;
@@ -710,7 +710,7 @@ watch(() => chatStore.lastError, (message) => {
     display: block;
     color: #666;
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -773,7 +773,7 @@ watch(() => chatStore.lastError, (message) => {
     flex-shrink: 0;
     color: #444;
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .fp-msg-av {
@@ -783,7 +783,7 @@ watch(() => chatStore.lastError, (message) => {
     border-radius: 50%;
     background: #2d281a;
     border: 1px solid #3d351f;
-    color: #c9a962;
+    color: #caa860;
     font-family: 'Manrope', sans-serif;
     font-size: 8px;
     font-weight: 700;
@@ -870,7 +870,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-status {
     color: #555;
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .fp-input-area {
@@ -910,7 +910,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea:focus {
-    border-color: #c9a962;
+    border-color: #caa860;
   }
 
   .fp-input-row textarea::placeholder {
@@ -931,8 +931,8 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #c9a962;
-    border-color: #c9a962;
+    background: #caa860;
+    border-color: #caa860;
     color: #0a0a0a;
   }
 
@@ -982,21 +982,21 @@ watch(() => chatStore.lastError, (message) => {
   .at-dm {
     background: #2d2618;
     border: 1px solid #3f351f;
-    color: #c9a962;
+    color: #caa860;
   }
 .fp-unread {
   flex-shrink: 0;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -1048,7 +1048,7 @@ watch(() => chatStore.lastError, (message) => {
   border-radius: 50%;
   background: #2d281a;
   border: 1px solid #3d351f;
-  color: #c9a962;
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 8px;
   font-weight: 700;
@@ -1135,7 +1135,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-status {
   color: #555;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .fp-typing {
@@ -1192,7 +1192,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea:focus {
-    border-color: #c9a962;
+    border-color: #caa860;
   }
 
   .fp-input-row textarea::placeholder {
@@ -1213,8 +1213,8 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #c9a962;
-    border-color: #c9a962;
+    background: #caa860;
+    border-color: #caa860;
     color: #0a0a0a;
   }
 

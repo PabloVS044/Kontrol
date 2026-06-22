@@ -48,8 +48,8 @@ defineEmits(['update:modelValue'])
 
 .filter-btn.active,
 .filter-btn:hover {
-  color: #c9a962;
-  border-color: rgba(201,169,98,0.35);
+  color: #caa860;
+  border-color: rgba(202,168,96,0.35);
   background: #111111;
 }
 

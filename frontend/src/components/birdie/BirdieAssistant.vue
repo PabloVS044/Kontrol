@@ -992,15 +992,15 @@ function closeAssistant() {
   position: relative;
   animation: birdiePulse 1.4s ease-in-out infinite;
   box-shadow:
-    0 0 0 3px rgba(201, 169, 98, 0.55),
-    0 0 24px 6px rgba(201, 169, 98, 0.35) !important;
+    0 0 0 3px rgba(202, 168, 96, 0.55),
+    0 0 24px 6px rgba(202, 168, 96, 0.35) !important;
   border-radius: inherit;
   z-index: 5;
 }
 
 @keyframes birdiePulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.45), 0 0 16px 4px rgba(201, 169, 98, 0.25); }
-  50%      { box-shadow: 0 0 0 5px rgba(201, 169, 98, 0.75), 0 0 28px 10px rgba(201, 169, 98, 0.5); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(202, 168, 96, 0.45), 0 0 16px 4px rgba(202, 168, 96, 0.25); }
+  50%      { box-shadow: 0 0 0 5px rgba(202, 168, 96, 0.75), 0 0 28px 10px rgba(202, 168, 96, 0.5); }
 }
 </style>
 
@@ -1062,8 +1062,8 @@ function closeAssistant() {
   height: 24px;
   border-radius: 50%;
   background: rgba(20, 18, 14, 0.95);
-  border: 1px solid rgba(201, 169, 98, 0.45);
-  color: #c9a962;
+  border: 1px solid rgba(202, 168, 96, 0.45);
+  color: #caa860;
   font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -1078,9 +1078,9 @@ function closeAssistant() {
 }
 
 .birdie-close:hover {
-  background: rgba(201, 169, 98, 0.18);
+  background: rgba(202, 168, 96, 0.18);
   color: #faf8f5;
-  border-color: rgba(201, 169, 98, 0.8);
+  border-color: rgba(202, 168, 96, 0.8);
   transform: scale(1.1);
 }
 
@@ -1095,11 +1095,11 @@ function closeAssistant() {
   max-width: 320px;
   padding: 12px 14px;
   background: linear-gradient(135deg, #161310 0%, #1f1a13 100%);
-  border: 1px solid rgba(201, 169, 98, 0.55);
+  border: 1px solid rgba(202, 168, 96, 0.55);
   border-radius: 14px;
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(201, 169, 98, 0.18) inset;
+    0 0 0 1px rgba(202, 168, 96, 0.18) inset;
   color: #faf8f5;
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
@@ -1144,15 +1144,15 @@ function closeAssistant() {
   transform: translateY(-2px);
 }
 .birdie-bubble--clickable:hover {
-  border-color: rgba(201, 169, 98, 0.85);
+  border-color: rgba(202, 168, 96, 0.85);
   box-shadow:
     0 14px 34px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(201, 169, 98, 0.35) inset,
-    0 0 18px rgba(201, 169, 98, 0.25);
+    0 0 0 1px rgba(202, 168, 96, 0.35) inset,
+    0 0 18px rgba(202, 168, 96, 0.25);
 }
 
 .birdie-bubble--clickable:hover .birdie-bubble-q {
-  background: rgba(201, 169, 98, 0.18);
+  background: rgba(202, 168, 96, 0.18);
   color: #faf8f5;
   transform: scale(1.08);
 }
@@ -1165,8 +1165,8 @@ function closeAssistant() {
   width: 12px;
   height: 12px;
   background: linear-gradient(135deg, #161310 0%, #1f1a13 100%);
-  border-right: 1px solid rgba(201, 169, 98, 0.55);
-  border-bottom: 1px solid rgba(201, 169, 98, 0.55);
+  border-right: 1px solid rgba(202, 168, 96, 0.55);
+  border-bottom: 1px solid rgba(202, 168, 96, 0.55);
   transform: rotate(45deg);
 }
 
@@ -1188,15 +1188,15 @@ function closeAssistant() {
   top: -7px;
   border-right: none;
   border-bottom: none;
-  border-left: 1px solid rgba(201, 169, 98, 0.55);
-  border-top: 1px solid rgba(201, 169, 98, 0.55);
+  border-left: 1px solid rgba(202, 168, 96, 0.55);
+  border-top: 1px solid rgba(202, 168, 96, 0.55);
 }
 
 .birdie-bubble-q {
   font-family: 'Bungee', 'Manrope', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: #c9a962;
+  color: #caa860;
   width: 28px;
   height: 28px;
   display: flex;
@@ -1213,7 +1213,7 @@ function closeAssistant() {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #c9a962;
+  color: #caa860;
 }
 
 .birdie-faq-section + .birdie-faq-toggle,
@@ -1223,7 +1223,7 @@ function closeAssistant() {
 
 .birdie-faq-section-title {
   margin: 0 0 6px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #777;
@@ -1253,7 +1253,7 @@ function closeAssistant() {
   width: 6px;
 }
 .birdie-faq-list::-webkit-scrollbar-thumb {
-  background: rgba(201, 169, 98, 0.35);
+  background: rgba(202, 168, 96, 0.35);
   border-radius: 6px;
 }
 
@@ -1271,21 +1271,21 @@ function closeAssistant() {
 }
 
 .birdie-faq-item:hover {
-  background: rgba(201, 169, 98, 0.12);
-  border-color: rgba(201, 169, 98, 0.4);
-  color: #c9a962;
+  background: rgba(202, 168, 96, 0.12);
+  border-color: rgba(202, 168, 96, 0.4);
+  color: #caa860;
 }
 
 .birdie-faq-toggle {
   width: 100%;
   background: transparent;
-  border: 1px dashed rgba(201, 169, 98, 0.3);
+  border: 1px dashed rgba(202, 168, 96, 0.3);
   border-radius: 8px;
   padding: 6px;
   margin-bottom: 8px;
   font-family: inherit;
   font-size: 11px;
-  color: #c9a962;
+  color: #caa860;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1295,8 +1295,8 @@ function closeAssistant() {
 }
 
 .birdie-faq-toggle:hover {
-  background: rgba(201, 169, 98, 0.08);
-  border-color: rgba(201, 169, 98, 0.55);
+  background: rgba(202, 168, 96, 0.08);
+  border-color: rgba(202, 168, 96, 0.55);
   color: #faf8f5;
 }
 
@@ -1336,9 +1336,9 @@ function closeAssistant() {
 .birdie-speech-ok {
   display: block;
   margin-left: auto;
-  background: rgba(201, 169, 98, 0.15);
-  border: 1px solid rgba(201, 169, 98, 0.45);
-  color: #c9a962;
+  background: rgba(202, 168, 96, 0.15);
+  border: 1px solid rgba(202, 168, 96, 0.45);
+  color: #caa860;
   padding: 5px 12px;
   border-radius: 6px;
   font-family: inherit;
@@ -1349,7 +1349,7 @@ function closeAssistant() {
 }
 
 .birdie-speech-ok:hover {
-  background: rgba(201, 169, 98, 0.3);
+  background: rgba(202, 168, 96, 0.3);
   color: #faf8f5;
 }
 

@@ -88,7 +88,7 @@ defineEmits(['create-project'])
   margin-top: 4px;
 }
 .ctx-label {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #444;
   margin-bottom: 12px;
@@ -118,10 +118,10 @@ defineEmits(['create-project'])
   color: #555;
 }
 .s-sub {
-  font-size: 10px;
+  font-size: 11px;
   color: #444;
 }
-.s-sub.gold { color: #c9a962; }
+.s-sub.gold { color: #caa860; }
 .s-sub.red { color: #fb7185; }
 
 :deep(.btn) {
@@ -136,7 +136,7 @@ defineEmits(['create-project'])
   text-align: left;
 }
 :deep(.btn):first-of-type {
-  background: #c9a962;
+  background: #caa860;
   color: #0a0a0a;
 }
 :deep(.btn):last-of-type {
@@ -149,7 +149,7 @@ defineEmits(['create-project'])
   margin-top: auto;
 }
 .ds-label {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #333;
   margin-bottom: 4px;
