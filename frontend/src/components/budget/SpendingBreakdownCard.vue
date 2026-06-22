@@ -100,17 +100,17 @@ function formatMoney(v) {
   margin-bottom: 16px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
+  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
   font-weight: 600; margin-bottom: 8px; text-transform: uppercase;
 }
 .hint {
-  font-size: 11px; color: #888; margin-bottom: 16px; line-height: 1.5;
+  font-size: 11px; color: var(--TextMuted); margin-bottom: 16px; line-height: 1.5;
   font-family: 'Manrope', sans-serif;
 }
 
 .group-label {
   font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: #888; margin-bottom: 10px;
+  color: var(--TextMuted); margin-bottom: 10px;
   font-family: 'Manrope', sans-serif;
 }
 
@@ -122,13 +122,13 @@ function formatMoney(v) {
 }
 .row-label {
   display: inline-flex; align-items: center; gap: 8px;
-  color: #d4d4d4;
+  color: var(--TextSoft);
 }
 .row-dot {
   width: 8px; height: 8px; border-radius: 50%; display: inline-block;
 }
 .row-amount {
-  color: #faf8f5; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--Text); font-weight: 600; font-variant-numeric: tabular-nums;
 }
 .row-amount.income { color: #34d399; }
 
@@ -136,11 +136,11 @@ function formatMoney(v) {
   display: flex; justify-content: space-between; align-items: center;
   padding: 10px 0 0; margin-top: 4px;
   border-top: 1px dashed #1f1f1f;
-  font-size: 12px; color: #cfcfcf;
+  font-size: 12px; color: var(--TextSoft);
   font-family: 'Manrope', sans-serif;
 }
 .subtotal-value {
-  color: #faf8f5; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--Text); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
 .net-row {

@@ -300,7 +300,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   min-height: 100vh;
   background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(10px);
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -326,7 +326,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .state-msg {
-  color: #9a9a9a;
+  color: var(--TextMuted);
   max-width: 460px;
   line-height: 1.6;
 }
@@ -351,7 +351,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .ghost-link {
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid #2a2a2a;
   background: #111111;
 }
@@ -360,7 +360,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   border: none;
   cursor: pointer;
   background: #caa860;
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 
 .detail-header {
@@ -380,7 +380,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .eyebrow,
 .section-kicker {
-  color: #caa860;
+  color: var(--Primary);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -394,7 +394,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .subtitle {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 14px;
 }
 
@@ -427,7 +427,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .description {
   margin-top: 14px;
-  color: #d2d2d2;
+  color: var(--TextSoft);
   line-height: 1.7;
   min-height: 72px;
 }
@@ -450,7 +450,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .stat-label,
 .mini-label {
   display: block;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -461,7 +461,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .mini-value {
   font-size: 20px;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -479,7 +479,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   flex: 1;
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
   padding: 10px 12px;
@@ -492,19 +492,19 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   width: 44px;
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.barcode-scan-btn:hover { border-color: #caa860; color: #caa860; }
+.barcode-scan-btn:hover { border-color: #caa860; color: var(--Primary); }
 .barcode-save-btn {
   flex: 0 0 auto;
   background: #caa860;
   border: none;
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -538,7 +538,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .stock-caption {
   display: block;
   margin-top: 6px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
 }
 
 .stock-details {
@@ -562,7 +562,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .section-count {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 12px;
 }
 
@@ -582,13 +582,13 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .supplier-name {
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .supplier-date,
 .empty-box {
   margin-top: 4px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 13px;
 }
 
@@ -611,7 +611,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .warning {
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .danger {

@@ -159,7 +159,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 45%),
     linear-gradient(180deg, #f3d489 0%, #d6a955 45%, #b8862f 100%);
-  color: #ffffff;
+  color: var(--Text);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   font-weight: 700;
   font-size: 0.98rem;
@@ -235,7 +235,7 @@
     linear-gradient(180deg, #1a1a1a, #0e0e0e);
   border: 1px solid var(--Border);
   border-radius: 8px;
-  color: #ffffff;
+  color: var(--Text);
   font-size: 0.82rem;
   font-family: var(--font-sans);
   cursor: pointer;

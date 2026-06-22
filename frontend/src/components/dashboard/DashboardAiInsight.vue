@@ -54,7 +54,7 @@ defineEmits(['review-budget'])
 
 .ai-box :deep(.btn) {
   background: var(--Primary);
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;

@@ -77,7 +77,7 @@ defineProps({
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: #888;
+  color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 4px;
@@ -85,7 +85,7 @@ defineProps({
 
 .chart-state {
   padding: 24px 0;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
 }
@@ -104,7 +104,7 @@ defineProps({
   gap: 12px;
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 .project-bar-name {
   overflow: hidden;
@@ -115,11 +115,11 @@ defineProps({
 .project-bar-meta {
   display: flex;
   gap: 10px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.project-bar-pct { color: #caa860; font-weight: 600; }
+.project-bar-pct { color: var(--Primary); font-weight: 600; }
 .project-bar-pct.advertencia { color: #f59e0b; }
 .project-bar-pct.critico { color: #fb7185; }
 
@@ -146,11 +146,11 @@ defineProps({
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-family: 'Manrope', sans-serif;
 }
-.snapshot-label { color: #8f8f8f; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-.snapshot-value { color: #faf8f5; font-size: 15px; font-variant-numeric: tabular-nums; }
+.snapshot-label { color: var(--TextMuted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: var(--Text); font-size: 15px; font-variant-numeric: tabular-nums; }
 .snapshot-value.gold { color: var(--Primary); }
 .snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
-.snapshot-foot { color: #8f8f8f; font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+.snapshot-foot { color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
 
 @media (max-width: 900px) {
   .charts-container { flex-direction: column; }

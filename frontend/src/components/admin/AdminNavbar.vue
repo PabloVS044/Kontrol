@@ -126,7 +126,7 @@ function closeMenu()   { isMenuOpen.value = false }
   font-family: 'Bungee', 'Manrope', sans-serif;
   font-size: 14px;
   letter-spacing: 1px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .admin-badge-wrap {
@@ -142,7 +142,7 @@ function closeMenu()   { isMenuOpen.value = false }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #caa860;
+  color: var(--Primary);
   background: rgba(202,168,96,0.1);
   padding: 2px 7px;
   border: 1px solid rgba(202,168,96,0.2);
@@ -160,7 +160,7 @@ function closeMenu()   { isMenuOpen.value = false }
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: #555;
+  color: var(--TextFaint);
   text-decoration: none;
   padding: 0 16px;
   display: flex;
@@ -179,9 +179,9 @@ function closeMenu()   { isMenuOpen.value = false }
   transition: transform .2s ease;
 }
 
-.appnav-link:hover { color: #faf8f5; }
+.appnav-link:hover { color: var(--Text); }
 
-.appnav-link.router-link-exact-active { color: #caa860; }
+.appnav-link.router-link-exact-active { color: var(--Primary); }
 .appnav-link.router-link-exact-active::after { transform: scaleX(1); }
 
 .appnav-end {
@@ -206,13 +206,13 @@ function closeMenu()   { isMenuOpen.value = false }
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: #444;
+  color: var(--TextFaint);
   transition: color 0.15s;
   border-radius: 4px;
 }
 
 .lang-btn:hover,
-.lang-btn.active { color: #caa860; }
+.lang-btn.active { color: var(--Primary); }
 
 .lang-dropdown {
   position: absolute;
@@ -235,13 +235,13 @@ function closeMenu()   { isMenuOpen.value = false }
   padding: 7px 10px;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
 
-.lang-opt:hover { color: #faf8f5; background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: #caa860; }
+.lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
+.lang-opt.selected { color: var(--Primary); }
 
 .appnav-avatar {
   width: 32px;
@@ -253,7 +253,7 @@ function closeMenu()   { isMenuOpen.value = false }
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: #caa860;
+  color: var(--Primary);
   cursor: pointer;
   transition: border-color 0.15s;
 }

@@ -95,21 +95,21 @@ defineEmits(['open'])
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 20px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .view-all-btn,
 .open-btn {
   background: #111111;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
 }
 
 .view-all-btn:hover,
-.open-btn:hover { color: #caa860; }
+.open-btn:hover { color: var(--Primary); }
 
 .table-skeleton { display: flex; flex-direction: column; gap: 10px; }
 .table-skel-row { display: flex; gap: 12px; }
@@ -130,7 +130,7 @@ defineEmits(['open'])
 
 .rep-table th {
   text-align: left;
-  color: #444;
+  color: var(--TextFaint);
   font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -143,13 +143,13 @@ defineEmits(['open'])
 }
 
 .rep-row:hover { background: #111111; }
-.rep-table td { padding: 12px 0; color: #777; }
-.td-name { color: #faf8f5 !important; font-weight: 600; }
+.rep-table td { padding: 12px 0; color: var(--TextDim); }
+.td-name { color: var(--Text) !important; font-weight: 600; }
 .proj-badge {
   display: inline-flex;
   border: 1px solid #222;
   padding: 3px 7px;
-  color: #777;
+  color: var(--TextDim);
 }
 
 .status-tag {
@@ -170,7 +170,7 @@ defineEmits(['open'])
 
 .empty-row {
   text-align: center;
-  color: #555 !important;
+  color: var(--TextFaint) !important;
   padding: 28px 0 !important;
 }
 

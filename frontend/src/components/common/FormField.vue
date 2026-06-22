@@ -25,19 +25,19 @@ defineProps({
 }
 .field-label {
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
   letter-spacing: 0.05em;
   font-family: 'Manrope', sans-serif;
 }
 .req {
-  color: #caa860;
+  color: var(--Primary);
 }
 input,
 textarea,
 select {
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   padding: 10px 12px;

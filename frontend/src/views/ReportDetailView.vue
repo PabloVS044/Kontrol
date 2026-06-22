@@ -181,7 +181,7 @@
                   <span class="member-role">{{ $t('reports.detail.memberRole', { count: role.total }) }}</span>
                 </div>
               </div>
-              <div v-if="!teamRoles.length" class="tl-label" style="color:#444; padding: 8px 0">
+              <div v-if="!teamRoles.length" class="tl-label" style="color: var(--TextFaint); padding: 8px 0">
                 {{ $t('reports.detail.noTeamMembers') }}
               </div>
             </div>
@@ -472,7 +472,7 @@ const healthSub = computed(() => {
   gap: 6px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
@@ -480,7 +480,7 @@ const healthSub = computed(() => {
   padding: 0;
   transition: color .2s;
 }
-.back-btn:hover { color: #caa860; }
+.back-btn:hover { color: var(--Primary); }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 .detail-header {
@@ -502,7 +502,7 @@ const healthSub = computed(() => {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0 0 6px;
 }
 
@@ -523,13 +523,13 @@ const healthSub = computed(() => {
   padding: 7px 14px;
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #caa860; color: #caa860; }
+.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
 
 /* Meta row */
 .meta-row {
@@ -543,7 +543,7 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -551,10 +551,10 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: #ccc;
+  color: var(--TextSoft);
 }
-.meta-value.gold { color: #caa860; }
-.meta-value.dim  { color: #555; }
+.meta-value.gold { color: var(--Primary); }
+.meta-value.dim  { color: var(--TextFaint); }
 
 /* Overall progress */
 .overall-progress { display: flex; align-items: center; gap: 12px; }
@@ -575,7 +575,7 @@ const healthSub = computed(() => {
 .op-label {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
   white-space: nowrap;
 }
 
@@ -636,14 +636,14 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #888;
+  color: var(--TextMuted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .card-tag {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #caa860;
+  color: var(--Primary);
   border: 1px solid rgba(202,168,96,0.2);
   padding: 2px 7px;
   background: #111111;
@@ -653,13 +653,13 @@ const healthSub = computed(() => {
   padding: 3px 8px;
   background: #111111;
   border: 1px solid #1e1e1e;
-  color: #444;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
   transition: all .15s;
 }
-.period-btn.active { border-color: rgba(202,168,96,0.4); color: #caa860; }
+.period-btn.active { border-color: rgba(202,168,96,0.4); color: var(--Primary); }
 
 /* ─── Budget card ────────────────────────────────────────────────────────── */
 .budget-body { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
@@ -670,20 +670,20 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #bbb;
+  color: var(--TextSoft);
 }
 .bstat-val.gold { color: #d4b06a; }
-.bstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
+.bstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 
 .budget-bars { display: flex; flex-direction: column; gap: 7px; }
 .bb-item { display: flex; align-items: center; gap: 8px; }
-.bb-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; width: 70px; flex-shrink: 0; }
+.bb-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); width: 70px; flex-shrink: 0; }
 .bb-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .bb-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .bb-fill.gold   { background: #caa860; }
 .bb-fill.blue   { background: #60a5fa; }
 .bb-fill.purple { background: #a78bfa; }
-.bb-pct { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; min-width: 28px; text-align: right; }
+.bb-pct { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); min-width: 28px; text-align: right; }
 
 /* ─── Task card ──────────────────────────────────────────────────────────── */
 .task-completion-circle {
@@ -693,8 +693,8 @@ const healthSub = computed(() => {
   margin-bottom: 16px;
 }
 .task-summary { display: flex; flex-direction: column; gap: 3px; }
-.ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #faf8f5; }
-.ts-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
+.ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--Text); }
+.ts-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
 
 .task-list { display: flex; flex-direction: column; gap: 7px; }
 .tl-row { display: flex; align-items: center; gap: 7px; }
@@ -703,7 +703,7 @@ const healthSub = computed(() => {
 .tl-dot.blue   { background: #60a5fa; }
 .tl-dot.gold   { background: #caa860; }
 .tl-dot.red    { background: #fb7185; }
-.tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; width: 72px; flex-shrink: 0; }
+.tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); width: 72px; flex-shrink: 0; }
 .tl-bar-wrap { flex: 1; }
 .tl-track { height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .tl-fill { height: 100%; border-radius: 2px; transition: width .5s; }
@@ -711,7 +711,7 @@ const healthSub = computed(() => {
 .tl-fill.blue   { background: #60a5fa; }
 .tl-fill.gold   { background: #caa860; }
 .tl-fill.red    { background: #fb7185; }
-.tl-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; min-width: 20px; text-align: right; }
+.tl-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); min-width: 20px; text-align: right; }
 
 /* ─── Team card ──────────────────────────────────────────────────────────── */
 .team-list { display: flex; flex-direction: column; gap: 4px; }
@@ -731,13 +731,13 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #aaa;
+  color: var(--TextSoft);
   flex-shrink: 0;
   border: 1px solid rgba(255,255,255,0.05);
 }
 .member-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ccc; font-weight: 500; }
-.member-role { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
+.member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--TextSoft); font-weight: 500; }
+.member-role { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
 .member-status {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
@@ -746,7 +746,7 @@ const healthSub = computed(() => {
   letter-spacing: 0.05em;
 }
 .st-active  { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.st-idle    { color: #888;    background: rgba(255,255,255,0.04); }
+.st-idle    { color: var(--TextMuted);    background: rgba(255,255,255,0.04); }
 .st-away    { color: #fb923c; background: rgba(251,146,60,0.08);  }
 
 /* ─── Timeline card ──────────────────────────────────────────────────────── */
@@ -783,14 +783,14 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--TextDim);
 }
 .phase-name.done    { color: #d4b06a; }
-.phase-name.current { color: #faf8f5; }
-.phase-name.future  { color: #444; }
+.phase-name.current { color: var(--Text); }
+.phase-name.future  { color: var(--TextFaint); }
 .phase-name.skip    { color: #2e2e2e; }
-.phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
-.phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; line-height: 1.5; }
+.phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); line-height: 1.5; }
 
 /* ─── Metrics card ───────────────────────────────────────────────────────── */
 .metrics-grid {
@@ -832,7 +832,7 @@ const healthSub = computed(() => {
 .metric-label {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -844,7 +844,7 @@ const healthSub = computed(() => {
 .view-all-btn {
   background: none;
   border: none;
-  color: #caa860;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -869,11 +869,11 @@ const healthSub = computed(() => {
   justify-content: center;
   flex-shrink: 0;
   border-radius: 4px;
-  color: #888;
+  color: var(--TextMuted);
 }
 .act-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: #aaa; }
-.act-meta { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
+.act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextSoft); }
+.act-meta { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 .act-tag {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
@@ -883,7 +883,7 @@ const healthSub = computed(() => {
   flex-shrink: 0;
 }
 .tag-green  { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.tag-gold   { color: #caa860; background: rgba(202,168,96,0.08);  }
+.tag-gold   { color: var(--Primary); background: rgba(202,168,96,0.08);  }
 .tag-purple { color: #a78bfa; background: rgba(167,139,250,0.08); }
 .tag-blue   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
 
@@ -899,7 +899,7 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0 0 10px;
@@ -920,7 +920,7 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--TextDim);
   display: block;
 }
 .health-sub {
@@ -947,9 +947,9 @@ const healthSub = computed(() => {
   padding: 7px 0;
   border-bottom: 1px solid #111;
 }
-.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
-.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: #aaa; }
-.qstat-val.gold { color: #caa860; }
+.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
+.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: var(--TextSoft); }
+.qstat-val.gold { color: var(--Primary); }
 .qstat-val.red  { color: #fb7185; }
 
 /* Side action buttons */
@@ -960,7 +960,7 @@ const healthSub = computed(() => {
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1a1a1a;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   border-radius: 0;
@@ -969,7 +969,7 @@ const healthSub = computed(() => {
 }
 .side-actions :deep(.btn:hover) {
   border-color: rgba(202,168,96,0.3);
-  color: #caa860;
+  color: var(--Primary);
 }
 
 /* Info list */
@@ -981,14 +981,14 @@ const healthSub = computed(() => {
   padding: 7px 0;
   border-bottom: 1px solid #111;
 }
-.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
-.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #999; }
-.info-val.gold { color: #caa860; }
+.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextMuted); }
+.info-val.gold { color: var(--Primary); }
 
 /* Risk bars */
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }

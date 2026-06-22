@@ -212,7 +212,11 @@ onMounted(() => {
   const mesh = new Mesh(gl, { geometry, program })
   container.appendChild(gl.canvas)
 
-  if (props.enableMouseInteraction) {
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  if (props.enableMouseInteraction && !prefersReducedMotion) {
     gl.canvas.addEventListener('mousemove', handleMouseMove)
     gl.canvas.addEventListener('mouseleave', handleMouseLeave)
   }
@@ -234,7 +238,13 @@ onMounted(() => {
     renderer.render({ scene: mesh })
   }
 
-  animationFrameId = requestAnimationFrame(update)
+  if (prefersReducedMotion) {
+    // Una sola pasada estática: sin bucle de animación.
+    program.uniforms.uTime.value = 0
+    renderer.render({ scene: mesh })
+  } else {
+    animationFrameId = requestAnimationFrame(update)
+  }
 
   onUnmounted(() => {
     cancelAnimationFrame(animationFrameId)

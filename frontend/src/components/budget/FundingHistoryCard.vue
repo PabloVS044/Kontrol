@@ -78,14 +78,14 @@ function formatDate(v) {
 .fh-head:hover { background: #111111; }
 
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
+  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
   font-weight: 600; margin: 0 0 4px; text-transform: uppercase;
 }
 .fh-meta {
-  font-size: 11px; color: #a8a8a8; margin: 0;
+  font-size: 11px; color: var(--TextMuted); margin: 0;
   font-family: 'Manrope', sans-serif;
 }
-.muted { color: #555; }
+.muted { color: var(--TextFaint); }
 .income { color: #34d399; font-weight: 600; }
 .danger { color: #fb7185; font-weight: 600; }
 
@@ -97,7 +97,7 @@ function formatDate(v) {
   border-top: 1px solid #1f1f1f;
 }
 .fh-empty {
-  font-size: 12px; color: #888; padding: 14px 0;
+  font-size: 12px; color: var(--TextMuted); padding: 14px 0;
   text-align: center; font-family: 'Manrope', sans-serif;
 }
 
@@ -114,10 +114,10 @@ function formatDate(v) {
 .fh-amount {
   font-size: 14px; font-variant-numeric: tabular-nums;
 }
-.fh-date { font-size: 11px; color: #888; }
+.fh-date { font-size: 11px; color: var(--TextMuted); }
 .fh-motivo {
-  font-size: 12px; color: #d4d4d4; margin: 4px 0 0;
+  font-size: 12px; color: var(--TextSoft); margin: 4px 0 0;
   line-height: 1.4;
 }
-.fh-user { font-size: 11px; color: #666; }
+.fh-user { font-size: 11px; color: var(--TextDim); }
 </style>

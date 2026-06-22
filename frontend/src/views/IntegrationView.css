@@ -23,14 +23,14 @@
   font-family: 'Playfair Display', serif;
   font-size: 48px;
   font-weight: 400;
-  color: #faf8f5;
+  color: var(--Text);
   line-height: 1.1;
   margin: 0 0 6px;
 }
 
 .page-subtitle {
   font-size: 14px;
-  color: #999;
+  color: var(--TextMuted);
   margin: 0;
 }
 
@@ -48,7 +48,7 @@
   font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #aaa;
+  color: var(--TextSoft);
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.15s;
@@ -56,13 +56,13 @@
 
 .chip:hover {
   border-color: #444;
-  color: #ccc;
+  color: var(--TextSoft);
 }
 
 .chip.active {
   background: rgba(202, 168, 96, 0.12);
   border-color: #caa860;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 /* ── Grid ── */
@@ -121,19 +121,19 @@
 .card-name {
   font-size: 16px;
   font-weight: 600;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .cat-badge {
   font-size: 11px;
-  color: #999;
+  color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .card-description {
   font-size: 13px;
-  color: #aaa;
+  color: var(--TextSoft);
   line-height: 1.55;
   margin: 0;
 }
@@ -148,7 +148,7 @@
 
 .updated-at {
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
 }
 
 /* ── Toggle switch ── */
@@ -213,7 +213,7 @@
   font-family: var(--font-sans);
   background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.3);
-  color: #caa860;
+  color: var(--Primary);
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -228,14 +228,14 @@
   font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: var(--TextMuted);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-test:hover:not(:disabled) {
   border-color: #444;
-  color: #ccc;
+  color: var(--TextSoft);
 }
 
 .btn-test:disabled {
@@ -312,13 +312,13 @@
 .state-title {
   font-size: 20px;
   font-weight: 600;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0;
 }
 
 .state-msg {
   font-size: 14px;
-  color: #666;
+  color: var(--TextDim);
   max-width: 360px;
   margin: 0;
 }
@@ -335,7 +335,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .form-group {
@@ -347,7 +347,7 @@
 
 .form-label {
   font-size: 13px;
-  color: #aaa;
+  color: var(--TextSoft);
 }
 
 .required-dot {
@@ -358,7 +358,7 @@
 .form-input {
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #faf8f5;
+  color: var(--Text);
   padding: 10px 12px;
   font-size: 14px;
   font-family: var(--font-sans);
@@ -378,14 +378,14 @@
   bottom: 10px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-size: 12px;
   cursor: pointer;
   font-family: var(--font-sans);
 }
 
 .toggle-pass:hover {
-  color: #888;
+  color: var(--TextMuted);
 }
 
 .modal-error {
@@ -425,7 +425,7 @@
   gap: 5px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-size: 12px;
   font-family: var(--font-sans);
   cursor: pointer;
@@ -434,14 +434,14 @@
 }
 
 .btn-how:hover {
-  color: #888;
+  color: var(--TextMuted);
 }
 
 .btn-disconnect {
   margin-left: auto;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-size: 12px;
   font-family: var(--font-sans);
   cursor: pointer;
@@ -480,14 +480,14 @@
   font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #666;
+  color: var(--TextDim);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-cancel-disconnect:hover {
   border-color: #444;
-  color: #aaa;
+  color: var(--TextSoft);
 }
 
 /* ── Tutorial modal ── */
@@ -500,7 +500,7 @@
 
 .tutorial-intro {
   font-size: 13px;
-  color: #888;
+  color: var(--TextMuted);
   margin: 0;
   line-height: 1.55;
 }
@@ -527,7 +527,7 @@
   border-radius: 50%;
   background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.25);
-  color: #caa860;
+  color: var(--Primary);
   font-size: 12px;
   font-weight: 600;
   display: flex;
@@ -538,7 +538,7 @@
 
 .step-text {
   font-size: 13px;
-  color: #aaa;
+  color: var(--TextSoft);
   line-height: 1.6;
 }
 

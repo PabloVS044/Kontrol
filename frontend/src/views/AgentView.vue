@@ -937,7 +937,7 @@ function autoResizeEdit(e) {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #111111;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -948,7 +948,7 @@ function autoResizeEdit(e) {
 .agent-send.active {
   background: var(--Primary, #caa860);
   border-color: var(--Primary, #caa860);
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 
 .agent-send.stop {
@@ -1216,7 +1216,7 @@ function autoResizeEdit(e) {
 .msg-action-btn.primary {
   background: var(--Primary, #caa860);
   border-color: var(--Primary, #caa860);
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 
 .msg-action-btn.primary:hover {
@@ -1266,7 +1266,7 @@ function autoResizeEdit(e) {
 .agent-banner.warn {
   background: rgba(202, 168, 96, 0.08);
   border-color: rgba(202, 168, 96, 0.32);
-  color: #caa860;
+  color: var(--Primary);
 }
 .agent-banner.error {
   background: rgba(220, 80, 80, 0.08);

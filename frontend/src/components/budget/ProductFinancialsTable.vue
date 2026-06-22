@@ -146,17 +146,17 @@ function formatMoney(v) {
   gap: 12px; margin-bottom: 8px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
+  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
   font-weight: 600; text-transform: uppercase;
 }
-.pf-count { font-size: 11px; color: #888; }
+.pf-count { font-size: 11px; color: var(--TextMuted); }
 .hint {
-  font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 16px;
+  font-size: 11px; color: var(--TextMuted); line-height: 1.5; margin-bottom: 16px;
   font-family: 'Manrope', sans-serif;
 }
 
 .pf-empty {
-  color: #a8a8a8; font-size: 13px; padding: 24px;
+  color: var(--TextMuted); font-size: 13px; padding: 24px;
   text-align: center; border: 1px dashed #2a2a2a;
 }
 
@@ -172,10 +172,10 @@ function formatMoney(v) {
 }
 .pf-total-label {
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #888;
+  color: var(--TextMuted);
 }
 .pf-total-value {
-  font-size: 16px; font-weight: 700; color: #faf8f5;
+  font-size: 16px; font-weight: 700; color: var(--Text);
   font-variant-numeric: tabular-nums;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -189,21 +189,21 @@ function formatMoney(v) {
 .pf-table th {
   text-align: right; padding: 10px 12px;
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #888; border-bottom: 1px solid #1f1f1f;
+  color: var(--TextMuted); border-bottom: 1px solid #1f1f1f;
   font-weight: 600;
   white-space: nowrap;
 }
 .pf-table th.left { text-align: left; }
 .pf-table td {
   padding: 12px;
-  color: #d4d4d4;
+  color: var(--TextSoft);
   border-bottom: 1px solid #161616;
   font-variant-numeric: tabular-nums;
 }
 .pf-table td.left  { text-align: left; }
 .pf-table td.num   { text-align: right; white-space: nowrap; }
 .pf-table td.name {
-  color: #faf8f5; font-weight: 500;
+  color: var(--Text); font-weight: 500;
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .pf-table tbody tr:hover { background: #111111; }
@@ -211,7 +211,7 @@ function formatMoney(v) {
 
 .income { color: #34d399; }
 .danger { color: #fb7185; }
-.gold   { color: #caa860; }
+.gold   { color: var(--Primary); }
 
 @media (max-width: 800px) {
   .pf-totals,

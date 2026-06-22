@@ -242,27 +242,27 @@ function areaPath(key) {
 .sf-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 .sf-select {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: #ccc;
+  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextSoft);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 6px 10px; outline: none;
 }
 .sf-select option { background: #111; }
 
 .sf-presets { display: flex; gap: 4px; }
 .sf-preset {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: #888;
+  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextMuted);
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600;
   padding: 6px 12px; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
 }
-.sf-preset:hover { color: #ccc; }
-.sf-preset.active { color: #caa860; border-color: #caa860; background: #1a150f; }
+.sf-preset:hover { color: var(--TextSoft); }
+.sf-preset.active { color: var(--Primary); border-color: #caa860; background: #1a150f; }
 
 .sf-custom-range { display: flex; gap: 16px; flex-wrap: wrap; }
 .sf-custom-range label {
   display: flex; align-items: center; gap: 8px;
-  font-family: 'Manrope', sans-serif; font-size: 11px; color: #777;
+  font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim);
 }
 .sf-custom-range input {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: #ccc;
+  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextSoft);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 6px 8px; outline: none;
 }
 
@@ -276,39 +276,39 @@ function areaPath(key) {
 .sf-kpi--accent { border-color: rgba(202,168,96,0.35); }
 .sf-kpi-label {
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
-  color: #555; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--TextFaint); letter-spacing: 0.06em; text-transform: uppercase;
 }
 .sf-kpi-value {
-  font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #faf8f5; line-height: 1.1;
+  font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--Text); line-height: 1.1; font-variant-numeric: tabular-nums;
 }
 .sf-kpi-value.pos { color: #34d399; }
 .sf-kpi-value.neg { color: #fb7185; }
 
 .sf-chart-block { display: flex; flex-direction: column; gap: 8px; }
 .sf-chart-legend { display: flex; gap: 16px; }
-.leg { display: flex; align-items: center; gap: 6px; font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; }
+.leg { display: flex; align-items: center; gap: 6px; font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
 .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
 .leg-dot.gold { background: #caa860; }
 .leg-dot.green { background: #34d399; }
 .sf-svg { width: 100%; height: 180px; display: block; }
 .sf-x-axis { display: flex; justify-content: space-between; }
-.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 11px; color: #444; }
+.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 
-.sf-state { padding: 24px 0; color: #777; font-family: 'Manrope', sans-serif; font-size: 12px; text-align: center; }
+.sf-state { padding: 24px 0; color: var(--TextDim); font-family: 'Manrope', sans-serif; font-size: 12px; text-align: center; }
 .sf-state--error { color: #fb7185; }
 
 .sf-top { display: flex; flex-direction: column; gap: 6px; }
 .sf-top-title {
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
-  color: #555; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
+  color: var(--TextFaint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
 }
 .sf-top-row {
   display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
   padding: 8px 0; border-bottom: 1px solid #161616;
 }
 .sf-top-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ddd; }
-.sf-top-units { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; }
-.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: #caa860; }
+.sf-top-units { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
+.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--Primary); }
 
 @media (max-width: 900px) {
   .sf-kpi-grid { grid-template-columns: repeat(2, 1fr); }

@@ -1063,7 +1063,7 @@ function closeAssistant() {
   border-radius: 50%;
   background: rgba(20, 18, 14, 0.95);
   border: 1px solid rgba(202, 168, 96, 0.45);
-  color: #caa860;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -1079,7 +1079,7 @@ function closeAssistant() {
 
 .birdie-close:hover {
   background: rgba(202, 168, 96, 0.18);
-  color: #faf8f5;
+  color: var(--Text);
   border-color: rgba(202, 168, 96, 0.8);
   transform: scale(1.1);
 }
@@ -1100,7 +1100,7 @@ function closeAssistant() {
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.55),
     0 0 0 1px rgba(202, 168, 96, 0.18) inset;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   line-height: 1.45;
@@ -1153,7 +1153,7 @@ function closeAssistant() {
 
 .birdie-bubble--clickable:hover .birdie-bubble-q {
   background: rgba(202, 168, 96, 0.18);
-  color: #faf8f5;
+  color: var(--Text);
   transform: scale(1.08);
 }
 
@@ -1196,7 +1196,7 @@ function closeAssistant() {
   font-family: 'Bungee', 'Manrope', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: #caa860;
+  color: var(--Primary);
   width: 28px;
   height: 28px;
   display: flex;
@@ -1213,7 +1213,7 @@ function closeAssistant() {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .birdie-faq-section + .birdie-faq-toggle,
@@ -1226,7 +1226,7 @@ function closeAssistant() {
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #777;
+  color: var(--TextDim);
 }
 
 .birdie-faq-section {
@@ -1236,7 +1236,7 @@ function closeAssistant() {
 .birdie-faq-empty {
   margin: 0 0 8px;
   font-size: 12px;
-  color: #888;
+  color: var(--TextMuted);
   font-style: italic;
 }
 
@@ -1264,7 +1264,7 @@ function closeAssistant() {
   padding: 8px 10px;
   font-family: inherit;
   font-size: 12.5px;
-  color: #faf8f5;
+  color: var(--Text);
   text-align: left;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -1273,7 +1273,7 @@ function closeAssistant() {
 .birdie-faq-item:hover {
   background: rgba(202, 168, 96, 0.12);
   border-color: rgba(202, 168, 96, 0.4);
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .birdie-faq-toggle {
@@ -1285,7 +1285,7 @@ function closeAssistant() {
   margin-bottom: 8px;
   font-family: inherit;
   font-size: 11px;
-  color: #caa860;
+  color: var(--Primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1297,7 +1297,7 @@ function closeAssistant() {
 .birdie-faq-toggle:hover {
   background: rgba(202, 168, 96, 0.08);
   border-color: rgba(202, 168, 96, 0.55);
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .birdie-faq-toggle-icon {
@@ -1311,7 +1311,7 @@ function closeAssistant() {
   width: 100%;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #888;
+  color: var(--TextMuted);
   padding: 6px;
   border-radius: 8px;
   font-family: inherit;
@@ -1321,7 +1321,7 @@ function closeAssistant() {
 }
 
 .birdie-faq-close:hover {
-  color: #faf8f5;
+  color: var(--Text);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -1329,7 +1329,7 @@ function closeAssistant() {
 .birdie-speech-text {
   margin: 0 0 10px;
   font-size: 13px;
-  color: #faf8f5;
+  color: var(--Text);
   white-space: pre-wrap;
 }
 
@@ -1338,7 +1338,7 @@ function closeAssistant() {
   margin-left: auto;
   background: rgba(202, 168, 96, 0.15);
   border: 1px solid rgba(202, 168, 96, 0.45);
-  color: #caa860;
+  color: var(--Primary);
   padding: 5px 12px;
   border-radius: 6px;
   font-family: inherit;
@@ -1350,7 +1350,7 @@ function closeAssistant() {
 
 .birdie-speech-ok:hover {
   background: rgba(202, 168, 96, 0.3);
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 /* ── Bubble enter/leave ── */

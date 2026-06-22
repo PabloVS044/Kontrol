@@ -377,7 +377,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .teams-root {
   min-height: 100vh;
   background: transparent;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -404,7 +404,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .eyebrow {
-  color: #caa860;
+  color: var(--Primary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -427,7 +427,7 @@ h3 { font-size: 20px; }
 .team-list-item small,
 .stack-row span,
 .muted-row {
-  color: #777;
+  color: var(--TextDim);
   font-size: 13px;
 }
 
@@ -471,7 +471,7 @@ h3 { font-size: 20px; }
 
 .team-list-item strong,
 .stack-row strong {
-  color: #faf8f5;
+  color: var(--Text);
   font-size: 14px;
 }
 
@@ -501,7 +501,7 @@ label {
 }
 
 label span {
-  color: #888;
+  color: var(--TextMuted);
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -514,7 +514,7 @@ textarea {
   background: #0a0a0a;
   border: 1px solid #252525;
   box-sizing: border-box;
-  color: #faf8f5;
+  color: var(--Text);
   font: inherit;
   outline: none;
   padding: 11px 12px;
@@ -549,7 +549,7 @@ textarea:focus {
 .primary-action,
 .secondary-action {
   background: #caa860;
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 
 .secondary-action {
@@ -604,7 +604,7 @@ button:disabled {
 .muted-row {
   background: #0c0c0c;
   border: 1px solid #1f1f1f;
-  color: #888;
+  color: var(--TextMuted);
   margin-bottom: 16px;
   padding: 16px;
 }

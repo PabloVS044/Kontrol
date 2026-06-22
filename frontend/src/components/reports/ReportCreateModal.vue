@@ -80,14 +80,14 @@ function submit() {
 .modal-box { background: #111; border: 1px solid #2a2a2a; width: 100%; max-width: 440px; padding: 24px; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-title { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: #e8e4de; letter-spacing: 0.04em; }
-.modal-close { background: none; border: none; color: #555; font-size: 14px; cursor: pointer; line-height: 1; transition: color .2s; }
-.modal-close:hover { color: #ccc; }
+.modal-close { background: none; border: none; color: var(--TextFaint); font-size: 14px; cursor: pointer; line-height: 1; transition: color .2s; }
+.modal-close:hover { color: var(--TextSoft); }
 .modal-form { display: flex; flex-direction: column; gap: 14px; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: #555; letter-spacing: 0.08em; text-transform: uppercase; }
-.form-optional { font-weight: 400; color: #444; text-transform: none; letter-spacing: 0; }
+.form-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--TextFaint); letter-spacing: 0.08em; text-transform: uppercase; }
+.form-optional { font-weight: 400; color: var(--TextFaint); text-transform: none; letter-spacing: 0; }
 .form-input {
-  padding: 8px 10px; background: #111111; border: 1px solid #2a2a2a; color: #ccc;
+  padding: 8px 10px; background: #111111; border: 1px solid #2a2a2a; color: var(--TextSoft);
   font-family: 'Manrope', sans-serif; font-size: 12px; outline: none; width: 100%;
   box-sizing: border-box; transition: border-color .2s;
 }
@@ -97,13 +97,13 @@ function submit() {
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .btn-outline {
   display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: #111111;
-  border: 1px solid #2a2a2a; color: #888; font-family: 'Manrope', sans-serif; font-size: 12px;
+  border: 1px solid #2a2a2a; color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px;
   font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #caa860; color: #caa860; }
+.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
 .btn-primary {
   display: flex; align-items: center; padding: 8px 16px; background: rgba(202,168,96,0.12);
-  border: 1px solid rgba(202,168,96,0.3); color: #caa860; font-family: 'Manrope', sans-serif;
+  border: 1px solid rgba(202,168,96,0.3); color: var(--Primary); font-family: 'Manrope', sans-serif;
   font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s;
 }
 .btn-primary:hover:not(:disabled) { background: rgba(202,168,96,0.22); }

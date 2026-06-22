@@ -181,18 +181,18 @@ function handleSubmit() {
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field  { display: flex; flex-direction: column; gap: 6px; }
 .form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-field label { font-size: 11px; color: #888; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
 .form-field input,
 .form-field textarea,
 .form-field select {
   background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: #faf8f5; font-family: 'Manrope', sans-serif; font-size: 13px;
+  color: var(--Text); font-family: 'Manrope', sans-serif; font-size: 13px;
   padding: 10px 12px; outline: none; resize: vertical;
   transition: border-color 0.15s;
 }
 .form-field input:focus,
 .form-field textarea:focus { border-color: #caa860; }
-.req { color: #caa860; }
+.req { color: var(--Primary); }
 .modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
@@ -200,13 +200,13 @@ function handleSubmit() {
 .mode-toggle { display: flex; border: 1px solid #1f1f1f; }
 .mode-btn {
   flex: 1; padding: 9px 12px; background: #0a0a0a; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; color: #888;
+  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; color: var(--TextMuted);
   transition: background 0.15s, color 0.15s;
 }
 .mode-btn + .mode-btn { border-left: 1px solid #1f1f1f; }
-.mode-btn.active { background: #caa860; color: #0a0a0a; }
+.mode-btn.active { background: #caa860; color: var(--BtnText); }
 .box-preview {
-  font-size: 12px; color: #caa860; font-family: 'Manrope', sans-serif;
+  font-size: 12px; color: var(--Primary); font-family: 'Manrope', sans-serif;
   background: rgba(202,168,96,0.08); border: 1px solid rgba(202,168,96,0.2);
   padding: 8px 12px;
 }
@@ -215,20 +215,20 @@ function handleSubmit() {
 .barcode-row input { flex: 1; }
 .barcode-scan {
   flex: 0 0 auto; width: 42px; background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--TextMuted); cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.barcode-scan:hover { border-color: #caa860; color: #caa860; }
+.barcode-scan:hover { border-color: #caa860; color: var(--Primary); }
 
 .btn-primary {
   background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: #0a0a0a; transition: filter 0.15s;
+  color: var(--BtnText); transition: filter 0.15s;
 }
 .btn-primary:hover    { filter: brightness(1.1); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: #faf8f5;
+  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
   cursor: pointer; transition: border-color 0.15s;
 }

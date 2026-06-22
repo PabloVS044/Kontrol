@@ -27,11 +27,11 @@ defineProps({
 .state-title {
   font-family: 'Playfair Display', serif;
   font-size: 24px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 .state-msg {
   font-size: 14px;
-  color: #888;
+  color: var(--TextMuted);
   text-align: center;
   max-width: 400px;
 }

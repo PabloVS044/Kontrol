@@ -560,14 +560,14 @@ onMounted(() => {
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #444;
+  color: var(--TextFaint);
   line-height: 1.5;
 }
 
 .chat-header-email {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .chat-panel-error {
@@ -580,7 +580,7 @@ onMounted(() => {
 .chat-typing-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #caa860;
+  color: var(--Primary);
   font-style: italic;
 }
 
@@ -611,7 +611,7 @@ onMounted(() => {
 .upload-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #caa860;
+  color: var(--Primary);
   padding-left: 8px;
 }
 
@@ -679,7 +679,7 @@ onMounted(() => {
 .ndm-title {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .ndm-close {
@@ -687,7 +687,7 @@ onMounted(() => {
   height: 26px;
   border: none;
   background: none;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -695,7 +695,7 @@ onMounted(() => {
   transition: color 0.12s;
 }
 
-.ndm-close:hover { color: #aaa; }
+.ndm-close:hover { color: var(--TextSoft); }
 
 .ndm-search {
   display: flex;
@@ -712,13 +712,13 @@ onMounted(() => {
   background: none;
   border: none;
   outline: none;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   padding: 9px 0;
 }
 
-.ndm-search input::placeholder { color: #444; }
+.ndm-search input::placeholder { color: var(--TextFaint); }
 
 .ndm-list {
   flex: 1;
@@ -750,7 +750,7 @@ onMounted(() => {
 .ndm-email {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .ndm-empty {
@@ -758,6 +758,6 @@ onMounted(() => {
   text-align: center;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #444;
+  color: var(--TextFaint);
 }
 </style>

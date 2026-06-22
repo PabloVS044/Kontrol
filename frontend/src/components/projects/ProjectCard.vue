@@ -194,7 +194,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 .card-name {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -210,7 +210,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .card-desc {
   font-size: 12px;
-  color: #666;
+  color: var(--TextDim);
   line-height: 1.5;
 }
 
@@ -221,7 +221,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .progress-val {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
   width: 30px;
   text-align: right;
   flex-shrink: 0;
@@ -236,10 +236,10 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
 }
 .budget-val {
-  color: #faf8f5;
+  color: var(--Text);
   font-variant-numeric: tabular-nums;
 }
 .progress-bg {
@@ -258,7 +258,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 .alert-pill {
   font-size: 11px;
@@ -284,7 +284,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .due-date {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .status-select-wrap {
@@ -337,7 +337,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .open-anchor {
   font-size: 12px;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   display: block;
   width: 100%;
@@ -346,7 +346,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   transition: color 0.15s;
   text-decoration: none;
 }
-.open-anchor:hover { color: #caa860; }
+.open-anchor:hover { color: var(--Primary); }
 
 :deep(.pill) {
   height: 22px;

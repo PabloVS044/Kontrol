@@ -128,18 +128,18 @@ const lowStockColor = computed(() => {
 .ctx-title {
   font-family: 'Playfair Display', serif;
   font-size: 28px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 .ctx-subtitle {
   font-size: 13px;
-  color: #555;
+  color: var(--TextFaint);
   margin-top: 4px;
 }
 
 .ctx-label {
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: #444;
+  color: var(--TextFaint);
   margin-bottom: 12px;
   font-family: 'Manrope', sans-serif;
 }
@@ -160,18 +160,18 @@ const lowStockColor = computed(() => {
 .s-value {
   font-size: 28px;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   line-height: 1;
 }
 .s-label {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 .s-sub {
   font-size: 11px;
-  color: #444;
+  color: var(--TextFaint);
 }
-.s-sub.gold { color: #caa860; }
+.s-sub.gold { color: var(--Primary); }
 .s-sub.red { color: #fb7185; }
 
 .category-section {
@@ -188,11 +188,11 @@ const lowStockColor = computed(() => {
   font-size: 11px;
 }
 .cat-name {
-  color: #faf8f5;
+  color: var(--Text);
   font-weight: 500;
 }
 .cat-count {
-  color: #888;
+  color: var(--TextMuted);
 }
 .cat-bar-bg {
   height: 4px;
@@ -219,7 +219,7 @@ const lowStockColor = computed(() => {
 }
 .alert-name {
   font-weight: 600;
-  color: #faf8f5;
+  color: var(--Text);
   display: block;
 }
 .alert-code {
@@ -240,7 +240,7 @@ const lowStockColor = computed(() => {
 }
 .alert-status.gold {
   background: rgba(202,168,96,0.15);
-  color: #caa860;
+  color: var(--Primary);
 }
 
 :deep(.btn) {
@@ -256,12 +256,12 @@ const lowStockColor = computed(() => {
 }
 :deep(.btn):first-of-type {
   background: #caa860;
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 :deep(.btn):last-of-type {
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .data-source {
@@ -275,7 +275,7 @@ const lowStockColor = computed(() => {
 }
 .ds-text {
   font-size: 11px;
-  color: #444;
+  color: var(--TextFaint);
 }
 </style>
 

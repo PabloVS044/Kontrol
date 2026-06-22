@@ -355,4 +355,11 @@ onMounted(async () => {
   background: var(--Background2);
   border: 1px solid var(--Border);
 }
+
+/* Móvil: la tabla de usuarios hace scroll horizontal en vez de comprimirse. */
+@media (max-width: 720px) {
+  .tasks-list { overflow-x: auto; }
+  .list-header,
+  .task-card { min-width: 560px; }
+}
 </style>

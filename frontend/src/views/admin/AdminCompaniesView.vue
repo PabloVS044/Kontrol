@@ -354,4 +354,11 @@ onMounted(async () => {
   background: var(--Background2);
   border: 1px solid var(--Border);
 }
+
+/* Móvil: la tabla de empresas hace scroll horizontal en vez de comprimirse. */
+@media (max-width: 760px) {
+  .tasks-list { overflow-x: auto; }
+  .list-header,
+  .task-card { min-width: 640px; }
+}
 </style>

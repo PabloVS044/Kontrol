@@ -101,32 +101,32 @@ function areaLabel(area) {
 
 <style scoped>
 .priority-bar { width: 3px; flex-shrink: 0; }
-.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; flex: 1; }
+.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--Text); flex: 1; }
 
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: #888; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field p { font-size: 13px; color: #faf8f5; font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
+.form-field p { font-size: 13px; color: var(--Text); font-family: 'Manrope', sans-serif; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 .area-badge {
-  font-size: 11px; color: #caa860;
+  font-size: 11px; color: var(--Primary);
   background: #caa860; border: 1px solid rgba(202,168,96,0.2);
   padding: 3px 10px; white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }
 
 .member-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.empty-hint  { color: #555; font-size: 13px; font-family: 'Manrope', sans-serif; }
+.empty-hint  { color: var(--TextFaint); font-size: 13px; font-family: 'Manrope', sans-serif; }
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
 .task-action-btn {
-  background: #111111; border: 1px solid #1f1f1f; color: #888;
+  background: #111111; border: 1px solid #1f1f1f; color: var(--TextMuted);
   font-family: 'Manrope', sans-serif; font-size: 11px;
   padding: 6px 12px; cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: #333; color: #faf8f5; }
+.task-action-btn:hover { border-color: #333; color: var(--Text); }
 .task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
 .task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
 </style>

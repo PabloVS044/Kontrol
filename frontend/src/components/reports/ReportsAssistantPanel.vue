@@ -108,7 +108,7 @@ const completionItems = [
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #caa860;
+  color: var(--Primary);
   letter-spacing: 0.04em;
 }
 
@@ -144,7 +144,7 @@ const completionItems = [
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0 0 8px;
@@ -153,7 +153,7 @@ const completionItems = [
 .ctx-insight {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
   line-height: 1.7;
   margin: 0;
 }
@@ -169,7 +169,7 @@ const completionItems = [
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1e1e1e;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   outline: none;
@@ -184,7 +184,7 @@ const completionItems = [
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1a1a1a;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   border-radius: 0;
@@ -193,7 +193,7 @@ const completionItems = [
 
 .ctx-actions :deep(.btn:hover) {
   border-color: rgba(202,168,96,0.3);
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .donut-wrap {
@@ -213,7 +213,7 @@ const completionItems = [
 .bar-labels span {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .dl-item {

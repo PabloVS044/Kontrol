@@ -90,7 +90,7 @@ defineEmits(['back'])
   gap: 6px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
@@ -98,7 +98,7 @@ defineEmits(['back'])
   padding: 0;
   transition: color .2s;
 }
-.back-btn:hover { color: #caa860; }
+.back-btn:hover { color: var(--Primary); }
 
 .detail-header {
   margin-bottom: 28px;
@@ -119,7 +119,7 @@ defineEmits(['back'])
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0 0 6px;
 }
 
@@ -140,13 +140,13 @@ defineEmits(['back'])
   padding: 7px 14px;
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #caa860; color: #caa860; }
+.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
 
 .meta-row {
   display: flex;
@@ -159,7 +159,7 @@ defineEmits(['back'])
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -167,10 +167,10 @@ defineEmits(['back'])
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: #ccc;
+  color: var(--TextSoft);
 }
-.meta-value.gold { color: #caa860; }
-.meta-value.dim { color: #555; }
+.meta-value.gold { color: var(--Primary); }
+.meta-value.dim { color: var(--TextFaint); }
 
 .overall-progress { display: flex; align-items: center; gap: 12px; }
 .op-track {
@@ -190,7 +190,7 @@ defineEmits(['back'])
 .op-label {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
   white-space: nowrap;
 }
 

@@ -98,13 +98,13 @@ onBeforeUnmount(stop)
   padding: 16px 20px; border-bottom: 1px solid #1f1f1f;
 }
 .scanner-title {
-  font-family: 'Playfair Display', serif; font-size: 18px; color: #faf8f5;
+  font-family: 'Playfair Display', serif; font-size: 18px; color: var(--Text);
 }
 .scanner-close {
-  background: none; border: none; color: #888; font-size: 18px; cursor: pointer;
+  background: none; border: none; color: var(--TextMuted); font-size: 18px; cursor: pointer;
   line-height: 1; padding: 4px;
 }
-.scanner-close:hover { color: #faf8f5; }
+.scanner-close:hover { color: var(--Text); }
 
 .scanner-viewport {
   position: relative; flex: 1; overflow: hidden;
@@ -123,7 +123,7 @@ onBeforeUnmount(stop)
   text-align: center; padding: 16px 20px;
   font-family: 'Manrope', sans-serif; font-size: 13px;
 }
-.scanner-msg.hint { color: #888; }
+.scanner-msg.hint { color: var(--TextMuted); }
 .scanner-msg.ok   { color: #34d399; }
 .scanner-msg.err  { color: #fb7185; }
 </style>

@@ -77,7 +77,7 @@ const dots = [
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 20px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .chart-legend,
@@ -92,7 +92,7 @@ const dots = [
   gap: 5px;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .leg-dot {

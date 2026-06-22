@@ -554,14 +554,14 @@ watch(
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .pm-title,
 .pm-card h3,
 .pm-state-title {
   font-family: 'Playfair Display', serif;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .pm-title {
@@ -573,7 +573,7 @@ watch(
 .pm-copy,
 .pm-state-copy,
 .pm-member-meta {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   line-height: 1.7;
   font-family: 'Manrope', sans-serif;
 }
@@ -594,7 +594,7 @@ watch(
   padding: 8px 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -602,7 +602,7 @@ watch(
 }
 
 .pm-chip.inactive {
-  color: #6a6a6a;
+  color: var(--TextDim);
 }
 
 .pm-state,
@@ -676,7 +676,7 @@ watch(
   padding: 12px 14px;
   background: #131313;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -712,14 +712,14 @@ watch(
 }
 
 .pm-permission-name {
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
 }
 
 .pm-permission-description {
-  color: #7e7e7e;
+  color: var(--TextDim);
   line-height: 1.5;
   font-family: 'Manrope', sans-serif;
 }
@@ -744,14 +744,14 @@ watch(
 
 .pm-btn--primary {
   background: #caa860;
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-weight: 700;
 }
 
 .pm-btn--secondary {
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .pm-btn--danger {
@@ -789,17 +789,17 @@ watch(
   justify-content: center;
   background: rgba(202, 168, 96, 0.12);
   border: 1px solid rgba(202, 168, 96, 0.2);
-  color: #caa860;
+  color: var(--Primary);
   font-weight: 700;
 }
 
 .pm-member-name {
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
 .pm-copy--muted {
-  color: #727272;
+  color: var(--TextDim);
 }
 
 @media (max-width: 980px) {

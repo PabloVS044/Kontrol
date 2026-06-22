@@ -79,13 +79,13 @@ defineEmits(['submit'])
 .modal-title {
   font-family: 'Playfair Display', serif;
   font-size: 19px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: #888;
+  color: var(--TextMuted);
   cursor: pointer;
   font-size: 22px;
   line-height: 1;
@@ -108,13 +108,13 @@ defineEmits(['submit'])
 .form-field label {
   font-size: 11px;
   letter-spacing: 0.05em;
-  color: #c0c0c0;
+  color: var(--TextSoft);
 }
 
 .form-field input {
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   padding: 10px 12px;
@@ -123,7 +123,7 @@ defineEmits(['submit'])
 
 .form-field input:focus { border-color: #caa860; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.req { color: #caa860; }
+.req { color: var(--Primary); }
 .modal-error { font-size: 12px; color: #fb7185; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .modal-actions :deep(.btn) {
@@ -136,8 +136,8 @@ defineEmits(['submit'])
 .modal-actions :deep(.btn:first-child) {
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
 }
-.modal-actions :deep(.btn:last-child) { background: #caa860; color: #0a0a0a; }
+.modal-actions :deep(.btn:last-child) { background: #caa860; color: var(--BtnText); }
 .modal-actions :deep(.btn:last-child:disabled) { opacity: 0.6; }
 </style>

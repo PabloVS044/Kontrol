@@ -182,11 +182,11 @@ function formatDate(v) {
 .bar-name-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: #111111; border: none; padding: 0;
-  color: #faf8f5; font-family: 'Manrope', sans-serif;
+  color: var(--Text); font-family: 'Manrope', sans-serif;
   font-size: 13px; font-weight: 500;
   cursor: pointer; min-width: 0; flex: 1;
 }
-.bar-name-btn:hover:not(.disabled) { color: #caa860; }
+.bar-name-btn:hover:not(.disabled) { color: var(--Primary); }
 .bar-name-btn.disabled { cursor: default; opacity: 1; }
 .bar-name-btn:disabled { cursor: default; }
 
@@ -200,7 +200,7 @@ function formatDate(v) {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bar-count {
-  font-size: 11px; color: #888;
+  font-size: 11px; color: var(--TextMuted);
   background: #111111;
   padding: 1px 6px;
   border: 1px solid #2a2a2a;
@@ -214,22 +214,22 @@ function formatDate(v) {
 }
 
 .row-btn {
-  background: #111111; border: 1px solid #2e2e2e; color: #b8b8b8;
+  background: #111111; border: 1px solid #2e2e2e; color: var(--TextSoft);
   width: 26px; height: 26px; cursor: pointer; font-size: 12px; line-height: 1;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color 0.15s, border-color 0.15s;
   font-family: 'Manrope', sans-serif;
 }
-.row-btn:hover { color: #caa860; border-color: #caa860; }
+.row-btn:hover { color: var(--Primary); border-color: #caa860; }
 .row-btn.danger:hover { color: #fb7185; border-color: #fb7185; }
 
 .bar-amounts {
   display: flex; justify-content: space-between;
-  font-size: 12px; color: #bcbcbc; margin-bottom: 6px;
+  font-size: 12px; color: var(--TextSoft); margin-bottom: 6px;
 }
 .amt-label {
   font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
-  color: #888; margin-right: 4px;
+  color: var(--TextMuted); margin-right: 4px;
 }
 .bar-overrun {
   font-size: 11px; color: #fda4af; margin-top: 4px;
@@ -244,7 +244,7 @@ function formatDate(v) {
   border-left: 2px solid #caa860;
 }
 .bar-details-empty {
-  font-size: 12px; color: #888; text-align: center;
+  font-size: 12px; color: var(--TextMuted); text-align: center;
   padding: 8px 0;
   font-family: 'Manrope', sans-serif;
 }
@@ -263,23 +263,23 @@ function formatDate(v) {
 .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
 
 .detail-date {
-  font-size: 11px; color: #888; letter-spacing: 0.05em;
+  font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em;
   text-transform: uppercase;
   min-width: 56px;
 }
 .detail-tag {
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #caa860; background: #caa860;
+  color: var(--Primary); background: #caa860;
   padding: 1px 6px; border: 1px solid rgba(202,168,96,0.2);
   align-self: center;
 }
 .detail-text {
-  color: #d4d4d4; line-height: 1.4;
+  color: var(--TextSoft); line-height: 1.4;
   overflow: hidden; text-overflow: ellipsis;
 }
-.detail-user { color: #888; font-size: 11px; }
+.detail-user { color: var(--TextMuted); font-size: 11px; }
 .detail-amount {
-  color: #faf8f5; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--Text); font-weight: 600; font-variant-numeric: tabular-nums;
 }
 
 .fade-enter-active, .fade-leave-active {

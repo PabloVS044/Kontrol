@@ -56,7 +56,7 @@ function close() {
 
 .modal-title {
   font-family: 'Playfair Display', serif;
-  font-size: 20px; color: #faf8f5;
+  font-size: 20px; color: var(--Text);
   flex: 1;
 }
 

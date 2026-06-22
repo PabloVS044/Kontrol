@@ -38,14 +38,14 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
   font-family: 'Playfair Display', serif;
   font-size: 42px;
   font-weight: 400;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0 0 4px;
 }
 
 .rep-subtitle {
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
-  color: #666;
+  color: var(--TextDim);
   margin: 0;
 }
 
@@ -62,7 +62,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
   gap: 7px;
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #888;
+  color: var(--TextMuted);
   padding: 9px 12px;
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
@@ -71,7 +71,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
 }
 
 .btn-outline:hover {
-  color: #caa860;
+  color: var(--Primary);
   border-color: rgba(202,168,96,0.45);
 }
 

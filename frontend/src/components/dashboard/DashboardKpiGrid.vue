@@ -49,13 +49,14 @@ defineProps({
 .kpi-grid :deep(.card-title) {
   font-size: 2rem;
   font-family: 'Playfair Display', serif;
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi-grid :deep(.card-subtitle) {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #666;
+  color: var(--TextDim);
 }
 
 @media (max-width: 900px) {

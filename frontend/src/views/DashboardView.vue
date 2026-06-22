@@ -1084,7 +1084,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .subtitle {
   font-family: var(--font-sans);
-  color: #666;
+  color: var(--TextDim);
   margin-bottom: 40px;
 }
 
@@ -1105,7 +1105,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .access-waiting-title {
   font-family: 'Playfair Display', serif;
   font-size: 2rem;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 10px 0 8px;
 }
 
@@ -1127,7 +1127,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #666;
+  color: var(--TextDim);
 }
 
 .ai-box {
@@ -1159,7 +1159,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .ai-box :deep(.btn) {
   background: var(--Primary);
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
@@ -1191,7 +1191,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: #888;
+  color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 4px;
@@ -1210,7 +1210,7 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  color: #444;
+  color: var(--TextFaint);
   font-size: 11px;
   font-family: var(--font-sans);
 }
@@ -1223,7 +1223,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: 12px;
   display: block;
   margin-bottom: 8px;
-  color: #888;
+  color: var(--TextMuted);
   font-family: var(--font-sans);
 }
 
@@ -1245,7 +1245,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .chart-state {
   padding: 24px 0;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
 }
@@ -1264,7 +1264,7 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: 12px;
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 .project-bar-name {
   overflow: hidden;
@@ -1275,11 +1275,11 @@ watch(() => authStore.idEmpresaActual, () => {
 .project-bar-meta {
   display: flex;
   gap: 10px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.project-bar-pct { color: #caa860; font-weight: 600; }
+.project-bar-pct { color: var(--Primary); font-weight: 600; }
 .project-bar-pct.advertencia { color: #f59e0b; }
 .project-bar-pct.critico     { color: #fb7185; }
 
@@ -1291,11 +1291,11 @@ watch(() => authStore.idEmpresaActual, () => {
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-family: 'Manrope', sans-serif;
 }
-.snapshot-label { color: #8f8f8f; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-.snapshot-value { color: #faf8f5; font-size: 15px; font-variant-numeric: tabular-nums; }
+.snapshot-label { color: var(--TextMuted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: var(--Text); font-size: 15px; font-variant-numeric: tabular-nums; }
 .snapshot-value.gold { color: var(--Primary); }
 .snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
-.snapshot-foot { color: #8f8f8f; font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+.snapshot-foot { color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
 
 .trend-card { margin-bottom: 20px; }
 .trend-head {
@@ -1307,7 +1307,7 @@ watch(() => authStore.idEmpresaActual, () => {
   flex-wrap: wrap;
 }
 .timeline-hint {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   line-height: 1.6;
@@ -1317,7 +1317,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .trend-select {
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   padding: 10px 12px;
   font-size: 13px;
   font-family: 'Manrope', sans-serif;
@@ -1356,7 +1356,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-title {
   font-family: 'Playfair Display', serif;
   font-size: 2.4rem;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 10px 0 8px;
 }
 
@@ -1365,7 +1365,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .member-email,
 .muted {
   font-family: 'Manrope', sans-serif;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   line-height: 1.7;
 }
 
@@ -1388,11 +1388,11 @@ watch(() => authStore.idEmpresaActual, () => {
   text-transform: uppercase;
   border: 1px solid rgba(255,255,255,0.12);
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .team-chip.inactive {
-  color: #6a6a6a;
+  color: var(--TextDim);
 }
 
 .team-grid {
@@ -1420,7 +1420,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-card h3 {
   font-family: 'Playfair Display', serif;
   font-size: 1.7rem;
-  color: #faf8f5;
+  color: var(--Text);
   margin-top: 8px;
 }
 
@@ -1458,14 +1458,14 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-btn--primary {
   background: var(--Primary);
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-weight: 700;
 }
 
 .team-btn--secondary {
   background: #111111;
   border: 1px solid rgba(255,255,255,0.12);
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .team-btn--danger {
@@ -1561,7 +1561,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .member-project-access-subtitle {
   margin-top: 6px;
-  color: #7e7e7e;
+  color: var(--TextDim);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
 }
@@ -1617,14 +1617,14 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .permission-name {
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
 }
 
 .permission-description {
-  color: #7e7e7e;
+  color: var(--TextDim);
   font-family: 'Manrope', sans-serif;
   line-height: 1.5;
 }
@@ -1637,7 +1637,7 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: center;
   background: rgba(202,168,96,0.12);
   border: 1px solid rgba(202,168,96,0.2);
-  color: #caa860;
+  color: var(--Primary);
   font-weight: 700;
 }
 
@@ -1648,11 +1648,11 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .member-name {
   font-family: 'Manrope', sans-serif;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .role-chip.owner {
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .role-chip.admin {
@@ -1671,7 +1671,7 @@ watch(() => authStore.idEmpresaActual, () => {
   padding: 12px 14px;
   background: #131313;
   border: 1px solid rgba(255,255,255,0.12);
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 @media (max-width: 1100px) {

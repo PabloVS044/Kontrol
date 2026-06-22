@@ -256,7 +256,7 @@ watch(() => route.params.token, loadInvitation)
   background:
     radial-gradient(circle at top, rgba(202, 168, 96, 0.18), transparent 28%),
     linear-gradient(180deg, #070707 0%, #111 100%);
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -284,7 +284,7 @@ watch(() => route.params.token, loadInvitation)
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .invite-title {
@@ -386,13 +386,13 @@ watch(() => route.params.token, loadInvitation)
 
 .secondary-btn {
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .ghost-btn {
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 

@@ -406,7 +406,7 @@ watch(showSideChat, async (isOpen) => {
   justify-content: center;
   border: 1px solid #3f3121;
   background: #1f180f;
-  color: #caa860;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -430,7 +430,7 @@ watch(showSideChat, async (isOpen) => {
   margin: 0;
   font-family: 'Playfair Display', serif;
   font-size: 30px;
-  color: #ffffff;
+  color: var(--Text);
 }
 
 .call-sub,
@@ -487,7 +487,7 @@ watch(showSideChat, async (isOpen) => {
 
 .call-btn--primary {
   background: #caa860;
-  color: #0a0a0a;
+  color: var(--BtnText);
 }
 
 .call-shell {
@@ -547,7 +547,7 @@ watch(showSideChat, async (isOpen) => {
 .close-side-btn {
   background: #121212;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #888;
+  color: var(--TextMuted);
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -577,7 +577,7 @@ watch(showSideChat, async (isOpen) => {
   justify-content: center;
   min-height: 120px;
   padding: 12px;
-  color: #ccc;
+  color: var(--TextSoft);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   text-align: center;
@@ -643,7 +643,7 @@ watch(showSideChat, async (isOpen) => {
 
 .mini-msg-text {
   font-size: 13px;
-  color: #faf8f5;
+  color: var(--Text);
   background: #111111;
   padding: 8px 12px;
   border-radius: 4px;
@@ -663,7 +663,7 @@ watch(showSideChat, async (isOpen) => {
   width: 100%;
   background: #070707;
   border: 1px solid #1f1f1f;
-  color: #fff;
+  color: var(--Text);
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
@@ -744,7 +744,7 @@ watch(showSideChat, async (isOpen) => {
   margin: 0;
   font-family: 'Playfair Display', serif;
   font-size: 34px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .call-toolbar {
@@ -782,7 +782,7 @@ watch(showSideChat, async (isOpen) => {
 
 .call-circle-btn.inactive {
   background: #101010;
-  color: #777;
+  color: var(--TextDim);
 }
 
 .call-circle-btn--danger {
@@ -853,7 +853,7 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .side-msg-text {
-  color: #FAF8F5;
+  color: var(--Text);
   font-size: 13px;
   line-height: 1.4;
 }

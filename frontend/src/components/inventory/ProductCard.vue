@@ -147,7 +147,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 }
 .img-placeholder span {
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
   letter-spacing: 0.05em;
 }
 
@@ -168,14 +168,14 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 }
 .card-code {
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
   font-weight: 500;
   letter-spacing: 0.08em;
 }
 .card-name {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
   line-height: 1.2;
 }
 
@@ -189,12 +189,12 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 }
 .card-price-label {
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
 }
 .card-price {
   font-size: 14px;
   font-weight: 600;
-  color: #faf8f5;
+  color: var(--Text);
   margin-top: 2px;
 }
 .card-stock {
@@ -206,10 +206,10 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   line-height: 1;
 }
 .card-stock-num.red { color: #fb7185; }
-.card-stock-num.gold { color: #caa860; }
+.card-stock-num.gold { color: var(--Primary); }
 .card-stock-label {
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
 }
 
 .card-proj-usage {
@@ -224,7 +224,7 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   margin-bottom: 4px;
 }
 .pu-label {
-  color: #888;
+  color: var(--TextMuted);
   font-weight: 500;
 }
 .pu-val {

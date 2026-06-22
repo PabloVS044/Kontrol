@@ -532,22 +532,22 @@ async function submitFunds(payload) {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600&display=swap');
 
-.budget-layout { min-height: 100vh; color: #faf8f5; font-family: 'Manrope', sans-serif; background: transparent; }
+.budget-layout { min-height: 100vh; color: var(--Text); font-family: 'Manrope', sans-serif; background: transparent; }
 .content { padding: 80px 56px 48px; max-width: 1400px; margin: 0 auto; }
 
 .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
 .header-titles { display: flex; flex-direction: column; gap: 6px; }
-.title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; color: #faf8f5; }
-.subtitle { font-size: 13px; color: #a8a8a8; display: inline-flex; gap: 8px; align-items: center; }
+.title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; color: var(--Text); }
+.subtitle { font-size: 13px; color: var(--TextMuted); display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
   font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #caa860; background: rgba(202,168,96,0.1);
+  color: var(--Primary); background: rgba(202,168,96,0.1);
   padding: 2px 8px; border: 1px solid rgba(202,168,96,0.2);
 }
 
 .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .project-select {
-  background: #0a0a0a; border: 1px solid #3a3a3a; color: #faf8f5;
+  background: #0a0a0a; border: 1px solid #3a3a3a; color: var(--Text);
   padding: 10px 12px; font-size: 13px; font-family: 'Manrope', sans-serif;
   outline: none; min-width: 220px;
 }
@@ -556,14 +556,14 @@ async function submitFunds(payload) {
 .project-select option   { background: #0f0f0f; }
 
 .readonly-hint {
-  font-size: 12px; color: #888;
+  font-size: 12px; color: var(--TextMuted);
   background: rgba(17, 17, 17, 0.92);
   border: 1px solid #1f1f1f; border-left: 2px solid #caa860;
   padding: 10px 14px; margin-bottom: 20px;
   font-family: 'Manrope', sans-serif;
 }
 
-.state-msg { padding: 40px; text-align: center; color: #b0b0b0; }
+.state-msg { padding: 40px; text-align: center; color: var(--TextSoft); }
 .state-msg.error { color: #fb7185; }
 
 .main-grid {
@@ -594,13 +594,13 @@ async function submitFunds(payload) {
 .mv-dot.purchase { background: #caa860; }
 .mv-dot.sale     { background: #34d399; }
 .mv-dot.admin    { background: #60a5fa; }
-.mv-label  { color: #d4d4d4; letter-spacing: 0.05em; }
+.mv-label  { color: var(--TextSoft); letter-spacing: 0.05em; }
 .mv-count  {
-  color: #faf8f5; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--Text); font-weight: 700; font-variant-numeric: tabular-nums;
   padding-left: 6px; border-left: 1px solid #2a2a2a;
 }
 .mv-hint   {
-  font-size: 11px; color: #888; margin: 0 0 0 auto;
+  font-size: 11px; color: var(--TextMuted); margin: 0 0 0 auto;
   flex: 1 1 200px; min-width: 0;
 }
 @media (max-width: 600px) {
@@ -612,7 +612,7 @@ async function submitFunds(payload) {
   border-top: 1px dashed #2a2a2a;
 }
 .income { color: #34d399; }
-.muted { color: #888; display: block; margin-top: 6px; font-size: 11px; }
+.muted { color: var(--TextMuted); display: block; margin-top: 6px; font-size: 11px; }
 
 /* Distribution */
 .distribution-section { background: rgba(12, 12, 12, 0.92); border: 1px solid #2a2a2a; padding: 24px; }
@@ -621,22 +621,22 @@ async function submitFunds(payload) {
   margin-bottom: 16px; gap: 12px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: #caa860;
+  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
   font-weight: 600; text-transform: uppercase;
 }
-.activities-count { font-size: 11px; color: #888; }
+.activities-count { font-size: 11px; color: var(--TextMuted); }
 
 .planning-row { margin-bottom: 20px; }
 .planning-head {
   display: flex; justify-content: space-between;
-  font-size: 11px; color: #888; margin-bottom: 5px;
+  font-size: 11px; color: var(--TextMuted); margin-bottom: 5px;
 }
-.planning-value { color: #cfcfcf; }
+.planning-value { color: var(--TextSoft); }
 .planning-row :deep(.pb-bg) { background: #1a1a1a; height: 4px; }
 .planning-row :deep(.pb-fill) { height: 100% !important; }
 
 .empty-hint {
-  color: #a8a8a8; font-size: 13px; padding: 20px 0;
+  color: var(--TextMuted); font-size: 13px; padding: 20px 0;
   text-align: center; border: 1px dashed #2a2a2a;
 }
 
@@ -647,15 +647,15 @@ async function submitFunds(payload) {
 }
 .ai-insight-box h4 {
   font-size: 12px; margin-bottom: 8px; letter-spacing: 0.1em;
-  color: #caa860; text-transform: uppercase;
+  color: var(--Primary); text-transform: uppercase;
 }
-.ai-insight-box p  { font-size: 12px; color: #d4d4d4; line-height: 1.6; margin: 0; }
-.gold   { color: #caa860; }
+.ai-insight-box p  { font-size: 12px; color: var(--TextSoft); line-height: 1.6; margin: 0; }
+.gold   { color: var(--Primary); }
 .danger { color: #fb7185; }
 
 .header-actions :deep(.btn) {
   border-radius: 0; font-size: 12px; font-weight: 600;
-  padding: 10px 16px; background: #caa860; color: #0a0a0a;
+  padding: 10px 16px; background: #caa860; color: var(--BtnText);
 }
 .header-actions :deep(.btn:disabled) { opacity: 0.4; cursor: not-allowed; }
 

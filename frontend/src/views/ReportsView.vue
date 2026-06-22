@@ -515,7 +515,7 @@ async function submitCreate(payload) {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0 0 4px;
 }
 
@@ -539,7 +539,7 @@ async function submitCreate(payload) {
   padding: 7px 14px;
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -549,7 +549,7 @@ async function submitCreate(payload) {
 
 .btn-outline:hover {
   border-color: #caa860;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 .icon14 { width: 14px; height: 14px; }
@@ -569,7 +569,7 @@ async function submitCreate(payload) {
   background: #111111;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -577,11 +577,11 @@ async function submitCreate(payload) {
   transition: color .2s, border-color .2s;
 }
 
-.filter-btn:hover { color: #aaa; }
+.filter-btn:hover { color: var(--TextSoft); }
 
 .filter-btn.active {
   border-bottom-color: #caa860;
-  color: #caa860;
+  color: var(--Primary);
 }
 
 /* ─── KPI Cards ──────────────────────────────────────────────────────────── */
@@ -610,7 +610,7 @@ async function submitCreate(payload) {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #555;
+  color: var(--TextFaint);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -619,7 +619,7 @@ async function submitCreate(payload) {
   font-family: 'Playfair Display', serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   line-height: 1;
 }
 
@@ -656,7 +656,7 @@ async function submitCreate(payload) {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 700;
-  color: #888;
+  color: var(--TextMuted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -664,7 +664,7 @@ async function submitCreate(payload) {
 .view-all-btn {
   background: none;
   border: none;
-  color: #caa860;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -685,7 +685,7 @@ async function submitCreate(payload) {
 
 .rep-table th {
   text-align: left;
-  color: #444;
+  color: var(--TextFaint);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -704,7 +704,7 @@ async function submitCreate(payload) {
 .rep-table td {
   padding: 12px 12px 12px 0;
   border-bottom: 1px solid rgba(255,255,255,0.04);
-  color: #aaa;
+  color: var(--TextSoft);
   vertical-align: middle;
 }
 
@@ -715,7 +715,7 @@ async function submitCreate(payload) {
   border: 1px solid #222;
   padding: 3px 8px;
   font-size: 11px;
-  color: #777;
+  color: var(--TextDim);
 }
 
 .status-tag {
@@ -735,12 +735,12 @@ async function submitCreate(payload) {
   flex-shrink: 0;
 }
 
-.td-date { color: #555; font-size: 11px; }
+.td-date { color: var(--TextFaint); font-size: 11px; }
 
 .progress-cell { display: flex; align-items: center; gap: 7px; }
 .prog-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; min-width: 60px; }
 .prog-fill  { height: 100%; background: linear-gradient(90deg, #b27f2a, #caa860); border-radius: 2px; }
-.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; min-width: 30px; }
+.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); min-width: 30px; }
 
 .type-tag {
   font-family: 'Manrope', sans-serif;
@@ -755,23 +755,23 @@ async function submitCreate(payload) {
 .section-count {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #444;
+  color: var(--TextFaint);
 }
 
 .open-btn {
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
   transition: color .2s;
 }
-.open-btn:hover { color: #caa860; }
+.open-btn:hover { color: var(--Primary); }
 
 .empty-row {
   text-align: center;
-  color: #444;
+  color: var(--TextFaint);
   padding: 24px 0 !important;
   font-size: 12px;
 }
@@ -804,7 +804,7 @@ async function submitCreate(payload) {
   gap: 5px;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 .leg-dot {
   width: 6px;

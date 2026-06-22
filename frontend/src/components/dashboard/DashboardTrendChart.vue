@@ -130,7 +130,7 @@ defineEmits(['update:modelValue'])
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: #888;
+  color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 4px;
@@ -146,7 +146,7 @@ defineEmits(['update:modelValue'])
   flex-wrap: wrap;
 }
 .timeline-hint {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   line-height: 1.6;
@@ -156,7 +156,7 @@ defineEmits(['update:modelValue'])
 .trend-select {
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   padding: 10px 12px;
   font-size: 13px;
   font-family: 'Manrope', sans-serif;
@@ -170,7 +170,7 @@ defineEmits(['update:modelValue'])
 }
 .chart-state {
   padding: 24px 0;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
 }
