@@ -8,10 +8,15 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development node --dns-result-order=ipv4first --watch src/index.js",
-    "start": "node --dns-result-order=ipv4first src/index.js"
+    "start": "node --dns-result-order=ipv4first src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "@vitest/coverage-v8": "^4.1.10",
+    "cross-env": "^7.0.3",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

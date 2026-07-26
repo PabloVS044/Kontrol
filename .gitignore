@@ -27,3 +27,5 @@ Thumbs.db
 *.sln
 *.sw?
 .claude
+# Test coverage
+coverage/

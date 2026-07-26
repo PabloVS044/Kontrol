@@ -16,6 +16,7 @@
 <script>
 export default {
     name: 'Button',
+    emits: ['click'],
     props: {
         label: {
             type: String,
