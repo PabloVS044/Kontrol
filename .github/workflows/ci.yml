@@ -1,15 +1,15 @@
 name: CI
 
+# Solo se valida lo que va a integrarse a una rama protegida:
+# pull requests dirigidos a main o develop. Los pushes a ramas de
+# trabajo no disparan la suite.
 on:
-  push:
-    branches: ['**']
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
-# Cancela ejecuciones anteriores de la misma rama que sigan corriendo.
-# Se incluye el evento en la clave para que un push no cancele el run del PR.
+# Si se sube un commit nuevo al PR, cancela el run anterior del mismo PR.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
