@@ -1,5 +1,10 @@
 import pool from '../db/pool.js'
 import { notifyCompany } from '../services/notificationService.js'
+import {
+  calculateUsageRatio,
+  computeAlert,
+  sumExpenses,
+} from '../utils/budgetCalculations.js'
 
 const ACTIVITY_SELECT = `
   pa.id_actividad, pa.nombre, pa.monto_planificado, pa.monto_real, pa.id_proyecto
@@ -9,33 +14,8 @@ const PROJECT_SCOPE_JOIN = `
   JOIN public.proyecto p ON p.id_proyecto = pa.id_proyecto
 `
 
-// ── Alert levels ─────────────────────────────────────────────────────────────
-// Granular thresholds let the UI surface a richer signal than just "warning".
-const ALERT_LEVELS = {
-  SALUDABLE:   { threshold: 0,    message: 'Budget on track.' },
-  PRECAUCION:  { threshold: 0.6,  message: '60% of the budget has been used. Monitor spending.' },
-  ADVERTENCIA: { threshold: 0.8,  message: 'More than 80% of the budget has been used.' },
-  CRITICO:     { threshold: 1.0,  message: 'The project budget has been fully consumed.' },
-  EXCEDIDO:    { threshold: 1.0001, message: 'Spending has exceeded the allocated budget.' },
-}
-
-const computeAlert = (usageRatio, totalBudget) => {
-  if (!totalBudget || totalBudget <= 0) {
-    return { alerta: null, alerta_nivel: null }
-  }
-
-  let level = 'SALUDABLE'
-  if (usageRatio > ALERT_LEVELS.EXCEDIDO.threshold) level = 'EXCEDIDO'
-  else if (usageRatio >= ALERT_LEVELS.CRITICO.threshold) level = 'CRITICO'
-  else if (usageRatio >= ALERT_LEVELS.ADVERTENCIA.threshold) level = 'ADVERTENCIA'
-  else if (usageRatio >= ALERT_LEVELS.PRECAUCION.threshold) level = 'PRECAUCION'
-
-  if (level === 'SALUDABLE') {
-    return { alerta: null, alerta_nivel: 'SALUDABLE' }
-  }
-
-  return { alerta: ALERT_LEVELS[level].message, alerta_nivel: level }
-}
+// Alert thresholds and the accumulated-spend math live in
+// utils/budgetCalculations.js so they can be exercised without a database.
 
 // ── Project scope helper ─────────────────────────────────────────────────────
 const ensureProjectInCompany = async (client, projectId, id_empresa) => {
@@ -129,9 +109,7 @@ const buildProjectBudgetSummaryData = async (client, projectId, id_empresa) => {
   const totalPlanned = activities.reduce(
     (sum, activity) => sum + activity.monto_planificado, 0
   )
-  const totalActividades = activities.reduce(
-    (sum, activity) => sum + activity.monto_real, 0
-  )
+  const totalActividades = sumExpenses(activities.map((a) => a.monto_real))
 
   const inv = {
     ENTRADA: { total: 0, movimientos: 0 },
@@ -150,7 +128,7 @@ const buildProjectBudgetSummaryData = async (client, projectId, id_empresa) => {
   const ingresosTotales = inv.SALIDA.total
   const resultadoNeto = ingresosTotales - egresosTotales
   const disponible = totalBudget - egresosTotales
-  const usageRatio = totalBudget > 0 ? egresosTotales / totalBudget : 0
+  const usageRatio = calculateUsageRatio(egresosTotales, totalBudget)
 
   const { alerta, alerta_nivel } = computeAlert(usageRatio, totalBudget)
 
