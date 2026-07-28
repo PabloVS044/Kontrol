@@ -384,6 +384,7 @@ import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ProductModal from '../components/inventory/ProductModal.vue'
 import { useAuthStore } from '@/stores/auth'
+import { lineTotal, calcSubtotal } from '@/utils/sales.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -639,12 +640,10 @@ function clearSaleCart() {
 }
 
 function saleItemSubtotal(item) {
-  return Number(item.product.precio_venta) * Number(item.cantidad)
+  return lineTotal(item)
 }
 
-const saleTotal = computed(() =>
-  saleCart.value.reduce((acc, item) => acc + saleItemSubtotal(item), 0)
-)
+const saleTotal = computed(() => calcSubtotal(saleCart.value))
 
 const canSubmitSale = computed(() => saleCart.value.length > 0)
 
