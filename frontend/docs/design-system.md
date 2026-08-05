@@ -47,20 +47,25 @@ Subtle curves to maintain an elegant and modern look.
 - `radius/full`: 999px (Status Badges / Pills)
 
 ## 6. Elevation & Shadows
-Specifically designed for dark interfaces.
+Specifically designed to provide depth in dark interfaces without losing elegance.
 - **Shadow/Card:** `0, 4, 20, 0, rgba(0,0,0, 0.5)` - Provides depth for surfaces.
-- **Shadow/Glow:** `0, 0, 15, 5, #CAA860 (50% Opacity)` - **Hover state effect** representing gold illumination.
-- **Shadow/Modal:** `0, 10, 40, 0, rgba(0,0,0, 0.8)` - Top layer focus.
+- **Shadow/Glow:** `0, 0, 15, 5, #CAA860 (50% Opacity)` - Used for Hover states to represent gold illumination.
+- **Shadow/Modal:** `0, 10, 40, 0, rgba(0,0,0, 0.8)` - Top layer focus for pop-ups.
 
-## 7. Iconography & Interaction
-- **Style:** Lucide Icons / Heroicons.
-- **Stroke Width:** 1.5px (Fine).
-- **Interactive States:** 
-  - **Hover:** 115% Brightness + `shadow/glow`.
-  - **Disabled:** 30% Opacity + `cursor: not-allowed`.
-  - **Active:** Scale transform (0.98).
+## 7. Iconography
+- **Library:** Lucide Icons / Heroicons.
+- **Grid Size:** 24x24px bounding box.
+- **Stroke Weight:** 1.5px for a clean, modern aesthetic.
+- **Color Logic:** Gold for active states; Muted Gray for inactive elements.
 
-## 8. Accessibility (WCAG 2.1 AA Compliance)
-- **Primary Text (#FAF8F5) on Base (#000000):** 14.2:1 (Passes AAA).
-- **Gold Highlights (#CAA860) on Surface (#0A0A0A):** 6.8:1 (Passes AA).
-- **Minimum Target Size:** All buttons and inputs maintain a minimum height of 40px for mobile accessibility.
+## 8. Interaction States
+- **Normal:** 100% color, no elevation.
+- **Hover:** 115% brightness increase + `shadow/glow` effect.
+- **Active (Click):** 0.98 scale transform (press feedback).
+- **Disabled:** 30% opacity + `cursor: not-allowed`.
+
+## 9. Accessibility & Contrast (WCAG 2.1)
+We prioritize legibility for users with diverse visual conditions.
+- **Text Contrast:** Main body text (#FAF8F5) on base black (#000000) yields a **14.2:1 contrast ratio**, exceeding the AAA standard.
+- **UI Elements:** Gold highlights (#CAA860) on surface black (#0A0A0A) yield a **6.8:1 contrast ratio**, meeting the AA standard.
+- **Interactive Targets:** All buttons maintain a minimum height of 44px to comply with touch-target guidelines.
