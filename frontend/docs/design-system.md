@@ -1,6 +1,7 @@
 # Kontrol Design System v2.0 
 **Project:** Kontrol - Management for Micro-businesses (Librería Ana González)  
 **Theme:** Luxury Dark Mode (Black & Gold)
+**Figma File:** [View Design System here](https://www.figma.com/design/qDDZC8ZvzDhXHRzDl6bbHi/Kontrol---Identidad-visual-v2?node-id=1-2&t=DvxRuG3wWGDLcbZE-1)
 
 ## 1. Business Identity & Goal
 The goal of this design system is to provide a consistent, high-end experience that transforms informal management into a professional digital environment. The "Luxury" aesthetic builds trust and clarity for owners and collaborators.
@@ -69,3 +70,13 @@ We prioritize legibility for users with diverse visual conditions.
 - **Text Contrast:** Main body text (#FAF8F5) on base black (#000000) yields a **14.2:1 contrast ratio**, exceeding the AAA standard.
 - **UI Elements:** Gold highlights (#CAA860) on surface black (#0A0A0A) yield a **6.8:1 contrast ratio**, meeting the AA standard.
 - **Interactive Targets:** All buttons maintain a minimum height of 44px to comply with touch-target guidelines.
+
+## Visual Reference
+![Paleta de Colores](./assets/Colores.png)
+![Tipografía](./assets/Tipografia.png)
+![Sistema de Espaciado](./assets/Espaciado.png)
+![Radios de Borde](./assets/Radios.png)
+![Sombras y Elevación](./assets/Sombras_Elevación.png)
+![Criterio de Iconografía](./assets/Iconografía.png)
+![Estados de Interacción](./assets/Interacción.png)
+![Verificción de Contraste](./assets/Contraste.png)
