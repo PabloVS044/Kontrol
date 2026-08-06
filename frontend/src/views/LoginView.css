@@ -408,6 +408,13 @@
   border: 1px solid var(--k-state-error-text);
   color: var(--k-state-error-text);
 }
+/* El template ya usaba esta variante para el banner de invitación, pero nunca
+   tuvo reglas: heredaba solo el padding y quedaba sin color. */
+.login-banner--success {
+  background: rgba(var(--k-color-success-rgb), 0.12);
+  border: 1px solid var(--k-state-success-text);
+  color: var(--k-state-success-text);
+}
 
 /* ── Responsive ──
    Solo geometría: no hay valores de marca en los breakpoints. Los tamaños de

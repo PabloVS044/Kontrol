@@ -38,6 +38,7 @@
      — evita repetir el literal del dorado por todo el código. */
   --k-color-primary-rgb: 202, 168, 96;
   --k-color-error-rgb: 224, 82, 82;
+  --k-color-success-rgb: 72, 199, 116;
   --k-color-black-rgb: 0, 0, 0;
   --k-color-white-rgb: 255, 255, 255;
 
