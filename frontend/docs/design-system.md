@@ -95,11 +95,13 @@ Designed specifically for dark backgrounds using "Glow" effects to provide depth
 *   **Target Size:** All interactive elements maintain a minimum height of 40px for mobile accessibility.
 
 ## Visual Reference
+> Transcripción literal de estas láminas (nombres de token tal como están en Figma): [`design-tokens-figma.md`](./design-tokens-figma.md)
+
 ![Paleta de Colores](./assets/Colores.png)
-![Tipografía](./assets/Tipografia.png)
+![Tipografía](./assets/Tipografía.png)
 ![Sistema de Espaciado](./assets/Espaciado.png)
 ![Radios de Borde](./assets/Radios.png)
 ![Sombras y Elevación](./assets/Sombras_Elevación.png)
 ![Criterio de Iconografía](./assets/Iconografía.png)
 ![Estados de Interacción](./assets/Interacción.png)
-![Verificción de Contraste](./assets/Contraste.png)
+![Verificación de Contraste](./assets/Contraste.png)
