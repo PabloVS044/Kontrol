@@ -1,32 +1,61 @@
+/**
+ * Kontrol — hoja global.
+ *
+ * Desde SCRUM-13 este archivo NO define valores de marca: los tokens viven en
+ * `src/styles/theme.css`. Aquí solo queda:
+ *   1. la capa de compatibilidad legacy (alias → tokens),
+ *   2. el reset mínimo del documento,
+ *   3. estilos base heredados de la landing.
+ */
+
+@import './src/styles/theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Capa de compatibilidad (SCRUM-13, punto 3 del alcance).
+ *
+ * Estas variables sin prefijo son las que ya consumían las pantallas
+ * existentes (~330 usos de `var(--Primary)`, `var(--Text)`, …). Se conservan
+ * como ALIAS de los tokens nuevos para que nada se rompa mientras avanza la
+ * migración de SCRUM-14..17.
+ *
+ * ⚠️ Congeladas: no agregar variables nuevas a esta lista. Todo código nuevo
+ * consume `var(--k-*)` directamente. Esta capa desaparece cuando no queden
+ * consumidores.
+ */
 :root {
-  --Primary: #caa860;
-  --Primary2: #b27f2a;
-  --Secondary: #886911;
-  --Tertiary: #12120e;
-  --Border: #312713;
-  --PillBack: #120f07;
-  --Text: #ffffff;
-  --Background: rgba(0, 0, 0, 0.92);
-  --Background2: #120f07;
-  --Background3: #282825;
-  --Success: rgb(15, 77, 15);
-  --Error: rgb(128, 13, 13);
-  --Warning: rgb(120, 80, 10);
+  --Primary: var(--k-color-primary);
+  --Primary2: var(--k-color-primary-2);
+  --Secondary: var(--k-color-secondary);
+  --Tertiary: var(--k-color-tertiary);
+  --Border: var(--k-color-border);
+  --PillBack: var(--k-color-pill-back);
+  --Text: var(--k-color-text);
+  --Background: var(--k-color-bg);
+  --Background2: var(--k-color-bg-2);
+  --Background3: var(--k-color-bg-3);
+  --Success: var(--k-color-success);
+  --Error: var(--k-color-error);
+  --Warning: var(--k-color-warning);
 
   /* Texto secundario */
-  --TextMuted: #8a8070;
-  --TextDim: #5a5040;
-  --TextPlaceholder: #4a4030;
+  --TextMuted: var(--k-text-muted);
+  --TextDim: var(--k-text-dim);
+  --TextPlaceholder: var(--k-text-placeholder);
 
   /* Estados visuales */
-  --ErrorText: #e05252;
-  --SuccessText: #48c774;
+  --ErrorText: var(--k-state-error-text);
+  --SuccessText: var(--k-state-success-text);
 
   /* Formularios */
-  --InputBg: rgba(255, 255, 255, 0.04);
-  --InputFocusBg: rgba(202, 168, 96, 0.05);
-  --BtnText: #0e0c08;
+  --InputBg: var(--k-form-input-bg);
+  --InputFocusBg: var(--k-form-input-focus-bg);
+  --BtnText: var(--k-form-btn-text);
 }
+
 html,
 body,
 #app {
@@ -39,29 +68,33 @@ body,
 html {
   scrollbar-gutter: stable;
 }
+
+/* Estilos heredados de la landing. Usan Alfa Slab One / DM Sans, que no forman
+   parte de la identidad v2; se migran en SCRUM-14..17. */
 .hero-title {
   color: var(--Text);
-  font-family: "Alfa Slab One";
+  font-family: 'Alfa Slab One';
   letter-spacing: 5px;
   font-size: clamp(2rem, 6vw, 6rem);
   margin-bottom: 20px;
 }
 
 p {
-  font-family: "DM Sans";
+  font-family: 'DM Sans';
   font-size: clamp(0.95rem, 1.5vw, 1.2rem);
   color: var(--Text);
   z-index: 20;
 }
 
 .sub-title {
-  font-family: "Alfa Slab One";
+  font-family: 'Alfa Slab One';
   letter-spacing: 2px;
   font-size: clamp(1.5rem, 3.5vw, 3rem);
   text-align: center;
   color: var(--Text);
   z-index: 20;
 }
+
 @media screen and (max-width: 500px) {
   .hero-title {
     font-size: 2em;
