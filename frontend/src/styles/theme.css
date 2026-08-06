@@ -1,0 +1,135 @@
+/**
+ * Kontrol — Design tokens (SCRUM-13 / HU-32)
+ *
+ * Fuente única de verdad del tema. Traducción a código de la guía de estilo
+ * aprobada en SCRUM-12; los nombres siguen las láminas de Figma documentadas
+ * en `docs/design-tokens-figma.md`.
+ *
+ * Reglas:
+ *  - Todo valor de marca (color, tipografía, espaciado, radio, sombra) vive aquí.
+ *    Ningún otro archivo debería declarar literales de marca.
+ *  - Consumir siempre `var(--k-*)`. Las variables sin prefijo (`--Primary`,
+ *    `--Text`, …) son alias legacy definidos en `globals.css` y están congelados:
+ *    existen para que las pantallas aún no migradas sigan funcionando.
+ *  - Tailwind lee estos mismos tokens (ver `tailwind.config.js`), así que las
+ *    clases utilitarias y el CSS plano no pueden divergir.
+ */
+
+:root,
+[data-theme='dark'] {
+  /* ── color/ ─────────────────────────────────────────────── */
+  --k-color-primary: #caa860;
+  --k-color-primary-2: #b27f2a;
+  --k-color-secondary: #886911;
+  --k-color-tertiary: #12120e;
+  --k-color-border: #312713;
+  --k-color-pill-back: #120f07;
+  --k-color-bg: rgba(0, 0, 0, 0.92);
+  --k-color-bg-2: #120f07;
+  --k-color-bg-3: #282825;
+  --k-color-text: #faf8f5;
+  --k-color-text-muted: #8a8070; /* distinto de --k-text-muted: gris neutro, no cálido */
+  --k-color-success: rgb(15, 77, 15);
+  --k-color-error: rgb(128, 13, 13);
+  --k-color-warning: rgb(120, 80, 10);
+
+  /* Triplets RGB de los colores que se usan con transparencia (glows,
+     tintes, overlays). Consumir como `rgba(var(--k-color-primary-rgb), 0.4)`
+     — evita repetir el literal del dorado por todo el código. */
+  --k-color-primary-rgb: 202, 168, 96;
+  --k-color-error-rgb: 224, 82, 82;
+  --k-color-black-rgb: 0, 0, 0;
+  --k-color-white-rgb: 255, 255, 255;
+
+  /* ── text/ ──────────────────────────────────────────────── */
+  --k-text-soft: #cfc9bf;
+  --k-text-muted: #989083;
+  --k-text-dim: #6e6558;
+  --k-text-faint: #565045;
+  --k-text-placeholder: #4a4030;
+
+  /* ── visualStates/ ──────────────────────────────────────── */
+  --k-state-error-text: #e05252;
+  --k-state-success-text: #48c774;
+
+  /* ── forms/ ─────────────────────────────────────────────── */
+  --k-form-input-bg: rgba(255, 255, 255, 0.04);
+  --k-form-input-focus-bg: rgba(202, 168, 96, 0.05);
+  --k-form-btn-text: #0e0c08;
+
+  /* ── font/ ──────────────────────────────────────────────── */
+  --k-font-display: 'Playfair Display', Georgia, serif;
+  --k-font-sans: 'Manrope', 'DM Sans', system-ui, sans-serif;
+  --k-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --k-font-size-display: 42px;
+  --k-font-size-heading-1: 24px;
+  /* body-large: la lámina de Figma define este nivel pero ninguna fuente le
+     asigna px (design-system.md solo escala 42/24/14/11). 16px es un supuesto
+     de implementación — confirmar con Diseño antes de propagarlo. */
+  --k-font-size-body-large: 16px;
+  --k-font-size-body-main: 14px;
+  --k-font-size-caption: 11px;
+
+  --k-font-weight-regular: 400;
+  --k-font-weight-medium: 500;
+  --k-font-weight-semibold: 600;
+  --k-font-weight-bold: 700;
+
+  /* ── spacing/ — rejilla 8pt, nomenclatura Figma (space-7 = 48px) ── */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+
+  /* ── radius/ ────────────────────────────────────────────── */
+  --k-radius-sm: 4px;
+  --k-radius-md: 8px;
+  --k-radius-lg: 12px;
+  --k-radius-xl: 24px;
+  --k-radius-pill: 999px;
+
+  /* ── shadow/ — pensadas para fondo oscuro ───────────────── */
+  --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
+  --k-shadow-glow: 0 0 15px 5px rgba(202, 168, 96, 0.5);
+  --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+
+  /* ── estados de interacción ─────────────────────────────── */
+  --k-state-hover-brightness: 1.15;
+  --k-state-active-scale: 0.98;
+  --k-state-disabled-opacity: 0.3;
+  --k-focus-ring-width: 2px;
+  --k-focus-ring-offset: 2px;
+  --k-focus-ring: var(--k-focus-ring-width) solid var(--k-color-primary);
+
+  /* ── iconografía ────────────────────────────────────────── */
+  --k-icon-stroke: 1.5px;
+  --k-icon-size: 24px;
+
+  /* ── accesibilidad ──────────────────────────────────────── */
+  --k-target-min-size: 40px;
+}
+
+/**
+ * TODO(SCRUM-12): paleta clara pendiente de Diseño.
+ *
+ * SCRUM-12 definió únicamente la identidad "Luxury Dark"; no existe paleta
+ * clara aprobada. El mecanismo de theming queda operativo (`[data-theme]` y
+ * `prefers-color-scheme`), pero sin overrides: el tema claro hereda el oscuro
+ * a propósito, para no inventar colores de marca sin aprobación.
+ *
+ * Cuando Diseño entregue la paleta, basta redeclarar aquí los tokens que
+ * cambien. Ningún consumidor necesita tocarse.
+ */
+[data-theme='light'] {
+  /* overrides del tema claro van aquí */
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    /* idem: sin overrides hasta que exista paleta clara aprobada */
+  }
+}
