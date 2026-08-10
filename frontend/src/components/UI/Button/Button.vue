@@ -9,7 +9,7 @@
             '--hoverBack': hoverBack
         }"
     >
-        {{ label }}
+        <slot>{{ label }}</slot>
     </button>
 </template>
 
@@ -32,15 +32,17 @@ export default {
             default: false
         },
         backColor: {
+            type: string,
             default: 'var(--Primary)'
         },
         hoverBack: {
-            default: 'var(--secondary)'
+            type: String,
+            default: 'var(--Primary2)'
         }
     },
     methods: {
-        handleClick() {
-            this.$emit('click');
+        handleClick(event) {
+            this.$emit('click', eventt);
         }
     }
 }
