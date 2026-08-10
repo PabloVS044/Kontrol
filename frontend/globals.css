@@ -69,7 +69,14 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-8: 48px;
+
+  /* Elevaciones y Sombras */
+  --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0px 0px 15px 5px rgba(202, 168, 96, 0.95);
+  --shadow-modal: 0px 10px 40px rgba(0, 0, 0, 0.8);
+  --transition-ui: all 0.2s ease-in-out;
 }
+
 html,
 body,
 #app {
