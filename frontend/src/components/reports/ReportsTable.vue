@@ -79,7 +79,8 @@ defineEmits(['open'])
 <style scoped>
 .section-block {
   background: var(--Background2);
-  border: 1px solid var(--Border);
+  border: var(--border-width)
+  solid var(--Border);
   padding: var(--space-5);
   margin-bottom: var(--space-6);
   border-radius: var(--radius-md);
@@ -145,10 +146,10 @@ defineEmits(['open'])
 
 .rep-row {
   cursor: pointer;
-  border-top: 1px solid var(--Border);
+  border-top: var(--border-width) solid var(--Border);
 }
 
-.rep-row:hover { background: rgba(255, 255, 255, 0.02); }
+.rep-row:hover { background: var(--Background-hover-subtle); }
 
 .rep-table td { padding: var(--space-3); color: var(--TextSoft); vertical-align: middle; }
 
@@ -156,7 +157,7 @@ defineEmits(['open'])
 
 .proj-badge {
   display: inline-flex;
-  border: 1px solid var(--Border);
+  border: var(--border-width) solid var(--Border);
   padding: var(--space-1) var(--space-2);
   color: var(--TextMuted);
   font-size: var(--text-2xs);
