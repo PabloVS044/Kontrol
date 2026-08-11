@@ -52,13 +52,13 @@ const props = defineProps({
   iconSize:        { type: Number, default: 24 },
   iconColor:       { type: String, default: "var(--Primary)" },
   listIcon:        { default: null },
-  listIconSize:    { type: Number, default: 24 },
+  listIconSize:    { type: Number, default: 20 },
   listIconColor:   { type: String, default: "var(--Primary)" },
   characteristics: { type: Array,  default: () => [] },
-  back:            { type: String, default: "var(--Primary)" },
+  back:            { type: String, default: "var(--Background2)" },
   titleColor:      { type: String, default: "var(--Text)" },
-  borderColor:     { type: String, default: "transparent" },
-  shadowColor:     { type: String, default: "rgba(0,0,0,0.25)" },
+  borderColor:     { type: String, default: "var(--Border)" },
+  shadowColor:     { type: String, default: "var(--shadow-card)" },
 })
 
 const isComponent = computed(() =>
