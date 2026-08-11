@@ -51,8 +51,11 @@ function close() {
   border: 1px solid var(--Border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
-  width: 100%;
+  width: 95%;
+  max-width: 600px;
   max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   transition: var(--transition-ui);
 }
