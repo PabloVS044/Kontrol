@@ -77,7 +77,7 @@ function close() {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: var(--space-1);
   flex-shrink: 0;
 }
 
