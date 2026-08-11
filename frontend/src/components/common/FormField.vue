@@ -41,7 +41,7 @@ input,
 textarea,
 select {
   background: var(--InputBg);
-  border: 1px solid var(--Border);
+  border: var(--border-width) solid var(--Border);
   color: var(--Text);
   font-family: var(--font-sans);
   font-size: var(--text-sm);

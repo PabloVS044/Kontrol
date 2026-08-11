@@ -8,7 +8,7 @@
   margin: var(--space-4);
   padding: var(--space-5);
   background-color: var(--back);
-  border: 1px solid var(--borderColor);
+  border: var(--border-width) solid var(--borderColor);
   border-radius: var(--radius-m);
   box-shadow: var(--shadow-card);
   transition: var(--transition-ui);
@@ -83,12 +83,12 @@
   color: var(--TextSoft);
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .card-list li img {
-  width: 24px;
-  height: 24px;
+  width: var(--space-5);
+  height: var(--space-5);
   object-fit: contain;
   flex-shrink: 0;
 }
