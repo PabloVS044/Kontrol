@@ -12,6 +12,7 @@
   --Success: rgb(15, 77, 15);
   --Error: rgb(128, 13, 13);
   --Warning: rgb(120, 80, 10);
+  --Background-hover-subtle: rgba(255, 255, 255, 0.02);
 
   /* Texto — rampa cálida sobre fondo oscuro (de más claro a más tenue) */
   --TextSoft: #cfc9bf; /* secundario alto */
@@ -75,6 +76,9 @@
   --shadow-glow: 0px 0px 15px 5px rgba(202, 168, 96, 0.95);
   --shadow-modal: 0px 10px 40px rgba(0, 0, 0, 0.8);
   --transition-ui: all 0.2s ease-in-out;
+
+  /* Ancho de borde */
+  --border-width: 1px;
 }
 
 html,
