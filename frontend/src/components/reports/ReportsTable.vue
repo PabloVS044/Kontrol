@@ -78,87 +78,97 @@ defineEmits(['open'])
 
 <style scoped>
 .section-block {
-  background: #111111;
-  border: 1px solid #1e1e1e;
-  padding: 18px;
-  margin-bottom: 24px;
+  background: var(--Background2);
+  border: 1px solid var(--Border);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-md);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  color: #faf8f5;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--Text);
 }
 
 .view-all-btn,
 .open-btn {
-  background: #111111;
+  background: transparent;
   border: none;
-  color: #555;
+  color: var(--TextMuted);
   cursor: pointer;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  transition: var(--transition-ui);
 }
 
 .view-all-btn:hover,
-.open-btn:hover { color: #c9a962; }
+.open-btn:hover { color: var(--Primary); }
 
-.table-skeleton { display: flex; flex-direction: column; gap: 10px; }
-.table-skel-row { display: flex; gap: 12px; }
+.table-skeleton { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.table-skel-row { display: flex; gap: var(--space-3); }
+
 .skel-cell {
-  height: 12px;
-  background: #1a1a1a;
-  border-radius: 2px;
+  height: var(--space-3);
+  background: var(--Background3);
+  border-radius: var(--radius-xs);
   animation: pulse 1.4s ease-in-out infinite;
 }
 
 .rep-table-wrap { overflow-x: auto; }
+
 .rep-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
 }
 
 .rep-table th {
   text-align: left;
-  color: #444;
-  font-size: 10px;
-  letter-spacing: .1em;
+  color: var(--TextMuted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  padding: 0 0 10px;
+  padding: var(--space-3);
+  padding-bottom: var(--space-2);
 }
 
 .rep-row {
   cursor: pointer;
-  border-top: 1px solid #161616;
+  border-top: 1px solid var(--Border);
 }
 
-.rep-row:hover { background: #111111; }
-.rep-table td { padding: 12px 0; color: #777; }
-.td-name { color: #faf8f5 !important; font-weight: 600; }
+.rep-row:hover { background: rgba(255, 255, 255, 0.02); }
+
+.rep-table td { padding: var(--space-3); color: var(--TextSoft); vertical-align: middle; }
+
+.td-name { color: var(--Text) !important; font-weight: 600; }
+
 .proj-badge {
   display: inline-flex;
-  border: 1px solid #222;
-  padding: 3px 7px;
-  color: #777;
+  border: 1px solid var(--Border);
+  padding: var(--space-1) var(--space-2);
+  color: var(--TextMuted);
+  font-size: var(--text-2xs);
 }
 
 .status-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 2px;
-  font-size: 10px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-2xs);
   letter-spacing: .04em;
 }
 
@@ -170,8 +180,8 @@ defineEmits(['open'])
 
 .empty-row {
   text-align: center;
-  color: #555 !important;
-  padding: 28px 0 !important;
+  color: var(--TextDim) !important;
+  padding: var(--space-5) 0 !important;
 }
 
 @keyframes pulse {
