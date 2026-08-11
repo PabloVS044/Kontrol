@@ -9,7 +9,7 @@
   >
     <span
       v-if="circleColor"
-      class="dot"
+      class="pill-dot"
     ></span>
     <span class="pill-text">{{ label }}</span>
   </span>

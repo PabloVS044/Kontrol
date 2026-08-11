@@ -9,11 +9,12 @@
   background-color: var(--pill-bg);
   border: var(--border-width) solid var(--Border);
   border-radius: var(--radius-full, 999px);
-  white-space: nowrap();
+  white-space: nowrap;
   transition: var(--transition-ui);
   width: auto;
   height: 40px;
-  z-index: 20;
+  position: relative;
+  z-index: 2;
   flex-wrap: nowrap;
 }
 
@@ -22,13 +23,12 @@
   height: 10px;
   border-radius: 50%;
   background-color: var(--pill-dot);
-  margin-right: 13px;
   flex-shrink: 0;
 }
 
 .pill-text {
   color: var(--pill-text);
-  font-family: var(--font-display), 'Bungee', cursiva;
+  font-family: var(--font-display), 'Bungee', cursive;
   font-size: var(--text-xs);
   text-transform: uppercase;
   line-height: 1;
