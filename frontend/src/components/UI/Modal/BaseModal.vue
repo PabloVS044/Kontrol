@@ -48,7 +48,7 @@ function close() {
 
 .modal {
   background: var(--Background2);
-  border: 1px solid var(--Border);
+  border: var(--border-width) solid var(--Border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
   width: 95%;
@@ -66,7 +66,7 @@ function close() {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--Border);
+  border-bottom: var(--border-width) solid var(--Border);
 }
 
 .modal-title {
