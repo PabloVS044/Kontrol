@@ -29,16 +29,19 @@ export default defineConfig({
       // `npm run test:coverage -w backend` de ci.yml pone el job en rojo solo.
       thresholds: {
         // Trinquete, punto 2: el umbral global se fija en la línea base medida
-        // el 11/08/2026 sobre 29 archivos (1107 sentencias), truncada a
-        // entero. Sin margen — el umbral es exactamente lo que hay hoy, así
-        // que la cobertura solo puede mantenerse o subir, nunca bajar.
-        statements: 29, // base 29.08 %
-        branches: 19, //   base 19.16 %
-        functions: 17, //  base 17.88 %
-        lines: 29, //      base 29.13 %
+        // el 12/08/2026, truncada a entero. Sin margen — el umbral es
+        // exactamente lo que hay hoy, así que la cobertura solo puede
+        // mantenerse o subir, nunca bajar.
+        //
+        // La base subió de 29.08/19.16/17.88/29.13 a la actual al cubrir el
+        // módulo de reportes; el umbral sube con ella para fijar la mejora.
+        statements: 33, // base 33.42 %
+        branches: 21, //   base 21.33 %
+        functions: 23, //  base 23.84 %
+        lines: 33, //      base 33.71 %
 
         // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-        // umbral global. Próxima subida, al cierre del Sprint 6: 34/24/22/34.
+        // umbral global. Próxima subida, al cierre del Sprint 6: 38/26/28/38.
         // La política completa está en el README, sección «Cobertura».
 
         // Umbrales por módulo crítico. Los globs se resuelven con picomatch
@@ -68,15 +71,8 @@ export default defineConfig({
         },
 
         // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
-        //
-        // AVISO — este umbral NO se cumple hoy y deja el job del backend en
-        // rojo. Medido el 11/08/2026:
-        //   reportsController.js  29.85 / 14.28 / 20 / 29.85
-        //   reportsRoutes.js      100 en las cuatro
-        //   reportsSchemas.js     80 / 100 / 0 / 80
-        // Los tests del módulo llegan el 17/08/2026; hasta entonces el gate
-        // bloquea el merge. Se activa por decisión explícita de la tarea, que
-        // lista reportes junto a POS, presupuesto y autenticación.
+        // Cubierto por `tests/reports.controller.test.js`. Medido el
+        // 12/08/2026: los tres archivos al 100 % en las cuatro métricas.
         'src/controllers/reportsController.js': {
           statements: 70,
           branches: 70,

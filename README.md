@@ -251,12 +251,12 @@ Acordada en la retrospectiva del Sprint 5 (SCRUM-23). La retrospectiva planteaba
 
 ### Umbrales vigentes
 
-Línea base medida el 11/08/2026.
+Línea base medida el 12/08/2026.
 
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
-| Backend — actual | 29 | 19 | 17 | 29 |
-| Backend — cierre Sprint 6 | 34 | 24 | 22 | 34 |
+| Backend — actual | 33 | 21 | 23 | 33 |
+| Backend — cierre Sprint 6 | 38 | 26 | 28 | 38 |
 | Frontend — actual | 80 | 80 | 75 | 83 |
 | Frontend — cierre Sprint 6 | 85 | 85 | 80 | 88 |
 

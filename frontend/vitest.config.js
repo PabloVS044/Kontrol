@@ -32,7 +32,7 @@ export default mergeConfig(
         // por sí solo.
         thresholds: {
           // Trinquete, punto 2: el umbral global se fija en la línea base
-          // medida el 11/08/2026 sobre 6 archivos (168 sentencias), truncada a
+          // medida el 12/08/2026 sobre 6 archivos (168 sentencias), truncada a
           // entero. Sin margen — el umbral es exactamente lo que hay hoy.
           statements: 80, // base 80.95 %
           branches: 80, //   base 80.46 %
@@ -83,7 +83,7 @@ export default mergeConfig(
 
           // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
           //
-          // Hoy (11/08/2026) ninguno de estos archivos entra al reporte de
+          // Hoy (12/08/2026) ninguno de estos archivos entra al reporte de
           // cobertura, porque ningún test los importa. Un glob sin archivos
           // que casen pasa en vacío, así que estos tres umbrales no fallan
           // pero tampoco protegen nada todavía: empiezan a tener efecto real
