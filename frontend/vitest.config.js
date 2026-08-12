@@ -39,6 +39,11 @@ export default mergeConfig(
           functions: 75, //  base 75.51 %
           lines: 83, //      base 83.10 %
 
+          // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
+          // umbral global. Próxima subida, al cierre del Sprint 6:
+          // 85/85/80/88. La política completa está en el README, sección
+          // «Cobertura».
+
           // Aviso: el denominador del frontend es de solo 168 sentencias en 6
           // archivos, así que un único archivo lo mueve muchísimo. Medido: si
           // el rediseño deja `Button.vue` (5 sentencias, 3 funciones, hoy al

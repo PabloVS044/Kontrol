@@ -37,6 +37,10 @@ export default defineConfig({
         functions: 17, //  base 17.88 %
         lines: 29, //      base 29.13 %
 
+        // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
+        // umbral global. Próxima subida, al cierre del Sprint 6: 34/24/22/34.
+        // La política completa está en el README, sección «Cobertura».
+
         // Umbrales por módulo crítico. Los globs se resuelven con picomatch
         // contra la ruta relativa a la raíz del workspace, y los archivos que
         // casan siguen contando también en el umbral global de arriba.
