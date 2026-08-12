@@ -36,7 +36,57 @@ export default defineConfig({
         statements: 25, // base 29.08 % · margen 4.08
         branches: 15, //   base 19.16 % · margen 4.16
         functions: 14, //  base 17.88 % · margen 3.88
-        lines: 25 //       base 29.13 % · margen 4.13
+        lines: 25, //      base 29.13 % · margen 4.13
+
+        // Umbrales por módulo crítico. Los globs se resuelven con picomatch
+        // contra la ruta relativa a la raíz del workspace, y los archivos que
+        // casan siguen contando también en el umbral global de arriba.
+        //
+        // Ojo: un glob que no casa con ningún archivo del reporte pasa en
+        // vacío, sin avisar. Si se borra el test que cubre uno de estos
+        // archivos, su umbral deja de proteger nada.
+
+        // Presupuesto: cálculo financiero puro. Medido 100 % en las cuatro.
+        'src/utils/budgetCalculations.js': {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70
+        },
+
+        // Autenticación: verificación de token y de rol. Medido 100 % en las
+        // cuatro para ambos archivos. La expansión de llaves casa solo con
+        // requireAuth.js y requireRole.js — requireCompanyRole.js queda fuera.
+        'src/middleware/require{Auth,Role}.js': {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70
+        }
+
+        // Reportes: umbral desactivado a propósito. Los tests del módulo
+        // llegan el 17/08/2026. Cobertura medida el 11/08/2026:
+        // reportsController.js 29.85 / 14.28 / 20 / 29.85.
+        // Descomentar y calibrar cuando esos tests estén en develop.
+        //
+        // 'src/controllers/reportsController.js': {
+        //   statements: 70,
+        //   branches: 70,
+        //   functions: 70,
+        //   lines: 70
+        // },
+        // 'src/routes/reportsRoutes.js': {
+        //   statements: 70,
+        //   branches: 70,
+        //   functions: 70,
+        //   lines: 70
+        // },
+        // 'src/schemas/reportsSchemas.js': {
+        //   statements: 70,
+        //   branches: 70,
+        //   functions: 70,
+        //   lines: 70
+        // }
       }
     }
   }

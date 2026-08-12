@@ -40,12 +40,65 @@ export default mergeConfig(
           statements: 70, // base 80.95 % · margen 10.95
           branches: 70, //   base 80.46 % · margen 10.46
           functions: 65, //  base 75.51 % · margen 10.51
-          lines: 72 //       base 83.10 % · margen 11.10
+          lines: 72, //      base 83.10 % · margen 11.10
 
           // Pendiente: recalibrar el 17/08/2026. Cuando lleguen los tests
           // nuevos, cualquiera que importe una vista completa mete esa vista
           // entera en el denominador de golpe y ningún margen razonable
           // aguanta ese salto.
+
+          // Umbrales por módulo crítico. Los globs se resuelven con picomatch
+          // contra la ruta relativa a la raíz del workspace, y los archivos
+          // que casan siguen contando también en el umbral global de arriba.
+          //
+          // Ojo: un glob que no casa con ningún archivo del reporte pasa en
+          // vacío, sin avisar. Si se borra el test que cubre uno de estos
+          // archivos, su umbral deja de proteger nada.
+
+          // POS: subtotal, descuento e IVA de una venta. Es el cálculo con
+          // mayor riesgo financiero del sistema. Medido 95.45/94.44/100/100.
+          'src/utils/sales.js': {
+            statements: 70,
+            branches: 70,
+            functions: 70,
+            lines: 70
+          },
+
+          // Autenticación de frontend. Escalón temporal por debajo del 70 %:
+          // medido 66.66/60.41/59.25/69.73, es decir por debajo en las cuatro
+          // métricas pese a tener `authStore.test.js` propio. Se fija encima
+          // de lo medido para frenar regresiones; subir a 70 cuando se amplíe
+          // ese test.
+          'src/stores/auth.js': {
+            statements: 60,
+            branches: 55,
+            functions: 55,
+            lines: 60
+          }
+
+          // Reportes: umbral desactivado a propósito. Los tests del módulo
+          // llegan el 17/08/2026. Hoy (11/08/2026) ninguno de estos archivos
+          // entra siquiera al reporte, porque ningún test los importa.
+          // Descomentar y calibrar cuando esos tests estén en develop.
+          //
+          // 'src/views/ReportsView.vue': {
+          //   statements: 70,
+          //   branches: 70,
+          //   functions: 70,
+          //   lines: 70
+          // },
+          // 'src/views/ReportDetailView.vue': {
+          //   statements: 70,
+          //   branches: 70,
+          //   functions: 70,
+          //   lines: 70
+          // },
+          // 'src/components/reports/**': {
+          //   statements: 70,
+          //   branches: 70,
+          //   functions: 70,
+          //   lines: 70
+          // }
         }
       }
     }
