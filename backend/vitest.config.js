@@ -28,15 +28,14 @@ export default defineConfig({
       // Vitest sale con código 1 si no se cumple un umbral, así que el step
       // `npm run test:coverage -w backend` de ci.yml pone el job en rojo solo.
       thresholds: {
-        // Línea base medida el 11/08/2026 sobre 29 archivos (1107 sentencias),
-        // menos ~4 puntos de margen. El margen no cubre el código nuevo sin
-        // tests (ese ni entra al denominador), sino el movimiento normal del
-        // denominador: un controller de ~200 sentencias que entre al 10% mueve
-        // el total ~1.5 puntos.
-        statements: 25, // base 29.08 % · margen 4.08
-        branches: 15, //   base 19.16 % · margen 4.16
-        functions: 14, //  base 17.88 % · margen 3.88
-        lines: 25, //      base 29.13 % · margen 4.13
+        // Trinquete, punto 2: el umbral global se fija en la línea base medida
+        // el 11/08/2026 sobre 29 archivos (1107 sentencias), truncada a
+        // entero. Sin margen — el umbral es exactamente lo que hay hoy, así
+        // que la cobertura solo puede mantenerse o subir, nunca bajar.
+        statements: 29, // base 29.08 %
+        branches: 19, //   base 19.16 %
+        functions: 17, //  base 17.88 %
+        lines: 29, //      base 29.13 %
 
         // Umbrales por módulo crítico. Los globs se resuelven con picomatch
         // contra la ruta relativa a la raíz del workspace, y los archivos que

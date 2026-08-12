@@ -31,21 +31,21 @@ export default mergeConfig(
         // `npm run test:coverage -w frontend` de ci.yml pone el job en rojo
         // por sí solo.
         thresholds: {
-          // Línea base medida el 11/08/2026 sobre 6 archivos (168 sentencias),
-          // menos ~10 puntos de margen. El margen es mayor que el del backend
-          // a propósito: con un denominador tan pequeño, un solo archivo lo
-          // mueve muchísimo. Medido: si el rediseño deja `Button.vue` (5
-          // sentencias, 3 funciones, hoy al 100 %) sin cubrir, functions cae
-          // de 75.51 % a 69.39 %.
-          statements: 70, // base 80.95 % · margen 10.95
-          branches: 70, //   base 80.46 % · margen 10.46
-          functions: 65, //  base 75.51 % · margen 10.51
-          lines: 72, //      base 83.10 % · margen 11.10
+          // Trinquete, punto 2: el umbral global se fija en la línea base
+          // medida el 11/08/2026 sobre 6 archivos (168 sentencias), truncada a
+          // entero. Sin margen — el umbral es exactamente lo que hay hoy.
+          statements: 80, // base 80.95 %
+          branches: 80, //   base 80.46 %
+          functions: 75, //  base 75.51 %
+          lines: 83, //      base 83.10 %
 
-          // Pendiente: recalibrar el 17/08/2026. Cuando lleguen los tests
-          // nuevos, cualquiera que importe una vista completa mete esa vista
-          // entera en el denominador de golpe y ningún margen razonable
-          // aguanta ese salto.
+          // Aviso: el denominador del frontend es de solo 168 sentencias en 6
+          // archivos, así que un único archivo lo mueve muchísimo. Medido: si
+          // el rediseño deja `Button.vue` (5 sentencias, 3 funciones, hoy al
+          // 100 %) sin cubrir, functions cae de 75.51 % a 69.39 % y este
+          // umbral se incumple. Al ir sin margen por decisión de SCRUM-23,
+          // cualquier PR que toque un archivo cubierto puede requerir subir
+          // cobertura en el mismo PR.
 
           // Umbrales por módulo crítico. Los globs se resuelven con picomatch
           // contra la ruta relativa a la raíz del workspace, y los archivos
