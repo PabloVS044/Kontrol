@@ -65,31 +65,36 @@ export default defineConfig({
           branches: 70,
           functions: 70,
           lines: 70
-        }
+        },
 
-        // Reportes: umbral desactivado a propósito. Los tests del módulo
-        // llegan el 17/08/2026. Cobertura medida el 11/08/2026:
-        // reportsController.js 29.85 / 14.28 / 20 / 29.85.
-        // Descomentar y calibrar cuando esos tests estén en develop.
+        // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
         //
-        // 'src/controllers/reportsController.js': {
-        //   statements: 70,
-        //   branches: 70,
-        //   functions: 70,
-        //   lines: 70
-        // },
-        // 'src/routes/reportsRoutes.js': {
-        //   statements: 70,
-        //   branches: 70,
-        //   functions: 70,
-        //   lines: 70
-        // },
-        // 'src/schemas/reportsSchemas.js': {
-        //   statements: 70,
-        //   branches: 70,
-        //   functions: 70,
-        //   lines: 70
-        // }
+        // AVISO — este umbral NO se cumple hoy y deja el job del backend en
+        // rojo. Medido el 11/08/2026:
+        //   reportsController.js  29.85 / 14.28 / 20 / 29.85
+        //   reportsRoutes.js      100 en las cuatro
+        //   reportsSchemas.js     80 / 100 / 0 / 80
+        // Los tests del módulo llegan el 17/08/2026; hasta entonces el gate
+        // bloquea el merge. Se activa por decisión explícita de la tarea, que
+        // lista reportes junto a POS, presupuesto y autenticación.
+        'src/controllers/reportsController.js': {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70
+        },
+        'src/routes/reportsRoutes.js': {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70
+        },
+        'src/schemas/reportsSchemas.js': {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70
+        }
       }
     }
   }

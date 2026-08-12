@@ -79,31 +79,33 @@ export default mergeConfig(
             branches: 55,
             functions: 55,
             lines: 60
-          }
+          },
 
-          // Reportes: umbral desactivado a propósito. Los tests del módulo
-          // llegan el 17/08/2026. Hoy (11/08/2026) ninguno de estos archivos
-          // entra siquiera al reporte, porque ningún test los importa.
-          // Descomentar y calibrar cuando esos tests estén en develop.
+          // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
           //
-          // 'src/views/ReportsView.vue': {
-          //   statements: 70,
-          //   branches: 70,
-          //   functions: 70,
-          //   lines: 70
-          // },
-          // 'src/views/ReportDetailView.vue': {
-          //   statements: 70,
-          //   branches: 70,
-          //   functions: 70,
-          //   lines: 70
-          // },
-          // 'src/components/reports/**': {
-          //   statements: 70,
-          //   branches: 70,
-          //   functions: 70,
-          //   lines: 70
-          // }
+          // Hoy (11/08/2026) ninguno de estos archivos entra al reporte de
+          // cobertura, porque ningún test los importa. Un glob sin archivos
+          // que casen pasa en vacío, así que estos tres umbrales no fallan
+          // pero tampoco protegen nada todavía: empiezan a tener efecto real
+          // cuando lleguen los tests del módulo el 17/08/2026.
+          'src/views/ReportsView.vue': {
+            statements: 70,
+            branches: 70,
+            functions: 70,
+            lines: 70
+          },
+          'src/views/ReportDetailView.vue': {
+            statements: 70,
+            branches: 70,
+            functions: 70,
+            lines: 70
+          },
+          'src/components/reports/**': {
+            statements: 70,
+            branches: 70,
+            functions: 70,
+            lines: 70
+          }
         }
       }
     }
