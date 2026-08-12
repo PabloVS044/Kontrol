@@ -6,6 +6,8 @@
 
 Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend · **PostgreSQL** + **MongoDB** como bases de datos.
 
+[![CI](https://github.com/PabloVS044/Kontrol/actions/workflows/ci.yml/badge.svg?event=pull_request)](https://github.com/PabloVS044/Kontrol/actions/workflows/ci.yml)
+
 ![Vue](https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-20--22-339933?logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
