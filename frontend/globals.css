@@ -69,29 +69,32 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* Estilos heredados de la landing. Usan Alfa Slab One / DM Sans, que no forman
-   parte de la identidad v2; se migran en SCRUM-14..17. */
+/* ── Titulares de la landing ── */
 .hero-title {
-  color: var(--Text);
-  font-family: 'Alfa Slab One';
+  color: var(--k-color-text);
+  font-family: var(--k-font-display);
   letter-spacing: 5px;
   font-size: clamp(2rem, 6vw, 6rem);
   margin-bottom: 20px;
 }
 
-p {
-  font-family: 'DM Sans';
-  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
-  color: var(--Text);
-  z-index: 20;
-}
-
 .sub-title {
-  font-family: 'Alfa Slab One';
+  font-family: var(--k-font-display);
   letter-spacing: 2px;
   font-size: clamp(1.5rem, 3.5vw, 3rem);
   text-align: center;
-  color: var(--Text);
+  color: var(--k-color-text);
+  z-index: 20;
+}
+
+/* TODO SCRUM-15: este selector `p` es global y alcanza a TODA la app, no solo a
+   la landing. Migrarlo a var(--k-font-sans) cambiaría la tipografía de las
+   pantallas de las fases 3+ y de las que son de otros tickets, así que queda
+   pendiente de decisión. */
+p {
+  font-family: 'DM Sans';
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  color: var(--k-color-text);
   z-index: 20;
 }
 
