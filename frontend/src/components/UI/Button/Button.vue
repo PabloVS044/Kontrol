@@ -32,7 +32,7 @@ export default {
             default: false
         },
         backColor: {
-            type: string,
+            type: String,
             default: 'var(--Primary)'
         },
         hoverBack: {
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         handleClick(event) {
-            this.$emit('click', eventt);
+            this.$emit('click', event)
         }
     }
 }
