@@ -325,3 +325,5 @@ shadow/
 **Changelog:**
 - **v2.0.0** (2026-08-16): SCRUM-13 / HU-32 migration complete. Tokens defined, CSS variables frozen, legacy layer operational.
 - **v1.0.0** (pre-2026): Initial branding.
+
+> This file is the executable source of truth for the design system. The token documentation for the Figma board remains in [`design-tokens-figma.md`](./design-tokens-figma.md).

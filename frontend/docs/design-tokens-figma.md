@@ -175,3 +175,18 @@ Focus ring:
 - Link a esta guía: `/frontend/docs/design-system.md`
 - Link a tokens JSON: `/frontend/docs/tokens.json`
 - Visualización: `./frontend/docs/assets/Kontrol_v2.png`
+
+---
+
+## 9. Referencia visual
+
+> Esta guía acompaña la hoja de referencia visual del sistema y no sustituye la documentación técnica en [`design-system.md`](./design-system.md).
+
+![Paleta de Colores](./assets/Colores.png)
+![Tipografía](./assets/Tipografía.png)
+![Sistema de Espaciado](./assets/Espaciado.png)
+![Radios de Borde](./assets/Radios.png)
+![Sombras y Elevación](./assets/Sombras_Elevación.png)
+![Criterio de Iconografía](./assets/Iconografía.png)
+![Estados de Interacción](./assets/Interacción.png)
+![Verificación de Contraste](./assets/Contraste.png)
