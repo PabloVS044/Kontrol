@@ -27,7 +27,7 @@ defineProps({
 .field-label {
   font-size: var(--text-2xs);
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: var(--k-font-weight-semibold);
   color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
@@ -61,13 +61,13 @@ textarea:focus,
 select:focus {
   border-color: var(--Primary);
   background: var(--InputFocusBg);
-  box-shadow: 0 0 0 2px rgba(202,168,96,0.1);
+  box-shadow: 0 0 0 var(--k-focus-ring-width) rgba(var(--k-color-primary-rgb), 0.12);
 }
 
 .field-error {
   font-size: var(--text-xs);
   color: var(--ErrorText);
-  font-weight: 500;
+  font-weight: var(--k-font-weight-medium);
   margin-top: var(--space-1);
 }
 
