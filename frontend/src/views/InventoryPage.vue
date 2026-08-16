@@ -409,6 +409,7 @@ import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import { useAuthStore } from '@/stores/auth'
+import { lineTotal, calcSubtotal } from '@/utils/sales.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -711,12 +712,10 @@ function clearSaleCart() {
 }
 
 function saleItemSubtotal(item) {
-  return Number(item.product.precio_venta) * Number(item.cantidad)
+  return lineTotal(item)
 }
 
-const saleTotal = computed(() =>
-  saleCart.value.reduce((acc, item) => acc + saleItemSubtotal(item), 0)
-)
+const saleTotal = computed(() => calcSubtotal(saleCart.value))
 
 const canSubmitSale = computed(() => saleCart.value.length > 0)
 

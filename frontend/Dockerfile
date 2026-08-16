@@ -11,7 +11,7 @@ ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_WEBRTC_ICE_SERVERS=$VITE_WEBRTC_ICE_SERVERS
 
 COPY package.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 RUN npm run build
