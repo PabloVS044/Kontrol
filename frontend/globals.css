@@ -15,6 +15,13 @@
   --Error: rgb(128, 13, 13);
   --Warning: rgb(120, 80, 10);
   --Background-hover-subtle: rgba(255, 255, 255, 0.02);
+  --Background-alert-box-watching: #facc15;
+  --Background-alert-box-warning: #f97316;
+  --Background-alert-box-warning-border: rgba(249,115,22,0.55);
+  --alert-header-warning: #fdba74;
+  --Background-alert-box-critical: #fb7185;
+  --Border-alert-box-critical: rgba(251,113,133,0.6); 
+  --alert-header-critical: #fda4af;
 
   /* Texto — rampa cálida sobre fondo oscuro (de más claro a más tenue) */
   --TextSoft: #cfc9bf; /* secundario alto */
