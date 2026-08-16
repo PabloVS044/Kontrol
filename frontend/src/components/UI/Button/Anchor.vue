@@ -3,14 +3,12 @@
     class="anchor"
     :href="link"
     :style="{
-      '--background': backColor || 'var(-Primary)',
+      '--background': backColor || 'var(--Primary)',
       '--hover': hoverColor || 'var(--Primary2)',
       '--color': textColor || 'var(--BtnText)',
     }"
   >
-    <!-- Label del botón -->
     <span v-if="label">{{ label }}</span>
-
     <component v-if="icon && typeof icon !== 'string'" :is="icon" :size="16" />
     <img v-else-if="icon" :src="icon" :alt="label" />
   </a>

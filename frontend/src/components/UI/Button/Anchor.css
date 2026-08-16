@@ -1,20 +1,21 @@
 a.anchor {
   text-decoration: none;
-  color: var(--color);
+  color: var(--color, var(--BtnText));
   width: auto;
   height: auto;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: var(--background);
-  border-radius: var(--radius-sm);
+  background-color: var(--background, var(--Primary));
+  border-radius: var(--k-radius-md);
   padding: var(--space-2) var(--space-4);
-  transition: all 0.2s ease-in-out;
+  transition: var(--transition-ui);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   gap: var(--space-2);
+  min-height: 40px;
 }
 
 .anchor img {
@@ -22,18 +23,18 @@ a.anchor {
   height: 18px;
 }
 
-a:hover {
-  background-color: var(--hover);
-  filter: brightness(1.1);
+a.anchor:hover {
+  background-color: var(--hover, var(--Primary2));
+  filter: brightness(var(--k-state-hover-brightness));
   box-shadow: var(--shadow-glow);
   transform: translateY(-1px);
 }
 
 a.anchor:focus-visible{
-  outline: 2px solid var(--Primary);
-  outline-offset: 2px;
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
 }
 
 a.anchor:active {
-  transform: scale(0.98);
+  transform: scale(var(--k-state-active-scale));
 }
