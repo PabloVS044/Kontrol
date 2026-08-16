@@ -38,8 +38,8 @@ function close() {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
-  background: var(--Background);
+  z-index: var(--z-modal-overlay);
+  background: rgba(var(--k-color-black-rgb), 0.78);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -49,7 +49,7 @@ function close() {
 .modal {
   background: var(--Background2);
   border: var(--border-width) solid var(--Border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--k-radius-lg);
   box-shadow: var(--shadow-modal);
   width: 95%;
   max-width: 600px;
