@@ -286,11 +286,16 @@ CREATE TABLE public.reporte (
   fecha_generacion timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['AVANCE', 'PRESUPUESTO', 'INCIDENTE', 'CONSOLIDADO'])),
   contenido_url character varying,
-  id_proyecto integer NOT NULL,
+  -- NULL para exportaciones que abarcan todos los proyectos de la empresa
+  id_proyecto integer,
+  id_empresa integer,
   id_usuario integer NOT NULL,
   CONSTRAINT reporte_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
+  CONSTRAINT reporte_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
   CONSTRAINT reporte_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
+
+CREATE INDEX reporte_empresa_fecha_idx ON public.reporte (id_empresa, fecha_generacion DESC);
 
 -- ─── SEED DATA ────────────────────────────────────────────────────────────────
 
