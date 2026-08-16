@@ -6,9 +6,9 @@
   padding: var(--space-1) var(--space-4);
   min-height: var(--space-7);
   min-width: max-content;
-  background-color: var(--pill-bg);
+  background-color: var(--pill-bg, var(--k-color-bg-3));
   border: var(--border-width) solid var(--Border);
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--k-radius-pill);
   white-space: nowrap;
   transition: var(--transition-ui);
   width: auto;
@@ -22,13 +22,13 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: var(--pill-dot);
+  background-color: var(--pill-dot, var(--Primary));
   flex-shrink: 0;
 }
 
 .pill-text {
-  color: var(--pill-text);
-  font-family: var(--font-display), 'Bungee', cursive;
+  color: var(--pill-text, var(--Text));
+  font-family: var(--font-display);
   font-size: var(--text-xs);
   text-transform: uppercase;
   line-height: 1;
