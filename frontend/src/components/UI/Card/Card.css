@@ -7,16 +7,16 @@
   align-self: center;
   margin: var(--space-4);
   padding: var(--space-5);
-  background-color: var(--back);
-  border: var(--border-width) solid var(--borderColor);
-  border-radius: var(--radius-m);
+  background-color: var(--back, var(--Background2));
+  border: var(--border-width) solid var(--borderColor, var(--Border));
+  border-radius: var(--k-radius-lg);
   box-shadow: var(--shadow-card);
   transition: var(--transition-ui);
   z-index: 20;
   position: relative;
   overflow: hidden;
   gap: 0;
-  filter: drop-shadow(0px 0px 0.75rem var(--shadowColor));
+  filter: drop-shadow(0px 0px 0.75rem var(--shadowColor, rgba(var(--k-color-primary-rgb), 0.18)));
 }
 
 .card:hover{
@@ -39,10 +39,10 @@
 }
 
 .card-title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
+  font-size: var(--text-xl);
+  font-weight: var(--k-font-weight-bold);
   font-family: var(--font-display);
-  color: var(--titleColor);
+  color: var(--titleColor, var(--Text));
   margin: 0;
   line-height: var(--leading-tight);
 }
