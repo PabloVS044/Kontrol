@@ -27,12 +27,13 @@
               </svg>
               {{ $t('reports.header.generateAI') }}
             </button>
-            <button class="btn-outline">
-              <svg class="icon14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 10V2M4 7l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
-              </svg>
-              {{ $t('reports.header.export') }}
-            </button>
+            <ReportExportMenu
+              :filter-label="activeFilterLabel"
+              :busy-format="exportingFormat"
+              :error="exportError"
+              :disabled="loading || loadingReports"
+              @export="runExport"
+            />
           </div>
         </div>
 
@@ -269,12 +270,19 @@ import SalesFinanceSection from '../components/reports/SalesFinanceSection.vue'
 import ReportsAiPanel from '../components/reports/ReportsAiPanel.vue'
 import ReportCreateModal from '../components/reports/ReportCreateModal.vue'
 import ReportDetailModal from '../components/reports/ReportDetailModal.vue'
+import ReportExportMenu from '../components/reports/ReportExportMenu.vue'
 import { statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
+import {
+  buildReportsDataset,
+  renderExport,
+  buildExportRegistration,
+} from '../utils/reportExport.js'
+import { downloadBlob } from '../utils/download.js'
 import { useAuthStore } from '../stores/auth'
 
 const router    = useRouter()
 const authStore = useAuthStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const summary    = ref({ totales: null, proyectos: [] })
 const loading    = ref(true)
@@ -288,6 +296,9 @@ const reportDetail   = ref(null)
 const showCreateModal = ref(false)
 const creating        = ref(false)
 const createError     = ref(null)
+
+const exportingFormat = ref(null)
+const exportError     = ref(null)
 
 const filters = computed(() => [
   { key: 'all',       label: t('reports.view.filters.all') },
@@ -436,6 +447,8 @@ function truncName(name) {
 }
 
 function projectNameById(id) {
+  // Export rows span every project of the company, so they carry no project.
+  if (id == null) return t('reports.export.allProjects')
   return summary.value.proyectos.find(p => p.id_proyecto === id)?.nombre ?? '—'
 }
 
@@ -450,6 +463,69 @@ function openCreateModal() {
 
 function closeCreateModal() {
   showCreateModal.value = false
+}
+
+// ── Export ─────────────────────────────────────────────────────────────────
+const activeFilterLabel = computed(
+  () => filters.value.find(f => f.key === activeFilter.value)?.label ?? ''
+)
+
+/**
+ * Builds the file from what is currently rendered — `displayedProjects`, not
+ * the full list — so the download always matches the filter on screen.
+ */
+async function runExport(format) {
+  exportingFormat.value = format
+  exportError.value = null
+
+  try {
+    const dataset = buildReportsDataset({
+      t,
+      locale: locale.value,
+      companyName: authStore.empresaActual?.nombre ?? '',
+      generatedBy: [authStore.user?.nombre, authStore.user?.apellido].filter(Boolean).join(' '),
+      filterLabel: activeFilterLabel.value,
+      projects: displayedProjects.value,
+      reports: reports.value,
+      kpis: {
+        avgProgress:       avgProgress.value,
+        totalProjects:     totales.value.total_proyectos,
+        activeProjects:    totales.value.proyectos_activos,
+        completedProjects: totales.value.proyectos_completados,
+        completionRate:    completionRate.value,
+        budgetTotal:       totales.value.presupuesto_total,
+        budgetPct:         budgetPct.value,
+      },
+      projectNameById,
+    })
+
+    const { blob, filename } = renderExport(dataset, format)
+    downloadBlob(blob, filename)
+
+    await registerExport(dataset, format)
+  } catch (e) {
+    exportError.value = e?.message ?? t('reports.export.errorFailed')
+  } finally {
+    exportingFormat.value = null
+  }
+}
+
+/**
+ * Leaves the generation event in REPORTE. The user already has the file at
+ * this point, so a failure here is surfaced but never undoes the download.
+ */
+async function registerExport(dataset, format) {
+  try {
+    const res = await fetch('/api/reports/exports', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildExportRegistration(dataset, format, { t })),
+    })
+    if (!res.ok) throw new Error()
+    await loadReports()
+  } catch {
+    exportError.value = t('reports.export.errorNotRecorded')
+  }
 }
 
 async function submitCreate(payload) {
