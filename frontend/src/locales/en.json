@@ -1053,6 +1053,97 @@
       "empty": "No users found."
     }
   },
+  "marketing": {
+    "title": "Publications",
+    "subtitle": "Plan, schedule and publish your projects' content",
+    "new": "New publication",
+    "loading": "Loading publications…",
+    "empty": "No publications yet. Create the first one.",
+    "emptyFiltered": "No publication matches these filters.",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allChannels": "All channels",
+      "allProjects": "All projects",
+      "byStatus": "Filter by status",
+      "byChannel": "Filter by channel",
+      "byProject": "Filter by project",
+      "clear": "Clear filters"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "SCHEDULED": "Scheduled",
+      "PUBLISHED": "Published"
+    },
+    "actions": {
+      "DRAFT": "Back to draft",
+      "SCHEDULED": "Schedule",
+      "PUBLISHED": "Publish",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "card": {
+      "project": "Project",
+      "scheduledFor": "Scheduled",
+      "publishedAt": "Published",
+      "noDate": "No date",
+      "imageAlt": "Image for {title}"
+    },
+    "form": {
+      "createTitle": "New publication",
+      "editTitle": "Edit publication",
+      "title": "Title",
+      "content": "Content",
+      "image": "Image (URL)",
+      "channel": "Target channel",
+      "format": "Format",
+      "project": "Project",
+      "selectProject": "Select a project",
+      "scheduledFor": "Scheduled date",
+      "notes": "Internal notes"
+    },
+    "schedule": {
+      "title": "Schedule publication",
+      "hint": "A scheduled publication needs a date and time.",
+      "submit": "Schedule",
+      "submitting": "Scheduling…"
+    },
+    "remove": {
+      "title": "Delete publication",
+      "hint": "\"{title}\" will be deleted. This action cannot be undone.",
+      "submit": "Delete",
+      "submitting": "Deleting…"
+    },
+    "errors": {
+      "load": "Could not load the publications.",
+      "save": "Could not save the publication.",
+      "transition": "Could not change the status.",
+      "schedule": "Could not schedule the publication.",
+      "remove": "Could not delete the publication."
+    },
+    "platform": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram",
+      "LINKEDIN": "LinkedIn",
+      "TIKTOK": "TikTok",
+      "X": "X",
+      "YOUTUBE": "YouTube",
+      "WHATSAPP": "WhatsApp",
+      "OTHER": "Other"
+    },
+    "format": {
+      "POST": "Post",
+      "STORY": "Story",
+      "REEL": "Reel",
+      "VIDEO": "Video",
+      "CAROUSEL": "Carousel",
+      "SHORT": "Short",
+      "AD": "Ad",
+      "OTHER": "Other"
+    }
+  },
   "birdie": {
     "tooltip": "Double-click me to hide · drag me to move",
     "askQuestion": "Ask a question",
@@ -1202,6 +1293,7 @@
     "chat": "Chat",
     "ai": "AI",
     "integrations": "Integrations",
+    "marketing": "Marketing",
     "yourWorkspaces": "YOUR WORKSPACES",
     "createWorkspace": "+ Create new workspace",
     "admin": {

@@ -5,12 +5,12 @@
     <div class="mkt-layout">
       <div class="mkt-header">
         <div>
-          <h1 class="mkt-title">Publicaciones</h1>
-          <p class="mkt-subtitle">Planifica, programa y publica el contenido de tus proyectos</p>
+          <h1 class="mkt-title">{{ t('marketing.title') }}</h1>
+          <p class="mkt-subtitle">{{ t('marketing.subtitle') }}</p>
         </div>
         <Button
           v-if="canManage"
-          label="Nueva publicación"
+          :label="t('marketing.new')"
           backColor="var(--k-color-primary)"
           @click="openCreate"
         />
@@ -18,38 +18,38 @@
 
       <!-- Filtros: estado, canal y proyecto -->
       <div class="mkt-filters">
-        <select v-model="filters.status" class="mkt-select" aria-label="Filtrar por estado">
-          <option value="">Todos los estados</option>
+        <select v-model="filters.status" class="mkt-select" :aria-label="t('marketing.filters.byStatus')">
+          <option value="">{{ t('marketing.filters.allStatuses') }}</option>
           <option v-for="estado in PUBLICATION_STATUSES" :key="estado" :value="estado">
-            {{ publicationStatusLabel(estado) }}
+            {{ t(`marketing.status.${estado}`) }}
           </option>
         </select>
 
-        <select v-model="filters.platform" class="mkt-select" aria-label="Filtrar por canal">
-          <option value="">Todos los canales</option>
-          <option v-for="canal in PUBLICATION_PLATFORMS" :key="canal.value" :value="canal.value">
-            {{ canal.label }}
+        <select v-model="filters.platform" class="mkt-select" :aria-label="t('marketing.filters.byChannel')">
+          <option value="">{{ t('marketing.filters.allChannels') }}</option>
+          <option v-for="canal in PUBLICATION_PLATFORMS" :key="canal" :value="canal">
+            {{ t(`marketing.platform.${canal}`) }}
           </option>
         </select>
 
-        <select v-model="filters.projectId" class="mkt-select" aria-label="Filtrar por proyecto">
-          <option value="">Todos los proyectos</option>
+        <select v-model="filters.projectId" class="mkt-select" :aria-label="t('marketing.filters.byProject')">
+          <option value="">{{ t('marketing.filters.allProjects') }}</option>
           <option v-for="proyecto in projects" :key="proyecto.id_proyecto" :value="proyecto.id_proyecto">
             {{ proyecto.nombre }}
           </option>
         </select>
 
-        <button v-if="hasActiveFilters" class="mkt-clear" @click="clearFilters">Limpiar filtros</button>
+        <button v-if="hasActiveFilters" class="mkt-clear" @click="clearFilters">
+          {{ t('marketing.filters.clear') }}
+        </button>
       </div>
 
       <p v-if="fetchError" class="mkt-error">{{ fetchError }}</p>
 
-      <p v-else-if="loading" class="mkt-empty">Cargando publicaciones…</p>
+      <p v-else-if="loading" class="mkt-empty">{{ t('marketing.loading') }}</p>
 
       <p v-else-if="!publications.length" class="mkt-empty">
-        {{ hasActiveFilters
-          ? 'Ninguna publicación coincide con estos filtros.'
-          : 'Todavía no hay publicaciones. Crea la primera.' }}
+        {{ hasActiveFilters ? t('marketing.emptyFiltered') : t('marketing.empty') }}
       </p>
 
       <div v-else class="mkt-grid">
@@ -58,17 +58,17 @@
             <span
               class="mkt-pill"
               :style="{
-                color: publicationStatusPill(publication.status).color,
-                background: publicationStatusPill(publication.status).bg,
+                color: publicationStatusColors(publication.status).color,
+                background: publicationStatusColors(publication.status).bg,
               }"
-            >{{ publicationStatusPill(publication.status).label }}</span>
-            <span class="mkt-channel">{{ platformLabel(publication.platform) }}</span>
+            >{{ t(`marketing.status.${publication.status}`) }}</span>
+            <span class="mkt-channel">{{ t(`marketing.platform.${publication.platform}`) }}</span>
           </div>
 
           <img
             v-if="publication.assetUrl"
             :src="publication.assetUrl"
-            :alt="`Imagen de ${publication.title}`"
+            :alt="t('marketing.card.imageAlt', { title: publication.title })"
             class="mkt-asset"
             @error="onAssetError"
           />
@@ -78,11 +78,11 @@
 
           <dl class="mkt-meta">
             <div>
-              <dt>Proyecto</dt>
+              <dt>{{ t('marketing.card.project') }}</dt>
               <dd>{{ publication.projectName || '—' }}</dd>
             </div>
             <div>
-              <dt>{{ publication.status === 'PUBLISHED' ? 'Publicada' : 'Programada' }}</dt>
+              <dt>{{ publication.status === 'PUBLISHED' ? t('marketing.card.publishedAt') : t('marketing.card.scheduledFor') }}</dt>
               <dd>{{ formatDate(publication.status === 'PUBLISHED' ? publication.publishedAt : publication.scheduledFor) }}</dd>
             </div>
           </dl>
@@ -94,10 +94,14 @@
               class="mkt-action mkt-action--primary"
               :disabled="busyId === publication.id"
               @click="applyTransition(publication, transition)"
-            >{{ transition.label }}</button>
+            >{{ t(`marketing.actions.${transition.status}`) }}</button>
 
-            <button class="mkt-action" :disabled="busyId === publication.id" @click="openEdit(publication)">Editar</button>
-            <button class="mkt-action mkt-action--danger" :disabled="busyId === publication.id" @click="confirmRemove(publication)">Eliminar</button>
+            <button class="mkt-action" :disabled="busyId === publication.id" @click="openEdit(publication)">
+              {{ t('marketing.actions.edit') }}
+            </button>
+            <button class="mkt-action mkt-action--danger" :disabled="busyId === publication.id" @click="confirmRemove(publication)">
+              {{ t('marketing.actions.delete') }}
+            </button>
           </div>
 
           <p v-if="rowError[publication.id]" class="mkt-row-error">{{ rowError[publication.id] }}</p>
@@ -105,38 +109,42 @@
       </div>
     </div>
 
-    <BaseModal v-model="showModal" :title="editing ? 'Editar publicación' : 'Nueva publicación'" maxWidth="560px">
+    <BaseModal
+      v-model="showModal"
+      :title="editing ? t('marketing.form.editTitle') : t('marketing.form.createTitle')"
+      maxWidth="560px"
+    >
       <form class="mkt-form" @submit.prevent="submitForm">
         <label class="mkt-field">
-          <span>Título</span>
+          <span>{{ t('marketing.form.title') }}</span>
           <input v-model="form.title" type="text" maxlength="180" required />
         </label>
 
         <label class="mkt-field">
-          <span>Contenido</span>
+          <span>{{ t('marketing.form.content') }}</span>
           <textarea v-model="form.caption" rows="4" maxlength="12000"></textarea>
         </label>
 
         <label class="mkt-field">
-          <span>Imagen (URL)</span>
+          <span>{{ t('marketing.form.image') }}</span>
           <input v-model="form.assetUrl" type="url" maxlength="500" placeholder="https://…" />
         </label>
 
         <div class="mkt-field-row">
           <label class="mkt-field">
-            <span>Canal destino</span>
+            <span>{{ t('marketing.form.channel') }}</span>
             <select v-model="form.platform" required>
-              <option v-for="canal in PUBLICATION_PLATFORMS" :key="canal.value" :value="canal.value">
-                {{ canal.label }}
+              <option v-for="canal in PUBLICATION_PLATFORMS" :key="canal" :value="canal">
+                {{ t(`marketing.platform.${canal}`) }}
               </option>
             </select>
           </label>
 
           <label class="mkt-field">
-            <span>Formato</span>
+            <span>{{ t('marketing.form.format') }}</span>
             <select v-model="form.format">
-              <option v-for="formato in PUBLICATION_FORMATS" :key="formato.value" :value="formato.value">
-                {{ formato.label }}
+              <option v-for="formato in PUBLICATION_FORMATS" :key="formato" :value="formato">
+                {{ t(`marketing.format.${formato}`) }}
               </option>
             </select>
           </label>
@@ -144,9 +152,9 @@
 
         <div class="mkt-field-row">
           <label class="mkt-field">
-            <span>Proyecto</span>
+            <span>{{ t('marketing.form.project') }}</span>
             <select v-model="form.projectId" required>
-              <option value="" disabled>Selecciona un proyecto</option>
+              <option value="" disabled>{{ t('marketing.form.selectProject') }}</option>
               <option v-for="proyecto in projects" :key="proyecto.id_proyecto" :value="proyecto.id_proyecto">
                 {{ proyecto.nombre }}
               </option>
@@ -154,23 +162,25 @@
           </label>
 
           <label class="mkt-field">
-            <span>Fecha programada</span>
+            <span>{{ t('marketing.form.scheduledFor') }}</span>
             <input v-model="form.scheduledFor" type="datetime-local" />
           </label>
         </div>
 
         <label class="mkt-field">
-          <span>Notas internas</span>
+          <span>{{ t('marketing.form.notes') }}</span>
           <textarea v-model="form.notes" rows="2" maxlength="1200"></textarea>
         </label>
 
         <p v-if="modalError" class="mkt-error">{{ modalError }}</p>
 
         <div class="mkt-form-actions">
-          <button type="button" class="mkt-action" @click="showModal = false">Cancelar</button>
+          <button type="button" class="mkt-action" @click="showModal = false">
+            {{ t('marketing.actions.cancel') }}
+          </button>
           <Button
             type="submit"
-            :label="modalLoading ? 'Guardando…' : 'Guardar'"
+            :label="modalLoading ? t('marketing.actions.saving') : t('marketing.actions.save')"
             :disabled="modalLoading"
             backColor="var(--k-color-primary)"
           />
@@ -178,22 +188,24 @@
       </form>
     </BaseModal>
 
-    <BaseModal v-model="showScheduleModal" title="Programar publicación" maxWidth="420px">
+    <BaseModal v-model="showScheduleModal" :title="t('marketing.schedule.title')" maxWidth="420px">
       <form class="mkt-form" @submit.prevent="submitSchedule">
-        <p class="mkt-hint">Una publicación programada necesita fecha y hora.</p>
+        <p class="mkt-hint">{{ t('marketing.schedule.hint') }}</p>
 
         <label class="mkt-field">
-          <span>Fecha programada</span>
+          <span>{{ t('marketing.form.scheduledFor') }}</span>
           <input v-model="scheduleDate" type="datetime-local" required />
         </label>
 
         <p v-if="modalError" class="mkt-error">{{ modalError }}</p>
 
         <div class="mkt-form-actions">
-          <button type="button" class="mkt-action" @click="showScheduleModal = false">Cancelar</button>
+          <button type="button" class="mkt-action" @click="showScheduleModal = false">
+            {{ t('marketing.actions.cancel') }}
+          </button>
           <Button
             type="submit"
-            :label="modalLoading ? 'Programando…' : 'Programar'"
+            :label="modalLoading ? t('marketing.schedule.submitting') : t('marketing.schedule.submit')"
             :disabled="modalLoading"
             backColor="var(--k-color-primary)"
           />
@@ -201,17 +213,17 @@
       </form>
     </BaseModal>
 
-    <BaseModal v-model="showDeleteModal" title="Eliminar publicación" maxWidth="420px">
-      <p class="mkt-hint">
-        Se eliminará «{{ removing?.title }}». Esta acción no se puede deshacer.
-      </p>
+    <BaseModal v-model="showDeleteModal" :title="t('marketing.remove.title')" maxWidth="420px">
+      <p class="mkt-hint">{{ t('marketing.remove.hint', { title: removing?.title ?? '' }) }}</p>
 
       <p v-if="modalError" class="mkt-error">{{ modalError }}</p>
 
       <div class="mkt-form-actions">
-        <button type="button" class="mkt-action" @click="showDeleteModal = false">Cancelar</button>
+        <button type="button" class="mkt-action" @click="showDeleteModal = false">
+          {{ t('marketing.actions.cancel') }}
+        </button>
         <Button
-          :label="modalLoading ? 'Eliminando…' : 'Eliminar'"
+          :label="modalLoading ? t('marketing.remove.submitting') : t('marketing.remove.submit')"
           :disabled="modalLoading"
           backColor="var(--k-color-error)"
           @click="submitRemove"
@@ -223,6 +235,7 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Button from '../components/UI/Button/Button.vue'
@@ -239,12 +252,11 @@ import {
   PUBLICATION_PLATFORMS,
   PUBLICATION_STATUSES,
   availableTransitions,
-  platformLabel,
-  publicationStatusLabel,
-  publicationStatusPill,
+  publicationStatusColors,
 } from '../utils/publicationStatus.js'
 import './MarketingPublications.css'
 
+const { t, locale } = useI18n()
 const authStore = useAuthStore()
 
 const publications = ref([])
@@ -287,11 +299,14 @@ const hasActiveFilters = computed(() =>
 const credentials = () => [authStore.token, authStore.idEmpresaActual]
 
 function formatDate(value) {
-  if (!value) return 'Sin fecha'
+  if (!value) return t('marketing.card.noDate')
   const date = new Date(value)
   return Number.isNaN(date.getTime())
-    ? 'Sin fecha'
-    : date.toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short' })
+    ? t('marketing.card.noDate')
+    : date.toLocaleString(locale.value === 'es' ? 'es-GT' : 'en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
 }
 
 // El backend espera 'YYYY-MM-DD HH:mm:ss'; el input datetime-local da 'YYYY-MM-DDTHH:mm'.
@@ -321,7 +336,7 @@ async function loadPublications() {
     publications.value = data
     canManage.value = capabilities.canManageMarketing
   } catch (error) {
-    fetchError.value = error.message || 'No se pudieron cargar las publicaciones.'
+    fetchError.value = error.message || t('marketing.errors.load')
   } finally {
     loading.value = false
   }
@@ -384,7 +399,7 @@ async function submitForm() {
     showModal.value = false
     await loadPublications()
   } catch (error) {
-    modalError.value = error.message || 'No se pudo guardar la publicación.'
+    modalError.value = error.message || t('marketing.errors.save')
   } finally {
     modalLoading.value = false
   }
@@ -406,7 +421,7 @@ async function applyTransition(publication, transition) {
     await updatePublication(...credentials(), publication.id, { status: transition.status })
     await loadPublications()
   } catch (error) {
-    rowError[publication.id] = error.message || 'No se pudo cambiar el estado.'
+    rowError[publication.id] = error.message || t('marketing.errors.transition')
   } finally {
     busyId.value = null
   }
@@ -423,7 +438,7 @@ async function submitSchedule() {
     showScheduleModal.value = false
     await loadPublications()
   } catch (error) {
-    modalError.value = error.message || 'No se pudo programar la publicación.'
+    modalError.value = error.message || t('marketing.errors.schedule')
   } finally {
     modalLoading.value = false
   }
@@ -443,7 +458,7 @@ async function submitRemove() {
     showDeleteModal.value = false
     await loadPublications()
   } catch (error) {
-    modalError.value = error.message || 'No se pudo eliminar la publicación.'
+    modalError.value = error.message || t('marketing.errors.remove')
   } finally {
     modalLoading.value = false
   }
