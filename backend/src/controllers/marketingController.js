@@ -118,6 +118,68 @@ const normalizeText = (value) => {
 
 const toNumber = (value) => Number(value || 0)
 
+// HU-28 — ciclo de vida de una publicación: borrador → programada → publicada.
+// PUBLISHED es terminal: el contenido se sigue pudiendo editar, el estado no.
+// DRAFT → PUBLISHED se admite como atajo de "publicar ahora".
+const PUBLICATION_STATUS_TRANSITIONS = {
+  DRAFT: ['SCHEDULED', 'PUBLISHED'],
+  SCHEDULED: ['DRAFT', 'PUBLISHED'],
+  PUBLISHED: [],
+}
+
+// Marca para que el UPDATE escriba CURRENT_TIMESTAMP en lugar de un parámetro:
+// la fecha la pone la base, no el reloj del proceso de Node.
+const NOW = Symbol('CURRENT_TIMESTAMP')
+
+const isPublicationTransitionAllowed = (current, next) =>
+  current === next || (PUBLICATION_STATUS_TRANSITIONS[current] ?? []).includes(next)
+
+const resolvePublicationLifecycleForCreate = ({ status, scheduledFor }) => {
+  const nextStatus = status ?? 'DRAFT'
+
+  if (nextStatus === 'SCHEDULED' && !scheduledFor) {
+    return { error: { status: 400, message: 'A scheduled publication requires a scheduled date.' } }
+  }
+
+  return { status: nextStatus }
+}
+
+/**
+ * Decide el estado resultante y qué hacer con published_at.
+ * `publishedAt: undefined` significa "no tocar la columna", lo que evita
+ * reenviar a Postgres una fecha que ya viajó de ida y vuelta por Node.
+ */
+const resolvePublicationLifecycleForUpdate = ({ existing, body }) => {
+  const currentStatus = existing.status
+  const nextStatus = body.status ?? currentStatus
+
+  if (!isPublicationTransitionAllowed(currentStatus, nextStatus)) {
+    return {
+      error: {
+        status: 409,
+        message: `A publication cannot move from ${currentStatus} to ${nextStatus}.`,
+      },
+    }
+  }
+
+  const scheduledFor = body.scheduledFor !== undefined ? body.scheduledFor : existing.scheduled_for
+  if (nextStatus === 'SCHEDULED' && !scheduledFor) {
+    return { error: { status: 400, message: 'A scheduled publication requires a scheduled date.' } }
+  }
+
+  let publishedAt
+
+  if (nextStatus === 'PUBLISHED') {
+    if (body.publishedAt) publishedAt = body.publishedAt
+    else if (!existing.published_at) publishedAt = NOW
+  } else if (existing.published_at) {
+    // Al dejar de estar publicada se limpia la marca de publicación.
+    publishedAt = null
+  }
+
+  return { status: nextStatus, publishedAt }
+}
+
 const buildLatestMetrics = (row) => {
   const impressions = toNumber(row.impressions)
   const reach = toNumber(row.reach)
@@ -302,7 +364,7 @@ const getCampaignInCompany = async (companyId, campaignId) => {
 
 const getPublicationInCompany = async (companyId, publicationId) => {
   const result = await pool.query(
-    `SELECT id_publication, id_campaign, id_proyecto, title
+    `SELECT id_publication, id_campaign, id_proyecto, title, status, scheduled_for, published_at
      FROM public.marketing_publication
      WHERE id_empresa = $1 AND id_publication = $2
      LIMIT 1`,
@@ -339,7 +401,7 @@ const buildCampaignQuery = ({ whereClause, values }) => pool.query(
    LEFT JOIN LATERAL (
      SELECT
        COUNT(*)::int AS publications_count,
-       COUNT(*) FILTER (WHERE mp.status IN ('PLANNED', 'IN_DESIGN', 'SCHEDULED'))::int AS pipeline_count,
+       COUNT(*) FILTER (WHERE mp.status IN ('DRAFT', 'SCHEDULED'))::int AS pipeline_count,
        COUNT(*) FILTER (WHERE mp.status = 'PUBLISHED')::int AS published_count,
        COALESCE(SUM(COALESCE(latest_metric.impressions, 0)), 0)::bigint AS total_impressions,
        COALESCE(SUM(COALESCE(latest_metric.reach, 0)), 0)::bigint AS total_reach,
@@ -1007,13 +1069,18 @@ export const createMarketingPublication = async (req, res) => {
 
   const association = await resolveCampaignAndProject({
     companyId,
-    campaignId,
+    campaignId: campaignId ?? null,
     projectId: projectId ?? null,
     requireProjectAssociation: true,
   })
 
   if (association.error) {
     return res.status(association.error.status).json({ success: false, message: association.error.message })
+  }
+
+  const lifecycle = resolvePublicationLifecycleForCreate({ status, scheduledFor })
+  if (lifecycle.error) {
+    return res.status(lifecycle.error.status).json({ success: false, message: lifecycle.error.message })
   }
 
   const result = await pool.query(
@@ -1035,17 +1102,23 @@ export const createMarketingPublication = async (req, res) => {
          created_by,
          updated_by
        )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::timestamp, $10::timestamp, $11, $12, $13, $14, $14)
+     VALUES (
+       $1, $2, $3, $4, $5, $6, $7, $8, $9::timestamp,
+       -- Solo una publicación publicada lleva fecha de publicación; si no se
+       -- envía, la fija la base.
+       CASE WHEN $8::varchar = 'PUBLISHED' THEN COALESCE($10::timestamp, CURRENT_TIMESTAMP) END,
+       $11, $12, $13, $14, $14
+     )
      RETURNING id_publication`,
     [
       companyId,
-      association.campaign?.id_campaign ?? campaignId,
+      association.campaign?.id_campaign ?? campaignId ?? null,
       association.projectId,
       title.trim(),
       normalizeText(caption) ?? null,
       platform,
       format,
-      status ?? 'PLANNED',
+      lifecycle.status,
       scheduledFor ?? null,
       publishedAt ?? null,
       normalizeText(assetUrl) ?? null,
@@ -1073,23 +1146,21 @@ export const updateMarketingPublication = async (req, res) => {
   }
 
   const nextCampaignId = req.body.campaignId !== undefined ? req.body.campaignId : existing.id_campaign
-  if (!nextCampaignId) {
-    return res.status(400).json({
-      success: false,
-      message: 'A publication must belong to a campaign.',
-    })
-  }
-
   const nextProjectId = req.body.projectId !== undefined ? req.body.projectId : existing.id_proyecto
   const association = await resolveCampaignAndProject({
     companyId,
-    campaignId: nextCampaignId,
+    campaignId: nextCampaignId ?? null,
     projectId: nextProjectId ?? null,
     requireProjectAssociation: true,
   })
 
   if (association.error) {
     return res.status(association.error.status).json({ success: false, message: association.error.message })
+  }
+
+  const lifecycle = resolvePublicationLifecycleForUpdate({ existing, body: req.body })
+  if (lifecycle.error) {
+    return res.status(lifecycle.error.status).json({ success: false, message: lifecycle.error.message })
   }
 
   const setClauses = []
@@ -1111,12 +1182,13 @@ export const updateMarketingPublication = async (req, res) => {
     values.push(req.body.format)
     setClauses.push(`publication_format = $${values.length}`)
   }
-  if (req.body.status !== undefined) {
-    values.push(req.body.status)
-    setClauses.push(`status = $${values.length}`)
-  }
+  // El estado siempre se reescribe: el resolver ya validó la transición y
+  // devuelve el estado actual cuando la petición no lo cambia.
+  values.push(lifecycle.status)
+  setClauses.push(`status = $${values.length}`)
+
   if (req.body.campaignId !== undefined) {
-    values.push(nextCampaignId)
+    values.push(nextCampaignId ?? null)
     setClauses.push(`id_campaign = $${values.length}`)
   }
   if (req.body.projectId !== undefined || req.body.campaignId !== undefined) {
@@ -1127,8 +1199,10 @@ export const updateMarketingPublication = async (req, res) => {
     values.push(req.body.scheduledFor ?? null)
     setClauses.push(`scheduled_for = $${values.length}::timestamp`)
   }
-  if (req.body.publishedAt !== undefined) {
-    values.push(req.body.publishedAt ?? null)
+  if (lifecycle.publishedAt === NOW) {
+    setClauses.push('published_at = CURRENT_TIMESTAMP')
+  } else if (lifecycle.publishedAt !== undefined) {
+    values.push(lifecycle.publishedAt)
     setClauses.push(`published_at = $${values.length}::timestamp`)
   }
   if (req.body.assetUrl !== undefined) {

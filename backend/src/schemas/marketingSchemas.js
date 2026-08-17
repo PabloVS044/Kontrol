@@ -4,7 +4,8 @@ export const MARKETING_CAMPAIGN_STATUSES = ['DRAFT', 'ACTIVE', 'PAUSED', 'COMPLE
 export const MARKETING_ITEM_STATUSES = ['DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED']
 export const MARKETING_ITEM_TYPES = ['IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL']
 export const MARKETING_ORIGIN_TYPES = ['MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL']
-export const MARKETING_PUBLICATION_STATUSES = ['PLANNED', 'IN_DESIGN', 'SCHEDULED', 'PUBLISHED', 'PAUSED', 'CANCELLED']
+// Ciclo de vida de HU-28: borrador → programada → publicada.
+export const MARKETING_PUBLICATION_STATUSES = ['DRAFT', 'SCHEDULED', 'PUBLISHED']
 export const MARKETING_SOCIAL_PLATFORMS = ['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TIKTOK', 'X', 'YOUTUBE', 'WHATSAPP', 'OTHER']
 export const MARKETING_PUBLICATION_FORMATS = ['POST', 'STORY', 'REEL', 'VIDEO', 'CAROUSEL', 'SHORT', 'AD', 'OTHER']
 
@@ -113,14 +114,16 @@ export const updateMarketingItemSchema = z
     { message: 'No item fields were provided for update.' }
   )
 
+// La publicación cuelga siempre de un proyecto (y por tanto de una empresa).
+// La campaña es un agrupador opcional.
 export const createMarketingPublicationSchema = z.object({
   title: z.string().trim().min(1, 'Publication title is required.').max(180),
   caption: optionalText(12000),
   platform: z.enum(MARKETING_SOCIAL_PLATFORMS),
-  format: z.enum(MARKETING_PUBLICATION_FORMATS),
+  format: z.enum(MARKETING_PUBLICATION_FORMATS).optional().default('POST'),
   status: z.enum(MARKETING_PUBLICATION_STATUSES).optional(),
-  campaignId: z.coerce.number().int().positive('Campaign is required.'),
-  projectId: optionalPositiveId,
+  campaignId: optionalPositiveId,
+  projectId: z.coerce.number().int().positive('Project is required.'),
   scheduledFor: optionalTimestamp,
   publishedAt: optionalTimestamp,
   assetUrl: optionalText(500),
@@ -135,7 +138,7 @@ export const updateMarketingPublicationSchema = z
     platform: z.enum(MARKETING_SOCIAL_PLATFORMS).optional(),
     format: z.enum(MARKETING_PUBLICATION_FORMATS).optional(),
     status: z.enum(MARKETING_PUBLICATION_STATUSES).optional(),
-    campaignId: z.coerce.number().int().positive().optional(),
+    campaignId: optionalPositiveId,
     projectId: z.coerce.number().int().positive().optional(),
     scheduledFor: optionalTimestamp,
     publishedAt: optionalTimestamp,

@@ -14,6 +14,7 @@ import chatRoutes from './routes/chatRoutes.js'
 import teamRoutes from './routes/teamRoutes.js'
 import agentRoutes from './routes/agentRoutes.js'
 import integrationRoutes from './routes/integrationRoutes.js'
+import marketingRoutes from './routes/marketingRoutes.js'
 import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
 
@@ -40,6 +41,7 @@ router.use('/chat', chatRoutes)
 router.use('/teams', teamRoutes)
 router.use('/agent', agentRoutes)
 router.use('/integrations', integrationRoutes)
+router.use('/marketing', marketingRoutes)
 router.use('/uploadthing', uploadthingRouter)
 
 export default router
