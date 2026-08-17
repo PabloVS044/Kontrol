@@ -1,6 +1,11 @@
 import pool from '../db/pool.js'
 import { EMPRESA_MANAGEMENT_ROLES } from '../services/projectAccessService.js'
 import { buildMarketingDrafts } from '../services/marketingGenerationService.js'
+import {
+  NOW,
+  resolvePublicationLifecycleForCreate,
+  resolvePublicationLifecycleForUpdate,
+} from '../utils/marketingPublicationLifecycle.js'
 
 const MARKETING_CAMPAIGN_SELECT = `
   mc.id_campaign,
@@ -117,68 +122,6 @@ const normalizeText = (value) => {
 }
 
 const toNumber = (value) => Number(value || 0)
-
-// HU-28 — ciclo de vida de una publicación: borrador → programada → publicada.
-// PUBLISHED es terminal: el contenido se sigue pudiendo editar, el estado no.
-// DRAFT → PUBLISHED se admite como atajo de "publicar ahora".
-const PUBLICATION_STATUS_TRANSITIONS = {
-  DRAFT: ['SCHEDULED', 'PUBLISHED'],
-  SCHEDULED: ['DRAFT', 'PUBLISHED'],
-  PUBLISHED: [],
-}
-
-// Marca para que el UPDATE escriba CURRENT_TIMESTAMP en lugar de un parámetro:
-// la fecha la pone la base, no el reloj del proceso de Node.
-const NOW = Symbol('CURRENT_TIMESTAMP')
-
-const isPublicationTransitionAllowed = (current, next) =>
-  current === next || (PUBLICATION_STATUS_TRANSITIONS[current] ?? []).includes(next)
-
-const resolvePublicationLifecycleForCreate = ({ status, scheduledFor }) => {
-  const nextStatus = status ?? 'DRAFT'
-
-  if (nextStatus === 'SCHEDULED' && !scheduledFor) {
-    return { error: { status: 400, message: 'A scheduled publication requires a scheduled date.' } }
-  }
-
-  return { status: nextStatus }
-}
-
-/**
- * Decide el estado resultante y qué hacer con published_at.
- * `publishedAt: undefined` significa "no tocar la columna", lo que evita
- * reenviar a Postgres una fecha que ya viajó de ida y vuelta por Node.
- */
-const resolvePublicationLifecycleForUpdate = ({ existing, body }) => {
-  const currentStatus = existing.status
-  const nextStatus = body.status ?? currentStatus
-
-  if (!isPublicationTransitionAllowed(currentStatus, nextStatus)) {
-    return {
-      error: {
-        status: 409,
-        message: `A publication cannot move from ${currentStatus} to ${nextStatus}.`,
-      },
-    }
-  }
-
-  const scheduledFor = body.scheduledFor !== undefined ? body.scheduledFor : existing.scheduled_for
-  if (nextStatus === 'SCHEDULED' && !scheduledFor) {
-    return { error: { status: 400, message: 'A scheduled publication requires a scheduled date.' } }
-  }
-
-  let publishedAt
-
-  if (nextStatus === 'PUBLISHED') {
-    if (body.publishedAt) publishedAt = body.publishedAt
-    else if (!existing.published_at) publishedAt = NOW
-  } else if (existing.published_at) {
-    // Al dejar de estar publicada se limpia la marca de publicación.
-    publishedAt = null
-  }
-
-  return { status: nextStatus, publishedAt }
-}
 
 const buildLatestMetrics = (row) => {
   const impressions = toNumber(row.impressions)
