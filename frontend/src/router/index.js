@@ -17,6 +17,7 @@ import ChatView from '../views/ChatView.vue'
 import TeamsView from '../views/TeamsView.vue'
 import AgentView from '../views/AgentView.vue'
 import IntegrationsView from '../views/IntegrationsView.vue'
+import MarketingPublicationsView from '../views/MarketingPublicationsView.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
 import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
@@ -128,6 +129,12 @@ const router = createRouter({
       path: '/integrations',
       name: 'integrations',
       component: IntegrationsView,
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/marketing',
+      name: 'marketing',
+      component: MarketingPublicationsView,
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
