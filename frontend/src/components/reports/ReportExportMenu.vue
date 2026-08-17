@@ -35,7 +35,7 @@
         </span>
       </button>
 
-      <span class="pop-footnote">{{ $t('reports.export.scopeNote', { filter: filterLabel }) }}</span>
+      <span class="pop-footnote">{{ scopeNote }}</span>
     </div>
 
     <p v-if="error" class="export-error">{{ error }}</p>
@@ -59,8 +59,9 @@ const FORMATS = [
 ]
 
 defineProps({
-  // Shown in the menu so it is obvious what subset the file will contain.
-  filterLabel: { type: String, default: '' },
+  // Already-translated sentence stating what the file will contain — the view
+  // knows whether its scope is a filter or a single project.
+  scopeNote: { type: String, default: '' },
   busyFormat: { type: String, default: null },
   error: { type: String, default: null },
   disabled: { type: Boolean, default: false },

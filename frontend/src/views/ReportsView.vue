@@ -28,7 +28,7 @@
               {{ $t('reports.header.generateAI') }}
             </button>
             <ReportExportMenu
-              :filter-label="activeFilterLabel"
+              :scope-note="$t('reports.export.scopeNote', { filter: activeFilterLabel })"
               :busy-format="exportingFormat"
               :error="exportError"
               :disabled="loading || loadingReports"
@@ -484,7 +484,7 @@ async function runExport(format) {
       locale: locale.value,
       companyName: authStore.empresaActual?.nombre ?? '',
       generatedBy: [authStore.user?.nombre, authStore.user?.apellido].filter(Boolean).join(' '),
-      filterLabel: activeFilterLabel.value,
+      scopeLabel: activeFilterLabel.value,
       projects: displayedProjects.value,
       reports: reports.value,
       kpis: {

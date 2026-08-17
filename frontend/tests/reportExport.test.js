@@ -2,7 +2,12 @@ import { describe, it, expect } from 'vitest'
 
 import { toCsv, escapeCsvValue, guardFormula } from '../src/utils/csvExport.js'
 import { measureText, encodePdfText, truncateToWidth, parseColor } from '../src/utils/pdf/pdfDocument.js'
-import { buildReportsDataset, renderExport, buildExportRegistration } from '../src/utils/reportExport.js'
+import {
+  buildReportsDataset,
+  buildProjectDataset,
+  renderExport,
+  buildExportRegistration,
+} from '../src/utils/reportExport.js'
 import { slugify, fileDateStamp } from '../src/utils/download.js'
 
 // Stand-in for vue-i18n's `t`. Interpolates the params the exporters pass so
@@ -38,7 +43,7 @@ function makeDataset(overrides = {}) {
     companyName: 'Constructora Ñandú S.A.',
     generatedBy: 'Juan M. Morales',
     generatedAt: new Date(2026, 7, 16, 15, 42),
-    filterLabel: 'Activos',
+    scopeLabel: 'Activos',
     projects: PROJECTS,
     reports: REPORTS,
     kpis: { avgProgress: 71, totalProjects: 2, activeProjects: 1, completedProjects: 1, completionRate: 50, budgetTotal: 4820000, budgetPct: 63 },
@@ -187,6 +192,89 @@ describe('reportExport — dataset y artefactos', () => {
       id_proyecto: null,
     })
     expect(payload.titulo.length).toBeLessThanOrEqual(200)
+  })
+})
+
+describe('reportExport — detalle de un proyecto', () => {
+  const project = {
+    id_proyecto: 7,
+    nombre: 'Ampliación Ñuñoa',
+    descripcion: 'Obra civil fase 2',
+    estado: 'EN_PROGRESO',
+    fecha_inicio: '2026-02-01',
+    fecha_fin_planificada: '2026-12-15',
+    presupuesto_total: 1200000,
+  }
+  const metrics = {
+    progressPct: 64,
+    budget: { planificado: 1200000, real: 780000, pct: 65, remaining: 420000 },
+    tasks: { total: 20, completadas: 12, enProgreso: 5, pendientes: 2, canceladas: 1 },
+    team: [{ rol: 'Supervisor', total: 2 }, { rol: 'Operario', total: 6 }],
+  }
+
+  const makeProjectDataset = (overrides = {}) =>
+    buildProjectDataset({
+      t,
+      locale: 'es',
+      companyName: 'Constructora Ñandú S.A.',
+      generatedBy: 'Juan M. Morales',
+      generatedAt: new Date(2026, 7, 16, 15, 42),
+      project,
+      metrics,
+      ...overrides,
+    })
+
+  it('usa el proyecto como alcance, no un filtro', () => {
+    const { meta } = makeProjectDataset()
+
+    expect(meta.scopeLabel).toBe('Ampliación Ñuñoa')
+    expect(meta.title).toBe('Ampliación Ñuñoa')
+    expect(meta.labels.scope).toBe('reports.export.meta.project')
+  })
+
+  it('resume en la sección primaria lo que muestra la pantalla', () => {
+    const [summary] = makeProjectDataset().sections
+    const byMetric = Object.fromEntries(summary.rows)
+
+    expect(summary.columns).toHaveLength(2)
+    expect(byMetric['Estado']).toBe('In Progress')
+    expect(byMetric['reports.detail.metaProgress']).toBe('64%')
+    expect(byMetric['reports.detail.spent']).toBe('$780K')
+    expect(byMetric['reports.detail.remaining']).toBe('$420K')
+  })
+
+  it('reparte las tareas en porcentajes que suman el total', () => {
+    const tasks = makeProjectDataset().sections.find((s) => s.key === 'tasks')
+
+    expect(tasks.rows.map((r) => r[1])).toEqual(['2', '5', '12', '1'])
+    expect(tasks.rows.map((r) => r[2])).toEqual(['10%', '25%', '60%', '5%'])
+  })
+
+  it('no divide por cero cuando el proyecto no tiene tareas', () => {
+    const empty = makeProjectDataset({ metrics: { ...metrics, tasks: { total: 0 } } })
+    const tasks = empty.sections.find((s) => s.key === 'tasks')
+
+    expect(tasks.rows.every((r) => r[2] === '0%')).toBe(true)
+  })
+
+  it('nombra el archivo con el proyecto y registra su id', () => {
+    const dataset = makeProjectDataset()
+
+    expect(renderExport(dataset, 'CSV').filename).toBe('kontrol-reportes-ampliacion-nunoa-2026-08-16.csv')
+    expect(buildExportRegistration(dataset, 'PDF', { t, idProyecto: 7 })).toEqual({
+      titulo: 'Exportación PDF · Ampliación Ñuñoa',
+      tipo: 'CONSOLIDADO',
+      id_proyecto: 7,
+    })
+  })
+
+  it('produce un PDF válido con las tres secciones', async () => {
+    const { blob } = renderExport(makeProjectDataset(), 'PDF')
+    const text = Buffer.from(await blob.arrayBuffer()).toString('latin1')
+
+    expect(text.startsWith('%PDF-1.4')).toBe(true)
+    expect(text.trimEnd().endsWith('%%EOF')).toBe(true)
+    expect(makeProjectDataset().sections.map((s) => s.key)).toEqual(['summary', 'tasks', 'team'])
   })
 })
 

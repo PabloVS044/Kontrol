@@ -83,15 +83,20 @@ function drawMasthead(doc, meta) {
     size: 6.5, color: BRAND.textFaint, tracking: CAPS_TRACKING * 6.5,
   })
 
-  doc.text(meta.title, MARGIN, 76, { size: 19, bold: true, color: BRAND.onInk, maxWidth: 330 })
+  // A project export titles itself with the project, so repeating it in the
+  // scope rail says nothing — drop the rail and give the title the width.
+  const scopeIsTitle = meta.scopeLabel === meta.title
+  const titleWidth = scopeIsTitle ? doc.contentWidth : 330
+
+  doc.text(meta.title, MARGIN, 76, { size: 19, bold: true, color: BRAND.onInk, maxWidth: titleWidth })
   if (meta.subtitle) {
-    doc.text(meta.subtitle, MARGIN, 90, { size: 8, color: BRAND.textFaint, maxWidth: 330 })
+    doc.text(meta.subtitle, MARGIN, 90, { size: 8, color: BRAND.textFaint, maxWidth: titleWidth })
   }
 
-  // Right rail: the two facts that make an exported file self-explanatory.
+  // Right rail: the facts that make an exported file self-explanatory.
   const right = doc.width - MARGIN
   drawStackedLabel(doc, right, 34, meta.labels.generatedOn, meta.generatedAtLabel)
-  drawStackedLabel(doc, right, 68, meta.labels.filter, meta.filterLabel)
+  if (!scopeIsTitle) drawStackedLabel(doc, right, 68, meta.labels.scope, meta.scopeLabel)
 
   return MASTHEAD_HEIGHT + 2.5
 }

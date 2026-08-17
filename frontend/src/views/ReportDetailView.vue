@@ -29,13 +29,12 @@
                 <p class="proj-desc">{{ project.descripcion || $t('reports.detail.noDescription') }}</p>
               </div>
               <div class="header-actions">
-              
-                <button class="btn-outline">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 9V2M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
-                  </svg>
-                  {{ $t('reports.detail.export') }}
-                </button>
+                <ReportExportMenu
+                  :scope-note="$t('reports.export.scopeNoteProject', { project: project.nombre })"
+                  :busy-format="exportingFormat"
+                  :error="exportError"
+                  @export="runExport"
+                />
               </div>
             </div>
 
@@ -292,24 +291,38 @@ import AppNavbar from '../components/AppNavbar.vue'
 import Pill       from '../components/UI/Pill/Pill.vue'
 import Button     from '../components/UI/Button/Button.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
+import ReportExportMenu from '../components/reports/ReportExportMenu.vue'
 import { statusLabel, statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
+import {
+  buildProjectDataset,
+  renderExport,
+  buildExportRegistration,
+} from '../utils/reportExport.js'
+import { downloadBlob } from '../utils/download.js'
 import { useAuthStore } from '../stores/auth'
 
 const route     = useRoute()
 const authStore = useAuthStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const project = ref(null)
 const metrics = ref(null)
 const loading = ref(true)
 
+const exportingFormat = ref(null)
+const exportError     = ref(null)
+
+function authHeaders() {
+  return {
+    Authorization: `Bearer ${authStore.token}`,
+    'X-Company-ID': String(authStore.idEmpresa),
+  }
+}
+
 async function loadAll() {
   loading.value = true
   try {
-    const headers = {
-      Authorization: `Bearer ${authStore.token}`,
-      'X-Company-ID': String(authStore.idEmpresa),
-    }
+    const headers = authHeaders()
     const [projRes, metRes] = await Promise.all([
       fetch(`/api/projects/${route.params.id}`, { headers }),
       fetch(`/api/projects/${route.params.id}/metrics`, { headers }),
@@ -438,6 +451,59 @@ const healthSub = computed(() => {
   if (e === 'CANCELADO')   return t('reports.detail.health.terminated')
   return t('reports.detail.health.notStarted')
 })
+
+// ── Export ─────────────────────────────────────────────────────────────────
+/**
+ * Same generators as the reports view, fed the figures this screen already
+ * derived, so the file and the page cannot disagree. Scoped to one project,
+ * so the REPORTE row carries its id instead of spanning the company.
+ */
+async function runExport(format) {
+  if (!project.value) return
+
+  exportingFormat.value = format
+  exportError.value = null
+
+  try {
+    const dataset = buildProjectDataset({
+      t,
+      locale: locale.value,
+      companyName: authStore.empresaActual?.nombre ?? '',
+      generatedBy: [authStore.user?.nombre, authStore.user?.apellido].filter(Boolean).join(' '),
+      project: project.value,
+      metrics: {
+        progressPct: progressPct.value,
+        budget: budgetData.value,
+        tasks: tasksByState.value,
+        team: teamRoles.value,
+      },
+    })
+
+    const { blob, filename } = renderExport(dataset, format)
+    downloadBlob(blob, filename)
+
+    await registerExport(dataset, format)
+  } catch (e) {
+    exportError.value = e?.message ?? t('reports.export.errorFailed')
+  } finally {
+    exportingFormat.value = null
+  }
+}
+
+async function registerExport(dataset, format) {
+  try {
+    const res = await fetch('/api/reports/exports', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        buildExportRegistration(dataset, format, { t, idProyecto: Number(route.params.id) })
+      ),
+    })
+    if (!res.ok) throw new Error()
+  } catch {
+    exportError.value = t('reports.export.errorNotRecorded')
+  }
+}
 </script>
 
 <style scoped>

@@ -831,6 +831,7 @@
       "csvTitle": "Hoja de cálculo CSV",
       "csvDesc": "Tabla de proyectos lista para Excel y Google Sheets.",
       "scopeNote": "Se exporta lo que muestra el filtro «{filter}».",
+      "scopeNoteProject": "Se exporta el proyecto «{project}».",
       "working": "Generando {format}…",
       "tagline": "GESTIÓN DE PROYECTOS",
       "footerNote": "Generado desde Kontrol",
@@ -841,13 +842,21 @@
       "recordTitle": "Exportación {format} · {filter}",
       "errorFailed": "No se pudo generar el archivo.",
       "errorNotRecorded": "El archivo se descargó, pero no se registró la generación.",
+      "projectSummary": "Resumen del Proyecto",
+      "colMetric": "Métrica",
+      "colValue": "Valor",
+      "colCount": "Cantidad",
+      "colShare": "% del total",
+      "colRole": "Rol",
+      "colMembers": "Miembros",
       "meta": {
         "company": "EMPRESA",
         "generatedBy": "GENERADO POR",
         "generatedOn": "FECHA DE GENERACIÓN",
         "filter": "FILTRO APLICADO",
         "projectCount": "PROYECTOS INCLUIDOS",
-        "reportCount": "REPORTES INCLUIDOS"
+        "reportCount": "REPORTES INCLUIDOS",
+        "project": "PROYECTO"
       }
     },
     "view": {
