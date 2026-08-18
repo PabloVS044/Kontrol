@@ -24,7 +24,7 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path
                 d="M9 2L4 7l5 5"
-                stroke="#555"
+                stroke="var(--k-text-faint)"
                 stroke-width="1.4"
                 stroke-linecap="square"
               />
@@ -50,12 +50,12 @@
                       width="10"
                       height="9"
                       rx="1"
-                      stroke="#555"
+                      stroke="var(--k-text-faint)"
                       stroke-width="1.2"
                     />
                     <path
                       d="M1 5h10M4 1v2M8 1v2"
-                      stroke="#555"
+                      stroke="var(--k-text-faint)"
                       stroke-width="1.2"
                       stroke-linecap="square"
                     />
@@ -65,16 +65,17 @@
                     &rarr; {{ formatDate(project.fecha_fin_planificada) }}
                   </template>
                 </span>
+                <!-- TODO SCRUM-16: #f97316 (aviso) no tiene token en la paleta v2 -->
                 <span
                   v-if="daysRemaining !== null"
                   class="pd-meta-item"
                   :style="{
                     color:
                       daysRemaining < 0
-                        ? '#fb7185'
+                        ? 'var(--k-state-error-text)'
                         : daysRemaining <= 7
                           ? '#f97316'
-                          : '#555',
+                          : 'var(--k-text-faint)',
                   }"
                 >
                   {{
@@ -222,7 +223,7 @@
                   <div
                     class="budget-detail-val"
                     :style="{
-                      color: budgetRemaining < 0 ? '#fb7185' : '#34d399',
+                      color: budgetRemaining < 0 ? 'var(--k-state-error-text)' : 'var(--k-state-success-text)',
                     }"
                   >
                     ${{ formatMoney(Math.abs(budgetRemaining)) }}
@@ -369,7 +370,7 @@
             </div>
             <button class="btn-primary" @click="openCreateTeam">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square" />
+                <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square" />
               </svg>
               {{ $t('projects.team.newTeam') }}
             </button>
@@ -377,9 +378,9 @@
 
           <div v-if="filteredTeams.length === 0" class="tab-empty">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <circle cx="13" cy="12" r="5" stroke="#2a2a2a" stroke-width="1.4"/>
-              <path d="M3 30c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
-              <path d="M25 16c2.8.8 5 3.4 5 6.5M33 30c0-4-2.5-7.4-6-8.5" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+              <circle cx="13" cy="12" r="5" stroke="var(--k-color-border)" stroke-width="1.4"/>
+              <path d="M3 30c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="var(--k-color-border)" stroke-width="1.4" stroke-linecap="square"/>
+              <path d="M25 16c2.8.8 5 3.4 5 6.5M33 30c0-4-2.5-7.4-6-8.5" stroke="var(--k-color-border)" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
             <p class="tab-empty-title">
               {{ teamFilterNombre || teamFilterArea ? $t('projects.team.emptyFilter') : $t('projects.team.emptyNoTeams') }}
@@ -389,7 +390,7 @@
             </p>
             <button v-if="!teamFilterNombre && !teamFilterArea" class="btn-primary" @click="openCreateTeam">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
               {{ $t('projects.team.emptyCta') }}
             </button>
@@ -616,14 +617,15 @@ function authHeader() {
   return headers;
 }
 
+// TODO SCRUM-16: #60a5fa (azul) y #f97316 (naranja) no existen en la paleta v2.
 function movColor(tipo) {
   return (
     {
-      ENTRADA: "#34d399",
-      SALIDA: "#fb7185",
+      ENTRADA: "var(--k-state-success-text)",
+      SALIDA: "var(--k-state-error-text)",
       AJUSTE: "#60a5fa",
       GASTO_ADMIN: "#f97316",
-    }[tipo] || "#666"
+    }[tipo] || "var(--k-text-dim)"
   );
 }
 
@@ -648,10 +650,11 @@ const budgetPct = computed(() => {
   return Math.round((spent / total) * 100);
 });
 
+// TODO SCRUM-16: #f97316 sin token; --k-color-warning es oscuro, para fondos.
 const budgetColor = computed(() => {
-  if (budgetPct.value >= 100) return "#fb7185";
+  if (budgetPct.value >= 100) return "var(--k-state-error-text)";
   if (budgetPct.value >= 80) return "#f97316";
-  return "#34d399";
+  return "var(--k-state-success-text)";
 });
 
 const budgetRemaining = computed(() => {
@@ -713,9 +716,9 @@ const progressLastUpdateLabel = computed(() =>
 
 const TASK_STATE_META = computed(() => [
   { estado: 'PENDIENTE',   label: t('projects.taskStatuses.pending'),    color: '#60a5fa' },
-  { estado: 'EN_PROGRESO', label: t('projects.taskStatuses.inProgress'), color: '#34d399' },
-  { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: '#c9a962' },
-  { estado: 'CANCELADA',   label: t('projects.taskStatuses.cancelled'),  color: '#fb7185' },
+  { estado: 'EN_PROGRESO', label: t('projects.taskStatuses.inProgress'), color: 'var(--k-state-success-text)' },
+  { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: 'var(--k-color-primary)' },
+  { estado: 'CANCELADA',   label: t('projects.taskStatuses.cancelled'),  color: 'var(--k-state-error-text)' },
 ])
 
 const totalTasks = computed(() =>
@@ -891,8 +894,9 @@ async function handleProjectMembersUpdated() {
 
 // ── Team modal ────────────────────────────────────────────────────────────────
 
+// TODO SCRUM-16: #60a5fa (azul) y #f97316 (naranja) no existen en la paleta v2.
 function areaColor(area) {
-  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "#34d399", Infraestructura: "#f97316", Gestión: "#c9a962" }[area] || "#555")
+  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "var(--k-state-success-text)", Infraestructura: "#f97316", Gestión: "var(--k-color-primary)" }[area] || "var(--k-text-faint)")
 }
 
 function openCreateTeam() {
