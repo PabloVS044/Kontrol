@@ -13,7 +13,7 @@
           <span class="empresa-name">{{ authStore.empresaActual?.nombre ?? '—' }}</span>
           <span class="empresa-role">{{ authStore.empresaActual?.rol ?? '' }}</span>
           <svg class="chevron" :class="{ open: dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 4l4 4 4-4" stroke="#555" stroke-width="1.4" stroke-linecap="square"/>
+            <path d="M2 4l4 4 4-4" stroke="var(--TextMuted)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
         </div>
 
@@ -193,8 +193,8 @@ const closeMenu = () => {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0b0b0b;
-  border-bottom: 1px solid #1f1f1f;
+  background: var(--Background2);
+  border-bottom: var(--border-width) solid var(--Border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 100;
@@ -206,19 +206,19 @@ const closeMenu = () => {
   width: 100%;
   display: flex;
   align-items: stretch;
-  padding: 0 32px;
+  padding: 0 var(--space-6);
   gap: 0;
 }
 
 .appnav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
   text-decoration: none;
   flex-shrink: 0;
-  padding-right: 24px;
-  border-right: 1px solid #1a1a1a;
-  margin-right: 12px;
+  padding-right: var(--space-5);
+  border-right: var(--border-width) solid var(--Border);
+  margin-right: var(--space-4);
 }
 
 .appnav-brand img {
@@ -227,10 +227,10 @@ const closeMenu = () => {
 }
 
 .appnav-brand span {
-  font-family: 'Bungee', 'Manrope', sans-serif;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #faf8f5;
+  font-family: var(--font-display), 'Bungee', sans-serif;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-caps);
+  color: var(--Text);
 }
 
 /* ── Empresa selector ── */
@@ -238,10 +238,10 @@ const closeMenu = () => {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   cursor: pointer;
-  border-right: 1px solid #1a1a1a;
-  margin-right: 12px;
+  border-right: var(--border-width) solid var(--Border);
+  margin-right: var(--space-4);
   position: relative;
 }
 
@@ -252,10 +252,10 @@ const closeMenu = () => {
 }
 
 .empresa-name {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: #faf8f5;
+  color: var(--Text);
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -263,13 +263,14 @@ const closeMenu = () => {
 }
 
 .empresa-role {
-  font-size: 10px;
-  color: #c9a962;
+  font-size: var(--text-2xs);
+  color: var(--Primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: #1e170d;
-  padding: 1px 6px;
-  border: 1px solid #3d3322;
+  background: var(--PrimaryVariation);
+  padding: 2px 6px;
+  border: var(--border-width) solid var(--Primary);
+  border-radius: var(--radius-xs);
 }
 
 .chevron {
@@ -288,20 +289,22 @@ const closeMenu = () => {
 }
 
 :global(.empresa-dropdown) {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
+  background: var(--Background2);
+  border: var(--border-width) solid var(--Border);
   min-width: 220px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 :global(.dd-label) {
-  font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: #333;
-  padding: 12px 16px 6px;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps);
+  color: var(--TextMuted);
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  text-transform: uppercase;
 }
 
 :global(.dd-item) {
@@ -310,25 +313,26 @@ const closeMenu = () => {
   align-items: center;
   background: none;
   border: none;
-  padding: 10px 16px;
+  padding: 10px var(--space-4);
   cursor: pointer;
   text-align: left;
   transition: background 0.15s;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 :global(.dd-item:hover) {
-  background: #111111;
+  background: var(--Background3);
 }
 
 :global(.dd-item.active) {
-  background: #1a150f;
+  background: var(--PrimaryVariation2);
+  border-left: 2px solid var(--Primary);
 }
 
 :global(.dd-item-name) {
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  color: #faf8f5;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -336,23 +340,23 @@ const closeMenu = () => {
 }
 
 :global(.dd-item-role) {
-  font-size: 10px;
-  color: #555;
+  font-size: var(--text-2xs);
+  color: var(--TextMuted);
   flex-shrink: 0;
   text-transform: capitalize;
 }
 
 :global(.dd-divider) {
   height: 1px;
-  background: #1a1a1a;
-  margin: 4px 0;
+  background: var(--Border);
+  margin: var(--space-1) 0;
 }
 
 :global(.dd-new) {
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #c9a962;
-  padding: 10px 16px;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--Primary);
+  padding: var(--space-3) var(--space-4);
   text-decoration: none;
   display: block;
   transition: background 0.15s;
@@ -371,16 +375,16 @@ const closeMenu = () => {
 }
 
 .appnav-link {
-  position: relative;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: #555;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--TextMuted);
   text-decoration: none;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   display: flex;
   align-items: center;
-  transition: color .2s;
+  transition: var(--transition-ui);
+  position: relative;
+  font-weight: 500;
   letter-spacing: 0.03em;
 }
 
@@ -389,28 +393,35 @@ const closeMenu = () => {
   position: absolute;
   bottom: 0; left: 16px; right: 16px;
   height: 2px;
-  background: #c9a962;
+  background: var(--Primary);
   transform: scaleX(0);
   transition: transform .2s ease;
 }
 
-.appnav-link:hover { color: #faf8f5; }
+.appnav-link:hover { color: var(--Text); }
 
 .appnav-link.router-link-active {
-  color: #c9a962;
+  color: var(--Primary);
 }
 
 .appnav-link.router-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  height: 2px;
+  background: var(--Primary);
   transform: scaleX(1);
 }
 
 .appnav-link--agent {
-  color: #886911;
+  color: var(--Secondary);
 }
 
 .appnav-link--agent:hover,
 .appnav-link--agent.router-link-active {
-  color: #c9a962;
+  color: var(--Primary);
 }
 
 /* ── End ── */
@@ -419,7 +430,7 @@ const closeMenu = () => {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .lang-picker {
@@ -436,26 +447,28 @@ const closeMenu = () => {
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: #444;
+  color: var(--TextMuted);
   transition: color 0.15s;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .lang-btn:hover,
-.lang-btn.active { color: #c9a962; }
+.lang-btn.active { color: var(--Primary); }
 
 .lang-dropdown {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  padding: 4px;
+  background: var(--Background2);
+  border: var(--border-width) solid var(--Border);
+  padding: var(--space-1);
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 110px;
   z-index: 200;
+  box-shadow: var(--shadow-modal);
+  border-radius: var(--radius-md);
 }
 
 .lang-opt {
@@ -463,33 +476,34 @@ const closeMenu = () => {
   border: none;
   text-align: left;
   padding: 7px 10px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #555;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--TextSoft);
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
 
-.lang-opt:hover { color: #faf8f5; background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: #c9a962; }
+.lang-opt:hover { color: var(--Text); background: var(--Background-hover-subtle); }
+.lang-opt.selected { color: var(--Primary); }
 
 .appnav-avatar {
-  width: 32px;
-  height: 32px;
-  background: #1f1f1f;
-  border: 1px solid #2e2e2e;
+  width: var(--space-6);
+  height: var(--space-6);
+  background: var(--Background3);
+  border: var(--border-width) solid var(--Border);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: #c9a962;
+  color: var(--Primary);
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: var(--transition-ui);
 }
 
 .appnav-avatar:hover {
-  border-color: #555;
+  border-color: var(--Primary);
 }
 
 /* Tablet */
@@ -499,7 +513,7 @@ const closeMenu = () => {
   border: none;
   cursor: pointer;
   padding: 0;
-  width: 24px;
+  width: var(--space-5);
   height: 20px;
   position: relative;
   z-index: 101;
@@ -509,7 +523,7 @@ const closeMenu = () => {
   display: block;
   width: 100%;
   height: 2px;
-  background-color: #faf8f5;
+  background-color: var(--Text);
   position: absolute;
   left: 0;
   transition: all 0.3s ease;
@@ -532,7 +546,7 @@ const closeMenu = () => {
 /* Tablet: reducir gap y padding */
 @media (max-width: 900px) {
   .appnav-inner { padding: 0 20px; }
-  .appnav-link  { padding: 0 10px; font-size: 11px; }
+  .appnav-link  { padding: 0 10px; font-size: var(--text-2xs); }
   .empresa-name { max-width: 100px; }
 }
 
@@ -549,11 +563,11 @@ const closeMenu = () => {
     top: 56px;
     left: 0;
     right: 0;
-    background: #090909;
-    border-bottom: 1px solid #1f1f1f;
+    background: var(--Background2);
+    border-bottom: var(--border-width) solid var(--Border);
     flex-direction: column;
-    padding: 20px 0;
-    gap: 16px;
+    padding: var(--space-5) 0;
+    gap: var(--space-4);
     align-items: center;
     clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
     transition: clip-path 0.3s ease-in-out;
@@ -566,8 +580,8 @@ const closeMenu = () => {
   }
 
   .appnav-link {
-    font-size: 16px;
-    padding: 10px 20px;
+    font-size: var(--text-md);
+    padding: var(--space-3) var(--space-5);
     width: 100%;
     justify-content: center;
   }

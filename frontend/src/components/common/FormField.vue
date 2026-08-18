@@ -21,40 +21,59 @@ defineProps({
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
+
 .field-label {
-  font-size: 11px;
-  color: #888;
-  letter-spacing: 0.05em;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--text-2xs);
+  font-family: var(--font-sans);
+  font-weight: var(--k-font-weight-semibold);
+  color: var(--TextMuted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
 }
 .req {
-  color: #c9a962;
+  color: var(--Primary);
+  margin-left: 2px;
 }
+
 input,
 textarea,
 select {
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
-  color: #faf8f5;
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  padding: 10px 12px;
+  background: var(--InputBg);
+  border: var(--border-width) solid var(--Border);
+  color: var(--Text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
   outline: none;
-  border-radius: 2px;
-  transition: border-color 0.15s;
+  border-radius: var(--radius-xs);
+  transition: var(--transition-ui);
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--TextPlaceholder);
+}
+
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #c9a962;
-  box-shadow: 0 0 0 2px rgba(201,169,98,0.1);
+  border-color: var(--Primary);
+  background: var(--InputFocusBg);
+  box-shadow: 0 0 0 var(--k-focus-ring-width) rgba(var(--k-color-primary-rgb), 0.12);
 }
-.field-error {
-  font-size: 12px;
-  color: #fb7185;
-  margin: 4px 0 0;
-}
-</style>
 
+.field-error {
+  font-size: var(--text-xs);
+  color: var(--ErrorText);
+  font-weight: var(--k-font-weight-medium);
+  margin-top: var(--space-1);
+}
+
+.form-field:has(.field-error) input,
+.form-field:has(.field-error) textarea {
+  border-color: var(--ErrorText);
+}
+
+</style>

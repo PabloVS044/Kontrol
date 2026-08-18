@@ -41,45 +41,53 @@ const meta = computed(() => {
 
 <style scoped>
 .alert-box {
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  font-family: 'Manrope', sans-serif;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-sans); 
+  border: var(--border-width) solid transparent;
 }
 
 .alert-ok {
-  background: #34d399;
-  border: 1px solid rgba(52,211,153,0.4);
-  padding: 14px 16px;
-  font-size: 13px;
-  color: #6ee7b7;
-  display: flex; gap: 10px; align-items: center;
+  background: var(--Success, 0.1);
+  border: var(--border-width) solid var(--SuccessText);
+  border-color: var(--SuccessText);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--SuccessText);
+  display: flex; gap: var(--space-3); align-items: center;
 }
-.alert-ok .alert-msg { color: #b8e8d4; font-weight: 400; }
+.alert-ok .alert-msg { color: var(--TextSoft); font-weight: 400; }
 
 .alert-box.watching {
-  background: #facc15;
-  border: 1px solid rgba(250,204,21,0.45);
+  background: var(--Background-alert-box-watching);
+  border: var(--border-width) solid rgba(250,204,21,0.45);
 }
-.alert-box.watching .alert-header { color: #facc15; }
+.alert-box.watching .alert-header { color: var(--Background-alert-box-watching); }
 
 .alert-box.warning {
-  background: #f97316;
-  border: 1px solid rgba(249,115,22,0.55);
+  background: var(----Background-alert-box-warning);
+  border: var(--border-width) solid var(----Background-alert-box-warning-border);
 }
-.alert-box.warning .alert-header { color: #fdba74; }
+.alert-box.warning .alert-header { color: var(--alert-header-warning); }
 
 .alert-box.critical {
-  background: #fb7185;
-  border: 1px solid rgba(251,113,133,0.6);
+  background: var(--Background-alert-box-critical);
+  border: var(--border-width) solid var(--Border-alert-box-critical);
 }
-.alert-box.critical .alert-header { color: #fda4af; }
+.alert-box.critical .alert-header { color: var(--alert-header-critical); }
 
 .alert-header {
-  display: flex; gap: 8px; margin-bottom: 4px;
-  font-size: 13px; font-weight: 600;
+  display: flex; gap: var(--space-2); margin-bottom: var(--space-1);
+  font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
 }
 .alert-box p {
-  font-size: 12px; color: #e8e8e8; line-height: 1.5; margin: 0;
+  font-size: var(--text-2xs); color: var(--TextSoft); line-height: var(--leading-normal); margin: 0;
+}
+
+.icon {
+  font-style: normal;
 }
 </style>
