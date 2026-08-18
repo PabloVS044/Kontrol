@@ -6,6 +6,8 @@
 
 Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend · **PostgreSQL** + **MongoDB** como bases de datos.
 
+[![CI](https://github.com/PabloVS044/Kontrol/actions/workflows/ci.yml/badge.svg?event=pull_request)](https://github.com/PabloVS044/Kontrol/actions/workflows/ci.yml)
+
 ![Vue](https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-20--22-339933?logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
@@ -26,6 +28,7 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Comandos útiles de Docker](#comandos-útiles-de-docker)
 - [Desarrollo sin Docker (opcional)](#desarrollo-sin-docker-opcional)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Cobertura de código](#cobertura-de-código)
 - [Solución de problemas](#solución-de-problemas)
 - [Contribuir](#contribuir)
 
@@ -226,6 +229,53 @@ Kontrol/
 ├── dev.sh                 # Atajo para levantar dev en Linux
 └── package.json           # Workspaces del monorepo
 ```
+
+---
+
+## Cobertura de código
+
+La cobertura no es solo informativa: es un **control automático que bloquea el merge**. Vitest sale con código distinto de cero si un umbral no se cumple, y el workflow de CI propaga ese fallo, así que un PR que baje la cobertura queda en rojo.
+
+```bash
+npm run test:coverage -w backend
+npm run test:coverage -w frontend
+```
+
+### Política de trinquete
+
+Acordada en la retrospectiva del Sprint 5 (SCRUM-23). La retrospectiva planteaba un umbral global único del 60 %, pero ocho de los doce módulos de negocio siguen sin cobertura propia y ese valor habría dejado el pipeline en rojo de inmediato. Se adoptó en su lugar un trinquete de tres reglas:
+
+1. **Umbral del 70 % por módulo crítico** — POS, presupuesto, autenticación y reportes.
+2. **Umbral global fijado en la línea base medida**, sin margen. El umbral es exactamente la cobertura actual: puede mantenerse o subir, nunca bajar.
+3. **+5 puntos porcentuales por sprint** sobre el umbral global.
+
+### Umbrales vigentes
+
+Línea base medida el 12/08/2026.
+
+| | Statements | Branches | Functions | Lines |
+|---|---|---|---|---|
+| Backend — actual | 33 | 21 | 23 | 33 |
+| Backend — cierre Sprint 6 | 38 | 26 | 28 | 38 |
+| Frontend — actual | 80 | 80 | 75 | 83 |
+| Frontend — cierre Sprint 6 | 85 | 85 | 80 | 88 |
+
+Por módulo crítico, al 70 % en las cuatro métricas:
+
+| Módulo | Archivos |
+|---|---|
+| POS | `frontend/src/utils/sales.js` |
+| Presupuesto | `backend/src/utils/budgetCalculations.js` |
+| Autenticación | `backend/src/middleware/require{Auth,Role}.js` |
+| Reportes | `backend/src/controllers/reportsController.js`, `backend/src/routes/reportsRoutes.js`, `backend/src/schemas/reportsSchemas.js` |
+
+`frontend/src/stores/auth.js` lleva un escalón temporal más bajo (60/55/55/60) porque hoy mide 66.66/60.41/59.25/69.73; sube a 70 cuando se amplíe `authStore.test.js`.
+
+### Qué se mide
+
+Se mide **solo lo que algún test importa**. `coverage.all` no existe en Vitest 4 y no se declara `coverage.include`, así que un archivo que ningún test toca no aparece en el reporte ni afecta al porcentaje. Es intencional: mantiene el gate estable mientras entra código sin tests propios.
+
+Consecuencia a tener presente: un glob de umbral que no case con ningún archivo del reporte **pasa en vacío, sin avisar**. Si se borra el test que cubre uno de los archivos de la tabla, su umbral deja de proteger nada.
 
 ---
 
