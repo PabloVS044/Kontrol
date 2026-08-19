@@ -66,8 +66,8 @@ const meta = computed(() => {
 .alert-box.watching .alert-header { color: var(--Background-alert-box-watching); }
 
 .alert-box.warning {
-  background: var(----Background-alert-box-warning);
-  border: var(--border-width) solid var(----Background-alert-box-warning-border);
+  background: var(--Background-alert-box-warning);
+  border: var(--border-width) solid var(--Background-alert-box-warning-border);
 }
 .alert-box.warning .alert-header { color: var(--alert-header-warning); }
 
