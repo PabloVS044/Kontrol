@@ -3,7 +3,9 @@
  *
  * `postcss-import` debe ir antes que Tailwind para que el `@import` de
  * `src/styles/theme.css` en `globals.css` se resuelva en build time.
- * Viene incluido con Tailwind, no requiere dependencia adicional.
+ * Se declara como devDependency propia: aunque Tailwind 3 lo trae como
+ * dependencia transitiva, esa resolución no está garantizada (npm puede no
+ * hoistearlo, y un `node_modules` cacheado en Docker lo deja fuera).
  */
 export default {
   plugins: {
