@@ -112,6 +112,66 @@
 
   /* ── accesibilidad ──────────────────────────────────────── */
   --k-target-min-size: 40px;
+
+  /* ══ Tokens de implementación ═════════════════════════════
+   *
+   * Las láminas de Figma NO definen nada de lo que sigue: no hay lámina de
+   * interlineado, tracking, transiciones, grosor de borde ni capas. El PR #86
+   * necesitó las siete familias, no encontró dónde declararlas y terminó
+   * creando un juego paralelo en `globals.css` que luego se borró, dejando
+   * ~260 referencias colgadas.
+   *
+   * Se declaran aquí, con prefijo `--k-` como todo lo demás, pero marcadas
+   * como implementación: NO son decisiones de marca. Si Diseño publica una
+   * lámina para alguna de estas familias, esa lámina manda y estos valores se
+   * sustituyen. Ninguno introduce un color, tamaño de fuente o radio nuevo:
+   * son valores estructurales o derivaciones de tokens ya aprobados.
+   */
+
+  /* ── interlineado ───────────────────────────────────────── */
+  /* Los tres valores ya estaban en uso literal en `globals.css` (body 1.5,
+     h1-h3 1.15). Se tokenizan tal cual; no cambia ningún render. */
+  --k-leading-tight: 1.15;
+  --k-leading-snug: 1.3;
+  --k-leading-normal: 1.5;
+  --k-leading-relaxed: 1.7;
+
+  /* ── tracking ───────────────────────────────────────────── */
+  /* 0.08em es el letter-spacing que `.hero-title` y `.sub-title` ya aplicaban;
+     se usa en etiquetas en mayúsculas, donde el interletraje es necesario para
+     que la caja alta siga siendo legible. */
+  --k-tracking-caps: 0.08em;
+  --k-tracking-tight: -0.01em;
+
+  /* ── grosor de borde ────────────────────────────────────── */
+  /* Un único grosor en todo el sistema. Existe como token para que el día que
+     cambie no haya que perseguir `1px solid` por 19 hojas. */
+  --k-border-width: 1px;
+
+  /* ── transición de UI ───────────────────────────────────── */
+  /* design-system.md §7 define los estados (hover, active, disabled, focus)
+     pero ninguna duración. 0.2s ease-in-out es la que ya usaban de facto las
+     hojas existentes. */
+  --k-transition-ui: 0.2s ease-in-out;
+
+  /* ── capas (z-index) ────────────────────────────────────── */
+  /* Escalera con hueco entre niveles para poder insertar capas sin renumerar.
+     `modal` va justo encima de `modal-overlay` a propósito: son la misma capa
+     visual, el overlay solo tiene que quedar por debajo de su propio diálogo. */
+  --k-z-negative: -1;
+  --k-z-base: 1;
+  --k-z-nav: 100;
+  --k-z-dropdown: 200;
+  --k-z-modal-overlay: 1000;
+  --k-z-modal: 1001;
+  --k-z-tooltip: 2000;
+
+  /* ── superficies derivadas ──────────────────────────────── */
+  /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para
+     que el mismo tinte no se reescriba con literales distintos en cada hoja. */
+  --k-surface-primary-tint: rgba(var(--k-color-primary-rgb), 0.1);
+  --k-surface-primary-tint-2: rgba(var(--k-color-primary-rgb), 0.05);
+  --k-surface-hover-subtle: rgba(var(--k-color-white-rgb), 0.02);
 }
 
 /**

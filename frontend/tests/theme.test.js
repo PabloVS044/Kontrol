@@ -93,12 +93,71 @@ describe('theme.css — catálogo de tokens', () => {
     ],
   }
 
+  /**
+   * Tokens de implementación: no salen de ninguna lámina de Figma. Se validan
+   * aparte para que la separación quede explícita en el propio test — si
+   * Diseño publica una lámina para alguna de estas familias, el grupo sube al
+   * bloque de arriba y sus valores dejan de ser negociables aquí.
+   */
+  const implementation = {
+    leading: [
+      '--k-leading-tight',
+      '--k-leading-snug',
+      '--k-leading-normal',
+      '--k-leading-relaxed',
+    ],
+    tracking: ['--k-tracking-caps', '--k-tracking-tight'],
+    borde: ['--k-border-width'],
+    transicion: ['--k-transition-ui'],
+    capas: [
+      '--k-z-negative',
+      '--k-z-base',
+      '--k-z-nav',
+      '--k-z-dropdown',
+      '--k-z-modal-overlay',
+      '--k-z-modal',
+      '--k-z-tooltip',
+    ],
+    superficies: [
+      '--k-surface-primary-tint',
+      '--k-surface-primary-tint-2',
+      '--k-surface-hover-subtle',
+    ],
+  }
+
   for (const [group, tokens] of Object.entries(expected)) {
     it(`declara todos los tokens del grupo ${group}/`, () => {
       const missing = tokens.filter((t) => !themeVars.has(t))
       expect(missing).toEqual([])
     })
   }
+
+  for (const [group, tokens] of Object.entries(implementation)) {
+    it(`declara todos los tokens de implementación de ${group}/`, () => {
+      const missing = tokens.filter((t) => !themeVars.has(t))
+      expect(missing).toEqual([])
+    })
+  }
+
+  it('mantiene la escalera de capas ordenada y con hueco entre niveles', () => {
+    const orden = ['base', 'nav', 'dropdown', 'modal-overlay', 'modal', 'tooltip']
+    const valores = orden.map((n) => {
+      const m = themeCss.match(new RegExp(`--k-z-${n}:\\s*(-?\\d+);`))
+      expect(m, `falta --k-z-${n}`).not.toBeNull()
+      return Number(m[1])
+    })
+    // Estrictamente creciente: una capa nunca debe empatar con la de al lado.
+    for (let i = 1; i < valores.length; i++) expect(valores[i]).toBeGreaterThan(valores[i - 1])
+    // El overlay del modal queda por debajo de su propio diálogo.
+    expect(valores[4]).toBeGreaterThan(valores[3])
+  })
+
+  it('deriva las superficies de tinte del dorado, sin introducir color nuevo', () => {
+    // Si alguien mete un hex aquí, es un color de marca sin aprobar.
+    expect(themeCss).toMatch(/--k-surface-primary-tint:\s*rgba\(var\(--k-color-primary-rgb\)/)
+    expect(themeCss).toMatch(/--k-surface-primary-tint-2:\s*rgba\(var\(--k-color-primary-rgb\)/)
+    expect(themeCss).toMatch(/--k-surface-hover-subtle:\s*rgba\(var\(--k-color-white-rgb\)/)
+  })
 
   it('respeta la rejilla de 8pt de Figma (space-7 = 48px)', () => {
     const scale = { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 5: '24px', 6: '32px', 7: '48px' }
