@@ -291,8 +291,19 @@
   font-size: 0.83rem;
   margin-bottom: 1rem;
 }
-.register-banner--error   { background: #e05252;  border: 1px solid var(--ErrorText);   color: var(--ErrorText); }
-.register-banner--success { background: #48c774; border: 1px solid var(--SuccessText); color: var(--SuccessText); }
+/* Fondo y texto eran el mismo color —#e05252 sobre #e05252— así que el mensaje
+   era ilegible. Es el mismo defecto que SCRUM-13 corrigió en login; registro no
+   se arregló entonces porque nunca llegó a migrarse. */
+.register-banner--error {
+  background: rgba(var(--k-color-error-rgb), 0.08);
+  border: 1px solid var(--ErrorText);
+  color: var(--ErrorText);
+}
+.register-banner--success {
+  background: rgba(var(--k-color-success-rgb), 0.12);
+  border: 1px solid var(--SuccessText);
+  color: var(--SuccessText);
+}
 
 /* ── Responsive ── */
 

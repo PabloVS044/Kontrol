@@ -212,23 +212,54 @@ describe('LoginView — estética restaurada (0547bbb)', () => {
 
 describe('CSS — texto legible sobre su propio fondo', () => {
   /**
-   * `color: X; background: X` deja la palabra invisible dentro de un bloque
-   * macizo. Estaba en nueve sitios de seis archivos —las píldoras de alerta de
-   * proyectos, etiquetas de área, tags de actividad y dos estados hover— y en
-   * todos la intención era un fondo con tinte que alguien olvidó atenuar.
+   * `color` y `background` del mismo color dejan la palabra invisible dentro de
+   * un bloque macizo. Apareció nueve veces en seis archivos, y una décima en
+   * `RegisterView` que la primera versión de este guard NO detectó: comparaba
+   * hex contra hex y en un único orden, mientras que allí el fondo era un
+   * literal y el texto un token, declarados al revés.
+   *
+   * Por eso ahora se resuelven los `var()` a su valor final y se compara por
+   * bloque, sin depender del orden ni de cómo esté escrito cada lado.
    */
-  const norm = (h) => {
-    const x = h.toLowerCase().replace('#', '')
-    return x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+  const styleSheets = [
+    ...sourceFiles.map((f) => [f, read(f)]),
+    ['globals.css', read('globals.css')],
+  ]
+
+  const vars = {}
+  for (const css of [read('src/styles/theme.css'), read('globals.css')]) {
+    for (const m of css.matchAll(/(--[\w-]+):\s*([^;]+);/g)) vars[m[1]] = m[2].trim()
+  }
+  const resolve = (v) => {
+    let s = v.trim()
+    for (let i = 0; i < 6 && s.startsWith('var('); i++) {
+      const t = s.match(/var\((--[\w-]+)/)
+      if (!t || !vars[t[1]]) return s
+      s = vars[t[1]].trim()
+    }
+    return s.toLowerCase()
+  }
+  const norm = (v) => {
+    const m = v.match(/^#([0-9a-f]{3,6})$/i)
+    if (!m) return v
+    const x = m[1]
+    return '#' + (x.length === 3 ? x.split('').map((c) => c + c).join('') : x)
   }
 
   it('no pinta un texto del mismo color que su fondo', () => {
     const casos = []
-    for (const file of sourceFiles) {
-      const src = read(file)
-      const re = /color:\s*(#[0-9a-f]{3,6})\s*;\s*background(?:-color)?:\s*(#[0-9a-f]{3,6})\s*;/gi
-      for (const m of src.matchAll(re)) {
-        if (norm(m[1]) === norm(m[2])) casos.push(`${relative('.', file)}: ${m[1]}`)
+    for (const [file, css] of styleSheets) {
+      for (const block of css.matchAll(/\{([^{}]*)\}/g)) {
+        const body = block[1]
+        const c = body.match(/(?:^|[;\s])color:\s*([^;]+)/)
+        const b = body.match(/(?:^|[;\s])background(?:-color)?:\s*([^;]+)/)
+        if (!c || !b) continue
+        const cv = norm(resolve(c[1]))
+        const bv = norm(resolve(b[1].split(/\s+/)[0]))
+        // Solo se comparan colores planos: un degradado o una imagen no tiene
+        // un único valor con el que contrastar.
+        if (!/^#[0-9a-f]{6}$/.test(cv) || !/^#[0-9a-f]{6}$/.test(bv)) continue
+        if (cv === bv) casos.push(`${relative('.', file)}: color y background = ${cv}`)
       }
     }
     expect(casos).toEqual([])
