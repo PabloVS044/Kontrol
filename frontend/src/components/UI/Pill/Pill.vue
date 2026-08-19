@@ -2,16 +2,16 @@
   <span
     class="pill"
     :style="{
-      '--color': btnColor,
-      '--dot-color': circleColor,
-      '--text': textColor,
+      '--pill-bg': bgColor || 'var(--Background3)',
+      '--pill-dot': circleColor,
+      '--pill-text': textColor || 'var(--Text)',
     }"
   >
-    <div
+    <span
       v-if="circleColor"
-      class="dot"
-    ></div>
-    <p class="pill-text">{{ label }}</p>
+      class="pill-dot"
+    ></span>
+    <span class="pill-text">{{ label }}</span>
   </span>
 </template>
 
@@ -19,8 +19,8 @@
 import "./Pill.css";
 
 const props = defineProps({
-  label: String,
-  btnColor: String,
+  label: { type: String, required: true },
+  bgColor: String,
   circleColor: String,
   textColor: String,
 });

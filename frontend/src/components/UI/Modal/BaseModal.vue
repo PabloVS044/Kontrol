@@ -36,32 +36,55 @@ function close() {
 
 <style scoped>
 .modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: #000000;
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-overlay);
+  background: rgba(var(--k-color-black-rgb), 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  width: 100%; max-height: 90vh; overflow-y: auto;
+  background: var(--Background2);
+  border: var(--border-width) solid var(--Border);
+  border-radius: var(--k-radius-lg);
+  box-shadow: var(--shadow-modal);
+  width: 95%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: var(--transition-ui);
 }
 
 .modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 12px;
-  padding: 20px 24px; border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: var(--border-width) solid var(--Border);
 }
 
 .modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px; color: var(--Text);
+  font-family: var(--font-display);
+  font-size: var(--text-xl); 
+  color: var(--Text);
   flex: 1;
 }
 
 .modal-close {
-  background: none; border: none; cursor: pointer; padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
   flex-shrink: 0;
+}
+
+.modal-close path {
+  stroke: var(--TextMuted);
 }
 </style>

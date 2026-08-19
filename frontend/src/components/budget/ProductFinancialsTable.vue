@@ -135,82 +135,126 @@ function formatMoney(v) {
 
 <style scoped>
 .pf-card {
-  background: #0c0c0c;
-  border: 1px solid #2a2a2a;
-  padding: 24px;
-  margin-bottom: 24px;
+  background: var(--Background2);
+  border: 1px solid var(--Border);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .pf-header {
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 12px; margin-bottom: 8px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  gap: var(--space-3); 
+  margin-bottom: var(--space-2);
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
-  font-weight: 600; text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  font-size: var(--text-2xs);
+  color: var(--Primary);
+  font-weight: 700;
+  text-transform: uppercase;
 }
-.pf-count { font-size: 11px; color: var(--TextMuted); }
-.hint {
-  font-size: 11px; color: var(--TextMuted); line-height: 1.5; margin-bottom: 16px;
-  font-family: 'Manrope', sans-serif;
+
+.pf-count { 
+  font-size: var(--text-2xs);
+  color: var(--TextMuted); 
+}
+
+  .hint {
+  font-size: var(--text-2xs);
+  color: var(--TextMuted); 
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-sans);
 }
 
 .pf-empty {
-  color: var(--TextMuted); font-size: 13px; padding: 24px;
-  text-align: center; border: 1px dashed #2a2a2a;
+  color: var(--TextMuted); 
+  font-size: var(--text-sm); 
+  padding: var(--space-6);
+  text-align: center; 
+  border: 1px dashed var(--Border);
 }
 
 .pf-totals {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px; margin-bottom: 16px;
-  padding: 14px; background: #000000;
-  border: 1px solid #1f1f1f;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-4); 
+  background: var(--Background);
+  border: 1px solid var(--Border);
 }
 .pf-totals.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
 .pf-total-cell {
-  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--space-1); 
+  min-width: 0;
 }
 .pf-total-label {
-  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: var(--text-2xs); 
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
   color: var(--TextMuted);
 }
 .pf-total-value {
-  font-size: 16px; font-weight: 700; color: var(--Text);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 700; 
+  color: var(--Text);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
 }
 
 .pf-table-wrap { overflow-x: auto; }
 
 .pf-table {
-  width: 100%; border-collapse: collapse;
-  font-family: 'Manrope', sans-serif; font-size: 12px;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans); 
+  font-size: var(--text-sm);
 }
 .pf-table th {
-  text-align: right; padding: 10px 12px;
-  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--TextMuted); border-bottom: 1px solid #1f1f1f;
+  text-align: right;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps); 
+  text-transform: uppercase;
+  color: var(--TextMuted);
+  border-bottom: 1px solid var(--Border);
   font-weight: 600;
   white-space: nowrap;
 }
 .pf-table th.left { text-align: left; }
+
 .pf-table td {
-  padding: 12px;
+  padding: var(--space-3);
   color: var(--TextSoft);
-  border-bottom: 1px solid #161616;
+  border-bottom: 1px solid var(--Border);
   font-variant-numeric: tabular-nums;
 }
+
 .pf-table td.left  { text-align: left; }
 .pf-table td.num   { text-align: right; white-space: nowrap; }
 .pf-table td.name {
-  color: var(--Text); font-weight: 500;
-  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--Text);
+  font-weight: 500;
+  max-width: 200px; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap;
 }
-.pf-table tbody tr:hover { background: #111111; }
+
+.pf-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
 .pf-table tbody tr:last-child td { border-bottom: none; }
 
-.income { color: #34d399; }
-.danger { color: #fb7185; }
+.income { color: var(--SuccessText); }
+.danger { color: var(--ErrorText); }
 .gold   { color: var(--Primary); }
 
 @media (max-width: 800px) {

@@ -1,32 +1,37 @@
 .pill {
-  width: auto;
-  min-width: max-content;
-  padding: 1px 15px;
-  height: 40px;
-  background-color: var(--color);
-  border-radius: 50px;
-  border: 2px solid var(--Border);
-  z-index: 20;
   display: inline-flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-4);
+  min-height: var(--space-7);
+  min-width: max-content;
+  background-color: var(--pill-bg, var(--k-color-bg-3));
+  border: var(--border-width) solid var(--Border);
+  border-radius: var(--k-radius-pill);
+  white-space: nowrap;
+  transition: var(--transition-ui);
+  width: auto;
+  height: 40px;
+  position: relative;
+  z-index: 2;
   flex-wrap: nowrap;
 }
 
-.dot {
-  width: 13px;
-  height: 13px;
+.pill-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: var(--dot-color);
-  margin-right: 13px;
+  background-color: var(--pill-dot, var(--Primary));
   flex-shrink: 0;
 }
 
 .pill-text {
-  color: var(--text);
-  font-family: 'Bungee';
-  font-size: 1em;
+  color: var(--pill-text, var(--Text));
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
   line-height: 1;
+  letter-spacing: var(--tracking-caps);
   width: auto;
 }
-

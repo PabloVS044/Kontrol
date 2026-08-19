@@ -20,20 +20,23 @@ defineProps({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: #0a0a0a;
+  gap: var(--space-2);
+  background: var(--Background);
   min-height: 300px;
+  padding: var(--space-7);
 }
 .state-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 24px;
+  font-family: Var(--font-display), serif;
+  font-size: var(--text-xl);
   color: var(--Text);
 }
 .state-msg {
-  font-size: 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
   color: var(--TextMuted);
   text-align: center;
   max-width: 400px;
+  line-height: var(--leading-relaxed);
 }
 </style>
 
