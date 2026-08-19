@@ -52,13 +52,17 @@ const props = defineProps({
   iconSize:        { type: Number, default: 24 },
   iconColor:       { type: String, default: "var(--Primary)" },
   listIcon:        { default: null },
-  listIconSize:    { type: Number, default: 24 },
+  listIconSize:    { type: Number, default: 20 },
   listIconColor:   { type: String, default: "var(--Primary)" },
   characteristics: { type: Array,  default: () => [] },
-  back:            { type: String, default: "var(--Primary)" },
+  back:            { type: String, default: "var(--Background2)" },
   titleColor:      { type: String, default: "var(--Text)" },
-  borderColor:     { type: String, default: "transparent" },
-  shadowColor:     { type: String, default: "rgba(0,0,0,0.25)" },
+  borderColor:     { type: String, default: "var(--Border)" },
+  // Es un COLOR, no una sombra: entra en `drop-shadow(0 0 .75rem <color>)`.
+  // El default era `var(--shadow-card)` — una sombra completa en la posición
+  // del color, inválida aunque el token existiera. Coincide a propósito con el
+  // fallback declarado en Card.css.
+  shadowColor:     { type: String, default: "rgba(var(--k-color-primary-rgb), 0.18)" },
 })
 
 const isComponent = computed(() =>

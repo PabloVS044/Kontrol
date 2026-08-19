@@ -1,5 +1,6 @@
 a.anchor {
   text-decoration: none;
+  /* Sin fallback a propósito: ver Anchor.vue. */
   color: var(--color);
   width: auto;
   height: auto;
@@ -9,11 +10,11 @@ a.anchor {
   align-items: center;
   text-align: center;
   background-color: var(--background);
-  border-radius: 50px;
-  padding: 10px 15px 10px 15px;
+  border-radius: var(--k-radius-pill);
+  padding: 10px 15px;
   transition: all 0.8s;
-  font-family: "DM Sans";
-  gap: 8px;
+  font-family: 'DM Sans';
+  gap: var(--k-space-2);
 }
 
 .anchor img {
@@ -21,6 +22,13 @@ a.anchor {
   height: 20px;
 }
 
-a:hover {
+/* Antes era `a:hover`, que pintaba el fondo de CUALQUIER enlace de la página.
+   Acotarlo a `.anchor` es un arreglo real, no un cambio estético. */
+a.anchor:hover {
   background-color: var(--hover);
+}
+
+a.anchor:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
 }
