@@ -25,13 +25,15 @@ export function statusStyle(estado) {
   return { color: c, borderColor: c + '44', background: c + '14' }
 }
 
+// El fallback a '—' importa: un proyecto sin estado producia el string
+// "undefined" dentro del PDF y del CSV exportados.
 export function statusLabel(estado) {
-  return STATUS_LABEL[estado] || estado
+  return STATUS_LABEL[estado] || estado || '—'
 }
 
 export function statusPill(estado) {
   const c = STATUS_COLOR[estado] || '#888'
-  return { label: STATUS_LABEL[estado] || estado, color: c, bg: c + '1a' }
+  return { label: STATUS_LABEL[estado] || estado || '—', color: c, bg: c + '1a' }
 }
 
 export const PRIORITY_COLOR = {
