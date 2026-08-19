@@ -13,7 +13,7 @@
           <span class="empresa-name">{{ authStore.empresaActual?.nombre ?? '—' }}</span>
           <span class="empresa-role">{{ authStore.empresaActual?.rol ?? '' }}</span>
           <svg class="chevron" :class="{ open: dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 4l4 4 4-4" stroke="var(--TextMuted)" stroke-width="1.4" stroke-linecap="square"/>
+            <path d="M2 4l4 4 4-4" stroke="#555" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
         </div>
 
@@ -193,8 +193,8 @@ const closeMenu = () => {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: var(--Background2);
-  border-bottom: var(--k-border-width) solid var(--Border);
+  background: #0b0b0b;
+  border-bottom: var(--k-border-width) solid #1f1f1f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 100;
@@ -213,12 +213,12 @@ const closeMenu = () => {
 .appnav-brand {
   display: flex;
   align-items: center;
-  gap: var(--k-space-3);
+  gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
   padding-right: var(--k-space-5);
-  border-right: var(--k-border-width) solid var(--Border);
-  margin-right: var(--k-space-4);
+  border-right: var(--k-border-width) solid #1a1a1a;
+  margin-right: var(--k-space-3);
 }
 
 .appnav-brand img {
@@ -227,9 +227,9 @@ const closeMenu = () => {
 }
 
 .appnav-brand span {
-  font-family: var(--k-font-display), 'Bungee', sans-serif;
-  font-size: var(--k-font-size-body-small);
-  letter-spacing: var(--k-tracking-caps);
+  font-family: 'Bungee', var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
+  letter-spacing: 1px;
   color: var(--Text);
 }
 
@@ -240,15 +240,15 @@ const closeMenu = () => {
   flex-shrink: 0;
   padding: 0 var(--k-space-4);
   cursor: pointer;
-  border-right: var(--k-border-width) solid var(--Border);
-  margin-right: var(--k-space-4);
+  border-right: var(--k-border-width) solid #1a1a1a;
+  margin-right: var(--k-space-3);
   position: relative;
 }
 
 .empresa-current {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--k-space-2);
 }
 
 .empresa-name {
@@ -263,14 +263,13 @@ const closeMenu = () => {
 }
 
 .empresa-role {
-  font-size: var(--k-font-size-caption);
+  font-size: 10px;
   color: var(--Primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: var(--k-surface-primary-tint);
-  padding: 2px 6px;
-  border: var(--k-border-width) solid var(--Primary);
-  border-radius: var(--k-radius-sm);
+  background: #1e170d;
+  padding: 1px 6px;
+  border: var(--k-border-width) solid #3d3322;
 }
 
 .chevron {
@@ -289,22 +288,22 @@ const closeMenu = () => {
 }
 
 :global(.empresa-dropdown) {
-  background: var(--Background2);
-  border: var(--k-border-width) solid var(--Border);
+  background: #0f0f0f;
+  border: var(--k-border-width) solid #1f1f1f;
   min-width: 220px;
-  box-shadow: var(--k-shadow-modal);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 :global(.dd-label) {
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-caption);
-  letter-spacing: var(--k-tracking-caps);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  /* Estaba en #333 sobre fondo #0f0f0f: ratio ~1.2:1, ilegible. Es el único
+     cambio del PR #86 que se conserva aquí — es contraste, no estética. */
   color: var(--TextMuted);
-  padding: var(--k-space-4) var(--k-space-4) var(--k-space-2);
-  text-transform: uppercase;
+  padding: 12px 16px 6px;
 }
 
 :global(.dd-item) {
@@ -313,7 +312,7 @@ const closeMenu = () => {
   align-items: center;
   background: none;
   border: none;
-  padding: 10px var(--k-space-4);
+  padding: 10px 16px;
   cursor: pointer;
   text-align: left;
   transition: background 0.15s;
@@ -321,12 +320,11 @@ const closeMenu = () => {
 }
 
 :global(.dd-item:hover) {
-  background: var(--Background3);
+  background: #111111;
 }
 
 :global(.dd-item.active) {
-  background: var(--k-surface-primary-tint-2);
-  border-left: 2px solid var(--Primary);
+  background: #1a150f;
 }
 
 :global(.dd-item-name) {
@@ -340,23 +338,23 @@ const closeMenu = () => {
 }
 
 :global(.dd-item-role) {
-  font-size: var(--k-font-size-caption);
-  color: var(--TextMuted);
+  font-size: 10px;
+  color: #555;
   flex-shrink: 0;
   text-transform: capitalize;
 }
 
 :global(.dd-divider) {
   height: 1px;
-  background: var(--Border);
-  margin: var(--k-space-1) 0;
+  background: #1a1a1a;
+  margin: 4px 0;
 }
 
 :global(.dd-new) {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
   color: var(--Primary);
-  padding: var(--k-space-3) var(--k-space-4);
+  padding: 10px 16px;
   text-decoration: none;
   display: block;
   transition: background 0.15s;
@@ -375,16 +373,16 @@ const closeMenu = () => {
 }
 
 .appnav-link {
+  position: relative;
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
-  color: var(--TextMuted);
+  font-weight: 500;
+  color: #555;
   text-decoration: none;
   padding: 0 var(--k-space-4);
   display: flex;
   align-items: center;
-  transition: var(--k-transition-ui);
-  position: relative;
-  font-weight: 500;
+  transition: color .2s;
   letter-spacing: 0.03em;
 }
 
@@ -405,13 +403,6 @@ const closeMenu = () => {
 }
 
 .appnav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: var(--k-space-4);
-  right: var(--k-space-4);
-  height: 2px;
-  background: var(--Primary);
   transform: scaleX(1);
 }
 
@@ -447,7 +438,7 @@ const closeMenu = () => {
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: var(--TextMuted);
+  color: #444;
   transition: color 0.15s;
   border-radius: var(--k-radius-sm);
 }
@@ -459,16 +450,14 @@ const closeMenu = () => {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: var(--Background2);
-  border: var(--k-border-width) solid var(--Border);
-  padding: var(--k-space-1);
+  background: #0f0f0f;
+  border: var(--k-border-width) solid #1f1f1f;
+  padding: 4px;
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 110px;
   z-index: 200;
-  box-shadow: var(--k-shadow-modal);
-  border-radius: var(--k-radius-md);
 }
 
 .lang-opt {
@@ -478,20 +467,19 @@ const closeMenu = () => {
   padding: 7px 10px;
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
-  color: var(--k-text-soft);
+  color: #555;
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
 
-.lang-opt:hover { color: var(--Text); background: var(--k-surface-hover-subtle); }
+.lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
 .lang-opt.selected { color: var(--Primary); }
 
 .appnav-avatar {
-  width: var(--k-space-6);
-  height: var(--k-space-6);
-  background: var(--Background3);
-  border: var(--k-border-width) solid var(--Border);
-  border-radius: var(--k-radius-sm);
+  width: 32px;
+  height: 32px;
+  background: #1f1f1f;
+  border: var(--k-border-width) solid #2e2e2e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -499,11 +487,11 @@ const closeMenu = () => {
   font-weight: 600;
   color: var(--Primary);
   cursor: pointer;
-  transition: var(--k-transition-ui);
+  transition: border-color 0.15s;
 }
 
 .appnav-avatar:hover {
-  border-color: var(--Primary);
+  border-color: #555;
 }
 
 /* Tablet */
@@ -513,7 +501,7 @@ const closeMenu = () => {
   border: none;
   cursor: pointer;
   padding: 0;
-  width: var(--k-space-5);
+  width: 24px;
   height: 20px;
   position: relative;
   z-index: 101;
@@ -545,7 +533,7 @@ const closeMenu = () => {
 
 /* Tablet: reducir gap y padding */
 @media (max-width: 900px) {
-  .appnav-inner { padding: 0 20px; }
+  .appnav-inner { padding: 0 var(--k-space-5); }
   .appnav-link  { padding: 0 10px; font-size: var(--k-font-size-caption); }
   .empresa-name { max-width: 100px; }
 }
@@ -554,7 +542,7 @@ const closeMenu = () => {
 @media (max-width: 640px) {
   .hamburger { display: block; }
 
-  .appnav-inner { padding: 0 16px; gap: 0; }
+  .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
 
   .empresa-role { display: none; }
 
@@ -563,10 +551,10 @@ const closeMenu = () => {
     top: 56px;
     left: 0;
     right: 0;
-    background: var(--Background2);
-    border-bottom: var(--k-border-width) solid var(--Border);
+    background: #090909;
+    border-bottom: var(--k-border-width) solid #1f1f1f;
     flex-direction: column;
-    padding: var(--k-space-5) 0;
+    padding: 20px 0;
     gap: var(--k-space-4);
     align-items: center;
     clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
@@ -581,7 +569,7 @@ const closeMenu = () => {
 
   .appnav-link {
     font-size: var(--k-font-size-body-large);
-    padding: var(--k-space-3) var(--k-space-5);
+    padding: 10px 20px;
     width: 100%;
     justify-content: center;
   }
