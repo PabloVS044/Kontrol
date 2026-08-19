@@ -137,42 +137,42 @@ function formatMoney(v) {
 .pf-card {
   background: var(--Background2);
   border: 1px solid var(--Border);
-  padding: var(--space-6);
-  margin-bottom: var(--space-5);
+  padding: var(--k-space-6);
+  margin-bottom: var(--k-space-5);
 }
 
 .pf-header {
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  gap: var(--space-3); 
-  margin-bottom: var(--space-2);
+  gap: var(--k-space-3); 
+  margin-bottom: var(--k-space-2);
 }
 .section-subtitle {
-  letter-spacing: var(--tracking-caps);
-  font-size: var(--text-2xs);
+  letter-spacing: var(--k-tracking-caps);
+  font-size: var(--k-font-size-caption);
   color: var(--Primary);
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .pf-count { 
-  font-size: var(--text-2xs);
+  font-size: var(--k-font-size-caption);
   color: var(--TextMuted); 
 }
 
   .hint {
-  font-size: var(--text-2xs);
+  font-size: var(--k-font-size-caption);
   color: var(--TextMuted); 
-  line-height: var(--leading-normal);
-  margin-bottom: var(--space-4);
-  font-family: var(--font-sans);
+  line-height: var(--k-leading-normal);
+  margin-bottom: var(--k-space-4);
+  font-family: var(--k-font-sans);
 }
 
 .pf-empty {
   color: var(--TextMuted); 
-  font-size: var(--text-sm); 
-  padding: var(--space-6);
+  font-size: var(--k-font-size-body-small); 
+  padding: var(--k-space-6);
   text-align: center; 
   border: 1px dashed var(--Border);
 }
@@ -180,9 +180,9 @@ function formatMoney(v) {
 .pf-totals {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-  padding: var(--space-4); 
+  gap: var(--k-space-3);
+  margin-bottom: var(--k-space-4);
+  padding: var(--k-space-4); 
   background: var(--Background);
   border: 1px solid var(--Border);
 }
@@ -191,18 +191,18 @@ function formatMoney(v) {
 .pf-total-cell {
   display: flex; 
   flex-direction: column; 
-  gap: var(--space-1); 
+  gap: var(--k-space-1); 
   min-width: 0;
 }
 .pf-total-label {
-  font-size: var(--text-2xs); 
-  letter-spacing: var(--tracking-caps);
+  font-size: var(--k-font-size-caption); 
+  letter-spacing: var(--k-tracking-caps);
   text-transform: uppercase;
   color: var(--TextMuted);
 }
 .pf-total-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
+  font-family: var(--k-font-mono);
+  font-size: var(--k-font-size-body-large);
   font-weight: 700; 
   color: var(--Text);
   font-variant-numeric: tabular-nums;
@@ -216,14 +216,14 @@ function formatMoney(v) {
 .pf-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-sans); 
-  font-size: var(--text-sm);
+  font-family: var(--k-font-sans); 
+  font-size: var(--k-font-size-body-small);
 }
 .pf-table th {
   text-align: right;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-caps); 
+  padding: var(--k-space-2) var(--k-space-3);
+  font-size: var(--k-font-size-caption);
+  letter-spacing: var(--k-tracking-caps); 
   text-transform: uppercase;
   color: var(--TextMuted);
   border-bottom: 1px solid var(--Border);
@@ -233,8 +233,8 @@ function formatMoney(v) {
 .pf-table th.left { text-align: left; }
 
 .pf-table td {
-  padding: var(--space-3);
-  color: var(--TextSoft);
+  padding: var(--k-space-3);
+  color: var(--k-text-soft);
   border-bottom: 1px solid var(--Border);
   font-variant-numeric: tabular-nums;
 }

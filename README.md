@@ -257,7 +257,7 @@ Línea base medida el 12/08/2026.
 |---|---|---|---|---|
 | Backend — actual | 33 | 21 | 23 | 33 |
 | Backend — cierre Sprint 6 | 38 | 26 | 28 | 38 |
-| Frontend — actual | 80 | 80 | 75 | 83 |
+| Frontend — actual | 83 | 83 | 78 | 85 |
 | Frontend — cierre Sprint 6 | 85 | 85 | 80 | 88 |
 
 Por módulo crítico, al 70 % en las cuatro métricas:

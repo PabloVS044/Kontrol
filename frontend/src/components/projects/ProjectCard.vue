@@ -267,13 +267,16 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border-radius: 2px;
   border: 1px solid currentColor;
 }
-.alert-pill.warn { 
-  color: #f97316; 
-  background: #f97316; 
+/* Mismo defecto que en ProjectsView: color de texto igual al de fondo. */
+.alert-pill.warn {
+  color: var(--k-alert-warning-text);
+  background: var(--k-alert-warning-bg);
+  border-color: var(--k-alert-warning-border);
 }
-.alert-pill.critical { 
-  color: #fb7185; 
-  background: #fb7185; 
+.alert-pill.critical {
+  color: var(--k-alert-critical-text);
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
 }
 
 .card-footer-row {

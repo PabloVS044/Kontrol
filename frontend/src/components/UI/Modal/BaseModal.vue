@@ -38,7 +38,7 @@ function close() {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--z-modal-overlay);
+  z-index: var(--k-z-modal-overlay);
   background: rgba(var(--k-color-black-rgb), 0.78);
   backdrop-filter: blur(8px);
   display: flex;
@@ -48,30 +48,30 @@ function close() {
 
 .modal {
   background: var(--Background2);
-  border: var(--border-width) solid var(--Border);
+  border: var(--k-border-width) solid var(--Border);
   border-radius: var(--k-radius-lg);
-  box-shadow: var(--shadow-modal);
+  box-shadow: var(--k-shadow-modal);
   width: 95%;
   max-width: 600px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: var(--transition-ui);
+  transition: var(--k-transition-ui);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--space-6);
-  border-bottom: var(--border-width) solid var(--Border);
+  gap: var(--k-space-3);
+  padding: var(--k-space-5) var(--k-space-6);
+  border-bottom: var(--k-border-width) solid var(--Border);
 }
 
 .modal-title {
-  font-family: var(--font-display);
-  font-size: var(--text-xl); 
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1); 
   color: var(--Text);
   flex: 1;
 }
@@ -80,7 +80,7 @@ function close() {
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-1);
+  padding: var(--k-space-1);
   flex-shrink: 0;
 }
 

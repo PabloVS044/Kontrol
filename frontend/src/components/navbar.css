@@ -4,7 +4,7 @@ body {
 
 .nav-container {
   position: fixed;
-  top: var(--space-5);
+  top: 20px; /* --k-space-5 son 24px: no equivale */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,18 +15,16 @@ body {
 
 .landing-nav {
   display: flex;
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--k-radius-pill);
   justify-content: space-between;
   align-items: center;
-  width: 85%;
-  height: 72px;
-  border: 2px solid var(--Border);
-  background-color: var(--Background2);
-  padding: 0 var(--space-5);
+  width: 80%;
+  height: 80px;
+  border: 3px solid var(--Border);
+  background-color: var(--Tertiary);
   padding-left: 40px;
   padding-right: 20px;
   box-sizing: border-box;
-  backdrop-filter: blur(10px);
 }
 
 ul {
@@ -34,22 +32,15 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-5);
+  gap: 20px; /* --k-space-5 son 24px */
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--k-space-2);
   flex-shrink: 0;
-}
-
-.icon h3 {
-  font-family: var(--font-display), 'Bungee', cursive;
-  font-size: var(--text-lg);
-  color: var(--Text);
-  margin: 0;
 }
 
 .icon img {
@@ -61,13 +52,17 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: 10px; /* --k-space-3 son 12px */
   flex-shrink: 0;
 }
 
-h3 {
-  font-family: var(--font-display), 'Bungee', sans-serif;
-  letter-spacing: var(--tracking-caps);
+/* Bungee es la voz de la landing. Va con la especificidad de `.icon h3` porque
+   globals.css declara `h1, h2, h3 { font-family: var(--k-font-display) }`: misma
+   especificidad que un `h3` suelto y se carga después, así que ganaba Playfair.
+   Bungee solo trae versalitas — con Playfair el logo salía como "Kontrol". */
+.landing-nav .icon h3 {
+  font-family: 'Bungee';
+  letter-spacing: 1px;
 }
 
 /* ─── Hamburger button ───────────────────────────────────────────────────── */
@@ -76,25 +71,24 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--space-1);
+  gap: 5px; /* --k-space-1 son 4px */
   width: 40px;
   height: 40px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-1);
+  padding: var(--k-space-1);
   flex-shrink: 0;
 }
 
 .hamburger span {
   display: block;
-  width: 20px;
+  width: 22px;
   height: 2px;
   background: var(--Text);
-  border-radius: var(--radius-xs);
+  border-radius: var(--k-radius-xs);
   transition: transform 0.3s, opacity 0.3s;
   transform-origin: center;
-  background: var(--Text);
 }
 
 .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -103,12 +97,12 @@ h3 {
 
 /* ─── Mobile menu ────────────────────────────────────────────────────────── */
 .mobile-menu {
-  width: 85%;
-  background: var(--Background2);
-  border: 2px solid var(--Border);
-  border-radius: var(--radius-lg);
-  margin-top: var(--space-2);
-  padding: 0 var(--space-5);
+  width: 80%;
+  background: var(--Tertiary);
+  border: 3px solid var(--Border);
+  border-radius: 24px; /* --k-radius-lg son 12px: la mitad */
+  margin-top: var(--k-space-2);
+  padding: 0 var(--k-space-5);
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease, padding 0.3s ease;
@@ -117,13 +111,13 @@ h3 {
 
 .mobile-menu.open {
   max-height: 500px;
-  padding: 20px var(--space-5);
+  padding: 20px var(--k-space-5);
 }
 
 .mobile-nav {
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-1);
+  gap: var(--k-space-1);
   padding: 0;
   margin: 0;
   width: 100%;
@@ -141,10 +135,10 @@ h3 {
 
 .mobile-actions {
   display: flex;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: var(--border-width) solid var(--Border);
-  margin-top: var(--space-2);
+  gap: 10px; /* --k-space-3 son 12px */
+  padding-top: var(--k-space-4);
+  border-top: var(--k-border-width) solid var(--Border);
+  margin-top: var(--k-space-2);
 }
 
 .mobile-actions a {
@@ -158,7 +152,7 @@ h3 {
   .mobile-menu { width: 90%; }
 
   .navigation {
-    gap: var(--space-3);
+    gap: var(--k-space-3);
   }
 }
 
@@ -167,7 +161,7 @@ h3 {
     width: 92%;
     height: 68px;
     padding-left: 20px;
-    padding-right: var(--space-4);
+    padding-right: var(--k-space-4);
   }
 
   .mobile-menu { width: 92%; }
