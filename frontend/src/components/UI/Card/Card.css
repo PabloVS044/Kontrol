@@ -5,13 +5,13 @@
   max-width: 550px;
   height: auto;
   align-self: center;
-  margin: var(--space-4);
-  padding: var(--space-5);
+  margin: var(--k-space-4);
+  padding: var(--k-space-5);
   background-color: var(--back, var(--Background2));
-  border: var(--border-width) solid var(--borderColor, var(--Border));
+  border: var(--k-border-width) solid var(--borderColor, var(--Border));
   border-radius: var(--k-radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: var(--transition-ui);
+  box-shadow: var(--k-shadow-card);
+  transition: var(--k-transition-ui);
   z-index: 20;
   position: relative;
   overflow: hidden;
@@ -20,7 +20,7 @@
 }
 
 .card:hover{
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--k-shadow-glow);
   transform: translateY(-2px);
 }
 
@@ -28,31 +28,31 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-4);
+  gap: var(--k-space-4);
 }
 
 .card-header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--k-space-2);
   flex: 1;
 }
 
 .card-title {
-  font-size: var(--text-xl);
+  font-size: var(--k-font-size-heading-1);
   font-weight: var(--k-font-weight-bold);
-  font-family: var(--font-display);
+  font-family: var(--k-font-display);
   color: var(--titleColor, var(--Text));
   margin: 0;
-  line-height: var(--leading-tight);
+  line-height: var(--k-leading-tight);
 }
 
 .card-subtitle {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
   color: var(--TextMuted);
   margin: 0;
-  line-height: var(--leading-normal);
+  line-height: var(--k-leading-normal);
 }
 
 .card-icon {
@@ -69,26 +69,26 @@
 .card-list {
   list-style: none;
   padding: 0;
-  margin: var(--space-5) 0 0 0;
+  margin: var(--k-space-5) 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: start;
-  gap: var(--space-4);
+  gap: var(--k-space-4);
 }
 
 .card-list li {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  color: var(--TextSoft);
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
+  gap: var(--k-space-4);
+  color: var(--k-text-soft);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
+  line-height: var(--k-leading-normal);
 }
 
 .card-list li img {
-  width: var(--space-5);
-  height: var(--space-5);
+  width: var(--k-space-5);
+  height: var(--k-space-5);
   object-fit: contain;
   flex-shrink: 0;
 }

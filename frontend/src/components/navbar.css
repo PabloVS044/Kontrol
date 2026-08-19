@@ -4,7 +4,7 @@ body {
 
 .nav-container {
   position: fixed;
-  top: var(--space-5);
+  top: var(--k-space-5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,14 +15,14 @@ body {
 
 .landing-nav {
   display: flex;
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--k-radius-pill);
   justify-content: space-between;
   align-items: center;
   width: 85%;
   height: 72px;
   border: 2px solid var(--Border);
   background-color: var(--Background2);
-  padding: 0 var(--space-5);
+  padding: 0 var(--k-space-5);
   padding-left: 40px;
   padding-right: 20px;
   box-sizing: border-box;
@@ -34,20 +34,20 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--k-space-5);
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--k-space-2);
   flex-shrink: 0;
 }
 
 .icon h3 {
-  font-family: var(--font-display), 'Bungee', cursive;
-  font-size: var(--text-lg);
+  font-family: var(--k-font-display), 'Bungee', cursive;
+  font-size: var(--k-font-size-heading-2);
   color: var(--Text);
   margin: 0;
 }
@@ -61,13 +61,13 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: var(--k-space-3);
   flex-shrink: 0;
 }
 
 h3 {
-  font-family: var(--font-display), 'Bungee', sans-serif;
-  letter-spacing: var(--tracking-caps);
+  font-family: var(--k-font-display), 'Bungee', sans-serif;
+  letter-spacing: var(--k-tracking-caps);
 }
 
 /* ─── Hamburger button ───────────────────────────────────────────────────── */
@@ -76,13 +76,13 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--k-space-1);
   width: 40px;
   height: 40px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-1);
+  padding: var(--k-space-1);
   flex-shrink: 0;
 }
 
@@ -91,7 +91,7 @@ h3 {
   width: 20px;
   height: 2px;
   background: var(--Text);
-  border-radius: var(--radius-xs);
+  border-radius: var(--k-radius-sm);
   transition: transform 0.3s, opacity 0.3s;
   transform-origin: center;
   background: var(--Text);
@@ -106,9 +106,9 @@ h3 {
   width: 85%;
   background: var(--Background2);
   border: 2px solid var(--Border);
-  border-radius: var(--radius-lg);
-  margin-top: var(--space-2);
-  padding: 0 var(--space-5);
+  border-radius: var(--k-radius-lg);
+  margin-top: var(--k-space-2);
+  padding: 0 var(--k-space-5);
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease, padding 0.3s ease;
@@ -117,13 +117,13 @@ h3 {
 
 .mobile-menu.open {
   max-height: 500px;
-  padding: 20px var(--space-5);
+  padding: 20px var(--k-space-5);
 }
 
 .mobile-nav {
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-1);
+  gap: var(--k-space-1);
   padding: 0;
   margin: 0;
   width: 100%;
@@ -141,10 +141,10 @@ h3 {
 
 .mobile-actions {
   display: flex;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: var(--border-width) solid var(--Border);
-  margin-top: var(--space-2);
+  gap: var(--k-space-3);
+  padding-top: var(--k-space-4);
+  border-top: var(--k-border-width) solid var(--Border);
+  margin-top: var(--k-space-2);
 }
 
 .mobile-actions a {
@@ -158,7 +158,7 @@ h3 {
   .mobile-menu { width: 90%; }
 
   .navigation {
-    gap: var(--space-3);
+    gap: var(--k-space-3);
   }
 }
 
@@ -167,7 +167,7 @@ h3 {
     width: 92%;
     height: 68px;
     padding-left: 20px;
-    padding-right: var(--space-4);
+    padding-right: var(--k-space-4);
   }
 
   .mobile-menu { width: 92%; }

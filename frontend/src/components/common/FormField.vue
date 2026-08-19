@@ -21,16 +21,16 @@ defineProps({
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--k-space-2);
 }
 
 .field-label {
-  font-size: var(--text-2xs);
-  font-family: var(--font-sans);
+  font-size: var(--k-font-size-caption);
+  font-family: var(--k-font-sans);
   font-weight: var(--k-font-weight-semibold);
   color: var(--TextMuted);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-caps);
+  letter-spacing: var(--k-tracking-caps);
 }
 .req {
   color: var(--Primary);
@@ -41,14 +41,14 @@ input,
 textarea,
 select {
   background: var(--InputBg);
-  border: var(--border-width) solid var(--Border);
+  border: var(--k-border-width) solid var(--Border);
   color: var(--Text);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  padding: var(--space-2) var(--space-3);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  padding: var(--k-space-2) var(--k-space-3);
   outline: none;
-  border-radius: var(--radius-xs);
-  transition: var(--transition-ui);
+  border-radius: var(--k-radius-sm);
+  transition: var(--k-transition-ui);
 }
 
 input::placeholder,
@@ -65,10 +65,10 @@ select:focus {
 }
 
 .field-error {
-  font-size: var(--text-xs);
+  font-size: var(--k-font-size-caption-lg);
   color: var(--ErrorText);
   font-weight: var(--k-font-weight-medium);
-  margin-top: var(--space-1);
+  margin-top: var(--k-space-1);
 }
 
 .form-field:has(.field-error) input,
