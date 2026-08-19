@@ -1,12 +1,29 @@
 /**
- * LoginView — pantalla piloto de la identidad v2 (SCRUM-13).
+ * LoginView — estética restaurada a la de `0547bbb`.
  *
- * Consume exclusivamente los tokens de `src/styles/theme.css`. Sirve de
- * referencia para la migración del resto de pantallas (SCRUM-14..17): si algo
- * aquí necesitó un literal, está comentado y explica por qué.
+ * Contexto: SCRUM-13 migró esta pantalla a los tokens `--k-*` sustituyendo cada
+ * literal por el token más cercano. La sustitución fue lossy porque
+ * `theme.css` no tiene los pasos intermedios que el diseño usaba (32px, 20px,
+ * 13px, radio 6px y 8px, opacidad de disabled 0.55…), así que el resultado
+ * quedó visiblemente por debajo del original: título −25 %, radios a la mitad,
+ * texto del botón principal de blanco a casi negro, `disabled` casi invisible y
+ * la escala tipográfica de los breakpoints eliminada.
  *
- * No se tocó el layout: solo valores. Cualquier diferencia visual respecto de
- * la versión anterior es adopción intencional de la guía de estilo.
+ * Este archivo vuelve a los valores originales. Criterio aplicado:
+ *
+ *  - Se usa `var(--k-*)` SOLO donde el token vale exactamente lo mismo que el
+ *    literal original, para no perder trazabilidad sin alterar el render:
+ *    48px (--k-space-7), 24px (--k-space-5), 16px (--k-space-4),
+ *    8px (--k-radius-md), 700 (--k-font-weight-bold) y los tripletes RGB.
+ *  - El resto queda como literal, con `TOKEN PENDIENTE` marcando el paso que
+ *    falta en `theme.css`. Esa lista es la entrada de la Fase 1: cuando existan
+ *    los tokens, esta pantalla se vuelve a migrar sin cambio visual.
+ *
+ * Se conserva del pase de SCRUM-13 lo que NO altera la estética por defecto:
+ *  - anillos `:focus-visible` (solo visibles con teclado — a11y),
+ *  - el arreglo de contraste de `.login-banner--error` (antes fondo y texto
+ *    eran ambos #e05252: el mensaje era ilegible),
+ *  - `.login-banner--success`, que el template usa para el banner de invitación.
  */
 
 /* ── Layout ── */
@@ -14,7 +31,11 @@
   position: relative;
   min-height: 100vh;
   display: flex;
-  font-family: var(--k-font-sans);
+  /* TOKEN PENDIENTE: la identidad v2 define Manrope (--k-font-sans), pero el
+     cambio de familia altera métricas y reflowea toda la pantalla. Se mantiene
+     DM Sans hasta que el rediseño de la pantalla se haga con Manrope de forma
+     deliberada, no como efecto colateral de una sustitución de variables. */
+  font-family: 'DM Sans', sans-serif;
 }
 
 .login-layout {
@@ -65,24 +86,59 @@
   min-height: 100vh;
   padding: var(--k-space-7) 5rem;
   box-sizing: border-box;
-  /* El degradado de fondo es composición, no un color de paleta: los stops
-     salen de --k-color-tertiary hacia negro. SCRUM-12 no define tokens de
-     degradado; si Diseño los formaliza, se sustituyen aquí. */
+  border-right: none;
+  /* TOKEN PENDIENTE: radio 22px. --k-radius-xl son 24px. */
+  border-radius: 22px 0 0 22px;
+}
+
+/**
+ * El fondo del panel vive en su propia capa para poder difuminar el borde
+ * izquierdo: enmascarar `.login-form-panel` directamente difuminaría también
+ * el formulario, que es contenido, no fondo.
+ *
+ * Antes el panel cortaba en seco contra el fondo de partículas — borde recto a
+ * todo lo alto, esquinas de 22px marcadas y un `inset 1px 0 0` blanco al 4 %
+ * que dibujaba literalmente una línea sobre la costura. Ese inset y la sombra
+ * exterior se han retirado: ahora la transición la hace la máscara.
+ *
+ * TOKEN PENDIENTE (superficies de degradado): #0c0c0c y #050505 son stops de
+ * composición, más oscuros que --k-color-tertiary (#12120e).
+ */
+.login-form-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background:
     radial-gradient(120% 80% at 0% 50%, rgba(var(--k-color-primary-rgb), 0.1), transparent 55%),
-    linear-gradient(180deg, var(--k-color-tertiary) 0%, rgb(var(--k-color-black-rgb)) 100%);
-  border-right: none;
-  border-radius: var(--k-radius-xl) 0 0 var(--k-radius-xl);
-  box-shadow:
-    -30px 0 80px rgba(var(--k-color-black-rgb), 0.55),
-    inset 1px 0 0 rgba(var(--k-color-white-rgb), 0.04);
+    linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
+  /* Los stops intermedios aproximan una entrada suave: un degradado lineal de
+     dos paradas deja una banda perceptible sobre un fondo tan oscuro. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  pointer-events: none;
 }
 
 /* ── Card ── */
 .login-card {
+  position: relative;
+  z-index: 1; /* por encima de .login-form-panel::before */
   width: 100%;
   max-width: 620px;
-  background: var(--k-color-tertiary);
+  /* TOKEN PENDIENTE: var(--k-shade-3) es más oscuro que --k-color-tertiary (#12120e). */
+  background: var(--k-shade-3);
   border: none;
   border-radius: 0;
   padding: 0;
@@ -90,10 +146,11 @@
 }
 
 .login-title {
-  font-family: var(--k-font-display);
-  font-size: var(--k-font-size-heading-1);
+  /* TOKEN PENDIENTE (escala tipográfica): 2rem = 32px. El paso más cercano es
+     --k-font-size-heading-1 (24px), que encogía el título un 25 %. */
+  font-size: var(--k-font-size-display-2);
   font-weight: var(--k-font-weight-bold);
-  color: var(--k-color-text);
+  color: var(--Text);
   margin: 0 0 var(--k-space-5);
 }
 
@@ -101,13 +158,15 @@
 .login-field {
   display: flex;
   flex-direction: column;
-  gap: var(--k-space-1);
+  /* TOKEN PENDIENTE: 0.3rem = 4.8px; --k-space-1 son 4px. */
+  gap: 0.3rem;
   margin-bottom: var(--k-space-4);
 }
 
 .login-field-label {
-  font-size: var(--k-font-size-caption);
-  color: var(--k-text-muted);
+  /* TOKEN PENDIENTE: 0.80rem = 12.8px; --k-font-size-caption son 11px. */
+  font-size: 0.8rem;
+  color: var(--TextMuted);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
@@ -118,41 +177,44 @@
 
 .login-input {
   width: 100%;
-  min-height: var(--k-target-min-size);
   box-sizing: border-box;
-  padding: var(--k-space-3) var(--k-space-7) var(--k-space-3) var(--k-space-3);
-  background: var(--k-form-input-bg);
-  border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-sm);
-  color: var(--k-color-text);
-  font-size: var(--k-font-size-body-main);
-  font-family: var(--k-font-sans);
+  /* TOKEN PENDIENTE: el padding derecho (2.4rem = 38.4px) reserva el hueco del
+     icono. --k-space-7 son 48px y separaba el cursor del icono. */
+  padding: 0.72rem 2.4rem 0.72rem 0.85rem;
+  background: var(--InputBg);
+  border: 1px solid var(--Border);
+  /* TOKEN PENDIENTE: radio 6px. La escala salta de 4px (sm) a 8px (md). */
+  border-radius: var(--k-radius-field);
+  color: var(--Text);
+  /* TOKEN PENDIENTE: 0.92rem = 14.7px; --k-font-size-body-main son 14px. */
+  font-size: 0.92rem;
+  font-family: 'DM Sans', sans-serif;
   outline: none;
   transition:
     border-color 0.2s,
     background 0.2s;
 }
 .login-input::placeholder {
-  color: var(--k-text-placeholder);
+  color: var(--TextPlaceholder);
 }
 .login-input:focus {
-  border-color: var(--k-color-primary);
-  background: var(--k-form-input-focus-bg);
+  border-color: var(--Primary);
+  background: var(--InputFocusBg);
 }
 .login-input:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
 }
 .login-input--error {
-  border-color: var(--k-state-error-text) !important;
+  border-color: var(--ErrorText) !important;
 }
 
 .login-input-icon {
   position: absolute;
-  right: var(--k-space-3);
+  right: 0.72rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--k-text-dim);
+  color: var(--TextDim);
   pointer-events: none;
 }
 .login-input-icon--btn {
@@ -166,8 +228,9 @@
 }
 
 .login-field-error {
-  font-size: var(--k-font-size-caption);
-  color: var(--k-state-error-text);
+  /* TOKEN PENDIENTE: 0.76rem = 12.2px. */
+  font-size: 0.76rem;
+  color: var(--ErrorText);
 }
 
 /* ── Remember + Forgot ── */
@@ -175,17 +238,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--k-space-4);
+  /* TOKEN PENDIENTE: 1.2rem = 19.2px; la rejilla salta de 16px a 24px. */
+  margin-bottom: 1.2rem;
 }
 
 .login-remember {
   display: flex;
   align-items: center;
-  gap: var(--k-space-2);
-  font-size: var(--k-font-size-body-main);
-  color: var(--k-text-muted);
+  /* TOKEN PENDIENTE: 0.4rem = 6.4px. */
+  gap: 0.4rem;
+  /* TOKEN PENDIENTE: 0.83rem = 13.3px. */
+  font-size: 0.83rem;
+  color: var(--TextMuted);
   cursor: pointer;
-  accent-color: var(--k-color-primary);
+  accent-color: var(--Primary);
 }
 .login-remember input:focus-visible {
   outline: var(--k-focus-ring);
@@ -193,8 +259,8 @@
 }
 
 .login-forgot {
-  font-size: var(--k-font-size-body-main);
-  color: var(--k-color-primary);
+  font-size: 0.83rem;
+  color: var(--Primary);
   text-decoration: none;
 }
 .login-forgot:hover {
@@ -210,34 +276,36 @@
 .login-btn-primary {
   position: relative;
   width: 100%;
-  min-height: var(--k-target-min-size);
-  padding: var(--k-space-3);
-  /* Degradado de marca: brillo superior + rampa dorada. Los stops intermedios
-     no son tokens de paleta; se derivan del dorado primario. */
+  /* TOKEN PENDIENTE: 0.95rem = 15.2px de padding vertical. */
+  padding: 0.95rem;
+  /* TOKEN PENDIENTE (rampa del degradado): #f3d489 / #d6a955 / #b8862f son
+     stops propios del botón. --k-color-primary (#caa860) y --k-color-primary-2
+     (#b27f2a) apagaban el degradado. */
   background:
     linear-gradient(
       180deg,
       rgba(var(--k-color-white-rgb), 0.18),
       rgba(var(--k-color-white-rgb), 0) 45%
     ),
-    linear-gradient(
-      180deg,
-      #f3d489 0%,
-      var(--k-color-primary) 45%,
-      var(--k-color-primary-2) 100%
-    );
-  color: var(--k-form-btn-text);
+    linear-gradient(180deg, #f3d489 0%, #d6a955 45%, #b8862f 100%);
+  /* El texto del botón es blanco con sombra, no --k-form-btn-text (#0e0c08):
+     el token invertía el contraste del CTA principal. */
+  color: rgb(var(--k-color-white-rgb));
+  text-shadow: 0 1px 2px rgba(var(--k-color-black-rgb), 0.35);
   font-weight: var(--k-font-weight-bold);
-  font-size: var(--k-font-size-body-large);
-  font-family: var(--k-font-sans);
-  border: 1px solid rgba(var(--k-color-primary-rgb), 0.35);
-  border-radius: var(--k-radius-sm);
+  /* TOKEN PENDIENTE: 0.98rem = 15.7px. */
+  font-size: 0.98rem;
+  font-family: 'DM Sans', sans-serif;
+  /* TOKEN PENDIENTE: el borde usa un dorado más claro (255,220,150) que el
+     primario de paleta. */
+  border: 1px solid rgba(255, 220, 150, 0.35);
+  border-radius: var(--k-radius-md);
   cursor: pointer;
   letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--k-space-2);
+  gap: 0.5rem;
   box-shadow:
     0 10px 30px rgba(var(--k-color-primary-rgb), 0.35),
     inset 0 1px 0 rgba(var(--k-color-white-rgb), 0.45),
@@ -262,31 +330,36 @@
   transition: transform 0.6s ease;
   pointer-events: none;
 }
+/* El hover eleva y refuerza la sombra en capas. --k-shadow-glow la reemplazaba
+   por un halo plano y perdía los `inset` que le dan el relieve. */
 .login-btn-primary:hover:not(:disabled) {
-  filter: brightness(var(--k-state-hover-brightness));
-  box-shadow: var(--k-shadow-glow);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow:
+    0 14px 36px rgba(var(--k-color-primary-rgb), 0.5),
+    inset 0 1px 0 rgba(var(--k-color-white-rgb), 0.5),
+    inset 0 -1px 0 rgba(var(--k-color-black-rgb), 0.25);
 }
 .login-btn-primary:hover:not(:disabled)::after {
   transform: translateX(100%);
-}
-.login-btn-primary:active:not(:disabled) {
-  transform: scale(var(--k-state-active-scale));
 }
 .login-btn-primary:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
 }
+/* TOKEN PENDIENTE: 0.55. --k-state-disabled-opacity (0.3) dejaba el botón
+   prácticamente invisible durante el envío del formulario. */
 .login-btn-primary:disabled {
-  opacity: var(--k-state-disabled-opacity);
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .login-spinner {
   width: 15px;
   height: 15px;
-  border: 2px solid rgba(var(--k-color-black-rgb), 0.25);
-  border-top-color: var(--k-form-btn-text);
-  border-radius: var(--k-radius-pill);
+  border: 2px solid rgba(14, 12, 8, 0.25);
+  border-top-color: var(--BtnText);
+  border-radius: 50%;
   animation: login-spin 0.65s linear infinite;
 }
 @keyframes login-spin {
@@ -299,26 +372,29 @@
 .login-divider {
   display: flex;
   align-items: center;
-  gap: var(--k-space-3);
-  margin: var(--k-space-4) 0;
+  /* TOKEN PENDIENTE: 0.7rem = 11.2px. */
+  gap: 0.7rem;
+  margin: 1.2rem 0;
 }
 .login-divider::before,
 .login-divider::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--k-color-border);
+  background: var(--Border);
 }
 .login-divider span {
-  font-size: var(--k-font-size-caption);
-  color: var(--k-text-dim);
+  /* TOKEN PENDIENTE: 0.78rem = 12.5px; --k-font-size-caption son 11px. */
+  font-size: 0.78rem;
+  color: var(--TextDim);
 }
 
 /* ── OAuth ── */
 .login-oauth-row {
   display: flex;
-  gap: var(--k-space-3);
-  margin-bottom: var(--k-space-4);
+  gap: 0.7rem;
+  /* TOKEN PENDIENTE: 1.1rem = 17.6px. */
+  margin-bottom: 1.1rem;
 }
 
 .login-btn-oauth {
@@ -326,21 +402,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--k-space-2);
-  min-height: var(--k-target-min-size);
-  padding: var(--k-space-3) var(--k-space-2);
+  gap: 0.5rem;
+  padding: 0.75rem 0.6rem;
+  /* TOKEN PENDIENTE (superficies): var(--k-shade-4) → #0e0e0e. --k-color-bg-3 (#282825)
+     aclaraba demasiado la parte superior del botón. */
   background:
     linear-gradient(
       180deg,
       rgba(var(--k-color-white-rgb), 0.04),
       rgba(var(--k-color-white-rgb), 0)
     ),
-    linear-gradient(180deg, var(--k-color-bg-3), var(--k-color-tertiary));
-  border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-sm);
-  color: var(--k-color-text);
-  font-size: var(--k-font-size-body-main);
-  font-family: var(--k-font-sans);
+    linear-gradient(180deg, #1a1a1a, #0e0e0e);
+  border: 1px solid var(--Border);
+  border-radius: var(--k-radius-md);
+  color: rgb(var(--k-color-white-rgb));
+  /* TOKEN PENDIENTE: 0.82rem = 13.1px. */
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(var(--k-color-white-rgb), 0.04);
   transition:
@@ -351,12 +429,11 @@
 }
 .login-btn-oauth:hover {
   border-color: rgba(var(--k-color-primary-rgb), 0.55);
-  color: var(--k-color-text);
-  filter: brightness(var(--k-state-hover-brightness));
-  box-shadow: var(--k-shadow-card);
-}
-.login-btn-oauth:active {
-  transform: scale(var(--k-state-active-scale));
+  color: var(--Text);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 18px rgba(var(--k-color-black-rgb), 0.4),
+    inset 0 1px 0 rgba(var(--k-color-white-rgb), 0.06);
 }
 .login-btn-oauth:focus-visible {
   outline: var(--k-focus-ring);
@@ -374,15 +451,15 @@
 .login-switch {
   width: 100%;
   text-align: center;
-  font-size: var(--k-font-size-body-main);
-  color: var(--k-text-dim);
-  margin-top: var(--k-space-1);
+  font-size: 0.83rem;
+  color: var(--TextDim);
+  margin-top: 0.25rem;
   margin-bottom: 0;
 }
 .login-switch-link {
-  color: var(--k-color-primary);
+  color: var(--Primary);
   text-decoration: none;
-  margin-left: var(--k-space-1);
+  margin-left: 0.2rem;
 }
 .login-switch-link:hover {
   text-decoration: underline;
@@ -393,37 +470,38 @@
   border-radius: var(--k-radius-sm);
 }
 
-/* ── Banner error ── */
+/* ── Banners ── */
 .login-banner {
-  padding: var(--k-space-3);
-  border-radius: var(--k-radius-md);
-  font-size: var(--k-font-size-body-main);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--k-radius-field);
+  font-size: 0.83rem;
   margin-bottom: var(--k-space-4);
 }
 /* Antes el fondo y el texto eran ambos #e05252: el mensaje de error era
-   ilegible. Ahora fondo tinte sobre superficie oscura + texto en
-   --k-state-error-text, que sí contrasta. */
+   ilegible. Se conserva el arreglo de contraste — es un bug, no estética. */
 .login-banner--error {
-  background: rgba(var(--k-color-error-rgb), 0.12);
-  border: 1px solid var(--k-state-error-text);
-  color: var(--k-state-error-text);
+  background: rgba(var(--k-color-error-rgb), 0.08);
+  border: 1px solid var(--ErrorText);
+  color: var(--ErrorText);
 }
 /* El template ya usaba esta variante para el banner de invitación, pero nunca
    tuvo reglas: heredaba solo el padding y quedaba sin color. */
 .login-banner--success {
   background: rgba(var(--k-color-success-rgb), 0.12);
-  border: 1px solid var(--k-state-success-text);
-  color: var(--k-state-success-text);
+  border: 1px solid var(--SuccessText);
+  color: var(--SuccessText);
 }
 
 /* ── Responsive ──
-   Solo geometría: no hay valores de marca en los breakpoints. Los tamaños de
-   texto vienen de la escala tipográfica y no se re-declaran por breakpoint. */
+   La escala tipográfica por breakpoint es parte del diseño: en móvil el título
+   baja de 2rem a 1.3rem. SCRUM-13 eliminó estos overrides asumiendo que la
+   escala de tokens los cubría, y el resultado fue un título fijo de 24px en
+   todos los anchos. Restaurados. */
 
 /* Laptop pequeño / tablet horizontal */
 @media (max-width: 1200px) {
   .login-form-panel {
-    padding: var(--k-space-6) var(--k-space-7);
+    padding: 2.5rem 3rem;
   }
   .login-card {
     max-width: 540px;
@@ -443,7 +521,7 @@
   .login-form-panel {
     width: 70%;
     min-width: 460px;
-    padding: var(--k-space-6) var(--k-space-5);
+    padding: 2.2rem 2.4rem;
   }
   .login-logo-panel {
     width: 30%;
@@ -456,7 +534,8 @@
     height: 320px !important;
   }
   .login-title {
-    margin-bottom: var(--k-space-4);
+    font-size: 1.7rem;
+    margin-bottom: 1.2rem;
   }
 }
 
@@ -478,7 +557,7 @@
     width: 100%;
     min-width: 0;
     margin: 0;
-    padding: var(--k-space-2) 0 0;
+    padding: 0.8rem 0 0;
     min-height: 220px;
     z-index: 1;
   }
@@ -491,28 +570,35 @@
     width: 100%;
     min-width: 0;
     min-height: auto;
-    padding: var(--k-space-4) var(--k-space-4) var(--k-space-6);
-    border-radius: var(--k-radius-xl) var(--k-radius-xl) 0 0;
+    padding: 1.2rem 1.6rem 2rem;
+    border-radius: 22px 22px 0 0;
     border-left: none;
     border-right: none;
     border-bottom: none;
-    border-top: 1px solid var(--k-color-border);
+    border-top: 1px solid var(--Border);
     box-shadow: 0 -20px 60px rgba(var(--k-color-black-rgb), 0.5);
     margin-top: -40px;
   }
+  /* Apilado: el panel queda debajo del logo, así que el borde a difuminar es
+     el superior, no el izquierdo. */
+  .login-form-panel::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+  }
   .login-field {
-    margin-bottom: var(--k-space-3);
+    margin-bottom: 0.7rem;
   }
   .login-divider {
-    margin: var(--k-space-3) 0;
+    margin: 0.9rem 0;
   }
   .login-row-extras {
-    margin-bottom: var(--k-space-3);
+    margin-bottom: 0.9rem;
   }
   .login-card {
     max-width: 520px;
   }
   .login-title {
+    font-size: 1.6rem;
     text-align: center;
   }
 }
@@ -520,7 +606,7 @@
 /* Phone */
 @media (max-width: 520px) {
   .login-logo-panel {
-    padding-top: var(--k-space-4);
+    padding-top: 1rem;
     min-height: 200px;
   }
   .login-logo-img,
@@ -529,30 +615,49 @@
     height: 220px !important;
   }
   .login-form-panel {
-    padding: var(--k-space-4) var(--k-space-3) var(--k-space-6);
+    padding: 1.2rem 1.1rem 2rem;
   }
   .login-title {
-    margin-bottom: var(--k-space-4);
+    font-size: 1.45rem;
+    margin-bottom: 1rem;
+  }
+  .login-input {
+    font-size: 0.9rem;
+    padding: 0.78rem 2.4rem 0.78rem 0.85rem;
+  }
+  .login-field-label {
+    font-size: 0.74rem;
+  }
+  .login-btn-primary {
+    padding: 0.85rem;
+    font-size: 0.95rem;
   }
   .login-oauth-row {
     flex-direction: column;
-    gap: var(--k-space-2);
+    gap: 0.55rem;
+  }
+  .login-btn-oauth {
+    padding: 0.7rem;
+    font-size: 0.85rem;
   }
   .login-row-extras {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--k-space-2);
-    margin-bottom: var(--k-space-4);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
   .login-divider {
-    margin: var(--k-space-4) 0;
+    margin: 1rem 0;
   }
 }
 
 /* Phone muy pequeño */
 @media (max-width: 360px) {
   .login-form-panel {
-    padding: var(--k-space-3) var(--k-space-3) var(--k-space-5);
+    padding: 1rem 0.85rem 1.6rem;
+  }
+  .login-title {
+    font-size: 1.3rem;
   }
   .login-logo-img,
   .login-logo-3d {
@@ -565,7 +670,7 @@
 @media (max-width: 820px) and (max-height: 760px) {
   .login-logo-panel {
     min-height: 170px;
-    padding-top: var(--k-space-2);
+    padding-top: 0.5rem;
   }
   .login-logo-img,
   .login-logo-3d {
@@ -574,16 +679,17 @@
   }
   .login-form-panel {
     margin-top: -30px;
-    padding: var(--k-space-3) var(--k-space-4) var(--k-space-5);
+    padding: 1rem 1.4rem 1.5rem;
   }
   .login-title {
-    margin-bottom: var(--k-space-3);
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
   }
   .login-field {
-    margin-bottom: var(--k-space-2);
+    margin-bottom: 0.55rem;
   }
   .login-divider {
-    margin: var(--k-space-3) 0;
+    margin: 0.7rem 0;
   }
 }
 
@@ -594,7 +700,7 @@
   }
   .login-layout {
     min-height: auto;
-    padding: var(--k-space-4) 0;
+    padding: 1rem 0;
   }
   .login-logo-panel {
     display: none;
@@ -603,6 +709,13 @@
     width: 100%;
     min-width: 0;
     min-height: auto;
-    padding: var(--k-space-5) var(--k-space-4);
+    padding: 1.4rem 1.6rem;
+    border-radius: 0;
+    border: none;
+  }
+  /* Ocupa todo el ancho y no linda con nada: no hay costura que difuminar. */
+  .login-form-panel::before {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }

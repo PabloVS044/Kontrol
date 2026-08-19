@@ -8,3 +8,6 @@ dist-ssr/
 # TypeScript
 *.tsbuildinfo
 CLAUDE.md
+
+# Capturas del arnés de paridad visual (scripts/visual-parity.py)
+.visual-parity/

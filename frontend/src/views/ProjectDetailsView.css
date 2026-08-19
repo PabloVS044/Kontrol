@@ -338,7 +338,10 @@
 .team-role-row:last-child { border-bottom: none; }
 .team-role-avatar {
   width: 36px; height: 36px;
-  background: var(--k-color-primary);
+  /* El fondo iba del mismo dorado que las iniciales: el avatar salía macizo y
+     la letra invisible. El borde ya estaba atenuado — faltaba atenuar el
+     fondo. */
+  background: var(--k-surface-primary-tint);
   border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   color: var(--k-color-primary);
   display: flex;
@@ -648,7 +651,9 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  background: #60a5fa;
+  /* Mismo defecto. La paleta no tiene azul, así que se conserva el literal con
+     el tinte que le faltaba en vez de inventar un color de marca. */
+  background: rgba(96, 165, 250, 0.14);
   border: 1px solid rgba(96,165,250,0.2);
   color: #60a5fa;
   font-size: var(--k-font-size-caption);

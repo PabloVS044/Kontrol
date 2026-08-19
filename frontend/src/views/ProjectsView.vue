@@ -879,7 +879,7 @@ async function submitProject() {
   background: var(--k-color-tertiary); border: none; color: var(--k-text-faint); cursor: pointer;
   transition: color 0.15s, background 0.15s; border-radius: 2px;
 }
-.lr-btn:hover { color: var(--k-color-primary); background: var(--k-color-primary); }
+.lr-btn:hover { color: var(--k-color-primary); background: var(--k-surface-primary-tint); }
 
 .lr-pill-col {
   display: flex; align-items: center; justify-content: center;
@@ -936,11 +936,19 @@ async function submitProject() {
   font-size: var(--k-font-size-caption); padding: 2px 8px; letter-spacing: 0.05em; border-radius: 2px;
   border: 1px solid currentColor;
 }
-/* TODO SCRUM-16: #f97316 sin token; --k-color-warning es oscuro, para fondos.
-   El fondo pasa a transparent: antes era del mismo color que el texto y la
-   pildora resultaba ilegible. */
-.alert-pill.warn     { color: #f97316; background: transparent; }
-.alert-pill.critical { color: var(--k-state-error-text); background: transparent; }
+/* El texto iba del mismo color que el fondo: la píldora salía maciza y la
+   palabra dentro era invisible. Fondo con tinte, texto sólido — y sobre
+   tokens de paleta, no sobre el naranja y rosa por defecto de Tailwind. */
+.alert-pill.warn {
+  color: var(--k-alert-warning-text);
+  background: var(--k-alert-warning-bg);
+  border-color: var(--k-alert-warning-border);
+}
+.alert-pill.critical {
+  color: var(--k-alert-critical-text);
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
+}
 
 /* Quick access row */
 .card-quick-row {
@@ -958,7 +966,7 @@ async function submitProject() {
   cursor: pointer; transition: color 0.2s, background 0.2s;
 }
 .quick-btn:last-child { border-right: none; }
-.quick-btn:hover { color: var(--k-color-primary); background: var(--k-color-primary); }
+.quick-btn:hover { color: var(--k-color-primary); background: var(--k-surface-primary-tint); }
 
 .card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .due-date { font-size: var(--k-font-size-body-main); color: var(--k-text-faint); }
