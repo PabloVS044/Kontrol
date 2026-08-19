@@ -52,16 +52,51 @@
   min-height: 100vh;
   padding: 3rem 5rem;
   box-sizing: border-box;
+  border-left: none;
+  border-radius: 0 22px 22px 0;
+}
+
+/**
+ * El fondo va en su propia capa para poder difuminar el borde que linda con el
+ * panel del logo: enmascarar `.register-form-panel` difuminaría también el
+ * formulario, que es contenido, no fondo.
+ *
+ * Espejo del login: aquí el panel está a la izquierda, así que la costura es el
+ * borde DERECHO. Se retiran el `inset -1px 0 0` blanco al 4 % —una línea clara
+ * dibujada justo sobre la junta— y la sombra exterior, que existían para
+ * definir el borde que la máscara ahora disuelve.
+ */
+.register-form-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background:
     radial-gradient(120% 80% at 100% 50%, rgba(202, 168, 96, 0.10), transparent 55%),
     linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
-  border-left: none;
-  border-radius: 0 22px 22px 0;
-  box-shadow: 30px 0 80px rgba(0, 0, 0, 0.55), inset -1px 0 0 rgba(255, 255, 255, 0.04);
+  /* Stops intermedios: un degradado de dos paradas deja banda visible sobre un
+     fondo tan oscuro. */
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  pointer-events: none;
 }
 
 /* ── Card ── */
 .register-card {
+  position: relative;
+  z-index: 1; /* por encima de .register-form-panel::before */
   width: 100%;
   max-width: 620px;
   background: #111111;
@@ -313,6 +348,12 @@
     box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
     margin-top: -40px;
   }
+  /* Apilado: el panel queda debajo del logo, el borde a difuminar es el de
+     arriba, no el lateral. */
+  .register-form-panel::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+  }
   .register-field      { margin-bottom: 0.7rem; }
   .register-divider    { margin: 0.9rem 0; }
   .register-row-two    { gap: 0.6rem; }
@@ -367,5 +408,10 @@
     padding: 1.4rem 1.6rem;
     border-radius: 0;
     border: none;
+  }
+  /* Ocupa todo el ancho y no linda con nada: no hay costura que difuminar. */
+  .register-form-panel::before {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
