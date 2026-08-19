@@ -30,8 +30,16 @@ import { dirname, resolve, relative } from 'node:path'
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
 
-/** Quita comentarios CSS y HTML: `var(--k-*)` citado en prosa no es una referencia. */
-const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '')
+/**
+ * Quita comentarios CSS, HTML y de línea JS: un `var(--k-*)` citado en prosa no
+ * es una referencia. El guardia `[^:]` antes de `//` evita comerse la parte de
+ * esquema de una URL (`https://…`) dentro de un bloque `<script>`.
+ */
+const strip = (s) =>
+  s
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/(^|[^:])\/\/[^\n]*/g, '$1')
 
 const read = (p) => strip(readFileSync(resolve(root, p), 'utf8'))
 
@@ -83,15 +91,25 @@ function scanDangling() {
  * DEUDA CONOCIDA — trinquete, mismo criterio que la política de cobertura
  * (`docs/coverage-ratchet.md`): la lista solo puede encoger.
  *
- * Es el inventario exacto de lo que el PR #86 dejó roto. NO es una excepción
- * permanente: cada entrada se borra de aquí cuando el componente se reconecta a
- * los tokens `--k-*` (Fase 2). Los tres tests de abajo impiden tanto añadir
+ * Es el inventario de lo que el PR #86 dejó roto y aún no se ha reconectado.
+ * NO es una excepción permanente: cada entrada se borra cuando el componente
+ * pasa a los tokens `--k-*`. Los tres tests de abajo impiden tanto añadir
  * referencias nuevas como dejar entradas obsoletas en la lista.
  *
- * Las variables sin equivalente en `theme.css` (`--text-xs/sm/lg`, `--leading-*`,
- * `--tracking-*`, `--transition-ui`, `--border-width`, `--z-*`, las superficies
- * de alerta) necesitan que Diseño defina el token antes de poder migrarse: esa
- * es la Fase 1.
+ * Arrancó en 13 archivos / 42 variables. Ya salieron `button.css`,
+ * `BaseModal.vue` y `Card.vue`, que solo dependían de familias que Figma no
+ * cubre (interlineado, tracking, transición, grosor de borde, capas) y que
+ * ahora existen como tokens de implementación en `theme.css`.
+ *
+ * Lo que queda está bloqueado por decisiones de Diseño, no por trabajo:
+ *
+ *  - `--text-xs` (12px), `--text-sm` (13px), `--text-lg` (20px): la lámina de
+ *    tipografía define 5 niveles y ninguno cae en esos tamaños. `--text-sm`
+ *    solo bloquea 7 de los 10 archivos.
+ *  - `--radius-xs` (2px): la lámina de radios empieza en 4px.
+ *  - Las superficies de alerta (`watching`/`warning`/`critical`): los valores
+ *    que traía el PR #86 son de la paleta por defecto de Tailwind (#facc15,
+ *    #f97316, #fb7185), ajenos a la identidad Luxury Dark.
  */
 const KNOWN_DEBT = {
   'src/components/AppNavbar.vue': [
@@ -127,14 +145,6 @@ const KNOWN_DEBT = {
     '--text-sm',
     '--transition-ui',
   ],
-  'src/components/UI/Button/button.css': [
-    '--font-sans',
-    '--shadow-glow',
-    '--space-2',
-    '--space-5',
-    '--text-base',
-    '--transition-ui',
-  ],
   'src/components/UI/Card/Card.css': [
     '--TextSoft',
     '--border-width',
@@ -151,22 +161,6 @@ const KNOWN_DEBT = {
     '--text-sm',
     '--text-xl',
     '--transition-ui',
-  ],
-  // `shadowColor` recibe por defecto `var(--shadow-card)`: una sombra completa
-  // en la posición de un color dentro de `drop-shadow()`. Inválido aunque el
-  // token existiera — se corrige en la Fase 3.
-  'src/components/UI/Card/Card.vue': ['--shadow-card'],
-  'src/components/UI/Modal/BaseModal.vue': [
-    '--border-width',
-    '--font-display',
-    '--shadow-modal',
-    '--space-1',
-    '--space-3',
-    '--space-5',
-    '--space-6',
-    '--text-xl',
-    '--transition-ui',
-    '--z-modal-overlay',
   ],
   'src/components/UI/Pill/Pill.css': [
     '--border-width',
@@ -301,7 +295,7 @@ describe('CSS custom properties — integridad de referencias', () => {
     expect(obsoletas).toEqual({})
   })
 
-  it('mantiene la deuda acotada a los 13 archivos del PR #86', () => {
+  it('no extiende la deuda a archivos nuevos', () => {
     expect(Object.keys(dangling).sort()).toEqual(Object.keys(KNOWN_DEBT).sort())
   })
 
