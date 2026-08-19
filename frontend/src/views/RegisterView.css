@@ -54,21 +54,54 @@
   min-height: 100vh;
   padding: var(--k-space-7) 5rem;
   box-sizing: border-box;
-  background:
-    radial-gradient(120% 80% at 100% 50%, rgba(var(--k-color-primary-rgb), 0.1), transparent 55%),
-    linear-gradient(180deg, var(--k-color-tertiary) 0%, rgb(var(--k-color-black-rgb)) 100%);
   border-left: none;
-  border-radius: 0 var(--k-radius-xl) var(--k-radius-xl) 0;
-  box-shadow:
-    30px 0 80px rgba(var(--k-color-black-rgb), 0.55),
-    inset -1px 0 0 rgba(var(--k-color-white-rgb), 0.04);
+  border-radius: 0 22px 22px 0;
+}
+
+/**
+ * El fondo va en su propia capa para poder difuminar el borde que linda con el
+ * panel del logo: enmascarar `.register-form-panel` difuminaría también el
+ * formulario, que es contenido, no fondo.
+ *
+ * Espejo del login: aquí el panel está a la izquierda, así que la costura es el
+ * borde DERECHO. Se retiran el `inset -1px 0 0` blanco al 4 % —una línea clara
+ * dibujada justo sobre la junta— y la sombra exterior, que existían para
+ * definir el borde que la máscara ahora disuelve.
+ */
+.register-form-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 80% at 100% 50%, rgba(202, 168, 96, 0.10), transparent 55%),
+    linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
+  /* Stops intermedios: un degradado de dos paradas deja banda visible sobre un
+     fondo tan oscuro. */
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  pointer-events: none;
 }
 
 /* ── Contenedor del formulario ── */
 .register-card {
+  position: relative;
+  z-index: 1; /* por encima de .register-form-panel::before */
   width: 100%;
   max-width: 620px;
-  background: transparent;
+  background: var(--k-shade-3);
   border: none;
   border-radius: 0;
   padding: 0;
@@ -76,11 +109,10 @@
 }
 
 .register-title {
-  font-family: var(--k-font-display);
-  font-size: var(--k-font-size-heading-1);
-  font-weight: var(--k-font-weight-bold);
+  font-size: var(--k-font-size-display-2);
+  font-weight: 700;
   color: var(--k-color-text);
-  margin: 0 0 var(--k-space-5);
+  margin: 0 0 1.5rem;
 }
 
 /* ── Fila doble (First + Last name) ── */
@@ -115,13 +147,13 @@
   width: 100%;
   min-height: var(--k-target-min-size);
   box-sizing: border-box;
-  padding: var(--k-space-3) var(--k-space-7) var(--k-space-3) var(--k-space-3);
+  padding: 0.72rem 2.4rem 0.72rem 0.85rem;
   background: var(--k-form-input-bg);
   border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-sm);
+  border-radius: var(--k-radius-field);
   color: var(--k-color-text);
-  font-size: var(--k-font-size-body-main);
-  font-family: var(--k-font-sans);
+  font-size: 0.92rem;
+  font-family: 'DM Sans', sans-serif;
   outline: none;
   transition:
     border-color 0.2s,
@@ -172,23 +204,15 @@
   min-height: var(--k-target-min-size);
   padding: var(--k-space-3);
   background:
-    linear-gradient(
-      180deg,
-      rgba(var(--k-color-white-rgb), 0.18),
-      rgba(var(--k-color-white-rgb), 0) 45%
-    ),
-    linear-gradient(
-      180deg,
-      #f3d489 0%,
-      var(--k-color-primary) 45%,
-      var(--k-color-primary-2) 100%
-    );
-  color: var(--k-form-btn-text);
-  font-weight: var(--k-font-weight-bold);
-  font-size: var(--k-font-size-body-large);
-  font-family: var(--k-font-sans);
-  border: 1px solid rgba(var(--k-color-primary-rgb), 0.35);
-  border-radius: var(--k-radius-sm);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #f3d489 0%, #d6a955 45%, #b8862f 100%);
+  color: rgb(var(--k-color-white-rgb));
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  font-weight: 700;
+  font-size: 0.98rem;
+  font-family: 'DM Sans', sans-serif;
+  border: 1px solid rgba(255, 220, 150, 0.35);
+  border-radius: 8px;
   cursor: pointer;
   letter-spacing: 0.04em;
   display: flex;
@@ -288,17 +312,13 @@
   min-height: var(--k-target-min-size);
   padding: var(--k-space-3) var(--k-space-2);
   background:
-    linear-gradient(
-      180deg,
-      rgba(var(--k-color-white-rgb), 0.04),
-      rgba(var(--k-color-white-rgb), 0)
-    ),
-    linear-gradient(180deg, var(--k-color-bg-3), var(--k-color-tertiary));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, #1a1a1a, #0e0e0e);
   border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-sm);
-  color: var(--k-color-text);
-  font-size: var(--k-font-size-body-main);
-  font-family: var(--k-font-sans);
+  border-radius: 8px;
+  color: rgb(var(--k-color-white-rgb));
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(var(--k-color-white-rgb), 0.04);
   transition:
@@ -353,13 +373,16 @@
 
 /* ── Banners ── */
 .register-banner {
-  padding: var(--k-space-3);
-  border-radius: var(--k-radius-md);
-  font-size: var(--k-font-size-body-main);
-  margin-bottom: var(--k-space-4);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--k-radius-field);
+  font-size: 0.83rem;
+  margin-bottom: 1rem;
 }
+/* Fondo y texto eran el mismo color —#e05252 sobre #e05252— así que el mensaje
+   era ilegible. Es el mismo defecto que SCRUM-13 corrigió en login; registro no
+   se arregló entonces porque nunca llegó a migrarse. */
 .register-banner--error {
-  background: rgba(var(--k-color-error-rgb), 0.12);
+  background: rgba(var(--k-color-error-rgb), 0.08);
   border: 1px solid var(--k-state-error-text);
   color: var(--k-state-error-text);
 }
@@ -451,21 +474,17 @@
     box-shadow: 0 -20px 60px rgba(var(--k-color-black-rgb), 0.5);
     margin-top: -40px;
   }
-  .register-field {
-    margin-bottom: var(--k-space-3);
+  /* Apilado: el panel queda debajo del logo, el borde a difuminar es el de
+     arriba, no el lateral. */
+  .register-form-panel::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
   }
-  .register-divider {
-    margin: var(--k-space-3) 0;
-  }
-  .register-row-two {
-    gap: var(--k-space-2);
-  }
-  .register-card {
-    max-width: 520px;
-  }
-  .register-title {
-    text-align: center;
-  }
+  .register-field      { margin-bottom: 0.7rem; }
+  .register-divider    { margin: 0.9rem 0; }
+  .register-row-two    { gap: 0.6rem; }
+  .register-card       { max-width: 520px; }
+  .register-title      { font-size: 1.6rem; text-align: center; }
 }
 
 /* Phone */
@@ -555,5 +574,10 @@
     padding: var(--k-space-5) var(--k-space-4);
     border-radius: 0;
     border: none;
+  }
+  /* Ocupa todo el ancho y no linda con nada: no hay costura que difuminar. */
+  .register-form-panel::before {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }

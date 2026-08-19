@@ -1,31 +1,8 @@
-/**
- * Kontrol — hoja global.
- *
- * Desde SCRUM-13 este archivo NO define valores de marca: los tokens viven en
- * `src/styles/theme.css`. Aquí solo queda:
- *   1. la capa de compatibilidad legacy (alias → tokens),
- *   2. el reset mínimo del documento,
- *   3. estilos base heredados de la landing.
- */
-
 @import './src/styles/theme.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/**
- * Capa de compatibilidad (SCRUM-13, punto 3 del alcance).
- *
- * Estas variables sin prefijo son las que ya consumían las pantallas
- * existentes (~330 usos de `var(--Primary)`, `var(--Text)`, …). Se conservan
- * como ALIAS de los tokens nuevos para que nada se rompa mientras avanza la
- * migración de SCRUM-14..17.
- *
- * ⚠️ Congeladas: no agregar variables nuevas a esta lista. Todo código nuevo
- * consume `var(--k-*)` directamente. Esta capa desaparece cuando no queden
- * consumidores.
- */
 :root {
   --Primary: var(--k-color-primary);
   --Primary2: var(--k-color-primary-2);
@@ -40,17 +17,11 @@
   --Success: var(--k-color-success);
   --Error: var(--k-color-error);
   --Warning: var(--k-color-warning);
-
-  /* Texto secundario */
   --TextMuted: var(--k-text-muted);
   --TextDim: var(--k-text-dim);
   --TextPlaceholder: var(--k-text-placeholder);
-
-  /* Estados visuales */
   --ErrorText: var(--k-state-error-text);
   --SuccessText: var(--k-state-success-text);
-
-  /* Formularios */
   --InputBg: var(--k-form-input-bg);
   --InputFocusBg: var(--k-form-input-focus-bg);
   --BtnText: var(--k-form-btn-text);
@@ -69,18 +40,91 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* ── Titulares de la landing ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Red de seguridad responsive: medios nunca desbordan su contenedor. */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+svg {
+  max-width: 100%;
+}
+
+/* Foco visible por teclado (no en click) — accesibilidad + acabado pro. */
+:focus-visible {
+  outline: 2px solid var(--k-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* Números alineados en datos tabulares (precios, KPIs, tablas). */
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Móvil: tablas anchas hacen scroll horizontal en vez de desbordar la página. */
+@media (max-width: 640px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Respeta la preferencia de reducir movimiento del sistema. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Base: todo hereda Manrope salvo override explícito en componentes. */
+body {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
+  line-height: 1.5;
+  color: var(--k-color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos sin clase propia caen en el display serif de marca. */
+h1,
+h2,
+h3 {
+  font-family: var(--k-font-display);
+  font-weight: 700;
+  line-height: 1.15;
+}
 .hero-title {
   color: var(--k-color-text);
   font-family: var(--k-font-display);
-  letter-spacing: 5px;
+  letter-spacing: 0.08em;
   font-size: clamp(2rem, 6vw, 6rem);
   margin-bottom: 20px;
 }
 
+p {
+  font-family: var(--k-font-sans);
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  color: var(--k-color-text);
+  z-index: 20;
+}
+
 .sub-title {
   font-family: var(--k-font-display);
-  letter-spacing: 2px;
+  letter-spacing: 0.08em;
   font-size: clamp(1.5rem, 3.5vw, 3rem);
   text-align: center;
   color: var(--k-color-text);
@@ -97,7 +141,6 @@ p {
   color: var(--k-color-text);
   z-index: 20;
 }
-
 @media screen and (max-width: 500px) {
   .hero-title {
     font-size: 2em;

@@ -64,6 +64,10 @@ export default {
         'body-large': 'var(--k-font-size-body-large)',
         'body-main': 'var(--k-font-size-body-main)',
         caption: 'var(--k-font-size-caption)',
+        // Pasos de implementación (no están en la lámina) — ver theme.css.
+        'heading-2': 'var(--k-font-size-heading-2)',
+        'body-small': 'var(--k-font-size-body-small)',
+        'caption-lg': 'var(--k-font-size-caption-lg)',
       },
 
       // Nomenclatura de Figma: space-1..space-7 (space-7 = 48px).
@@ -104,6 +108,46 @@ export default {
 
       strokeWidth: {
         icon: 'var(--k-icon-stroke)',
+      },
+
+      // ── Tokens de implementación (ver theme.css) ──
+      // No provienen de Figma; se exponen igual para que las utilidades y el
+      // CSS plano sigan leyendo la misma fuente y no puedan divergir.
+
+      lineHeight: {
+        tight: 'var(--k-leading-tight)',
+        snug: 'var(--k-leading-snug)',
+        normal: 'var(--k-leading-normal)',
+        relaxed: 'var(--k-leading-relaxed)',
+      },
+
+      letterSpacing: {
+        caps: 'var(--k-tracking-caps)',
+        tight: 'var(--k-tracking-tight)',
+      },
+
+      borderWidth: {
+        DEFAULT: 'var(--k-border-width)',
+      },
+
+      transitionProperty: {
+        ui: 'all',
+      },
+
+      zIndex: {
+        negative: 'var(--k-z-negative)',
+        base: 'var(--k-z-base)',
+        nav: 'var(--k-z-nav)',
+        dropdown: 'var(--k-z-dropdown)',
+        'modal-overlay': 'var(--k-z-modal-overlay)',
+        modal: 'var(--k-z-modal)',
+        tooltip: 'var(--k-z-tooltip)',
+      },
+
+      backgroundColor: {
+        'primary-tint': 'var(--k-surface-primary-tint)',
+        'primary-tint-2': 'var(--k-surface-primary-tint-2)',
+        'hover-subtle': 'var(--k-surface-hover-subtle)',
       },
     },
   },

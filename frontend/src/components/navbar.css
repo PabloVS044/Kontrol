@@ -4,7 +4,7 @@ body {
 
 .nav-container {
   position: fixed;
-  top: 20px;
+  top: 20px; /* --k-space-5 son 24px: no equivale */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,7 +32,7 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 20px; /* --k-space-5 son 24px */
 }
 
 .icon {
@@ -52,15 +52,15 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 10px; /* --k-space-3 son 12px */
   flex-shrink: 0;
 }
 
-/* TODO SCRUM-15: `h3` es un selector global y alcanza a TODA la app, no solo al
-   navbar de la landing. 'Bungee' no pertenece a la identidad v2 (el token de
-   titulares es --k-font-display), pero cambiarlo aquí afectaría a pantallas de
-   otras fases y de otros tickets. Pendiente de decisión. */
-h3 {
+/* Bungee es la voz de la landing. Va con la especificidad de `.icon h3` porque
+   globals.css declara `h1, h2, h3 { font-family: var(--k-font-display) }`: misma
+   especificidad que un `h3` suelto y se carga después, así que ganaba Playfair.
+   Bungee solo trae versalitas — con Playfair el logo salía como "Kontrol". */
+.landing-nav .icon h3 {
   font-family: 'Bungee';
   letter-spacing: 1px;
 }
@@ -71,13 +71,13 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
-  width: var(--k-target-min-size);
-  height: var(--k-target-min-size);
+  gap: 5px; /* --k-space-1 son 4px */
+  width: 40px;
+  height: 40px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: var(--k-space-1);
   flex-shrink: 0;
 }
 
@@ -92,7 +92,7 @@ h3 {
   width: 22px;
   height: 2px;
   background: var(--k-color-text);
-  border-radius: 2px;
+  border-radius: var(--k-radius-xs);
   transition: transform 0.3s, opacity 0.3s;
   transform-origin: center;
 }
@@ -106,7 +106,7 @@ h3 {
   width: 80%;
   background: var(--k-color-tertiary);
   border: 3px solid var(--k-color-border);
-  border-radius: var(--k-radius-xl);
+  border-radius: 24px; /* --k-radius-lg son 12px: la mitad */
   margin-top: var(--k-space-2);
   padding: 0 var(--k-space-5);
   max-height: 0;
@@ -141,9 +141,9 @@ h3 {
 
 .mobile-actions {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* --k-space-3 son 12px */
   padding-top: var(--k-space-4);
-  border-top: 1px solid var(--k-color-border);
+  border-top: var(--k-border-width) solid var(--k-color-border);
   margin-top: var(--k-space-2);
 }
 
