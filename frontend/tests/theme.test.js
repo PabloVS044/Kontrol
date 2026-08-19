@@ -123,11 +123,19 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
     ],
+    rampaNeutra: [
+      '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
+      '--k-shade-5', '--k-shade-6', '--k-shade-7',
+      '--k-gray-1', '--k-gray-2', '--k-gray-3',
+      '--k-gray-4', '--k-gray-5', '--k-gray-6',
+    ],
     tipografiaIntermedia: [
       '--k-font-size-heading-2',
       '--k-font-size-body-small',
       '--k-font-size-caption-lg',
+      '--k-font-size-display-2',
     ],
+    radiosExtra: ['--k-radius-xs', '--k-radius-field'],
     alertas: [
       '--k-alert-watching-bg',
       '--k-alert-watching-border',
@@ -171,6 +179,13 @@ describe('theme.css — catálogo de tokens', () => {
     expect(valores[4]).toBeGreaterThan(valores[3])
   })
 
+  it('mantiene la rampa neutra realmente neutra (R=G=B)', () => {
+    for (const [, name, hex] of themeCss.matchAll(/(--k-(?:shade|gray)-\d):\s*(#[0-9a-f]{6});/gi)) {
+      const [r, g, b] = [1, 3, 5].map((i) => hex.slice(i, i + 2))
+      expect(r === g && g === b, `${name} = ${hex} no es un gris neutro`).toBe(true)
+    }
+  })
+
   it('deriva las alertas de la paleta, sin colores de Tailwind', () => {
     // El PR #86 traía #facc15 / #f97316 / #fb7185 (ámbar, naranja y rosa por
     // defecto de Tailwind). Ningún token de alerta puede llevar un hex: todos
@@ -179,6 +194,50 @@ describe('theme.css — catálogo de tokens', () => {
     for (const [, valor] of themeCss.matchAll(alerta)) {
       expect(valor, `token de alerta con literal de color: ${valor}`).not.toMatch(/#[0-9a-f]{3,8}/i)
       expect(valor).toMatch(/var\(--k-/)
+    }
+  })
+
+  /**
+   * Contraste real de cada nivel de alerta.
+   *
+   * No basta con que fondo y texto sean distintos: `critical` cumplía esa
+   * condición y aun así se quedaba en 4.39:1 con el tinte al 12 %, por debajo
+   * del 4.5:1 que WCAG AA pide para texto normal —y estas píldoras van a 9-12px.
+   * Se compone el tinte sobre el fondo de tarjeta y se mide.
+   */
+  it('cada nivel de alerta supera 4.5:1 de contraste', () => {
+    const hex = (h) => {
+      const x = h.replace('#', '')
+      const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+      return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
+    }
+    const resolve = (v) => {
+      let s = v.trim()
+      while (s.startsWith('var(')) s = themeCss.match(new RegExp(`${s.match(/var\((--[\w-]+)\)/)[1]}:\s*([^;]+);`))[1].trim()
+      return s
+    }
+    const rgba = (v) => {
+      const s = resolve(v)
+      if (s.startsWith('#')) return [...hex(s), 1]
+      const m = s.match(/rgba?\(\s*var\((--[\w-]+)\)\s*,\s*([\d.]+)\)/)
+      if (m) return [...themeCss.match(new RegExp(`${m[1]}:\s*([^;]+);`))[1].split(',').map(Number), Number(m[2])]
+      const p = s.match(/rgba?\(([^)]+)\)/)[1].split(',').map(Number)
+      return [p[0], p[1], p[2], p[3] ?? 1]
+    }
+    const lum = (c) =>
+      c.slice(0, 3).map((v) => {
+        const x = v / 255
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+      }).reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
+
+    const GROUND = [17, 17, 17] // #111111, el fondo de tarjeta más claro en uso
+    for (const nivel of ['watching', 'warning', 'critical', 'ok']) {
+      const t = rgba(`var(--k-alert-${nivel}-text)`)
+      const b = rgba(`var(--k-alert-${nivel}-bg)`)
+      const comp = [0, 1, 2].map((i) => Math.round(b[i] * b[3] + GROUND[i] * (1 - b[3])))
+      const [hi, lo] = [lum(t), lum(comp)].sort((a, z) => z - a)
+      const ratio = (hi + 0.05) / (lo + 0.05)
+      expect(ratio, `alerta ${nivel}: ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
     }
   })
 

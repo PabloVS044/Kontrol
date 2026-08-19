@@ -110,8 +110,8 @@ function areaLabel(area) {
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 .area-badge {
-  font-size: 11px; color: #c9a962;
-  background: #c9a962; border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px; color: var(--Primary);
+  background: var(--k-surface-primary-tint); border: 1px solid rgba(201,169,98,0.2);
   padding: 3px 10px; white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }

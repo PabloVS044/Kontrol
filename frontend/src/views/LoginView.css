@@ -137,8 +137,8 @@
   z-index: 1; /* por encima de .login-form-panel::before */
   width: 100%;
   max-width: 620px;
-  /* TOKEN PENDIENTE: #111111 es más oscuro que --k-color-tertiary (#12120e). */
-  background: #111111;
+  /* TOKEN PENDIENTE: var(--k-shade-3) es más oscuro que --k-color-tertiary (#12120e). */
+  background: var(--k-shade-3);
   border: none;
   border-radius: 0;
   padding: 0;
@@ -148,7 +148,7 @@
 .login-title {
   /* TOKEN PENDIENTE (escala tipográfica): 2rem = 32px. El paso más cercano es
      --k-font-size-heading-1 (24px), que encogía el título un 25 %. */
-  font-size: 2rem;
+  font-size: var(--k-font-size-display-2);
   font-weight: var(--k-font-weight-bold);
   color: var(--Text);
   margin: 0 0 var(--k-space-5);
@@ -184,7 +184,7 @@
   background: var(--InputBg);
   border: 1px solid var(--Border);
   /* TOKEN PENDIENTE: radio 6px. La escala salta de 4px (sm) a 8px (md). */
-  border-radius: 6px;
+  border-radius: var(--k-radius-field);
   color: var(--Text);
   /* TOKEN PENDIENTE: 0.92rem = 14.7px; --k-font-size-body-main son 14px. */
   font-size: 0.92rem;
@@ -290,7 +290,7 @@
     linear-gradient(180deg, #f3d489 0%, #d6a955 45%, #b8862f 100%);
   /* El texto del botón es blanco con sombra, no --k-form-btn-text (#0e0c08):
      el token invertía el contraste del CTA principal. */
-  color: #ffffff;
+  color: rgb(var(--k-color-white-rgb));
   text-shadow: 0 1px 2px rgba(var(--k-color-black-rgb), 0.35);
   font-weight: var(--k-font-weight-bold);
   /* TOKEN PENDIENTE: 0.98rem = 15.7px. */
@@ -404,7 +404,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 0.6rem;
-  /* TOKEN PENDIENTE (superficies): #1a1a1a → #0e0e0e. --k-color-bg-3 (#282825)
+  /* TOKEN PENDIENTE (superficies): var(--k-shade-4) → #0e0e0e. --k-color-bg-3 (#282825)
      aclaraba demasiado la parte superior del botón. */
   background:
     linear-gradient(
@@ -415,7 +415,7 @@
     linear-gradient(180deg, #1a1a1a, #0e0e0e);
   border: 1px solid var(--Border);
   border-radius: var(--k-radius-md);
-  color: #ffffff;
+  color: rgb(var(--k-color-white-rgb));
   /* TOKEN PENDIENTE: 0.82rem = 13.1px. */
   font-size: 0.82rem;
   font-family: 'DM Sans', sans-serif;
@@ -473,14 +473,14 @@
 /* ── Banners ── */
 .login-banner {
   padding: 0.7rem 0.9rem;
-  border-radius: 6px;
+  border-radius: var(--k-radius-field);
   font-size: 0.83rem;
   margin-bottom: var(--k-space-4);
 }
 /* Antes el fondo y el texto eran ambos #e05252: el mensaje de error era
    ilegible. Se conserva el arreglo de contraste — es un bug, no estética. */
 .login-banner--error {
-  background: rgba(var(--k-color-error-rgb), 0.12);
+  background: rgba(var(--k-color-error-rgb), 0.08);
   border: 1px solid var(--ErrorText);
   color: var(--ErrorText);
 }

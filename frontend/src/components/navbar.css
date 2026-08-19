@@ -86,7 +86,7 @@ ul {
   width: 22px;
   height: 2px;
   background: var(--Text);
-  border-radius: 2px;
+  border-radius: var(--k-radius-xs);
   transition: transform 0.3s, opacity 0.3s;
   transform-origin: center;
 }
