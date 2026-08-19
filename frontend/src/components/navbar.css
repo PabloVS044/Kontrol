@@ -4,7 +4,7 @@ body {
 
 .nav-container {
   position: fixed;
-  top: var(--k-space-5);
+  top: 20px; /* --k-space-5 son 24px: no equivale */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,15 +18,13 @@ body {
   border-radius: var(--k-radius-pill);
   justify-content: space-between;
   align-items: center;
-  width: 85%;
-  height: 72px;
-  border: 2px solid var(--Border);
-  background-color: var(--Background2);
-  padding: 0 var(--k-space-5);
+  width: 80%;
+  height: 80px;
+  border: 3px solid var(--Border);
+  background-color: var(--Tertiary);
   padding-left: 40px;
   padding-right: 20px;
   box-sizing: border-box;
-  backdrop-filter: blur(10px);
 }
 
 ul {
@@ -34,7 +32,7 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--k-space-5);
+  gap: 20px; /* --k-space-5 son 24px */
 }
 
 .icon {
@@ -43,13 +41,6 @@ ul {
   justify-content: center;
   gap: var(--k-space-2);
   flex-shrink: 0;
-}
-
-.icon h3 {
-  font-family: var(--k-font-display), 'Bungee', cursive;
-  font-size: var(--k-font-size-heading-2);
-  color: var(--Text);
-  margin: 0;
 }
 
 .icon img {
@@ -61,13 +52,15 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--k-space-3);
+  gap: 10px; /* --k-space-3 son 12px */
   flex-shrink: 0;
 }
 
+/* Bungee es la voz de la landing. --k-font-display (Playfair Display) es la
+   familia de la app; cambiarla aquí reescribía la identidad de la portada. */
 h3 {
-  font-family: var(--k-font-display), 'Bungee', sans-serif;
-  letter-spacing: var(--k-tracking-caps);
+  font-family: 'Bungee';
+  letter-spacing: 1px;
 }
 
 /* ─── Hamburger button ───────────────────────────────────────────────────── */
@@ -76,7 +69,7 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--k-space-1);
+  gap: 5px; /* --k-space-1 son 4px */
   width: 40px;
   height: 40px;
   background: none;
@@ -88,13 +81,12 @@ h3 {
 
 .hamburger span {
   display: block;
-  width: 20px;
+  width: 22px;
   height: 2px;
   background: var(--Text);
-  border-radius: var(--k-radius-sm);
+  border-radius: 2px;
   transition: transform 0.3s, opacity 0.3s;
   transform-origin: center;
-  background: var(--Text);
 }
 
 .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -103,10 +95,10 @@ h3 {
 
 /* ─── Mobile menu ────────────────────────────────────────────────────────── */
 .mobile-menu {
-  width: 85%;
-  background: var(--Background2);
-  border: 2px solid var(--Border);
-  border-radius: var(--k-radius-lg);
+  width: 80%;
+  background: var(--Tertiary);
+  border: 3px solid var(--Border);
+  border-radius: 24px; /* --k-radius-lg son 12px: la mitad */
   margin-top: var(--k-space-2);
   padding: 0 var(--k-space-5);
   max-height: 0;
@@ -141,7 +133,7 @@ h3 {
 
 .mobile-actions {
   display: flex;
-  gap: var(--k-space-3);
+  gap: 10px; /* --k-space-3 son 12px */
   padding-top: var(--k-space-4);
   border-top: var(--k-border-width) solid var(--Border);
   margin-top: var(--k-space-2);
