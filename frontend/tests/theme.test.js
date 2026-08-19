@@ -123,11 +123,19 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
     ],
+    rampaNeutra: [
+      '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
+      '--k-shade-5', '--k-shade-6', '--k-shade-7',
+      '--k-gray-1', '--k-gray-2', '--k-gray-3',
+      '--k-gray-4', '--k-gray-5', '--k-gray-6',
+    ],
     tipografiaIntermedia: [
       '--k-font-size-heading-2',
       '--k-font-size-body-small',
       '--k-font-size-caption-lg',
+      '--k-font-size-display-2',
     ],
+    radiosExtra: ['--k-radius-xs', '--k-radius-field'],
     alertas: [
       '--k-alert-watching-bg',
       '--k-alert-watching-border',
@@ -169,6 +177,13 @@ describe('theme.css — catálogo de tokens', () => {
     for (let i = 1; i < valores.length; i++) expect(valores[i]).toBeGreaterThan(valores[i - 1])
     // El overlay del modal queda por debajo de su propio diálogo.
     expect(valores[4]).toBeGreaterThan(valores[3])
+  })
+
+  it('mantiene la rampa neutra realmente neutra (R=G=B)', () => {
+    for (const [, name, hex] of themeCss.matchAll(/(--k-(?:shade|gray)-\d):\s*(#[0-9a-f]{6});/gi)) {
+      const [r, g, b] = [1, 3, 5].map((i) => hex.slice(i, i + 2))
+      expect(r === g && g === b, `${name} = ${hex} no es un gris neutro`).toBe(true)
+    }
   })
 
   it('deriva las alertas de la paleta, sin colores de Tailwind', () => {

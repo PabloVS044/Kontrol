@@ -162,6 +162,43 @@
   --k-alert-ok-border: rgba(var(--k-color-success-rgb), 0.6);
   --k-alert-ok-text: var(--k-state-success-text);
 
+  /* ── rampa neutra ───────────────────────────────────────── */
+  /* Figma define la identidad cálida —dorados, marrones, rampa de texto
+     cálida— pero la aplicación está construida sobre una rampa NEUTRA de
+     grises que ninguna lámina recoge. Medido sobre `src/`: unos 700 usos
+     literales repartidos por casi todas las pantallas (`#111` 164 veces,
+     `#1f1f1f` 136, `#555` 119, `#0a0a0a` 91…).
+     No es decoración de un componente suelto: es la mitad del sistema que
+     faltaba por declarar. Los valores son exactamente los que ya se usan, así
+     que sustituirlos no cambia un solo píxel. */
+  --k-shade-1: #0a0a0a; /* fondo de barra / superficie más profunda */
+  --k-shade-2: #0f0f0f; /* dropdowns y paneles flotantes */
+  --k-shade-3: #111111; /* tarjetas sobre fondo oscuro */
+  --k-shade-4: #1a1a1a; /* separadores y hover de fila */
+  --k-shade-5: #1e1e1e;
+  --k-shade-6: #1f1f1f; /* bordes neutros */
+  --k-shade-7: #2a2a2a; /* borde de control interactivo */
+
+  /* Texto neutro: gris frío, distinto de la rampa cálida `--k-text-*`. */
+  --k-gray-1: #333333; /* etiquetas de sección — bajo contraste, uso decorativo */
+  --k-gray-2: #444444;
+  --k-gray-3: #555555; /* texto terciario, estado inactivo */
+  --k-gray-4: #666666;
+  --k-gray-5: #888888;
+  --k-gray-6: #8f8f8f;
+
+  /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de
+     Figma es #caa860 (29 usos). Difieren en uno o dos puntos por canal —por
+     debajo del umbral de percepción— pero la divergencia es sistémica y
+     conviene unificarla en una pasada propia, no de rondón. */
+
+  /* ── pasos de tamaño que faltaban ───────────────────────── */
+  /* Ambos los usa el diseño aprobado de login y registro; sin ellos, migrar
+     esas pantallas obligaba a redondear y encogía el título un 25 %. */
+  --k-font-size-display-2: 32px; /* título de las pantallas de autenticación */
+  --k-radius-field: 6px; /* inputs y banners: la escala salta de 4 a 8 */
+  --k-radius-xs: 2px; /* trazos finos, p. ej. las barras del menú hamburguesa */
+
   /* ── interlineado ───────────────────────────────────────── */
   /* Los tres valores ya estaban en uso literal en `globals.css` (body 1.5,
      h1-h3 1.15). Se tokenizan tal cual; no cambia ningún render. */
