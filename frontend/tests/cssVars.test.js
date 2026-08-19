@@ -1,0 +1,358 @@
+import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve, relative } from 'node:path'
+
+/**
+ * Integridad de las CSS custom properties (Fase 0 del saneamiento de estilos).
+ *
+ * Por qué existe: el PR #86 migró 13 componentes a un juego de variables
+ * (`--space-*`, `--text-*`, `--radius-*`, `--shadow-*`, `--z-*`…) y su último
+ * commit borró las declaraciones, dejando ~260 referencias `var()` colgadas.
+ * Nada lo detectó: `vite build` compila sin error y los 62 tests pasaban. Una
+ * declaración con un `var()` sin resolver no es un error de sintaxis — el
+ * navegador simplemente descarta esa declaración, así que el fallo es
+ * puramente visual y solo se ve abriendo la app.
+ *
+ * Este test cierra ese hueco. Se lee CSS como texto (igual que `theme.test.js`)
+ * porque happy-dom no resuelve cadenas de `var()` anidadas.
+ *
+ * Semántica aplicada:
+ *  - `var(--x)` sin fallback y sin declaración en ningún ámbito → ROMPE.
+ *  - `var(--x, algo)` → no rompe: degrada al fallback. No se reporta.
+ *  - Una variable se considera declarada si está en `theme.css`, en
+ *    `globals.css`, o en cualquier archivo del MISMO directorio — incluidas las
+ *    que los componentes Vue inyectan por `:style="{ '--back': … }"`, que se
+ *    declaran en el `.vue` y se consumen en el `.css` hermano.
+ */
+
+const here = dirname(fileURLToPath(import.meta.url))
+const root = resolve(here, '..')
+
+/** Quita comentarios CSS y HTML: `var(--k-*)` citado en prosa no es una referencia. */
+const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '')
+
+const read = (p) => strip(readFileSync(resolve(root, p), 'utf8'))
+
+/** `--x: valor` — declaración en una hoja o en un bloque `<style>`. */
+const declarations = (s) => [...s.matchAll(/(?:^|[;{\s])(--[\w-]+)\s*:/gm)].map((m) => m[1])
+
+/** `'--x':` — inyección desde un binding `:style` de Vue. */
+const bindings = (s) => [...s.matchAll(/['"](--[\w-]+)['"]\s*:/g)].map((m) => m[1])
+
+/**
+ * Referencias que rompen si no resuelven. El segundo grupo distingue
+ * `var(--x)` de `var(--x, fallback)`; solo el primero se reporta.
+ */
+const hardReferences = (s) =>
+  [...s.matchAll(/var\(\s*(-{2,}[\w-]+)\s*([,)])/g)].filter((m) => m[2] === ')').map((m) => m[1])
+
+const sourceFiles = execFileSync(
+  'find',
+  ['src', '-type', 'f', '(', '-name', '*.css', '-o', '-name', '*.vue', ')'],
+  { cwd: root, encoding: 'utf8' },
+)
+  .trim()
+  .split('\n')
+  .sort()
+
+const globalScope = new Set([...declarations(read('src/styles/theme.css')), ...declarations(read('globals.css'))])
+
+const scopeByDir = new Map()
+for (const file of sourceFiles) {
+  const src = read(file)
+  const dir = dirname(file)
+  if (!scopeByDir.has(dir)) scopeByDir.set(dir, new Set())
+  for (const name of [...declarations(src), ...bindings(src)]) scopeByDir.get(dir).add(name)
+}
+
+/** `{ 'ruta/archivo': ['--var', …] }` con lo que hoy no resuelve. */
+function scanDangling() {
+  const found = {}
+  for (const file of sourceFiles) {
+    const src = read(file)
+    const local = scopeByDir.get(dirname(file))
+    const bad = [...new Set(hardReferences(src).filter((v) => !globalScope.has(v) && !local.has(v)))].sort()
+    if (bad.length) found[file] = bad
+  }
+  return found
+}
+
+/**
+ * DEUDA CONOCIDA — trinquete, mismo criterio que la política de cobertura
+ * (`docs/coverage-ratchet.md`): la lista solo puede encoger.
+ *
+ * Es el inventario exacto de lo que el PR #86 dejó roto. NO es una excepción
+ * permanente: cada entrada se borra de aquí cuando el componente se reconecta a
+ * los tokens `--k-*` (Fase 2). Los tres tests de abajo impiden tanto añadir
+ * referencias nuevas como dejar entradas obsoletas en la lista.
+ *
+ * Las variables sin equivalente en `theme.css` (`--text-xs/sm/lg`, `--leading-*`,
+ * `--tracking-*`, `--transition-ui`, `--border-width`, `--z-*`, las superficies
+ * de alerta) necesitan que Diseño defina el token antes de poder migrarse: esa
+ * es la Fase 1.
+ */
+const KNOWN_DEBT = {
+  'src/components/AppNavbar.vue': [
+    '--Background-hover-subtle',
+    '--PrimaryVariation',
+    '--PrimaryVariation2',
+    '--TextSoft',
+    '--border-width',
+    '--font-display',
+    '--font-sans',
+    '--radius-md',
+    '--radius-sm',
+    '--radius-xs',
+    '--shadow-modal',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--space-4',
+    '--space-5',
+    '--space-6',
+    '--text-2xs',
+    '--text-md',
+    '--text-sm',
+    '--text-xs',
+    '--tracking-caps',
+    '--transition-ui',
+  ],
+  'src/components/UI/Button/Anchor.css': [
+    '--font-sans',
+    '--shadow-glow',
+    '--space-2',
+    '--space-4',
+    '--text-sm',
+    '--transition-ui',
+  ],
+  'src/components/UI/Button/button.css': [
+    '--font-sans',
+    '--shadow-glow',
+    '--space-2',
+    '--space-5',
+    '--text-base',
+    '--transition-ui',
+  ],
+  'src/components/UI/Card/Card.css': [
+    '--TextSoft',
+    '--border-width',
+    '--font-display',
+    '--font-sans',
+    '--leading-normal',
+    '--leading-tight',
+    '--shadow-card',
+    '--shadow-glow',
+    '--space-2',
+    '--space-4',
+    '--space-5',
+    '--text-base',
+    '--text-sm',
+    '--text-xl',
+    '--transition-ui',
+  ],
+  // `shadowColor` recibe por defecto `var(--shadow-card)`: una sombra completa
+  // en la posición de un color dentro de `drop-shadow()`. Inválido aunque el
+  // token existiera — se corrige en la Fase 3.
+  'src/components/UI/Card/Card.vue': ['--shadow-card'],
+  'src/components/UI/Modal/BaseModal.vue': [
+    '--border-width',
+    '--font-display',
+    '--shadow-modal',
+    '--space-1',
+    '--space-3',
+    '--space-5',
+    '--space-6',
+    '--text-xl',
+    '--transition-ui',
+    '--z-modal-overlay',
+  ],
+  'src/components/UI/Pill/Pill.css': [
+    '--border-width',
+    '--font-display',
+    '--space-1',
+    '--space-3',
+    '--space-4',
+    '--space-7',
+    '--text-xs',
+    '--tracking-caps',
+    '--transition-ui',
+  ],
+  'src/components/budget/BudgetAlertBox.vue': [
+    '--Background-alert-box-critical',
+    '--Background-alert-box-warning',
+    '--Background-alert-box-warning-border',
+    '--Background-alert-box-watching',
+    '--Border-alert-box-critical',
+    '--TextSoft',
+    '--alert-header-critical',
+    '--alert-header-warning',
+    '--border-width',
+    '--font-sans',
+    '--leading-normal',
+    '--radius-md',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--space-4',
+    '--text-2xs',
+    '--text-sm',
+    '--text-xs',
+    '--tracking-caps',
+  ],
+  'src/components/budget/ProductFinancialsTable.vue': [
+    '--TextSoft',
+    '--font-mono',
+    '--font-sans',
+    '--leading-normal',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--space-4',
+    '--space-5',
+    '--space-6',
+    '--text-2xs',
+    '--text-md',
+    '--text-sm',
+    '--tracking-caps',
+  ],
+  'src/components/common/ErrorState.vue': [
+    '--font-sans',
+    '--leading-relaxed',
+    '--space-2',
+    '--space-7',
+    '--text-sm',
+    '--text-xl',
+  ],
+  'src/components/common/FormField.vue': [
+    '--border-width',
+    '--font-sans',
+    '--radius-xs',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--text-2xs',
+    '--text-sm',
+    '--text-xs',
+    '--tracking-caps',
+    '--transition-ui',
+  ],
+  'src/components/navbar.css': [
+    '--border-width',
+    '--font-display',
+    '--radius-lg',
+    '--radius-xs',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--space-4',
+    '--space-5',
+    '--text-lg',
+    '--tracking-caps',
+  ],
+  'src/components/reports/ReportsTable.vue': [
+    '--Background-hover-subtle',
+    '--TextSoft',
+    '--border-width',
+    '--font-display',
+    '--font-sans',
+    '--radius-md',
+    '--radius-xs',
+    '--space-1',
+    '--space-2',
+    '--space-3',
+    '--space-4',
+    '--space-5',
+    '--space-6',
+    '--text-2xs',
+    '--text-sm',
+    '--text-xl',
+    '--tracking-caps',
+    '--transition-ui',
+  ],
+}
+
+describe('CSS custom properties — integridad de referencias', () => {
+  const dangling = scanDangling()
+
+  it('no introduce referencias colgadas fuera de la deuda conocida', () => {
+    const nuevas = {}
+    for (const [file, vars] of Object.entries(dangling)) {
+      const permitidas = new Set(KNOWN_DEBT[file] ?? [])
+      const extra = vars.filter((v) => !permitidas.has(v))
+      if (extra.length) nuevas[file] = extra
+    }
+    // Si esto falla: el `var()` no resuelve en ningún ámbito. Declara el token
+    // en theme.css (con prefijo --k-) o usa el que ya existe. No lo añadas a
+    // KNOWN_DEBT: esa lista está congelada y solo encoge.
+    expect(nuevas).toEqual({})
+  })
+
+  it('no deja entradas obsoletas en la deuda conocida', () => {
+    const obsoletas = {}
+    for (const [file, vars] of Object.entries(KNOWN_DEBT)) {
+      const siguenRotas = new Set(dangling[file] ?? [])
+      const yaArregladas = vars.filter((v) => !siguenRotas.has(v))
+      if (yaArregladas.length) obsoletas[file] = yaArregladas
+    }
+    // Si esto falla: arreglaste algo — bórralo de KNOWN_DEBT. Es lo que hace
+    // que el trinquete baje.
+    expect(obsoletas).toEqual({})
+  })
+
+  it('mantiene la deuda acotada a los 13 archivos del PR #86', () => {
+    expect(Object.keys(dangling).sort()).toEqual(Object.keys(KNOWN_DEBT).sort())
+  })
+
+  it('no usa var() con guiones de más', () => {
+    const typos = []
+    for (const file of sourceFiles) {
+      const src = read(file)
+      for (const m of src.matchAll(/var\(\s*-{3,}[\w-]+/g)) {
+        typos.push(`${relative('.', file)}: ${m[0]}`)
+      }
+    }
+    // `var(----x)` es un nombre distinto de `var(--x)` y nunca resuelve.
+    expect(typos).toEqual([])
+  })
+
+  it('no referencia el prefijo desnudo --k- (token a medio escribir)', () => {
+    const parciales = []
+    for (const file of sourceFiles) {
+      const src = read(file)
+      for (const m of src.matchAll(/var\(\s*--k-\s*[,)]/g)) parciales.push(relative('.', file))
+    }
+    expect(parciales).toEqual([])
+  })
+})
+
+describe('LoginView — estética restaurada (0547bbb)', () => {
+  const login = readFileSync(resolve(root, 'src/views/LoginView.css'), 'utf8')
+
+  // Los valores que la migración de SCRUM-13 degradó. Se fijan aquí para que
+  // una futura sustitución automática de literales por tokens no los vuelva a
+  // perder en silencio.
+  const invariantes = [
+    ['título a 32px', /\.login-title\s*\{[^}]*font-size:\s*2rem/],
+    ['CTA con texto blanco', /\.login-btn-primary\s*\{[^}]*color:\s*#ffffff/],
+    ['CTA con text-shadow', /\.login-btn-primary\s*\{[^}]*text-shadow:/],
+    ['CTA con radio de 8px', /\.login-btn-primary\s*\{[^}]*border-radius:\s*var\(--k-radius-md\)/],
+    ['disabled legible al 0.55', /\.login-btn-primary:disabled\s*\{[^}]*opacity:\s*0\.55/],
+    ['input con radio de 6px', /\.login-input\s*\{[^}]*border-radius:\s*6px/],
+    ['panel con radio de 22px', /border-radius:\s*22px 0 0 22px/],
+    ['hover del CTA que eleva', /\.login-btn-primary:hover:not\(:disabled\)\s*\{[^}]*translateY\(-1px\)/],
+  ]
+
+  it.each(invariantes)('conserva: %s', (_nombre, patron) => {
+    expect(login).toMatch(patron)
+  })
+
+  it('escala el título en cada breakpoint en vez de dejarlo fijo', () => {
+    // SCRUM-13 borró estos overrides asumiendo que la escala de tokens los
+    // cubría; el título quedó a 24px desde 1440px hasta 320px.
+    for (const size of ['1.7rem', '1.6rem', '1.45rem', '1.4rem', '1.3rem']) {
+      expect(login).toContain(`font-size: ${size}`)
+    }
+  })
+})
