@@ -1,40 +1,34 @@
 a.anchor {
   text-decoration: none;
-  color: var(--color, var(--BtnText));
+  /* Sin fallback a propósito: ver Anchor.vue. */
+  color: var(--color);
   width: auto;
   height: auto;
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: var(--background, var(--Primary));
-  border-radius: var(--k-radius-md);
-  padding: var(--k-space-2) var(--k-space-4);
-  transition: var(--k-transition-ui);
-  font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-small);
+  background-color: var(--background);
+  border-radius: var(--k-radius-pill);
+  padding: 10px 15px;
+  transition: all 0.8s;
+  font-family: 'DM Sans';
   gap: var(--k-space-2);
-  min-height: 40px;
 }
 
 .anchor img {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
+/* Antes era `a:hover`, que pintaba el fondo de CUALQUIER enlace de la página.
+   Acotarlo a `.anchor` es un arreglo real, no un cambio estético. */
 a.anchor:hover {
-  background-color: var(--hover, var(--Primary2));
-  filter: brightness(var(--k-state-hover-brightness));
-  box-shadow: var(--k-shadow-glow);
-  transform: translateY(-1px);
+  background-color: var(--hover);
 }
 
-a.anchor:focus-visible{
+a.anchor:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
-}
-
-a.anchor:active {
-  transform: scale(var(--k-state-active-scale));
 }

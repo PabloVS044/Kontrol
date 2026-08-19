@@ -56,9 +56,11 @@ ul {
   flex-shrink: 0;
 }
 
-/* Bungee es la voz de la landing. --k-font-display (Playfair Display) es la
-   familia de la app; cambiarla aquí reescribía la identidad de la portada. */
-h3 {
+/* Bungee es la voz de la landing. Va con la especificidad de `.icon h3` porque
+   globals.css declara `h1, h2, h3 { font-family: var(--k-font-display) }`: misma
+   especificidad que un `h3` suelto y se carga después, así que ganaba Playfair.
+   Bungee solo trae versalitas — con Playfair el logo salía como "Kontrol". */
+.landing-nav .icon h3 {
   font-family: 'Bungee';
   letter-spacing: 1px;
 }
