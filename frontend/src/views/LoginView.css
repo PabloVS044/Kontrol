@@ -86,22 +86,55 @@
   min-height: 100vh;
   padding: var(--k-space-7) 5rem;
   box-sizing: border-box;
-  /* TOKEN PENDIENTE (superficies de degradado): #0c0c0c y #050505 son stops de
-     composición, más oscuros que --k-color-tertiary (#12120e). Sustituirlos por
-     el token aclaraba el panel; se dejan literales. */
-  background:
-    radial-gradient(120% 80% at 0% 50%, rgba(var(--k-color-primary-rgb), 0.1), transparent 55%),
-    linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
   border-right: none;
   /* TOKEN PENDIENTE: radio 22px. --k-radius-xl son 24px. */
   border-radius: 22px 0 0 22px;
-  box-shadow:
-    -30px 0 80px rgba(var(--k-color-black-rgb), 0.55),
-    inset 1px 0 0 rgba(var(--k-color-white-rgb), 0.04);
+}
+
+/**
+ * El fondo del panel vive en su propia capa para poder difuminar el borde
+ * izquierdo: enmascarar `.login-form-panel` directamente difuminaría también
+ * el formulario, que es contenido, no fondo.
+ *
+ * Antes el panel cortaba en seco contra el fondo de partículas — borde recto a
+ * todo lo alto, esquinas de 22px marcadas y un `inset 1px 0 0` blanco al 4 %
+ * que dibujaba literalmente una línea sobre la costura. Ese inset y la sombra
+ * exterior se han retirado: ahora la transición la hace la máscara.
+ *
+ * TOKEN PENDIENTE (superficies de degradado): #0c0c0c y #050505 son stops de
+ * composición, más oscuros que --k-color-tertiary (#12120e).
+ */
+.login-form-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 80% at 0% 50%, rgba(var(--k-color-primary-rgb), 0.1), transparent 55%),
+    linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
+  /* Los stops intermedios aproximan una entrada suave: un degradado lineal de
+     dos paradas deja una banda perceptible sobre un fondo tan oscuro. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.35) 80px,
+    rgba(0, 0, 0, 0.8) 190px,
+    #000 300px
+  );
+  pointer-events: none;
 }
 
 /* ── Card ── */
 .login-card {
+  position: relative;
+  z-index: 1; /* por encima de .login-form-panel::before */
   width: 100%;
   max-width: 620px;
   /* TOKEN PENDIENTE: #111111 es más oscuro que --k-color-tertiary (#12120e). */
@@ -546,6 +579,12 @@
     box-shadow: 0 -20px 60px rgba(var(--k-color-black-rgb), 0.5);
     margin-top: -40px;
   }
+  /* Apilado: el panel queda debajo del logo, así que el borde a difuminar es
+     el superior, no el izquierdo. */
+  .login-form-panel::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+  }
   .login-field {
     margin-bottom: 0.7rem;
   }
@@ -673,5 +712,10 @@
     padding: 1.4rem 1.6rem;
     border-radius: 0;
     border: none;
+  }
+  /* Ocupa todo el ancho y no linda con nada: no hay costura que difuminar. */
+  .login-form-panel::before {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
