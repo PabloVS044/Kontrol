@@ -13,7 +13,7 @@
           <span class="empresa-name">{{ authStore.empresaActual?.nombre ?? '—' }}</span>
           <span class="empresa-role">{{ authStore.empresaActual?.rol ?? '' }}</span>
           <svg class="chevron" :class="{ open: dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 4l4 4 4-4" stroke="#555" stroke-width="1.4" stroke-linecap="square"/>
+            <path d="M2 4l4 4 4-4" stroke="var(--k-gray-3)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
         </div>
 
@@ -194,7 +194,7 @@ const closeMenu = () => {
   top: 0; left: 0; right: 0;
   height: 56px;
   background: #0b0b0b;
-  border-bottom: var(--k-border-width) solid #1f1f1f;
+  border-bottom: var(--k-border-width) solid var(--k-shade-6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 100;
@@ -217,7 +217,7 @@ const closeMenu = () => {
   text-decoration: none;
   flex-shrink: 0;
   padding-right: var(--k-space-5);
-  border-right: var(--k-border-width) solid #1a1a1a;
+  border-right: var(--k-border-width) solid var(--k-shade-4);
   margin-right: var(--k-space-3);
 }
 
@@ -240,7 +240,7 @@ const closeMenu = () => {
   flex-shrink: 0;
   padding: 0 var(--k-space-4);
   cursor: pointer;
-  border-right: var(--k-border-width) solid #1a1a1a;
+  border-right: var(--k-border-width) solid var(--k-shade-4);
   margin-right: var(--k-space-3);
   position: relative;
 }
@@ -288,8 +288,8 @@ const closeMenu = () => {
 }
 
 :global(.empresa-dropdown) {
-  background: #0f0f0f;
-  border: var(--k-border-width) solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
   min-width: 220px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   display: flex;
@@ -300,7 +300,7 @@ const closeMenu = () => {
   font-family: var(--k-font-sans);
   font-size: 10px;
   letter-spacing: 0.1em;
-  /* Estaba en #333 sobre fondo #0f0f0f: ratio ~1.2:1, ilegible. Es el único
+  /* Estaba en var(--k-gray-1) sobre fondo var(--k-shade-2): ratio ~1.2:1, ilegible. Es el único
      cambio del PR #86 que se conserva aquí — es contraste, no estética. */
   color: var(--TextMuted);
   padding: 12px 16px 6px;
@@ -320,7 +320,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-item:hover) {
-  background: #111111;
+  background: var(--k-shade-3);
 }
 
 :global(.dd-item.active) {
@@ -339,14 +339,14 @@ const closeMenu = () => {
 
 :global(.dd-item-role) {
   font-size: 10px;
-  color: #555;
+  color: var(--k-gray-3);
   flex-shrink: 0;
   text-transform: capitalize;
 }
 
 :global(.dd-divider) {
   height: 1px;
-  background: #1a1a1a;
+  background: var(--k-shade-4);
   margin: 4px 0;
 }
 
@@ -377,7 +377,7 @@ const closeMenu = () => {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
   font-weight: 500;
-  color: #555;
+  color: var(--k-gray-3);
   text-decoration: none;
   padding: 0 var(--k-space-4);
   display: flex;
@@ -438,7 +438,7 @@ const closeMenu = () => {
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: #444;
+  color: var(--k-gray-2);
   transition: color 0.15s;
   border-radius: var(--k-radius-sm);
 }
@@ -450,8 +450,8 @@ const closeMenu = () => {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: #0f0f0f;
-  border: var(--k-border-width) solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
   padding: 4px;
   display: flex;
   flex-direction: column;
@@ -467,7 +467,7 @@ const closeMenu = () => {
   padding: 7px 10px;
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
-  color: #555;
+  color: var(--k-gray-3);
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
@@ -478,7 +478,7 @@ const closeMenu = () => {
 .appnav-avatar {
   width: 32px;
   height: 32px;
-  background: #1f1f1f;
+  background: var(--k-shade-6);
   border: var(--k-border-width) solid #2e2e2e;
   display: flex;
   align-items: center;
@@ -491,7 +491,7 @@ const closeMenu = () => {
 }
 
 .appnav-avatar:hover {
-  border-color: #555;
+  border-color: var(--k-gray-3);
 }
 
 /* Tablet */
@@ -552,7 +552,7 @@ const closeMenu = () => {
     left: 0;
     right: 0;
     background: #090909;
-    border-bottom: var(--k-border-width) solid #1f1f1f;
+    border-bottom: var(--k-border-width) solid var(--k-shade-6);
     flex-direction: column;
     padding: 20px 0;
     gap: var(--k-space-4);

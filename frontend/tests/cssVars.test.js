@@ -156,23 +156,49 @@ describe('CSS custom properties — integridad de referencias', () => {
 
 describe('LoginView — estética restaurada (0547bbb)', () => {
   const login = readFileSync(resolve(root, 'src/views/LoginView.css'), 'utf8')
+  const theme = readFileSync(resolve(root, 'src/styles/theme.css'), 'utf8')
 
-  // Los valores que la migración de SCRUM-13 degradó. Se fijan aquí para que
-  // una futura sustitución automática de literales por tokens no los vuelva a
-  // perder en silencio.
+  /** `--k-x` → su valor declarado en theme.css. */
+  const tokenValue = Object.fromEntries(
+    [...strip(theme).matchAll(/(--k-[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
+  )
+
+  /** Resuelve los `var(--k-*)` de una declaración a su valor final. */
+  const resolver = (v) =>
+    v.replace(/var\((--[\w-]+)\)/g, (raw, t) => tokenValue[t] ?? raw).trim()
+
+  /** Valor final de `prop` dentro del primer bloque que casa con `selector`. */
+  function valorDe(selector, prop) {
+    const m = login.match(new RegExp(`${selector}\\s*\\{[^}]*?${prop}:\\s*([^;]+);`))
+    return m ? resolver(m[1]) : null
+  }
+
+  /**
+   * Se comprueba el VALOR RESUELTO, no cómo esté escrito. Así el test sobrevive
+   * a que un literal pase a token —que es justo lo que se quiere fomentar— pero
+   * sigue fallando si el valor cambia, que es lo que degradó la pantalla.
+   */
   const invariantes = [
-    ['título a 32px', /\.login-title\s*\{[^}]*font-size:\s*2rem/],
-    ['CTA con texto blanco', /\.login-btn-primary\s*\{[^}]*color:\s*#ffffff/],
-    ['CTA con text-shadow', /\.login-btn-primary\s*\{[^}]*text-shadow:/],
-    ['CTA con radio de 8px', /\.login-btn-primary\s*\{[^}]*border-radius:\s*var\(--k-radius-md\)/],
-    ['disabled legible al 0.55', /\.login-btn-primary:disabled\s*\{[^}]*opacity:\s*0\.55/],
-    ['input con radio de 6px', /\.login-input\s*\{[^}]*border-radius:\s*6px/],
-    ['panel con radio de 22px', /border-radius:\s*22px 0 0 22px/],
-    ['hover del CTA que eleva', /\.login-btn-primary:hover:not\(:disabled\)\s*\{[^}]*translateY\(-1px\)/],
+    ['título a 32px', '\\.login-title', 'font-size', /^32px$/],
+    ['CTA con texto blanco', '\\.login-btn-primary', 'color', /^(#ffffff|rgb\(\s*255,\s*255,\s*255\s*\))$/i],
+    ['CTA con radio de 8px', '\\.login-btn-primary', 'border-radius', /^8px$/],
+    ['input con radio de 6px', '\\.login-input', 'border-radius', /^6px$/],
+    ['disabled legible al 0.55', '\\.login-btn-primary:disabled', 'opacity', /^0?\.55$/],
   ]
 
-  it.each(invariantes)('conserva: %s', (_nombre, patron) => {
-    expect(login).toMatch(patron)
+  it.each(invariantes)('conserva: %s', (_n, sel, prop, esperado) => {
+    const valor = valorDe(sel, prop)
+    expect(valor, `no se encontró ${prop} en ${sel}`).not.toBeNull()
+    expect(valor).toMatch(esperado)
+  })
+
+  it('conserva el text-shadow y la elevación del CTA', () => {
+    expect(login).toMatch(/\.login-btn-primary\s*\{[^}]*text-shadow:/)
+    expect(login).toMatch(/\.login-btn-primary:hover:not\(:disabled\)\s*\{[^}]*translateY\(-1px\)/)
+  })
+
+  it('conserva el radio de 22px del panel', () => {
+    expect(login).toMatch(/border-radius:\s*22px 0 0 22px/)
   })
 
   it('escala el título en cada breakpoint en vez de dejarlo fijo', () => {
