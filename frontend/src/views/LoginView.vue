@@ -195,7 +195,9 @@ async function handleLogin() {
 
     router.push(getDefaultAuthenticatedRoute(authStore))
   } catch (err) {
-    errorMessage.value = err.message || t('auth.login.errors.generic')
+    errorMessage.value = err.code
+      ? t(`auth.login.errors.${err.code}`)
+      : err.message || t('auth.login.errors.generic')
   } finally {
     isLoading.value = false
   }
