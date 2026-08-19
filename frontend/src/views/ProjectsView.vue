@@ -873,7 +873,7 @@ async function submitProject() {
   background: #111111; border: none; color: #555; cursor: pointer;
   transition: color 0.15s, background 0.15s; border-radius: 2px;
 }
-.lr-btn:hover { color: #c9a962; background: #c9a962; }
+.lr-btn:hover { color: var(--Primary); background: var(--k-surface-primary-tint); }
 
 .lr-pill-col {
   display: flex; align-items: center; justify-content: center;
@@ -930,8 +930,19 @@ async function submitProject() {
   font-size: 12px; padding: 2px 8px; letter-spacing: 0.05em; border-radius: 2px;
   border: 1px solid currentColor;
 }
-.alert-pill.warn     { color: #f97316; background: #f97316; }
-.alert-pill.critical { color: #fb7185; background: #fb7185; }
+/* El texto iba del mismo color que el fondo: la píldora salía maciza y la
+   palabra dentro era invisible. Fondo con tinte, texto sólido — y sobre
+   tokens de paleta, no sobre el naranja y rosa por defecto de Tailwind. */
+.alert-pill.warn {
+  color: var(--k-alert-warning-text);
+  background: var(--k-alert-warning-bg);
+  border-color: var(--k-alert-warning-border);
+}
+.alert-pill.critical {
+  color: var(--k-alert-critical-text);
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
+}
 
 /* Quick access row */
 .card-quick-row {
@@ -949,7 +960,7 @@ async function submitProject() {
   cursor: pointer; transition: color 0.2s, background 0.2s;
 }
 .quick-btn:last-child { border-right: none; }
-.quick-btn:hover { color: #c9a962; background: #c9a962; }
+.quick-btn:hover { color: var(--Primary); background: var(--k-surface-primary-tint); }
 
 .card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .due-date { font-size: 14px; color: #555; }

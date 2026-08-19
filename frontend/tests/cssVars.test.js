@@ -209,3 +209,28 @@ describe('LoginView — estética restaurada (0547bbb)', () => {
     }
   })
 })
+
+describe('CSS — texto legible sobre su propio fondo', () => {
+  /**
+   * `color: X; background: X` deja la palabra invisible dentro de un bloque
+   * macizo. Estaba en nueve sitios de seis archivos —las píldoras de alerta de
+   * proyectos, etiquetas de área, tags de actividad y dos estados hover— y en
+   * todos la intención era un fondo con tinte que alguien olvidó atenuar.
+   */
+  const norm = (h) => {
+    const x = h.toLowerCase().replace('#', '')
+    return x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+  }
+
+  it('no pinta un texto del mismo color que su fondo', () => {
+    const casos = []
+    for (const file of sourceFiles) {
+      const src = read(file)
+      const re = /color:\s*(#[0-9a-f]{3,6})\s*;\s*background(?:-color)?:\s*(#[0-9a-f]{3,6})\s*;/gi
+      for (const m of src.matchAll(re)) {
+        if (norm(m[1]) === norm(m[2])) casos.push(`${relative('.', file)}: ${m[1]}`)
+      }
+    }
+    expect(casos).toEqual([])
+  })
+})

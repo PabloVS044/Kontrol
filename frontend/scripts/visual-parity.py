@@ -76,11 +76,14 @@ def capture(tag):
 
 def compare(a, b):
     worst = 0
+    missing = 0
     for name in TARGETS:
         for vp in VIEWPORTS:
             pa, pb = S / f"{a}_{name}_{vp}.png", S / f"{b}_{name}_{vp}.png"
             if not (pa.exists() and pb.exists()):
-                print(f"  ?   {name}/{vp}: falta captura"); continue
+                # Sin esto, una tanda incompleta reportaba 0 % y daba por buena
+                # una comparación que nunca ocurrió.
+                print(f"  ?   {name}/{vp}: FALTA CAPTURA"); missing += 1; continue
             ia, ib = Image.open(pa).convert("RGB"), Image.open(pb).convert("RGB")
             if ia.size != ib.size:
                 print(f"  DIF {name}/{vp}: TAMAÑO {ia.size} -> {ib.size}"); worst = 999; continue
@@ -90,6 +93,9 @@ def compare(a, b):
             worst = max(worst, pct)
             mark = "OK " if px == 0 else ("~  " if pct < 0.05 else "DIF")
             print(f"  {mark} {name}/{vp}: {px} px ({pct:.4f} %)" + (f" bbox={diff.getbbox()}" if px else ""))
+    if missing:
+        print(f"\nINCOMPLETO: faltan {missing} capturas — la comparación no es concluyente")
+        return 999
     print(f"\nmáxima divergencia: {worst:.4f} %")
     return worst
 
@@ -97,4 +103,4 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print(__doc__); sys.exit(2)
     if sys.argv[1] == "capture": capture(sys.argv[2])
-    else: compare(sys.argv[2], sys.argv[3])
+    else: sys.exit(0 if compare(sys.argv[2], sys.argv[3]) == 0 else 1)

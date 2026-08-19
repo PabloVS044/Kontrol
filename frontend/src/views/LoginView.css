@@ -480,7 +480,7 @@
 /* Antes el fondo y el texto eran ambos #e05252: el mensaje de error era
    ilegible. Se conserva el arreglo de contraste — es un bug, no estética. */
 .login-banner--error {
-  background: rgba(var(--k-color-error-rgb), 0.12);
+  background: rgba(var(--k-color-error-rgb), 0.08);
   border: 1px solid var(--ErrorText);
   color: var(--ErrorText);
 }

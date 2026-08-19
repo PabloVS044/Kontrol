@@ -197,6 +197,50 @@ describe('theme.css — catálogo de tokens', () => {
     }
   })
 
+  /**
+   * Contraste real de cada nivel de alerta.
+   *
+   * No basta con que fondo y texto sean distintos: `critical` cumplía esa
+   * condición y aun así se quedaba en 4.39:1 con el tinte al 12 %, por debajo
+   * del 4.5:1 que WCAG AA pide para texto normal —y estas píldoras van a 9-12px.
+   * Se compone el tinte sobre el fondo de tarjeta y se mide.
+   */
+  it('cada nivel de alerta supera 4.5:1 de contraste', () => {
+    const hex = (h) => {
+      const x = h.replace('#', '')
+      const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+      return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
+    }
+    const resolve = (v) => {
+      let s = v.trim()
+      while (s.startsWith('var(')) s = themeCss.match(new RegExp(`${s.match(/var\((--[\w-]+)\)/)[1]}:\s*([^;]+);`))[1].trim()
+      return s
+    }
+    const rgba = (v) => {
+      const s = resolve(v)
+      if (s.startsWith('#')) return [...hex(s), 1]
+      const m = s.match(/rgba?\(\s*var\((--[\w-]+)\)\s*,\s*([\d.]+)\)/)
+      if (m) return [...themeCss.match(new RegExp(`${m[1]}:\s*([^;]+);`))[1].split(',').map(Number), Number(m[2])]
+      const p = s.match(/rgba?\(([^)]+)\)/)[1].split(',').map(Number)
+      return [p[0], p[1], p[2], p[3] ?? 1]
+    }
+    const lum = (c) =>
+      c.slice(0, 3).map((v) => {
+        const x = v / 255
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+      }).reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
+
+    const GROUND = [17, 17, 17] // #111111, el fondo de tarjeta más claro en uso
+    for (const nivel of ['watching', 'warning', 'critical', 'ok']) {
+      const t = rgba(`var(--k-alert-${nivel}-text)`)
+      const b = rgba(`var(--k-alert-${nivel}-bg)`)
+      const comp = [0, 1, 2].map((i) => Math.round(b[i] * b[3] + GROUND[i] * (1 - b[3])))
+      const [hi, lo] = [lum(t), lum(comp)].sort((a, z) => z - a)
+      const ratio = (hi + 0.05) / (lo + 0.05)
+      expect(ratio, `alerta ${nivel}: ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
   it('nunca pinta la cabecera de una alerta del mismo color que su fondo', () => {
     // watching usaba el mismo amarillo para fondo y cabecera: texto invisible.
     for (const nivel of ['watching', 'warning', 'critical', 'ok']) {

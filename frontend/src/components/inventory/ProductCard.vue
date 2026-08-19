@@ -161,7 +161,9 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
 .card-project-tag {
   font-size: 11px;
   color: #60a5fa;
-  background: #60a5fa;
+  /* La paleta no tiene azul; se deja el literal con el tinte que faltaba en
+     vez de inventar un color de marca. */
+  background: rgba(96, 165, 250, 0.14);
   padding: 2px 6px;
   border-radius: 3px;
   align-self: flex-start;

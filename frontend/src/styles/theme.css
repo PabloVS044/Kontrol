@@ -154,7 +154,7 @@
   --k-alert-warning-border: rgba(var(--k-color-primary-rgb), 0.55);
   --k-alert-warning-text: var(--k-color-primary);
 
-  --k-alert-critical-bg: rgba(var(--k-color-error-rgb), 0.12);
+  --k-alert-critical-bg: rgba(var(--k-color-error-rgb), 0.08);
   --k-alert-critical-border: rgba(var(--k-color-error-rgb), 0.6);
   --k-alert-critical-text: var(--k-state-error-text);
 
