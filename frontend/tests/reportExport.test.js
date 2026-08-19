@@ -9,6 +9,7 @@ import {
   buildExportRegistration,
 } from '../src/utils/reportExport.js'
 import { slugify, fileDateStamp } from '../src/utils/download.js'
+import { statusLabel, statusPill, priorityColor, formatDate, formatBudget } from '../src/utils/statusHelpers.js'
 
 // Stand-in for vue-i18n's `t`. Interpolates the params the exporters pass so
 // assertions read like the strings a user would see.
@@ -22,6 +23,10 @@ const t = (key, params = {}) => {
     'reports.view.colStatus': 'Estado',
     'reports.view.colStartDate': 'Fecha de Inicio',
     'reports.header.title': 'Centro de Reportes',
+    'reports.view.kpi.projects': `${params.count} proyectos`,
+    'reports.view.kpi.ofTotal': `de ${params.total}`,
+    'reports.view.kpi.completionRate': `${params.pct}% completado`,
+    'reports.view.kpi.budgetUsed': `${params.pct}% usado`,
   }
   return canned[key] ?? key
 }
@@ -287,5 +292,95 @@ describe('download — nombres de archivo', () => {
 
   it('sella la fecha local, no la UTC', () => {
     expect(fileDateStamp(new Date(2026, 0, 5))).toBe('2026-01-05')
+  })
+})
+
+/**
+ * Los exportadores reciben lo que la pantalla tenga cargado en ese momento, que
+ * no siempre esta completo: un proyecto recien creado no trae metricas, y el
+ * endpoint de KPIs puede no haber respondido cuando el usuario pulsa exportar.
+ * El artefacto igual debe salir con ceros, nunca con "undefined%" ni "NaN".
+ */
+describe('reportExport — degradacion con datos incompletos', () => {
+  it('rinde las tarjetas en cero cuando los KPIs no llegaron', () => {
+    const dataset = makeDataset({ kpis: {} })
+    const values = dataset.kpis.map((card) => card.value)
+
+    expect(values).toEqual(['0%', '0', '0', formatBudget(0)])
+    expect(values.join(' ')).not.toMatch(/undefined|NaN/)
+  })
+
+  it('cuenta los proyectos cargados cuando los KPIs no traen el total', () => {
+    const dataset = makeDataset({ kpis: {} })
+    const hints = dataset.kpis.map((card) => card.hint).join(' ')
+
+    // `totalProjects` ausente cae a projects.length, no a 0.
+    expect(hints).toContain(String(PROJECTS.length))
+    expect(hints).not.toMatch(/undefined|NaN/)
+  })
+
+  it('exporta un proyecto sin metricas sin romper el resumen', () => {
+    const dataset = buildProjectDataset({ t, project: {}, metrics: {} })
+    const summary = dataset.sections.find((s) => s.key === 'summary')
+    const flat = summary.rows.map((r) => String(r[1])).join(' ')
+
+    expect(dataset.meta.scopeLabel).toBe('—')
+    expect(flat).toContain('0%')
+    expect(flat).not.toMatch(/undefined|NaN/)
+  })
+
+  it('deja las cuatro filas de tareas en cero cuando no hay tareas', () => {
+    const dataset = buildProjectDataset({ t, project: {}, metrics: {} })
+    const tasks = dataset.sections.find((s) => s.key === 'tasks')
+
+    expect(tasks.rows).toHaveLength(4)
+    expect(tasks.rows.every((row) => String(row[1]) === '0')).toBe(true)
+  })
+
+  it('completa los roles de equipo a los que les falta nombre o total', () => {
+    const dataset = buildProjectDataset({
+      t,
+      project: { nombre: 'Torre Sur' },
+      metrics: { team: [{}, { rol: 'Albañil' }] },
+    })
+    const team = dataset.sections.find((s) => s.key === 'team')
+
+    expect(team.rows).toEqual([['—', '0'], ['Albañil', '0']])
+  })
+
+  it('registra la exportacion sin proyecto cuando no se pasan opciones extra', () => {
+    const record = buildExportRegistration(makeDataset(), 'CSV', { t })
+    expect(record.id_proyecto).toBeNull()
+    expect(record.tipo).toBe('CONSOLIDADO')
+  })
+})
+
+describe('statusHelpers — estados fuera del catalogo', () => {
+  it('devuelve el estado crudo y un color neutro si no esta mapeado', () => {
+    expect(statusLabel('ARCHIVADO')).toBe('ARCHIVADO')
+    expect(statusPill('ARCHIVADO')).toMatchObject({ label: 'ARCHIVADO', color: '#888' })
+  })
+
+  it('usa el color por defecto para una prioridad desconocida', () => {
+    expect(priorityColor('URGENTISIMA')).toBe('#555')
+  })
+
+  it('muestra un guion en vez de "Invalid Date" cuando no hay fecha', () => {
+    expect(formatDate(null)).toBe('—')
+    expect(formatDate('')).toBe('—')
+  })
+})
+
+describe('csvExport — variantes de salida', () => {
+  it('omite el BOM cuando se pide explicitamente', () => {
+    const csv = toCsv([{ label: 'a' }], [['1']], { bom: false })
+    expect(csv.startsWith('\uFEFF')).toBe(false)
+    expect(csv.endsWith('\r\n')).toBe(true)
+  })
+
+  it('deja pasar los valores vacios sin intentar neutralizarlos', () => {
+    expect(guardFormula('')).toBe('')
+    expect(guardFormula(null)).toBeNull()
+    expect(guardFormula(undefined)).toBeUndefined()
   })
 })
