@@ -64,6 +64,10 @@ export default {
         'body-large': 'var(--k-font-size-body-large)',
         'body-main': 'var(--k-font-size-body-main)',
         caption: 'var(--k-font-size-caption)',
+        // Pasos de implementación (no están en la lámina) — ver theme.css.
+        'heading-2': 'var(--k-font-size-heading-2)',
+        'body-small': 'var(--k-font-size-body-small)',
+        'caption-lg': 'var(--k-font-size-caption-lg)',
       },
 
       // Nomenclatura de Figma: space-1..space-7 (space-7 = 48px).

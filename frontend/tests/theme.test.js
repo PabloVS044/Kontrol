@@ -123,6 +123,25 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
     ],
+    tipografiaIntermedia: [
+      '--k-font-size-heading-2',
+      '--k-font-size-body-small',
+      '--k-font-size-caption-lg',
+    ],
+    alertas: [
+      '--k-alert-watching-bg',
+      '--k-alert-watching-border',
+      '--k-alert-watching-text',
+      '--k-alert-warning-bg',
+      '--k-alert-warning-border',
+      '--k-alert-warning-text',
+      '--k-alert-critical-bg',
+      '--k-alert-critical-border',
+      '--k-alert-critical-text',
+      '--k-alert-ok-bg',
+      '--k-alert-ok-border',
+      '--k-alert-ok-text',
+    ],
   }
 
   for (const [group, tokens] of Object.entries(expected)) {
@@ -150,6 +169,26 @@ describe('theme.css — catálogo de tokens', () => {
     for (let i = 1; i < valores.length; i++) expect(valores[i]).toBeGreaterThan(valores[i - 1])
     // El overlay del modal queda por debajo de su propio diálogo.
     expect(valores[4]).toBeGreaterThan(valores[3])
+  })
+
+  it('deriva las alertas de la paleta, sin colores de Tailwind', () => {
+    // El PR #86 traía #facc15 / #f97316 / #fb7185 (ámbar, naranja y rosa por
+    // defecto de Tailwind). Ningún token de alerta puede llevar un hex: todos
+    // salen de --k-color-warning / --k-color-error / --k-color-success.
+    const alerta = /--k-alert-[\w-]+:\s*([^;]+);/g
+    for (const [, valor] of themeCss.matchAll(alerta)) {
+      expect(valor, `token de alerta con literal de color: ${valor}`).not.toMatch(/#[0-9a-f]{3,8}/i)
+      expect(valor).toMatch(/var\(--k-/)
+    }
+  })
+
+  it('nunca pinta la cabecera de una alerta del mismo color que su fondo', () => {
+    // watching usaba el mismo amarillo para fondo y cabecera: texto invisible.
+    for (const nivel of ['watching', 'warning', 'critical', 'ok']) {
+      const bg = themeCss.match(new RegExp(`--k-alert-${nivel}-bg:\\s*([^;]+);`))[1].trim()
+      const text = themeCss.match(new RegExp(`--k-alert-${nivel}-text:\\s*([^;]+);`))[1].trim()
+      expect(text, `alerta ${nivel}: cabecera y fondo iguales`).not.toBe(bg)
+    }
   })
 
   it('deriva las superficies de tinte del dorado, sin introducir color nuevo', () => {

@@ -39,6 +39,7 @@
   --k-color-primary-rgb: 202, 168, 96;
   --k-color-error-rgb: 224, 82, 82;
   --k-color-success-rgb: 72, 199, 116;
+  --k-color-warning-rgb: 120, 80, 10;
   --k-color-black-rgb: 0, 0, 0;
   --k-color-white-rgb: 255, 255, 255;
 
@@ -127,6 +128,39 @@
    * sustituyen. Ninguno introduce un color, tamaño de fuente o radio nuevo:
    * son valores estructurales o derivaciones de tokens ya aprobados.
    */
+
+  /* ── pasos tipográficos intermedios ─────────────────────── */
+  /* La lámina define 5 niveles (42/24/16/14/11) y los componentes de tablas,
+     navbar y formularios usan tres tamaños que no caen en ninguno. Se declaran
+     con los valores que ya tenían, en vez de encajarlos al nivel aprobado más
+     cercano: ese redondeo es justo lo que degradó el login (título 32→24px).
+     Cuando Diseño amplíe la lámina, estos tres suben al bloque de Figma. */
+  --k-font-size-heading-2: 20px; /* títulos de navbar */
+  --k-font-size-body-small: 13px; /* celdas de tabla, texto secundario */
+  --k-font-size-caption-lg: 12px; /* etiquetas de formulario, pills */
+
+  /* ── superficies de alerta ──────────────────────────────── */
+  /* Tres niveles derivados de la paleta. El PR #86 traía #facc15 / #f97316 /
+     #fb7185 — el ámbar, naranja y rosa por defecto de Tailwind, ajenos a
+     Luxury Dark. Aquí no hay ningún color nuevo: `watching` y `warning` salen
+     del dorado y del ámbar de marca, `critical` del rojo.
+     El texto de cabecera es SIEMPRE distinto del fondo: en #86 `watching`
+     usaba el mismo amarillo para ambos y la cabecera era invisible. */
+  --k-alert-watching-bg: rgba(var(--k-color-primary-rgb), 0.08);
+  --k-alert-watching-border: rgba(var(--k-color-primary-rgb), 0.3);
+  --k-alert-watching-text: var(--k-color-primary);
+
+  --k-alert-warning-bg: rgba(var(--k-color-warning-rgb), 0.35);
+  --k-alert-warning-border: rgba(var(--k-color-primary-rgb), 0.55);
+  --k-alert-warning-text: var(--k-color-primary);
+
+  --k-alert-critical-bg: rgba(var(--k-color-error-rgb), 0.12);
+  --k-alert-critical-border: rgba(var(--k-color-error-rgb), 0.6);
+  --k-alert-critical-text: var(--k-state-error-text);
+
+  --k-alert-ok-bg: rgba(var(--k-color-success-rgb), 0.12);
+  --k-alert-ok-border: rgba(var(--k-color-success-rgb), 0.6);
+  --k-alert-ok-text: var(--k-state-success-text);
 
   /* ── interlineado ───────────────────────────────────────── */
   /* Los tres valores ya estaban en uso literal en `globals.css` (body 1.5,
