@@ -49,11 +49,20 @@ from PIL import Image, ImageChops
 
 S = pathlib.Path(__file__).resolve().parent.parent / ".visual-parity"
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (430, 932)}
-TARGETS = {                       # ruta, selector a capturar, selectores a enmascarar
-    "landing":  ("/",         ".nav-container", ["canvas"]),
-    "login":    ("/login",    ".login-page",    ["canvas", ".login-logo-3d"]),
-    "register": ("/register", ".register-page", ["canvas", ".register-logo-3d"]),
+TARGETS = {                                  # ruta, selector a capturar
+    "landing":  ("/",         ".nav-container"),
+    "login":    ("/login",    ".login-page"),
+    "register": ("/register", ".register-page"),
 }
+
+# Se OCULTAN, no se enmascaran: `mask=` pinta el rectángulo del elemento, y el
+# canvas de partículas ocupa la página entera, así que enmascararlo devolvía una
+# imagen de un solo color. `visibility: hidden` conserva el layout y deja ver
+# todo lo demás.
+CALLAR_ANIMACION = """
+  canvas,
+  .login-logo-panel, .register-logo-panel { visibility: hidden !important; }
+"""
 
 def capture(tag):
     S.mkdir(parents=True, exist_ok=True)
@@ -62,14 +71,22 @@ def capture(tag):
         for vp, (w, h) in VIEWPORTS.items():
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=1,
                             reduced_motion="reduce")
-            for name, (route, sel, masks) in TARGETS.items():
+            for name, (route, sel) in TARGETS.items():
                 pg.goto(f"http://localhost:5199{route}", wait_until="networkidle")
                 pg.wait_for_selector(sel, timeout=15000)
+                pg.add_style_tag(content=CALLAR_ANIMACION)
                 pg.wait_for_timeout(2500)
-                m = [pg.locator(x) for x in masks]
-                pg.locator(sel).first.screenshot(
-                    path=str(S / f"{tag}_{name}_{vp}.png"), mask=m,
-                    mask_color="#FF00FF")
+                out = S / f"{tag}_{name}_{vp}.png"
+                pg.locator(sel).first.screenshot(path=str(out))
+                # Salvaguarda: una captura de un solo color no compara nada y
+                # haría que cualquier diff diera 0. Es como este arnés estuvo
+                # roto: enmascaraba el canvas de página completa y guardaba
+                # rectángulos lisos que siempre coincidían.
+                colores = len(set(Image.open(out).convert("RGB").getdata()))
+                if colores < 50:
+                    raise SystemExit(
+                        f"captura degenerada: {out.name} tiene {colores} colores. "
+                        "No se compara nada — revisa el selector o lo que se oculta.")
             pg.close()
         b.close()
     print(f"capturado: {tag}")
