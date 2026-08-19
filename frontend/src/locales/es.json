@@ -623,6 +623,7 @@
       "close": "Cerrar",
       "permissionError": "Permiso de cámara denegado. Habilítalo para escanear.",
       "noCamera": "No se pudo acceder a la cámara.",
+      "insecureContext": "La cámara requiere HTTPS. Abre la app en localhost o por una URL https:// para escanear.",
       "notFound": "Sin producto para el código {code}.",
       "added": "Agregado: {name}"
     },

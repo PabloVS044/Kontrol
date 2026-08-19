@@ -623,6 +623,7 @@
       "close": "Close",
       "permissionError": "Camera permission denied. Enable it to scan.",
       "noCamera": "Could not access the camera.",
+      "insecureContext": "The camera requires HTTPS. Open the app on localhost or over an https:// URL to scan.",
       "notFound": "No product for code {code}.",
       "added": "Added: {name}"
     },

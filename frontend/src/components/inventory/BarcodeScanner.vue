@@ -44,11 +44,44 @@ async function start() {
   cameraError.value = null
   await nextTick()
   if (!videoEl.value) return
+
+  // getUserMedia solo existe en contexto seguro (https o localhost). Al abrir la
+  // app por IP de LAN en http el objeto no existe y el fallo se ve igual que una
+  // camara ausente, asi que lo distinguimos antes de intentar.
+  if (!navigator.mediaDevices?.getUserMedia) {
+    cameraError.value = window.isSecureContext
+      ? t('inventory.scanner.noCamera')
+      : t('inventory.scanner.insecureContext')
+    return
+  }
+
   try {
     const { BrowserMultiFormatReader } = await import('@zxing/browser')
-    reader = new BrowserMultiFormatReader()
+    const { DecodeHintType, BarcodeFormat } = await import('@zxing/library')
+
+    // TRY_HARDER cuesta mas CPU por intento pero es lo que rescata un 1D
+    // ligeramente desenfocado, que es el caso normal con webcam de foco fijo.
+    const hints = new Map()
+    hints.set(DecodeHintType.TRY_HARDER, true)
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13, BarcodeFormat.EAN_8,
+      BarcodeFormat.UPC_A, BarcodeFormat.UPC_E,
+      BarcodeFormat.CODE_128, BarcodeFormat.CODE_39,
+      BarcodeFormat.ITF, BarcodeFormat.QR_CODE,
+    ])
+
+    reader = new BrowserMultiFormatReader(hints)
     controls = await reader.decodeFromConstraints(
-      { video: { facingMode: { ideal: 'environment' } } },
+      // Sin width/height el navegador entrega su default de 640x480, que no da
+      // los ~4 px por modulo que necesita un EAN-13: pedimos lo maximo que la
+      // camara soporte. Son `ideal`, asi que degrada solo si no hay mas.
+      {
+        video: {
+          facingMode: { ideal: 'environment' },
+          width:  { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+      },
       videoEl.value,
       (result) => {
         if (!result) return
