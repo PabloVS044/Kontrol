@@ -41,50 +41,58 @@ const meta = computed(() => {
 
 <style scoped>
 .alert-box {
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-4);
-  font-family: var(--font-sans); 
-  border: var(--border-width) solid transparent;
+  padding: var(--k-space-4);
+  border-radius: var(--k-radius-md);
+  margin-bottom: var(--k-space-4);
+  font-family: var(--k-font-sans); 
+  border: var(--k-border-width) solid transparent;
 }
+
+/* Los cuatro niveles siguen el mismo patrón: tinte de fondo + borde del mismo
+   color a más opacidad + cabecera en el tono claro. Todos los valores salen de
+   `theme.css`; ningún literal de color vive aquí. */
 
 .alert-ok {
-  background: var(--Success, 0.1);
-  border: var(--border-width) solid var(--SuccessText);
-  border-color: var(--SuccessText);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--SuccessText);
-  display: flex; gap: var(--space-3); align-items: center;
+  /* Antes: `background: var(--Success, 0.1)`. La intención era un tinte al
+     10 %, pero eso no es lo que hace `var()`: el 0.1 es el fallback y solo
+     aplica si --Success no existe. Como sí existe, salía el verde oscuro
+     opaco de la paleta a fondo completo. */
+  background: var(--k-alert-ok-bg);
+  border: var(--k-border-width) solid var(--k-alert-ok-border);
+  padding: var(--k-space-3) var(--k-space-4);
+  font-size: var(--k-font-size-body-small);
+  color: var(--k-alert-ok-text);
+  display: flex; gap: var(--k-space-3); align-items: center;
 }
-.alert-ok .alert-msg { color: var(--TextSoft); font-weight: 400; }
+.alert-ok .alert-msg { color: var(--k-text-soft); font-weight: 400; }
 
 .alert-box.watching {
-  background: var(--Background-alert-box-watching);
-  border: var(--border-width) solid rgba(250,204,21,0.45);
+  background: var(--k-alert-watching-bg);
+  border: var(--k-border-width) solid var(--k-alert-watching-border);
 }
-.alert-box.watching .alert-header { color: var(--Background-alert-box-watching); }
+/* La cabecera usaba el MISMO color que el fondo: texto invisible. */
+.alert-box.watching .alert-header { color: var(--k-alert-watching-text); }
 
 .alert-box.warning {
-  background: var(----Background-alert-box-warning);
-  border: var(--border-width) solid var(----Background-alert-box-warning-border);
+  background: var(--k-alert-warning-bg);
+  border: var(--k-border-width) solid var(--k-alert-warning-border);
 }
-.alert-box.warning .alert-header { color: var(--alert-header-warning); }
+.alert-box.warning .alert-header { color: var(--k-alert-warning-text); }
 
 .alert-box.critical {
-  background: var(--Background-alert-box-critical);
-  border: var(--border-width) solid var(--Border-alert-box-critical);
+  background: var(--k-alert-critical-bg);
+  border: var(--k-border-width) solid var(--k-alert-critical-border);
 }
-.alert-box.critical .alert-header { color: var(--alert-header-critical); }
+.alert-box.critical .alert-header { color: var(--k-alert-critical-text); }
 
 .alert-header {
-  display: flex; gap: var(--space-2); margin-bottom: var(--space-1);
-  font-size: var(--text-xs); font-weight: 700;
+  display: flex; gap: var(--k-space-2); margin-bottom: var(--k-space-1);
+  font-size: var(--k-font-size-caption-lg); font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-caps);
+  letter-spacing: var(--k-tracking-caps);
 }
 .alert-box p {
-  font-size: var(--text-2xs); color: var(--TextSoft); line-height: var(--leading-normal); margin: 0;
+  font-size: var(--k-font-size-caption); color: var(--k-text-soft); line-height: var(--k-leading-normal); margin: 0;
 }
 
 .icon {

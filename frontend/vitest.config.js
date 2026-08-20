@@ -32,12 +32,13 @@ export default mergeConfig(
         // por sí solo.
         thresholds: {
           // Trinquete, punto 2: el umbral global se fija en la línea base
-          // medida el 12/08/2026 sobre 6 archivos (168 sentencias), truncada a
-          // entero. Sin margen — el umbral es exactamente lo que hay hoy.
-          statements: 80, // base 80.95 %
-          branches: 80, //   base 80.46 %
-          functions: 75, //  base 75.51 %
-          lines: 83, //      base 83.10 %
+          // medida, truncada a entero. Sin margen — el umbral es exactamente lo
+          // que hay hoy. Remedido el 18/08/2026 tras cubrir `services/auth.js`
+          // (194 sentencias en 7 archivos; antes 168 en 6).
+          statements: 83, // base 83.50 % — antes 80
+          branches: 83, //   base 83.44 % — antes 80
+          functions: 78, //  base 78.18 % — antes 75
+          lines: 85, //      base 85.29 % — antes 83
 
           // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
           // umbral global. Próxima subida, al cierre del Sprint 6:

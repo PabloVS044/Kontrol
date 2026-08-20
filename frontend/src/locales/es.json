@@ -18,7 +18,8 @@
         "emailInvalid": "Ingresa un correo válido",
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "Mínimo 6 caracteres",
-        "generic": "Algo salió mal. Por favor intenta de nuevo."
+        "generic": "Algo salió mal. Por favor intenta de nuevo.",
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
       }
     },
     "register": {
@@ -42,7 +43,8 @@
         "emailInvalid": "Ingresa un correo válido",
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "Mínimo 6 caracteres",
-        "generic": "Algo salió mal. Por favor intenta de nuevo."
+        "generic": "Algo salió mal. Por favor intenta de nuevo.",
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
       }
     }
   },
@@ -693,11 +695,26 @@
       "used": "Usado"
     },
     "alertBox": {
-      "onTrack":  { "title": "En orden.",      "message": "No se detectó sobreuso del presupuesto." },
-      "watching": { "title": "En vigilancia",  "message": "El gasto se acerca al umbral de advertencia." },
-      "warning":  { "title": "Advertencia",    "message": "El uso del presupuesto es alto." },
-      "critical": { "title": "Crítico",        "message": "Presupuesto totalmente consumido." },
-      "overrun":  { "title": "Excedido",       "message": "El gasto ha superado el presupuesto." }
+      "onTrack": {
+        "title": "En orden.",
+        "message": "No se detectó sobreuso del presupuesto."
+      },
+      "watching": {
+        "title": "En vigilancia",
+        "message": "El gasto se acerca al umbral de advertencia."
+      },
+      "warning": {
+        "title": "Advertencia",
+        "message": "El uso del presupuesto es alto."
+      },
+      "critical": {
+        "title": "Crítico",
+        "message": "Presupuesto totalmente consumido."
+      },
+      "overrun": {
+        "title": "Excedido",
+        "message": "El gasto ha superado el presupuesto."
+      }
     },
     "activityModal": {
       "editTitle": "Editar actividad",
@@ -954,8 +971,12 @@
       "legendBudget": "Presupuesto",
       "legendProgress": "Progreso",
       "months": {
-        "jan": "Ene", "feb": "Feb", "mar": "Mar",
-        "apr": "Abr", "may": "May", "jun": "Jun"
+        "jan": "Ene",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Abr",
+        "may": "May",
+        "jun": "Jun"
       }
     },
     "table": {
@@ -1001,10 +1022,22 @@
       "timelineTitle": "Línea de tiempo",
       "overdue": "Vencido",
       "timeline": {
-        "planning": { "label": "Planificación", "desc": "Definición de alcance, asignación de recursos y establecimiento de objetivos." },
-        "execution": { "label": "Ejecución",    "desc": "Desarrollo activo y finalización de tareas por el equipo." },
-        "review":    { "label": "Revisión",     "desc": "Control de calidad, pruebas y revisión por parte de los interesados." },
-        "delivery":  { "label": "Entrega",      "desc": "Entrega final, documentación y cierre del proyecto." }
+        "planning": {
+          "label": "Planificación",
+          "desc": "Definición de alcance, asignación de recursos y establecimiento de objetivos."
+        },
+        "execution": {
+          "label": "Ejecución",
+          "desc": "Desarrollo activo y finalización de tareas por el equipo."
+        },
+        "review": {
+          "label": "Revisión",
+          "desc": "Control de calidad, pruebas y revisión por parte de los interesados."
+        },
+        "delivery": {
+          "label": "Entrega",
+          "desc": "Entrega final, documentación y cierre del proyecto."
+        }
       },
       "health": {
         "completed": "Completado",

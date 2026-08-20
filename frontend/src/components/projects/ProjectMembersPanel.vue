@@ -531,8 +531,8 @@ watch(
 .pm-header,
 .pm-card,
 .pm-readonly {
-  background: #0c0c0c;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-1);
+  border: 1px solid var(--k-shade-6);
 }
 
 .pm-header,
@@ -550,22 +550,22 @@ watch(
 .pm-eyebrow,
 .pm-card-kicker,
 .pm-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .pm-title,
 .pm-card h3,
 .pm-state-title {
-  font-family: 'Playfair Display', serif;
-  color: var(--Text);
+  font-family: var(--k-font-display);
+  color: var(--k-color-text);
 }
 
 .pm-title {
-  font-size: 2.2rem;
+  font-size: var(--k-font-size-display-2);
   margin: 10px 0 8px;
 }
 
@@ -573,9 +573,9 @@ watch(
 .pm-copy,
 .pm-state-copy,
 .pm-member-meta {
-  color: var(--TextMuted);
+  color: var(--k-gray-6);
   line-height: 1.7;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .pm-summary,
@@ -592,36 +592,36 @@ watch(
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #111111;
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  background: var(--k-shade-3);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .pm-chip.inactive {
-  color: var(--TextDim);
+  color: var(--k-gray-4);
 }
 
 .pm-state,
 .pm-feedback {
   padding: 16px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111111;
-  font-family: 'Manrope', sans-serif;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
+  font-family: var(--k-font-sans);
 }
 
 .pm-state--error,
 .pm-feedback--error {
-  border-color: rgba(251, 113, 133, 0.24);
-  color: #fecdd3;
+  border-color: rgba(var(--k-color-error-rgb), 0.24);
+  color: var(--k-state-error-text);
 }
 
 .pm-feedback--ok {
-  border-color: rgba(52, 211, 153, 0.24);
-  color: #bbf7d0;
+  border-color: rgba(var(--k-color-success-rgb), 0.24);
+  color: var(--k-state-success-text);
 }
 
 .pm-grid {
@@ -650,19 +650,19 @@ watch(
 }
 
 .pm-card h3 {
-  font-size: 1.7rem;
+  font-size: var(--k-font-size-heading-1);
   margin-top: 8px;
 }
 
 .pm-link-box {
   padding: 16px;
-  background: #111111;
-  border: 1px dashed rgba(202, 168, 96, 0.28);
+  background: var(--k-shade-3);
+  border: 1px dashed rgba(var(--k-color-primary-rgb), 0.28);
 }
 
 .pm-link {
   display: block;
-  color: #f8e7ba;
+  color: var(--k-color-primary);
   word-break: break-all;
   line-height: 1.7;
 }
@@ -674,10 +674,10 @@ watch(
 .pm-select {
   min-width: 280px;
   padding: 12px 14px;
-  background: #131313;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
 }
 
 .pm-permission-block {
@@ -697,8 +697,8 @@ watch(
   flex-direction: column;
   gap: 6px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111111;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
   cursor: pointer;
 }
 
@@ -708,20 +708,20 @@ watch(
 }
 
 .pm-permission input {
-  accent-color: #caa860;
+  accent-color: var(--k-color-primary);
 }
 
 .pm-permission-name {
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
   font-weight: 600;
 }
 
 .pm-permission-description {
-  color: var(--TextDim);
+  color: var(--k-gray-5);
   line-height: 1.5;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .pm-btn {
@@ -730,7 +730,7 @@ watch(
   padding: 13px 16px;
   cursor: pointer;
   transition: transform 0.16s ease, opacity 0.16s ease;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .pm-btn:hover {
@@ -743,21 +743,21 @@ watch(
 }
 
 .pm-btn--primary {
-  background: #caa860;
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-shade-1);
   font-weight: 700;
 }
 
 .pm-btn--secondary {
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--Text);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  color: var(--k-color-text);
 }
 
 .pm-btn--danger {
-  background: rgba(251, 113, 133, 0.12);
-  border: 1px solid rgba(251, 113, 133, 0.22);
-  color: #fecdd3;
+  background: rgba(var(--k-color-error-rgb), 0.12);
+  border: 1px solid rgba(var(--k-color-error-rgb), 0.22);
+  color: var(--k-state-error-text);
 }
 
 .pm-member-list {
@@ -768,8 +768,8 @@ watch(
 
 .pm-member {
   padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #111111;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.06);
+  background: var(--k-shade-3);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -787,19 +787,19 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(202, 168, 96, 0.12);
-  border: 1px solid rgba(202, 168, 96, 0.2);
-  color: var(--Primary);
+  background: rgba(var(--k-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
+  color: var(--k-color-primary);
   font-weight: 700;
 }
 
 .pm-member-name {
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
 }
 
 .pm-copy--muted {
-  color: var(--TextDim);
+  color: var(--k-gray-4);
 }
 
 @media (max-width: 980px) {
@@ -819,10 +819,6 @@ watch(
   .pm-card,
   .pm-readonly {
     padding: 20px 16px;
-  }
-
-  .pm-title {
-    font-size: 1.8rem;
   }
 
   .pm-select {

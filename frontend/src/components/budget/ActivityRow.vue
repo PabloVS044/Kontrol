@@ -269,8 +269,8 @@ function formatDate(v) {
 }
 .detail-tag {
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--Primary); background: #caa860;
-  padding: 1px 6px; border: 1px solid rgba(202,168,96,0.2);
+  color: var(--Primary); background: var(--k-surface-primary-tint);
+  padding: 1px 6px; border: 1px solid rgba(201,169,98,0.2);
   align-self: center;
 }
 .detail-text {

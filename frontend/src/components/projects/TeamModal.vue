@@ -94,20 +94,20 @@ function handleSubmit() {
 <style scoped>
 .modal-form  { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field  { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: var(--k-font-size-caption); color: var(--k-gray-5); letter-spacing: 0.05em; font-family: var(--k-font-sans); }
 .form-field input,
 .form-field select {
-  background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: var(--Text); font-family: 'Manrope', sans-serif; font-size: 13px;
+  background: var(--k-shade-1); border: 1px solid var(--k-shade-6);
+  color: var(--k-color-text); font-family: var(--k-font-sans); font-size: var(--k-font-size-body-small);
   padding: 10px 12px; outline: none;
   transition: border-color 0.15s;
 }
 .form-field input:focus,
-.form-field select:focus { border-color: #caa860; }
-.form-field select option { background: #0f0f0f; }
-.req { color: var(--Primary); }
+.form-field select:focus { border-color: var(--k-color-primary); }
+.form-field select option { background: var(--k-shade-2); }
+.req { color: var(--k-color-primary); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
+.modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
 
 .members-checklist {
   display: flex; flex-direction: column; gap: 6px;
@@ -115,23 +115,23 @@ function handleSubmit() {
 }
 .member-check {
   display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--Text); cursor: pointer;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-body-small); color: var(--k-color-text); cursor: pointer;
+  font-family: var(--k-font-sans);
 }
-.member-check input { accent-color: #caa860; }
-.no-members { font-size: 13px; color: var(--TextFaint); font-family: 'Manrope', sans-serif; }
+.member-check input { accent-color: var(--k-color-primary); }
+.no-members { font-size: var(--k-font-size-body-small); color: var(--k-gray-3); font-family: var(--k-font-sans); }
 
 .btn-primary {
-  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: var(--BtnText); transition: filter 0.15s;
+  background: var(--k-color-primary); border: none; padding: 10px 18px; cursor: pointer;
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg); font-weight: 600;
+  color: var(--k-shade-1); transition: filter 0.15s;
 }
 .btn-primary:hover { filter: brightness(1.1); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
-  font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
+  background: var(--k-shade-3); border: 1px solid var(--k-shade-6); color: var(--k-color-text);
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg); padding: 10px 18px;
   cursor: pointer; transition: border-color 0.15s;
 }
-.btn-secondary:hover { border-color: #333; }
+.btn-secondary:hover { border-color: var(--k-gray-1); }
 </style>

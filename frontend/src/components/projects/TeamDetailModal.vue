@@ -74,18 +74,19 @@ const show = computed({
 
 function areaColor(area) {
   return {
+    /* cambiar a token color azul */
     Development: '#60a5fa',
     Engineering: '#60a5fa',
     Design: '#60a5fa',
-    Quality: '#34d399',
+    Quality: 'var(--k-state-success-text)',
     Infrastructure: '#f97316',
-    Management: '#caa860',
+    Management: 'var(--k-color-primary)',
     Desarrollo: '#60a5fa',
     Diseño: '#60a5fa',
-    Calidad: '#34d399',
+    Calidad: 'var(--k-state-success-text)',
     Infraestructura: '#f97316',
-    Gestión: '#caa860',
-  }[area] || '#555'
+    Gestión: 'var(--k-color-primary)',
+  }[area] || 'var(--k-gray-3)'
 }
 
 function areaLabel(area) {
@@ -101,23 +102,23 @@ function areaLabel(area) {
 
 <style scoped>
 .priority-bar { width: 3px; flex-shrink: 0; }
-.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--Text); flex: 1; }
+.modal-title  { font-family: var(--k-font-display); font-size: var(--k-font-size-heading-2); color: var(--k-color-text); flex: 1; }
 
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field p { font-size: 13px; color: var(--Text); font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: var(--k-font-size-caption); color: var(--k-gray-5); letter-spacing: 0.05em; font-family: var(--k-font-sans); }
+.form-field p { font-size: var(--k-font-size-body-small); color: var(--k-color-text); font-family: var(--k-font-sans); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 .area-badge {
-  font-size: 11px; color: var(--Primary);
-  background: #caa860; border: 1px solid rgba(202,168,96,0.2);
+  font-size: var(--k-font-size-caption); color: var(--k-color-primary);
+  background: var(--k-surface-primary-tint); border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   padding: 3px 10px; white-space: nowrap;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .member-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.empty-hint  { color: var(--TextFaint); font-size: 13px; font-family: 'Manrope', sans-serif; }
+.empty-hint  { color: var(--k-gray-3); font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans); }
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
 .task-action-btn {

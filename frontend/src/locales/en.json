@@ -18,7 +18,8 @@
         "emailInvalid": "Enter a valid email",
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "unreachable": "Can't reach the server. Check your connection and try again."
       }
     },
     "register": {
@@ -42,7 +43,8 @@
         "emailInvalid": "Enter a valid email",
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "unreachable": "Can't reach the server. Check your connection and try again."
       }
     }
   },
@@ -693,11 +695,26 @@
       "used": "Used"
     },
     "alertBox": {
-      "onTrack":  { "title": "On track.",  "message": "No budget overrun detected." },
-      "watching": { "title": "Watching",   "message": "Spending is approaching the warning threshold." },
-      "warning":  { "title": "Warning",    "message": "Budget usage is high." },
-      "critical": { "title": "Critical",   "message": "Budget fully consumed." },
-      "overrun":  { "title": "Overrun",    "message": "Spending has exceeded the budget." }
+      "onTrack": {
+        "title": "On track.",
+        "message": "No budget overrun detected."
+      },
+      "watching": {
+        "title": "Watching",
+        "message": "Spending is approaching the warning threshold."
+      },
+      "warning": {
+        "title": "Warning",
+        "message": "Budget usage is high."
+      },
+      "critical": {
+        "title": "Critical",
+        "message": "Budget fully consumed."
+      },
+      "overrun": {
+        "title": "Overrun",
+        "message": "Spending has exceeded the budget."
+      }
     },
     "activityModal": {
       "editTitle": "Edit activity",
@@ -954,8 +971,12 @@
       "legendBudget": "Budget",
       "legendProgress": "Progress",
       "months": {
-        "jan": "Jan", "feb": "Feb", "mar": "Mar",
-        "apr": "Apr", "may": "May", "jun": "Jun"
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun"
       }
     },
     "table": {
@@ -1001,10 +1022,22 @@
       "timelineTitle": "Timeline",
       "overdue": "Overdue",
       "timeline": {
-        "planning": { "label": "Planning",  "desc": "Scope definition, resource allocation and goal setting." },
-        "execution": { "label": "Execution", "desc": "Active development and task completion by the team." },
-        "review":    { "label": "Review",    "desc": "Quality assurance, testing and stakeholder review." },
-        "delivery":  { "label": "Delivery",  "desc": "Final delivery, documentation and project closure." }
+        "planning": {
+          "label": "Planning",
+          "desc": "Scope definition, resource allocation and goal setting."
+        },
+        "execution": {
+          "label": "Execution",
+          "desc": "Active development and task completion by the team."
+        },
+        "review": {
+          "label": "Review",
+          "desc": "Quality assurance, testing and stakeholder review."
+        },
+        "delivery": {
+          "label": "Delivery",
+          "desc": "Final delivery, documentation and project closure."
+        }
       },
       "health": {
         "completed": "Completed",
