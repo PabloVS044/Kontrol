@@ -5,6 +5,7 @@
   background: var(--k-color-bg);
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
+  margin-top: 56px; /* altura de AppNavbar (position: fixed) */
 }
 
 .mkt-layout {
@@ -53,6 +54,9 @@
   color: var(--k-color-text);
   font-family: inherit;
   font-size: var(--k-font-size-body-main);
+  /* Sin esto el navegador pinta el listado desplegable con sus colores
+     claros por defecto: texto blanco heredado sobre fondo blanco nativo. */
+  color-scheme: dark;
 }
 
 .mkt-select:focus-visible {
@@ -232,6 +236,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--k-space-4);
+  padding: var(--k-space-5);
 }
 
 .mkt-field {
@@ -260,6 +265,10 @@
   font-family: inherit;
   font-size: var(--k-font-size-body-main);
   resize: vertical;
+}
+
+.mkt-field select {
+  color-scheme: dark;
 }
 
 .mkt-field input:focus-visible,
