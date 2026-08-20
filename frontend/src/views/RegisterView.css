@@ -99,7 +99,7 @@
   z-index: 1; /* por encima de .register-form-panel::before */
   width: 100%;
   max-width: 620px;
-  background: var(--k-shade-3);
+  background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;
