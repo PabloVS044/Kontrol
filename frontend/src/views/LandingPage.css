@@ -419,3 +419,14 @@
     padding: 40px 16px;
   }
 }
+
+/* ─── Correcciones locales sobre el componente Card ───────────────────────── */
+/* `.card-header` de ProgressCard.css es global y pisa al de Card.css (misma
+   especificidad, se carga después): convierte la columna en una rejilla de
+   2.5%/97.5% y solapa título y subtítulo. Se restaura solo en la landing. */
+#problem .card-header,
+.graph .card-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-2);
+}
