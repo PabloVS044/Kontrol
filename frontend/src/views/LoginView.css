@@ -138,7 +138,7 @@
   width: 100%;
   max-width: 620px;
   /* TOKEN PENDIENTE: var(--k-shade-3) es más oscuro que --k-color-tertiary (#12120e). */
-  background: var(--k-shade-3);
+  background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;

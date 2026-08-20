@@ -48,12 +48,24 @@ from playwright.sync_api import sync_playwright
 from PIL import Image, ImageChops
 
 S = pathlib.Path(__file__).resolve().parent.parent / ".visual-parity"
-VIEWPORTS = {"desktop": (1440, 900), "mobile": (430, 932)}
-TARGETS = {                       # ruta, selector a capturar, selectores a enmascarar
-    "landing":  ("/",         ".nav-container", ["canvas"]),
-    "login":    ("/login",    ".login-page",    ["canvas", ".login-logo-3d"]),
-    "register": ("/register", ".register-page", ["canvas", ".register-logo-3d"]),
+# 700px cubre el apilado ANCHO: el panel ya ocupa todo el ancho pero la tarjeta
+# sigue topada a 520px, así que asoma panel a los lados. Ahí es donde se ve el
+# borde de la tarjeta — y ni 1440 ni 430 lo enseñan, que es como se coló.
+VIEWPORTS = {"desktop": (1440, 900), "tablet": (700, 900), "mobile": (430, 932)}
+TARGETS = {                                  # ruta, selector a capturar
+    "landing":  ("/",         ".nav-container"),
+    "login":    ("/login",    ".login-page"),
+    "register": ("/register", ".register-page"),
 }
+
+# Se OCULTAN, no se enmascaran: `mask=` pinta el rectángulo del elemento, y el
+# canvas de partículas ocupa la página entera, así que enmascararlo devolvía una
+# imagen de un solo color. `visibility: hidden` conserva el layout y deja ver
+# todo lo demás.
+CALLAR_ANIMACION = """
+  canvas,
+  .login-logo-panel, .register-logo-panel { visibility: hidden !important; }
+"""
 
 def capture(tag):
     S.mkdir(parents=True, exist_ok=True)
@@ -62,14 +74,22 @@ def capture(tag):
         for vp, (w, h) in VIEWPORTS.items():
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=1,
                             reduced_motion="reduce")
-            for name, (route, sel, masks) in TARGETS.items():
+            for name, (route, sel) in TARGETS.items():
                 pg.goto(f"http://localhost:5199{route}", wait_until="networkidle")
                 pg.wait_for_selector(sel, timeout=15000)
+                pg.add_style_tag(content=CALLAR_ANIMACION)
                 pg.wait_for_timeout(2500)
-                m = [pg.locator(x) for x in masks]
-                pg.locator(sel).first.screenshot(
-                    path=str(S / f"{tag}_{name}_{vp}.png"), mask=m,
-                    mask_color="#FF00FF")
+                out = S / f"{tag}_{name}_{vp}.png"
+                pg.locator(sel).first.screenshot(path=str(out))
+                # Salvaguarda: una captura de un solo color no compara nada y
+                # haría que cualquier diff diera 0. Es como este arnés estuvo
+                # roto: enmascaraba el canvas de página completa y guardaba
+                # rectángulos lisos que siempre coincidían.
+                colores = len(set(Image.open(out).convert("RGB").getdata()))
+                if colores < 50:
+                    raise SystemExit(
+                        f"captura degenerada: {out.name} tiene {colores} colores. "
+                        "No se compara nada — revisa el selector o lo que se oculta.")
             pg.close()
         b.close()
     print(f"capturado: {tag}")
@@ -88,16 +108,22 @@ def compare(a, b):
             if ia.size != ib.size:
                 print(f"  DIF {name}/{vp}: TAMAÑO {ia.size} -> {ib.size}"); worst = 999; continue
             diff = ImageChops.difference(ia, ib)
-            px = sum(1 for q in diff.getdata() if q != (0, 0, 0))
+            data = list(diff.getdata())
+            px = sum(1 for q in data if q != (0, 0, 0))
             pct = 100 * px / (ia.size[0] * ia.size[1])
-            worst = max(worst, pct)
-            mark = "OK " if px == 0 else ("~  " if pct < 0.05 else "DIF")
-            print(f"  {mark} {name}/{vp}: {px} px ({pct:.4f} %)" + (f" bbox={diff.getbbox()}" if px else ""))
+            # Cuántos píxeles cambian importa menos que CUÁNTO cambian: una
+            # diferencia de 1/255 es dithering del degradado, no un cambio de
+            # diseño. Se decide por la amplitud, no por el recuento.
+            delta = max((max(q) for q in data), default=0)
+            worst = max(worst, delta)
+            mark = "OK " if px == 0 else ("~  " if delta <= 2 else "DIF")
+            detalle = f"{px} px ({pct:.4f} %), delta máx {delta}/255"
+            print(f"  {mark} {name}/{vp}: {detalle}" + (f" bbox={diff.getbbox()}" if delta > 2 else ""))
     if missing:
         print(f"\nINCOMPLETO: faltan {missing} capturas — la comparación no es concluyente")
         return 999
-    print(f"\nmáxima divergencia: {worst:.4f} %")
-    return worst
+    print("\ndelta máximo de canal: " + str(worst) + "/255" + ("  — por debajo del umbral de percepción" if worst <= 2 else ""))
+    return 0 if worst <= 2 else worst
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
