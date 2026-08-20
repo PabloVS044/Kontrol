@@ -1122,6 +1122,14 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: var(--k-space-3);
 }
 
+/* `.card-header` de ProgressCard.css es global y pisa al de Card.css: convierte
+   la columna en una rejilla de 2.5%/97.5% y pega el valor a su etiqueta. */
+.kpi-grid :deep(.card-header) {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--k-space-2);
+}
+
 .kpi-grid :deep(.card-title) {
   font-size: var(--k-font-size-heading-1);
   font-family: var(--k-font-display);
