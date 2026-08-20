@@ -313,7 +313,7 @@
   padding: var(--k-space-3) var(--k-space-2);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
-    linear-gradient(180deg, #1a1a1a, #0e0e0e);
+    linear-gradient(180deg, var(--k-shade-4), #0e0e0e);
   border: 1px solid var(--k-color-border);
   border-radius: 8px;
   color: rgb(var(--k-color-white-rgb));

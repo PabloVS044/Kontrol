@@ -412,7 +412,7 @@
       rgba(var(--k-color-white-rgb), 0.04),
       rgba(var(--k-color-white-rgb), 0)
     ),
-    linear-gradient(180deg, #1a1a1a, #0e0e0e);
+    linear-gradient(180deg, var(--k-shade-4), #0e0e0e);
   border: 1px solid var(--k-color-border);
   border-radius: var(--k-radius-md);
   color: rgb(var(--k-color-white-rgb));
