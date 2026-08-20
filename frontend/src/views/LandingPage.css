@@ -430,3 +430,13 @@
   flex-direction: column;
   gap: var(--k-space-2);
 }
+
+/* `.card-icon` de IntegrationView.css es global y le pone caja de 48px, fondo y
+   borde a cualquier icono de Card. Se anula en la landing. */
+#problem .card-icon,
+.graph .card-icon {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+}
