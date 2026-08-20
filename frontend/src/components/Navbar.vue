@@ -15,7 +15,7 @@
 
       <div class="actions">
         <Anchor label="Login"       link="/login"    />
-        <Anchor label="Get Started" link="/register" backColor="var(--Secondary)" hoverColor="var(--Background)" />
+        <Anchor label="Get Started" link="/register" backColor="var(--k-color-secondary)" hoverColor="var(--k-color-bg)" />
       </div>
 
       <button class="hamburger" :class="{ open: isOpen }" @click="isOpen = !isOpen" aria-label="Menu">
@@ -34,7 +34,7 @@
       </ul>
       <div class="mobile-actions">
         <Anchor label="Login"       link="/login"    />
-        <Anchor label="Get Started" link="/register" backColor="var(--Secondary)" hoverColor="var(--Background)" />
+        <Anchor label="Get Started" link="/register" backColor="var(--k-color-secondary)" hoverColor="var(--k-color-bg)" />
       </div>
     </div>
   </div>

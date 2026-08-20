@@ -105,7 +105,7 @@ svg {
 
 /* Foco visible por teclado (no en click) — accesibilidad + acabado pro. */
 :focus-visible {
-  outline: 2px solid var(--Primary);
+  outline: 2px solid var(--k-color-primary);
   outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
@@ -141,7 +141,7 @@ body {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-main);
   line-height: 1.5;
-  color: var(--Text);
+  color: var(--k-color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -155,7 +155,7 @@ h3 {
   line-height: 1.15;
 }
 .hero-title {
-  color: var(--Text);
+  color: var(--k-color-text);
   font-family: var(--k-font-display);
   letter-spacing: 0.08em;
   font-size: clamp(2rem, 6vw, 6rem);
@@ -165,7 +165,7 @@ h3 {
 p {
   font-family: var(--k-font-sans);
   font-size: clamp(0.95rem, 1.5vw, 1.2rem);
-  color: var(--Text);
+  color: var(--k-color-text);
   z-index: 20;
 }
 
@@ -174,7 +174,18 @@ p {
   letter-spacing: 0.08em;
   font-size: clamp(1.5rem, 3.5vw, 3rem);
   text-align: center;
-  color: var(--Text);
+  color: var(--k-color-text);
+  z-index: 20;
+}
+
+/* TODO SCRUM-15: este selector `p` es global y alcanza a TODA la app, no solo a
+   la landing. Migrarlo a var(--k-font-sans) cambiaría la tipografía de las
+   pantallas de las fases 3+ y de las que son de otros tickets, así que queda
+   pendiente de decisión. */
+p {
+  font-family: 'DM Sans';
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  color: var(--k-color-text);
   z-index: 20;
 }
 @media screen and (max-width: 500px) {

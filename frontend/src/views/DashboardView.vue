@@ -59,27 +59,31 @@ const spentPct = computed(() => {
   return t > 0 ? Math.round((totalSpent.value / t) * 100) : 0
 })
 
+// TODO SCRUM-15: trendColor se queda en hex porque el template lo concatena
+// (`:btnColor="stat.trendColor + '18'"`) para construir un hex de 8 digitos con
+// alpha. var() no se puede concatenar, y separarlo en dos campos seria
+// refactorizar la estructura, que queda fuera del alcance de este ticket.
 const stats = computed(() => [
   {
     label: t('dashboard.stats.totalSpent'),
     value: money(totalSpent.value),
     trend: totalAllocated.value > 0 ? t('dashboard.stats.ofBudget', { pct: spentPct.value }) : t('dashboard.stats.noBudget'),
     trendColor: spentPct.value >= 80 ? '#fb7185' : '#34d399',
-    back: 'rgba(15,15,15,0.85)',
+    back: 'var(--k-color-tertiary)',
   },
   {
     label: t('dashboard.stats.activeProjects'),
     value: String(activeProjectsCount.value),
     trend: t('dashboard.stats.totalProjects', { count: projects.value.length }),
-    trendColor: '#caa860',
-    back: 'rgba(15,15,15,0.85)',
+    trendColor: '#c9a962',
+    back: 'var(--k-color-tertiary)',
   },
   {
     label: t('dashboard.stats.overrunAlerts'),
     value: String(overrunCount.value),
     trend: warningCount.value ? t('dashboard.stats.warning', { count: warningCount.value }) : (overrunCount.value ? t('dashboard.stats.critical') : t('dashboard.stats.allHealthy')),
-    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#caa860' : '#34d399'),
-    back: overrunCount.value ? 'rgba(25,10,10,0.85)' : 'rgba(15,15,15,0.85)',
+    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#c9a962' : '#34d399'),
+    back: overrunCount.value ? 'rgba(var(--k-color-error-rgb), 0.12)' : 'var(--k-color-tertiary)',
   },
 ])
 
@@ -674,9 +678,9 @@ watch(() => authStore.idEmpresaActual, () => {
           :title="stat.value"
           :subtitle="stat.label"
           :back="stat.back"
-          titleColor="#faf8f5"
-          borderColor="#1f1f1f"
-          shadowColor="rgba(0,0,0,0.5)"
+          titleColor="var(--k-color-text)"
+          borderColor="var(--k-shade-6)"
+          shadowColor="rgba(var(--k-color-black-rgb), 0.5)"
         >
           <Pill
             :label="stat.trend"
@@ -732,14 +736,14 @@ watch(() => authStore.idEmpresaActual, () => {
               :key="`yg-${t.label}`"
               :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
               :y1="t.y" :y2="t.y"
-              stroke="#1f1f1f" stroke-width="1"
+              stroke="var(--k-shade-6)" stroke-width="1"
             />
             <text
               v-for="t in chartData.yTicks"
               :key="`yt-${t.label}`"
               :x="chartArea.x - 8" :y="t.y + 4"
-              fill="#666" font-size="10" text-anchor="end"
-              font-family="Manrope, sans-serif"
+              fill="var(--k-gray-4)" font-size="10" text-anchor="end"
+              font-family="var(--k-font-sans)"
             >{{ t.label }}</text>
           </g>
 
@@ -747,28 +751,28 @@ watch(() => authStore.idEmpresaActual, () => {
           <line
             :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
             :y1="chartArea.y + chartArea.h" :y2="chartArea.y + chartArea.h"
-            stroke="#2a2a2a" stroke-width="1"
+            stroke="var(--k-shade-7)" stroke-width="1"
           />
           <text
             v-for="(t, i) in chartData.xTicks"
             :key="`xt-${i}`"
             :x="t.x" :y="chartArea.y + chartArea.h + 18"
-            fill="#888" font-size="10"
+            fill="var(--k-gray-5)" font-size="10"
             :text-anchor="i === 0 ? 'start' : i === chartData.xTicks.length - 1 ? 'end' : 'middle'"
-            font-family="Manrope, sans-serif"
+            font-family="var(--k-font-sans)"
           >{{ t.label }}</text>
 
           <!-- Planned line (dashed gold) -->
           <path
             :d="chartData.plannedPath"
-            fill="none" stroke="#caa860" stroke-width="1.5"
+            fill="none" stroke="var(--k-color-primary)" stroke-width="1.5"
             stroke-dasharray="6,5" opacity="0.75"
           />
 
           <!-- Actual cumulative line -->
           <path
             :d="chartData.actualPath"
-            fill="none" stroke="#34d399" stroke-width="2"
+            fill="none" stroke="var(--k-state-success-text)" stroke-width="2"
           />
 
           <!-- Today marker -->
@@ -776,22 +780,22 @@ watch(() => authStore.idEmpresaActual, () => {
             <line
               :x1="chartData.todayLine.x" :x2="chartData.todayLine.x"
               :y1="chartArea.y" :y2="chartArea.y + chartArea.h"
-              stroke="#faf8f5" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"
+              stroke="var(--k-color-text)" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"
             />
             <text
               :x="chartData.todayLine.x" :y="chartArea.y - 6"
-              fill="#faf8f5" font-size="10" text-anchor="middle" opacity="0.8"
-              font-family="Manrope, sans-serif"
+              fill="var(--k-color-text)" font-size="10" text-anchor="middle" opacity="0.8"
+              font-family="var(--k-font-sans)"
             >{{ $t('dashboard.trend.today') }}</text>
           </template>
 
           <!-- Legend -->
           <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
-            <rect x="0" y="0" width="210" height="40" fill="rgba(15,15,15,0.85)" stroke="#1f1f1f"/>
-            <line x1="10" y1="14" x2="32" y2="14" stroke="#caa860" stroke-width="1.5" stroke-dasharray="6,5"/>
-            <text x="40" y="17" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.planned') }}</text>
-            <line x1="10" y1="30" x2="32" y2="30" stroke="#34d399" stroke-width="2"/>
-            <text x="40" y="33" fill="#8f8f8f" font-size="10" font-family="Manrope, sans-serif">{{ $t('dashboard.trend.legend.actual') }}</text>
+            <rect x="0" y="0" width="210" height="40" fill="var(--k-color-bg)" stroke="var(--k-shade-6)"/>
+            <line x1="10" y1="14" x2="32" y2="14" stroke="var(--k-color-primary)" stroke-width="1.5" stroke-dasharray="6,5"/>
+            <text x="40" y="17" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.planned') }}</text>
+            <line x1="10" y1="30" x2="32" y2="30" stroke="var(--k-state-success-text)" stroke-width="2"/>
+            <text x="40" y="33" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.actual') }}</text>
           </g>
         </svg>
       </section>
@@ -1057,7 +1061,7 @@ watch(() => authStore.idEmpresaActual, () => {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 .dashboard-layout {
   display: flex;
@@ -1069,22 +1073,22 @@ watch(() => authStore.idEmpresaActual, () => {
 .content {
   flex: 1;
   padding: 80px 100px;
-  color: var(--Text);
+  color: var(--k-color-text);
   background: transparent;
   margin-top: 56px;
 }
 
 .title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--k-font-display);
   letter-spacing: -0.02em;
-  font-size: 3rem;
-  color: var(--Text);
+  font-size: var(--k-font-size-display);
+  color: var(--k-color-text);
   margin-bottom: 10px;
 }
 
 .subtitle {
-  font-family: var(--font-sans);
-  color: var(--TextDim);
+  font-family: var(--k-font-sans);
+  color: var(--k-gray-4);
   margin-bottom: 40px;
 }
 
@@ -1096,16 +1100,16 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .access-waiting {
-  background: rgba(12, 10, 5, 0.92);
-  border: 1px dashed var(--Primary);
+  background: var(--k-color-bg);
+  border: 1px dashed var(--k-color-primary);
   padding: 28px 32px;
-  margin-bottom: 32px;
+  margin-bottom: var(--k-space-6);
 }
 
 .access-waiting-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  color: var(--Text);
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
+  color: var(--k-color-text);
   margin: 10px 0 8px;
 }
 
@@ -1113,59 +1117,65 @@ watch(() => authStore.idEmpresaActual, () => {
   max-width: none;
   width: 100%;
   margin: 0;
-  border-radius: 4px;
-  padding: 24px;
-  gap: 12px;
+  border-radius: var(--k-radius-sm);
+  padding: var(--k-space-5);
+  gap: var(--k-space-3);
+}
+
+.kpi-grid :deep(.card-header) {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--k-space-2);
 }
 
 .kpi-grid :deep(.card-title) {
-  font-size: 2rem;
-  font-family: 'Playfair Display', serif;
+  font-size: var(--k-font-size-heading-1);
+  font-family: var(--k-font-display);
 }
 
 .kpi-grid :deep(.card-subtitle) {
-  font-size: 11px;
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--TextDim);
+  color: var(--k-gray-4);
 }
 
 .ai-box {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(12, 10, 5, 0.92);
-  border: 1px dashed var(--Primary);
+  background: var(--k-color-bg);
+  border: 1px dashed var(--k-color-primary);
   padding: 40px;
   margin-bottom: 40px;
-  gap: 32px;
+  gap: var(--k-space-6);
 }
 
 .ai-title {
-  color: var(--Primary);
-  font-size: 12px;
+  color: var(--k-color-primary);
+  font-size: var(--k-font-size-caption-lg);
   letter-spacing: 0.1em;
-  margin-bottom: 12px;
-  font-family: var(--font-sans);
+  margin-bottom: var(--k-space-3);
+  font-family: var(--k-font-sans);
 }
 
 .ai-message {
   font-style: italic;
-  font-size: 1.05rem;
+  font-size: var(--k-font-size-body-large);
   max-width: 800px;
   line-height: 1.6;
-  font-family: var(--font-sans);
+  font-family: var(--k-font-sans);
 }
 
 .ai-box :deep(.btn) {
-  background: var(--Primary);
-  color: var(--BtnText);
-  font-family: var(--font-sans);
-  font-size: 11px;
+  background: var(--k-color-primary);
+  color: var(--k-shade-1);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   font-weight: 700;
   letter-spacing: 0.1em;
   border-radius: 0;
-  padding: 12px 24px;
+  padding: var(--k-space-3) 24px;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1181,20 +1191,20 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .chart-card {
-  background: rgba(12, 12, 12, 0.92);
-  border: 1px solid var(--Border);
+  background: var(--k-color-bg);
+  border: 1px solid var(--k-color-border);
   padding: 30px;
   flex: 1;
 }
 
 .chart-card h3 {
-  font-family: var(--font-sans);
-  font-size: 13px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
   font-weight: 600;
-  color: var(--TextMuted);
+  color: var(--k-gray-5);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 4px;
+  margin-bottom: var(--k-space-1);
 }
 
 .chart-placeholder {
@@ -1210,9 +1220,9 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  color: var(--TextFaint);
-  font-size: 11px;
-  font-family: var(--font-sans);
+  color: var(--k-gray-2);
+  font-size: var(--k-font-size-caption);
+  font-family: var(--k-font-sans);
 }
 
 .bar-group {
@@ -1220,36 +1230,36 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .bar-group label {
-  font-size: 12px;
+  font-size: var(--k-font-size-caption-lg);
   display: block;
-  margin-bottom: 8px;
-  color: var(--TextMuted);
-  font-family: var(--font-sans);
+  margin-bottom: var(--k-space-2);
+  color: var(--k-gray-5);
+  font-family: var(--k-font-sans);
 }
 
 .bar-bg {
-  background: #111;
+  background: var(--k-shade-3);
   height: 6px;
   border-radius: 3px;
 }
 
 .bar-fill {
-  background: var(--Primary);
+  background: var(--k-color-primary);
   height: 100%;
   border-radius: 3px;
   transition: width .4s ease;
 }
 
-.bar-fill.advertencia { background: #f59e0b; }
-.bar-fill.critico     { background: #fb7185; }
+.bar-fill.advertencia { background: #f59e0b; } /* cambiar a token color ambar */
+.bar-fill.critico     { background: var(--k-state-error-text); }
 
 .chart-state {
-  padding: 24px 0;
-  color: var(--TextMuted);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  padding: var(--k-space-5) 0;
+  color: var(--k-gray-6);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
 }
-.chart-state--error { color: #fecdd3; }
+.chart-state--error { color: var(--k-state-error-text); }
 
 .project-bars {
   display: flex;
@@ -1257,14 +1267,14 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: 18px;
   margin-top: 12px;
 }
-.project-bar-row { display: flex; flex-direction: column; gap: 6px; }
+.project-bar-row { display: flex; flex-direction: column; gap: var(--k-space-1); }
 .project-bar-head {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  color: var(--Text);
+  gap: var(--k-space-3);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  color: var(--k-color-text);
 }
 .project-bar-name {
   overflow: hidden;
@@ -1275,52 +1285,52 @@ watch(() => authStore.idEmpresaActual, () => {
 .project-bar-meta {
   display: flex;
   gap: 10px;
-  color: var(--TextMuted);
-  font-size: 12px;
+  color: var(--k-gray-6);
+  font-size: var(--k-font-size-caption-lg);
   font-variant-numeric: tabular-nums;
 }
-.project-bar-pct { color: var(--Primary); font-weight: 600; }
-.project-bar-pct.advertencia { color: #f59e0b; }
-.project-bar-pct.critico     { color: #fb7185; }
+.project-bar-pct { color: var(--k-color-primary); font-weight: 600; }
+.project-bar-pct.advertencia { color: #f59e0b; } /* cambiar a token color ambar */
+.project-bar-pct.critico     { color: var(--k-state-error-text); }
 
 .snapshot-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  font-family: 'Manrope', sans-serif;
+  border-bottom: 1px solid rgba(var(--k-color-white-rgb), 0.05);
+  font-family: var(--k-font-sans);
 }
-.snapshot-label { color: var(--TextMuted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-.snapshot-value { color: var(--Text); font-size: 15px; font-variant-numeric: tabular-nums; }
-.snapshot-value.gold { color: var(--Primary); }
+.snapshot-label { color: var(--k-gray-6); font-size: var(--k-font-size-caption-lg); letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: var(--k-color-text); font-size: var(--k-font-size-body-main); font-variant-numeric: tabular-nums; }
+.snapshot-value.gold { color: var(--k-color-primary); }
 .snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
-.snapshot-foot { color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+.snapshot-foot { color: var(--k-gray-6); font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg); line-height: 1.5; }
 
 .trend-card { margin-bottom: 20px; }
 .trend-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: var(--k-space-4);
+  margin-bottom: var(--k-space-2);
   flex-wrap: wrap;
 }
 .timeline-hint {
-  color: var(--TextMuted);
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  color: var(--k-gray-6);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
   line-height: 1.6;
   margin: 4px 0 12px;
   max-width: 520px;
 }
 .trend-select {
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
-  color: var(--Text);
+  background: var(--k-shade-1);
+  border: 1px solid var(--k-shade-6);
+  color: var(--k-color-text);
   padding: 10px 12px;
-  font-size: 13px;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-body-small);
+  font-family: var(--k-font-sans);
   min-width: 220px;
 }
 .trend-svg {
@@ -1331,32 +1341,32 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .company-collaborators {
-  background: rgba(12, 12, 12, 0.92);
-  border: 1px solid #1f1f1f;
-  padding: 32px;
+  background: var(--k-color-bg);
+  border: 1px solid var(--k-shade-6);
+  padding: var(--k-space-6);
 }
 
 .team-header {
   display: flex;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--k-space-5);
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: var(--k-space-5);
 }
 
 .team-eyebrow,
 .team-card-kicker {
-  font-family: var(--font-sans);
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .team-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.4rem;
-  color: var(--Text);
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
+  color: var(--k-color-text);
   margin: 10px 0 8px;
 }
 
@@ -1364,8 +1374,8 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-copy,
 .member-email,
 .muted {
-  font-family: 'Manrope', sans-serif;
-  color: var(--TextMuted);
+  font-family: var(--k-font-sans);
+  color: var(--k-gray-6);
   line-height: 1.7;
 }
 
@@ -1382,17 +1392,17 @@ watch(() => authStore.idEmpresaActual, () => {
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  font-family: var(--font-sans);
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: #111111;
-  color: var(--Text);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  background: var(--k-shade-3);
+  color: var(--k-color-text);
 }
 
 .team-chip.inactive {
-  color: var(--TextDim);
+  color: var(--k-gray-4);
 }
 
 .team-grid {
@@ -1402,9 +1412,9 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .team-card {
-  background: #080808;
-  border: 1px solid #1f1f1f;
-  padding: 24px;
+  background: var(--k-color-bg-2);
+  border: 1px solid var(--k-shade-6);
+  padding: var(--k-space-5);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1414,25 +1424,25 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: var(--k-space-4);
 }
 
 .team-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.7rem;
-  color: var(--Text);
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
+  color: var(--k-color-text);
   margin-top: 8px;
 }
 
 .invite-link-box {
-  padding: 16px;
-  background: #111111;
-  border: 1px dashed rgba(202,168,96,0.28);
+  padding: var(--k-space-4);
+  background: var(--k-shade-3);
+  border: 1px dashed rgba(var(--k-color-primary-rgb), 0.28);
 }
 
 .invite-link {
   display: block;
-  color: #f8e7ba;
+  color: var(--k-color-primary);
   word-break: break-all;
   line-height: 1.7;
 }
@@ -1440,7 +1450,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .team-btn,
@@ -1457,21 +1467,21 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .team-btn--primary {
-  background: var(--Primary);
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-shade-1);
   font-weight: 700;
 }
 
 .team-btn--secondary {
-  background: #111111;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--Text);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  color: var(--k-color-text);
 }
 
 .team-btn--danger {
-  background: rgba(251,113,133,0.12);
-  border: 1px solid rgba(251,113,133,0.22);
-  color: #fecdd3;
+  background: rgba(var(--k-color-error-rgb), 0.12);
+  border: 1px solid rgba(var(--k-color-error-rgb), 0.22);
+  color: var(--k-state-error-text);
 }
 
 .team-btn:hover {
@@ -1485,33 +1495,33 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .feedback {
   padding: 14px 16px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
-  font-family: 'Manrope', sans-serif;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
+  font-family: var(--k-font-sans);
 }
 
 .feedback--ok {
-  border-color: rgba(52,211,153,0.24);
-  color: #bbf7d0;
+  border-color: rgba(var(--k-color-success-rgb), 0.24);
+  color: var(--k-state-success-text);
 }
 
 .feedback--error,
 .team-state--error {
-  border-color: rgba(251,113,133,0.24);
-  color: #fecdd3;
+  border-color: rgba(var(--k-color-error-rgb), 0.24);
+  color: var(--k-state-error-text);
 }
 
 .team-state {
   padding: 18px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
-  font-family: 'Manrope', sans-serif;
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
+  font-family: var(--k-font-sans);
 }
 
 .members-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .member-row {
@@ -1520,8 +1530,8 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   gap: 20px;
   padding: 18px;
-  background: #111111;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.06);
 }
 
 .member-main,
@@ -1539,36 +1549,36 @@ watch(() => authStore.idEmpresaActual, () => {
 .member-project-access {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--k-space-4);
   padding-top: 8px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(var(--k-color-white-rgb), 0.06);
 }
 
 .member-project-access-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: var(--k-space-4);
 }
 
 .member-project-access-title {
-  font-family: var(--font-sans);
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .member-project-access-subtitle {
   margin-top: 6px;
-  color: var(--TextDim);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  color: var(--k-gray-5);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
 }
 
 .member-project-assignment-controls {
   display: flex;
-  gap: 12px;
+  gap: var(--k-space-3);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -1580,12 +1590,12 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .project-assignment-card {
-  padding: 16px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  padding: var(--k-space-4);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--k-space-4);
 }
 
 .project-assignment-head,
@@ -1593,39 +1603,39 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .permission-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .permission-toggle {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #111111;
+  gap: var(--k-space-1);
+  padding: var(--k-space-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  background: var(--k-shade-3);
   cursor: pointer;
 }
 
 .permission-toggle input {
-  accent-color: #caa860;
+  accent-color: var(--k-color-primary);
 }
 
 .permission-name {
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
   font-weight: 600;
 }
 
 .permission-description {
-  color: var(--TextDim);
-  font-family: 'Manrope', sans-serif;
+  color: var(--k-gray-5);
+  font-family: var(--k-font-sans);
   line-height: 1.5;
 }
 
@@ -1635,9 +1645,9 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(202,168,96,0.12);
-  border: 1px solid rgba(202,168,96,0.2);
-  color: var(--Primary);
+  background: rgba(var(--k-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
+  color: var(--k-color-primary);
   font-weight: 700;
 }
 
@@ -1647,31 +1657,34 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .member-name {
-  font-family: 'Manrope', sans-serif;
-  color: var(--Text);
+  font-family: var(--k-font-sans);
+  color: var(--k-color-text);
 }
 
 .role-chip.owner {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
+/* cambiar a token color azul */
 .role-chip.admin {
   color: #93c5fd;
 }
 
+/* cambiar a token color rojo */
 .role-chip.manager {
   color: #fca5a5;
 }
 
+/* cambiar a token color verde */
 .role-chip.collaborator {
   color: #86efac;
 }
 
 .role-select {
-  padding: 12px 14px;
-  background: #131313;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--Text);
+  padding: var(--k-space-3) 14px;
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  color: var(--k-color-text);
 }
 
 @media (max-width: 1100px) {
@@ -1683,10 +1696,6 @@ watch(() => authStore.idEmpresaActual, () => {
 @media (max-width: 900px) {
   .content {
     padding: 40px 32px;
-  }
-
-  .title {
-    font-size: 2.2rem;
   }
 
   .kpi-grid {
@@ -1721,41 +1730,25 @@ watch(() => authStore.idEmpresaActual, () => {
 
 @media (max-width: 600px) {
   .content {
-    padding: 24px 16px;
-  }
-
-  .title {
-    font-size: 1.8rem;
+    padding: var(--k-space-5) 16px;
   }
 
   .subtitle {
-    margin-bottom: 24px;
+    margin-bottom: var(--k-space-5);
   }
 
   .kpi-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .kpi-grid :deep(.card-title) {
-    font-size: 1.6rem;
+    gap: var(--k-space-3);
+    margin-bottom: var(--k-space-5);
   }
 
   .ai-box {
     padding: 20px;
   }
 
-  .ai-message {
-    font-size: 0.95rem;
-  }
-
   .company-collaborators {
     padding: 20px 16px;
-  }
-
-  .team-title {
-    font-size: 1.9rem;
   }
 
   .member-row {
