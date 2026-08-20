@@ -679,7 +679,7 @@ watch(() => authStore.idEmpresaActual, () => {
           :subtitle="stat.label"
           :back="stat.back"
           titleColor="var(--k-color-text)"
-          borderColor="var(--k-color-border)"
+          borderColor="var(--k-shade-6)"
           shadowColor="rgba(var(--k-color-black-rgb), 0.5)"
         >
           <Pill
@@ -736,13 +736,13 @@ watch(() => authStore.idEmpresaActual, () => {
               :key="`yg-${t.label}`"
               :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
               :y1="t.y" :y2="t.y"
-              stroke="var(--k-color-border)" stroke-width="1"
+              stroke="var(--k-shade-6)" stroke-width="1"
             />
             <text
               v-for="t in chartData.yTicks"
               :key="`yt-${t.label}`"
               :x="chartArea.x - 8" :y="t.y + 4"
-              fill="var(--k-text-dim)" font-size="10" text-anchor="end"
+              fill="var(--k-gray-4)" font-size="10" text-anchor="end"
               font-family="var(--k-font-sans)"
             >{{ t.label }}</text>
           </g>
@@ -751,13 +751,13 @@ watch(() => authStore.idEmpresaActual, () => {
           <line
             :x1="chartArea.x" :x2="chartArea.x + chartArea.w"
             :y1="chartArea.y + chartArea.h" :y2="chartArea.y + chartArea.h"
-            stroke="var(--k-color-border)" stroke-width="1"
+            stroke="var(--k-shade-7)" stroke-width="1"
           />
           <text
             v-for="(t, i) in chartData.xTicks"
             :key="`xt-${i}`"
             :x="t.x" :y="chartArea.y + chartArea.h + 18"
-            fill="var(--k-text-muted)" font-size="10"
+            fill="var(--k-gray-5)" font-size="10"
             :text-anchor="i === 0 ? 'start' : i === chartData.xTicks.length - 1 ? 'end' : 'middle'"
             font-family="var(--k-font-sans)"
           >{{ t.label }}</text>
@@ -791,11 +791,11 @@ watch(() => authStore.idEmpresaActual, () => {
 
           <!-- Legend -->
           <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
-            <rect x="0" y="0" width="210" height="40" fill="var(--k-color-bg)" stroke="var(--k-color-border)"/>
+            <rect x="0" y="0" width="210" height="40" fill="var(--k-color-bg)" stroke="var(--k-shade-6)"/>
             <line x1="10" y1="14" x2="32" y2="14" stroke="var(--k-color-primary)" stroke-width="1.5" stroke-dasharray="6,5"/>
-            <text x="40" y="17" fill="var(--k-text-muted)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.planned') }}</text>
+            <text x="40" y="17" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.planned') }}</text>
             <line x1="10" y1="30" x2="32" y2="30" stroke="var(--k-state-success-text)" stroke-width="2"/>
-            <text x="40" y="33" fill="var(--k-text-muted)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.actual') }}</text>
+            <text x="40" y="33" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.actual') }}</text>
           </g>
         </svg>
       </section>
@@ -1088,7 +1088,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .subtitle {
   font-family: var(--k-font-sans);
-  color: var(--k-text-dim);
+  color: var(--k-gray-4);
   margin-bottom: 40px;
 }
 
@@ -1131,7 +1131,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: var(--k-font-size-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--k-text-dim);
+  color: var(--k-gray-4);
 }
 
 .ai-box {
@@ -1147,7 +1147,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .ai-title {
   color: var(--k-color-primary);
-  font-size: var(--k-font-size-caption);
+  font-size: var(--k-font-size-caption-lg);
   letter-spacing: 0.1em;
   margin-bottom: var(--k-space-3);
   font-family: var(--k-font-sans);
@@ -1163,7 +1163,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .ai-box :deep(.btn) {
   background: var(--k-color-primary);
-  color: var(--k-form-btn-text);
+  color: var(--k-shade-1);
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption);
   font-weight: 700;
@@ -1193,9 +1193,9 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .chart-card h3 {
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
   font-weight: 600;
-  color: var(--k-text-muted);
+  color: var(--k-gray-5);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: var(--k-space-1);
@@ -1214,7 +1214,7 @@ watch(() => authStore.idEmpresaActual, () => {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  color: var(--k-text-faint);
+  color: var(--k-gray-2);
   font-size: var(--k-font-size-caption);
   font-family: var(--k-font-sans);
 }
@@ -1224,15 +1224,15 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .bar-group label {
-  font-size: var(--k-font-size-caption);
+  font-size: var(--k-font-size-caption-lg);
   display: block;
   margin-bottom: var(--k-space-2);
-  color: var(--k-text-muted);
+  color: var(--k-gray-5);
   font-family: var(--k-font-sans);
 }
 
 .bar-bg {
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   height: 6px;
   border-radius: 3px;
 }
@@ -1244,16 +1244,14 @@ watch(() => authStore.idEmpresaActual, () => {
   transition: width .4s ease;
 }
 
-/* TODO SCRUM-15: sin token. --k-color-warning es rgb(120,80,10), pensado para
-   fondos, no para una barra o un texto de aviso sobre superficie oscura. */
-.bar-fill.advertencia { background: #f59e0b; }
+.bar-fill.advertencia { background: #f59e0b; } /* cambiar a token color ambar */
 .bar-fill.critico     { background: var(--k-state-error-text); }
 
 .chart-state {
   padding: var(--k-space-5) 0;
-  color: var(--k-text-muted);
+  color: var(--k-gray-6);
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
 }
 .chart-state--error { color: var(--k-state-error-text); }
 
@@ -1269,7 +1267,7 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   gap: var(--k-space-3);
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
   color: var(--k-color-text);
 }
 .project-bar-name {
@@ -1281,12 +1279,12 @@ watch(() => authStore.idEmpresaActual, () => {
 .project-bar-meta {
   display: flex;
   gap: 10px;
-  color: var(--k-text-muted);
-  font-size: var(--k-font-size-caption);
+  color: var(--k-gray-6);
+  font-size: var(--k-font-size-caption-lg);
   font-variant-numeric: tabular-nums;
 }
 .project-bar-pct { color: var(--k-color-primary); font-weight: 600; }
-.project-bar-pct.advertencia { color: #f59e0b; } /* TODO SCRUM-15: sin token de aviso claro */
+.project-bar-pct.advertencia { color: #f59e0b; } /* cambiar a token color ambar */
 .project-bar-pct.critico     { color: var(--k-state-error-text); }
 
 .snapshot-row {
@@ -1297,11 +1295,11 @@ watch(() => authStore.idEmpresaActual, () => {
   border-bottom: 1px solid rgba(var(--k-color-white-rgb), 0.05);
   font-family: var(--k-font-sans);
 }
-.snapshot-label { color: var(--k-text-muted); font-size: var(--k-font-size-caption); letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-label { color: var(--k-gray-6); font-size: var(--k-font-size-caption-lg); letter-spacing: 0.08em; text-transform: uppercase; }
 .snapshot-value { color: var(--k-color-text); font-size: var(--k-font-size-body-main); font-variant-numeric: tabular-nums; }
 .snapshot-value.gold { color: var(--k-color-primary); }
 .snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
-.snapshot-foot { color: var(--k-text-muted); font-family: var(--k-font-sans); font-size: var(--k-font-size-caption); line-height: 1.5; }
+.snapshot-foot { color: var(--k-gray-6); font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg); line-height: 1.5; }
 
 .trend-card { margin-bottom: 20px; }
 .trend-head {
@@ -1313,19 +1311,19 @@ watch(() => authStore.idEmpresaActual, () => {
   flex-wrap: wrap;
 }
 .timeline-hint {
-  color: var(--k-text-muted);
+  color: var(--k-gray-6);
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-caption);
+  font-size: var(--k-font-size-caption-lg);
   line-height: 1.6;
   margin: 4px 0 12px;
   max-width: 520px;
 }
 .trend-select {
-  background: var(--k-color-tertiary);
-  border: 1px solid var(--k-color-border);
+  background: var(--k-shade-1);
+  border: 1px solid var(--k-shade-6);
   color: var(--k-color-text);
   padding: 10px 12px;
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
   font-family: var(--k-font-sans);
   min-width: 220px;
 }
@@ -1338,7 +1336,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .company-collaborators {
   background: var(--k-color-bg);
-  border: 1px solid var(--k-color-border);
+  border: 1px solid var(--k-shade-6);
   padding: var(--k-space-6);
 }
 
@@ -1371,7 +1369,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .member-email,
 .muted {
   font-family: var(--k-font-sans);
-  color: var(--k-text-muted);
+  color: var(--k-gray-6);
   line-height: 1.7;
 }
 
@@ -1393,12 +1391,12 @@ watch(() => authStore.idEmpresaActual, () => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   color: var(--k-color-text);
 }
 
 .team-chip.inactive {
-  color: var(--k-text-dim);
+  color: var(--k-gray-4);
 }
 
 .team-grid {
@@ -1409,7 +1407,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-card {
   background: var(--k-color-bg-2);
-  border: 1px solid var(--k-color-border);
+  border: 1px solid var(--k-shade-6);
   padding: var(--k-space-5);
   display: flex;
   flex-direction: column;
@@ -1432,7 +1430,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .invite-link-box {
   padding: var(--k-space-4);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   border: 1px dashed rgba(var(--k-color-primary-rgb), 0.28);
 }
 
@@ -1464,12 +1462,12 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-btn--primary {
   background: var(--k-color-primary);
-  color: var(--k-form-btn-text);
+  color: var(--k-shade-1);
   font-weight: 700;
 }
 
 .team-btn--secondary {
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
   color: var(--k-color-text);
 }
@@ -1492,7 +1490,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .feedback {
   padding: 14px 16px;
   border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   font-family: var(--k-font-sans);
 }
 
@@ -1510,7 +1508,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .team-state {
   padding: 18px;
   border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   font-family: var(--k-font-sans);
 }
 
@@ -1526,7 +1524,7 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   gap: 20px;
   padding: 18px;
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-color-white-rgb), 0.06);
 }
 
@@ -1567,9 +1565,9 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .member-project-access-subtitle {
   margin-top: 6px;
-  color: var(--k-text-dim);
+  color: var(--k-gray-5);
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
 }
 
 .member-project-assignment-controls {
@@ -1588,7 +1586,7 @@ watch(() => authStore.idEmpresaActual, () => {
 .project-assignment-card {
   padding: var(--k-space-4);
   border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   display: flex;
   flex-direction: column;
   gap: var(--k-space-4);
@@ -1614,7 +1612,7 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: var(--k-space-1);
   padding: var(--k-space-3);
   border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   cursor: pointer;
 }
 
@@ -1625,12 +1623,12 @@ watch(() => authStore.idEmpresaActual, () => {
 .permission-name {
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-body-main);
+  font-size: var(--k-font-size-body-small);
   font-weight: 600;
 }
 
 .permission-description {
-  color: var(--k-text-dim);
+  color: var(--k-gray-5);
   font-family: var(--k-font-sans);
   line-height: 1.5;
 }
@@ -1661,24 +1659,24 @@ watch(() => authStore.idEmpresaActual, () => {
   color: var(--k-color-primary);
 }
 
-/* TODO SCRUM-15: la codificacion por rol usa azul/rojo/verde claros que no
-   existen en la paleta v2 (no hay azul, y los tokens de estado son semanticos:
-   error/exito, no etiquetas de rol). Pendiente de definicion con Diseno. */
+/* cambiar a token color azul */
 .role-chip.admin {
   color: #93c5fd;
 }
 
+/* cambiar a token color rojo */
 .role-chip.manager {
   color: #fca5a5;
 }
 
+/* cambiar a token color verde */
 .role-chip.collaborator {
   color: #86efac;
 }
 
 .role-select {
   padding: var(--k-space-3) 14px;
-  background: var(--k-color-tertiary);
+  background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
   color: var(--k-color-text);
 }
