@@ -20,6 +20,14 @@ export const updateReportSchema = z
     { message: 'No fields were provided for update.' }
   )
 
+// Registration of a downloaded export. id_proyecto is optional: the reports
+// view exports every project the active filter selects, not just one.
+export const registerExportSchema = z.object({
+  titulo:      z.string().min(1, 'Title is required.').max(200),
+  tipo:        z.enum(VALID_TIPOS_REPORTE, { message: `Type must be one of: ${VALID_TIPOS_REPORTE.join(', ')}.` }).default('CONSOLIDADO'),
+  id_proyecto: z.number().int().positive('Project ID must be a positive integer.').optional().nullable(),
+})
+
 export const reportIdParamSchema = z.object({
   id: z.coerce.number().int().positive({ message: 'Report ID must be a positive integer.' }),
 })

@@ -248,12 +248,12 @@
   font-size: 32px;
   line-height: 1;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .progress-overview-sub {
   font-size: 12px;
-  color: #888;
+  color: var(--TextMuted);
   margin-top: 6px;
 }
 
@@ -262,7 +262,7 @@
   gap: 12px;
   flex-wrap: wrap;
   font-size: 12px;
-  color: #666;
+  color: var(--TextDim);
 }
 
 /* Task states */
@@ -387,9 +387,9 @@
 .filter-select:focus { border-color: var(--k-color-primary); }
 .filter-select option { background: var(--k-shade-2); }
 
-.tasks-count { font-size: 12px; color: #444; }
+.tasks-count { font-size: 12px; color: var(--TextFaint); }
 
-.tasks-loading { font-size: 13px; color: #555; padding: 32px 0; }
+.tasks-loading { font-size: 13px; color: var(--TextFaint); padding: 32px 0; }
 
 .tasks-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -430,7 +430,7 @@
 
 .task-name {
   font-size: 14px;
-  color: #faf8f5;
+  color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -438,7 +438,7 @@
 
 .task-desc {
   font-size: 12px;
-  color: #666;
+  color: var(--TextDim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -453,14 +453,14 @@
 }
 
 .priority-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
 }
 
 .due-badge {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 .due-badge.overdue { color: #fb7185; }
 
@@ -473,14 +473,14 @@
 .task-action-btn {
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   padding: 6px 12px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: #333; color: #faf8f5; }
+.task-action-btn:hover { border-color: #333; color: var(--Text); }
 .task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
 .task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
 .task-action-btn:disabled { opacity: 0.5; cursor: wait; }
@@ -645,7 +645,7 @@
   cursor: pointer;
   transition: color 0.15s;
 }
-.task-name-link:hover { color: #c9a962; }
+.task-name-link:hover { color: var(--Primary); }
 
 .area-badge {
   display: inline-flex;

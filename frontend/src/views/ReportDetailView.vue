@@ -29,13 +29,12 @@
                 <p class="proj-desc">{{ project.descripcion || $t('reports.detail.noDescription') }}</p>
               </div>
               <div class="header-actions">
-              
-                <button class="btn-outline">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 9V2M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
-                  </svg>
-                  {{ $t('reports.detail.export') }}
-                </button>
+                <ReportExportMenu
+                  :scope-note="$t('reports.export.scopeNoteProject', { project: project.nombre })"
+                  :busy-format="exportingFormat"
+                  :error="exportError"
+                  @export="runExport"
+                />
               </div>
             </div>
 
@@ -87,9 +86,9 @@
               <div class="donut-wrap">
                 <DonutChart
                   :pct="budgetData.pct"
-                  color="#c9a962"
+                  color="#caa860"
                   :size="70" :radius="28" :stroke-width="10"
-                  :label="`${budgetData.pct}%`" label-color="#c9a962" :label-font-size="11" :label-offset-y="3"
+                  :label="`${budgetData.pct}%`" label-color="#caa860" :label-font-size="11" :label-offset-y="3"
                   sublabel="used" :sublabel-font-size="6" :sublabel-offset-y="10"
                   display-width="120px"
                 />
@@ -181,7 +180,7 @@
                   <span class="member-role">{{ $t('reports.detail.memberRole', { count: role.total }) }}</span>
                 </div>
               </div>
-              <div v-if="!teamRoles.length" class="tl-label" style="color:#444; padding: 8px 0">
+              <div v-if="!teamRoles.length" class="tl-label" style="color: var(--TextFaint); padding: 8px 0">
                 {{ $t('reports.detail.noTeamMembers') }}
               </div>
             </div>
@@ -292,24 +291,38 @@ import AppNavbar from '../components/AppNavbar.vue'
 import Pill       from '../components/UI/Pill/Pill.vue'
 import Button     from '../components/UI/Button/Button.vue'
 import DonutChart from '../components/UI/DonutChart/DonutChart.vue'
+import ReportExportMenu from '../components/reports/ReportExportMenu.vue'
 import { statusLabel, statusPill, formatDate, formatBudget } from '../utils/statusHelpers.js'
+import {
+  buildProjectDataset,
+  renderExport,
+  buildExportRegistration,
+} from '../utils/reportExport.js'
+import { downloadBlob } from '../utils/download.js'
 import { useAuthStore } from '../stores/auth'
 
 const route     = useRoute()
 const authStore = useAuthStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const project = ref(null)
 const metrics = ref(null)
 const loading = ref(true)
 
+const exportingFormat = ref(null)
+const exportError     = ref(null)
+
+function authHeaders() {
+  return {
+    Authorization: `Bearer ${authStore.token}`,
+    'X-Company-ID': String(authStore.idEmpresa),
+  }
+}
+
 async function loadAll() {
   loading.value = true
   try {
-    const headers = {
-      Authorization: `Bearer ${authStore.token}`,
-      'X-Company-ID': String(authStore.idEmpresa),
-    }
+    const headers = authHeaders()
     const [projRes, metRes] = await Promise.all([
       fetch(`/api/projects/${route.params.id}`, { headers }),
       fetch(`/api/projects/${route.params.id}/metrics`, { headers }),
@@ -438,6 +451,59 @@ const healthSub = computed(() => {
   if (e === 'CANCELADO')   return t('reports.detail.health.terminated')
   return t('reports.detail.health.notStarted')
 })
+
+// ── Export ─────────────────────────────────────────────────────────────────
+/**
+ * Same generators as the reports view, fed the figures this screen already
+ * derived, so the file and the page cannot disagree. Scoped to one project,
+ * so the REPORTE row carries its id instead of spanning the company.
+ */
+async function runExport(format) {
+  if (!project.value) return
+
+  exportingFormat.value = format
+  exportError.value = null
+
+  try {
+    const dataset = buildProjectDataset({
+      t,
+      locale: locale.value,
+      companyName: authStore.empresaActual?.nombre ?? '',
+      generatedBy: [authStore.user?.nombre, authStore.user?.apellido].filter(Boolean).join(' '),
+      project: project.value,
+      metrics: {
+        progressPct: progressPct.value,
+        budget: budgetData.value,
+        tasks: tasksByState.value,
+        team: teamRoles.value,
+      },
+    })
+
+    const { blob, filename } = renderExport(dataset, format)
+    downloadBlob(blob, filename)
+
+    await registerExport(dataset, format)
+  } catch (e) {
+    exportError.value = e?.message ?? t('reports.export.errorFailed')
+  } finally {
+    exportingFormat.value = null
+  }
+}
+
+async function registerExport(dataset, format) {
+  try {
+    const res = await fetch('/api/reports/exports', {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        buildExportRegistration(dataset, format, { t, idProyecto: Number(route.params.id) })
+      ),
+    })
+    if (!res.ok) throw new Error()
+  } catch {
+    exportError.value = t('reports.export.errorNotRecorded')
+  }
+}
 </script>
 
 <style scoped>
@@ -472,7 +538,7 @@ const healthSub = computed(() => {
   gap: 6px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
@@ -480,7 +546,7 @@ const healthSub = computed(() => {
   padding: 0;
   transition: color .2s;
 }
-.back-btn:hover { color: #c9a962; }
+.back-btn:hover { color: var(--Primary); }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 .detail-header {
@@ -502,7 +568,7 @@ const healthSub = computed(() => {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0 0 6px;
 }
 
@@ -523,13 +589,13 @@ const healthSub = computed(() => {
   padding: 7px 14px;
   background: #111111;
   border: 1px solid #2a2a2a;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #c9a962; color: #c9a962; }
+.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
 
 /* Meta row */
 .meta-row {
@@ -541,9 +607,9 @@ const healthSub = computed(() => {
 .meta-item { display: flex; flex-direction: column; gap: 3px; }
 .meta-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -551,10 +617,10 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: #ccc;
+  color: var(--TextSoft);
 }
-.meta-value.gold { color: #c9a962; }
-.meta-value.dim  { color: #555; }
+.meta-value.gold { color: var(--Primary); }
+.meta-value.dim  { color: var(--TextFaint); }
 
 /* Overall progress */
 .overall-progress { display: flex; align-items: center; gap: 12px; }
@@ -568,14 +634,14 @@ const healthSub = computed(() => {
 }
 .op-fill {
   height: 100%;
-  background: linear-gradient(90deg, #b27f2a, #c9a962);
+  background: linear-gradient(90deg, #b27f2a, #caa860);
   border-radius: 2px;
   transition: width .6s ease;
 }
 .op-label {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
   white-space: nowrap;
 }
 
@@ -586,7 +652,7 @@ const healthSub = computed(() => {
 }
 .info-row :deep(.pill) {
   padding: 3px 8px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 /* Skeleton */
@@ -621,7 +687,7 @@ const healthSub = computed(() => {
   transition: border-color .2s, background .2s;
 }
 .detail-card:hover {
-  border-color: rgba(201,169,98,0.2);
+  border-color: rgba(202,168,96,0.2);
   background: #111111;
 }
 .detail-card.span-2 { grid-column: span 2; }
@@ -636,15 +702,15 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #888;
+  color: var(--TextMuted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .card-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #c9a962;
-  border: 1px solid rgba(201,169,98,0.2);
+  font-size: 11px;
+  color: var(--Primary);
+  border: 1px solid rgba(202,168,96,0.2);
   padding: 2px 7px;
   background: #111111;
 }
@@ -653,13 +719,13 @@ const healthSub = computed(() => {
   padding: 3px 8px;
   background: #111111;
   border: 1px solid #1e1e1e;
-  color: #444;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   transition: all .15s;
 }
-.period-btn.active { border-color: rgba(201,169,98,0.4); color: #c9a962; }
+.period-btn.active { border-color: rgba(202,168,96,0.4); color: var(--Primary); }
 
 /* ─── Budget card ────────────────────────────────────────────────────────── */
 .budget-body { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
@@ -670,20 +736,20 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #bbb;
+  color: var(--TextSoft);
 }
 .bstat-val.gold { color: #d4b06a; }
-.bstat-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
+.bstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 
 .budget-bars { display: flex; flex-direction: column; gap: 7px; }
 .bb-item { display: flex; align-items: center; gap: 8px; }
-.bb-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 70px; flex-shrink: 0; }
+.bb-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); width: 70px; flex-shrink: 0; }
 .bb-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .bb-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.bb-fill.gold   { background: #c9a962; }
+.bb-fill.gold   { background: #caa860; }
 .bb-fill.blue   { background: #60a5fa; }
 .bb-fill.purple { background: #a78bfa; }
-.bb-pct { font-family: 'Manrope', sans-serif; font-size: 10px; color: #444; min-width: 28px; text-align: right; }
+.bb-pct { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); min-width: 28px; text-align: right; }
 
 /* ─── Task card ──────────────────────────────────────────────────────────── */
 .task-completion-circle {
@@ -693,25 +759,25 @@ const healthSub = computed(() => {
   margin-bottom: 16px;
 }
 .task-summary { display: flex; flex-direction: column; gap: 3px; }
-.ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #faf8f5; }
-.ts-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; }
+.ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--Text); }
+.ts-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
 
 .task-list { display: flex; flex-direction: column; gap: 7px; }
 .tl-row { display: flex; align-items: center; gap: 7px; }
 .tl-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .tl-dot.green  { background: #4ade80; }
 .tl-dot.blue   { background: #60a5fa; }
-.tl-dot.gold   { background: #c9a962; }
+.tl-dot.gold   { background: #caa860; }
 .tl-dot.red    { background: #fb7185; }
-.tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #777; width: 72px; flex-shrink: 0; }
+.tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); width: 72px; flex-shrink: 0; }
 .tl-bar-wrap { flex: 1; }
 .tl-track { height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .tl-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .tl-fill.green  { background: #4ade80; }
 .tl-fill.blue   { background: #60a5fa; }
-.tl-fill.gold   { background: #c9a962; }
+.tl-fill.gold   { background: #caa860; }
 .tl-fill.red    { background: #fb7185; }
-.tl-val { font-family: 'Manrope', sans-serif; font-size: 10px; color: #444; min-width: 20px; text-align: right; }
+.tl-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); min-width: 20px; text-align: right; }
 
 /* ─── Team card ──────────────────────────────────────────────────────────── */
 .team-list { display: flex; flex-direction: column; gap: 4px; }
@@ -729,24 +795,24 @@ const healthSub = computed(() => {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: #aaa;
+  color: var(--TextSoft);
   flex-shrink: 0;
   border: 1px solid rgba(255,255,255,0.05);
 }
 .member-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ccc; font-weight: 500; }
-.member-role { font-family: 'Manrope', sans-serif; font-size: 10px; color: #666; }
+.member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--TextSoft); font-weight: 500; }
+.member-role { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
 .member-status {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 2px 6px;
   letter-spacing: 0.05em;
 }
 .st-active  { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.st-idle    { color: #888;    background: rgba(255,255,255,0.04); }
+.st-idle    { color: var(--TextMuted);    background: rgba(255,255,255,0.04); }
 .st-away    { color: #fb923c; background: rgba(251,146,60,0.08);  }
 
 /* ─── Timeline card ──────────────────────────────────────────────────────── */
@@ -764,8 +830,8 @@ const healthSub = computed(() => {
   flex-shrink: 0;
   transition: all .2s;
 }
-.phase-dot.done    { background: #c9a962; border: none; }
-.phase-dot.current { background: #c9a962; border: 1.5px solid #c9a962; }
+.phase-dot.done    { background: #caa860; border: none; }
+.phase-dot.current { background: #caa860; border: 1.5px solid #caa860; }
 .phase-dot.future  { background: #111111; border: 1.5px solid #2a2a2a; }
 .phase-dot.skip    { background: #111111; border: 1.5px solid #1e1e1e; }
 .phase-connector {
@@ -775,7 +841,7 @@ const healthSub = computed(() => {
   background: #1e1e1e;
   margin: 3px 0;
 }
-.phase-connector.filled { background: #c9a962; opacity: 0.4; }
+.phase-connector.filled { background: #caa860; opacity: 0.4; }
 
 .phase-content { flex: 1; padding-bottom: 18px; }
 .phase-name-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
@@ -783,14 +849,14 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--TextDim);
 }
 .phase-name.done    { color: #d4b06a; }
-.phase-name.current { color: #faf8f5; }
-.phase-name.future  { color: #444; }
+.phase-name.current { color: var(--Text); }
+.phase-name.future  { color: var(--TextFaint); }
 .phase-name.skip    { color: #2e2e2e; }
-.phase-date { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
-.phase-desc { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; line-height: 1.5; }
+.phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); line-height: 1.5; }
 
 /* ─── Metrics card ───────────────────────────────────────────────────────── */
 .metrics-grid {
@@ -807,7 +873,7 @@ const healthSub = computed(() => {
 }
 .metric-card:hover {
   background: #111111;
-  border-color: rgba(201,169,98,0.2);
+  border-color: rgba(202,168,96,0.2);
   border-top-color: currentColor;
 }
 .metric-top {
@@ -823,7 +889,7 @@ const healthSub = computed(() => {
 }
 .metric-delta {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 1px 4px;
 }
@@ -831,8 +897,8 @@ const healthSub = computed(() => {
 .metric-delta.neg { color: #fb7185; background: rgba(251,113,133,0.08); }
 .metric-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
-  color: #666;
+  font-size: 11px;
+  color: var(--TextDim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -844,7 +910,7 @@ const healthSub = computed(() => {
 .view-all-btn {
   background: none;
   border: none;
-  color: #c9a962;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -869,21 +935,21 @@ const healthSub = computed(() => {
   justify-content: center;
   flex-shrink: 0;
   border-radius: 4px;
-  color: #888;
+  color: var(--TextMuted);
 }
 .act-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: #aaa; }
-.act-meta { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; }
+.act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextSoft); }
+.act-meta { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 .act-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   padding: 2px 7px;
   letter-spacing: 0.05em;
   flex-shrink: 0;
 }
 .tag-green  { color: #4ade80; background: rgba(74,222,128,0.08);  }
-.tag-gold   { color: #c9a962; background: rgba(201,169,98,0.08);  }
+.tag-gold   { color: var(--Primary); background: rgba(202,168,96,0.08);  }
 .tag-purple { color: #a78bfa; background: rgba(167,139,250,0.08); }
 .tag-blue   { color: #60a5fa; background: rgba(96,165,250,0.08);  }
 
@@ -897,9 +963,9 @@ const healthSub = computed(() => {
 .side-section { margin-bottom: 16px; }
 .side-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0 0 10px;
@@ -920,12 +986,12 @@ const healthSub = computed(() => {
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--TextDim);
   display: block;
 }
 .health-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #333;
   display: block;
 }
@@ -947,9 +1013,9 @@ const healthSub = computed(() => {
   padding: 7px 0;
   border-bottom: 1px solid #111;
 }
-.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: #666; }
-.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: #aaa; }
-.qstat-val.gold { color: #c9a962; }
+.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
+.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: var(--TextSoft); }
+.qstat-val.gold { color: var(--Primary); }
 .qstat-val.red  { color: #fb7185; }
 
 /* Side action buttons */
@@ -960,7 +1026,7 @@ const healthSub = computed(() => {
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1a1a1a;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   border-radius: 0;
@@ -968,8 +1034,8 @@ const healthSub = computed(() => {
   transition: border-color .2s, color .2s;
 }
 .side-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
+  border-color: rgba(202,168,96,0.3);
+  color: var(--Primary);
 }
 
 /* Info list */
@@ -981,17 +1047,17 @@ const healthSub = computed(() => {
   padding: 7px 0;
   border-bottom: 1px solid #111;
 }
-.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: #555; }
-.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: #999; }
-.info-val.gold { color: #c9a962; }
+.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextMuted); }
+.info-val.gold { color: var(--Primary); }
 
 /* Risk bars */
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 10px; color: #555; width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
+.risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {

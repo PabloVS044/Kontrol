@@ -34,7 +34,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   pct:              { type: Number, default: 0 },
-  color:            { type: String, default: '#c9a962' },
+  color:            { type: String, default: '#caa860' },
   size:             { type: Number, default: 80 },
   radius:           { type: Number, default: 28 },
   strokeWidth:      { type: Number, default: 10 },

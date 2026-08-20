@@ -16,8 +16,8 @@
         <svg viewBox="0 0 600 160" preserveAspectRatio="none" class="perf-svg">
           <defs>
             <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#c9a962" stop-opacity="0.3" />
-              <stop offset="100%" stop-color="#c9a962" stop-opacity="0" />
+              <stop offset="0%" stop-color="#caa860" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#caa860" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="lineGrad2" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.2" />
@@ -26,10 +26,10 @@
           </defs>
           <line v-for="y in [0,40,80,120,160]" :key="y" x1="0" :y1="y" x2="600" :y2="y" stroke="#1f1f1f" stroke-width="1" />
           <path d="M0,140 C60,120 120,100 180,80 C240,60 300,50 360,40 C420,30 480,20 600,15 L600,160 L0,160 Z" fill="url(#lineGrad)" />
-          <path d="M0,140 C60,120 120,100 180,80 C240,60 300,50 360,40 C420,30 480,20 600,15" fill="none" stroke="#c9a962" stroke-width="2" />
+          <path d="M0,140 C60,120 120,100 180,80 C240,60 300,50 360,40 C420,30 480,20 600,15" fill="none" stroke="#caa860" stroke-width="2" />
           <path d="M0,155 C60,150 120,140 180,130 C240,120 300,105 360,90 C420,75 480,60 600,45 L600,160 L0,160 Z" fill="url(#lineGrad2)" />
           <path d="M0,155 C60,150 120,140 180,130 C240,120 300,105 360,90 C420,75 480,60 600,45" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 3" />
-          <circle v-for="dot in dots" :key="dot.x" :cx="dot.x" :cy="dot.y" r="3" fill="#c9a962" />
+          <circle v-for="dot in dots" :key="dot.x" :cx="dot.x" :cy="dot.y" r="3" fill="#caa860" />
         </svg>
         <div class="x-axis">
           <span v-for="month in months" :key="month">{{ month }}</span>
@@ -77,7 +77,7 @@ const dots = [
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 20px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .chart-legend,
@@ -92,7 +92,7 @@ const dots = [
   gap: 5px;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .leg-dot {
@@ -101,7 +101,7 @@ const dots = [
   border-radius: 50%;
 }
 
-.leg-dot.gold { background: #c9a962; }
+.leg-dot.gold { background: #caa860; }
 .leg-dot.blue { background: #60a5fa; }
 .chart-wrap { gap: 8px; align-items: stretch; }
 
@@ -115,7 +115,7 @@ const dots = [
 .y-axis span,
 .x-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #333;
 }
 

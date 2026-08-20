@@ -62,13 +62,13 @@ const show = computed({
 
 <style scoped>
 .priority-bar { width: 3px; flex-shrink: 0; }
-.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: #faf8f5; flex: 1; }
-.detail-loading { padding: 24px; text-align: center; color: #666; font-family: 'Manrope', sans-serif; font-size: 13px; }
+.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--Text); flex: 1; }
+.detail-loading { padding: 24px; text-align: center; color: var(--TextDim); font-family: 'Manrope', sans-serif; font-size: 13px; }
 
 .modal-form  { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field  { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: #888; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field p { font-size: 13px; color: #faf8f5; font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
+.form-field p { font-size: 13px; color: var(--Text); font-family: 'Manrope', sans-serif; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .status-badge {
@@ -78,5 +78,5 @@ const show = computed({
   letter-spacing: 0.08em; text-transform: uppercase;
   font-family: 'Manrope', sans-serif;
 }
-.status-badge.small { font-size: 10px; padding: 2px 8px; }
+.status-badge.small { font-size: 11px; padding: 2px 8px; }
 </style>

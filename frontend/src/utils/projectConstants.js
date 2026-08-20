@@ -10,7 +10,7 @@ export const STATUS_COLOR = {
   PLANIFICADO: '#60a5fa',
   EN_PROGRESO: '#34d399',
   PAUSADO:     '#f97316',
-  COMPLETADO:  '#c9a962',
+  COMPLETADO:  '#caa860',
   CANCELADO:   '#fb7185'
 }
 

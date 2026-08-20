@@ -122,12 +122,12 @@ function areaLabel(area) {
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
 .task-action-btn {
-  background: #111111; border: 1px solid #1f1f1f; color: #888;
+  background: #111111; border: 1px solid #1f1f1f; color: var(--TextMuted);
   font-family: 'Manrope', sans-serif; font-size: 11px;
   padding: 6px 12px; cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: #333; color: #faf8f5; }
+.task-action-btn:hover { border-color: #333; color: var(--Text); }
 .task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
 .task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
 </style>

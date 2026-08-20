@@ -17,14 +17,61 @@
   --Success: var(--k-color-success);
   --Error: var(--k-color-error);
   --Warning: var(--k-color-warning);
-  --TextMuted: var(--k-text-muted);
-  --TextDim: var(--k-text-dim);
+
+  /* Texto — rampa cálida sobre fondo oscuro (de más claro a más tenue).
+     Soft y Faint no estaban aliasadas y suman >200 usos en las pantallas
+     migradas a móvil; sus tokens ya existen en theme.css. */
+  --TextSoft: var(--k-text-soft); /* secundario alto */
+  --TextMuted: var(--k-text-muted); /* secundario */
+  --TextDim: var(--k-text-dim); /* terciario / meta */
+  --TextFaint: var(--k-text-faint); /* tenue / deshabilitado */
   --TextPlaceholder: var(--k-text-placeholder);
   --ErrorText: var(--k-state-error-text);
   --SuccessText: var(--k-state-success-text);
   --InputBg: var(--k-form-input-bg);
   --InputFocusBg: var(--k-form-input-focus-bg);
   --BtnText: var(--k-form-btn-text);
+
+  /* ─── Tipografía de marca ─────────────────────────────────────────────── */
+  /* Playfair Display = display/títulos (serif).  Manrope = cuerpo/UI (sans). */
+  --font-display: var(--k-font-display);
+  --font-sans: var(--k-font-sans);
+  --font-mono: var(--k-font-mono);
+
+  /* Escala tipográfica — piso de legibilidad 11px, paso ~1.2 */
+  --text-2xs: 0.6875rem; /* 11px — mínimo legible (labels, meta, pills) */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.875rem; /* 14px — cuerpo UI */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 2rem; /* 32px */
+  --text-3xl: 2.625rem; /* 42px */
+
+  /* Interlineado y tracking */
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --tracking-tight: -0.01em;
+  --tracking-caps: 0.08em; /* labels en mayúsculas */
+
+  /* Radios — escala (POS/reports tiende a 2-4px; cards/marketing a 8-16px) */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Espaciado base 4px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
 }
 
 html,

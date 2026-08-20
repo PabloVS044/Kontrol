@@ -97,7 +97,7 @@ const isDone = computed(() =>
 
 .task-name {
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,7 +109,7 @@ const isDone = computed(() =>
 
 .task-desc {
   font-size: 12px;
-  color: #666;
+  color: var(--TextDim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -136,16 +136,16 @@ const isDone = computed(() =>
   white-space: nowrap;
   font-family: 'Manrope', sans-serif;
 }
-.status-badge.small { font-size: 10px; padding: 2px 8px; }
+.status-badge.small { font-size: 11px; padding: 2px 8px; }
 
 .priority-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   font-family: 'Manrope', sans-serif;
 }
 
-.due-badge { font-size: 11px; color: #555; font-family: 'Manrope', sans-serif; }
+.due-badge { font-size: 11px; color: var(--TextFaint); font-family: 'Manrope', sans-serif; }
 .due-badge.overdue { color: #fb7185; }
 
 .task-card-actions {
@@ -157,14 +157,14 @@ const isDone = computed(() =>
 .task-action-btn {
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   padding: 6px 12px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: #333; color: #faf8f5; }
+.task-action-btn:hover { border-color: #333; color: var(--Text); }
 .task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
 .task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
 .task-action-btn:disabled { opacity: 0.5; cursor: wait; }

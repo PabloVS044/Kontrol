@@ -217,6 +217,85 @@ export const ensureDatabaseSchema = async () => {
       WHERE id_actividad IS NOT NULL
   `)
 
+  // Snapshot of the product's weighted-average cost at the moment of a SALIDA.
+  // Lets sales/profit analytics compute COGS against the cost that actually
+  // applied when the sale happened, instead of the product's current cost
+  // (which drifts as new stock comes in). Nullable: only SALIDA rows set it,
+  // and pre-existing rows fall back to costo_promedio_ponderado at query time.
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS costo_unitario_venta numeric
+  `)
+
+  // Barcode for camera-scan POS. Nullable; unique per project so the same
+  // physical product can live in several projects' inventories, but a code
+  // resolves unambiguously within one project.
+  await pool.query(`
+    ALTER TABLE public.producto
+      ADD COLUMN IF NOT EXISTS codigo_barras varchar
+  `)
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS producto_codigo_barras_unique
+      ON public.producto (id_proyecto, codigo_barras)
+      WHERE codigo_barras IS NOT NULL
+  `)
+
+  // Indexes for the sales/finance analytics + movement listings, which filter
+  // by project + date range and by product. Avoids full scans as the ledger grows.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_proyecto_fecha_idx
+      ON public.movimiento_inventario (id_proyecto, fecha)
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_producto_idx
+      ON public.movimiento_inventario (id_producto)
+      WHERE id_producto IS NOT NULL
+  `)
+
+  // Generating an export (PDF/CSV) from the reports view is recorded as a row
+  // in REPORTE, but that view spans every project the company has, so such a
+  // row belongs to no single project: id_proyecto becomes optional and the
+  // company is stored directly instead of being read through the project join.
+  await pool.query(`
+    ALTER TABLE public.reporte
+      ADD COLUMN IF NOT EXISTS id_empresa integer
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'reporte_id_empresa_fkey'
+          AND table_name = 'reporte'
+      ) THEN
+        ALTER TABLE public.reporte
+          ADD CONSTRAINT reporte_id_empresa_fkey
+          FOREIGN KEY (id_empresa)
+          REFERENCES public.empresa(id_empresa)
+          ON DELETE CASCADE;
+      END IF;
+    END $$
+  `)
+  await pool.query(`
+    ALTER TABLE public.reporte
+      ALTER COLUMN id_proyecto DROP NOT NULL
+  `)
+
+  // Backfill so every pre-existing report resolves its company without the
+  // project join, which is what the listing queries now rely on.
+  await pool.query(`
+    UPDATE public.reporte r
+    SET id_empresa = p.id_empresa
+    FROM public.proyecto p
+    WHERE p.id_proyecto = r.id_proyecto
+      AND r.id_empresa IS NULL
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS reporte_empresa_fecha_idx
+      ON public.reporte (id_empresa, fecha_generacion DESC)
+  `)
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS public.equipo (
       id_equipo SERIAL PRIMARY KEY,

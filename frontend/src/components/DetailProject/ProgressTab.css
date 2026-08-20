@@ -59,7 +59,7 @@
 
 .pt-state {
   padding: 20px 40px;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
 }
@@ -70,7 +70,7 @@
 
 .pt-empty {
   padding: 20px 40px;
-  color: #888;
+  color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
 }

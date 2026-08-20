@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
 }
 
 .csa-text {
-  color: #fff;
+  color: var(--Text);
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
   border-radius: 8px;
   border: none;
   background: var(--Primary, #caa860);
-  color: #fff;
+  color: var(--Text);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;

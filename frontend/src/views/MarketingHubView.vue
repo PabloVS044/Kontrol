@@ -1275,7 +1275,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .stat-label,
 .metric-label {
   margin: 0 0 8px;
-  color: #c9a962;
+  color: var(--Primary);
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1286,7 +1286,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .campaign-card h3,
 .publication-card h3 {
   margin: 0;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Playfair Display', serif;
 }
 
@@ -1358,7 +1358,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .primary-action {
-  background: #c9a962;
+  background: #caa860;
   color: #0b0b0b;
   padding: 12px 18px;
   font-weight: 700;
@@ -1367,13 +1367,13 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .ghost-action,
 .mini-action {
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   border-color: rgba(255, 255, 255, 0.14);
   padding: 10px 14px;
 }
 
 .mini-action.solid {
-  background: #c9a962;
+  background: #caa860;
   color: #f5e3ae;
 }
 
@@ -1453,8 +1453,8 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .project-card.active,
 .campaign-card.active,
 .publication-card.active {
-  border-color: rgba(201, 169, 98, 0.48);
-  background: rgba(201, 169, 98, 0.11);
+  border-color: rgba(202, 168, 96, 0.48);
+  background: rgba(202, 168, 96, 0.11);
 }
 
 .project-top,
@@ -1473,7 +1473,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 .publication-card h3,
 .snapshot-when strong,
 .summary-row strong {
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .project-meta,
@@ -1499,7 +1499,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 
 .stat-value {
   display: block;
-  color: #faf8f5;
+  color: var(--Text);
   font-size: 2rem;
   margin-bottom: 8px;
 }
@@ -1545,7 +1545,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip {
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .status-chip.neutral {
@@ -1558,7 +1558,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .status-chip.brand {
-  background: rgba(201, 169, 98, 0.18);
+  background: rgba(202, 168, 96, 0.18);
   color: #f1d287;
 }
 
@@ -1595,7 +1595,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
 }
 
 .metric-card strong {
-  color: #faf8f5;
+  color: var(--Text);
   font-size: 1.6rem;
 }
 
@@ -1680,7 +1680,7 @@ watch(selectedPublicationId, loadSelectedPublicationMetrics)
   width: 100%;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  color: #faf8f5;
+  color: var(--Text);
   padding: 12px 14px;
   resize: vertical;
 }

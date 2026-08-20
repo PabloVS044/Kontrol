@@ -75,33 +75,33 @@ function handleSubmit() {
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field label {
-  font-size: 11px; color: #888; letter-spacing: 0.05em;
+  font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em;
   font-family: 'Manrope', sans-serif;
 }
 .form-field input,
 .form-field textarea {
-  background: #0a0a0a; border: 1px solid #1f1f1f; color: #faf8f5;
+  background: #0a0a0a; border: 1px solid #1f1f1f; color: var(--Text);
   font-family: 'Manrope', sans-serif; font-size: 13px;
   padding: 10px 12px; outline: none; resize: vertical;
   transition: border-color 0.15s;
 }
-.form-field input:focus, .form-field textarea:focus { border-color: #c9a962; }
+.form-field input:focus, .form-field textarea:focus { border-color: #caa860; }
 .hint {
-  font-size: 11px; color: #888; line-height: 1.5; margin: 0;
+  font-size: 11px; color: var(--TextMuted); line-height: 1.5; margin: 0;
   font-family: 'Manrope', sans-serif;
 }
-.req { color: #c9a962; }
+.req { color: var(--Primary); }
 .modal-error { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .btn-primary {
-  background: #c9a962; border: none; padding: 10px 18px; cursor: pointer;
+  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
   font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: #0a0a0a; transition: filter 0.15s;
+  color: var(--BtnText); transition: filter 0.15s;
 }
 .btn-primary:hover    { filter: brightness(1.1); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: #faf8f5;
+  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
   cursor: pointer; transition: border-color 0.15s;
 }

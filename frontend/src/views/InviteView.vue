@@ -254,9 +254,9 @@ watch(() => route.params.token, loadInvitation)
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at top, rgba(201, 169, 98, 0.18), transparent 28%),
+    radial-gradient(circle at top, rgba(202, 168, 96, 0.18), transparent 28%),
     linear-gradient(180deg, #070707 0%, #111 100%);
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -267,7 +267,7 @@ watch(() => route.params.token, loadInvitation)
 
 .invite-card {
   background: #0c0c0c;
-  border: 1px solid rgba(201, 169, 98, 0.18);
+  border: 1px solid rgba(202, 168, 96, 0.18);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
   padding: 44px;
   display: flex;
@@ -284,7 +284,7 @@ watch(() => route.params.token, loadInvitation)
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #c9a962;
+  color: var(--Primary);
 }
 
 .invite-title {
@@ -379,20 +379,20 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .primary-btn {
-  background: #c9a962;
+  background: #caa860;
   color: #101010;
   font-weight: 700;
 }
 
 .secondary-btn {
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .ghost-btn {
   background: #111111;
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 

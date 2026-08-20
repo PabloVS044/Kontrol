@@ -695,7 +695,7 @@ const progressBlockers = computed(() =>
 
 const progressSignalColor = computed(() => {
   if (progressBlockers.value > 0) return "#fb7185";
-  if (progressPercentage.value >= 100) return "#c9a962";
+  if (progressPercentage.value >= 100) return "#caa860";
   if (progressPercentage.value >= 60) return "#34d399";
   if (progressPercentage.value > 0) return "#60a5fa";
   return "#666";
