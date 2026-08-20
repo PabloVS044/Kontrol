@@ -135,8 +135,8 @@ function formatMoney(v) {
 
 <style scoped>
 .pf-card {
-  background: var(--Background2);
-  border: 1px solid var(--Border);
+  background: var(--k-color-bg-2);
+  border: 1px solid var(--k-color-border);
   padding: var(--k-space-6);
   margin-bottom: var(--k-space-5);
 }
@@ -151,30 +151,30 @@ function formatMoney(v) {
 .section-subtitle {
   letter-spacing: var(--k-tracking-caps);
   font-size: var(--k-font-size-caption);
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .pf-count { 
   font-size: var(--k-font-size-caption);
-  color: var(--TextMuted); 
+  color: var(--k-text-muted); 
 }
 
   .hint {
   font-size: var(--k-font-size-caption);
-  color: var(--TextMuted); 
+  color: var(--k-text-muted); 
   line-height: var(--k-leading-normal);
   margin-bottom: var(--k-space-4);
   font-family: var(--k-font-sans);
 }
 
 .pf-empty {
-  color: var(--TextMuted); 
+  color: var(--k-text-muted); 
   font-size: var(--k-font-size-body-small); 
   padding: var(--k-space-6);
   text-align: center; 
-  border: 1px dashed var(--Border);
+  border: 1px dashed var(--k-color-border);
 }
 
 .pf-totals {
@@ -183,8 +183,8 @@ function formatMoney(v) {
   gap: var(--k-space-3);
   margin-bottom: var(--k-space-4);
   padding: var(--k-space-4); 
-  background: var(--Background);
-  border: 1px solid var(--Border);
+  background: var(--k-color-bg);
+  border: 1px solid var(--k-color-border);
 }
 .pf-totals.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
@@ -198,13 +198,13 @@ function formatMoney(v) {
   font-size: var(--k-font-size-caption); 
   letter-spacing: var(--k-tracking-caps);
   text-transform: uppercase;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
 }
 .pf-total-value {
   font-family: var(--k-font-mono);
   font-size: var(--k-font-size-body-large);
   font-weight: 700; 
-  color: var(--Text);
+  color: var(--k-color-text);
   font-variant-numeric: tabular-nums;
   white-space: nowrap; 
   overflow: hidden; 
@@ -225,8 +225,8 @@ function formatMoney(v) {
   font-size: var(--k-font-size-caption);
   letter-spacing: var(--k-tracking-caps); 
   text-transform: uppercase;
-  color: var(--TextMuted);
-  border-bottom: 1px solid var(--Border);
+  color: var(--k-text-muted);
+  border-bottom: 1px solid var(--k-color-border);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -235,14 +235,14 @@ function formatMoney(v) {
 .pf-table td {
   padding: var(--k-space-3);
   color: var(--k-text-soft);
-  border-bottom: 1px solid var(--Border);
+  border-bottom: 1px solid var(--k-color-border);
   font-variant-numeric: tabular-nums;
 }
 
 .pf-table td.left  { text-align: left; }
 .pf-table td.num   { text-align: right; white-space: nowrap; }
 .pf-table td.name {
-  color: var(--Text);
+  color: var(--k-color-text);
   font-weight: 500;
   max-width: 200px; 
   overflow: hidden; 
@@ -250,12 +250,12 @@ function formatMoney(v) {
   white-space: nowrap;
 }
 
-.pf-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+.pf-table tbody tr:hover { background: var(--k-surface-hover-subtle); }
 .pf-table tbody tr:last-child td { border-bottom: none; }
 
-.income { color: var(--SuccessText); }
-.danger { color: var(--ErrorText); }
-.gold   { color: var(--Primary); }
+.income { color: var(--k-state-success-text); }
+.danger { color: var(--k-state-error-text); }
+.gold   { color: var(--k-color-primary); }
 
 @media (max-width: 800px) {
   .pf-totals,
