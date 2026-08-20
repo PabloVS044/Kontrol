@@ -131,7 +131,7 @@
   pointer-events: none;
 }
 
-/* ── Card ── */
+/* ── Contenedor del formulario ── */
 .login-card {
   position: relative;
   z-index: 1; /* por encima de .login-form-panel::before */
@@ -150,7 +150,7 @@
      --k-font-size-heading-1 (24px), que encogía el título un 25 %. */
   font-size: var(--k-font-size-display-2);
   font-weight: var(--k-font-weight-bold);
-  color: var(--Text);
+  color: var(--k-color-text);
   margin: 0 0 var(--k-space-5);
 }
 
@@ -166,7 +166,7 @@
 .login-field-label {
   /* TOKEN PENDIENTE: 0.80rem = 12.8px; --k-font-size-caption son 11px. */
   font-size: 0.8rem;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
@@ -181,11 +181,11 @@
   /* TOKEN PENDIENTE: el padding derecho (2.4rem = 38.4px) reserva el hueco del
      icono. --k-space-7 son 48px y separaba el cursor del icono. */
   padding: 0.72rem 2.4rem 0.72rem 0.85rem;
-  background: var(--InputBg);
-  border: 1px solid var(--Border);
+  background: var(--k-form-input-bg);
+  border: 1px solid var(--k-color-border);
   /* TOKEN PENDIENTE: radio 6px. La escala salta de 4px (sm) a 8px (md). */
   border-radius: var(--k-radius-field);
-  color: var(--Text);
+  color: var(--k-color-text);
   /* TOKEN PENDIENTE: 0.92rem = 14.7px; --k-font-size-body-main son 14px. */
   font-size: 0.92rem;
   font-family: 'DM Sans', sans-serif;
@@ -195,18 +195,18 @@
     background 0.2s;
 }
 .login-input::placeholder {
-  color: var(--TextPlaceholder);
+  color: var(--k-text-placeholder);
 }
 .login-input:focus {
-  border-color: var(--Primary);
-  background: var(--InputFocusBg);
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
 }
 .login-input:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
 }
 .login-input--error {
-  border-color: var(--ErrorText) !important;
+  border-color: var(--k-state-error-text) !important;
 }
 
 .login-input-icon {
@@ -214,7 +214,7 @@
   right: 0.72rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   pointer-events: none;
 }
 .login-input-icon--btn {
@@ -230,7 +230,7 @@
 .login-field-error {
   /* TOKEN PENDIENTE: 0.76rem = 12.2px. */
   font-size: 0.76rem;
-  color: var(--ErrorText);
+  color: var(--k-state-error-text);
 }
 
 /* ── Remember + Forgot ── */
@@ -249,9 +249,9 @@
   gap: 0.4rem;
   /* TOKEN PENDIENTE: 0.83rem = 13.3px. */
   font-size: 0.83rem;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   cursor: pointer;
-  accent-color: var(--Primary);
+  accent-color: var(--k-color-primary);
 }
 .login-remember input:focus-visible {
   outline: var(--k-focus-ring);
@@ -260,7 +260,7 @@
 
 .login-forgot {
   font-size: 0.83rem;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   text-decoration: none;
 }
 .login-forgot:hover {
@@ -358,7 +358,7 @@
   width: 15px;
   height: 15px;
   border: 2px solid rgba(14, 12, 8, 0.25);
-  border-top-color: var(--BtnText);
+  border-top-color: var(--k-form-btn-text);
   border-radius: 50%;
   animation: login-spin 0.65s linear infinite;
 }
@@ -381,12 +381,12 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--Border);
+  background: var(--k-color-border);
 }
 .login-divider span {
   /* TOKEN PENDIENTE: 0.78rem = 12.5px; --k-font-size-caption son 11px. */
   font-size: 0.78rem;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
 }
 
 /* ── OAuth ── */
@@ -412,8 +412,8 @@
       rgba(var(--k-color-white-rgb), 0.04),
       rgba(var(--k-color-white-rgb), 0)
     ),
-    linear-gradient(180deg, #1a1a1a, #0e0e0e);
-  border: 1px solid var(--Border);
+    linear-gradient(180deg, var(--k-shade-4), #0e0e0e);
+  border: 1px solid var(--k-color-border);
   border-radius: var(--k-radius-md);
   color: rgb(var(--k-color-white-rgb));
   /* TOKEN PENDIENTE: 0.82rem = 13.1px. */
@@ -429,7 +429,7 @@
 }
 .login-btn-oauth:hover {
   border-color: rgba(var(--k-color-primary-rgb), 0.55);
-  color: var(--Text);
+  color: var(--k-color-text);
   transform: translateY(-1px);
   box-shadow:
     0 6px 18px rgba(var(--k-color-black-rgb), 0.4),
@@ -452,12 +452,12 @@
   width: 100%;
   text-align: center;
   font-size: 0.83rem;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   margin-top: 0.25rem;
   margin-bottom: 0;
 }
 .login-switch-link {
-  color: var(--Primary);
+  color: var(--k-color-primary);
   text-decoration: none;
   margin-left: 0.2rem;
 }
@@ -481,15 +481,13 @@
    ilegible. Se conserva el arreglo de contraste — es un bug, no estética. */
 .login-banner--error {
   background: rgba(var(--k-color-error-rgb), 0.08);
-  border: 1px solid var(--ErrorText);
-  color: var(--ErrorText);
+  border: 1px solid var(--k-state-error-text);
+  color: var(--k-state-error-text);
 }
-/* El template ya usaba esta variante para el banner de invitación, pero nunca
-   tuvo reglas: heredaba solo el padding y quedaba sin color. */
 .login-banner--success {
   background: rgba(var(--k-color-success-rgb), 0.12);
-  border: 1px solid var(--SuccessText);
-  color: var(--SuccessText);
+  border: 1px solid var(--k-state-success-text);
+  color: var(--k-state-success-text);
 }
 
 /* ── Responsive ──
@@ -575,7 +573,7 @@
     border-left: none;
     border-right: none;
     border-bottom: none;
-    border-top: 1px solid var(--Border);
+    border-top: 1px solid var(--k-color-border);
     box-shadow: 0 -20px 60px rgba(var(--k-color-black-rgb), 0.5);
     margin-top: -40px;
   }
