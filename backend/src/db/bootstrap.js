@@ -460,4 +460,119 @@ export const ensureDatabaseSchema = async () => {
     CREATE INDEX IF NOT EXISTS marketing_metric_snapshot_publication_idx
       ON public.marketing_publication_metric_snapshot (id_publication, captured_at DESC, id_metric_snapshot DESC)
   `)
+
+  // ── Marketing · alineación de bases anteriores a HU-28 ─────────────────────
+  // Las tablas de marketing ya existían con otra forma: la campaña era
+  // obligatoria, el estado usaba otro catálogo ('PLANNED', 'IN_DESIGN', …) y las
+  // FKs miraban una sola columna. CREATE TABLE IF NOT EXISTS no toca una tabla
+  // que ya existe, así que hace falta migrarla explícitamente.
+  // Todo lo que sigue es idempotente y en una base recién creada no cambia nada.
+
+  // La publicación cuelga del proyecto; la campaña pasa a ser opcional.
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      ALTER COLUMN id_campaign DROP NOT NULL
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      ALTER COLUMN status SET DEFAULT 'DRAFT'
+  `)
+
+  // El CHECK viejo se suelta antes de tocar los datos: no admite 'DRAFT', así
+  // que la normalización de estados fallaría contra él.
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      DROP CONSTRAINT IF EXISTS marketing_publication_status_check
+  `)
+
+  // Estados del catálogo anterior → ciclo de HU-28. Todo lo que no llegó a
+  // publicarse vuelve a borrador, que es el único destino que no inventa datos.
+  await pool.query(`
+    UPDATE public.marketing_publication
+    SET status = 'DRAFT'
+    WHERE status IN ('PLANNED', 'IN_DESIGN', 'PAUSED', 'CANCELLED')
+  `)
+
+  // Filas que incumplirían el invariante de fechas, saneadas antes de imponerlo:
+  // sin ellas el ALTER fallaría y el servidor no arrancaría.
+  await pool.query(`
+    UPDATE public.marketing_publication
+    SET status = 'DRAFT'
+    WHERE status = 'SCHEDULED' AND scheduled_for IS NULL
+  `)
+
+  await pool.query(`
+    UPDATE public.marketing_publication
+    SET published_at = COALESCE(published_at, updated_at, CURRENT_TIMESTAMP)
+    WHERE status = 'PUBLISHED' AND published_at IS NULL
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      ADD CONSTRAINT marketing_publication_status_check
+      CHECK (status IN ('DRAFT', 'SCHEDULED', 'PUBLISHED'))
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      DROP CONSTRAINT IF EXISTS marketing_publication_transicion_check
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.marketing_publication
+      ADD CONSTRAINT marketing_publication_transicion_check CHECK (
+        (status = 'DRAFT')
+        OR (status = 'SCHEDULED' AND scheduled_for IS NOT NULL)
+        OR (status = 'PUBLISHED' AND published_at IS NOT NULL)
+      )
+  `)
+
+  // Aislamiento multi-empresa a nivel de base: el proyecto y la campaña de una
+  // publicación deben ser de su misma empresa. Las FKs de una sola columna no lo
+  // garantizaban. Se agregan NOT VALID para que una fila heredada inconsistente
+  // no impida arrancar; a partir de aquí toda escritura sí queda validada.
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'marketing_campaign_empresa_id_unique'
+      ) THEN
+        ALTER TABLE public.marketing_campaign
+          ADD CONSTRAINT marketing_campaign_empresa_id_unique UNIQUE (id_empresa, id_campaign);
+      END IF;
+    END $$
+  `)
+
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'marketing_publication_empresa_proyecto_fkey'
+      ) THEN
+        ALTER TABLE public.marketing_publication
+          DROP CONSTRAINT IF EXISTS marketing_publication_project_fkey;
+        ALTER TABLE public.marketing_publication
+          ADD CONSTRAINT marketing_publication_empresa_proyecto_fkey
+          FOREIGN KEY (id_empresa, id_proyecto)
+          REFERENCES public.proyecto(id_empresa, id_proyecto) ON DELETE CASCADE NOT VALID;
+      END IF;
+    END $$
+  `)
+
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'marketing_publication_empresa_campaign_fkey'
+      ) THEN
+        ALTER TABLE public.marketing_publication
+          DROP CONSTRAINT IF EXISTS marketing_publication_campaign_fkey;
+        ALTER TABLE public.marketing_publication
+          ADD CONSTRAINT marketing_publication_empresa_campaign_fkey
+          FOREIGN KEY (id_empresa, id_campaign)
+          REFERENCES public.marketing_campaign(id_empresa, id_campaign) ON DELETE RESTRICT NOT VALID;
+      END IF;
+    END $$
+  `)
 }
