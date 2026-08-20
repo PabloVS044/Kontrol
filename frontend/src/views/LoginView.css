@@ -137,6 +137,7 @@
   z-index: 1; /* por encima de .login-form-panel::before */
   width: 100%;
   max-width: 620px;
+  /* TOKEN PENDIENTE: var(--k-shade-3) es más oscuro que --k-color-tertiary (#12120e). */
   background: transparent;
   border: none;
   border-radius: 0;
