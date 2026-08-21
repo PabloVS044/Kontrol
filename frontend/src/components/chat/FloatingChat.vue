@@ -514,13 +514,13 @@ watch(() => chatStore.lastError, (message) => {
   height: 52px;
   border: none;
   border-radius: 50%;
-  background: #c9a962;
-  color: #0a0a0a;
+  background: #caa860;
+  color: var(--BtnText);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(201, 169, 98, 0.3);
+  box-shadow: 0 4px 20px rgba(202, 168, 96, 0.3);
   transition: transform 0.15s, filter 0.15s;
 }
 
@@ -531,7 +531,7 @@ watch(() => chatStore.lastError, (message) => {
 
 .chat-fab.active {
   background: #1a1a1a;
-  color: #888;
+  color: var(--TextMuted);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
@@ -543,14 +543,14 @@ watch(() => chatStore.lastError, (message) => {
   height: 18px;
   border-radius: 9px;
   background: #fb7185;
-  color: #fff;
+  color: var(--Text);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
   border: 2px solid #0a0a0a;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -595,7 +595,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-modal-title {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .fp-header-actions {
@@ -606,10 +606,10 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-total-unread {
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     background: #232017;
-    color: #c9a962;
+    color: var(--Primary);
     border: 1px solid #3e3926;
     padding: 1px 7px;
     border-radius: 10px;
@@ -623,7 +623,7 @@ watch(() => chatStore.lastError, (message) => {
     border: none;
     border-radius: 4px;
     background: #121212;
-    color: #666;
+    color: var(--TextDim);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -636,7 +636,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-back-btn:hover,
   .fp-att-btn:hover {
     background: #161616;
-    color: #aaa;
+    color: var(--TextSoft);
   }
 
   .fp-search {
@@ -654,14 +654,14 @@ watch(() => chatStore.lastError, (message) => {
     background: #121212;
     border: none;
     outline: none;
-    color: #faf8f5;
+    color: var(--Text);
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     padding: 8px 0;
   }
 
   .fp-search input::placeholder {
-    color: #444;
+    color: var(--TextFaint);
   }
 
   .fp-chat-info {
@@ -695,7 +695,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-conv-name,
   .fp-modal-user-name {
     display: block;
-    color: #faf8f5;
+    color: var(--Text);
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
@@ -708,9 +708,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-conv-preview,
   .fp-modal-user-email {
     display: block;
-    color: #666;
+    color: var(--TextDim);
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -729,7 +729,7 @@ watch(() => chatStore.lastError, (message) => {
     justify-content: center;
     padding: 14px 12px;
     min-height: 120px;
-    color: #bbb;
+    color: var(--TextSoft);
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     text-align: center;
@@ -771,9 +771,9 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-conv-time {
     flex-shrink: 0;
-    color: #444;
+    color: var(--TextFaint);
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .fp-msg-av {
@@ -783,7 +783,7 @@ watch(() => chatStore.lastError, (message) => {
     border-radius: 50%;
     background: #2d281a;
     border: 1px solid #3d351f;
-    color: #c9a962;
+    color: var(--Primary);
     font-family: 'Manrope', sans-serif;
     font-size: 8px;
     font-weight: 700;
@@ -818,7 +818,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-msg.own .fp-msg-bubble {
     background: #2f2914;
     border-color: #3f361e;
-    color: #faf8f5;
+    color: var(--Text);
     border-radius: 10px 2px 10px 10px;
   }
 
@@ -829,7 +829,7 @@ watch(() => chatStore.lastError, (message) => {
     max-width: 200px;
     border: 1px solid #232323;
     background: #141414;
-    color: #888;
+    color: var(--TextMuted);
     text-decoration: none;
   }
 
@@ -868,9 +868,9 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-msg-time,
   .fp-status {
-    color: #555;
+    color: var(--TextFaint);
     font-family: 'Manrope', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .fp-input-area {
@@ -901,7 +901,7 @@ watch(() => chatStore.lastError, (message) => {
     outline: none;
     border: 1px solid #1f1f1f;
     background: #141414;
-    color: #faf8f5;
+    color: var(--Text);
     padding: 7px 10px;
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
@@ -910,7 +910,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea:focus {
-    border-color: #c9a962;
+    border-color: #caa860;
   }
 
   .fp-input-row textarea::placeholder {
@@ -922,7 +922,7 @@ watch(() => chatStore.lastError, (message) => {
     height: 32px;
     border: 1px solid #1f1f1f;
     background: #121212;
-    color: #444;
+    color: var(--TextFaint);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -931,9 +931,9 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #c9a962;
-    border-color: #c9a962;
-    color: #0a0a0a;
+    background: #caa860;
+    border-color: #caa860;
+    color: var(--BtnText);
   }
 
   .fp-send-btn:disabled {
@@ -982,21 +982,21 @@ watch(() => chatStore.lastError, (message) => {
   .at-dm {
     background: #2d2618;
     border: 1px solid #3f351f;
-    color: #c9a962;
+    color: var(--Primary);
   }
 .fp-unread {
   flex-shrink: 0;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: #c9a962;
-  color: #0a0a0a;
+  background: #caa860;
+  color: var(--BtnText);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -1004,7 +1004,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-error {
   padding: 18px 14px;
   text-align: center;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
 }
@@ -1048,7 +1048,7 @@ watch(() => chatStore.lastError, (message) => {
   border-radius: 50%;
   background: #2d281a;
   border: 1px solid #3d351f;
-  color: #c9a962;
+  color: var(--Primary);
   font-family: 'Manrope', sans-serif;
   font-size: 8px;
   font-weight: 700;
@@ -1083,7 +1083,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-msg.own .fp-msg-bubble {
   background: #2f2914;
   border-color: #3f361e;
-  color: #faf8f5;
+  color: var(--Text);
   border-radius: 10px 2px 10px 10px;
 }
 
@@ -1094,7 +1094,7 @@ watch(() => chatStore.lastError, (message) => {
   max-width: 200px;
   border: 1px solid #232323;
   background: #141414;
-  color: #888;
+  color: var(--TextMuted);
   text-decoration: none;
 }
 
@@ -1133,9 +1133,9 @@ watch(() => chatStore.lastError, (message) => {
 
 .fp-msg-time,
 .fp-status {
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .fp-typing {
@@ -1183,7 +1183,7 @@ watch(() => chatStore.lastError, (message) => {
     outline: none;
     border: 1px solid #1f1f1f;
     background: #141414;
-    color: #faf8f5;
+    color: var(--Text);
     padding: 7px 10px;
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
@@ -1192,7 +1192,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea:focus {
-    border-color: #c9a962;
+    border-color: #caa860;
   }
 
   .fp-input-row textarea::placeholder {
@@ -1204,7 +1204,7 @@ watch(() => chatStore.lastError, (message) => {
     height: 32px;
     border: 1px solid #1f1f1f;
     background: #121212;
-    color: #444;
+    color: var(--TextFaint);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1213,9 +1213,9 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #c9a962;
-    border-color: #c9a962;
-    color: #0a0a0a;
+    background: #caa860;
+    border-color: #caa860;
+    color: var(--BtnText);
   }
 
   .fp-send-btn:disabled {

@@ -1,0 +1,303 @@
+/* HU-28 · Administración interna de publicaciones de marketing. */
+
+.mkt-root {
+  min-height: 100vh;
+  background: var(--k-color-bg);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  margin-top: 56px; /* altura de AppNavbar (position: fixed) */
+}
+
+.mkt-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--k-space-7) var(--k-space-5);
+}
+
+.mkt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--k-space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--k-space-6);
+}
+
+.mkt-title {
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
+  font-weight: var(--k-font-weight-semibold);
+  margin: 0;
+}
+
+.mkt-subtitle {
+  margin: var(--k-space-1) 0 0;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-body-main);
+}
+
+/* ── Filtros ─────────────────────────────────────────────── */
+
+.mkt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-3);
+  margin-bottom: var(--k-space-5);
+}
+
+.mkt-select {
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-3);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: var(--k-color-bg-2);
+  color: var(--k-color-text);
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+  /* Sin esto el navegador pinta el listado desplegable con sus colores
+     claros por defecto: texto blanco heredado sobre fondo blanco nativo. */
+  color-scheme: dark;
+}
+
+.mkt-select:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-clear {
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-3);
+  border: none;
+  background: none;
+  color: var(--k-color-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+}
+
+/* ── Listado ─────────────────────────────────────────────── */
+
+.mkt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--k-space-4);
+}
+
+.mkt-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-3);
+  padding: var(--k-space-4);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-lg);
+  background: var(--k-color-bg-2);
+  box-shadow: var(--k-shadow-card);
+}
+
+.mkt-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-space-2);
+}
+
+.mkt-pill {
+  padding: var(--k-space-1) var(--k-space-3);
+  border-radius: var(--k-radius-pill);
+  font-size: var(--k-font-size-caption);
+  font-weight: var(--k-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mkt-channel {
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mkt-asset {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--k-radius-md);
+  background: var(--k-color-bg-3);
+}
+
+.mkt-card-title {
+  margin: 0;
+  font-size: var(--k-font-size-body-large);
+  font-weight: var(--k-font-weight-semibold);
+}
+
+.mkt-card-caption {
+  margin: 0;
+  color: var(--k-text-soft);
+  font-size: var(--k-font-size-body-main);
+  /* El contenido completo se ve al editar; aquí basta un vistazo. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mkt-meta {
+  display: flex;
+  gap: var(--k-space-5);
+  margin: 0;
+}
+
+.mkt-meta dt {
+  color: var(--k-text-dim);
+  font-size: var(--k-font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mkt-meta dd {
+  margin: var(--k-space-1) 0 0;
+  font-size: var(--k-font-size-body-main);
+}
+
+/* ── Acciones ────────────────────────────────────────────── */
+
+.mkt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-2);
+  margin-top: auto;
+  padding-top: var(--k-space-2);
+  border-top: 1px solid var(--k-color-border);
+}
+
+.mkt-action {
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-3);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: transparent;
+  color: var(--k-text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+}
+
+.mkt-action:hover:not(:disabled) {
+  filter: brightness(var(--k-state-hover-brightness));
+  border-color: var(--k-color-primary);
+}
+
+.mkt-action:active:not(:disabled) {
+  transform: scale(var(--k-state-active-scale));
+}
+
+.mkt-action:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-action:disabled {
+  opacity: var(--k-state-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.mkt-action--primary {
+  border-color: var(--k-color-primary);
+  color: var(--k-color-primary);
+}
+
+.mkt-action--danger {
+  color: var(--k-state-error-text);
+}
+
+/* ── Estados de la pantalla ──────────────────────────────── */
+
+.mkt-empty,
+.mkt-hint {
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-body-main);
+}
+
+.mkt-error,
+.mkt-row-error {
+  color: var(--k-state-error-text);
+  font-size: var(--k-font-size-body-main);
+  margin: 0;
+}
+
+.mkt-row-error {
+  font-size: var(--k-font-size-caption);
+}
+
+/* ── Formulario ──────────────────────────────────────────── */
+
+.mkt-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-4);
+  padding: var(--k-space-5);
+}
+
+.mkt-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-2);
+  flex: 1;
+}
+
+.mkt-field > span {
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mkt-field input,
+.mkt-field select,
+.mkt-field textarea {
+  min-height: var(--k-target-min-size);
+  padding: var(--k-space-2) var(--k-space-3);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: var(--k-form-input-bg);
+  color: var(--k-color-text);
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+  resize: vertical;
+}
+
+.mkt-field select {
+  color-scheme: dark;
+}
+
+.mkt-field input:focus-visible,
+.mkt-field select:focus-visible,
+.mkt-field textarea:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+  background: var(--k-form-input-focus-bg);
+}
+
+.mkt-field-row {
+  display: flex;
+  gap: var(--k-space-3);
+  flex-wrap: wrap;
+}
+
+.mkt-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--k-space-3);
+}
+
+@media (max-width: 640px) {
+  .mkt-layout {
+    padding: var(--k-space-5) var(--k-space-4);
+  }
+
+  .mkt-filters .mkt-select {
+    flex: 1 1 100%;
+  }
+}

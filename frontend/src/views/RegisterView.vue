@@ -225,7 +225,9 @@ async function handleRegister() {
     successMessage.value = t('auth.register.success')
     setTimeout(() => router.push({ name: 'login' }), 1400)
   } catch (err) {
-    errorMessage.value = err.message || t('auth.register.errors.generic')
+    errorMessage.value = err.code
+      ? t(`auth.register.errors.${err.code}`)
+      : err.message || t('auth.register.errors.generic')
   } finally {
     isLoading.value = false
   }

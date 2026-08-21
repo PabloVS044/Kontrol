@@ -177,11 +177,11 @@ function handleSubmit() {
 .modal-actions :deep(.btn):first-child {
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
 }
 .modal-actions :deep(.btn):last-child {
-  background: #c9a962;
-  color: #0a0a0a;
+  background: #caa860;
+  color: var(--BtnText);
 }
 .modal-actions :deep(.btn):last-child:disabled {
   opacity: 0.6;

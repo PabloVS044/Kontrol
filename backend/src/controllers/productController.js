@@ -17,6 +17,7 @@ const PRODUCTO_SELECT = `
   p.costo_promedio_ponderado,
   p.stock_actual,
   p.stock_minimo,
+  p.codigo_barras,
   p.id_proyecto,
   proj.nombre AS proyecto_nombre,
   c.nombre AS categoria,
@@ -226,15 +227,21 @@ export const getProductById = async (req, res) => {
  * POST /api/products  — requires requireProject middleware
  */
 export const createProduct = async (req, res) => {
-  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria } = req.body
+  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, codigo_barras } = req.body
   const { id_proyecto } = req.proyecto
 
-  const inserted = await pool.query(
-    `INSERT INTO public.producto
-       (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_proyecto)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id_producto`,
-    [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, id_categoria ?? null, id_proyecto]
-  )
+  let inserted
+  try {
+    inserted = await pool.query(
+      `INSERT INTO public.producto
+         (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_proyecto, codigo_barras)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id_producto`,
+      [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, id_categoria ?? null, id_proyecto, codigo_barras ?? null]
+    )
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ success: false, message: 'That barcode is already in use in this project.' })
+    throw err
+  }
 
   const newProducto = await pool.query(
     `SELECT ${PRODUCTO_SELECT} ${PRODUCTO_FROM} WHERE p.id_producto = $1`,
@@ -257,7 +264,7 @@ export const updateProduct = async (req, res) => {
     return res.status(access.status).json({ success: false, message: access.message })
   }
 
-  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria']
+  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria', 'codigo_barras']
   const setClauses = []
   const values = []
 
@@ -265,7 +272,12 @@ export const updateProduct = async (req, res) => {
     if (req.body[field] !== undefined) { values.push(req.body[field]); setClauses.push(`${field} = $${values.length}`) }
   }
   values.push(id)
-  await pool.query(`UPDATE public.producto SET ${setClauses.join(', ')} WHERE id_producto = $${values.length}`, values)
+  try {
+    await pool.query(`UPDATE public.producto SET ${setClauses.join(', ')} WHERE id_producto = $${values.length}`, values)
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ success: false, message: 'That barcode is already in use in this project.' })
+    throw err
+  }
 
   const updated = await pool.query(
     `SELECT ${PRODUCTO_SELECT} ${PRODUCTO_FROM} WHERE p.id_producto = $1`,

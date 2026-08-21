@@ -39,7 +39,7 @@ defineEmits(['update:modelValue'])
   padding: 8px 12px;
   background: #111111;
   border: 1px solid #1f1f1f;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   cursor: pointer;
@@ -48,8 +48,8 @@ defineEmits(['update:modelValue'])
 
 .filter-btn.active,
 .filter-btn:hover {
-  color: #c9a962;
-  border-color: rgba(201,169,98,0.35);
+  color: var(--Primary);
+  border-color: rgba(202,168,96,0.35);
   background: #111111;
 }
 

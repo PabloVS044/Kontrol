@@ -26,10 +26,12 @@ describe('statusStyle / statusLabel / statusPill', () => {
   })
 
   it('statusPill combina etiqueta, color y fondo', () => {
+    // El dorado de COMPLETADO se alineó con --k-color-primary (#caa860); antes
+    // era un literal aparte (#c9a962) que no coincidía con el token de marca.
     expect(statusPill('COMPLETADO')).toEqual({
       label: 'Completed',
-      color: '#c9a962',
-      bg: '#c9a9621a',
+      color: '#caa860',
+      bg: '#caa8601a',
     })
   })
 })

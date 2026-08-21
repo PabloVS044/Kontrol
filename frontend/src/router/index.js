@@ -1,26 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView     from '../views/LoginView.vue'
-import RegisterView  from '../views/RegisterView.vue'
-import LandingPage   from '../views/LandingPage.vue'
-import InventoryPage from '../views/InventoryPage.vue'
-import ProductDetailView from '../views/ProductDetailView.vue'
-import ProjectsView  from '../views/ProjectsView.vue'
-import DashboardView from '../views/DashboardView.vue'
-import OnboardingView from '../views/OnboardingView.vue'
-import InviteView from '../views/InviteView.vue'
-import AuthCallback from '../views/AuthCallback.vue'
-import BudgetView from '../views/BudgetView.vue'
-import ProjectDetailView from '../views/ProjectDetailView.vue'
-import ReportsView from '../views/ReportsView.vue'
-import ReportDetailView from '../views/ReportDetailView.vue'
-import ChatView from '../views/ChatView.vue'
-import TeamsView from '../views/TeamsView.vue'
-import AgentView from '../views/AgentView.vue'
-import IntegrationsView from '../views/IntegrationsView.vue'
-import AdminLayout from '../views/admin/AdminLayout.vue'
-import AdminDashboardView from '../views/admin/AdminDashboardView.vue'
-import AdminCompaniesView from '../views/admin/AdminCompaniesView.vue'
-import AdminUsersView from '../views/admin/AdminUsersView.vue'
+// Landing is the public entry point → keep it eager for instant first paint.
+// Every other view is lazy-loaded (() => import) so each route ships its own
+// chunk and the initial bundle stays small (heavy deps like three/zxing only
+// load when their route does).
+import LandingPage from '../views/LandingPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,111 +16,117 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: LoginView,
+      component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterView,
+      component: () => import('../views/RegisterView.vue'),
     },
     {
       // Receives ?token=&onboarding=&error= from the backend Google OAuth callback
       path: '/auth/callback',
       name: 'auth-callback',
-      component: AuthCallback,
+      component: () => import('../views/AuthCallback.vue'),
     },
     {
       // Shown when user is authenticated but belongs to no empresa yet
       path: '/onboarding',
       name: 'onboarding',
-      component: OnboardingView,
+      component: () => import('../views/OnboardingView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/invite/:token',
       name: 'invite',
-      component: InviteView,
+      component: () => import('../views/InviteView.vue'),
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView,
+      component: () => import('../views/DashboardView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/projects',
       name: 'projects',
-      component: ProjectsView,
+      component: () => import('../views/ProjectsView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {
       path: '/projects/:id',
       name: 'project-detail',
-      component: ProjectDetailView,
+      component: () => import('../views/ProjectDetailView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {
       path: '/teams',
       name: 'teams',
-      component: TeamsView,
+      component: () => import('../views/TeamsView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
     },
     {
       path: '/inventory',
       name: 'inventory',
-      component: InventoryPage,
+      component: () => import('../views/InventoryPage.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/inventory/:id',
       name: 'inventory-detail',
-      component: ProductDetailView,
+      component: () => import('../views/ProductDetailView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/reports',
       name: 'reports',
-      component: ReportsView,
+      component: () => import('../views/ReportsView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/reports/:id',
       name: 'report-detail',
-      component: ReportDetailView,
+      component: () => import('../views/ReportDetailView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/budget',
       name: 'budget',
-      component: BudgetView,
+      component: () => import('../views/BudgetView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/chat',
       name: 'chat',
-      component: ChatView,
+      component: () => import('../views/ChatView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/agent',
       name: 'agent',
-      component: AgentView,
+      component: () => import('../views/AgentView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/integrations',
       name: 'integrations',
-      component: IntegrationsView,
+      component: () => import('../views/IntegrationsView.vue'),
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
+      path: '/marketing',
+      name: 'marketing',
+      component: () => import('../views/MarketingPublicationsView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/admin',
-      component: AdminLayout,
+      component: () => import('../views/admin/AdminLayout.vue'),
       meta: { requiresAuth: true, requiresSuperUser: true },
       children: [
-        { path: '',        name: 'admin-dashboard', component: AdminDashboardView },
-        { path: 'companies', name: 'admin-companies', component: AdminCompaniesView },
-        { path: 'users',     name: 'admin-users',     component: AdminUsersView },
+        { path: '',        name: 'admin-dashboard', component: () => import('../views/admin/AdminDashboardView.vue') },
+        { path: 'companies', name: 'admin-companies', component: () => import('../views/admin/AdminCompaniesView.vue') },
+        { path: 'users',     name: 'admin-users',     component: () => import('../views/admin/AdminUsersView.vue') },
       ],
     },
   ],

@@ -168,7 +168,7 @@ function logout() {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  color: #faf8f5;
+  color: var(--Text);
   padding: 40px 24px;
 }
 
@@ -198,12 +198,12 @@ function logout() {
   font-size: 52px;
   font-weight: 400;
   line-height: 1.1;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .ob-tagline {
   font-size: 14px;
-  color: #888;
+  color: var(--TextMuted);
   line-height: 1.7;
   max-width: 380px;
 }
@@ -220,13 +220,13 @@ function logout() {
   align-items: center;
   gap: 12px;
   font-size: 13px;
-  color: #666;
+  color: var(--TextDim);
 }
 
 .ob-dot {
   width: 6px;
   height: 6px;
-  background: #c9a962;
+  background: #caa860;
   flex-shrink: 0;
 }
 
@@ -252,12 +252,12 @@ function logout() {
   font-family: 'Playfair Display', serif;
   font-size: 24px;
   font-weight: 400;
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .ob-card-sub {
   font-size: 13px;
-  color: #666;
+  color: var(--TextDim);
   margin-top: -12px;
 }
 
@@ -275,14 +275,14 @@ function logout() {
 
 .ob-field label {
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
   letter-spacing: 0.05em;
 }
 
 .ob-field input {
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
-  color: #faf8f5;
+  color: var(--Text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   padding: 10px 12px;
@@ -291,7 +291,7 @@ function logout() {
 }
 
 .ob-field input:focus {
-  border-color: #c9a962;
+  border-color: #caa860;
 }
 
 .ob-field input:disabled {
@@ -305,7 +305,7 @@ function logout() {
   gap: 12px;
 }
 
-.req { color: #c9a962; }
+.req { color: var(--Primary); }
 
 .ob-error {
   font-size: 12px;
@@ -313,9 +313,9 @@ function logout() {
 }
 
 .ob-submit {
-  background: #c9a962;
+  background: #caa860;
   border: none;
-  color: #0a0a0a;
+  color: var(--BtnText);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
@@ -347,7 +347,7 @@ function logout() {
 
 .ob-footer-note {
   font-size: 11px;
-  color: #444;
+  color: var(--TextFaint);
   line-height: 1.6;
   padding-top: 8px;
   border-top: 1px solid #1a1a1a;
@@ -356,7 +356,7 @@ function logout() {
 .ob-logout {
   background: none;
   border: none;
-  color: #444;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   cursor: pointer;
@@ -366,7 +366,7 @@ function logout() {
 }
 
 .ob-logout:hover {
-  color: #888;
+  color: var(--TextMuted);
 }
 
 /* ── Responsive ── */

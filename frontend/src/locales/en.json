@@ -18,7 +18,8 @@
         "emailInvalid": "Enter a valid email",
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "unreachable": "Can't reach the server. Check your connection and try again."
       }
     },
     "register": {
@@ -42,7 +43,8 @@
         "emailInvalid": "Enter a valid email",
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
-        "generic": "Something went wrong. Please try again."
+        "generic": "Something went wrong. Please try again.",
+        "unreachable": "Can't reach the server. Check your connection and try again."
       }
     }
   },
@@ -544,6 +546,7 @@
       "net": "Net",
       "viewDetails": "View details",
       "sell": "Sell",
+      "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
       "cannotSell": "This product cannot be sold right now."
@@ -556,6 +559,7 @@
       "submit": "Realize sale",
       "submitting": "Processing sale…",
       "cancel": "Cancel sale",
+      "viewSale": "View sale",
       "remove": "Remove item",
       "movementReason": "POS sale from inventory",
       "errors": {
@@ -601,7 +605,42 @@
       "descriptionPlaceholder": "Optional description",
       "cancel": "Cancel",
       "save": "Save product",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "costAndStock": "Cost & initial stock",
+      "stockMode": {
+        "unit": "By unit",
+        "box": "By box"
+      },
+      "boxes": "Boxes",
+      "unitsPerBox": "Units per box",
+      "boxPrice": "Price per box",
+      "boxPreview": "→ {units} units · cost ${cost}/u",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "Scan or type the code"
+    },
+    "scanner": {
+      "scan": "Scan barcode",
+      "title": "Scan barcode",
+      "hint": "Point the camera at the product's barcode.",
+      "close": "Close",
+      "permissionError": "Camera permission denied. Enable it to scan.",
+      "noCamera": "Could not access the camera.",
+      "insecureContext": "The camera requires HTTPS. Open the app on localhost or over an https:// URL to scan.",
+      "notFound": "No product for code {code}.",
+      "added": "Added: {name}"
+    },
+    "restock": {
+      "title": "Add stock",
+      "currentStock": "Current stock: {count}",
+      "avgCost": "Avg. cost ${cost}/u",
+      "entryMode": "Entry mode",
+      "units": "Units",
+      "unitCost": "Cost per unit",
+      "reason": "Reason",
+      "reasonPlaceholder": "Purchase, restock…",
+      "defaultReason": "Stock entry",
+      "save": "Add stock",
+      "saving": "Adding…"
     },
     "errors": {
       "selectProject": "Select a project before adding a product.",
@@ -656,11 +695,26 @@
       "used": "Used"
     },
     "alertBox": {
-      "onTrack":  { "title": "On track.",  "message": "No budget overrun detected." },
-      "watching": { "title": "Watching",   "message": "Spending is approaching the warning threshold." },
-      "warning":  { "title": "Warning",    "message": "Budget usage is high." },
-      "critical": { "title": "Critical",   "message": "Budget fully consumed." },
-      "overrun":  { "title": "Overrun",    "message": "Spending has exceeded the budget." }
+      "onTrack": {
+        "title": "On track.",
+        "message": "No budget overrun detected."
+      },
+      "watching": {
+        "title": "Watching",
+        "message": "Spending is approaching the warning threshold."
+      },
+      "warning": {
+        "title": "Warning",
+        "message": "Budget usage is high."
+      },
+      "critical": {
+        "title": "Critical",
+        "message": "Budget fully consumed."
+      },
+      "overrun": {
+        "title": "Overrun",
+        "message": "Spending has exceeded the budget."
+      }
     },
     "activityModal": {
       "editTitle": "Edit activity",
@@ -753,12 +807,75 @@
     }
   },
   "reports": {
+    "sales": {
+      "title": "Sales & Finance",
+      "allProjects": "All projects",
+      "from": "From",
+      "to": "To",
+      "presets": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "custom": "Range"
+      },
+      "kpi": {
+        "grossIncome": "Gross income",
+        "cogs": "Cost of sales",
+        "grossProfit": "Gross profit",
+        "adminExpenses": "Admin expenses",
+        "netProfit": "Net profit",
+        "unitsSold": "Units sold",
+        "purchases": "Purchases",
+        "avgTicket": "Avg. ticket"
+      },
+      "legendIncome": "Income",
+      "legendProfit": "Profit",
+      "loading": "Loading…",
+      "noData": "No sales in this period.",
+      "topProducts": "Top selling products",
+      "unitsShort": "{count} u"
+    },
     "header": {
       "title": "Reports Center",
       "subtitle": "Analytics and performance overview for all your projects",
       "createReport": "Create Report",
       "generateAI": "Generate with AI",
       "export": "Export"
+    },
+    "export": {
+      "chooseFormat": "Export format",
+      "pdfTitle": "PDF document",
+      "pdfDesc": "Report with header, Kontrol identity and generation date.",
+      "csvTitle": "CSV spreadsheet",
+      "csvDesc": "Projects table ready for Excel and Google Sheets.",
+      "scopeNote": "Exports what the \"{filter}\" filter shows.",
+      "scopeNoteProject": "Exports the \"{project}\" project.",
+      "working": "Generating {format}…",
+      "tagline": "PROJECT MANAGEMENT",
+      "footerNote": "Generated from Kontrol",
+      "noData": "No data for the applied filter.",
+      "continued": "(continued)",
+      "allProjects": "All projects",
+      "page": "Page {current} of {total}",
+      "recordTitle": "{format} export · {filter}",
+      "errorFailed": "The file could not be generated.",
+      "errorNotRecorded": "The file was downloaded, but the generation was not recorded.",
+      "projectSummary": "Project Summary",
+      "colMetric": "Metric",
+      "colValue": "Value",
+      "colCount": "Count",
+      "colShare": "% of total",
+      "colRole": "Role",
+      "colMembers": "Members",
+      "meta": {
+        "company": "COMPANY",
+        "generatedBy": "GENERATED BY",
+        "generatedOn": "GENERATED ON",
+        "filter": "APPLIED FILTER",
+        "projectCount": "PROJECTS INCLUDED",
+        "reportCount": "REPORTS INCLUDED",
+        "project": "PROJECT"
+      }
     },
     "view": {
       "filters": {
@@ -854,8 +971,12 @@
       "legendBudget": "Budget",
       "legendProgress": "Progress",
       "months": {
-        "jan": "Jan", "feb": "Feb", "mar": "Mar",
-        "apr": "Apr", "may": "May", "jun": "Jun"
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun"
       }
     },
     "table": {
@@ -901,10 +1022,22 @@
       "timelineTitle": "Timeline",
       "overdue": "Overdue",
       "timeline": {
-        "planning": { "label": "Planning",  "desc": "Scope definition, resource allocation and goal setting." },
-        "execution": { "label": "Execution", "desc": "Active development and task completion by the team." },
-        "review":    { "label": "Review",    "desc": "Quality assurance, testing and stakeholder review." },
-        "delivery":  { "label": "Delivery",  "desc": "Final delivery, documentation and project closure." }
+        "planning": {
+          "label": "Planning",
+          "desc": "Scope definition, resource allocation and goal setting."
+        },
+        "execution": {
+          "label": "Execution",
+          "desc": "Active development and task completion by the team."
+        },
+        "review": {
+          "label": "Review",
+          "desc": "Quality assurance, testing and stakeholder review."
+        },
+        "delivery": {
+          "label": "Delivery",
+          "desc": "Final delivery, documentation and project closure."
+        }
       },
       "health": {
         "completed": "Completed",
@@ -1051,6 +1184,97 @@
       "colCompanies": "Companies",
       "colStatus": "Status",
       "empty": "No users found."
+    }
+  },
+  "marketing": {
+    "title": "Publications",
+    "subtitle": "Plan, schedule and publish your projects' content",
+    "new": "New publication",
+    "loading": "Loading publications…",
+    "empty": "No publications yet. Create the first one.",
+    "emptyFiltered": "No publication matches these filters.",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allChannels": "All channels",
+      "allProjects": "All projects",
+      "byStatus": "Filter by status",
+      "byChannel": "Filter by channel",
+      "byProject": "Filter by project",
+      "clear": "Clear filters"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "SCHEDULED": "Scheduled",
+      "PUBLISHED": "Published"
+    },
+    "actions": {
+      "DRAFT": "Back to draft",
+      "SCHEDULED": "Schedule",
+      "PUBLISHED": "Publish",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "card": {
+      "project": "Project",
+      "scheduledFor": "Scheduled",
+      "publishedAt": "Published",
+      "noDate": "No date",
+      "imageAlt": "Image for {title}"
+    },
+    "form": {
+      "createTitle": "New publication",
+      "editTitle": "Edit publication",
+      "title": "Title",
+      "content": "Content",
+      "image": "Image (URL)",
+      "channel": "Target channel",
+      "format": "Format",
+      "project": "Project",
+      "selectProject": "Select a project",
+      "scheduledFor": "Scheduled date",
+      "notes": "Internal notes"
+    },
+    "schedule": {
+      "title": "Schedule publication",
+      "hint": "A scheduled publication needs a date and time.",
+      "submit": "Schedule",
+      "submitting": "Scheduling…"
+    },
+    "remove": {
+      "title": "Delete publication",
+      "hint": "\"{title}\" will be deleted. This action cannot be undone.",
+      "submit": "Delete",
+      "submitting": "Deleting…"
+    },
+    "errors": {
+      "load": "Could not load the publications.",
+      "save": "Could not save the publication.",
+      "transition": "Could not change the status.",
+      "schedule": "Could not schedule the publication.",
+      "remove": "Could not delete the publication."
+    },
+    "platform": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram",
+      "LINKEDIN": "LinkedIn",
+      "TIKTOK": "TikTok",
+      "X": "X",
+      "YOUTUBE": "YouTube",
+      "WHATSAPP": "WhatsApp",
+      "OTHER": "Other"
+    },
+    "format": {
+      "POST": "Post",
+      "STORY": "Story",
+      "REEL": "Reel",
+      "VIDEO": "Video",
+      "CAROUSEL": "Carousel",
+      "SHORT": "Short",
+      "AD": "Ad",
+      "OTHER": "Other"
     }
   },
   "birdie": {
@@ -1202,6 +1426,7 @@
     "chat": "Chat",
     "ai": "AI",
     "integrations": "Integrations",
+    "marketing": "Marketing",
     "yourWorkspaces": "YOUR WORKSPACES",
     "createWorkspace": "+ Create new workspace",
     "admin": {

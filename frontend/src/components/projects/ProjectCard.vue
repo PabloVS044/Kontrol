@@ -9,9 +9,9 @@
       <span class="card-name">{{ project.nombre }}</span>
       <Pill
         :label="isAdmin ? 'ADMIN' : 'MEMBER'"
-        :btnColor="isAdmin ? 'rgba(201,169,98,0.12)' : 'rgba(96,165,250,0.08)'"
-        :circleColor="isAdmin ? '#c9a962' : '#60a5fa'"
-        :textColor="isAdmin ? '#c9a962' : '#60a5fa'"
+        :btnColor="isAdmin ? 'rgba(202,168,96,0.12)' : 'rgba(96,165,250,0.08)'"
+        :circleColor="isAdmin ? '#caa860' : '#60a5fa'"
+        :textColor="isAdmin ? '#caa860' : '#60a5fa'"
       />
     </div>
 
@@ -102,7 +102,7 @@
         :link="projectLink"
         textColor="#555"
         backColor="transparent"
-        hoverColor="rgba(201,169,98,0.06)"
+        hoverColor="rgba(202,168,96,0.06)"
       />
       <a class="open-anchor" @click="$emit('open-budget', project)">{{ $t('projects.list.openBudget') }}</a>
     </div>
@@ -154,7 +154,7 @@ const budgetColor = computed(() => {
   const lvl = budgetSummary.value?.alerta_nivel
   if (lvl === 'CRITICO') return '#fb7185'
   if (lvl === 'ADVERTENCIA') return '#f97316'
-  return '#c9a962'
+  return '#caa860'
 })
 const budgetAlert = computed(() => budgetSummary.value?.alerta_nivel)
 const budgetDisplay = computed(() => {
@@ -194,7 +194,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 .card-name {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: #faf8f5;
+  color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -210,7 +210,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .card-desc {
   font-size: 12px;
-  color: #666;
+  color: var(--TextDim);
   line-height: 1.5;
 }
 
@@ -221,7 +221,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .progress-val {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
   width: 30px;
   text-align: right;
   flex-shrink: 0;
@@ -236,10 +236,10 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #888;
+  color: var(--TextMuted);
 }
 .budget-val {
-  color: #faf8f5;
+  color: var(--Text);
   font-variant-numeric: tabular-nums;
 }
 .progress-bg {
@@ -257,23 +257,26 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
-  color: #555;
+  font-size: 11px;
+  color: var(--TextFaint);
 }
 .alert-pill {
-  font-size: 9px;
+  font-size: 11px;
   padding: 2px 6px;
   letter-spacing: 0.08em;
   border-radius: 2px;
   border: 1px solid currentColor;
 }
-.alert-pill.warn { 
-  color: #f97316; 
-  background: #f97316; 
+/* Mismo defecto que en ProjectsView: color de texto igual al de fondo. */
+.alert-pill.warn {
+  color: var(--k-alert-warning-text);
+  background: var(--k-alert-warning-bg);
+  border-color: var(--k-alert-warning-border);
 }
-.alert-pill.critical { 
-  color: #fb7185; 
-  background: #fb7185; 
+.alert-pill.critical {
+  color: var(--k-alert-critical-text);
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
 }
 
 .card-footer-row {
@@ -284,7 +287,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .due-date {
   font-size: 11px;
-  color: #555;
+  color: var(--TextFaint);
 }
 
 .status-select-wrap {
@@ -308,7 +311,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.04em;
   padding: 0;
   padding-right: 14px;
@@ -337,7 +340,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .open-anchor {
   font-size: 12px;
-  color: #555;
+  color: var(--TextFaint);
   cursor: pointer;
   display: block;
   width: 100%;
@@ -346,7 +349,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   transition: color 0.15s;
   text-decoration: none;
 }
-.open-anchor:hover { color: #c9a962; }
+.open-anchor:hover { color: var(--Primary); }
 
 :deep(.pill) {
   height: 22px;
@@ -355,7 +358,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: 1px solid currentColor;
 }
 :deep(.pill-text) {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   font-family: 'Manrope', sans-serif;
 }

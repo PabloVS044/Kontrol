@@ -58,7 +58,9 @@ router.delete('/items/:itemId', requireCompanyRole('owner', 'admin'), validate(m
 router.get('/publications', validate(getMarketingPublicationsQuerySchema, 'query'), getMarketingPublications)
 router.post('/publications', requireCompanyRole('owner', 'admin', 'manager'), validate(createMarketingPublicationSchema), createMarketingPublication)
 router.put('/publications/:publicationId', requireCompanyRole('owner', 'admin', 'manager'), validate(marketingPublicationIdParamSchema, 'params'), validate(updateMarketingPublicationSchema), updateMarketingPublication)
-router.delete('/publications/:publicationId', requireCompanyRole('owner', 'admin'), validate(marketingPublicationIdParamSchema, 'params'), deleteMarketingPublication)
+// HU-28: el encargado de marketing (manager) administra el ciclo completo de la
+// publicación, eliminación incluida.
+router.delete('/publications/:publicationId', requireCompanyRole('owner', 'admin', 'manager'), validate(marketingPublicationIdParamSchema, 'params'), deleteMarketingPublication)
 
 router.get('/publications/:publicationId/metrics', validate(marketingPublicationIdParamSchema, 'params'), getMarketingPublicationMetrics)
 router.post('/publications/:publicationId/metrics', requireCompanyRole('owner', 'admin', 'manager'), validate(marketingPublicationIdParamSchema, 'params'), validate(createMarketingMetricSnapshotSchema), createMarketingMetricSnapshot)

@@ -60,7 +60,29 @@
                 <strong class="stat-value">${{ formatMoney(product.costo_promedio_ponderado) }}</strong>
               </div>
             </div>
+
+            <div class="barcode-editor">
+              <span class="stat-label">Barcode</span>
+              <div class="barcode-edit-row">
+                <input v-model="barcodeInput" class="barcode-input" placeholder="No barcode assigned" />
+                <button type="button" class="barcode-scan-btn" title="Scan" @click="showScanner = true">
+                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                    <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="barcode-save-btn"
+                  :disabled="savingBarcode || barcodeInput.trim() === (product.codigo_barras || '')"
+                  @click="saveBarcode"
+                >{{ savingBarcode ? 'Saving…' : 'Save' }}</button>
+              </div>
+              <p v-if="barcodeMsg" class="barcode-msg" :class="barcodeMsgType">{{ barcodeMsg }}</p>
+            </div>
           </article>
+
+          <BarcodeScanner v-model="showScanner" @detected="onBarcodeDetected" />
 
           <article class="hero-card secondary">
             <p class="section-kicker">Stock</p>
@@ -124,6 +146,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
+import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
@@ -132,6 +155,44 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const error = ref(null)
 const product = ref(null)
+
+// Barcode assignment for an existing product
+const barcodeInput = ref('')
+const savingBarcode = ref(false)
+const barcodeMsg = ref('')
+const barcodeMsgType = ref('ok')
+const showScanner = ref(false)
+
+function onBarcodeDetected(code) {
+  barcodeInput.value = code
+  showScanner.value = false
+}
+
+async function saveBarcode() {
+  if (!product.value) return
+  savingBarcode.value = true
+  barcodeMsg.value = ''
+  try {
+    const value = barcodeInput.value.trim()
+    const res = await fetch(`/api/products/${productId.value}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ codigo_barras: value || null }),
+    })
+    const payload = await res.json().catch(() => ({}))
+    if (res.status === 409) { barcodeMsg.value = payload.message || 'That barcode is already in use.'; barcodeMsgType.value = 'err'; return }
+    if (res.status === 403) { barcodeMsg.value = 'You do not have permission to edit this product.'; barcodeMsgType.value = 'err'; return }
+    if (!res.ok) { barcodeMsg.value = payload.message || `Error ${res.status}`; barcodeMsgType.value = 'err'; return }
+    product.value.codigo_barras = value || null
+    barcodeMsg.value = 'Barcode saved.'
+    barcodeMsgType.value = 'ok'
+  } catch {
+    barcodeMsg.value = 'Network error, try again.'
+    barcodeMsgType.value = 'err'
+  } finally {
+    savingBarcode.value = false
+  }
+}
 
 const productId = computed(() => route.params.id)
 const projectQuery = computed(() => {
@@ -199,6 +260,8 @@ async function loadProduct() {
     }
 
     product.value = payload.data
+    barcodeInput.value = payload.data?.codigo_barras || ''
+    barcodeMsg.value = ''
   } catch (err) {
     product.value = null
     error.value = err.message
@@ -234,11 +297,22 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 .product-detail-root {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
+  color: var(--Text);
+  font-family: 'Manrope', sans-serif;
+}
+
+.product-detail-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(10px);
-  color: #faf8f5;
-  font-family: 'Manrope', sans-serif;
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .content {
@@ -263,7 +337,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .state-msg {
-  color: #9a9a9a;
+  color: var(--TextMuted);
   max-width: 460px;
   line-height: 1.6;
 }
@@ -288,7 +362,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .ghost-link {
-  color: #faf8f5;
+  color: var(--Text);
   border: 1px solid #2a2a2a;
   background: #111111;
 }
@@ -296,8 +370,8 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .btn-primary {
   border: none;
   cursor: pointer;
-  background: #c9a962;
-  color: #0a0a0a;
+  background: #caa860;
+  color: var(--BtnText);
 }
 
 .detail-header {
@@ -317,7 +391,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .eyebrow,
 .section-kicker {
-  color: #c9a962;
+  color: var(--Primary);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -331,7 +405,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .subtitle {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 14px;
 }
 
@@ -364,7 +438,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .description {
   margin-top: 14px;
-  color: #d2d2d2;
+  color: var(--TextSoft);
   line-height: 1.7;
   min-height: 72px;
 }
@@ -387,8 +461,8 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .stat-label,
 .mini-label {
   display: block;
-  color: #8f8f8f;
-  font-size: 10px;
+  color: var(--TextMuted);
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -398,9 +472,66 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .mini-value {
   font-size: 20px;
   font-weight: 700;
-  color: #faf8f5;
+  color: var(--Text);
   font-variant-numeric: tabular-nums;
 }
+
+.barcode-editor {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #1f1f1f;
+}
+.barcode-edit-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.barcode-input {
+  flex: 1;
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: var(--Text);
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  min-width: 0;
+}
+.barcode-input:focus { border-color: #caa860; }
+.barcode-scan-btn {
+  flex: 0 0 auto;
+  width: 44px;
+  background: #0a0a0a;
+  border: 1px solid #1f1f1f;
+  color: var(--TextMuted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, color .15s;
+}
+.barcode-scan-btn:hover { border-color: #caa860; color: var(--Primary); }
+.barcode-save-btn {
+  flex: 0 0 auto;
+  background: #caa860;
+  border: none;
+  color: var(--BtnText);
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: filter .15s;
+}
+.barcode-save-btn:hover:not(:disabled) { filter: brightness(1.08); }
+.barcode-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.barcode-msg {
+  margin-top: 8px;
+  font-size: 12px;
+  font-family: 'Manrope', sans-serif;
+}
+.barcode-msg.ok { color: #34d399; }
+.barcode-msg.err { color: #fb7185; }
 
 .stock-metric {
   margin-top: 14px;
@@ -418,7 +549,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .stock-caption {
   display: block;
   margin-top: 6px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
 }
 
 .stock-details {
@@ -442,7 +573,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .section-count {
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 12px;
 }
 
@@ -462,13 +593,13 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .supplier-name {
-  color: #faf8f5;
+  color: var(--Text);
 }
 
 .supplier-date,
 .empty-box {
   margin-top: 4px;
-  color: #8f8f8f;
+  color: var(--TextMuted);
   font-size: 13px;
 }
 
@@ -491,7 +622,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .warning {
-  color: #c9a962;
+  color: var(--Primary);
 }
 
 .danger {

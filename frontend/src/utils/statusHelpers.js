@@ -2,8 +2,8 @@ export const STATUS_COLOR = {
   PLANIFICADO: '#60a5fa',
   EN_PROGRESO: '#34d399',
   PAUSADO:     '#f97316',
-  COMPLETADO:  '#c9a962',
-  COMPLETADA:  '#c9a962',
+  COMPLETADO:  '#caa860',
+  COMPLETADA:  '#caa860',
   CANCELADO:   '#fb7185',
   CANCELADA:   '#fb7185',
   PENDIENTE:   '#60a5fa',
@@ -25,13 +25,15 @@ export function statusStyle(estado) {
   return { color: c, borderColor: c + '44', background: c + '14' }
 }
 
+// El fallback a '—' importa: un proyecto sin estado producia el string
+// "undefined" dentro del PDF y del CSV exportados.
 export function statusLabel(estado) {
-  return STATUS_LABEL[estado] || estado
+  return STATUS_LABEL[estado] || estado || '—'
 }
 
 export function statusPill(estado) {
   const c = STATUS_COLOR[estado] || '#888'
-  return { label: STATUS_LABEL[estado] || estado, color: c, bg: c + '1a' }
+  return { label: STATUS_LABEL[estado] || estado || '—', color: c, bg: c + '1a' }
 }
 
 export const PRIORITY_COLOR = {

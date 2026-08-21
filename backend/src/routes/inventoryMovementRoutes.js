@@ -5,13 +5,17 @@ import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
 import {
   getInventoryMovementsQuerySchema,
+  getInventorySalesStatsQuerySchema,
   inventoryMovementIdParamSchema,
   createInventoryMovementSchema,
+  createSaleSchema,
 } from '../schemas/inventoryMovementSchemas.js'
 import {
   getInventoryMovements,
+  getInventorySalesStats,
   getInventoryMovementById,
   createInventoryMovement,
+  createSale,
 } from '../controllers/inventoryMovementController.js'
 
 const router = Router()
@@ -23,6 +27,13 @@ router.get(
   '/',
   validate(getInventoryMovementsQuerySchema, 'query'),
   getInventoryMovements
+)
+
+// Must be registered before '/:id' so the literal path wins over the param.
+router.get(
+  '/stats',
+  validate(getInventorySalesStatsQuerySchema, 'query'),
+  getInventorySalesStats
 )
 
 router.get(
@@ -45,6 +56,14 @@ router.post(
   movementPermissionGate,
   validate(createInventoryMovementSchema),
   createInventoryMovement
+)
+
+// Atomic multi-line POS sale. Project access is validated per-item in the
+// controller (cart may span projects), so no single-project gate here.
+router.post(
+  '/sale',
+  validate(createSaleSchema),
+  createSale
 )
 
 export default router

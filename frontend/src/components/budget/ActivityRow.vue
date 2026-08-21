@@ -14,7 +14,7 @@
           :class="{ open: expanded }"
           width="10" height="10" viewBox="0 0 10 10" fill="none"
         >
-          <path d="M2 3l3 4 3-4" stroke="#888" stroke-width="1.4" stroke-linecap="square"/>
+          <path d="M2 3l3 4 3-4" stroke="var(--k-gray-5)" stroke-width="1.4" stroke-linecap="square"/>
         </svg>
         <span v-else class="chev-placeholder"></span>
         <span class="bar-name">{{ activity.nombre }}</span>
@@ -120,11 +120,13 @@ const usagePct = computed(() => {
   return Math.round((efectivo.value / planned) * 100)
 })
 
+// Mismo colapso de niveles que budgetColor() en ProjectsView.vue y
+// progressColor() en BudgetSummaryCard.vue: la paleta v2 no define un
+// ámbar/naranja intermedio.
 const usageColor = computed(() => {
-  if (usagePct.value > 100) return '#fb7185'
-  if (usagePct.value >= 80) return '#f97316'
-  if (usagePct.value >= 60) return '#facc15'
-  return '#c9a962'
+  if (usagePct.value > 100) return 'var(--k-state-error-text)'
+  if (usagePct.value >= 60) return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  return 'var(--k-color-primary)'
 })
 
 async function toggle() {
@@ -170,23 +172,23 @@ function formatDate(v) {
 .bar-item {
   margin-bottom: 18px;
   padding-bottom: 18px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--k-shade-4);
 }
 .bar-item:last-child { border-bottom: none; }
 
 .bar-header {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 6px; font-size: 13px; gap: 8px;
+  margin-bottom: 6px; font-size: var(--k-font-size-body-small); gap: 8px;
 }
 
 .bar-name-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: #111111; border: none; padding: 0;
-  color: #faf8f5; font-family: 'Manrope', sans-serif;
-  font-size: 13px; font-weight: 500;
+  background: var(--k-shade-3); border: none; padding: 0;
+  color: var(--k-color-text); font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small); font-weight: 500;
   cursor: pointer; min-width: 0; flex: 1;
 }
-.bar-name-btn:hover:not(.disabled) { color: #c9a962; }
+.bar-name-btn:hover:not(.disabled) { color: var(--k-color-primary); }
 .bar-name-btn.disabled { cursor: default; opacity: 1; }
 .bar-name-btn:disabled { cursor: default; }
 
@@ -200,86 +202,86 @@ function formatDate(v) {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bar-count {
-  font-size: 10px; color: #888;
-  background: #111111;
+  font-size: var(--k-font-size-caption); color: var(--k-gray-5);
+  background: var(--k-shade-3);
   padding: 1px 6px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--k-shade-7);
   flex-shrink: 0;
 }
 
 .bar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .bar-pct {
-  font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums;
+  font-weight: 600; font-size: var(--k-font-size-body-small); font-variant-numeric: tabular-nums;
   transition: color 0.2s;
 }
 
 .row-btn {
-  background: #111111; border: 1px solid #2e2e2e; color: #b8b8b8;
-  width: 26px; height: 26px; cursor: pointer; font-size: 12px; line-height: 1;
+  background: var(--k-shade-3); border: 1px solid #2e2e2e; color: #b8b8b8; /* sin token exacto */
+  width: 26px; height: 26px; cursor: pointer; font-size: var(--k-font-size-caption-lg); line-height: 1;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color 0.15s, border-color 0.15s;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
-.row-btn:hover { color: #c9a962; border-color: #c9a962; }
-.row-btn.danger:hover { color: #fb7185; border-color: #fb7185; }
+.row-btn:hover { color: var(--k-color-primary); border-color: var(--k-color-primary); }
+.row-btn.danger:hover { color: var(--k-state-error-text); border-color: var(--k-state-error-text); }
 
 .bar-amounts {
   display: flex; justify-content: space-between;
-  font-size: 12px; color: #bcbcbc; margin-bottom: 6px;
+  font-size: var(--k-font-size-caption-lg); color: #bcbcbc; margin-bottom: 6px; /* sin token exacto */
 }
 .amt-label {
-  font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
-  color: #888; margin-right: 4px;
+  font-size: var(--k-font-size-caption); letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--k-gray-5); margin-right: 4px;
 }
 .bar-overrun {
-  font-size: 11px; color: #fda4af; margin-top: 4px;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption); color: var(--k-state-error-text); margin-top: 4px;
+  font-family: var(--k-font-sans);
 }
 
 .bar-details {
   margin-top: 12px;
   padding: 12px 14px;
-  background: #000000;
-  border: 1px solid #1a1a1a;
-  border-left: 2px solid #c9a962;
+  background: rgb(var(--k-color-black-rgb));
+  border: 1px solid var(--k-shade-4);
+  border-left: 2px solid var(--k-color-primary);
 }
 .bar-details-empty {
-  font-size: 12px; color: #888; text-align: center;
+  font-size: var(--k-font-size-caption-lg); color: var(--k-gray-5); text-align: center;
   padding: 8px 0;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 .bar-details-list {
   display: flex; flex-direction: column; gap: 8px;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 .detail-row {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px; align-items: baseline;
-  font-size: 12px;
+  font-size: var(--k-font-size-caption-lg);
   padding-bottom: 6px;
-  border-bottom: 1px dashed #1f1f1f;
+  border-bottom: 1px dashed var(--k-shade-6);
 }
 .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
 
 .detail-date {
-  font-size: 10px; color: #888; letter-spacing: 0.05em;
+  font-size: var(--k-font-size-caption); color: var(--k-gray-5); letter-spacing: 0.05em;
   text-transform: uppercase;
   min-width: 56px;
 }
 .detail-tag {
-  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #c9a962; background: #c9a962;
-  padding: 1px 6px; border: 1px solid rgba(201,169,98,0.2);
+  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; /* sin token exacto */
+  color: var(--k-color-primary); background: var(--k-surface-primary-tint);
+  padding: 1px 6px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   align-self: center;
 }
 .detail-text {
-  color: #d4d4d4; line-height: 1.4;
+  color: #d4d4d4; line-height: 1.4; /* sin token exacto */
   overflow: hidden; text-overflow: ellipsis;
 }
-.detail-user { color: #888; font-size: 11px; }
+.detail-user { color: var(--k-gray-5); font-size: var(--k-font-size-caption); }
 .detail-amount {
-  color: #faf8f5; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--k-color-text); font-weight: 600; font-variant-numeric: tabular-nums;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -289,8 +291,8 @@ function formatDate(v) {
 
 /* Override ProgressBar default background */
 :deep(.pb-bg) {
-  background: #202020;
-  border: 1px solid #2a2a2a;
+  background: #202020; /* sin token exacto */
+  border: 1px solid var(--k-shade-7);
   height: 10px;
 }
 :deep(.pb-fill) {

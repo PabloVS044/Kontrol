@@ -1,0 +1,267 @@
+/**
+ * Kontrol — Design tokens (SCRUM-13 / HU-32)
+ *
+ * Fuente única de verdad del tema. Traducción a código de la guía de estilo
+ * aprobada en SCRUM-12; los nombres siguen las láminas de Figma documentadas
+ * en `docs/design-tokens-figma.md`.
+ *
+ * Reglas:
+ *  - Todo valor de marca (color, tipografía, espaciado, radio, sombra) vive aquí.
+ *    Ningún otro archivo debería declarar literales de marca.
+ *  - Consumir siempre `var(--k-*)`. Las variables sin prefijo (`--Primary`,
+ *    `--Text`, …) son alias legacy definidos en `globals.css` y están congelados:
+ *    existen para que las pantallas aún no migradas sigan funcionando.
+ *  - Tailwind lee estos mismos tokens (ver `tailwind.config.js`), así que las
+ *    clases utilitarias y el CSS plano no pueden divergir.
+ */
+
+:root,
+[data-theme='dark'] {
+  /* ── color/ ─────────────────────────────────────────────── */
+  --k-color-primary: #caa860;
+  --k-color-primary-2: #b27f2a;
+  --k-color-secondary: #886911;
+  --k-color-tertiary: #12120e;
+  --k-color-border: #312713;
+  --k-color-pill-back: #120f07;
+  --k-color-bg: rgba(0, 0, 0, 0.92);
+  --k-color-bg-2: #120f07;
+  --k-color-bg-3: #282825;
+  --k-color-text: #faf8f5;
+  --k-color-text-muted: #8a8070; /* distinto de --k-text-muted: gris neutro, no cálido */
+  --k-color-success: rgb(15, 77, 15);
+  --k-color-error: rgb(128, 13, 13);
+  --k-color-warning: rgb(120, 80, 10);
+
+  /* Triplets RGB de los colores que se usan con transparencia (glows,
+     tintes, overlays). Consumir como `rgba(var(--k-color-primary-rgb), 0.4)`
+     — evita repetir el literal del dorado por todo el código. */
+  --k-color-primary-rgb: 202, 168, 96;
+  --k-color-error-rgb: 224, 82, 82;
+  --k-color-success-rgb: 72, 199, 116;
+  --k-color-warning-rgb: 120, 80, 10;
+  --k-color-black-rgb: 0, 0, 0;
+  --k-color-white-rgb: 255, 255, 255;
+
+  /* ── text/ ──────────────────────────────────────────────── */
+  --k-text-soft: #cfc9bf;
+  --k-text-muted: #989083;
+  --k-text-dim: #6e6558;
+  --k-text-faint: #565045;
+  --k-text-placeholder: #4a4030;
+
+  /* ── visualStates/ ──────────────────────────────────────── */
+  --k-state-error-text: #e05252;
+  --k-state-success-text: #48c774;
+
+  /* ── forms/ ─────────────────────────────────────────────── */
+  --k-form-input-bg: rgba(255, 255, 255, 0.04);
+  --k-form-input-focus-bg: rgba(202, 168, 96, 0.05);
+  --k-form-btn-text: #0e0c08;
+
+  /* ── font/ ──────────────────────────────────────────────── */
+  --k-font-display: 'Playfair Display', Georgia, serif;
+  --k-font-sans: 'Manrope', 'DM Sans', system-ui, sans-serif;
+  --k-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --k-font-size-display: 42px;
+  --k-font-size-heading-1: 24px;
+  /* body-large: la lámina de Figma define este nivel pero ninguna fuente le
+     asigna px (design-system.md solo escala 42/24/14/11). 16px es un supuesto
+     de implementación — confirmar con Diseño antes de propagarlo. */
+  --k-font-size-body-large: 16px;
+  --k-font-size-body-main: 14px;
+  --k-font-size-caption: 11px;
+
+  --k-font-weight-regular: 400;
+  --k-font-weight-medium: 500;
+  --k-font-weight-semibold: 600;
+  --k-font-weight-bold: 700;
+
+  /* ── spacing/ — rejilla 8pt, nomenclatura Figma (space-7 = 48px) ── */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+
+  /* ── radius/ ────────────────────────────────────────────── */
+  --k-radius-sm: 4px;
+  --k-radius-md: 8px;
+  --k-radius-lg: 12px;
+  --k-radius-xl: 24px;
+  --k-radius-pill: 999px;
+
+  /* ── shadow/ — pensadas para fondo oscuro ───────────────── */
+  --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
+  --k-shadow-glow: 0 0 15px 5px rgba(202, 168, 96, 0.5);
+  --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+
+  /* ── estados de interacción ─────────────────────────────── */
+  --k-state-hover-brightness: 1.15;
+  --k-state-active-scale: 0.98;
+  --k-state-disabled-opacity: 0.3;
+  --k-focus-ring-width: 2px;
+  --k-focus-ring-offset: 2px;
+  --k-focus-ring: var(--k-focus-ring-width) solid var(--k-color-primary);
+
+  /* ── iconografía ────────────────────────────────────────── */
+  --k-icon-stroke: 1.5px;
+  --k-icon-size: 24px;
+
+  /* ── accesibilidad ──────────────────────────────────────── */
+  --k-target-min-size: 40px;
+
+  /* ══ Tokens de implementación ═════════════════════════════
+   *
+   * Las láminas de Figma NO definen nada de lo que sigue: no hay lámina de
+   * interlineado, tracking, transiciones, grosor de borde ni capas. El PR #86
+   * necesitó las siete familias, no encontró dónde declararlas y terminó
+   * creando un juego paralelo en `globals.css` que luego se borró, dejando
+   * ~260 referencias colgadas.
+   *
+   * Se declaran aquí, con prefijo `--k-` como todo lo demás, pero marcadas
+   * como implementación: NO son decisiones de marca. Si Diseño publica una
+   * lámina para alguna de estas familias, esa lámina manda y estos valores se
+   * sustituyen. Ninguno introduce un color, tamaño de fuente o radio nuevo:
+   * son valores estructurales o derivaciones de tokens ya aprobados.
+   */
+
+  /* ── pasos tipográficos intermedios ─────────────────────── */
+  /* La lámina define 5 niveles (42/24/16/14/11) y los componentes de tablas,
+     navbar y formularios usan tres tamaños que no caen en ninguno. Se declaran
+     con los valores que ya tenían, en vez de encajarlos al nivel aprobado más
+     cercano: ese redondeo es justo lo que degradó el login (título 32→24px).
+     Cuando Diseño amplíe la lámina, estos tres suben al bloque de Figma. */
+  --k-font-size-heading-2: 20px; /* títulos de navbar */
+  --k-font-size-body-small: 13px; /* celdas de tabla, texto secundario */
+  --k-font-size-caption-lg: 12px; /* etiquetas de formulario, pills */
+
+  /* ── superficies de alerta ──────────────────────────────── */
+  /* Tres niveles derivados de la paleta. El PR #86 traía #facc15 / #f97316 /
+     #fb7185 — el ámbar, naranja y rosa por defecto de Tailwind, ajenos a
+     Luxury Dark. Aquí no hay ningún color nuevo: `watching` y `warning` salen
+     del dorado y del ámbar de marca, `critical` del rojo.
+     El texto de cabecera es SIEMPRE distinto del fondo: en #86 `watching`
+     usaba el mismo amarillo para ambos y la cabecera era invisible. */
+  --k-alert-watching-bg: rgba(var(--k-color-primary-rgb), 0.08);
+  --k-alert-watching-border: rgba(var(--k-color-primary-rgb), 0.3);
+  --k-alert-watching-text: var(--k-color-primary);
+
+  --k-alert-warning-bg: rgba(var(--k-color-warning-rgb), 0.35);
+  --k-alert-warning-border: rgba(var(--k-color-primary-rgb), 0.55);
+  --k-alert-warning-text: var(--k-color-primary);
+
+  --k-alert-critical-bg: rgba(var(--k-color-error-rgb), 0.08);
+  --k-alert-critical-border: rgba(var(--k-color-error-rgb), 0.6);
+  --k-alert-critical-text: var(--k-state-error-text);
+
+  --k-alert-ok-bg: rgba(var(--k-color-success-rgb), 0.12);
+  --k-alert-ok-border: rgba(var(--k-color-success-rgb), 0.6);
+  --k-alert-ok-text: var(--k-state-success-text);
+
+  /* ── rampa neutra ───────────────────────────────────────── */
+  /* Figma define la identidad cálida —dorados, marrones, rampa de texto
+     cálida— pero la aplicación está construida sobre una rampa NEUTRA de
+     grises que ninguna lámina recoge. Medido sobre `src/`: unos 700 usos
+     literales repartidos por casi todas las pantallas (`#111` 164 veces,
+     `#1f1f1f` 136, `#555` 119, `#0a0a0a` 91…).
+     No es decoración de un componente suelto: es la mitad del sistema que
+     faltaba por declarar. Los valores son exactamente los que ya se usan, así
+     que sustituirlos no cambia un solo píxel. */
+  --k-shade-1: #0a0a0a; /* fondo de barra / superficie más profunda */
+  --k-shade-2: #0f0f0f; /* dropdowns y paneles flotantes */
+  --k-shade-3: #111111; /* tarjetas sobre fondo oscuro */
+  --k-shade-4: #1a1a1a; /* separadores y hover de fila */
+  --k-shade-5: #1e1e1e;
+  --k-shade-6: #1f1f1f; /* bordes neutros */
+  --k-shade-7: #2a2a2a; /* borde de control interactivo */
+
+  /* Texto neutro: gris frío, distinto de la rampa cálida `--k-text-*`. */
+  --k-gray-1: #333333; /* etiquetas de sección — bajo contraste, uso decorativo */
+  --k-gray-2: #444444;
+  --k-gray-3: #555555; /* texto terciario, estado inactivo */
+  --k-gray-4: #666666;
+  --k-gray-5: #888888;
+  --k-gray-6: #8f8f8f;
+
+  /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de
+     Figma es #caa860 (29 usos). Difieren en uno o dos puntos por canal —por
+     debajo del umbral de percepción— pero la divergencia es sistémica y
+     conviene unificarla en una pasada propia, no de rondón. */
+
+  /* ── pasos de tamaño que faltaban ───────────────────────── */
+  /* Ambos los usa el diseño aprobado de login y registro; sin ellos, migrar
+     esas pantallas obligaba a redondear y encogía el título un 25 %. */
+  --k-font-size-display-2: 32px; /* título de las pantallas de autenticación */
+  --k-radius-field: 6px; /* inputs y banners: la escala salta de 4 a 8 */
+  --k-radius-xs: 2px; /* trazos finos, p. ej. las barras del menú hamburguesa */
+
+  /* ── interlineado ───────────────────────────────────────── */
+  /* Los tres valores ya estaban en uso literal en `globals.css` (body 1.5,
+     h1-h3 1.15). Se tokenizan tal cual; no cambia ningún render. */
+  --k-leading-tight: 1.15;
+  --k-leading-snug: 1.3;
+  --k-leading-normal: 1.5;
+  --k-leading-relaxed: 1.7;
+
+  /* ── tracking ───────────────────────────────────────────── */
+  /* 0.08em es el letter-spacing que `.hero-title` y `.sub-title` ya aplicaban;
+     se usa en etiquetas en mayúsculas, donde el interletraje es necesario para
+     que la caja alta siga siendo legible. */
+  --k-tracking-caps: 0.08em;
+  --k-tracking-tight: -0.01em;
+
+  /* ── grosor de borde ────────────────────────────────────── */
+  /* Un único grosor en todo el sistema. Existe como token para que el día que
+     cambie no haya que perseguir `1px solid` por 19 hojas. */
+  --k-border-width: 1px;
+
+  /* ── transición de UI ───────────────────────────────────── */
+  /* design-system.md §7 define los estados (hover, active, disabled, focus)
+     pero ninguna duración. 0.2s ease-in-out es la que ya usaban de facto las
+     hojas existentes. */
+  --k-transition-ui: 0.2s ease-in-out;
+
+  /* ── capas (z-index) ────────────────────────────────────── */
+  /* Escalera con hueco entre niveles para poder insertar capas sin renumerar.
+     `modal` va justo encima de `modal-overlay` a propósito: son la misma capa
+     visual, el overlay solo tiene que quedar por debajo de su propio diálogo. */
+  --k-z-negative: -1;
+  --k-z-base: 1;
+  --k-z-nav: 100;
+  --k-z-dropdown: 200;
+  --k-z-modal-overlay: 1000;
+  --k-z-modal: 1001;
+  --k-z-tooltip: 2000;
+
+  /* ── superficies derivadas ──────────────────────────────── */
+  /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para
+     que el mismo tinte no se reescriba con literales distintos en cada hoja. */
+  --k-surface-primary-tint: rgba(var(--k-color-primary-rgb), 0.1);
+  --k-surface-primary-tint-2: rgba(var(--k-color-primary-rgb), 0.05);
+  --k-surface-hover-subtle: rgba(var(--k-color-white-rgb), 0.02);
+}
+
+/**
+ * TODO(SCRUM-12): paleta clara pendiente de Diseño.
+ *
+ * SCRUM-12 definió únicamente la identidad "Luxury Dark"; no existe paleta
+ * clara aprobada. El mecanismo de theming queda operativo (`[data-theme]` y
+ * `prefers-color-scheme`), pero sin overrides: el tema claro hereda el oscuro
+ * a propósito, para no inventar colores de marca sin aprobación.
+ *
+ * Cuando Diseño entregue la paleta, basta redeclarar aquí los tokens que
+ * cambien. Ningún consumidor necesita tocarse.
+ */
+[data-theme='light'] {
+  /* overrides del tema claro van aquí */
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    /* idem: sin overrides hasta que exista paleta clara aprobada */
+  }
+}

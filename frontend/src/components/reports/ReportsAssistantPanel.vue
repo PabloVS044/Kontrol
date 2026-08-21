@@ -38,7 +38,7 @@
       <div class="donut-wrap">
         <DonutChart
           :pct="72"
-          color="#c9a962"
+          color="#caa860"
           :size="80"
           :radius="30"
           :stroke-width="10"
@@ -108,7 +108,7 @@ const completionItems = [
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #c9a962;
+  color: var(--Primary);
   letter-spacing: 0.04em;
 }
 
@@ -122,7 +122,7 @@ const completionItems = [
   position: relative;
   transition: background .2s;
 }
-.toggle input:checked + .toggle-track { background: #c9a962; }
+.toggle input:checked + .toggle-track { background: #caa860; }
 .toggle-thumb {
   position: absolute;
   top: 2px;
@@ -135,16 +135,16 @@ const completionItems = [
 }
 .toggle input:checked + .toggle-track .toggle-thumb {
   transform: translateX(14px);
-  background: #c9a962;
+  background: #caa860;
 }
 
 .ctx-section { margin-bottom: 16px; }
 
 .ctx-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
-  color: #444;
+  color: var(--TextFaint);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0 0 8px;
@@ -153,7 +153,7 @@ const completionItems = [
 .ctx-insight {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #666;
+  color: var(--TextDim);
   line-height: 1.7;
   margin: 0;
 }
@@ -169,7 +169,7 @@ const completionItems = [
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1e1e1e;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   outline: none;
@@ -184,7 +184,7 @@ const completionItems = [
   padding: 8px 10px;
   background: #111111;
   border: 1px solid #1a1a1a;
-  color: #555;
+  color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
   border-radius: 0;
@@ -192,8 +192,8 @@ const completionItems = [
 }
 
 .ctx-actions :deep(.btn:hover) {
-  border-color: rgba(201,169,98,0.3);
-  color: #c9a962;
+  border-color: rgba(202,168,96,0.3);
+  color: var(--Primary);
 }
 
 .donut-wrap {
@@ -212,8 +212,8 @@ const completionItems = [
 .bar-val,
 .bar-labels span {
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
-  color: #555;
+  font-size: 11px;
+  color: var(--TextFaint);
 }
 
 .dl-item {
@@ -227,7 +227,7 @@ const completionItems = [
   height: 6px;
   border-radius: 50%;
 }
-.dl-dot.gold { background: #c9a962; }
+.dl-dot.gold { background: #caa860; }
 .dl-dot.dim { background: #333; }
 
 .bar-list {
@@ -252,7 +252,7 @@ const completionItems = [
 }
 
 .bar-fill { height: 100%; border-radius: 3px; }
-.bar-fill.gold { background: #c9a962; }
+.bar-fill.gold { background: #caa860; }
 .bar-fill.blue { background: #60a5fa; }
 .bar-fill.dim { background: #444; }
 
