@@ -1,5 +1,10 @@
 import pool from "../db/pool.js";
 
+// A report belongs to a company either directly (exports, which span every
+// project) or through its project (manually created reports, whose id_empresa
+// is backfilled but kept coherent here for rows written before the migration).
+const COMPANY_SCOPE = `COALESCE(r.id_empresa, p.id_empresa) = `
+
 //GET /api/reports
 export const getReports = async (req, res) => {
   try {
@@ -8,8 +13,8 @@ export const getReports = async (req, res) => {
     const result = await pool.query(
       `SELECT r.*
        FROM public.reporte r
-       JOIN public.proyecto p ON p.id_proyecto = r.id_proyecto
-       WHERE p.id_empresa = $1
+       LEFT JOIN public.proyecto p ON p.id_proyecto = r.id_proyecto
+       WHERE ${COMPANY_SCOPE}$1
        ORDER BY r.fecha_generacion DESC`,
       [id_empresa]
     )
@@ -30,8 +35,8 @@ export const getReportById = async (req, res) => {
     const result = await pool.query(
       `SELECT r.*
        FROM public.reporte r
-       JOIN public.proyecto p ON p.id_proyecto = r.id_proyecto
-       WHERE r.id_reporte = $1 AND p.id_empresa = $2`,
+       LEFT JOIN public.proyecto p ON p.id_proyecto = r.id_proyecto
+       WHERE r.id_reporte = $1 AND ${COMPANY_SCOPE}$2`,
       [id, id_empresa]
     )
 
@@ -63,10 +68,47 @@ export const createReport = async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO public.reporte (titulo, tipo, contenido_url, id_proyecto, id_usuario)
+      `INSERT INTO public.reporte (titulo, tipo, contenido_url, id_proyecto, id_empresa, id_usuario)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [titulo, tipo, contenido_url, id_proyecto, id_empresa, id_usuario]
+    )
+
+    return res.status(201).json({ success: true, data: result.rows[0] })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: 'Server error.' })
+  }
+}
+
+//POST /api/reports/exports
+//Records that a report was downloaded as a shareable file. The file itself is
+//built in the browser from what is already on screen; this only leaves the
+//generation event in REPORTE so the reports list shows who exported what.
+export const registerReportExport = async (req, res) => {
+  try {
+    const { titulo, tipo, id_proyecto } = req.body
+    const id_usuario = req.user.id_usuario
+    const { id_empresa } = req.empresa
+
+    // A project-scoped export must name a project of this company; a
+    // company-wide one leaves id_proyecto null.
+    if (id_proyecto != null) {
+      const projectCheck = await pool.query(
+        `SELECT id_proyecto FROM public.proyecto WHERE id_proyecto = $1 AND id_empresa = $2`,
+        [id_proyecto, id_empresa]
+      )
+
+      if (!projectCheck.rows.length) {
+        return res.status(404).json({ success: false, message: 'Project not found.' })
+      }
+    }
+
+    const result = await pool.query(
+      `INSERT INTO public.reporte (titulo, tipo, id_proyecto, id_empresa, id_usuario)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [titulo, tipo, contenido_url, id_proyecto, id_usuario]
+      [titulo, tipo, id_proyecto ?? null, id_empresa, id_usuario]
     )
 
     return res.status(201).json({ success: true, data: result.rows[0] })
@@ -86,10 +128,11 @@ export const updateReport = async (req, res) => {
     const result = await pool.query(
       `UPDATE public.reporte r
        SET titulo = $1, tipo = $2, contenido_url = $3
-       FROM public.proyecto p
-       WHERE r.id_proyecto = p.id_proyecto
-         AND r.id_reporte = $4
-         AND p.id_empresa = $5
+       WHERE r.id_reporte = $4
+         AND COALESCE(
+               r.id_empresa,
+               (SELECT p.id_empresa FROM public.proyecto p WHERE p.id_proyecto = r.id_proyecto)
+             ) = $5
        RETURNING r.*`,
       [titulo, tipo, contenido_url, id, id_empresa]
     )
@@ -113,10 +156,11 @@ export const deleteReport = async (req, res) => {
 
     const result = await pool.query(
       `DELETE FROM public.reporte r
-       USING public.proyecto p
-       WHERE r.id_proyecto = p.id_proyecto
-         AND r.id_reporte = $1
-         AND p.id_empresa = $2
+       WHERE r.id_reporte = $1
+         AND COALESCE(
+               r.id_empresa,
+               (SELECT p.id_empresa FROM public.proyecto p WHERE p.id_proyecto = r.id_proyecto)
+             ) = $2
        RETURNING r.id_reporte`,
       [id, id_empresa]
     )

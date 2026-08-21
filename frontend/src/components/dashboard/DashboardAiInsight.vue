@@ -41,7 +41,7 @@ defineEmits(['review-budget'])
   font-size: 12px;
   letter-spacing: 0.1em;
   margin-bottom: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .ai-message {
@@ -49,13 +49,13 @@ defineEmits(['review-budget'])
   font-size: 1.05rem;
   max-width: 800px;
   line-height: 1.6;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .ai-box :deep(.btn) {
   background: var(--Primary);
-  color: #0a0a0a;
-  font-family: 'DM Sans', sans-serif;
+  color: var(--BtnText);
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;

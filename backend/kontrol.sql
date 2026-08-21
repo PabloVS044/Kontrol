@@ -187,6 +187,17 @@ CREATE TABLE public.producto_proveedor (
   CONSTRAINT producto_proveedor_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor)
 );
 
+-- presupuesto_actividad va antes de movimiento_inventario: este la referencia
+-- por FK (mi_actividad_fkey), y Postgres exige que la tabla ya exista.
+CREATE TABLE public.presupuesto_actividad (
+  id_actividad SERIAL PRIMARY KEY,
+  nombre character varying NOT NULL,
+  monto_planificado numeric NOT NULL CHECK (monto_planificado >= 0::numeric),
+  monto_real numeric CHECK (monto_real >= 0::numeric),
+  id_proyecto integer NOT NULL,
+  CONSTRAINT presupuesto_actividad_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto)
+);
+
 -- id_producto es nullable: permite registrar gastos administrativos del proyecto
 -- que impactan el presupuesto sin corresponder a un item de inventario.
 -- cantidad también nullable por la misma razón (un gasto admin no tiene unidades).
@@ -256,15 +267,6 @@ CREATE TABLE public.evidencia (
   CONSTRAINT evidencia_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
 
-CREATE TABLE public.presupuesto_actividad (
-  id_actividad SERIAL PRIMARY KEY,
-  nombre character varying NOT NULL,
-  monto_planificado numeric NOT NULL CHECK (monto_planificado >= 0::numeric),
-  monto_real numeric CHECK (monto_real >= 0::numeric),
-  id_proyecto integer NOT NULL,
-  CONSTRAINT presupuesto_actividad_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto)
-);
-
 -- Audit log for top-up additions to a project's allocated budget.
 -- Positive monto = add funds; negative = withdraw (allowed for corrections).
 -- Distinct from movimiento_inventario because adjustments change the capital
@@ -286,11 +288,16 @@ CREATE TABLE public.reporte (
   fecha_generacion timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['AVANCE', 'PRESUPUESTO', 'INCIDENTE', 'CONSOLIDADO'])),
   contenido_url character varying,
-  id_proyecto integer NOT NULL,
+  -- NULL para exportaciones que abarcan todos los proyectos de la empresa
+  id_proyecto integer,
+  id_empresa integer,
   id_usuario integer NOT NULL,
   CONSTRAINT reporte_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
+  CONSTRAINT reporte_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
   CONSTRAINT reporte_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
+
+CREATE INDEX reporte_empresa_fecha_idx ON public.reporte (id_empresa, fecha_generacion DESC);
 
 -- ─── SEED DATA ────────────────────────────────────────────────────────────────
 
@@ -298,7 +305,8 @@ CREATE TABLE public.reporte (
 INSERT INTO public.rol (nombre_rol, descripcion) VALUES
   ('super_user', 'Super usuario — acceso global irrestricto a toda la plataforma'),
   ('admin',      'Administrador de la plataforma'),
-  ('usuario',    'Usuario estándar de la plataforma');
+  ('usuario',    'Usuario estándar de la plataforma')
+ON CONFLICT DO NOTHING;
 
 -- Permisos de empresa
 INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
@@ -310,7 +318,8 @@ INSERT INTO public.permiso_empresa (nombre_permiso, descripcion) VALUES
   ('ver_inventario',       'Ver inventario de la empresa'),
   ('gestionar_inventario', 'Gestionar inventario'),
   ('ver_reportes',         'Ver reportes'),
-  ('crear_reportes',       'Crear reportes');
+  ('crear_reportes',       'Crear reportes')
+ON CONFLICT DO NOTHING;
 
 -- Permisos de proyecto
 INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
@@ -320,40 +329,46 @@ INSERT INTO public.permiso_proyecto (nombre_permiso, descripcion) VALUES
   ('asignar_usuarios',      'Asignar usuarios a tareas'),
   ('gestionar_inventario',  'Gestionar inventario del proyecto'),
   ('gestionar_presupuesto', 'Gestionar presupuesto del proyecto'),
-  ('crear_reportes',        'Crear reportes del proyecto');
+  ('crear_reportes',        'Crear reportes del proyecto')
+ON CONFLICT DO NOTHING;
 
 -- Roles estándar de empresa
 INSERT INTO public.rol_empresa (nombre, descripcion) VALUES
   ('owner',        'Propietario — acceso total a la empresa'),
   ('admin',        'Administrador — gestión completa excepto eliminar empresa'),
   ('manager',      'Gerente — gestiona proyectos y equipo'),
-  ('collaborator', 'Colaborador — acceso básico y ejecución de tareas');
+  ('collaborator', 'Colaborador — acceso básico y ejecución de tareas')
+ON CONFLICT DO NOTHING;
 
 -- Permisos del rol owner (todos)
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
-WHERE re.nombre = 'owner';
+WHERE re.nombre = 'owner'
+ON CONFLICT DO NOTHING;
 
 -- Permisos del rol admin (todos excepto gestionar_miembros de nivel owner)
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
-WHERE re.nombre = 'admin';
+WHERE re.nombre = 'admin'
+ON CONFLICT DO NOTHING;
 
 -- Permisos del rol manager
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'manager'
-  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes');
+  AND pe.nombre_permiso IN ('ver_proyectos','crear_proyectos','editar_proyectos','ver_inventario','gestionar_inventario','ver_reportes','crear_reportes')
+ON CONFLICT DO NOTHING;
 
 -- Permisos del rol collaborator
 INSERT INTO public.rol_empresa_permiso (id_rol_empresa, id_permiso_empresa)
 SELECT re.id_rol_empresa, pe.id_permiso_empresa
 FROM public.rol_empresa re, public.permiso_empresa pe
 WHERE re.nombre = 'collaborator'
-  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes');
+  AND pe.nombre_permiso IN ('ver_proyectos','ver_inventario','ver_reportes')
+ON CONFLICT DO NOTHING;
 
 -- Tabla de Equipos
 CREATE TABLE public.equipo (

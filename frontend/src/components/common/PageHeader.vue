@@ -47,13 +47,13 @@ defineEmits(['create'])
   font-family: 'Playfair Display', serif;
   font-size: clamp(28px, 5vw, 48px);
   font-weight: 400;
-  color: #faf8f5;
+  color: var(--Text);
   margin: 0;
   line-height: 1.1;
 }
 .header-subtitle {
   font-size: 14px;
-  color: #888;
+  color: var(--TextMuted);
   margin: 0;
 }
 .header-actions {
@@ -67,9 +67,9 @@ defineEmits(['create'])
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #c9a962;
+  background: #caa860;
   border: none;
-  color: #0a0a0a;
+  color: var(--BtnText);
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;

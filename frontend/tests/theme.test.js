@@ -293,8 +293,9 @@ describe('theme.css — mecanismo de temas', () => {
 })
 
 describe('globals.css — capa de compatibilidad legacy', () => {
-  // Las 21 variables que existían antes de SCRUM-13. Si alguna desaparece,
-  // rompen las pantallas todavía sin migrar.
+  // Las 21 variables que existían antes de SCRUM-13, más las 5 que la rama de
+  // inventario móvil introdujo en paralelo (~215 usos en sus pantallas). Si
+  // alguna desaparece, rompen las pantallas todavía sin migrar.
   const legacy = [
     '--Primary',
     '--Primary2',
@@ -309,20 +310,25 @@ describe('globals.css — capa de compatibilidad legacy', () => {
     '--Success',
     '--Error',
     '--Warning',
+    '--TextSoft',
     '--TextMuted',
     '--TextDim',
+    '--TextFaint',
     '--TextPlaceholder',
     '--ErrorText',
     '--SuccessText',
     '--InputBg',
     '--InputFocusBg',
     '--BtnText',
+    '--font-display',
+    '--font-sans',
+    '--font-mono',
   ]
 
   const pairs = aliasPairs(globalsCss)
   const aliased = new Map(pairs.map((p) => [p.alias, p.target]))
 
-  it('conserva las 21 variables legacy', () => {
+  it('conserva las 26 variables legacy', () => {
     const missing = legacy.filter((v) => !aliased.has(v))
     expect(missing).toEqual([])
   })

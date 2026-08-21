@@ -71,8 +71,8 @@ const year = new Date().getFullYear();
 <style scoped>
 .footer {
   width: 100%;
-  background: color-mix(in srgb, var(--Tertiary) 85%, var(--Background));
-  border-top: 1px solid var(--Border);
+  background: color-mix(in srgb, var(--k-color-tertiary) 85%, var(--k-color-bg));
+  border-top: 1px solid var(--k-color-border);
   padding: 60px 0 0;
   box-sizing: border-box;
   position: relative;
@@ -93,7 +93,7 @@ const year = new Date().getFullYear();
   flex: 0 0 260px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--k-space-4);
 }
 
 .footer-logo {
@@ -103,47 +103,52 @@ const year = new Date().getFullYear();
 }
 
 .footer-logo img {
-  width: 32px;
-  height: 32px;
+  width: var(--k-space-6);
+  height: var(--k-space-6);
   object-fit: contain;
 }
 
 .footer-logo span {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--Text);
+  font-size: var(--k-font-size-heading-1);
+  font-weight: var(--k-font-weight-bold);
+  color: var(--k-color-text);
 }
 
 .footer-tagline {
-  font-size: 0.88rem;
-  color: color-mix(in srgb, var(--Text) 60%, transparent);
+  font-size: var(--k-font-size-body-main);
+  color: var(--k-text-muted);
   line-height: 1.6;
   margin: 0;
 }
 
 .footer-socials {
   display: flex;
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .footer-socials a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--Text) 8%, transparent);
-  border: 1px solid var(--Border);
-  color: color-mix(in srgb, var(--Text) 70%, transparent);
+  width: var(--k-target-min-size);
+  height: var(--k-target-min-size);
+  border-radius: var(--k-radius-md);
+  background: rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid var(--k-color-border);
+  color: var(--k-text-soft);
   transition: background 0.2s, color 0.2s;
   text-decoration: none;
 }
 
 .footer-socials a:hover {
-  background: var(--Primary);
-  color: var(--Text);
-  border-color: var(--Primary);
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
+  border-color: var(--k-color-primary);
+}
+
+.footer-socials a:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
 }
 
 /* ─── Links columns ──────────────────────────────────────────────────────── */
@@ -159,15 +164,15 @@ const year = new Date().getFullYear();
   min-width: 120px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--k-space-3);
 }
 
 .footer-col h4 {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: var(--k-font-size-caption);
+  font-weight: var(--k-font-weight-bold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--Primary2);
+  color: var(--k-color-primary-2);
   margin: 0;
 }
 
@@ -181,14 +186,20 @@ const year = new Date().getFullYear();
 }
 
 .footer-col ul li a {
-  font-size: 0.9rem;
-  color: color-mix(in srgb, var(--Text) 65%, transparent);
+  font-size: var(--k-font-size-body-main);
+  color: var(--k-text-soft);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .footer-col ul li a:hover {
-  color: var(--Text);
+  color: var(--k-color-text);
+}
+
+.footer-col ul li a:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+  border-radius: var(--k-radius-sm);
 }
 
 /* ─── Bottom bar ─────────────────────────────────────────────────────────── */
@@ -196,14 +207,14 @@ const year = new Date().getFullYear();
   max-width: 1200px;
   margin: 40px auto 0;
   padding: 20px 40px;
-  border-top: 1px solid var(--Border);
+  border-top: 1px solid var(--k-color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.82rem;
-  color: color-mix(in srgb, var(--Text) 45%, transparent);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-dim);
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--k-space-2);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
@@ -211,7 +222,7 @@ const year = new Date().getFullYear();
   .footer-inner {
     flex-direction: column;
     gap: 40px;
-    padding: 0 24px;
+    padding: 0 var(--k-space-5);
   }
 
   .footer-brand {
@@ -219,14 +230,14 @@ const year = new Date().getFullYear();
   }
 
   .footer-links {
-    gap: 32px;
+    gap: var(--k-space-6);
   }
 
   .footer-bottom {
-    padding: 20px 24px;
+    padding: 20px var(--k-space-5);
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: var(--k-space-1);
   }
 }
 
@@ -236,7 +247,7 @@ const year = new Date().getFullYear();
   }
 
   .footer-inner {
-    padding: 0 16px;
+    padding: 0 var(--k-space-4);
   }
 
   .footer-links {
@@ -245,7 +256,7 @@ const year = new Date().getFullYear();
   }
 
   .footer-bottom {
-    padding: 16px;
+    padding: var(--k-space-4);
   }
 }
 </style>

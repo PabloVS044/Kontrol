@@ -5,9 +5,9 @@
       <div class="header-container">
         <Pill
           label="The future of Business"
-          btnColor="var(--PillBack)"
-          circleColor="var(--Primary)"
-          textColor="var(--Primary)"
+          btnColor="var(--k-color-pill-back)"
+          circleColor="var(--k-color-primary)"
+          textColor="var(--k-color-primary)"
         />
         <AnimatedText
           style="margin-top: 0"
@@ -15,8 +15,8 @@
           text="Take control of your bussiness"
           tag="h1"
           class="hero-title"
-          color="var(--Primary)"
-          shine-color="var(--Text)"
+          color="var(--k-color-primary)"
+          shine-color="var(--k-color-text)"
           :speed="5"
           :delay="2.4"
           :spread="135"
@@ -38,15 +38,15 @@
         <div class="goto">
           <Anchor
             label="Start managing your business"
-            backColor="var(--Primary)"
-            hoverColor="var(--Tertiary)"
+            backColor="var(--k-color-primary)"
+            hoverColor="var(--k-color-tertiary)"
             :icon="arrowRightIcon"
             link="/register"
           />
           <Anchor
             label="See How it works"
-            backColor="var(--Tertiary)"
-            hoverColor="var(--Secondary)"
+            backColor="var(--k-color-tertiary)"
+            hoverColor="var(--k-color-secondary)"
             :icon="arrowRightIcon"
             link="#features"
           />
@@ -65,31 +65,31 @@
             title="The Chaos"
             subtitle="Disjointed systems that slow you down."
             :icon="LayoutGrid"
-            :iconSize="100"
-            iconColor="var(--Background3)"
+            :iconSize="48"
+            iconColor="var(--k-color-bg-3)"
             :listIcon="CircleX"
             :listIconSize="24"
-            listIconColor="var(--Error)"
+            listIconColor="var(--k-color-error)"
             :characteristics="chaosCharacteristics"
-            back="var(--Tertiary)"
-            borderColor="var(--Border)"
-            titleColor="var(--Text)"
+            back="var(--k-color-tertiary)"
+            borderColor="var(--k-color-border)"
+            titleColor="var(--k-color-text)"
           />
 
           <Card
             title="The Order"
             subtitle="Unified ecosystem designed for scale."
             :icon="Sparkles"
-            :iconSize="100"
-            iconColor="var(--Primary2)"
+            :iconSize="48"
+            iconColor="var(--k-color-primary-2)"
             :listIcon="CircleCheck"
             :listIconSize="24"
-            listIconColor="var(--Success)"
+            listIconColor="var(--k-color-success)"
             :characteristics="orderCharacteristics"
-            back="var(--Background2)"
-            borderColor="var(--Border)"
-            titleColor="var(--Primary2)"
-            shadowColor="var(--Border)"
+            back="var(--k-color-bg-2)"
+            borderColor="var(--k-color-border)"
+            titleColor="var(--k-color-primary-2)"
+            shadowColor="var(--k-color-border)"
           />
         </div>
       </div>
@@ -104,8 +104,8 @@
         </p>
         <div class="magic-circles-wrapper">
           <MagicCircles
-            color="var(--Primary2)"
-            color-two="var(--Primary)"
+            color="var(--k-color-primary-2)"
+            color-two="var(--k-color-primary)"
             :ring-count="6"
             :speed="1"
             :attenuation="10"
@@ -125,13 +125,13 @@
             :hover-scale="1.2"
             :parallax="0.05"
             :click-burst="false"
-            :background="`linear-gradient(color-mix(in srgb, var(--Background) 90%, transparent), color-mix(in srgb, var(--Tertiary) 80%, transparent))`"
+            :background="`linear-gradient(color-mix(in srgb, var(--k-color-bg) 90%, transparent), color-mix(in srgb, var(--k-color-tertiary) 80%, transparent))`"
           />
           <div class="graph">
             <CircleRounded
               :size="200"
-              color="var(--Primary)"
-              roundedColor="var(--Primary2)"
+              color="var(--k-color-primary)"
+              roundedColor="var(--k-color-primary-2)"
               :animationDuration="3"
               :icon="NetworkIcon"
               class="main-circle"
@@ -141,44 +141,44 @@
               title="Finances"
               subtitle="Real-time cashflow tracking"
               :icon="Banknote"
-              :iconSize="100"
-              back="var(--Tertiary)"
-              iconColor="var(--Text)"
-              borderColor="var(--Border)"
-              shadowColor="var(--Primary)"
+              :iconSize="48"
+              back="var(--k-color-tertiary)"
+              iconColor="var(--k-color-text)"
+              borderColor="var(--k-color-border)"
+              shadowColor="var(--k-color-primary)"
             />
             <Card
               class="sub-2"
               title="Team CRM"
               subtitle="Collaboration simplified"
               :icon="UsersRound"
-              :iconSize="100"
-              back="var(--Tertiary)"
-              iconColor="var(--Text)"
-              borderColor="var(--Border)"
-              shadowColor="var(--Primary)"
+              :iconSize="48"
+              back="var(--k-color-tertiary)"
+              iconColor="var(--k-color-text)"
+              borderColor="var(--k-color-border)"
+              shadowColor="var(--k-color-primary)"
             />
             <Card
               class="sub-3"
               title="Marketing"
               subtitle="Omnichannel campaigns"
               :icon="Megaphone"
-              :iconSize="100"
-              back="var(--Tertiary)"
-              iconColor="var(--Text)"
-              borderColor="var(--Border)"
-              shadowColor="var(--Primary)"
+              :iconSize="48"
+              back="var(--k-color-tertiary)"
+              iconColor="var(--k-color-text)"
+              borderColor="var(--k-color-border)"
+              shadowColor="var(--k-color-primary)"
             />
             <Card
               class="sub-4"
               title="Inventory"
               subtitle="Automated stock control"
               :icon="Box"
-              :iconSize="100"
-              back="var(--Tertiary)"
-              iconColor="var(--Text)"
-              borderColor="var(--Border)"
-              shadowColor="var(--Primary)"
+              :iconSize="48"
+              back="var(--k-color-tertiary)"
+              iconColor="var(--k-color-text)"
+              borderColor="var(--k-color-border)"
+              shadowColor="var(--k-color-primary)"
             />
           </div>
         </div>
@@ -198,12 +198,12 @@
         :spotlight-radius="400"
         :particle-count="12"
         :disable-animations="false"
-        card-background="var(--Background2)"
-        card-border="var(--Border)"
-        label-color="var(--Primary)"
-        title-color="var(--Text)"
-        description-color="var(--Text)"
-        glow-color="var(--Primary)"
+        card-background="var(--k-color-bg-2)"
+        card-border="var(--k-color-border)"
+        label-color="var(--k-color-primary)"
+        title-color="var(--k-color-text)"
+        description-color="var(--k-color-text)"
+        glow-color="var(--k-color-primary)"
         :cards="[
           {
             label: 'Insights',
@@ -256,7 +256,7 @@
         :base-scale="0.85"
       >
         <ScrollStackItem
-          style="background: var(--Background2)"
+          style="background: var(--k-color-bg-2)"
           :step="1"
           title="Connect your ecosystem"
           description="Bring your tools together with one central command center."
@@ -267,7 +267,7 @@
           ]"
         />
         <ScrollStackItem
-          style="background: var(--Background2)"
+          style="background: var(--k-color-bg-2)"
           :step="2"
           title="Automate your workflow"
           description="Turn manual handoffs into automated processes that move work forward."
@@ -278,7 +278,7 @@
           ]"
         />
         <ScrollStackItem
-          style="background: var(--Background2)"
+          style="background: var(--k-color-bg-2)"
           :step="3"
           title="Optimize outcomes"
           description="Use live performance data to refine processes and improve business results."
@@ -315,8 +315,8 @@
             style="
               background: linear-gradient(
                 135deg,
-                var(--Tertiary),
-                var(--Background)
+                var(--k-color-tertiary),
+                var(--k-color-bg)
               );
             "
           >
@@ -339,8 +339,8 @@
             style="
               background: linear-gradient(
                 135deg,
-                var(--Tertiary),
-                var(--Background)
+                var(--k-color-tertiary),
+                var(--k-color-bg)
               );
             "
           >
@@ -363,8 +363,8 @@
             style="
               background: linear-gradient(
                 135deg,
-                var(--Tertiary),
-                var(--Background)
+                var(--k-color-tertiary),
+                var(--k-color-bg)
               );
             "
           >
@@ -394,8 +394,8 @@
       </p>
       <Anchor
         label="Enter the command center"
-        backColor="var(--Primary2)"
-        hoverColor="var(--Tertiary)"
+        backColor="var(--k-color-primary-2)"
+        hoverColor="var(--k-color-tertiary)"
         :icon="Rocket"
         link = "/register"
       />

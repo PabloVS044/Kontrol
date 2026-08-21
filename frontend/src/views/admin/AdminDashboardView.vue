@@ -223,12 +223,12 @@ onMounted(async () => {
   padding-top: 0.5rem;
   font-size: 14px;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   margin: 0;
 }
 
-.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: 'DM Sans', sans-serif; }
-.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: 'DM Sans', sans-serif; }
+.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: var(--font-sans); }
+.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: var(--font-sans); }
 
 /* ── KPI row ── */
 .kpi-grid {
@@ -256,21 +256,21 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 .kpi-value {
   font-size: 3rem;
   font-weight: 700;
   color: var(--Primary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.1;
 }
 
 .kpi-sub {
   font-size: 12px;
   color: var(--TextDim);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Charts row ── */
@@ -301,14 +301,14 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   margin: 0 0 16px;
 }
 
 .chart-empty {
   font-size: 13px;
   color: var(--TextDim);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Horizontal bars ── */
@@ -326,7 +326,7 @@ onMounted(async () => {
 .bar-label, .status-lbl {
   font-size: 12px;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -353,7 +353,7 @@ onMounted(async () => {
 .bar-val {
   font-size: 12px;
   color: var(--TextMuted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   text-align: right;
 }
 
@@ -381,14 +381,14 @@ onMounted(async () => {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--Primary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   line-height: 1;
 }
 
 .donut-sub {
   font-size: 11px;
   color: var(--TextDim);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Legend ── */
@@ -398,7 +398,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--TextMuted);
 }

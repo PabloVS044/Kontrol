@@ -546,6 +546,7 @@
       "net": "Neto",
       "viewDetails": "Ver detalles",
       "sell": "Vender",
+      "restock": "Ingresar",
       "increase": "Agregar uno",
       "decrease": "Quitar uno",
       "cannotSell": "Este producto no puede venderse ahora."
@@ -558,6 +559,7 @@
       "submit": "Realizar venta",
       "submitting": "Procesando venta…",
       "cancel": "Cancelar venta",
+      "viewSale": "Ver venta",
       "remove": "Quitar artículo",
       "movementReason": "Venta POS desde inventario",
       "errors": {
@@ -603,7 +605,42 @@
       "descriptionPlaceholder": "Descripción opcional",
       "cancel": "Cancelar",
       "save": "Guardar producto",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "costAndStock": "Costo y stock inicial",
+      "stockMode": {
+        "unit": "Por unidad",
+        "box": "Por caja"
+      },
+      "boxes": "Cajas",
+      "unitsPerBox": "Unidades por caja",
+      "boxPrice": "Precio por caja",
+      "boxPreview": "→ {units} unidades · costo ${cost}/u",
+      "barcode": "Código de barras",
+      "barcodePlaceholder": "Escanea o escribe el código"
+    },
+    "scanner": {
+      "scan": "Escanear código",
+      "title": "Escanear código de barras",
+      "hint": "Apunta la cámara al código de barras del producto.",
+      "close": "Cerrar",
+      "permissionError": "Permiso de cámara denegado. Habilítalo para escanear.",
+      "noCamera": "No se pudo acceder a la cámara.",
+      "insecureContext": "La cámara requiere HTTPS. Abre la app en localhost o por una URL https:// para escanear.",
+      "notFound": "Sin producto para el código {code}.",
+      "added": "Agregado: {name}"
+    },
+    "restock": {
+      "title": "Ingresar stock",
+      "currentStock": "Stock actual: {count}",
+      "avgCost": "Costo prom. ${cost}/u",
+      "entryMode": "Modo de ingreso",
+      "units": "Unidades",
+      "unitCost": "Costo por unidad",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Compra, reabastecimiento…",
+      "defaultReason": "Ingreso de stock",
+      "save": "Ingresar stock",
+      "saving": "Ingresando…"
     },
     "errors": {
       "selectProject": "Selecciona un proyecto antes de agregar un producto.",
@@ -770,12 +807,75 @@
     }
   },
   "reports": {
+    "sales": {
+      "title": "Ventas y Finanzas",
+      "allProjects": "Todos los proyectos",
+      "from": "Desde",
+      "to": "Hasta",
+      "presets": {
+        "day": "Día",
+        "week": "Semana",
+        "month": "Mes",
+        "custom": "Rango"
+      },
+      "kpi": {
+        "grossIncome": "Ingreso bruto",
+        "cogs": "Costo de ventas",
+        "grossProfit": "Ganancia bruta",
+        "adminExpenses": "Gastos admin",
+        "netProfit": "Ganancia neta",
+        "unitsSold": "Unidades vendidas",
+        "purchases": "Compras",
+        "avgTicket": "Ticket promedio"
+      },
+      "legendIncome": "Ingreso",
+      "legendProfit": "Ganancia",
+      "loading": "Cargando…",
+      "noData": "Sin ventas en este período.",
+      "topProducts": "Productos más vendidos",
+      "unitsShort": "{count} uds"
+    },
     "header": {
       "title": "Centro de Reportes",
       "subtitle": "Análisis y resumen de rendimiento de todos tus proyectos",
       "createReport": "Crear reporte",
       "generateAI": "Generar con IA",
       "export": "Exportar"
+    },
+    "export": {
+      "chooseFormat": "Formato de exportación",
+      "pdfTitle": "Documento PDF",
+      "pdfDesc": "Reporte con encabezado, identidad Kontrol y fecha de generación.",
+      "csvTitle": "Hoja de cálculo CSV",
+      "csvDesc": "Tabla de proyectos lista para Excel y Google Sheets.",
+      "scopeNote": "Se exporta lo que muestra el filtro «{filter}».",
+      "scopeNoteProject": "Se exporta el proyecto «{project}».",
+      "working": "Generando {format}…",
+      "tagline": "GESTIÓN DE PROYECTOS",
+      "footerNote": "Generado desde Kontrol",
+      "noData": "Sin datos para el filtro aplicado.",
+      "continued": "(continuación)",
+      "allProjects": "Todos los proyectos",
+      "page": "Página {current} de {total}",
+      "recordTitle": "Exportación {format} · {filter}",
+      "errorFailed": "No se pudo generar el archivo.",
+      "errorNotRecorded": "El archivo se descargó, pero no se registró la generación.",
+      "projectSummary": "Resumen del Proyecto",
+      "colMetric": "Métrica",
+      "colValue": "Valor",
+      "colCount": "Cantidad",
+      "colShare": "% del total",
+      "colRole": "Rol",
+      "colMembers": "Miembros",
+      "meta": {
+        "company": "EMPRESA",
+        "generatedBy": "GENERADO POR",
+        "generatedOn": "FECHA DE GENERACIÓN",
+        "filter": "FILTRO APLICADO",
+        "projectCount": "PROYECTOS INCLUIDOS",
+        "reportCount": "REPORTES INCLUIDOS",
+        "project": "PROYECTO"
+      }
     },
     "view": {
       "filters": {
