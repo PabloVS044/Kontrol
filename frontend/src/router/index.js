@@ -114,6 +114,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
+      path: '/marketing',
+      name: 'marketing',
+      component: () => import('../views/MarketingPublicationsView.vue'),
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
       path: '/admin',
       component: () => import('../views/admin/AdminLayout.vue'),
       meta: { requiresAuth: true, requiresSuperUser: true },

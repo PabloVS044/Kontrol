@@ -1,7 +1,7 @@
 <template>
   <BaseModal v-model="show" max-width="480px">
     <template #header-prefix>
-      <span class="priority-bar" :style="{ background: priorityColor(task?.prioridad), minHeight: '24px' }"></span>
+      <span class="priority-bar" :style="{ background: taskPriorityColor(task?.prioridad), minHeight: '24px' }"></span>
     </template>
     <template #header-title>
       <span class="modal-title">{{ task?.nombre ?? '…' }}</span>
@@ -21,7 +21,7 @@
         </div>
         <div class="form-field" style="align-items: flex-start;">
           <label>{{ $t('projects.tasks.detail.status') }}</label>
-          <span class="status-badge small" :style="statusStyle(task.estado)" style="width: fit-content;">
+          <span class="status-badge small" :style="taskStatusStyle(task.estado)" style="width: fit-content;">
             {{ statusLabel(task.estado) }}
           </span>
         </div>
@@ -42,7 +42,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
-import { statusStyle, statusLabel, priorityColor } from '@/utils/statusHelpers.js'
+import { statusLabel } from '@/utils/statusHelpers.js'
+import { taskStatusStyle, taskPriorityColor } from '@/utils/taskIndicatorColors.js'
 
 const { t } = useI18n()
 
@@ -62,21 +63,21 @@ const show = computed({
 
 <style scoped>
 .priority-bar { width: 3px; flex-shrink: 0; }
-.modal-title  { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--Text); flex: 1; }
-.detail-loading { padding: 24px; text-align: center; color: var(--TextDim); font-family: 'Manrope', sans-serif; font-size: 13px; }
+.modal-title  { font-family: var(--k-font-display); font-size: var(--k-font-size-heading-2); color: var(--k-color-text); flex: 1; }
+.detail-loading { padding: 24px; text-align: center; color: var(--k-gray-4); font-family: var(--k-font-sans); font-size: var(--k-font-size-body-small); }
 
 .modal-form  { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .form-field  { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field p { font-size: 13px; color: var(--Text); font-family: 'Manrope', sans-serif; }
+.form-field label { font-size: var(--k-font-size-caption); color: var(--k-gray-5); letter-spacing: 0.05em; font-family: var(--k-font-sans); }
+.form-field p { font-size: var(--k-font-size-body-small); color: var(--k-color-text); font-family: var(--k-font-sans); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .status-badge {
   display: inline-flex; align-items: center;
   padding: 4px 12px; border: 1px solid;
-  font-size: 11px; font-weight: 600;
+  font-size: var(--k-font-size-caption); font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
-.status-badge.small { font-size: 11px; padding: 2px 8px; }
+.status-badge.small { font-size: var(--k-font-size-caption); padding: 2px 8px; }
 </style>

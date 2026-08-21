@@ -10,8 +10,8 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid var(--Primary);
-  background: var(--Tertiary);
+  border: 2px solid var(--k-color-primary);
+  background: var(--k-color-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,25 +21,31 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--Primary);
+  background: var(--k-color-primary);
 }
 
 .progress-card {
   border-radius: 20px;
   padding: 20px;
-  background-color: var(--Tertiary);
-  border: 2px solid var(--Background3);
+  background-color: var(--k-color-tertiary);
+  border: 2px solid var(--k-color-bg-3);
   width: 100%;
 }
 
+/* success/error usan los tokens de texto (brillantes), no --k-color-success/error
+   (pensados para relleno sólido): un borde de 2px o un punto de 8px en el verde/
+   rojo oscuro de esos tokens es casi invisible sobre el fondo ya oscuro de la
+   tarjeta — mismo defecto ya corregido en el avatar de equipo y en las alertas
+   de sobrecosto. warning no tiene token de texto propio; usa el dorado, igual
+   que --k-alert-warning-text. */
 .success {
-  border-color: var(--Success);
+  border-color: var(--k-state-success-text);
 }
 .error {
-  border-color: var(--Error);
+  border-color: var(--k-state-error-text);
 }
 .warning {
-  border-color: var(--Warning);
+  border-color: var(--k-color-primary);
 }
 
 .card-header {
@@ -53,7 +59,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: var(--k-font-size-caption-lg);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -63,25 +69,25 @@
 
 h4 {
   margin: 0;
-  font-size: 15px;
+  font-size: 15px; /* sin token exacto en la escala (11/12/13/14/16/20/24/32/42) */
 }
 
 .fecha {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--k-font-size-caption-lg);
   opacity: 0.6;
 }
 
 .descripcion {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--k-font-size-body-main);
   line-height: 1.5;
 }
 
-.success .dot-inner { background: var(--Success); }
-.error   .dot-inner { background: var(--Error);   }
-.warning .dot-inner { background: var(--Warning); }
+.success .dot-inner { background: var(--k-state-success-text); }
+.error   .dot-inner { background: var(--k-state-error-text);   }
+.warning .dot-inner { background: var(--k-color-primary); }
 
-.success .dot { border-color: var(--Success); }
-.error   .dot { border-color: var(--Error);   }
-.warning .dot { border-color: var(--Warning); }
+.success .dot { border-color: var(--k-state-success-text); }
+.error   .dot { border-color: var(--k-state-error-text);   }
+.warning .dot { border-color: var(--k-color-primary); }

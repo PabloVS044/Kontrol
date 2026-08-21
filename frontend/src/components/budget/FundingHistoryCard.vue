@@ -14,7 +14,7 @@
         </p>
       </div>
       <svg class="chev" :class="{ open }" width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M3 5l4 4 4-4" stroke="#888" stroke-width="1.4" stroke-linecap="square"/>
+        <path d="M3 5l4 4 4-4" stroke="var(--k-gray-5)" stroke-width="1.4" stroke-linecap="square"/>
       </svg>
     </header>
 
@@ -66,8 +66,8 @@ function formatDate(v) {
 
 <style scoped>
 .fh-card {
-  background: #0a0a0a;
-  border: 1px solid #2a2a2a;
+  background: var(--k-shade-1);
+  border: 1px solid var(--k-shade-7);
   margin-bottom: 16px;
 }
 .fh-head {
@@ -75,49 +75,49 @@ function formatDate(v) {
   padding: 14px 18px; cursor: pointer;
   transition: background 0.15s;
 }
-.fh-head:hover { background: #111111; }
+.fh-head:hover { background: var(--k-shade-3); }
 
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
+  letter-spacing: 0.15em; font-size: var(--k-font-size-caption); color: var(--k-color-primary);
   font-weight: 600; margin: 0 0 4px; text-transform: uppercase;
 }
 .fh-meta {
-  font-size: 11px; color: var(--TextMuted); margin: 0;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption); color: var(--k-gray-5); margin: 0;
+  font-family: var(--k-font-sans);
 }
-.muted { color: var(--TextFaint); }
-.income { color: #34d399; font-weight: 600; }
-.danger { color: #fb7185; font-weight: 600; }
+.muted { color: var(--k-gray-3); }
+.income { color: var(--k-state-success-text); font-weight: 600; }
+.danger { color: var(--k-state-error-text); font-weight: 600; }
 
 .chev { transition: transform 0.2s; flex-shrink: 0; }
 .chev.open { transform: rotate(180deg); }
 
 .fh-body {
   padding: 0 18px 16px;
-  border-top: 1px solid #1f1f1f;
+  border-top: 1px solid var(--k-shade-6);
 }
 .fh-empty {
-  font-size: 12px; color: var(--TextMuted); padding: 14px 0;
-  text-align: center; font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption-lg); color: var(--k-gray-5); padding: 14px 0;
+  text-align: center; font-family: var(--k-font-sans);
 }
 
 .fh-list { list-style: none; padding: 0; margin: 12px 0 0; }
 .fh-item {
   padding: 10px 0;
-  border-bottom: 1px solid #161616;
-  font-family: 'Manrope', sans-serif;
+  border-bottom: 1px solid #161616; /* sin token exacto en la rampa de shades */
+  font-family: var(--k-font-sans);
 }
 .fh-item:last-child { border-bottom: none; }
 .fh-item-top {
   display: flex; justify-content: space-between; align-items: baseline;
 }
 .fh-amount {
-  font-size: 14px; font-variant-numeric: tabular-nums;
+  font-size: var(--k-font-size-body-main); font-variant-numeric: tabular-nums;
 }
-.fh-date { font-size: 11px; color: var(--TextMuted); }
+.fh-date { font-size: var(--k-font-size-caption); color: var(--k-gray-5); }
 .fh-motivo {
-  font-size: 12px; color: var(--TextSoft); margin: 4px 0 0;
+  font-size: var(--k-font-size-caption-lg); color: #d4d4d4; margin: 4px 0 0; /* sin token exacto */
   line-height: 1.4;
 }
-.fh-user { font-size: 11px; color: var(--TextDim); }
+.fh-user { font-size: var(--k-font-size-caption); color: var(--k-gray-4); }
 </style>

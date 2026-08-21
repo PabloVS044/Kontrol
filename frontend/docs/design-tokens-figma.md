@@ -1,199 +1,192 @@
-# Kontrol — Tokens de Figma (transcripción visual)
+# Kontrol Design Tokens para Figma
 
-**Fuente:** láminas exportadas de Figma en `./assets/`
-**Alcance:** este documento es una **transcripción literal** de lo que muestran las imágenes. No añade valores que no aparezcan en ellas.
-**Documento complementario:** [`design-system.md`](./design-system.md) — ahí están los hex, las reglas de uso y los criterios de accesibilidad.
+## 1. Estructura de Tokens por Categoría
 
-> **Cómo usar estos dos documentos**
-> - Este archivo → **qué tokens existen** y **cómo se llaman** en Figma.
-> - `design-system.md` → **qué valor tiene cada token** y **cuándo aplicarlo**.
->
-> Donde los nombres no coinciden entre ambos, se marca con ⚠️.
+Todos los tokens siguen la estructura `category/token-name` en Figma Tokens.
+
+### COLOR/
+
+#### Primarios
+- `color/primary`: #caa860 (Gold - Main brand)
+- `color/primary-2`: #b27f2a (Gold - Active/Pressed)
+- `color/secondary`: #886911 (Warm accent)
+
+#### Superficies (Dark Mode)
+- `color/bg`: rgba(0,0,0,0.92) (Full-page overlay)
+- `color/bg-2`: #120f07 (Primary surface - cards, panels)
+- `color/bg-3`: #282825 (Secondary depth layer)
+- `color/tertiary`: #12120e (Darkened overlay)
+
+#### Bordes
+- `color/border`: #312713 (Subtle borders on dark)
+- `color/pill-back`: #120f07 (Badge/pill backgrounds)
+
+#### Texto Primario
+- `color/text`: #faf8f5 (High-contrast on dark)
+
+#### RGB Triplets (para transparencias)
+- `color/primary-rgb`: 202, 168, 96
+- `color/error-rgb`: 224, 82, 82
+- `color/success-rgb`: 72, 199, 116
+- `color/black-rgb`: 0, 0, 0
+- `color/white-rgb`: 255, 255, 255
 
 ---
 
-## 1. Paleta de colores
+### TEXT/ (Rampa de Jerarquía)
+
+Escala descendente de claridad para texto secundario:
+- `text/soft`: #cfc9bf (Secundario alto - Labels principales)
+- `text/muted`: #8a8070 (Secundario - Labels deshabilitadas) **Neutral, no cálido**
+- `text/dim`: #6e6558 (Terciario - Metadata)
+- `text/faint`: #565045 (Muy tenue - Deshabilitado)
+- `text/placeholder`: #4a4030 (Placeholders en inputs)
+
+---
+
+### VISUALSTATES/
+
+Estados semánticos:
+- `visualStates/success-text`: #48c774 (Verde éxito)
+- `visualStates/error-text`: #e05252 (Rojo error)
+
+**Nota:** Success y Error backgrounds se usan en tags/badges:
+- `color/success`: rgb(15, 77, 15)
+- `color/error`: rgb(128, 13, 13)
+- `color/warning`: rgb(120, 80, 10)
+
+---
+
+### FORMS/
+
+Estilos específicos de formularios:
+- `forms/input-bg`: rgba(255, 255, 255, 0.04) (Input default)
+- `forms/input-focus-bg`: rgba(202, 168, 96, 0.05) (Input focused)
+- `forms/btn-text`: #0e0c08 (Texto sobre botones gold)
+
+---
+
+## 2. Tipografía
+
+### FONT/
+
+Familias tipográficas:
+- `font/display`: "Playfair Display" (Serif - Títulos)
+- `font/sans`: "Manrope" (Sans-serif - UI/Body)
+- `font/mono`: "JetBrains Mono" (Monospace - Código/KPIs)
+
+### FONTSIZE/
+
+Escala tipográfica (en píxeles):
+- `fontSize/display`: 42px (Títulos dashboard principales)
+- `fontSize/heading-1`: 24px (Headers, card titles)
+- `fontSize/body-large`: 16px (Body text - variante mayor)
+- `fontSize/body-main`: 14px (Body text - default)
+- `fontSize/caption`: 11px (Captions, pills, metadata)
+
+### FONTWEIGHT/
+
+Pesos disponibles (numéricos):
+- `fontWeight/regular`: 400
+- `fontWeight/medium`: 500
+- `fontWeight/semibold`: 600
+- `fontWeight/bold`: 700
+
+### LINEHEIGHT/ y LETTERSPACING/
+
+- `leading/tight`: 1.15 (Headings)
+- `leading/snug`: 1.3 (Subheadings)
+- `leading/normal`: 1.5 (Body text)
+- `tracking/tight`: -0.01em (Headlines)
+- `tracking/caps`: 0.08em (Uppercase labels/buttons)
+
+---
+
+## 3. Espaciado (8pt Grid)
+
+### SPACING/
+
+Todos los valores en píxeles (8pt base):
+- `space/1`: 4px (Micro gaps)
+- `space/2`: 8px (Tight padding - buttons)
+- `space/3`: 12px (Field/label spacing)
+- `space/4`: 16px (Component padding)
+- `space/5`: 24px (Section spacing)
+- `space/6`: 32px (Large sections)
+- `space/7`: 48px (Major spacing - full-width)
+
+---
+
+## 4. Bordes (Radios)
+
+### RADIUS/
+
+Radios de borde (en píxeles):
+- `radius/sm`: 4px (Buttons, small inputs)
+- `radius/md`: 8px (Standard cards)
+- `radius/lg`: 12px (Modals, large overlays)
+- `radius/xl`: 24px (Feature cards)
+- `radius/pill`: 999px (Badges, avatars, full-round)
+
+---
+
+## 5. Sombras
+
+### SHADOW/
+
+Efectos de profundidad (sintaxis CSS):
+- `shadow/card`: `0 4px 20px 0 rgba(0, 0, 0, 0.5)` (Superficies)
+- `shadow/glow`: `0 0 15px 5px rgba(202, 168, 96, 0.5)` (Hover interactivo)
+- `shadow/modal`: `0 10px 40px 0 rgba(0, 0, 0, 0.8)` (Top-layer modals)
+
+---
+
+## 6. Estados de Interacción
+
+### STATES/
+
+Modificadores de estado (uso en CSS):
+- `state/hover-brightness`: 1.15 → `filter: brightness(1.15)`
+- `state/active-scale`: 0.98 → `transform: scale(0.98)`
+- `state/disabled-opacity`: 0.3 → `opacity: 0.3`
+
+### FOCUS/
+
+Focus ring:
+- `focus-ring-width`: 2px
+- `focus-ring-offset`: 2px
+- `focus-ring`: `2px solid #caa860`
+
+---
+
+## 7. Iconografía
+
+- **Biblioteca:** Lucide Icons / Heroicons
+- **Stroke Weight:** 1.5px (definido como `icon-stroke`)
+- **Tamaño estándar:** 24px × 24px
+- **Tamaños permitidos:** 24px, 32px, 40px (grid 8pt)
+- **Color:** Hereda de `currentColor` (contexto de texto)
+
+---
+
+## 8. Documentación Externa
+
+- Link al Figma file: `https://www.figma.com/design/qDDZC8ZvzDhXHRzDl6bbHi/Kontrol---Identidad-visual-v2?node-id=35-26&t=AQIBKGoAGr8AsFS7-1`
+- Link a esta guía: `/frontend/docs/design-system.md`
+- Link a tokens JSON: `/frontend/docs/tokens.json`
+- Visualización: `./frontend/docs/assets/Kontrol_v2.png`
+
+---
+
+## 9. Referencia visual
+
+> Esta guía acompaña la hoja de referencia visual del sistema y no sustituye la documentación técnica en [`design-system.md`](./design-system.md).
 
 ![Paleta de Colores](./assets/Colores.png)
-
-Lámina: *"PALETA DE COLORES LOCALES"* — 24 tokens en 4 grupos por prefijo.
-
-### Grupo `color/`
-| Token | Muestra |
-| :--- | :--- |
-| `color/primary` | Dorado claro |
-| `color/primary2` | Dorado oscuro / bronce |
-| `color/Background` | Negro |
-| `color/Background2` | Negro cálido (marrón muy oscuro) |
-| `color/Text` | Blanco roto |
-| `color/text-muted` | Gris medio |
-| `color/Secondary` | Oliva dorado |
-| `color/Tertiary` | Negro verdoso |
-| `color/Border` | Marrón oscuro |
-| `color/PillBack` | Negro cálido |
-| `color/Background3` | Gris muy oscuro |
-| `color/Success` | Verde oscuro |
-| `color/Error` | Rojo oscuro |
-| `color/Warning` | Ámbar oscuro |
-
-### Grupo `text/`
-| Token | Muestra |
-| :--- | :--- |
-| `text/TextSoft` | Beige claro |
-| `text/TextMuted` | Gris cálido |
-| `text/TextDim` | Marrón grisáceo |
-| `text/TextFaint` | Marrón oscuro |
-| `text/TextPlaceholder` | Marrón muy oscuro |
-
-### Grupo `visualStates/`
-| Token | Muestra |
-| :--- | :--- |
-| `visualStates/ErrorText` | Rojo claro |
-| `visualStates/SuccessText` | Verde claro |
-
-### Grupo `forms/`
-| Token | Muestra |
-| :--- | :--- |
-| `forms/InputBg` | Blanco translúcido |
-| `forms/InputFocusBg` | Dorado translúcido |
-| `forms/BtnText` | Negro |
-
-> ⚠️ La lámina define **dos tokens distintos de texto atenuado**: `color/text-muted` (gris neutro) y `text/TextMuted` (gris cálido). No son intercambiables.
->
-> ⚠️ `design-system.md` §2 no lista `Secondary`, `Tertiary`, `Border`, `PillBack`, `Background3`, `ErrorText` ni `SuccessText`.
-
----
-
-## 2. Sistema de tipografías
-
 ![Tipografía](./assets/Tipografía.png)
-
-Lámina: *"SISTEMA DE TIPOGRAFÍAS"* — 5 niveles, de mayor a menor.
-
-| Token | Familia mostrada | Peso | Escala relativa |
-| :--- | :--- | :--- | :--- |
-| `font/display` | Serif | Bold | Nivel 1 (mayor) |
-| `font/heading-1` | Serif | Bold | Nivel 2 |
-| `font/body-large` | Sans-serif | Regular | Nivel 3 |
-| `font/body-main` | Sans-serif | Regular | Nivel 4 |
-| `font/caption` | Sans-serif | Regular | Nivel 5 (menor) |
-
-Criterio visible: **serif para títulos** (`display`, `heading-1`), **sans-serif para contenido** (`body-large`, `body-main`, `caption`).
-
-> ⚠️ La lámina no indica tamaños en px. `design-system.md` §3 usa una nomenclatura distinta (`text-3xl`, `text-xl`, `text-base`, `text-2xs`) sin equivalencia declarada con estos tokens.
-
----
-
-## 3. Sistema de espaciado
-
 ![Sistema de Espaciado](./assets/Espaciado.png)
-
-Lámina: *"SISTEMA DE ESPACIADO"* — cada token ilustrado con una retícula de esa densidad.
-
-| Token | Valor |
-| :--- | :--- |
-| `spacing/space-1` | 4px |
-| `spacing/space-2` | 8px |
-| `spacing/space-3` | 12px |
-| `spacing/space-4` | 16px |
-| `spacing/space-5` | 24px |
-| `spacing/space-6` | 32px |
-| `spacing/space-7` | 48px |
-
-> ⚠️ `design-system.md` §4 llama `space-8` al valor de 48px. En Figma es `space-7`.
-
----
-
-## 4. Radios de borde
-
 ![Radios de Borde](./assets/Radios.png)
-
-Lámina: *"RADIOS DE BORDE"* — 5 tokens.
-
-| Token | Valor |
-| :--- | :--- |
-| `radius/sm` | 4px |
-| `radius/md` | 8px |
-| `radius/lg` | 12px |
-| `radius/xl` | 24px |
-| `radius/pill` | 999px |
-
-> ⚠️ `design-system.md` §5 omite `radius/xl` (24px) y declara el pill como `9999px`.
-
----
-
-## 5. Sombras y elevación
-
 ![Sombras y Elevación](./assets/Sombras_Elevación.png)
-
-Lámina: *"SOMBRAS Y ELEVACIÓN"* — 3 tokens sobre superficie oscura.
-
-| Token | Efecto visible |
-| :--- | :--- |
-| `shadow/card` | Sombra difusa desplazada hacia abajo. Elevación baja. |
-| `shadow/glow` | Halo dorado alrededor de toda la forma, sin desplazamiento. |
-| `shadow/modal` | Sombra amplia y muy difusa. Elevación alta. |
-
-Coincide con `design-system.md` §6, que aporta los valores numéricos.
-
----
-
-## 6. Criterio de iconografía
-
 ![Criterio de Iconografía](./assets/Iconografía.png)
-
-Lámina: *"CRITERIO DE ICONOGRAFÍA"* — 4 tiles de ejemplo con fondo oscuro, esquinas redondeadas e icono dorado con etiqueta superior.
-
-Iconos mostrados: casa, libro, usuario, campana.
-
-**Especificaciones declaradas en la lámina:**
-- Grosor del trazo (Stroke): **1.5px**
-
-> La lámina no indica librería ni caja de 24×24; eso está en `design-system.md` §8.
-
----
-
-## 7. Estados de interacción
-
 ![Estados de Interacción](./assets/Interacción.png)
-
-Lámina: *"ESTADOS DE INTERACCIÓN"* — 4 estados sobre un elemento dorado.
-
-| Estado | Efecto visible |
-| :--- | :--- |
-| `Default` | Dorado plano con sombra sutil. |
-| `Hover` | Halo dorado difuso alrededor (`shadow/glow`). |
-| `Active (Pressed)` | Sin halo, elemento desplazado y sombra reducida. |
-| `Disabled` | Gris desaturado, sin sombra. |
-
-> ⚠️ La lámina no incluye el estado **Focus**, que sí define `design-system.md` §7 (2px sólido `--Primary`, offset 2px). Para navegación por teclado, rige el documento de sistema.
-
----
-
-## 8. Verificación de contraste
-
 ![Verificación de Contraste](./assets/Contraste.png)
-
-Lámina: *"VERIFICACIÓN DE CONTRASTE"* — 2 pares sobre fondo negro.
-
-| Muestra | Ratio | Resultado |
-| :--- | :--- | :--- |
-| `Aa` blanco sobre negro | 14.2:1 | Pass AAA |
-| `Aa` dorado sobre negro | 6.8:1 | Pass AA |
-
-Coincide con `design-system.md` §9.
-
----
-
-## Índice de láminas
-
-| Sección | Archivo |
-| :--- | :--- |
-| Paleta de colores | `assets/Colores.png` |
-| Tipografías | `assets/Tipografía.png` |
-| Espaciado | `assets/Espaciado.png` |
-| Radios | `assets/Radios.png` |
-| Sombras y elevación | `assets/Sombras_Elevación.png` |
-| Iconografía | `assets/Iconografía.png` |
-| Estados de interacción | `assets/Interacción.png` |
-| Verificación de contraste | `assets/Contraste.png` |

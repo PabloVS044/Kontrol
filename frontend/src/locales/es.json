@@ -1186,6 +1186,97 @@
       "empty": "No se encontraron usuarios."
     }
   },
+  "marketing": {
+    "title": "Publicaciones",
+    "subtitle": "Planifica, programa y publica el contenido de tus proyectos",
+    "new": "Nueva publicación",
+    "loading": "Cargando publicaciones…",
+    "empty": "Todavía no hay publicaciones. Crea la primera.",
+    "emptyFiltered": "Ninguna publicación coincide con estos filtros.",
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allChannels": "Todos los canales",
+      "allProjects": "Todos los proyectos",
+      "byStatus": "Filtrar por estado",
+      "byChannel": "Filtrar por canal",
+      "byProject": "Filtrar por proyecto",
+      "clear": "Limpiar filtros"
+    },
+    "status": {
+      "DRAFT": "Borrador",
+      "SCHEDULED": "Programada",
+      "PUBLISHED": "Publicada"
+    },
+    "actions": {
+      "DRAFT": "Volver a borrador",
+      "SCHEDULED": "Programar",
+      "PUBLISHED": "Publicar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando…"
+    },
+    "card": {
+      "project": "Proyecto",
+      "scheduledFor": "Programada",
+      "publishedAt": "Publicada",
+      "noDate": "Sin fecha",
+      "imageAlt": "Imagen de {title}"
+    },
+    "form": {
+      "createTitle": "Nueva publicación",
+      "editTitle": "Editar publicación",
+      "title": "Título",
+      "content": "Contenido",
+      "image": "Imagen (URL)",
+      "channel": "Canal destino",
+      "format": "Formato",
+      "project": "Proyecto",
+      "selectProject": "Selecciona un proyecto",
+      "scheduledFor": "Fecha programada",
+      "notes": "Notas internas"
+    },
+    "schedule": {
+      "title": "Programar publicación",
+      "hint": "Una publicación programada necesita fecha y hora.",
+      "submit": "Programar",
+      "submitting": "Programando…"
+    },
+    "remove": {
+      "title": "Eliminar publicación",
+      "hint": "Se eliminará «{title}». Esta acción no se puede deshacer.",
+      "submit": "Eliminar",
+      "submitting": "Eliminando…"
+    },
+    "errors": {
+      "load": "No se pudieron cargar las publicaciones.",
+      "save": "No se pudo guardar la publicación.",
+      "transition": "No se pudo cambiar el estado.",
+      "schedule": "No se pudo programar la publicación.",
+      "remove": "No se pudo eliminar la publicación."
+    },
+    "platform": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram",
+      "LINKEDIN": "LinkedIn",
+      "TIKTOK": "TikTok",
+      "X": "X",
+      "YOUTUBE": "YouTube",
+      "WHATSAPP": "WhatsApp",
+      "OTHER": "Otro"
+    },
+    "format": {
+      "POST": "Post",
+      "STORY": "Historia",
+      "REEL": "Reel",
+      "VIDEO": "Video",
+      "CAROUSEL": "Carrusel",
+      "SHORT": "Short",
+      "AD": "Anuncio",
+      "OTHER": "Otro"
+    }
+  },
   "birdie": {
     "tooltip": "Doble clic para ocultarme · arrástrame para moverme",
     "askQuestion": "Haz una pregunta",
@@ -1335,6 +1426,7 @@
     "chat": "Chat",
     "ai": "IA",
     "integrations": "Integraciones",
+    "marketing": "Marketing",
     "yourWorkspaces": "TUS ESPACIOS DE TRABAJO",
     "createWorkspace": "+ Crear nuevo espacio",
     "admin": {

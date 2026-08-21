@@ -1,7 +1,7 @@
 <template>
   <div class="task-card" :class="{ 'task-card--done': isDone }">
     <div class="task-card-left">
-      <span class="priority-bar" :style="{ background: priorityColor(task.prioridad) }"></span>
+      <span class="priority-bar" :style="{ background: taskPriorityColor(task.prioridad) }"></span>
       <div class="task-info">
         <span
           class="task-name"
@@ -10,10 +10,10 @@
         >{{ task.nombre }}</span>
         <span v-if="task.descripcion" class="task-desc">{{ task.descripcion }}</span>
         <div class="task-badges">
-          <span class="status-badge small" :style="statusStyle(task.estado)">
+          <span class="status-badge small" :style="taskStatusStyle(task.estado)">
             {{ statusLabel(task.estado) }}
           </span>
-          <span class="priority-badge" :style="{ color: priorityColor(task.prioridad) }">
+          <span class="priority-badge" :style="{ color: taskPriorityColor(task.prioridad) }">
             {{ task.prioridad }}
           </span>
           <span
@@ -41,7 +41,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { statusStyle, statusLabel, priorityColor, formatDate, isOverdue } from '@/utils/statusHelpers.js'
+import { statusLabel, formatDate, isOverdue } from '@/utils/statusHelpers.js'
+import { taskStatusStyle, taskPriorityColor } from '@/utils/taskIndicatorColors.js'
 
 const { t } = useI18n()
 
@@ -66,11 +67,11 @@ const isDone = computed(() =>
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: 1px solid var(--k-shade-6);
   transition: border-color 0.15s;
 }
-.task-card:hover { border-color: #2a2a2a; }
+.task-card:hover { border-color: var(--k-shade-7); }
 .task-card--done { opacity: 0.55; }
 
 .task-card-left {
@@ -96,24 +97,24 @@ const isDone = computed(() =>
 }
 
 .task-name {
-  font-size: 16px;
-  color: var(--Text);
+  font-size: var(--k-font-size-body-large);
+  color: var(--k-color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .task-name-link { cursor: pointer; }
 .task-name-link:hover { text-decoration: underline; }
 
 .task-desc {
-  font-size: 12px;
-  color: var(--TextDim);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-gray-4);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
 .task-badges {
@@ -129,24 +130,24 @@ const isDone = computed(() =>
   align-items: center;
   padding: 4px 12px;
   border: 1px solid;
-  font-size: 11px;
+  font-size: var(--k-font-size-caption);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
-.status-badge.small { font-size: 11px; padding: 2px 8px; }
+.status-badge.small { font-size: var(--k-font-size-caption); padding: 2px 8px; }
 
 .priority-badge {
-  font-size: 11px;
+  font-size: var(--k-font-size-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
 
-.due-badge { font-size: 11px; color: var(--TextFaint); font-family: 'Manrope', sans-serif; }
-.due-badge.overdue { color: #fb7185; }
+.due-badge { font-size: var(--k-font-size-caption); color: var(--k-gray-3); font-family: var(--k-font-sans); }
+.due-badge.overdue { color: var(--k-state-error-text); }
 
 .task-card-actions {
   display: flex;
@@ -155,17 +156,17 @@ const isDone = computed(() =>
 }
 
 .task-action-btn {
-  background: #111111;
-  border: 1px solid #1f1f1f;
-  color: var(--TextMuted);
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-6);
+  color: var(--k-gray-5);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   padding: 6px 12px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: #333; color: var(--Text); }
-.task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
-.task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
+.task-action-btn:hover { border-color: var(--k-gray-1); color: var(--k-color-text); }
+.task-action-btn--close { border-color: rgba(var(--k-color-success-rgb), 0.2); color: var(--k-state-success-text); }
+.task-action-btn--close:hover { border-color: rgba(var(--k-color-success-rgb), 0.4); }
 .task-action-btn:disabled { opacity: 0.5; cursor: wait; }
 </style>

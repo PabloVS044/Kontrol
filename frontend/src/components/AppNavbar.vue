@@ -51,6 +51,7 @@
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">{{ $t('navbar.reports') }}</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}</RouterLink>
         <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
         <RouterLink
           v-if="isAdminOrOwner"

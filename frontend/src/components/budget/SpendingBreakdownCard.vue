@@ -28,14 +28,14 @@
     <div class="row">
       <div class="row-head">
         <span class="row-label">
-          <span class="row-dot" style="background: #34d399"></span>
+          <span class="row-dot" style="background: var(--k-state-success-text)"></span>
           {{ $t('budget.breakdown.productSales') }}
         </span>
         <span class="row-amount income">${{ formatMoney(totalIncome) }}</span>
       </div>
       <ProgressBar
         :pct="expenseScale ? (totalIncome / expenseScale) * 100 : 0"
-        color="#34d399"
+        color="var(--k-state-success-text)"
         height="6px"
       />
     </div>
@@ -64,8 +64,11 @@ const props = defineProps({
   totalIncome:           { type: Number, default: 0 },
 })
 
+// admin/activities son categorías decorativas, no estados: la paleta v2 no
+// define azul ni morado (mismo hueco documentado en ProjectDetailsView.css
+// para .area-badge), así que se conservan literales.
 const expenseSources = computed(() => [
-  { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: '#caa860' },
+  { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: 'var(--k-color-primary)' },
   { key: 'admin',      label: t('budget.breakdown.adminExpenses'),      value: props.totalInventoryAdmin, color: '#60a5fa' },
   { key: 'activities', label: t('budget.breakdown.activitiesManual'),   value: props.totalActivities,     color: '#a78bfa' },
 ])
@@ -94,81 +97,84 @@ function formatMoney(v) {
 
 <style scoped>
 .breakdown-card {
-  background: #0a0a0a;
-  border: 1px solid #2a2a2a;
+  background: var(--k-shade-1);
+  border: 1px solid var(--k-shade-7);
   padding: 20px;
   margin-bottom: 16px;
 }
 .section-subtitle {
-  letter-spacing: 0.15em; font-size: 11px; color: var(--Primary);
+  letter-spacing: 0.15em; font-size: var(--k-font-size-caption); color: var(--k-color-primary);
   font-weight: 600; margin-bottom: 8px; text-transform: uppercase;
 }
 .hint {
-  font-size: 11px; color: var(--TextMuted); margin-bottom: 16px; line-height: 1.5;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption); color: var(--k-gray-5); margin-bottom: 16px; line-height: 1.5;
+  font-family: var(--k-font-sans);
 }
 
 .group-label {
-  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--TextMuted); margin-bottom: 10px;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--k-gray-5); margin-bottom: 10px;
+  font-family: var(--k-font-sans);
 }
 
 .row { margin-bottom: 12px; }
 .row-head {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 5px; font-size: 12px;
-  font-family: 'Manrope', sans-serif;
+  margin-bottom: 5px; font-size: var(--k-font-size-caption-lg);
+  font-family: var(--k-font-sans);
 }
 .row-label {
   display: inline-flex; align-items: center; gap: 8px;
-  color: var(--TextSoft);
+  color: #d4d4d4; /* sin token exacto */
 }
 .row-dot {
   width: 8px; height: 8px; border-radius: 50%; display: inline-block;
 }
 .row-amount {
-  color: var(--Text); font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--k-color-text); font-weight: 600; font-variant-numeric: tabular-nums;
 }
-.row-amount.income { color: #34d399; }
+.row-amount.income { color: var(--k-state-success-text); }
 
 .subtotal-row {
   display: flex; justify-content: space-between; align-items: center;
   padding: 10px 0 0; margin-top: 4px;
-  border-top: 1px dashed #1f1f1f;
-  font-size: 12px; color: var(--TextSoft);
-  font-family: 'Manrope', sans-serif;
+  border-top: 1px dashed var(--k-shade-6);
+  font-size: var(--k-font-size-caption-lg); color: var(--k-text-soft);
+  font-family: var(--k-font-sans);
 }
 .subtotal-value {
-  color: var(--Text); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--k-color-text); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
 .net-row {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px 14px; margin-top: 16px;
   border-radius: 4px;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--k-font-sans);
 }
+/* Antes el fondo y el texto del valor usaban el MISMO verde/rojo sólido —
+   texto invisible. Reutiliza el mismo tinte que ya usa BudgetAlertBox.vue
+   para ok/critical en vez de un fondo sólido. */
 .net-row.positive {
-  background: #34d399;
-  border: 1px solid rgba(52,211,153,0.3);
+  background: var(--k-alert-ok-bg);
+  border: 1px solid var(--k-alert-ok-border);
 }
 .net-row.negative {
-  background: #fb7185;
-  border: 1px solid rgba(251,113,133,0.3);
+  background: var(--k-alert-critical-bg);
+  border: 1px solid var(--k-alert-critical-border);
 }
 .net-label {
-  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: var(--k-font-size-caption); letter-spacing: 0.1em; text-transform: uppercase;
   font-weight: 600;
 }
-.net-row.positive .net-label { color: #6ee7b7; }
-.net-row.negative .net-label { color: #fda4af; }
+.net-row.positive .net-label { color: var(--k-alert-ok-text); }
+.net-row.negative .net-label { color: var(--k-alert-critical-text); }
 .net-value {
   font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
-.net-row.positive .net-value { color: #34d399; }
-.net-row.negative .net-value { color: #fb7185; }
+.net-row.positive .net-value { color: var(--k-alert-ok-text); }
+.net-row.negative .net-value { color: var(--k-alert-critical-text); }
 
-:deep(.pb-bg) { background: #1c1c1c; height: 6px; }
+:deep(.pb-bg) { background: #1c1c1c; height: 6px; } /* sin token exacto */
 :deep(.pb-fill) { height: 100% !important; }
 </style>

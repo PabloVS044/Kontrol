@@ -393,5 +393,143 @@ CREATE TABLE public.equipo_usuario (
 );
 
 -- Relación Proyecto - Equipo
-ALTER TABLE public.proyecto 
+ALTER TABLE public.proyecto
 ADD COLUMN id_equipo integer REFERENCES public.equipo(id_equipo) ON DELETE SET NULL;
+
+-- ─── MARKETING (HU-28) ────────────────────────────────────────────────────────
+-- Administración interna de publicaciones de marketing. La publicación es la
+-- entidad central: vive dentro de una empresa y siempre cuelga de un proyecto.
+-- La campaña es una agrupación opcional; la integración real con las APIs de
+-- redes sociales queda fuera de alcance (HU-36, backlog Futuro).
+
+-- Campaña: agrupador opcional de publicaciones dentro de un proyecto.
+CREATE TABLE public.marketing_campaign (
+  id_campaign SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  id_proyecto integer NOT NULL,
+  name character varying NOT NULL,
+  description text,
+  objective character varying,
+  channel character varying,
+  status character varying NOT NULL DEFAULT 'DRAFT'::character varying CHECK (status::text = ANY (ARRAY['DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED'])),
+  start_date date,
+  end_date date,
+  created_by integer NOT NULL,
+  updated_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  -- FK compuesta: el proyecto debe pertenecer a la misma empresa (aislamiento multi-empresa)
+  CONSTRAINT marketing_campaign_empresa_proyecto_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto) ON DELETE CASCADE,
+  CONSTRAINT marketing_campaign_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+  CONSTRAINT marketing_campaign_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
+  -- Permite que las publicaciones referencien la campaña sin salirse de su empresa
+  CONSTRAINT marketing_campaign_empresa_id_unique UNIQUE (id_empresa, id_campaign),
+  CONSTRAINT marketing_campaign_fechas_check CHECK (end_date IS NULL OR start_date IS NULL OR end_date >= start_date)
+);
+
+CREATE INDEX marketing_campaign_empresa_status_idx ON public.marketing_campaign (id_empresa, status);
+CREATE INDEX marketing_campaign_proyecto_idx ON public.marketing_campaign (id_proyecto);
+
+-- Publicación: entidad principal de HU-28.
+-- Estados: DRAFT (borrador) → SCHEDULED (programada) → PUBLISHED (publicada).
+CREATE TABLE public.marketing_publication (
+  id_publication SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  id_proyecto integer NOT NULL,
+  id_campaign integer,
+  title character varying NOT NULL,
+  caption text,                                    -- contenido de la publicación
+  asset_url character varying,                     -- imagen / recurso visual
+  platform character varying NOT NULL CHECK (platform::text = ANY (ARRAY['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TIKTOK', 'X', 'YOUTUBE', 'WHATSAPP', 'OTHER'])),
+  publication_format character varying NOT NULL DEFAULT 'POST'::character varying CHECK (publication_format::text = ANY (ARRAY['POST', 'STORY', 'REEL', 'VIDEO', 'CAROUSEL', 'SHORT', 'AD', 'OTHER'])),
+  status character varying NOT NULL DEFAULT 'DRAFT'::character varying CHECK (status::text = ANY (ARRAY['DRAFT', 'SCHEDULED', 'PUBLISHED'])),
+  scheduled_for timestamp without time zone,
+  published_at timestamp without time zone,
+  publication_url character varying,
+  notes text,
+  created_by integer NOT NULL,
+  updated_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  -- FK compuesta: el proyecto debe pertenecer a la misma empresa (aislamiento multi-empresa)
+  CONSTRAINT marketing_publication_empresa_proyecto_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto) ON DELETE CASCADE,
+  -- FK compuesta: la campaña (opcional) debe pertenecer a la misma empresa.
+  -- RESTRICT porque el controller exige mover o borrar las publicaciones antes
+  -- de eliminar la campaña (responde 409); además SET NULL sobre una FK
+  -- compuesta anularía también id_empresa, que es NOT NULL.
+  CONSTRAINT marketing_publication_empresa_campaign_fkey FOREIGN KEY (id_empresa, id_campaign) REFERENCES public.marketing_campaign(id_empresa, id_campaign) ON DELETE RESTRICT,
+  CONSTRAINT marketing_publication_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+  CONSTRAINT marketing_publication_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario),
+  -- Invariante de la máquina de estados: una publicación programada exige fecha
+  -- programada y una publicada exige fecha de publicación.
+  CONSTRAINT marketing_publication_transicion_check CHECK (
+    (status::text = 'DRAFT')
+    OR (status::text = 'SCHEDULED' AND scheduled_for IS NOT NULL)
+    OR (status::text = 'PUBLISHED' AND published_at IS NOT NULL)
+  )
+);
+
+CREATE INDEX marketing_publication_empresa_status_idx ON public.marketing_publication (id_empresa, status);
+CREATE INDEX marketing_publication_empresa_platform_idx ON public.marketing_publication (id_empresa, platform);
+CREATE INDEX marketing_publication_empresa_proyecto_idx ON public.marketing_publication (id_empresa, id_proyecto);
+CREATE INDEX marketing_publication_campaign_idx ON public.marketing_publication (id_campaign);
+CREATE INDEX marketing_publication_agenda_idx ON public.marketing_publication (id_empresa, scheduled_for DESC);
+
+-- Pieza creativa: ideas, copies y borradores de contenido previos a la publicación.
+CREATE TABLE public.marketing_item (
+  id_marketing_item SERIAL PRIMARY KEY,
+  id_empresa integer NOT NULL,
+  id_proyecto integer,
+  id_campaign integer,
+  title character varying NOT NULL,
+  description text,
+  content text NOT NULL,
+  status character varying NOT NULL DEFAULT 'DRAFT'::character varying CHECK (status::text = ANY (ARRAY['DRAFT', 'IN_REVIEW', 'READY', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED'])),
+  content_type character varying NOT NULL CHECK (content_type::text = ANY (ARRAY['IDEA', 'COPY', 'POST', 'ASSET', 'PROPOSAL'])),
+  marketing_date date NOT NULL DEFAULT CURRENT_DATE,
+  resource_link character varying,
+  origin_type character varying NOT NULL DEFAULT 'MANUAL'::character varying CHECK (origin_type::text = ANY (ARRAY['MANUAL', 'RULE_BASED', 'AI', 'EXTERNAL'])),
+  integration_provider character varying,
+  integration_reference character varying,
+  integration_metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_by integer NOT NULL,
+  updated_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT marketing_item_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE,
+  -- FK compuestas: proyecto y campaña opcionales, siempre dentro de la misma empresa
+  CONSTRAINT marketing_item_empresa_proyecto_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto) ON DELETE CASCADE,
+  CONSTRAINT marketing_item_empresa_campaign_fkey FOREIGN KEY (id_empresa, id_campaign) REFERENCES public.marketing_campaign(id_empresa, id_campaign) ON DELETE RESTRICT,
+  CONSTRAINT marketing_item_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario),
+  CONSTRAINT marketing_item_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE INDEX marketing_item_empresa_status_idx ON public.marketing_item (id_empresa, status);
+CREATE INDEX marketing_item_campaign_idx ON public.marketing_item (id_campaign);
+
+-- Corte de métricas de una publicación, capturado manualmente.
+-- La captura automática desde las APIs de redes sociales corresponde a HU-36.
+CREATE TABLE public.marketing_publication_metric_snapshot (
+  id_metric_snapshot SERIAL PRIMARY KEY,
+  id_publication integer NOT NULL,
+  captured_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  impressions integer NOT NULL DEFAULT 0 CHECK (impressions >= 0),
+  reach integer NOT NULL DEFAULT 0 CHECK (reach >= 0),
+  likes integer NOT NULL DEFAULT 0 CHECK (likes >= 0),
+  comments integer NOT NULL DEFAULT 0 CHECK (comments >= 0),
+  shares integer NOT NULL DEFAULT 0 CHECK (shares >= 0),
+  saves integer NOT NULL DEFAULT 0 CHECK (saves >= 0),
+  clicks integer NOT NULL DEFAULT 0 CHECK (clicks >= 0),
+  leads integer NOT NULL DEFAULT 0 CHECK (leads >= 0),
+  followers_gained integer NOT NULL DEFAULT 0 CHECK (followers_gained >= 0),
+  spend numeric NOT NULL DEFAULT 0 CHECK (spend >= 0::numeric),
+  notes text,
+  created_by integer NOT NULL,
+  created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT marketing_metric_snapshot_publication_fkey FOREIGN KEY (id_publication) REFERENCES public.marketing_publication(id_publication) ON DELETE CASCADE,
+  CONSTRAINT marketing_metric_snapshot_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE INDEX marketing_metric_snapshot_publication_idx
+  ON public.marketing_publication_metric_snapshot (id_publication, captured_at DESC, id_metric_snapshot DESC);
