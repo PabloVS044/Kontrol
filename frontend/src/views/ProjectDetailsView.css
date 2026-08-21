@@ -3,9 +3,20 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .pd-root {
-  background: var(--k-color-bg);
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
+}
+
+.pd-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--k-color-bg);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .pd-layout {
