@@ -297,11 +297,22 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 .product-detail-root {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
-  background: rgba(10, 10, 10, 0.75);
-  backdrop-filter: blur(10px);
   color: var(--Text);
   font-family: 'Manrope', sans-serif;
+}
+
+.product-detail-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .content {

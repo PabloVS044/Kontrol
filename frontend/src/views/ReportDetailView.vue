@@ -509,10 +509,23 @@ async function registerExport(dataset, format) {
 <style scoped>
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .detail-root {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
+  padding-top: 56px;
+}
+
+/* El blur vive en una capa aparte: backdrop-filter en el root crearia un
+   containing block que rompe el position: fixed del AppNavbar. */
+.detail-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background: rgba(17, 17, 17, 0.75);
   backdrop-filter: blur(10px);
-  padding-top: 56px;
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .detail-layout {
