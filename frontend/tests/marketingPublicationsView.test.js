@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
@@ -27,7 +27,9 @@ import MarketingPublicationsView from '@/views/MarketingPublicationsView.vue'
 import {
   listPublications,
   listProjectsForPublications,
+  createPublication,
   updatePublication,
+  deletePublication,
 } from '@/services/marketing.js'
 
 const publicacion = (overrides = {}) => ({
@@ -58,13 +60,46 @@ const montar = ({ data = [publicacion()], canManageMarketing = true, locale = 'e
   })
 }
 
+// Los formularios de crear/editar/programar/eliminar viven dentro de BaseModal.
+// Acá SÍ se monta el BaseModal real (se teletransporta a document.body) para
+// poder rellenar los campos y disparar el submit nativo.
+const montarConModales = ({ data = [publicacion()], canManageMarketing = true } = {}) => {
+  listPublications.mockResolvedValue({ data, capabilities: { canManageMarketing } })
+  listProjectsForPublications.mockResolvedValue([{ id_proyecto: 10, nombre: 'Proyecto A' }])
+
+  const wrapper = mount(MarketingPublicationsView, {
+    attachTo: document.body,
+    global: {
+      plugins: [createI18n({ legacy: false, locale: 'es', fallbackLocale: 'en', messages: { es, en } })],
+      stubs: { AppNavbar: true },
+    },
+  })
+  montados.push(wrapper)
+  return wrapper
+}
+
+const setValor = (elemento, valor) => {
+  elemento.value = valor
+  elemento.dispatchEvent(new Event('input'))
+  elemento.dispatchEvent(new Event('change'))
+}
+
 const esperarTarjetas = async (wrapper, cantidad) =>
   vi.waitFor(() => expect(wrapper.findAll('.mkt-card')).toHaveLength(cantidad))
 
+let montados = []
+
 beforeEach(() => {
-  vi.clearAllMocks()
+  // reset (no solo clear): un mockRejectedValue de un test no debe sobrevivir al siguiente
+  vi.resetAllMocks()
   almacen.clear()
   setActivePinia(createPinia())
+})
+
+afterEach(() => {
+  montados.forEach((w) => w.unmount())
+  montados = []
+  document.body.innerHTML = ''
 })
 
 // HU-28 · Pantalla de administración de publicaciones.
@@ -249,5 +284,216 @@ describe('Idioma', () => {
     expect(wrapper.text()).toContain(en.marketing.title)
     expect(wrapper.text()).toContain(en.marketing.status.DRAFT)
     expect(wrapper.text()).not.toContain('marketing.')
+  })
+})
+
+describe('Formulario de crear/editar (modal real)', () => {
+  it('crear una publicación manda el payload construido al backend', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.find('.mkt-header button').trigger('click')
+    expect(wrapper.vm.showModal).toBe(true)
+
+    const [titulo, , fecha] = document.querySelectorAll('.mkt-form input')
+    const [proyecto] = [...document.querySelectorAll('.mkt-form select')].slice(2)
+    setValor(titulo, '  Nueva promo  ')
+    setValor(proyecto, '10')
+    void fecha // queda vacía a propósito: scheduledFor es opcional al crear
+
+    await document.querySelector('.mkt-form button[type="submit"]').click()
+    await wrapper.vm.$nextTick()
+
+    await vi.waitFor(() => expect(createPublication).toHaveBeenCalled())
+    expect(createPublication.mock.calls.at(-1).at(-1)).toMatchObject({
+      title: 'Nueva promo',
+      platform: 'INSTAGRAM',
+      format: 'POST',
+      projectId: 10,
+      scheduledFor: null,
+    })
+    await vi.waitFor(() => expect(wrapper.vm.showModal).toBe(false))
+  })
+
+  it('editar precarga el formulario con los datos de la publicación', async () => {
+    const wrapper = montarConModales({
+      data: [publicacion({ caption: 'Texto original', notes: 'Nota interna' })],
+    })
+    await esperarTarjetas(wrapper, 1)
+
+    const botonEditar = wrapper.findAll('.mkt-action').find((b) => b.text() === es.marketing.actions.edit)
+    await botonEditar.trigger('click')
+
+    const [titulo] = document.querySelectorAll('.mkt-form input')
+    const [caption, notas] = document.querySelectorAll('.mkt-form textarea')
+    expect(titulo.value).toBe('Lanzamiento de temporada')
+    expect(caption.value).toBe('Texto original')
+    expect(notas.value).toBe('Nota interna')
+
+    setValor(titulo, 'Título editado')
+    await document.querySelector('.mkt-form button[type="submit"]').click()
+
+    await vi.waitFor(() => expect(updatePublication).toHaveBeenCalled())
+    const [, , id, payload] = updatePublication.mock.calls.at(-1)
+    expect(id).toBe(1)
+    expect(payload).toMatchObject({ title: 'Título editado' })
+  })
+
+  it('un error al guardar se muestra en el modal y no lo cierra', async () => {
+    createPublication.mockRejectedValue(new Error('El título ya existe'))
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.find('.mkt-header button').trigger('click')
+    const [titulo] = document.querySelectorAll('.mkt-form input')
+    const [proyecto] = [...document.querySelectorAll('.mkt-form select')].slice(2)
+    setValor(titulo, 'Promo')
+    setValor(proyecto, '10')
+
+    await document.querySelector('.mkt-form button[type="submit"]').click()
+
+    await vi.waitFor(() => expect(document.querySelector('.mkt-error').textContent).toBe('El título ya existe'))
+    expect(wrapper.vm.showModal).toBe(true)
+  })
+
+  it('cancelar cierra el modal sin llamar al backend', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.find('.mkt-header button').trigger('click')
+    await document.querySelector('.mkt-form button[type="button"]').click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.showModal).toBe(false)
+    expect(createPublication).not.toHaveBeenCalled()
+  })
+})
+
+describe('Modal de programación (modal real)', () => {
+  it('programar con fecha manda el estado SCHEDULED y el timestamp formateado', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    const [programar] = wrapper.findAll('.mkt-action--primary')
+    await programar.trigger('click')
+    await vi.waitFor(() => expect(wrapper.vm.showScheduleModal).toBe(true))
+
+    const fecha = document.querySelector('.mkt-form input[type="datetime-local"]')
+    setValor(fecha, '2026-09-01T10:00')
+    await document.querySelector('.mkt-form button[type="submit"]').click()
+
+    await vi.waitFor(() => expect(updatePublication).toHaveBeenCalled())
+    expect(updatePublication.mock.calls.at(-1).at(-1)).toEqual({
+      status: 'SCHEDULED',
+      scheduledFor: '2026-09-01 10:00:00',
+    })
+    await vi.waitFor(() => expect(wrapper.vm.showScheduleModal).toBe(false))
+  })
+
+  it('un error al programar se muestra y deja el modal abierto', async () => {
+    updatePublication.mockRejectedValue(new Error('La fecha debe ser futura'))
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.findAll('.mkt-action--primary')[0].trigger('click')
+    await vi.waitFor(() => expect(wrapper.vm.showScheduleModal).toBe(true))
+
+    setValor(document.querySelector('.mkt-form input[type="datetime-local"]'), '2026-09-01T10:00')
+    await document.querySelector('.mkt-form button[type="submit"]').click()
+
+    await vi.waitFor(() =>
+      expect(document.querySelector('.mkt-error').textContent).toBe('La fecha debe ser futura')
+    )
+    expect(wrapper.vm.showScheduleModal).toBe(true)
+  })
+})
+
+describe('Eliminar una publicación (modal real)', () => {
+  it('confirmar el borrado llama al backend y refresca el listado', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    const botonEliminar = wrapper.findAll('.mkt-action').find((b) => b.text() === es.marketing.actions.delete)
+    await botonEliminar.trigger('click')
+    await vi.waitFor(() => expect(wrapper.vm.showDeleteModal).toBe(true))
+    expect(document.querySelector('.mkt-hint').textContent).toContain('Lanzamiento de temporada')
+
+    const botones = [...document.querySelectorAll('.mkt-form-actions button')]
+    await botones.at(-1).click()
+
+    await vi.waitFor(() => expect(deletePublication).toHaveBeenCalled())
+    expect(deletePublication.mock.calls.at(-1).at(-1)).toBe(1)
+    await vi.waitFor(() => expect(wrapper.vm.showDeleteModal).toBe(false))
+  })
+
+  it('un error al eliminar se muestra sin cerrar el modal', async () => {
+    deletePublication.mockRejectedValue(new Error('No se puede eliminar: ya fue publicada'))
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    const botonEliminar = wrapper.findAll('.mkt-action').find((b) => b.text() === es.marketing.actions.delete)
+    await botonEliminar.trigger('click')
+    await vi.waitFor(() => expect(wrapper.vm.showDeleteModal).toBe(true))
+
+    const botones = [...document.querySelectorAll('.mkt-form-actions button')]
+    await botones.at(-1).click()
+
+    await vi.waitFor(() =>
+      expect(document.querySelector('.mkt-error').textContent).toBe('No se puede eliminar: ya fue publicada')
+    )
+    expect(wrapper.vm.showDeleteModal).toBe(true)
+  })
+
+  it('cancelar cierra el modal de borrado sin llamar al backend', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    const botonEliminar = wrapper.findAll('.mkt-action').find((b) => b.text() === es.marketing.actions.delete)
+    await botonEliminar.trigger('click')
+    await vi.waitFor(() => expect(wrapper.vm.showDeleteModal).toBe(true))
+
+    await document.querySelector('.mkt-form-actions button[type="button"]').click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.showDeleteModal).toBe(false)
+    expect(deletePublication).not.toHaveBeenCalled()
+  })
+})
+
+describe('Detalles de la tarjeta', () => {
+  it('una imagen rota se oculta en vez de romper la tarjeta', async () => {
+    const wrapper = montar({ data: [publicacion({ assetUrl: 'https://ejemplo.test/roto.png' })] })
+    await esperarTarjetas(wrapper, 1)
+
+    const imagen = wrapper.find('.mkt-asset')
+    expect(imagen.exists()).toBe(true)
+    await imagen.trigger('error')
+
+    expect(imagen.element.style.display).toBe('none')
+  })
+
+  it('una fecha inválida se muestra como "sin fecha" en vez de "Invalid Date"', async () => {
+    const wrapper = montar({
+      data: [publicacion({ status: 'PUBLISHED', publishedAt: 'no-es-una-fecha' })],
+    })
+    await esperarTarjetas(wrapper, 1)
+
+    expect(wrapper.text()).toContain(es.marketing.card.noDate)
+  })
+
+  it('sin catálogo de proyectos (falla la carga), el filtro sigue usable', async () => {
+    listPublications.mockResolvedValue({ data: [publicacion()], capabilities: { canManageMarketing: true } })
+    listProjectsForPublications.mockRejectedValue(new Error('Servidor caído'))
+
+    const wrapper = mount(MarketingPublicationsView, {
+      global: {
+        plugins: [createI18n({ legacy: false, locale: 'es', fallbackLocale: 'en', messages: { es, en } })],
+        stubs: { AppNavbar: true, BaseModal: true, Button: true },
+      },
+    })
+    await esperarTarjetas(wrapper, 1)
+
+    const selectProyecto = wrapper.findAll('.mkt-select')[2]
+    expect(selectProyecto.findAll('option')).toHaveLength(1) // solo "Todos los proyectos"
   })
 })

@@ -27,6 +27,10 @@ describe('Estados del ciclo', () => {
     const colores = PUBLICATION_STATUSES.map((estado) => publicationStatusColors(estado).color)
     expect(new Set(colores).size).toBe(PUBLICATION_STATUSES.length)
   })
+
+  it('un estado sin color asignado cae al gris por defecto', () => {
+    expect(publicationStatusColors('PLANNED')).toEqual({ color: '#888', bg: '#8881a' })
+  })
 })
 
 describe('Transiciones ofrecidas al usuario', () => {
