@@ -88,11 +88,13 @@ $SSH "
   echo '==> .env actualizado'
 "
 
-echo "==> [2/3] Lanzando build en el servidor (corre en background, no depende de SSH)..."
+echo "==> [2/3] Lanzando build en el servidor (secuencial, para no saturar RAM)..."
 $SSH "
   set -e
   cd /app/Kontrol
-  docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+  docker compose -f docker-compose.prod.yml build backend
+  docker compose -f docker-compose.prod.yml build frontend
+  docker compose -f docker-compose.prod.yml up -d --remove-orphans
   docker image prune -f >/dev/null 2>&1 || true
 "
 
