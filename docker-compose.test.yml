@@ -1,0 +1,45 @@
+# SCRUM-25 — UX test environment.
+# Overlay on top of docker-compose.prod.yml: adds backend-test/frontend-test
+# pointed at a separate Supabase database, and extends the existing Caddy
+# container with a second site so it also serves this environment.
+# Usage: docker compose -f docker-compose.prod.yml -f docker-compose.test.yml up -d --build
+services:
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${TEST_DATABASE_URL}
+      - DATABASE_SSL=${TEST_DATABASE_SSL:-true}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${TEST_JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
+      - FRONTEND_URL=${TEST_FRONTEND_URL}
+      - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
+    restart: unless-stopped
+
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${TEST_FRONTEND_URL:-}
+        VITE_SOCKET_URL: ${TEST_FRONTEND_URL:-}
+    expose:
+      - "80"
+    depends_on:
+      - backend-test
+    restart: unless-stopped
+
+  caddy:
+    environment:
+      - TEST_PUBLIC_HOST=${TEST_PUBLIC_HOST}
+    depends_on:
+      - frontend-test
