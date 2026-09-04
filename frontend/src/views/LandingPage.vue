@@ -12,7 +12,7 @@
         <AnimatedText
           style="margin-top: 0"
           effects="split shiny"
-          text="Take control of your bussiness"
+          text="Take control of your business"
           tag="h1"
           class="hero-title"
           color="var(--k-color-primary)"
@@ -48,7 +48,7 @@
             backColor="var(--k-color-tertiary)"
             hoverColor="var(--k-color-secondary)"
             :icon="arrowRightIcon"
-            link="#features"
+            link="#steps"
           />
         </div>
       </div>
@@ -97,7 +97,7 @@
 
     <section id="solution">
       <div class="solution-container">
-        <h2 class="sub-title">The Comand Center</h2>
+        <h2 class="sub-title">The Command Center</h2>
         <p class="description">
           Every facet of your operation, unified in a high-fidelity dashboard
           that anticipates your next move.
@@ -186,7 +186,7 @@
     </section>
 
     <section id="features">
-      <h2 class="sub-title">How it works?</h2>
+      <h2 class="sub-title">Features</h2>
       <MagicBento
         :text-auto-hide="true"
         enable-stars
