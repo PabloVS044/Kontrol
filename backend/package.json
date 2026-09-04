@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "seed:test": "node src/db/seed.js"
+    "seed:test": "node src/db/seed.js",
+    "reset:test": "node src/db/reset.js"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.10",
