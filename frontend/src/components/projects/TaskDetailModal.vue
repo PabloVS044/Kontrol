@@ -34,13 +34,35 @@
         <label>{{ $t('projects.tasks.detail.assignedTo') }}</label>
         <p>{{ task.asignado_nombre ? `${task.asignado_nombre} ${task.asignado_apellido}` : '—' }}</p>
       </div>
+
+      <div class="form-field">
+        <label>{{ $t('projects.tasks.detail.evidence.title') }}</label>
+
+        <ul v-if="evidence.length" class="evidence-list">
+          <li v-for="item in evidence" :key="item.id_evidencia" class="evidence-item">
+            <a :href="item.url_archivo" target="_blank" rel="noopener">{{ item.descripcion || item.tipo_archivo }}</a>
+            <span class="evidence-meta">{{ $t('projects.tasks.detail.evidence.by') }} {{ item.autor_nombre }}</span>
+            <button type="button" class="evidence-delete" @click="removeEvidence(item.id_evidencia)">
+              {{ $t('projects.tasks.detail.evidence.delete') }}
+            </button>
+          </li>
+        </ul>
+        <p v-else class="evidence-empty">{{ $t('projects.tasks.detail.evidence.empty') }}</p>
+
+        <label class="evidence-upload-btn">
+          {{ uploading ? $t('projects.tasks.detail.evidence.uploading') : $t('projects.tasks.detail.evidence.uploadLabel') }}
+          <input type="file" hidden :disabled="uploading" @change="handleFileSelected" />
+        </label>
+        <p v-if="uploadError" class="evidence-error">{{ uploadError }}</p>
+      </div>
     </div>
   </BaseModal>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { genUploader } from 'uploadthing/client'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import { statusLabel } from '@/utils/statusHelpers.js'
 import { taskStatusStyle, taskPriorityColor } from '@/utils/taskIndicatorColors.js'
@@ -50,6 +72,7 @@ const { t } = useI18n()
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   task:       { type: Object, default: null },
+  projectId:  { type: [String, Number], default: null },
   loading:    { type: Boolean, default: false },
 })
 
@@ -59,6 +82,71 @@ const show = computed({
   get: () => props.modelValue,
   set: (v) => emit('update:modelValue', v),
 })
+
+const API = import.meta.env.VITE_API_URL || window.location.origin
+const uploadthing = genUploader({ url: `${API}/api/uploadthing` })
+
+function authHeader() {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+const evidence = ref([])
+const uploading = ref(false)
+const uploadError = ref('')
+
+async function loadEvidence() {
+  if (!props.projectId || !props.task?.id_tarea) {
+    evidence.value = []
+    return
+  }
+  const res = await fetch(
+    `/api/projects/${props.projectId}/tasks/${props.task.id_tarea}/evidence`,
+    { headers: authHeader() }
+  )
+  if (!res.ok) {
+    evidence.value = []
+    return
+  }
+  const body = await res.json()
+  evidence.value = body.data ?? []
+}
+
+watch(() => [props.modelValue, props.task?.id_tarea], ([open]) => {
+  uploadError.value = ''
+  if (open) loadEvidence()
+}, { immediate: true })
+
+async function handleFileSelected(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file || !props.task?.id_tarea) return
+
+  uploading.value = true
+  uploadError.value = ''
+
+  try {
+    await uploadthing.uploadFiles('taskEvidence', {
+      files: [file],
+      input: { taskId: props.task.id_tarea },
+      headers: () => authHeader(),
+    })
+    await loadEvidence()
+  } catch (error) {
+    uploadError.value = error?.message || t('projects.tasks.detail.evidence.uploadError')
+  } finally {
+    uploading.value = false
+  }
+}
+
+async function removeEvidence(id) {
+  if (!props.projectId || !props.task?.id_tarea) return
+  await fetch(
+    `/api/projects/${props.projectId}/tasks/${props.task.id_tarea}/evidence/${id}`,
+    { method: 'DELETE', headers: authHeader() }
+  )
+  await loadEvidence()
+}
 </script>
 
 <style scoped>
@@ -80,4 +168,23 @@ const show = computed({
   font-family: var(--k-font-sans);
 }
 .status-badge.small { font-size: var(--k-font-size-caption); padding: 2px 8px; }
+
+.evidence-list { display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.evidence-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans);
+}
+.evidence-item a { color: var(--k-color-text); text-decoration: underline; }
+.evidence-meta { color: var(--k-gray-5); font-size: var(--k-font-size-caption); }
+.evidence-delete {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  color: var(--k-gray-5); font-size: var(--k-font-size-caption); text-decoration: underline;
+}
+.evidence-empty { color: var(--k-gray-5); font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans); }
+.evidence-upload-btn {
+  display: inline-flex; width: fit-content; cursor: pointer;
+  padding: 6px 12px; border: 1px solid var(--k-gray-3);
+  font-size: var(--k-font-size-caption); font-family: var(--k-font-sans);
+}
+.evidence-error { color: #fb7185; font-size: var(--k-font-size-caption); font-family: var(--k-font-sans); }
 </style>

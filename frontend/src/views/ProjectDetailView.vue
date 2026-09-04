@@ -442,6 +442,7 @@
     <TaskDetailModal
       v-model="showDetailModal"
       :task="detailTask"
+      :project-id="projectId"
       :loading="detailLoading"
     />
 
