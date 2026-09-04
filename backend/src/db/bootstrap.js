@@ -654,4 +654,33 @@ export const ensureDatabaseSchema = async () => {
       END IF;
     END $$
   `)
+
+  await pool.query(`
+    ALTER TABLE public.evidencia
+      ADD COLUMN IF NOT EXISTS public_id character varying
+  `)
+
+  await pool.query(`
+    ALTER TABLE public.evidencia
+      ADD COLUMN IF NOT EXISTS id_progress_entry integer
+  `)
+
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'evidencia_progress_entry_fkey'
+      ) THEN
+        ALTER TABLE public.evidencia
+          ADD CONSTRAINT evidencia_progress_entry_fkey
+          FOREIGN KEY (id_progress_entry) REFERENCES public.project_progress_entry(id_progress_entry)
+          ON DELETE SET NULL;
+      END IF;
+    END $$
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS evidencia_id_tarea_idx
+      ON public.evidencia (id_tarea)
+  `)
 }
