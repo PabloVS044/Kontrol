@@ -364,7 +364,16 @@
         "priority": "Prioridad",
         "status": "Estado",
         "dueDate": "Fecha de vencimiento",
-        "assignedTo": "Asignado a"
+        "assignedTo": "Asignado a",
+        "evidence": {
+          "title": "Evidencia",
+          "empty": "Sin evidencia adjunta todavía.",
+          "uploadLabel": "Adjuntar evidencia",
+          "uploading": "Subiendo…",
+          "uploadError": "No se pudo subir el archivo.",
+          "delete": "Eliminar",
+          "by": "por"
+        }
       }
     },
     "team": {
