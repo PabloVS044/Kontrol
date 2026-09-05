@@ -4,7 +4,7 @@
     :style="useWindowScroll ? { overflow: 'visible' } : {}"
     ref="scrollerRef"
   >
-    <div class="scroll-stack-inner">
+    <div class="scroll-stack-inner" ref="innerRef">
       <slot />
       <div class="scroll-stack-end" />
     </div>
@@ -33,6 +33,7 @@ const props = defineProps({
 
 // ─── Refs ─────────────────────────────────────────────────────────────────────
 const scrollerRef = ref(null);
+const innerRef     = ref(null);
 
 let cards          = [];
 let lenis          = null;
@@ -85,6 +86,32 @@ function measureOffsets() {
     const endEl = scrollerRef.value?.querySelector('.scroll-stack-end');
     endOffset   = endEl ? endEl.offsetTop : 0;
   }
+
+  updateRunway();
+}
+
+// The last card never scrolls away on its own: once released from pinning it
+// keeps a fixed translateY roughly equal to its own height plus the stack
+// offsets (see the release branch in updateCardTransforms). The trailing
+// space after the stack must be at least that tall, or the released card
+// visually overlaps whatever section comes next. `stackPosition` is a
+// percentage of the *viewport* height, so a fixed CSS value can never get
+// this right for every screen — it has to be computed from real measurements.
+function updateRunway() {
+  if (!innerRef.value || !cards.length) return;
+
+  const { containerHeight } = getScrollData();
+  const stackPositionPx = parsePercentage(props.stackPosition, containerHeight);
+  const lastIndex       = cards.length - 1;
+  // offsetHeight (not getBoundingClientRect) so a `scale()` already applied
+  // to the card mid-animation doesn't shrink the measurement.
+  const lastCardHeight  = cards[lastIndex].offsetHeight;
+
+  const releaseOffset = lastCardHeight - containerHeight / 2 + stackPositionPx
+    + props.itemStackDistance * lastIndex;
+
+  const EXTRA_GAP_PX = 64; // breathing room before the next section
+  innerRef.value.style.paddingBottom = `${Math.max(releaseOffset, 0) + EXTRA_GAP_PX}px`;
 }
 
 // ─── Core animation ───────────────────────────────────────────────────────────
@@ -272,16 +299,20 @@ onUnmounted(() => {
 }
 
 .scroll-stack-inner {
-  padding: 0 5rem 50rem;
+  padding: 0 5rem;
+  /* Fallback for the instant before JS measures and sets the real value
+     inline (see updateRunway) — modest on purpose, not a magic number tuned
+     to cancel out elsewhere. */
+  padding-bottom: 6rem;
   min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-  .scroll-stack-inner { padding: 0 1.25rem 50rem; }
+  .scroll-stack-inner { padding-left: 1.25rem; padding-right: 1.25rem; }
 }
 
 @media (max-width: 480px) {
-  .scroll-stack-inner { padding: 0 0.5rem 50rem; }
+  .scroll-stack-inner { padding-left: 0.5rem; padding-right: 0.5rem; }
 }
 
 .scroll-stack-end {
