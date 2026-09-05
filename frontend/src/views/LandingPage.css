@@ -105,34 +105,177 @@
   color: var(--k-color-primary-2);
 }
 
-/* ─── Problem ────────────────────────────────────────────────────────────── */
-#problem {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 100px 20px;
-  box-sizing: border-box;
+/* ─── Control Center pilot (pin + scrub) ────────────────────────────────────
+   #control-center is tall (see height below) so there's scroll distance for
+   the timeline to play against; .control-center-viewport stays on screen via
+   native `position: sticky` (no JS pinning, no risk of the transform/measure
+   feedback loop fixed in ScrollStack) while GSAP scrubs the K's rotation/
+   scale and cross-fades the three .control-moment blocks in sync with scroll
+   position — see setupControlCenter() in LandingPage.vue. */
+#control-center {
+  position: relative;
+  height: 260vh;
 }
 
-.problem-container {
-  width: 70%;
-  z-index: 20;
+.control-center-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.control-k-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* KontrolLogo3D reads mouse position from `window`, not this element, so
+     this doesn't affect its own hover reactivity — just keeps it from
+     intercepting clicks meant for whatever sits in front of it. */
+  pointer-events: none;
+}
+
+.control-moment {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: var(--k-space-4);
+  padding: 0 20px;
+  text-align: center;
+  opacity: 0; /* GSAP scrubs this; starts hidden so there's no flash before JS runs */
 }
 
-.cards {
+.control-moment-tags {
   display: flex;
-  gap: 20px;
+  gap: var(--k-space-3);
   flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.control-moment-tags li {
+  padding: 0.5rem 1.25rem;
+  border: var(--k-border-width) solid var(--k-color-border);
+  border-radius: var(--k-radius-pill);
+  color: var(--k-color-text);
+  background: var(--k-color-tertiary);
+}
+
+/* Reduced motion (and the fallback if JS never wires up the timeline): no
+   pinning, no scrubbing — the three moments just stack as static content. */
+#control-center.no-pin {
+  height: auto;
+}
+
+#control-center.no-pin .control-center-viewport {
+  position: static;
+  height: auto;
+  flex-direction: column;
+  gap: 4rem;
+  padding: 120px 20px;
+  overflow: visible;
+}
+
+#control-center.no-pin .control-k-wrapper {
+  position: static;
+  width: 220px;
+  height: 220px;
+}
+
+#control-center.no-pin .control-moment {
+  position: static;
+  inset: auto;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  #control-center {
+    height: 220vh;
+  }
+}
+
+/* ─── Problem (pin + scrub) ──────────────────────────────────────────────────
+   Same mechanism as #control-center: a tall section, a sticky viewport, and
+   a scrub timeline (setupProblemPin in LandingPage.vue) — here it morphs
+   "The Chaos" into "The Order" in the same spot instead of cross-fading
+   text. `overflow-x: hidden` keeps the sideways part of that morph from
+   opening a horizontal scrollbar mid-animation. */
+#problem {
+  position: relative;
+  height: 220vh;
+  overflow-x: hidden;
+}
+
+.problem-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-space-6);
+  box-sizing: border-box;
+  padding: 0 20px;
+}
+
+.problem-stage {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  min-height: 480px;
+}
+
+.problem-card-wrap {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 
 .marked {
   color: var(--k-color-primary-2);
+}
+
+/* Reduced motion: no pinning, no scrubbing — both cards side by side, static. */
+#problem.no-pin {
+  height: auto;
+}
+
+#problem.no-pin .problem-viewport {
+  position: static;
+  height: auto;
+  padding: 100px 20px;
+}
+
+#problem.no-pin .problem-stage {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  min-height: auto;
+  max-width: none;
+}
+
+#problem.no-pin .problem-card-wrap {
+  position: static;
+  opacity: 1;
+  transform: none;
 }
 
 /* ─── Solution ───────────────────────────────────────────────────────────── */
@@ -150,6 +293,10 @@
   align-items: center;
   padding: 80px 0;
   box-sizing: border-box;
+  /* The four sub-cards converge from left/right on scroll (LandingPage.vue,
+     setupScrollChoreography) — contains that so it can't open a horizontal
+     scrollbar mid-animation. */
+  overflow-x: hidden;
 }
 
 .magic-circles-wrapper {
@@ -239,6 +386,29 @@
   margin-top: var(--k-space-3);
 }
 
+/* ─── Craft (interactive grid) ───────────────────────────────────────────── */
+#craft {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 100px 20px;
+  box-sizing: border-box;
+}
+
+.craft-container {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--k-space-5);
+}
+
+.craft-container .description {
+  width: 100%;
+  margin: 0;
+}
+
 /* ─── Features ───────────────────────────────────────────────────────────── */
 #features {
   width: 100%;
@@ -273,9 +443,6 @@
 /* ─── Tablet (≤ 1024px) ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .header-container {
-    width: 85%;
-  }
-  .problem-container {
     width: 85%;
   }
   .description {
@@ -318,20 +485,19 @@
 
   /* Problem */
   #problem {
+    height: 240vh;
+  }
+  .problem-viewport {
+    gap: var(--k-space-4);
+  }
+  .problem-stage {
+    min-height: 520px;
+  }
+  #problem.no-pin {
+    height: auto;
+  }
+  #problem.no-pin .problem-viewport {
     padding: 60px 16px;
-    min-height: auto;
-  }
-  .problem-container {
-    width: 100%;
-  }
-  .cards {
-    flex-direction: column;
-    align-items: center;
-  }
-  .cards .card {
-    width: 100%;
-    max-width: 420px;
-    align-self: stretch;
   }
 
   /* Solution graph → linear list */
@@ -375,6 +541,11 @@
   .companies-swap {
     width: 100%;
     flex: none;
+  }
+
+  /* Craft */
+  #craft {
+    padding: 60px 16px;
   }
 
   /* Features */

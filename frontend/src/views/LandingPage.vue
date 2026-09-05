@@ -54,43 +54,86 @@
       </div>
     </section>
 
-    <section id="problem">
-      <div class="problem-container">
+    <!-- Pilot: a single fixed viewport where the K stays put while the scroll
+         drives it through three "moments" — see setupControlCenter(). If this
+         works well, the same pin+scrub pattern extends to the rest of the
+         page; if not, it's isolated here and easy to remove. -->
+    <section id="control-center" :class="{ 'no-pin': reduceMotion }">
+      <div class="control-center-viewport" ref="controlViewportRef">
+        <div class="control-k-wrapper" aria-hidden="true">
+          <KontrolLogo3D
+            width="380px"
+            height="380px"
+            :idle-spin-speed="0.04"
+            :scroll-rotation-y="scrollK.rotationY"
+            :scroll-scale="scrollK.scale"
+          />
+        </div>
+
+        <div class="control-moment control-moment-1" ref="controlMoment1Ref">
+          <h2 class="sub-title">One command center.</h2>
+        </div>
+
+        <div class="control-moment control-moment-2" ref="controlMoment2Ref">
+          <h2 class="sub-title">Every part of your business.</h2>
+          <ul class="control-moment-tags">
+            <li>Projects</li>
+            <li>Finance</li>
+            <li>Marketing</li>
+            <li>Inventory</li>
+          </ul>
+        </div>
+
+        <div class="control-moment control-moment-3" ref="controlMoment3Ref">
+          <h2 class="sub-title">Under your control.</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pinned like #control-center: the heading stays put while scroll
+         morphs "The Chaos" into "The Order" in the same spot — see
+         setupProblemPin(). -->
+    <section id="problem" :class="{ 'no-pin': reduceMotion }">
+      <div class="problem-viewport">
         <h2 class="sub-title">
           Stop juggling tools to <span class="marked">run your business</span>
         </h2>
 
-        <div class="cards">
-          <Card
-            title="The Chaos"
-            subtitle="Disjointed systems that slow you down."
-            :icon="LayoutGrid"
-            :iconSize="48"
-            iconColor="var(--k-color-bg-3)"
-            :listIcon="CircleX"
-            :listIconSize="24"
-            listIconColor="var(--k-color-error)"
-            :characteristics="chaosCharacteristics"
-            back="var(--k-color-tertiary)"
-            borderColor="var(--k-color-border)"
-            titleColor="var(--k-color-text)"
-          />
+        <div class="problem-stage">
+          <div class="problem-card-wrap" ref="chaosWrapRef">
+            <Card
+              title="The Chaos"
+              subtitle="Disjointed systems that slow you down."
+              :icon="LayoutGrid"
+              :iconSize="48"
+              iconColor="var(--k-color-bg-3)"
+              :listIcon="CircleX"
+              :listIconSize="24"
+              listIconColor="var(--k-color-error)"
+              :characteristics="chaosCharacteristics"
+              back="var(--k-color-tertiary)"
+              borderColor="var(--k-color-border)"
+              titleColor="var(--k-color-text)"
+            />
+          </div>
 
-          <Card
-            title="The Order"
-            subtitle="Unified ecosystem designed for scale."
-            :icon="Sparkles"
-            :iconSize="48"
-            iconColor="var(--k-color-primary-2)"
-            :listIcon="CircleCheck"
-            :listIconSize="24"
-            listIconColor="var(--k-color-success)"
-            :characteristics="orderCharacteristics"
-            back="var(--k-color-bg-2)"
-            borderColor="var(--k-color-border)"
-            titleColor="var(--k-color-primary-2)"
-            shadowColor="var(--k-color-border)"
-          />
+          <div class="problem-card-wrap" ref="orderWrapRef">
+            <Card
+              title="The Order"
+              subtitle="Unified ecosystem designed for scale."
+              :icon="Sparkles"
+              :iconSize="48"
+              iconColor="var(--k-color-primary-2)"
+              :listIcon="CircleCheck"
+              :listIconSize="24"
+              listIconColor="var(--k-color-success)"
+              :characteristics="orderCharacteristics"
+              back="var(--k-color-bg-2)"
+              borderColor="var(--k-color-border)"
+              titleColor="var(--k-color-primary-2)"
+              shadowColor="var(--k-color-border)"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -386,6 +429,24 @@
         </div>
       </div>
     </section>
+    <section id="craft">
+      <div class="craft-container">
+        <h2 class="sub-title">Precision, down to the pixel</h2>
+        <p class="description">
+          Move your cursor over the grid. Every detail in Kontrol reacts the
+          same way &mdash; instantly, and exactly where you expect it.
+        </p>
+        <GridWave
+          :rows="gridSize.rows"
+          :cols="gridSize.cols"
+          base-color="var(--k-color-border)"
+          active-color="var(--k-color-primary-2)"
+          :radius="160"
+          :max-scale="1.6"
+        />
+      </div>
+    </section>
+
     <section id="start">
       <h2 class="sub-title">Start controlling your business today.</h2>
       <p>
@@ -405,8 +466,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, reactive, onMounted, onUnmounted } from "vue";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./LandingPage.css";
+
+gsap.registerPlugin(ScrollTrigger);
 import MagicBento from "../components/UI/AnimatedComponents/MagicBento.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
@@ -440,6 +505,8 @@ import ScrollStack from "../components/UI/AnimatedComponents/ScrollStack.vue";
 import ScrollStackItem from "../components/UI/AnimatedComponents/ScrollStackItem.vue";
 import CardSwap from "../components/UI/AnimatedComponents/CardsSwap.vue";
 import CarSwapItem from "../components/UI/AnimatedComponents/CarSwapItem.vue";
+import GridWave from "../components/UI/Backgrounds/GridWave/GridWave.vue";
+import KontrolLogo3D from "../components/UI/KontrolLogo3D/KontrolLogo3D.vue";
 
 // ─── Responsive CardSwap sizing ───────────────────────────────────────────────
 const cardSwapWidth = ref(860);
@@ -472,13 +539,208 @@ function updateCardSwapSize() {
   }
 }
 
-onMounted(() => {
+// ─── Responsive GridWave density ──────────────────────────────────────────────
+// Fewer cells on small screens: same effect, no cramped/tiny squares.
+const gridSize = ref({ rows: 12, cols: 12 });
+
+function updateGridSize() {
+  const vw = window.innerWidth;
+  if (vw < 480) {
+    gridSize.value = { rows: 7, cols: 7 };
+  } else if (vw < 768) {
+    gridSize.value = { rows: 9, cols: 9 };
+  } else if (vw < 1024) {
+    gridSize.value = { rows: 10, cols: 10 };
+  } else {
+    gridSize.value = { rows: 12, cols: 12 };
+  }
+}
+
+function handleLandingResize() {
   updateCardSwapSize();
-  window.addEventListener("resize", updateCardSwapSize);
+  updateGridSize();
+}
+
+// ─── Scroll choreography ────────────────────────────────────────────────────
+// Each section gets its own entrance signature, tied to the scroll position —
+// this is what makes the page feel animated as you scroll rather than static
+// content that just happens to be below the fold. `toggleActions: "restart
+// none none reverse"` is the standard GSAP pattern for "play forward on enter,
+// play backward on leave-back", so every animation replays each time its
+// section re-enters the viewport, scrolling either up or down.
+const landingScrollTriggers = [];
+
+function revealOnScroll(target, fromVars, triggerVars = {}) {
+  if (!target || (Array.isArray(target) && !target.length)) return;
+  const tween = gsap.from(target, {
+    duration: 0.9,
+    ease: "power3.out",
+    // Otherwise GSAP leaves the tween's final transform/opacity as an inline
+    // style forever, which outranks CSS `:hover` rules (e.g. Card.css's lift
+    // on hover) — clearProps only fires on forward completion, never on the
+    // reverse (see the toggleActions below), so the hidden state in between
+    // reveals is untouched and the repeat behavior still works.
+    clearProps: "transform,opacity,filter",
+    ...fromVars,
+    scrollTrigger: {
+      trigger: Array.isArray(target) ? target[0] : target,
+      start: "top 82%",
+      toggleActions: "restart none none reverse",
+      ...triggerVars,
+    },
+  });
+  if (tween.scrollTrigger) landingScrollTriggers.push(tween.scrollTrigger);
+}
+
+// ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
+// three "moments" cross-fading in front of it as the scroll progresses ──────
+const reduceMotion = ref(false);
+const controlViewportRef = ref(null);
+const controlMoment1Ref = ref(null);
+const controlMoment2Ref = ref(null);
+const controlMoment3Ref = ref(null);
+
+// Tweened directly by GSAP below (a `reactive` object, not a `ref`, so GSAP
+// can mutate `scrollK.rotationY`/`scrollK.scale` per frame like any other
+// tween target — Vue's reactivity picks up those writes the same way it
+// would its own). Passed into KontrolLogo3D as props; the 3D model itself
+// can't be scroll-scrubbed via a CSS transform like a flat element, since
+// that would just spin the rendered canvas in 2D instead of turning the
+// model in its own 3D space.
+const scrollK = reactive({ rotationY: 0, scale: 1 });
+
+function setupControlCenter() {
+  if (reduceMotion.value) return; // .no-pin CSS already shows the moments stacked, statically
+
+  const moments = [controlMoment1Ref.value, controlMoment2Ref.value, controlMoment3Ref.value];
+  if (moments.some(m => !m)) return;
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#control-center",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.6,
+    },
+  });
+
+  tl.to(scrollK, { rotationY: Math.PI * 1.8, scale: 1.5, duration: 1, ease: "none" }, 0)
+    .fromTo(moments[0], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0)
+    .to(moments[0], { opacity: 0, duration: 0.12 }, 0.24)
+    .fromTo(moments[1], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.32)
+    .to(moments[1], { opacity: 0, duration: 0.12 }, 0.62)
+    .fromTo(moments[2], { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.72);
+
+  landingScrollTriggers.push(tl.scrollTrigger);
+}
+
+// ─── Problem pin: Chaos morphs into Order in the same spot ─────────────────────
+const chaosWrapRef = ref(null);
+const orderWrapRef = ref(null);
+
+function setupProblemPin() {
+  if (reduceMotion.value) return; // .no-pin CSS shows both cards stacked, statically
+
+  const chaos = chaosWrapRef.value;
+  const order = orderWrapRef.value;
+  if (!chaos || !order) return;
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#problem",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.6,
+    },
+  });
+
+  gsap.set(order, { opacity: 0, scale: 0.7, rotation: 15, x: 60 });
+
+  tl.to(chaos, { opacity: 0, scale: 0.7, rotation: -15, x: -60, duration: 1, ease: "none" }, 0)
+    .to(order, { opacity: 1, scale: 1, rotation: 0, x: 0, duration: 1, ease: "none" }, 0);
+
+  landingScrollTriggers.push(tl.scrollTrigger);
+}
+
+// ── Solution: unlike Control Center/Problem (hard pin), the command center
+// assembles from its four directions in a single scrub timeline tied to the
+// section's own scroll-through — no sticky viewport, so there's no risk of
+// this content-heavy grid overflowing a fixed 100vh (can't verify visually
+// this session). Distinct dynamic: one continuous build sequence instead of
+// each element triggering independently. ────────────────────────────────────
+function setupSolutionScrub() {
+  if (reduceMotion.value) return;
+
+  gsap.set("#solution .sub-title", { opacity: 0, y: 30 });
+  gsap.set("#solution .description", { opacity: 0, y: 20 });
+  gsap.set(".magic-circles-wrapper", { opacity: 0 });
+  gsap.set(".main-circle", { opacity: 0, scale: 0.4, rotation: -120 });
+  gsap.set(".sub-1", { opacity: 0, y: -70 });
+  gsap.set(".sub-2", { opacity: 0, x: -70 });
+  gsap.set(".sub-3", { opacity: 0, x: 70 });
+  gsap.set(".sub-4", { opacity: 0, y: 70 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#solution",
+      start: "top 70%",
+      end: "bottom 60%",
+      scrub: 0.6,
+    },
+  });
+
+  tl.to("#solution .sub-title", { opacity: 1, y: 0, duration: 1, ease: "none" }, 0)
+    .to("#solution .description", { opacity: 1, y: 0, duration: 1, ease: "none" }, 0.15)
+    .to(".magic-circles-wrapper", { opacity: 1, duration: 1.2, ease: "none" }, 0.3)
+    .to(".main-circle", { opacity: 1, scale: 1, rotation: 0, duration: 1.3, ease: "none" }, 0.5)
+    .to(".sub-1", { opacity: 1, y: 0, duration: 1, ease: "none" }, 0.75)
+    .to(".sub-2", { opacity: 1, x: 0, duration: 1, ease: "none" }, 0.82)
+    .to(".sub-3", { opacity: 1, x: 0, duration: 1, ease: "none" }, 0.89)
+    .to(".sub-4", { opacity: 1, y: 0, duration: 1, ease: "none" }, 0.96);
+
+  landingScrollTriggers.push(tl.scrollTrigger);
+}
+
+function setupScrollChoreography() {
+  if (reduceMotion.value) return;
+
+  // ── Features: heading drops in from above, cards cascade in a stagger ──────
+  revealOnScroll("#features .sub-title", { opacity: 0, y: -30, scale: 0.92 }, { start: "top 85%" });
+  revealOnScroll(gsap.utils.toArray("#features .magic-bento-card"), { opacity: 0, y: 40, stagger: 0.08 }, { start: "top 78%" });
+
+  // ── Steps: heading leans in with a slight skew, like a step tilting into place ──
+  revealOnScroll("#steps .sub-title", { opacity: 0, x: -50, skewX: 6 }, { start: "top 85%" });
+
+  // ── Companies: copy slides in from the left, the card stack answers from the right ──
+  revealOnScroll("#companies .steps-header .sub-title", { opacity: 0, x: -60 }, { start: "top 80%" });
+  revealOnScroll("#companies .steps-header p", { opacity: 0, x: -40 }, { start: "top 78%", duration: 0.7 });
+  revealOnScroll(".companies-swap", { opacity: 0, x: 60, scale: 0.9 }, { start: "top 75%" });
+
+  // ── Craft: the grid materializes — heading blurs into focus ─────────────────
+  revealOnScroll("#craft .sub-title", { opacity: 0, y: 10, filter: "blur(12px)" }, { start: "top 85%" });
+  revealOnScroll("#craft .description", { opacity: 0, y: 20 }, { start: "top 82%" });
+  revealOnScroll(".grid-wave", { opacity: 0, scale: 0.92 }, { start: "top 75%", duration: 1.1 });
+
+  // ── Start: final CTA punches in with a bounce, distinct from every other ease used ──
+  revealOnScroll("#start .sub-title", { opacity: 0, scale: 0.6, ease: "back.out(1.7)" }, { start: "top 85%" });
+  revealOnScroll("#start p", { opacity: 0, y: 20 }, { start: "top 82%" });
+  revealOnScroll("#start .anchor", { opacity: 0, scale: 0.7, ease: "back.out(1.7)" }, { start: "top 80%" });
+}
+
+onMounted(() => {
+  reduceMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  handleLandingResize();
+  window.addEventListener("resize", handleLandingResize);
+  setupControlCenter();
+  setupProblemPin();
+  setupSolutionScrub();
+  setupScrollChoreography();
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateCardSwapSize);
+  window.removeEventListener("resize", handleLandingResize);
+  landingScrollTriggers.forEach(st => st.kill());
+  landingScrollTriggers.length = 0;
 });
 
 const chaosCharacteristics = [
