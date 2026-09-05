@@ -2,7 +2,7 @@
   <div class="nav-container">
     <nav class="landing-nav">
       <div class="icon">
-        <img :src="logo" alt="Logo" />
+        <img :src="logo" alt="Kontrol logo" />
         <h3>Kontrol</h3>
       </div>
 

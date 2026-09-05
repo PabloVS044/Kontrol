@@ -1,7 +1,9 @@
 <template>
-  <a
+  <component
+    :is="isInternalRoute ? 'router-link' : 'a'"
     class="anchor"
-    :href="link"
+    :to="isInternalRoute ? link : undefined"
+    :href="isInternalRoute ? undefined : link"
     :style="{
       '--background': backColor,
       '--hover': hoverColor,
@@ -11,10 +13,11 @@
     <span v-if="label">{{ label }}</span>
     <component v-if="icon && typeof icon !== 'string'" :is="icon" :size="18" />
     <img v-else-if="icon" :src="icon" :alt="label" />
-  </a>
+  </component>
 </template>
 
 <script setup>
+import { computed } from "vue";
 import "./Anchor.css";
 
 const props = defineProps({
@@ -29,4 +32,9 @@ const props = defineProps({
   textColor: { type: String, default: "var(--Text)" },
   icon: { type: [String, Object, Function], default: "" },
 });
+
+// Rutas internas (empiezan con "/") navegan por el router de Vue en vez de
+// recargar la página completa; los anclas de sección (#id) y enlaces externos
+// siguen siendo <a> normales.
+const isInternalRoute = computed(() => props.link.startsWith("/"));
 </script>
