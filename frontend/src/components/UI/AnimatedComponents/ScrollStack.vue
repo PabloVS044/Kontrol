@@ -63,11 +63,28 @@ function getScrollData() {
   return { scrollTop: scroller.scrollTop, containerHeight: scroller.clientHeight };
 }
 
-function getElementOffset(element) {
+// ─── Cached layout offsets ──────────────────────────────────────────────────────
+// `getBoundingClientRect()` reports the element's PAINTED position, which
+// includes any CSS transform already applied to it. Since this component sets
+// `translateY(...)` on every card, re-measuring a card's position with
+// `getBoundingClientRect()` on each scroll tick would read back its own
+// previous transform, feeding it into the next frame's calculation — the
+// stack would visibly jitter/drift instead of tracking the scroll smoothly.
+// Layout offsets are measured once (before any transform is applied) and
+// cached; only a resize re-measures them, since transforms never affect them.
+let cardOffsets = [];
+let endOffset   = 0;
+
+function measureOffsets() {
   if (props.useWindowScroll) {
-    return element.getBoundingClientRect().top + window.scrollY;
+    cardOffsets = cards.map(card => card.getBoundingClientRect().top + window.scrollY);
+    const endEl = document.querySelector('.scroll-stack-end');
+    endOffset   = endEl ? endEl.getBoundingClientRect().top + window.scrollY : 0;
+  } else {
+    cardOffsets = cards.map(card => card.offsetTop);
+    const endEl = scrollerRef.value?.querySelector('.scroll-stack-end');
+    endOffset   = endEl ? endEl.offsetTop : 0;
   }
-  return element.offsetTop;
 }
 
 // ─── Core animation ───────────────────────────────────────────────────────────
@@ -79,16 +96,12 @@ function updateCardTransforms() {
   const stackPositionPx    = parsePercentage(props.stackPosition, containerHeight);
   const scaleEndPositionPx = parsePercentage(props.scaleEndPosition, containerHeight);
 
-  const endEl = props.useWindowScroll
-    ? document.querySelector('.scroll-stack-end')
-    : scrollerRef.value?.querySelector('.scroll-stack-end');
-
-  const endElementTop = endEl ? getElementOffset(endEl) : 0;
+  const endElementTop = endOffset;
 
   cards.forEach((card, i) => {
     if (!card) return;
 
-    const cardTop      = getElementOffset(card);
+    const cardTop      = cardOffsets[i];
     const triggerStart = cardTop - stackPositionPx - props.itemStackDistance * i;
     const triggerEnd   = cardTop - scaleEndPositionPx;
     const pinStart     = cardTop - stackPositionPx - props.itemStackDistance * i;
@@ -103,7 +116,7 @@ function updateCardTransforms() {
     if (props.blurAmount) {
       let topCardIndex = 0;
       for (let j = 0; j < cards.length; j++) {
-        const jTriggerStart = getElementOffset(cards[j]) - stackPositionPx - props.itemStackDistance * j;
+        const jTriggerStart = cardOffsets[j] - stackPositionPx - props.itemStackDistance * j;
         if (scrollTop >= jTriggerStart) topCardIndex = j;
       }
       if (i < topCardIndex) blur = Math.max(0, (topCardIndex - i) * props.blurAmount);
@@ -211,15 +224,35 @@ onMounted(() => {
     card.style.opacity         = '0'; // hidden by default
   });
 
+  // Measured while every card still has `transform: none`, so the cached
+  // offsets reflect real layout position, not a previously-applied transform.
+  measureOffsets();
+
+  window.addEventListener('resize', handleResize);
+  // Late-loading web fonts/images can still shift layout after this point;
+  // the previous per-frame remeasurement absorbed that automatically, so a
+  // one-off re-measure on 'load' keeps that same guarantee with the cache.
+  window.addEventListener('load', handleResize);
+
   setupLenis();
   updateCardTransforms();
 });
 
+function handleResize() {
+  // A resize can change layout (offsets), but never a card's own transform,
+  // so re-measuring here is safe and keeps the stack aligned after reflow.
+  measureOffsets();
+  updateCardTransforms();
+}
+
 onUnmounted(() => {
   if (rafId)  cancelAnimationFrame(rafId);
   if (lenis)  lenis.destroy();
+  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('load', handleResize);
   stackCompleted = false;
   cards          = [];
+  cardOffsets    = [];
   lastTransforms.clear();
   isUpdating     = false;
 });
