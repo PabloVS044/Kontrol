@@ -112,4 +112,21 @@ defineProps({
   color: color-mix(in srgb, var(--Text) 85%, transparent);
   line-height: 1.6;
 }
+
+@media (max-width: 768px) {
+  .scroll-stack-card {
+    padding: 2rem;
+    min-height: auto;
+  }
+  .scroll-stack-card-title {
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scroll-stack-card {
+    padding: 1.5rem;
+    border-radius: 24px;
+  }
+}
 </style>

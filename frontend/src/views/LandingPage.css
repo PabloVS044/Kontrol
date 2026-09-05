@@ -333,6 +333,11 @@
     flex-direction: column;
     align-items: center;
   }
+  .cards .card {
+    width: 100%;
+    max-width: 420px;
+    align-self: stretch;
+  }
 
   /* Solution graph → linear list */
   .graph {
@@ -349,6 +354,11 @@
   .sub-3,
   .sub-4 {
     grid-area: unset;
+  }
+  .graph .card {
+    width: 100%;
+    max-width: 420px;
+    align-self: stretch;
   }
 
   /* Companies */
