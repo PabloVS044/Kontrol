@@ -26,19 +26,22 @@
     <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
-    <div v-if="authError" class="state-screen">
-      <p class="state-title">{{ $t('inventory.authError.title') }}</p>
-      <p class="state-msg">{{ $t('inventory.authError.message') }}</p>
-    </div>
+    <ErrorState
+      v-if="authError"
+      :title="$t('inventory.authError.title')"
+      :message="$t('inventory.authError.message')"
+    />
 
     <!-- Estado: error genérico -->
-    <div v-else-if="fetchError" class="state-screen">
-      <p class="state-title">{{ $t('inventory.fetchError.title') }}</p>
-      <p class="state-msg">{{ fetchError }}</p>
-      <button class="btn-primary" style="margin-top:16px" @click="loadData">
-        <span>{{ $t('inventory.fetchError.retry') }}</span>
-      </button>
-    </div>
+    <ErrorState
+      v-else-if="fetchError"
+      :title="$t('inventory.fetchError.title')"
+      :message="fetchError"
+    >
+      <template #actions>
+        <Button :label="$t('inventory.fetchError.retry')" @click="loadData" />
+      </template>
+    </ErrorState>
 
     <template v-else>
 
@@ -60,20 +63,20 @@
               @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
               <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : selectedProject ? $t('inventory.header.noWriteAccess') : $t('inventory.header.selectProjectFirst') }}</span>
             </button>
             <button class="icon-btn" :title="$t('inventory.header.settings')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
-                <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+                <circle cx="9" cy="9" r="2.5" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+                <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
             <button class="icon-btn" :title="$t('inventory.header.history')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
-                <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+                <circle cx="9" cy="9" r="7" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+                <path d="M9 5v4.5l3 1.5" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
           </div>
@@ -102,8 +105,8 @@
         <!-- Búsqueda -->
         <div class="search-bar">
           <svg class="icon18" viewBox="0 0 18 18" fill="none">
-            <circle cx="8" cy="8" r="5.5" stroke="#666" stroke-width="1.4"/>
-            <path d="M12.5 12.5L16 16" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+            <circle cx="8" cy="8" r="5.5" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+            <path d="M12.5 12.5L16 16" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
           <input
             v-model="searchQuery"
@@ -118,13 +121,13 @@
             @click="openScanner"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
-              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="#666" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="var(--k-gray-4)" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
           </button>
           <button class="search-submit">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
             </svg>
           </button>
         </div>
@@ -174,16 +177,16 @@
               <div class="img-placeholder">
                 <!-- Ícono genérico de producto -->
                 <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-                  <rect x="10" y="8" width="28" height="34" rx="2" stroke="#faf8f5" stroke-width="1.5"/>
-                  <path d="M10 18h28M18 8v10" stroke="#faf8f5" stroke-width="1.5"/>
+                  <rect x="10" y="8" width="28" height="34" rx="2" stroke="var(--k-color-text)" stroke-width="1.5"/>
+                  <path d="M10 18h28M18 8v10" stroke="var(--k-color-text)" stroke-width="1.5"/>
                 </svg>
                 <span>image</span>
               </div>
               <Pill
                 :label="stockLabel(product)"
-                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(202,168,96,0.12)' : 'rgba(52,211,153,0.12)'"
-                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
-                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
+                :btnColor="stockPill(product).bg"
+                :circleColor="stockPill(product).fg"
+                :textColor="stockPill(product).fg"
               />
             </div>
 
@@ -401,6 +404,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
+import ErrorState from '../components/common/ErrorState.vue'
 import './InventoryPage.css'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
@@ -409,7 +413,7 @@ import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import { useAuthStore } from '@/stores/auth'
-import { lineTotal, calcSubtotal } from '@/utils/sales.js'
+import { calcSubtotal } from '@/utils/sales.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -561,7 +565,18 @@ const stats = computed(() => {
   return { total, lowStock, outOfStock, totalValue: formatted }
 })
 
-const CAT_COLORS = ['#caa860', '#60a5fa', '#a78bfa', '#34d399', '#f97316', '#fb7185', '#e879f9']
+/* Rampa de barras por categoría. Los tonos anteriores (#60a5fa, #a78bfa,
+   #f97316, #e879f9…) eran los por defecto de Tailwind, ajenos a "Luxury Dark":
+   se sustituyen por la paleta de marca. */
+const CAT_COLORS = [
+  'var(--k-color-primary)',
+  'var(--k-color-primary-2)',
+  'var(--k-color-secondary)',
+  'var(--k-state-success-text)',
+  'var(--k-state-error-text)',
+  'var(--k-text-muted)',
+  'var(--k-text-dim)',
+]
 
 const categoryStats = computed(() => {
   const totals = {}
@@ -578,11 +593,29 @@ const categoryStats = computed(() => {
   }))
 })
 
-/* ── badge helpers (usan stock_actual vs stock_minimo) ── */
-function stockBadgeClass(p) {
-  if (p.stock_actual === 0) return 'badge-out'
-  if (p.stock_actual <= p.stock_minimo) return 'badge-low'
-  return 'badge-ok'
+/* ── estado de stock (usa stock_actual vs stock_minimo) ── */
+
+/**
+ * Tono semántico de un producto según SCRUM-12. Un único sitio decide el
+ * estado; la etiqueta, la píldora y el color del número se derivan de él, así
+ * que no pueden discrepar entre sí.
+ */
+function stockTone(p) {
+  if (p.stock_actual === 0) return 'critical'
+  if (p.stock_actual <= p.stock_minimo) return 'watching'
+  return 'ok'
+}
+
+const STOCK_PILL = {
+  critical: { bg: 'var(--k-alert-critical-bg)', fg: 'var(--k-alert-critical-text)' },
+  watching: { bg: 'var(--k-alert-watching-bg)', fg: 'var(--k-alert-watching-text)' },
+  ok:       { bg: 'var(--k-alert-ok-bg)',       fg: 'var(--k-alert-ok-text)' },
+}
+
+const STOCK_NUM_CLASS = { critical: 'red', watching: 'gold', ok: '' }
+
+function stockPill(p) {
+  return STOCK_PILL[stockTone(p)]
 }
 
 function stockLabel(p) {
@@ -592,9 +625,7 @@ function stockLabel(p) {
 }
 
 function stockNumClass(p) {
-  if (p.stock_actual === 0) return 'red'
-  if (p.stock_actual <= p.stock_minimo) return 'gold'
-  return ''
+  return STOCK_NUM_CLASS[stockTone(p)]
 }
 
 function detailLink(product) {
@@ -709,10 +740,6 @@ function clearSaleCart() {
   saleCart.value = []
   saleError.value = null
   cartExpanded.value = false
-}
-
-function saleItemSubtotal(item) {
-  return lineTotal(item)
 }
 
 const saleTotal = computed(() => calcSubtotal(saleCart.value))
