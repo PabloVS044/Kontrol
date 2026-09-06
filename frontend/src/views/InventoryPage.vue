@@ -23,6 +23,16 @@
       @detected="handleScan"
     />
 
+    <SaleCheckoutModal
+      v-model="showCheckout"
+      :items="saleCart"
+      :total="saleTotal"
+      :subtitle="saleSubtitle"
+      :error="saleError"
+      :submitting="saleSubmitting"
+      @confirm="submitSale"
+    />
+
     <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
@@ -286,11 +296,11 @@
           v-if="saleCart.length"
           :items="saleCart"
           :total="saleTotal"
-          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
           @remove="removeFromCart"
-          @submit="submitSale"
+          @submit="openCheckout"
           @cancel="clearSaleCart"
         />
 
@@ -386,11 +396,11 @@
         <SaleCartPanel
           :items="saleCart"
           :total="saleTotal"
-          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
           @remove="removeFromCart"
-          @submit="submitSale"
+          @submit="openCheckout"
           @cancel="clearSaleCart"
         />
       </div>
@@ -412,6 +422,7 @@ import ProductModal from '../components/inventory/ProductModal.vue'
 import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
+import SaleCheckoutModal from '../components/inventory/SaleCheckoutModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { calcSubtotal } from '@/utils/sales.js'
 
@@ -644,10 +655,27 @@ const saleCart        = ref([])
 const saleSubmitting  = ref(false)
 const saleError       = ref(null)
 const cartExpanded    = ref(false)  // mobile drawer open state
+const showCheckout    = ref(false)  // modal de cobro
 
 const saleItemCount = computed(() =>
   saleCart.value.reduce((acc, item) => acc + Number(item.cantidad), 0)
 )
+
+const saleSubtitle = computed(() =>
+  selectedProject.value ? selectedProject.value.nombre : t('inventory.sale.multiProject')
+)
+
+/**
+ * El carrito ya no vende directamente: abre el cobro. La venta solo sale
+ * cuando se confirma en el modal, que es el último punto donde el cajero ve
+ * artículos y total antes de descontar stock.
+ */
+function openCheckout() {
+  if (!saleCart.value.length) return
+  saleError.value = null
+  cartExpanded.value = false
+  showCheckout.value = true
+}
 
 /* ── escaneo de código de barras (POS) ── */
 const showScanner  = ref(false)
@@ -779,6 +807,7 @@ function clearSaleCart() {
   saleCart.value = []
   saleError.value = null
   cartExpanded.value = false
+  showCheckout.value = false
 }
 
 const saleTotal = computed(() => calcSubtotal(saleCart.value))
@@ -835,6 +864,9 @@ watch(products, (next) => {
       return { product: fresh, cantidad }
     })
     .filter(Boolean)
+
+  // Si el refresco deja el carrito vacío no queda nada que cobrar.
+  if (!saleCart.value.length) showCheckout.value = false
 })
 
 /* ── modal nuevo producto ── */

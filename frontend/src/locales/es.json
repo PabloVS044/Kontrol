@@ -560,6 +560,13 @@
       "decrease": "Quitar uno",
       "cannotSell": "Este producto no puede venderse ahora."
     },
+    "checkout": {
+      "title": "Cobrar venta",
+      "total": "Total a cobrar",
+      "confirm": "Confirmar venta",
+      "confirming": "Procesando…",
+      "back": "Volver"
+    },
     "sale": {
       "title": "Venta en curso",
       "multiProject": "Varios proyectos",

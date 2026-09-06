@@ -560,6 +560,13 @@
       "decrease": "Remove one",
       "cannotSell": "This product cannot be sold right now."
     },
+    "checkout": {
+      "title": "Charge sale",
+      "total": "Amount due",
+      "confirm": "Confirm sale",
+      "confirming": "Processing…",
+      "back": "Back"
+    },
     "sale": {
       "title": "Current sale",
       "multiProject": "Multiple projects",
