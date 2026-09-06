@@ -1,5 +1,21 @@
 <template>
   <main>
+    <!-- Fixed background video, scrubbed by total page scroll (see
+         setupBackgroundVideoScrub): frame 0 = fully chaotic, last frame =
+         fully ordered, so scrolling from Header to Start visually traces the
+         same "chaos becomes order" arc the copy already tells. Paused by
+         default — only ever seeked via JS, never auto-playing on its own. -->
+    <video
+      ref="bgVideoRef"
+      class="bg-scroll-video"
+      src="/kontrol-scroll-chaos-order.mp4"
+      muted
+      playsinline
+      preload="auto"
+      aria-hidden="true"
+    ></video>
+    <div class="bg-scroll-video-scrim" aria-hidden="true"></div>
+
     <Navbar />
     <section id="header">
       <div class="header-container">
@@ -433,24 +449,6 @@
         </div>
       </div>
     </section>
-    <section id="craft">
-      <div class="craft-container">
-        <h2 class="sub-title">Precision, down to the pixel</h2>
-        <p class="description">
-          Move your cursor over the grid. Every detail in Kontrol reacts the
-          same way &mdash; instantly, and exactly where you expect it.
-        </p>
-        <GridWave
-          :rows="gridSize.rows"
-          :cols="gridSize.cols"
-          base-color="var(--k-color-border)"
-          active-color="var(--k-color-primary-2)"
-          :radius="160"
-          :max-scale="1.6"
-        />
-      </div>
-    </section>
-
     <section id="start">
       <h2 class="sub-title">Start controlling your business today.</h2>
       <p>
@@ -509,7 +507,6 @@ import ScrollStack from "../components/UI/AnimatedComponents/ScrollStack.vue";
 import ScrollStackItem from "../components/UI/AnimatedComponents/ScrollStackItem.vue";
 import CardSwap from "../components/UI/AnimatedComponents/CardsSwap.vue";
 import CarSwapItem from "../components/UI/AnimatedComponents/CarSwapItem.vue";
-import GridWave from "../components/UI/Backgrounds/GridWave/GridWave.vue";
 import KontrolLogo3D from "../components/UI/KontrolLogo3D/KontrolLogo3D.vue";
 
 // ─── Responsive CardSwap sizing ───────────────────────────────────────────────
@@ -543,57 +540,96 @@ function updateCardSwapSize() {
   }
 }
 
-// ─── Responsive GridWave density ──────────────────────────────────────────────
-// Fewer cells on small screens: same effect, no cramped/tiny squares.
-const gridSize = ref({ rows: 12, cols: 12 });
-
-function updateGridSize() {
-  const vw = window.innerWidth;
-  if (vw < 480) {
-    gridSize.value = { rows: 7, cols: 7 };
-  } else if (vw < 768) {
-    gridSize.value = { rows: 9, cols: 9 };
-  } else if (vw < 1024) {
-    gridSize.value = { rows: 10, cols: 10 };
-  } else {
-    gridSize.value = { rows: 12, cols: 12 };
-  }
-}
-
 function handleLandingResize() {
   updateCardSwapSize();
-  updateGridSize();
 }
 
 // ─── Scroll choreography ────────────────────────────────────────────────────
 // Each section gets its own entrance signature, tied to the scroll position —
 // this is what makes the page feel animated as you scroll rather than static
-// content that just happens to be below the fold. `toggleActions: "restart
-// none none reverse"` is the standard GSAP pattern for "play forward on enter,
-// play backward on leave-back", so every animation replays each time its
-// section re-enters the viewport, scrolling either up or down.
+// content that just happens to be below the fold.
 const landingScrollTriggers = [];
 
+// `scrub` instead of a one-shot `toggleActions` trigger: the reveal's
+// progress is tied directly to scroll position within its own window (like
+// the background video, Solution, Problem, and Control Center already are),
+// so content visibly draws itself in exactly as fast or slow as you scroll —
+// pausing mid-scroll pauses the reveal too — rather than a fixed-duration
+// animation that just fires once you cross a line.
 function revealOnScroll(target, fromVars, triggerVars = {}) {
   if (!target || (Array.isArray(target) && !target.length)) return;
   const tween = gsap.from(target, {
-    duration: 0.9,
-    ease: "power3.out",
+    ease: "none",
     // Otherwise GSAP leaves the tween's final transform/opacity as an inline
     // style forever, which outranks CSS `:hover` rules (e.g. Card.css's lift
-    // on hover) — clearProps only fires on forward completion, never on the
-    // reverse (see the toggleActions below), so the hidden state in between
-    // reveals is untouched and the repeat behavior still works.
+    // on hover) — clearProps only fires once scrub reaches the end of its
+    // window, and GSAP re-applies the value the moment you scroll back into
+    // it, so the reveal still works both ways.
     clearProps: "transform,opacity,filter",
     ...fromVars,
     scrollTrigger: {
       trigger: Array.isArray(target) ? target[0] : target,
-      start: "top 82%",
-      toggleActions: "restart none none reverse",
+      start: "top 85%",
+      end: "+=380",
+      scrub: 0.3,
       ...triggerVars,
     },
   });
   if (tween.scrollTrigger) landingScrollTriggers.push(tween.scrollTrigger);
+}
+
+// ─── Background scroll video: total page scroll (0 → 1, Header through the
+// Footer) maps to the video's own timeline (0 → duration). The source clip
+// is only ~4s of actual generated content (AI video credits are expensive);
+// it's motion-interpolated up to ~8s of smooth slow motion locally (see the
+// ffmpeg step that produced public/kontrol-scroll-chaos-order.mp4) so there's
+// more real seekable duration without paying for more generation. Spread
+// across the whole page this will still move less per scroll-pixel than the
+// earlier bounded-window version did — if that reads as sluggish again,
+// the fix is more of the same free lever (stretch the clip further), not
+// re-shrinking the window. Reduced motion leaves it paused on its first
+// (most chaotic) frame instead. ─────────────────────────────────────────────
+const bgVideoRef = ref(null);
+
+function setupBackgroundVideoScrub() {
+  const video = bgVideoRef.value;
+  if (!video) return;
+
+  video.pause();
+  if (reduceMotion.value) return;
+
+  const wireScrub = () => {
+    if (!video.duration) return;
+    // Seeking to exactly `video.duration` lands past the last decodable
+    // frame in most browsers and renders nothing (black/blank) instead of
+    // holding the final frame — which is what read as the video "ending"
+    // and leaving empty space once scroll passed this section. Capping the
+    // target just short of the real duration keeps it parked on an actual
+    // visible frame instead.
+    const seekableDuration = Math.max(0, video.duration - 0.15);
+    const st = ScrollTrigger.create({
+      trigger: "main",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: true,
+      onUpdate: (self) => {
+        // A hard `video.currentTime =` assignment on every tick can outpace
+        // what the decoder can seek to, which is what read as the video
+        // "getting stuck" — tweening it instead smooths out fast scroll
+        // bursts into a short catch-up motion rather than a forced jump.
+        gsap.to(video, {
+          currentTime: self.progress * seekableDuration,
+          duration: 0.2,
+          ease: "none",
+          overwrite: true,
+        });
+      },
+    });
+    landingScrollTriggers.push(st);
+  };
+
+  if (video.readyState >= 1) wireScrub();
+  else video.addEventListener("loadedmetadata", wireScrub, { once: true });
 }
 
 // ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
@@ -638,16 +674,24 @@ function setupControlCenter() {
   landingScrollTriggers.push(tl.scrollTrigger);
 }
 
-// ─── Problem pin: Chaos morphs into Order in the same spot ─────────────────────
+// ─── Problem pin: Chaos and Order fly in from opposite sides and land side
+// by side — previously both cards were stacked in the exact same spot and
+// cross-faded, which meant only one was ever actually visible at a time
+// (and if the fade misfired, the other could stay permanently hidden). Now
+// each card animates independently to its own on-screen position, so both
+// are guaranteed visible once scrolled past. ─────────────────────────────────
 const chaosWrapRef = ref(null);
 const orderWrapRef = ref(null);
 
 function setupProblemPin() {
-  if (reduceMotion.value) return; // .no-pin CSS shows both cards stacked, statically
+  if (reduceMotion.value) return; // .no-pin CSS shows both cards side by side, statically
 
   const chaos = chaosWrapRef.value;
   const order = orderWrapRef.value;
   if (!chaos || !order) return;
+
+  gsap.set(chaos, { opacity: 0, x: -80, rotation: -8 });
+  gsap.set(order, { opacity: 0, x: 80, rotation: 8 });
 
   const tl = gsap.timeline({
     scrollTrigger: {
@@ -658,10 +702,8 @@ function setupProblemPin() {
     },
   });
 
-  gsap.set(order, { opacity: 0, scale: 0.7, rotation: 15, x: 60 });
-
-  tl.to(chaos, { opacity: 0, scale: 0.7, rotation: -15, x: -60, duration: 1, ease: "none" }, 0)
-    .to(order, { opacity: 1, scale: 1, rotation: 0, x: 0, duration: 1, ease: "none" }, 0);
+  tl.to(chaos, { opacity: 1, x: 0, rotation: 0, duration: 1, ease: "none" }, 0)
+    .to(order, { opacity: 1, x: 0, rotation: 0, duration: 1, ease: "none" }, 0.15);
 
   landingScrollTriggers.push(tl.scrollTrigger);
 }
@@ -715,20 +757,15 @@ function setupScrollChoreography() {
   // spans for its mosaic layout, so translating a card vertically while it
   // reveals can visually ride over the neighboring cell. Scale-from-center
   // grows within its own footprint instead.
-  revealOnScroll(gsap.utils.toArray("#features .magic-bento-card"), { opacity: 0, scale: 0.85, stagger: 0.08 }, { start: "top 78%" });
+  revealOnScroll(gsap.utils.toArray("#features .magic-bento-card"), { opacity: 0, scale: 0.85, stagger: 0.08 }, { start: "top 78%", end: "+=550" });
 
   // ── Steps: heading leans in with a slight skew, like a step tilting into place ──
   revealOnScroll("#steps .sub-title", { opacity: 0, x: -50, skewX: 6 }, { start: "top 85%" });
 
   // ── Companies: copy slides in from the left, the card stack answers from the right ──
   revealOnScroll("#companies .steps-header .sub-title", { opacity: 0, x: -60 }, { start: "top 80%" });
-  revealOnScroll("#companies .steps-header p", { opacity: 0, x: -40 }, { start: "top 78%", duration: 0.7 });
+  revealOnScroll("#companies .steps-header p", { opacity: 0, x: -40 }, { start: "top 78%" });
   revealOnScroll(".companies-swap", { opacity: 0, x: 60, scale: 0.9 }, { start: "top 75%" });
-
-  // ── Craft: the grid materializes — heading blurs into focus ─────────────────
-  revealOnScroll("#craft .sub-title", { opacity: 0, y: 10, filter: "blur(12px)" }, { start: "top 85%" });
-  revealOnScroll("#craft .description", { opacity: 0, y: 20 }, { start: "top 82%" });
-  revealOnScroll(".grid-wave", { opacity: 0, scale: 0.92 }, { start: "top 75%", duration: 1.1 });
 
   // ── Start: final CTA punches in with a bounce, distinct from every other ease used ──
   revealOnScroll("#start .sub-title", { opacity: 0, scale: 0.6, ease: "back.out(1.7)" }, { start: "top 85%" });
@@ -740,6 +777,7 @@ onMounted(() => {
   reduceMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   handleLandingResize();
   window.addEventListener("resize", handleLandingResize);
+  setupBackgroundVideoScrub();
   setupControlCenter();
   setupProblemPin();
   setupSolutionScrub();

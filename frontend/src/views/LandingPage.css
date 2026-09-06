@@ -1,3 +1,27 @@
+/* ─── Background scroll video ────────────────────────────────────────────── */
+/* Fixed full-viewport, always behind every section (z-index: -1) — its
+   currentTime is driven entirely by scroll position in setupBackgroundVideoScrub,
+   never by native playback. The scrim sits directly above it (still behind
+   all real content) so text stays legible over a busy, high-motion clip
+   without every section needing its own overlay treatment. */
+.bg-scroll-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bg-scroll-video-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 #header {
   width: 100%;
@@ -207,10 +231,11 @@
 
 /* ─── Problem (pin + scrub) ──────────────────────────────────────────────────
    Same mechanism as #control-center: a tall section, a sticky viewport, and
-   a scrub timeline (setupProblemPin in LandingPage.vue) — here it morphs
-   "The Chaos" into "The Order" in the same spot instead of cross-fading
-   text. `overflow-x: hidden` keeps the sideways part of that morph from
-   opening a horizontal scrollbar mid-animation. */
+   a scrub timeline (setupProblemPin in LandingPage.vue). Chaos and Order sit
+   side by side (never stacked in the same spot) and fly in from opposite
+   sides as you scroll, so both are always independently visible — no
+   overlap, no one card ever hiding behind the other. `overflow-x: hidden`
+   contains the sideways entrance so it can't open a horizontal scrollbar. */
 #problem {
   position: relative;
   height: 220vh;
@@ -234,14 +259,17 @@
 .problem-stage {
   position: relative;
   width: 100%;
-  max-width: 550px;
-  min-height: 480px;
+  max-width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
 }
 
 .problem-card-wrap {
-  position: absolute;
-  inset: 0;
-  margin: auto;
+  flex: 1 1 380px;
+  max-width: 460px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,7 +279,8 @@
   color: var(--k-color-primary-2);
 }
 
-/* Reduced motion: no pinning, no scrubbing — both cards side by side, static. */
+/* Reduced motion: no pinning, no scrubbing — cards already render in their
+   final side-by-side layout above, so nothing extra is needed here. */
 #problem.no-pin {
   height: auto;
 }
@@ -262,22 +291,6 @@
   padding: 100px 20px;
 }
 
-#problem.no-pin .problem-stage {
-  position: static;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  min-height: auto;
-  max-width: none;
-}
-
-#problem.no-pin .problem-card-wrap {
-  position: static;
-  opacity: 1;
-  transform: none;
-}
-
 /* ─── Solution ───────────────────────────────────────────────────────────── */
 #solution {
   width: 100%;
@@ -286,7 +299,10 @@
 
 .solution-container {
   width: 100%;
-  background-color: var(--k-color-bg);
+  /* Was a near-opaque var(--k-color-bg); lowered so the scroll video reads
+     through here too, instead of this being the one section that blocks it. */
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -386,29 +402,6 @@
   margin-top: var(--k-space-3);
 }
 
-/* ─── Craft (interactive grid) ───────────────────────────────────────────── */
-#craft {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 100px 20px;
-  box-sizing: border-box;
-}
-
-.craft-container {
-  width: 100%;
-  max-width: 720px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--k-space-5);
-}
-
-.craft-container .description {
-  width: 100%;
-  margin: 0;
-}
-
 /* ─── Features ───────────────────────────────────────────────────────────── */
 #features {
   width: 100%;
@@ -424,7 +417,7 @@
 /* ─── Start CTA ──────────────────────────────────────────────────────────── */
 /* The page's closing moment — previously just plain text on the bare page
    background, identical in weight to every section before it. A thin gradient
-   divider marks the handoff from Craft, and a soft radial glow behind the
+   divider marks the handoff from Companies, and a soft radial glow behind the
    copy (same gold used everywhere else via --k-color-primary-rgb) gives this
    last push its own sense of climax before the footer. */
 #start {
@@ -524,9 +517,6 @@
   .problem-viewport {
     gap: var(--k-space-4);
   }
-  .problem-stage {
-    min-height: 520px;
-  }
   #problem.no-pin {
     height: auto;
   }
@@ -575,11 +565,6 @@
   .companies-swap {
     width: 100%;
     flex: none;
-  }
-
-  /* Craft */
-  #craft {
-    padding: 60px 16px;
   }
 
   /* Features */
