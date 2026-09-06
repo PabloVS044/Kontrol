@@ -1,6 +1,14 @@
 <template>
   <BaseModal v-model="show" :title="$t('inventory.modal.title')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
+      <FormField :label="$t('inventory.modal.project')" :required="true">
+        <select v-model.number="form.id_proyecto">
+          <option v-for="p in projects" :key="p.id_proyecto" :value="p.id_proyecto">
+            {{ p.nombre }}
+          </option>
+        </select>
+      </FormField>
+
       <FormField :label="$t('inventory.modal.name')" :required="true">
         <input v-model="form.nombre" type="text" :placeholder="$t('inventory.modal.namePlaceholder')" required />
       </FormField>
@@ -114,6 +122,11 @@ const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
+  // Proyectos donde el usuario puede dar de alta. El padre ya los filtra por
+  // permiso, así que cualquiera de la lista es un destino válido.
+  projects:   { type: Array, default: () => [] },
+  // Proyecto del filtro del catálogo, si hay uno: es el destino más probable.
+  defaultProjectId: { type: Number, default: null },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
 })
@@ -127,12 +140,23 @@ const show = computed({
 
 function emptyForm() {
   return {
+    id_proyecto: defaultProject(),
     nombre: '', descripcion: '', codigo_barras: '',
     precio_venta: null, precio_costo: null,
     stock_minimo: 0, stock_inicial: 0,
     modo: 'unidad',
     cajas: null, unidades_por_caja: null, precio_caja: null,
   }
+}
+
+/**
+ * Destino por defecto: el proyecto que se está mirando si se puede escribir en
+ * él y, si no, el primero disponible. Nunca se abre sin destino, que era lo que
+ * dejaba el alta bloqueada desde la vista de "todos los proyectos".
+ */
+function defaultProject() {
+  const enLista = props.projects.some((p) => p.id_proyecto === props.defaultProjectId)
+  return enLista ? props.defaultProjectId : (props.projects[0]?.id_proyecto ?? null)
 }
 
 const form = ref(emptyForm())
@@ -183,6 +207,7 @@ const costError = computed(() =>
 )
 
 const canSubmit = computed(() => {
+  if (!form.value.id_proyecto) return false
   if (!form.value.nombre || form.value.precio_venta == null) return false
   if (costExceedsPrice.value) return false
   if (form.value.modo === 'caja') {
@@ -195,6 +220,7 @@ function handleSubmit() {
   if (!canSubmit.value) return
   const isBox = form.value.modo === 'caja'
   emit('submit', {
+    id_proyecto: form.value.id_proyecto,
     nombre: form.value.nombre,
     descripcion: form.value.descripcion,
     precio_venta: form.value.precio_venta,
@@ -236,6 +262,8 @@ function handleSubmit() {
 }
 .modal-form input::placeholder,
 .modal-form textarea::placeholder { color: var(--k-text-placeholder); }
+.modal-form select:focus { border-color: var(--k-color-primary); }
+.modal-form select option { background: var(--k-shade-2); color: var(--k-color-text); }
 
 .modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }

@@ -524,9 +524,7 @@
       "subtitle": "Browse and manage your product catalogue",
       "newProduct": "New product",
       "noWriteAccess": "No write access",
-      "selectProjectFirst": "Select project first",
-      "noWriteAccessTitle": "You do not have write access in this project",
-      "selectProjectTitle": "Select a project first",
+      "noWriteAccessTitle": "You do not have write access in any project",
       "settings": "Settings",
       "history": "History"
     },
@@ -611,6 +609,7 @@
     },
     "modal": {
       "title": "New product",
+      "project": "Project",
       "name": "Name",
       "description": "Description",
       "salePrice": "Sale price",

@@ -524,9 +524,7 @@
       "subtitle": "Explora y gestiona tu catálogo de productos",
       "newProduct": "Nuevo producto",
       "noWriteAccess": "Sin acceso de escritura",
-      "selectProjectFirst": "Selecciona un proyecto",
-      "noWriteAccessTitle": "No tienes acceso de escritura en este proyecto",
-      "selectProjectTitle": "Selecciona un proyecto primero",
+      "noWriteAccessTitle": "No tienes acceso de escritura en ningún proyecto",
       "settings": "Configuración",
       "history": "Historial"
     },
@@ -611,6 +609,7 @@
     },
     "modal": {
       "title": "Nuevo producto",
+      "project": "Proyecto",
       "name": "Nombre",
       "description": "Descripción",
       "salePrice": "Precio de venta",

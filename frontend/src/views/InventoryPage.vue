@@ -4,6 +4,8 @@
 
     <ProductModal
       v-model="showModal"
+      :projects="writableProjects"
+      :default-project-id="selectedProject?.id_proyecto ?? null"
       :submitting="modalLoading"
       :error="modalError"
       @submit="submitProduct"
@@ -69,13 +71,13 @@
               data-birdie="create-product"
               class="btn-primary"
               :class="{ 'btn-disabled': !canCreateProduct }"
-              :title="canCreateProduct ? '' : selectedProject ? $t('inventory.header.noWriteAccessTitle') : $t('inventory.header.selectProjectTitle')"
+              :title="canCreateProduct ? '' : $t('inventory.header.noWriteAccessTitle')"
               @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : selectedProject ? $t('inventory.header.noWriteAccess') : $t('inventory.header.selectProjectFirst') }}</span>
+              <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : $t('inventory.header.noWriteAccess') }}</span>
             </button>
             <button class="icon-btn" :title="$t('inventory.header.settings')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
@@ -442,31 +444,40 @@ const activeCategory = ref('All')
 const projects        = ref([])
 const projectsLoading = ref(false)
 const selectedProject = ref(null)
-const canCreateProduct = computed(() => {
-  if (!selectedProject.value) return false
+/** ¿Puede el usuario dar de alta o reabastecer en este proyecto? */
+function canWriteProject(project) {
   if (authStore.canManageInventory) return true
-  return (selectedProject.value.mis_permisos || []).includes('gestionar_inventario')
-})
+  return (project?.mis_permisos || []).includes('gestionar_inventario')
+}
+
+const writableProjects = computed(() => projects.value.filter(canWriteProject))
+
+// Crear ya no depende del filtro del catálogo: el proyecto de destino se elige
+// dentro del modal. Antes, entrar en "Todos los proyectos" —que es la vista por
+// defecto— dejaba el botón bloqueado sin más salida que cambiar el filtro.
+const canCreateProduct = computed(() => writableProjects.value.length > 0)
 
 // Restock requires write access on the product's *own* project (works in the
 // "all projects" view too, where each product carries its id_proyecto).
 function canRestock(product) {
-  if (authStore.canManageInventory) return true
-  const proj = projects.value.find((p) => p.id_proyecto === product.id_proyecto)
-  return (proj?.mis_permisos || []).includes('gestionar_inventario')
+  return canWriteProject(projects.value.find((p) => p.id_proyecto === product.id_proyecto))
 }
 
 /* ── helpers API ── */
-function authHeader(includeProyecto = false) {
+/**
+ * `id_proyecto` explícito en vez de tomarlo del filtro: el alta de producto lo
+ * elige en su propio modal y puede no coincidir con lo que se está mirando.
+ */
+function authHeader(id_proyecto = null) {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
   if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  if (includeProyecto && selectedProject.value) headers['X-Project-ID'] = selectedProject.value.id_proyecto
+  if (id_proyecto) headers['X-Project-ID'] = id_proyecto
   return headers
 }
 
-async function apiFetch(path, write = false) {
-  const res = await fetch(path, { headers: authHeader(write) })
+async function apiFetch(path) {
+  const res = await fetch(path, { headers: authHeader() })
   if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -885,7 +896,7 @@ function openNewProduct() {
 }
 
 async function submitProduct(formData) {
-  if (!selectedProject.value) {
+  if (!formData.id_proyecto) {
     modalError.value = t('inventory.errors.selectProject')
     return
   }
@@ -894,7 +905,7 @@ async function submitProduct(formData) {
   try {
     const res = await fetch('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader(true) },
+      headers: { 'Content-Type': 'application/json', ...authHeader(formData.id_proyecto) },
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
