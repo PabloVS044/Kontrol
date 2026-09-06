@@ -632,7 +632,10 @@
       "boxPrice": "Precio por caja",
       "boxPreview": "→ {units} unidades · costo ${cost}/u",
       "barcode": "Código de barras",
-      "barcodePlaceholder": "Escanea o escribe el código"
+      "barcodePlaceholder": "Escanea o escribe el código",
+      "errors": {
+        "costOverPrice": "El costo no puede superar el precio de venta."
+      }
     },
     "scanner": {
       "scan": "Escanear código",

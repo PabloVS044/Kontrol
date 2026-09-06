@@ -632,7 +632,10 @@
       "boxPrice": "Price per box",
       "boxPreview": "→ {units} units · cost ${cost}/u",
       "barcode": "Barcode",
-      "barcodePlaceholder": "Scan or type the code"
+      "barcodePlaceholder": "Scan or type the code",
+      "errors": {
+        "costOverPrice": "Cost cannot be greater than the sale price."
+      }
     },
     "scanner": {
       "scan": "Scan barcode",

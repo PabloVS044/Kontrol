@@ -55,7 +55,7 @@
           <FormField :label="$t('inventory.modal.initialStock')">
             <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
           </FormField>
-          <FormField :label="$t('inventory.modal.costPrice')" :required="true">
+          <FormField :label="$t('inventory.modal.costPrice')" :required="true" :error="costError">
             <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" />
           </FormField>
         </div>
@@ -70,7 +70,7 @@
             <input v-model.number="form.unidades_por_caja" type="number" min="1" placeholder="0" />
           </FormField>
         </div>
-        <FormField :label="$t('inventory.modal.boxPrice')" :required="true">
+        <FormField :label="$t('inventory.modal.boxPrice')" :required="true" :error="costError">
           <input v-model.number="form.precio_caja" type="number" min="0" step="0.01" placeholder="0.00" />
         </FormField>
         <p v-if="resolved.cantidad" class="box-preview">
@@ -103,11 +103,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import Button from '@/components/UI/Button/Button.vue'
 import FormField from '@/components/common/FormField.vue'
 import BarcodeScanner from '@/components/inventory/BarcodeScanner.vue'
 import { resolveStockEntry } from '@/utils/boxPricing'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -156,8 +159,32 @@ const resolved = computed(() =>
   })
 )
 
+/**
+ * Costo por unidad, venga escrito directamente o resuelto desde el precio por
+ * caja. Es el valor que se guarda y contra el que se compara el precio de
+ * venta, así que el modo "por caja" queda cubierto por la misma regla.
+ */
+const unitCost = computed(() =>
+  form.value.modo === 'caja' ? resolved.value.costoUnitario : form.value.precio_costo
+)
+
+// Un producto que cuesta más de lo que se vende nace con margen negativo: cada
+// venta se registraría como pérdida. El backend lo rechaza igualmente; aquí se
+// avisa antes de enviar y sobre el campo que hay que corregir.
+const costExceedsPrice = computed(() => {
+  const costo = Number(unitCost.value)
+  const venta = Number(form.value.precio_venta)
+  if (!Number.isFinite(costo) || !Number.isFinite(venta)) return false
+  return costo > venta
+})
+
+const costError = computed(() =>
+  costExceedsPrice.value ? t('inventory.modal.errors.costOverPrice') : ''
+)
+
 const canSubmit = computed(() => {
   if (!form.value.nombre || form.value.precio_venta == null) return false
+  if (costExceedsPrice.value) return false
   if (form.value.modo === 'caja') {
     return resolved.value.cantidad != null && resolved.value.costoUnitario != null
   }

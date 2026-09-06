@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { COST_OVER_PRICE_MESSAGE } from '../schemas/productSchemas.js'
 import {
   ensureProjectAccess,
   getAccessibleProjectIds,
@@ -271,6 +272,20 @@ export const updateProduct = async (req, res) => {
   })
   if (!access.ok) {
     return res.status(access.status).json({ success: false, message: access.message })
+  }
+
+  // La regla "costo <= precio de venta" hay que comprobarla sobre el resultado
+  // de la edición, no sobre el cuerpo: quien solo manda `precio_venta` puede
+  // dejarlo por debajo del costo ya guardado, y el esquema —que es parcial— no
+  // tiene forma de verlo.
+  const actual = await pool.query(
+    'SELECT precio_venta, precio_costo FROM public.producto WHERE id_producto = $1',
+    [id]
+  )
+  const precioVenta = req.body.precio_venta ?? Number(actual.rows[0].precio_venta)
+  const precioCosto = req.body.precio_costo ?? Number(actual.rows[0].precio_costo)
+  if (precioCosto > precioVenta) {
+    return res.status(400).json({ success: false, message: COST_OVER_PRICE_MESSAGE })
   }
 
   const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria', 'codigo_barras']

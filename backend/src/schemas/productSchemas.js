@@ -15,16 +15,30 @@ export const productSupplierParamsSchema = z.object({
   supplierId: z.coerce.number().int().positive(),
 })
 
-export const createProductSchema = z.object({
-  nombre:        z.string().min(1, 'Product name is required.').max(255),
-  descripcion:   z.string().optional(),
-  precio_venta:  z.number().min(0, 'Sale price must be >= 0.'),
-  precio_costo:  z.number().min(0, 'Cost price must be >= 0.'),
-  stock_minimo:  z.number().int().min(0).optional().default(0),
-  stock_inicial: z.number().int().min(0).optional().default(0),
-  id_categoria:  z.number().int().positive().optional(),
-  codigo_barras: z.string().trim().min(1).max(64).optional(),
-})
+/**
+ * Un producto no puede costar más de lo que se vende: cada unidad nacería con
+ * margen negativo y el informe de ventas registraría pérdida en cada línea.
+ * Se comprueba aquí, y no solo en el formulario, porque el mismo endpoint lo
+ * usan el POS y cualquier integración.
+ */
+export const COST_OVER_PRICE_MESSAGE =
+  'Cost price cannot be greater than the sale price.'
+
+export const createProductSchema = z
+  .object({
+    nombre:        z.string().min(1, 'Product name is required.').max(255),
+    descripcion:   z.string().optional(),
+    precio_venta:  z.number().min(0, 'Sale price must be >= 0.'),
+    precio_costo:  z.number().min(0, 'Cost price must be >= 0.'),
+    stock_minimo:  z.number().int().min(0).optional().default(0),
+    stock_inicial: z.number().int().min(0).optional().default(0),
+    id_categoria:  z.number().int().positive().optional(),
+    codigo_barras: z.string().trim().min(1).max(64).optional(),
+  })
+  .refine((data) => data.precio_costo <= data.precio_venta, {
+    message: COST_OVER_PRICE_MESSAGE,
+    path: ['precio_costo'],
+  })
 
 export const updateProductSchema = z
   .object({
