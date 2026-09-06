@@ -238,7 +238,11 @@
    contains the sideways entrance so it can't open a horizontal scrollbar. */
 #problem {
   position: relative;
-  height: 220vh;
+  /* Was 220vh — that height is what sets how much scroll it takes to get
+     through the whole pin, independent of how early the reveal finishes
+     inside it. Now that the reveal completes almost immediately, the extra
+     distance just read as dead space before releasing into Solution. */
+  height: 150vh;
   overflow-x: hidden;
 }
 
@@ -254,6 +258,12 @@
   gap: var(--k-space-6);
   box-sizing: border-box;
   padding: 0 20px;
+  /* The Chaos/Order cards are near-black (--k-color-tertiary / --k-color-bg-2),
+     so against the busy background video + its light global scrim they lost
+     contrast and read as barely-there even at full opacity. This section's
+     own darker backdrop gives them a calmer, more even background to sit on. */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
 }
 
 .problem-stage {
@@ -512,7 +522,7 @@
 
   /* Problem */
   #problem {
-    height: 240vh;
+    height: 170vh;
   }
   .problem-viewport {
     gap: var(--k-space-4);

@@ -703,7 +703,14 @@ function setupProblemPin() {
   });
 
   tl.to(chaos, { opacity: 1, x: 0, rotation: 0, duration: 1, ease: "none" }, 0)
-    .to(order, { opacity: 1, x: 0, rotation: 0, duration: 1, ease: "none" }, 0.15);
+    .to(order, { opacity: 1, x: 0, rotation: 0, duration: 1, ease: "none" }, 0.15)
+    // Hold: without this, the reveal above (ending at t=1.15) gets stretched
+    // across the ENTIRE pinned scroll range, so both cards only reach full
+    // opacity right as the section is about to release — you never get to
+    // actually see them settled. This empty tween pads the timeline so the
+    // reveal finishes within the first ~25% of the scroll and the cards just
+    // sit there, fully visible, for the remaining ~75% before it lets go.
+    .to({}, { duration: 10 });
 
   landingScrollTriggers.push(tl.scrollTrigger);
 }
