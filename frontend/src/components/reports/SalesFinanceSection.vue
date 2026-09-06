@@ -182,7 +182,16 @@ async function load() {
   loading.value = true
   error.value = null
   try {
-    const params = new URLSearchParams({ desde: r.desde, hasta: r.hasta, bucket: r.bucket })
+    // El rango se construye con la hora local del navegador y la columna
+    // `fecha` guarda hora UTC. Sin mandar la zona, el backend compara relojes
+    // distintos y las ventas del día no entran en el informe hasta pasado el
+    // desfase horario (seis horas en Guatemala).
+    const params = new URLSearchParams({
+      desde: r.desde,
+      hasta: r.hasta,
+      bucket: r.bucket,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    })
     if (selectedProjectId.value) params.set('projectId', selectedProjectId.value)
     const res = await fetch(`/api/inventory-movements/stats?${params}`, { headers: authHeaders() })
     if (!res.ok) throw new Error(`Error ${res.status}`)
