@@ -12,6 +12,56 @@
 
     <div class="scanner-footer">
       <p class="scanner-msg" :class="messageTone">{{ message }}</p>
+
+      <!-- Confirmación del código leído. Sin esto, escanear metía la unidad en
+           el carrito a ciegas y había que salir del escáner para comprobar qué
+           se había añadido. -->
+      <div v-if="pending" class="scan-confirm">
+        <div class="sc-info">
+          <span class="sc-name">{{ pending.product.nombre }}</span>
+          <span class="sc-meta">
+            ${{ Number(pending.product.precio_venta).toFixed(2) }}
+            · {{ $t('inventory.scanner.available', { count: pending.max }) }}
+            <template v-if="pending.inCart">
+              · {{ $t('inventory.scanner.inCart', { count: pending.inCart }) }}
+            </template>
+          </span>
+        </div>
+
+        <div class="sc-qty">
+          <button
+            type="button"
+            class="sc-step"
+            :aria-label="$t('inventory.card.decrease')"
+            :disabled="qty <= 1"
+            @click="stepQty(-1)"
+          >−</button>
+          <input
+            v-model.number="qty"
+            class="sc-qty-input"
+            type="number"
+            inputmode="numeric"
+            :min="1"
+            :max="pending.max"
+            :aria-label="$t('inventory.scanner.quantity')"
+            @input="clampQty"
+          />
+          <button
+            type="button"
+            class="sc-step"
+            :aria-label="$t('inventory.card.increase')"
+            :disabled="qty >= pending.max"
+            @click="stepQty(1)"
+          >+</button>
+        </div>
+
+        <button type="button" class="sc-add" @click="confirmPending">
+          {{ $t('inventory.scanner.add') }}
+        </button>
+        <button type="button" class="sc-discard" @click="$emit('cancel')">
+          {{ $t('inventory.scanner.discard') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -28,12 +78,20 @@ const props = defineProps({
   modelValue: { type: Boolean, required: true },
   // Transient message the parent can surface over the camera, e.g. { type, msg }
   feedback:   { type: Object, default: null },
+  /**
+   * Producto leído a la espera de confirmación: `{ product, max, inCart }`.
+   * Lo resuelve el padre, que es quien conoce el catálogo, el carrito y los
+   * permisos; aquí solo se pinta y se elige la cantidad. Cuando es `null` el
+   * panel es el de siempre, que es como lo usan los formularios de producto.
+   */
+  pending:    { type: Object, default: null },
 })
 
-const emit = defineEmits(['update:modelValue', 'detected'])
+const emit = defineEmits(['update:modelValue', 'detected', 'confirm', 'cancel'])
 
 const videoEl     = ref(null)
 const cameraError = ref(null)
+const qty         = ref(1)
 
 let reader = null
 let controls = null
@@ -56,6 +114,30 @@ const messageTone = computed(() => {
   if (props.feedback) return props.feedback.type
   return 'hint'
 })
+
+/** Cada lectura empieza en una unidad, nunca hereda la cantidad de la anterior. */
+watch(() => props.pending, () => {
+  qty.value = 1
+})
+
+function clampQty() {
+  const max = props.pending?.max ?? 1
+  let next = Math.floor(Number(qty.value))
+  if (!Number.isFinite(next) || next < 1) next = 1
+  if (next > max) next = max
+  qty.value = next
+}
+
+function stepQty(delta) {
+  qty.value = qty.value + delta
+  clampQty()
+}
+
+function confirmPending() {
+  if (!props.pending) return
+  clampQty()
+  emit('confirm', qty.value)
+}
 
 async function start() {
   cameraError.value = null
@@ -106,6 +188,11 @@ async function start() {
         const now = Date.now()
         // Debounce: ZXing fires repeatedly while a code stays in frame.
         if (text === lastCode && now - lastTime < 1500) return
+        // Mientras se confirma una lectura, el mismo código no vuelve a
+        // dispararla: el producto sigue delante de la cámara mientras el
+        // usuario ajusta la cantidad. Un código distinto sí la sustituye, que
+        // es lo que se espera al haber escaneado el artículo equivocado.
+        if (props.pending && text === lastCode) return
         lastCode = text
         lastTime = now
         emit('detected', text)
@@ -170,9 +257,13 @@ onBeforeUnmount(stop)
 .scanner-close:hover { color: var(--k-color-text); }
 
 .scanner-viewport {
-  position: relative; flex: 1; overflow: hidden;
+  position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   background: rgb(var(--k-color-black-rgb));
+  /* `min-height: 0` es lo que deja encogerse al vídeo cuando aparece la tarjeta
+     de confirmación. Sin él un hijo flex no baja de su tamaño de contenido y en
+     móvil la tarjeta se salía por debajo de la pantalla. */
+  flex: 1 1 auto; min-height: 96px;
 }
 .scanner-video { width: 100%; height: 100%; object-fit: cover; }
 .scanner-frame {
@@ -183,8 +274,12 @@ onBeforeUnmount(stop)
 }
 
 .scanner-footer {
+  flex: 0 0 auto;
   padding: 16px 20px 20px;
   border-top: var(--k-border-width) solid var(--k-shade-6);
+  background: var(--k-shade-1);
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
 /* Estados controlados: cada tono trae fondo, borde y texto propios, de modo
@@ -210,5 +305,118 @@ onBeforeUnmount(stop)
   color: var(--k-alert-critical-text);
   background: var(--k-alert-critical-bg);
   border-color: var(--k-alert-critical-border);
+}
+
+/* ── Confirmación de la lectura ──────────────────────────────────────────── */
+
+.scan-confirm {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-color-primary);
+}
+
+.sc-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sc-name {
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-body-large);
+  color: var(--k-color-text);
+  line-height: var(--k-leading-snug);
+  /* Un nombre largo se parte en varias líneas en vez de ensanchar el panel. */
+  overflow-wrap: anywhere;
+}
+.sc-meta {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-muted);
+}
+
+.sc-qty {
+  display: flex;
+  align-items: stretch;
+  border: var(--k-border-width) solid var(--k-shade-6);
+  background: var(--k-shade-1);
+}
+.sc-step {
+  flex: 0 0 52px;
+  background: transparent;
+  border: none;
+  color: var(--k-color-primary);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-heading-2);
+  font-weight: var(--k-font-weight-semibold);
+  cursor: pointer;
+  min-height: 52px;
+  transition: var(--k-transition-ui);
+}
+.sc-step:hover:not(:disabled) { background: var(--k-surface-primary-tint); }
+.sc-step:disabled { color: var(--k-text-faint); cursor: not-allowed; }
+
+.sc-qty-input {
+  flex: 1; min-width: 0;
+  background: transparent;
+  border: none;
+  border-left: var(--k-border-width) solid var(--k-shade-6);
+  border-right: var(--k-border-width) solid var(--k-shade-6);
+  text-align: center;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  /* 16px es el mínimo que evita que iOS haga zoom al enfocar el campo. */
+  font-size: var(--k-font-size-body-large);
+  font-weight: var(--k-font-weight-semibold);
+  outline: none;
+}
+.sc-qty-input::-webkit-outer-spin-button,
+.sc-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sc-qty-input { -moz-appearance: textfield; }
+
+.sc-add {
+  width: 100%;
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
+  border: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  min-height: 52px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
+  letter-spacing: var(--k-tracking-caps);
+  text-transform: uppercase;
+  transition: var(--k-transition-ui);
+}
+.sc-add:hover { filter: brightness(var(--k-state-hover-brightness)); }
+
+.sc-discard {
+  width: 100%;
+  background: transparent;
+  color: var(--k-text-muted);
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  min-height: var(--k-target-min-size);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: var(--k-transition-ui);
+}
+.sc-discard:hover { color: var(--k-color-text); }
+
+/* Móvil: la cámara cede sitio y los controles crecen para el pulgar. */
+@media (max-width: 600px) {
+  .scanner-footer { padding: 12px 14px 16px; max-height: 70vh; }
+  .scan-confirm { padding: 12px; gap: 10px; }
+  .sc-step { flex-basis: 60px; min-height: 56px; }
+  .sc-add { min-height: 56px; }
+}
+
+/* Pantallas bajas (móvil apaisado): la tarjeta manda sobre el vídeo. */
+@media (max-height: 520px) {
+  .scanner-viewport { min-height: 72px; }
+  .scanner-footer { max-height: 78vh; }
 }
 </style>

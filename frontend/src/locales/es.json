@@ -660,11 +660,15 @@
       "permissionError": "Permiso de cámara denegado. Habilítalo para escanear.",
       "noCamera": "No se pudo acceder a la cámara.",
       "insecureContext": "La cámara requiere HTTPS. Abre la app en localhost o por una URL https:// para escanear.",
+      "quantity": "Cantidad",
+      "available": "Disponible: {count}",
+      "inCart": "ya en la venta: {count}",
+      "add": "Agregar a la venta",
+      "discard": "Descartar lectura",
+      "addedQty": "Agregado: {count} × {name}",
       "notFound": "Sin producto para el código {code}.",
       "outOfStock": "{name} no tiene stock disponible.",
-      "duplicate": "{name} ya estaba en la venta · ahora {count} + 1",
-      "stockLimit": "Solo quedan {count} unidades de {name}.",
-      "added": "Agregado: {name}"
+      "stockLimit": "Solo quedan {count} unidades de {name}."
     },
     "restock": {
       "title": "Ingresar stock",

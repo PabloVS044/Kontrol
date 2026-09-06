@@ -22,7 +22,10 @@
     <BarcodeScanner
       v-model="showScanner"
       :feedback="scanFeedback"
+      :pending="pendingScan"
       @detected="handleScan"
+      @confirm="confirmScan"
+      @cancel="cancelScan"
     />
 
     <ProductEditModal
@@ -727,13 +730,23 @@ function openCheckout() {
 /* ── escaneo de código de barras (POS) ── */
 const showScanner  = ref(false)
 const scanFeedback = ref(null)
+// Lectura pendiente de confirmar: { product, max, inCart }. Mientras exista,
+// el escáner muestra la tarjeta con el nombre y la cantidad a agregar.
+const pendingScan  = ref(null)
 let scanFeedbackTimer = null
 
 function openScanner() {
   if (!authStore.canSellInventory) return
   scanFeedback.value = null
-  showScanner.value = true
+  pendingScan.value  = null
+  showScanner.value  = true
 }
+
+// Cerrar el escáner descarta lo que estuviera a medio confirmar: al volver a
+// abrirlo se empieza limpio en vez de arrastrar una lectura vieja.
+watch(showScanner, (open) => {
+  if (!open) pendingScan.value = null
+})
 
 // Un acierto se lee de un vistazo; un error hay que poder leerlo entero antes
 // de que desaparezca, sobre todo con el código en la mano.
@@ -746,15 +759,19 @@ function flashScanFeedback(type, msg) {
 }
 
 /**
- * Punto único de entrada del escaneo: lo llaman tanto la cámara como el campo
- * manual del panel, así que ambos caminos producen exactamente los mismos
- * estados controlados.
+ * Resuelve el código leído y deja el producto a la espera de confirmación.
  *
- * Los cuatro casos que el POS tiene que distinguir:
- *  - código inexistente     → error, no se toca el carrito
- *  - producto sin stock     → error (incluye "sin permiso de venta")
- *  - código ya en la venta  → aviso, y suma una unidad más
- *  - código nuevo y vendible→ alta correcta
+ * Escanear ya no toca el carrito: la tarjeta del escáner enseña qué se leyó y
+ * cuánto se va a agregar, de modo que se puede validar y seguir escaneando sin
+ * salir de la cámara. Solo `confirmScan` mueve la venta.
+ *
+ * Los casos que se resuelven aquí, y que nunca llegan a tarjeta:
+ *  - código inexistente          → error
+ *  - producto sin stock vendible → error (incluye "sin permiso de venta")
+ *  - carrito ya con todo el stock→ error, no queda nada que agregar
+ *
+ * El duplicado no es un error: la tarjeta lo indica con lo que ya hay en la
+ * venta y ofrece el resto disponible.
  */
 function handleScan(code) {
   const scanned = String(code ?? '').trim()
@@ -772,28 +789,34 @@ function handleScan(code) {
     return
   }
 
-  const existing = getCartItem(match)
-  if (existing) {
-    // Duplicado: el código ya está en la venta. Se suma una unidad, salvo que
-    // eso pasara del stock disponible — ahí el aviso pasa a error y no se toca
-    // la cantidad, porque la venta no podría cerrarse.
-    if (existing.cantidad >= Number(match.stock_actual)) {
-      flashScanFeedback('err', t('inventory.scanner.stockLimit', {
-        name: match.nombre,
-        count: match.stock_actual,
-      }))
-      return
-    }
-    incrementCart(match)
-    flashScanFeedback('warn', t('inventory.scanner.duplicate', {
+  const inCart = getCartItem(match)?.cantidad ?? 0
+  const max = Number(match.stock_actual) - inCart
+  if (max <= 0) {
+    flashScanFeedback('err', t('inventory.scanner.stockLimit', {
       name: match.nombre,
-      count: existing.cantidad,
+      count: match.stock_actual,
     }))
     return
   }
 
-  addToCart(match)
-  flashScanFeedback('ok', t('inventory.scanner.added', { name: match.nombre }))
+  scanFeedback.value = null
+  pendingScan.value = { product: match, max, inCart }
+}
+
+/** Confirmación explícita: es el único punto donde el escaneo entra al carrito. */
+function confirmScan(cantidad) {
+  const pendiente = pendingScan.value
+  if (!pendiente) return
+  addToCart(pendiente.product, cantidad)
+  pendingScan.value = null
+  flashScanFeedback('ok', t('inventory.scanner.addedQty', {
+    name: pendiente.product.nombre,
+    count: cantidad,
+  }))
+}
+
+function cancelScan() {
+  pendingScan.value = null
 }
 
 function getCartItem(product) {
@@ -805,15 +828,16 @@ function canSellProduct(product) {
   return Number(product.stock_actual) > 0
 }
 
-function addToCart(product) {
+function addToCart(product, cantidad = 1) {
   if (!canSellProduct(product)) return
   saleError.value = null
+  const stock = Number(product.stock_actual)
   const existing = getCartItem(product)
   if (existing) {
-    incrementCart(product)
+    existing.cantidad = Math.min(existing.cantidad + cantidad, stock)
     return
   }
-  saleCart.value.push({ product, cantidad: 1 })
+  saleCart.value.push({ product, cantidad: Math.min(cantidad, stock) })
 }
 
 function incrementCart(product) {

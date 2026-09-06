@@ -660,11 +660,15 @@
       "permissionError": "Camera permission denied. Enable it to scan.",
       "noCamera": "Could not access the camera.",
       "insecureContext": "The camera requires HTTPS. Open the app on localhost or over an https:// URL to scan.",
+      "quantity": "Quantity",
+      "available": "Available: {count}",
+      "inCart": "already in the sale: {count}",
+      "add": "Add to sale",
+      "discard": "Discard scan",
+      "addedQty": "Added: {count} × {name}",
       "notFound": "No product for code {code}.",
       "outOfStock": "{name} has no stock available.",
-      "duplicate": "{name} was already in the sale · now {count} + 1",
-      "stockLimit": "Only {count} units of {name} left.",
-      "added": "Added: {name}"
+      "stockLimit": "Only {count} units of {name} left."
     },
     "restock": {
       "title": "Add stock",
