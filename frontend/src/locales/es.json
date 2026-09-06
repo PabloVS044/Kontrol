@@ -636,6 +636,9 @@
       "noCamera": "No se pudo acceder a la cámara.",
       "insecureContext": "La cámara requiere HTTPS. Abre la app en localhost o por una URL https:// para escanear.",
       "notFound": "Sin producto para el código {code}.",
+      "manualLabel": "O escribe el código",
+      "manualPlaceholder": "Código de barras",
+      "manualSubmit": "Agregar",
       "added": "Agregado: {name}"
     },
     "restock": {

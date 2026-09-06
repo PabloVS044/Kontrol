@@ -10,15 +10,38 @@
       <div class="scanner-frame"></div>
     </div>
 
-    <p v-if="cameraError" class="scanner-msg err">{{ cameraError }}</p>
-    <p v-else-if="feedback" class="scanner-msg" :class="feedback.type === 'err' ? 'err' : 'ok'">{{ feedback.msg }}</p>
-    <p v-else class="scanner-msg hint">{{ $t('inventory.scanner.hint') }}</p>
+    <div class="scanner-footer">
+      <p class="scanner-msg" :class="messageTone">{{ message }}</p>
+
+      <!-- Entrada manual: única vía cuando la cámara no está disponible (permiso
+           denegado, contexto no seguro) y atajo para lectores USB, que teclean
+           el código y envían Enter. -->
+      <form class="manual-form" @submit.prevent="submitManual">
+        <FormField :label="$t('inventory.scanner.manualLabel')">
+          <div class="manual-row">
+            <input
+              ref="manualEl"
+              v-model="manualCode"
+              class="manual-input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              :placeholder="$t('inventory.scanner.manualPlaceholder')"
+            />
+            <button class="manual-submit" type="submit" :disabled="!manualCode.trim()">
+              {{ $t('inventory.scanner.manualSubmit') }}
+            </button>
+          </div>
+        </FormField>
+      </form>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
+import FormField from '@/components/common/FormField.vue'
 // @zxing is loaded on demand (dynamic import inside start) so it ships as its
 // own chunk and never weighs down the inventory route's initial load.
 
@@ -33,12 +56,38 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'detected'])
 
 const videoEl     = ref(null)
+const manualEl    = ref(null)
 const cameraError = ref(null)
+const manualCode  = ref('')
 
 let reader = null
 let controls = null
 let lastCode = null
 let lastTime = 0
+
+/**
+ * Un único mensaje visible a la vez, con su tono semántico (SCRUM-12). El fallo
+ * de cámara manda sobre el feedback del padre: si no hay cámara, saber por qué
+ * es más útil que el resultado del último escaneo.
+ */
+const message = computed(() => {
+  if (cameraError.value) return cameraError.value
+  if (props.feedback) return props.feedback.msg
+  return t('inventory.scanner.hint')
+})
+
+const messageTone = computed(() => {
+  if (cameraError.value) return 'err'
+  if (props.feedback) return props.feedback.type
+  return 'hint'
+})
+
+function submitManual() {
+  const code = manualCode.value.trim()
+  if (!code) return
+  emit('detected', code)
+  manualCode.value = ''
+}
 
 async function start() {
   cameraError.value = null
@@ -52,6 +101,7 @@ async function start() {
     cameraError.value = window.isSecureContext
       ? t('inventory.scanner.noCamera')
       : t('inventory.scanner.insecureContext')
+    focusManual()
     return
   }
 
@@ -98,7 +148,14 @@ async function start() {
     cameraError.value = err?.name === 'NotAllowedError'
       ? t('inventory.scanner.permissionError')
       : t('inventory.scanner.noCamera')
+    // Sin cámara la venta tiene que poder seguir: el foco va al campo manual.
+    focusManual()
   }
+}
+
+async function focusManual() {
+  await nextTick()
+  manualEl.value?.focus()
 }
 
 function stop() {
@@ -113,50 +170,119 @@ function close() {
 }
 
 watch(() => props.modelValue, (open) => {
-  if (open) start()
-  else stop()
+  if (open) {
+    manualCode.value = ''
+    start()
+  } else {
+    stop()
+  }
 })
 
 onBeforeUnmount(stop)
 </script>
 
 <style scoped>
+/**
+ * Panel de escaneo — identidad visual v2 (SCRUM-19).
+ *
+ * Los mensajes usan los colores semánticos de SCRUM-12: el permiso de cámara
+ * denegado y el código inexistente salen en el rojo de estado, el duplicado en
+ * el ámbar de vigilancia y el alta en el verde de éxito. Antes eran literales
+ * (#fb7185 / #34d399) ajenos a la paleta.
+ */
+
 .scanner-overlay {
-  position: fixed; inset: 0; z-index: 300;
-  background: #050505;
+  position: fixed; inset: 0; z-index: var(--k-z-modal);
+  background: var(--k-shade-1);
   display: flex; flex-direction: column;
 }
 .scanner-head {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; border-bottom: 1px solid #1f1f1f;
+  padding: 16px 20px; border-bottom: var(--k-border-width) solid var(--k-shade-6);
 }
 .scanner-title {
-  font-family: 'Playfair Display', serif; font-size: 18px; color: var(--Text);
+  font-family: var(--k-font-display); font-size: var(--k-font-size-heading-2);
+  color: var(--k-color-text);
 }
 .scanner-close {
-  background: none; border: none; color: var(--TextMuted); font-size: 18px; cursor: pointer;
+  background: none; border: none; color: var(--k-text-muted);
+  font-size: var(--k-font-size-body-large); cursor: pointer;
   line-height: 1; padding: 4px;
+  min-width: var(--k-target-min-size); min-height: var(--k-target-min-size);
+  transition: var(--k-transition-ui);
 }
-.scanner-close:hover { color: var(--Text); }
+.scanner-close:hover { color: var(--k-color-text); }
 
 .scanner-viewport {
   position: relative; flex: 1; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  background: #000;
+  background: rgb(var(--k-color-black-rgb));
 }
 .scanner-video { width: 100%; height: 100%; object-fit: cover; }
 .scanner-frame {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: min(72vw, 320px); height: min(40vw, 180px);
-  border: 2px solid #caa860; border-radius: 8px;
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+  border: 2px solid var(--k-color-primary); border-radius: var(--k-radius-md);
+  box-shadow: 0 0 0 9999px rgba(var(--k-color-black-rgb), 0.45);
 }
 
-.scanner-msg {
-  text-align: center; padding: 16px 20px;
-  font-family: 'Manrope', sans-serif; font-size: 13px;
+.scanner-footer {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 16px 20px 20px;
+  border-top: var(--k-border-width) solid var(--k-shade-6);
 }
-.scanner-msg.hint { color: var(--TextMuted); }
-.scanner-msg.ok   { color: #34d399; }
-.scanner-msg.err  { color: #fb7185; }
+
+/* Estados controlados: cada tono trae fondo, borde y texto propios, de modo
+   que el mensaje se lee también sin distinguir el color (WCAG §9). */
+.scanner-msg {
+  margin: 0;
+  text-align: center; padding: 10px 16px;
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-body-small);
+  border: var(--k-border-width) solid transparent;
+}
+.scanner-msg.hint { color: var(--k-text-muted); }
+.scanner-msg.ok {
+  color: var(--k-alert-ok-text);
+  background: var(--k-alert-ok-bg);
+  border-color: var(--k-alert-ok-border);
+}
+.scanner-msg.warn {
+  color: var(--k-alert-watching-text);
+  background: var(--k-alert-watching-bg);
+  border-color: var(--k-alert-watching-border);
+}
+.scanner-msg.err {
+  color: var(--k-alert-critical-text);
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
+}
+
+.manual-form { display: flex; flex-direction: column; }
+.manual-row { display: flex; gap: 8px; }
+.manual-input {
+  flex: 1; min-width: 0;
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+  font-family: var(--k-font-mono); font-size: var(--k-font-size-body-main);
+  letter-spacing: 0.04em;
+  padding: 10px 12px; outline: none;
+  min-height: var(--k-target-min-size);
+  transition: var(--k-transition-ui);
+}
+.manual-input::placeholder { color: var(--k-text-placeholder); font-family: var(--k-font-sans); letter-spacing: normal; }
+.manual-input:focus { border-color: var(--k-color-primary); background: var(--k-form-input-focus-bg); }
+
+.manual-submit {
+  flex: 0 0 auto;
+  background: var(--k-color-primary); color: var(--k-form-btn-text);
+  border: none; cursor: pointer;
+  padding: 10px 20px; min-height: var(--k-target-min-size);
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
+  letter-spacing: var(--k-tracking-caps); text-transform: uppercase;
+  transition: var(--k-transition-ui);
+}
+.manual-submit:hover:not(:disabled) { filter: brightness(var(--k-state-hover-brightness)); }
+.manual-submit:disabled { opacity: var(--k-state-disabled-opacity); cursor: not-allowed; }
 </style>
