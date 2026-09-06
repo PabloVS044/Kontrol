@@ -12,28 +12,6 @@
 
     <div class="scanner-footer">
       <p class="scanner-msg" :class="messageTone">{{ message }}</p>
-
-      <!-- Entrada manual: única vía cuando la cámara no está disponible (permiso
-           denegado, contexto no seguro) y atajo para lectores USB, que teclean
-           el código y envían Enter. -->
-      <form class="manual-form" @submit.prevent="submitManual">
-        <FormField :label="$t('inventory.scanner.manualLabel')">
-          <div class="manual-row">
-            <input
-              ref="manualEl"
-              v-model="manualCode"
-              class="manual-input"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-              :placeholder="$t('inventory.scanner.manualPlaceholder')"
-            />
-            <button class="manual-submit" type="submit" :disabled="!manualCode.trim()">
-              {{ $t('inventory.scanner.manualSubmit') }}
-            </button>
-          </div>
-        </FormField>
-      </form>
     </div>
   </div>
 </template>
@@ -41,7 +19,6 @@
 <script setup>
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import FormField from '@/components/common/FormField.vue'
 // @zxing is loaded on demand (dynamic import inside start) so it ships as its
 // own chunk and never weighs down the inventory route's initial load.
 
@@ -56,9 +33,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'detected'])
 
 const videoEl     = ref(null)
-const manualEl    = ref(null)
 const cameraError = ref(null)
-const manualCode  = ref('')
 
 let reader = null
 let controls = null
@@ -82,13 +57,6 @@ const messageTone = computed(() => {
   return 'hint'
 })
 
-function submitManual() {
-  const code = manualCode.value.trim()
-  if (!code) return
-  emit('detected', code)
-  manualCode.value = ''
-}
-
 async function start() {
   cameraError.value = null
   await nextTick()
@@ -101,7 +69,6 @@ async function start() {
     cameraError.value = window.isSecureContext
       ? t('inventory.scanner.noCamera')
       : t('inventory.scanner.insecureContext')
-    focusManual()
     return
   }
 
@@ -148,14 +115,7 @@ async function start() {
     cameraError.value = err?.name === 'NotAllowedError'
       ? t('inventory.scanner.permissionError')
       : t('inventory.scanner.noCamera')
-    // Sin cámara la venta tiene que poder seguir: el foco va al campo manual.
-    focusManual()
   }
-}
-
-async function focusManual() {
-  await nextTick()
-  manualEl.value?.focus()
 }
 
 function stop() {
@@ -170,12 +130,8 @@ function close() {
 }
 
 watch(() => props.modelValue, (open) => {
-  if (open) {
-    manualCode.value = ''
-    start()
-  } else {
-    stop()
-  }
+  if (open) start()
+  else stop()
 })
 
 onBeforeUnmount(stop)
@@ -227,7 +183,6 @@ onBeforeUnmount(stop)
 }
 
 .scanner-footer {
-  display: flex; flex-direction: column; gap: 12px;
   padding: 16px 20px 20px;
   border-top: var(--k-border-width) solid var(--k-shade-6);
 }
@@ -256,33 +211,4 @@ onBeforeUnmount(stop)
   background: var(--k-alert-critical-bg);
   border-color: var(--k-alert-critical-border);
 }
-
-.manual-form { display: flex; flex-direction: column; }
-.manual-row { display: flex; gap: 8px; }
-.manual-input {
-  flex: 1; min-width: 0;
-  background: var(--k-shade-3);
-  border: var(--k-border-width) solid var(--k-shade-6);
-  color: var(--k-color-text);
-  font-family: var(--k-font-mono); font-size: var(--k-font-size-body-main);
-  letter-spacing: 0.04em;
-  padding: 10px 12px; outline: none;
-  min-height: var(--k-target-min-size);
-  transition: var(--k-transition-ui);
-}
-.manual-input::placeholder { color: var(--k-text-placeholder); font-family: var(--k-font-sans); letter-spacing: normal; }
-.manual-input:focus { border-color: var(--k-color-primary); background: var(--k-form-input-focus-bg); }
-
-.manual-submit {
-  flex: 0 0 auto;
-  background: var(--k-color-primary); color: var(--k-form-btn-text);
-  border: none; cursor: pointer;
-  padding: 10px 20px; min-height: var(--k-target-min-size);
-  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg);
-  font-weight: var(--k-font-weight-semibold);
-  letter-spacing: var(--k-tracking-caps); text-transform: uppercase;
-  transition: var(--k-transition-ui);
-}
-.manual-submit:hover:not(:disabled) { filter: brightness(var(--k-state-hover-brightness)); }
-.manual-submit:disabled { opacity: var(--k-state-disabled-opacity); cursor: not-allowed; }
 </style>

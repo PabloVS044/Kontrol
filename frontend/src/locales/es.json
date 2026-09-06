@@ -646,9 +646,6 @@
       "outOfStock": "{name} no tiene stock disponible.",
       "duplicate": "{name} ya estaba en la venta · ahora {count} + 1",
       "stockLimit": "Solo quedan {count} unidades de {name}.",
-      "manualLabel": "O escribe el código",
-      "manualPlaceholder": "Código de barras",
-      "manualSubmit": "Agregar",
       "added": "Agregado: {name}"
     },
     "restock": {
