@@ -211,7 +211,18 @@ export const createProject = async (req, res) => {
     ]
   )
 
-  return res.status(201).json({ success: true, data: result.rows[0] })
+  const proyecto = result.rows[0]
+
+  // The creator (id_encargado) must be a project member, not just its owner,
+  // or the asignacion FK rejects assigning tasks to them right after creation.
+  await pool.query(
+    `INSERT INTO public.proyecto_usuario (id_proyecto, id_usuario)
+     VALUES ($1, $2)
+     ON CONFLICT DO NOTHING`,
+    [proyecto.id_proyecto, id_encargado]
+  )
+
+  return res.status(201).json({ success: true, data: proyecto })
 }
 
 export const updateProject = async (req, res) => {
