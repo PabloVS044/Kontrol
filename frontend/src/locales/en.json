@@ -536,7 +536,7 @@
       "loading": "Loading…"
     },
     "search": {
-      "placeholder": "Search by name or category..."
+      "placeholder": "Search by name, category or code..."
     },
     "filter": {
       "category": "Category",

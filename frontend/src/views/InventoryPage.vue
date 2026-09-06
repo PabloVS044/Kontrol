@@ -558,10 +558,14 @@ const categories = computed(() => {
 const filteredProducts = computed(() => {
   return products.value.filter(p => {
     const matchesCat = activeCategory.value === 'All' || p.categoria === activeCategory.value
-    const q = searchQuery.value.toLowerCase()
+    const q = searchQuery.value.trim().toLowerCase()
+    // El código de barras entra en la búsqueda: es la vía para localizar un
+    // producto por su código sin pasar por la cámara —lector USB, código a la
+    // vista, o permiso de cámara denegado—. El escáner queda solo para escanear.
     const matchesSearch = !q
       || p.nombre.toLowerCase().includes(q)
       || (p.categoria || '').toLowerCase().includes(q)
+      || String(p.codigo_barras ?? '').toLowerCase().includes(q)
     return matchesCat && matchesSearch
   })
 })
