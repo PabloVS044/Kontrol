@@ -4,6 +4,11 @@
    never by native playback. The scrim sits directly above it (still behind
    all real content) so text stays legible over a busy, high-motion clip
    without every section needing its own overlay treatment. */
+
+html {
+  scroll-behavior: smooth;
+}
+
 .bg-scroll-video {
   position: fixed;
   inset: 0;
@@ -223,11 +228,10 @@
   opacity: 1;
 }
 
-@media (max-width: 768px) {
-  #control-center {
-    height: 220vh;
-  }
-}
+/* No mobile height override here: below 768px `isMobile` (LandingPage.vue)
+   forces the `.no-pin` static layout, whose `#control-center.no-pin { height:
+   auto; }` already wins on specificity over any plain `#control-center { ... }`
+   rule regardless of media query — a `height` set here would just be dead. */
 
 /* ─── Problem (pin + scrub) ──────────────────────────────────────────────────
    Same mechanism as #control-center: a tall section, a sticky viewport, and
@@ -520,10 +524,8 @@
     padding-top: 3.5rem;
   }
 
-  /* Problem */
-  #problem {
-    height: 170vh;
-  }
+  /* Problem: no height override — below 768px `isMobile` forces `.no-pin`,
+     whose `height: auto` already wins here regardless of media query. */
   .problem-viewport {
     gap: var(--k-space-4);
   }

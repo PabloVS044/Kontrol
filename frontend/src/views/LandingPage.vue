@@ -4,8 +4,14 @@
          setupBackgroundVideoScrub): frame 0 = fully chaotic, last frame =
          fully ordered, so scrolling from Header to Start visually traces the
          same "chaos becomes order" arc the copy already tells. Paused by
-         default — only ever seeked via JS, never auto-playing on its own. -->
+         default — only ever seeked via JS, never auto-playing on its own.
+         `v-if` (not a CSS `display: none`) on mobile: it's a multi-MB file
+         and the browser starts fetching it the moment the tag exists in the
+         DOM, so it has to never be there at all rather than be hidden after
+         the fact. The app's own Waves background (App.vue) still shows
+         through underneath, same as on every other page. -->
     <video
+      v-if="!isMobile"
       ref="bgVideoRef"
       class="bg-scroll-video"
       src="/kontrol-scroll-chaos-order.mp4"
@@ -14,7 +20,7 @@
       preload="auto"
       aria-hidden="true"
     ></video>
-    <div class="bg-scroll-video-scrim" aria-hidden="true"></div>
+    <div v-if="!isMobile" class="bg-scroll-video-scrim" aria-hidden="true"></div>
 
     <Navbar />
     <section id="header">
@@ -74,7 +80,7 @@
          drives it through three "moments" — see setupControlCenter(). If this
          works well, the same pin+scrub pattern extends to the rest of the
          page; if not, it's isolated here and easy to remove. -->
-    <section id="control-center" :class="{ 'no-pin': reduceMotion }">
+    <section id="control-center" :class="{ 'no-pin': reduceMotion || isMobile }">
       <div class="control-center-viewport" ref="controlViewportRef">
         <div class="control-k-wrapper" aria-hidden="true">
           <KontrolLogo3D
@@ -109,7 +115,7 @@
     <!-- Pinned like #control-center: the heading stays put while scroll
          morphs "The Chaos" into "The Order" in the same spot — see
          setupProblemPin(). -->
-    <section id="problem" :class="{ 'no-pin': reduceMotion }">
+    <section id="problem" :class="{ 'no-pin': reduceMotion || isMobile }">
       <div class="problem-viewport">
         <h2 class="sub-title">
           Stop juggling tools to <span class="marked">run your business</span>
@@ -632,6 +638,14 @@ function setupBackgroundVideoScrub() {
   else video.addEventListener("loadedmetadata", wireScrub, { once: true });
 }
 
+// Computed synchronously (not in onMounted, unlike reduceMotion below) because
+// it gates whether the background <video> even renders — deciding that after
+// mount would mean the browser already started fetching a multi-MB file
+// before we could pull it back. Matches the same 768px breakpoint the CSS
+// media queries use for the mobile layout. Not re-evaluated on resize/rotate,
+// same tradeoff already accepted for reduceMotion.
+const isMobile = ref(window.matchMedia("(max-width: 768px)").matches);
+
 // ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
 // three "moments" cross-fading in front of it as the scroll progresses ──────
 const reduceMotion = ref(false);
@@ -650,7 +664,7 @@ const controlMoment3Ref = ref(null);
 const scrollK = reactive({ rotationY: 0, scale: 1 });
 
 function setupControlCenter() {
-  if (reduceMotion.value) return; // .no-pin CSS already shows the moments stacked, statically
+  if (reduceMotion.value || isMobile.value) return; // .no-pin CSS already shows the moments stacked, statically
 
   const moments = [controlMoment1Ref.value, controlMoment2Ref.value, controlMoment3Ref.value];
   if (moments.some(m => !m)) return;
@@ -684,7 +698,12 @@ const chaosWrapRef = ref(null);
 const orderWrapRef = ref(null);
 
 function setupProblemPin() {
-  if (reduceMotion.value) return; // .no-pin CSS shows both cards side by side, statically
+  // On mobile the cards would wrap to stack vertically inside a fixed
+  // 100vh sticky viewport (see .problem-viewport) — two full Card components
+  // plus the heading easily exceed that height there, clipping content with
+  // no way to scroll to see the rest. The static .no-pin layout sidesteps
+  // that entirely by not pinning/fixing the height at all.
+  if (reduceMotion.value || isMobile.value) return;
 
   const chaos = chaosWrapRef.value;
   const order = orderWrapRef.value;
