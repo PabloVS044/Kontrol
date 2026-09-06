@@ -556,6 +556,8 @@
       "restock": "Ingresar",
       "increase": "Agregar uno",
       "decrease": "Quitar uno",
+      "edit": "Editar producto",
+      "delete": "Eliminar producto",
       "cannotSell": "Este producto no puede venderse ahora."
     },
     "checkout": {
@@ -606,6 +608,20 @@
       "exportInventory": "↓ Exportar inventario",
       "dataSource": "Fuente de Datos",
       "dataSourceText": "Base de datos de inventario · En vivo"
+    },
+    "edit": {
+      "title": "Editar producto",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "stockNote": "El stock actual se ajusta con ingresos y ventas, no desde aquí."
+    },
+    "delete": {
+      "title": "Eliminar producto",
+      "question": "¿Eliminar {name}?",
+      "warning": "Esta acción no se puede deshacer.",
+      "submit": "Eliminar",
+      "deleting": "Eliminando…",
+      "hasMovements": "No se puede eliminar: el producto tiene movimientos registrados. Su historial de inventario dejaría de cuadrar."
     },
     "modal": {
       "title": "Nuevo producto",

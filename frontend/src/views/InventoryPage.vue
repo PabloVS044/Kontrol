@@ -25,6 +25,22 @@
       @detected="handleScan"
     />
 
+    <ProductEditModal
+      v-model="showEdit"
+      :product="editProduct"
+      :submitting="editLoading"
+      :error="editError"
+      @submit="submitEdit"
+    />
+
+    <ProductDeleteModal
+      v-model="showDelete"
+      :product="deleteProduct"
+      :submitting="deleteLoading"
+      :error="deleteError"
+      @confirm="confirmDelete"
+    />
+
     <SaleCheckoutModal
       v-model="showCheckout"
       :items="saleCart"
@@ -186,6 +202,20 @@
             @click="openDetail(product)"
           >
             <div class="card-img">
+              <!-- Gestionar el producto vive aparte de venderlo: el pie de la
+                   tarjeta queda libre para las acciones del POS. -->
+              <div v-if="canRestock(product)" class="card-admin" @click.stop>
+                <button class="admin-btn" :title="$t('inventory.card.edit')" @click="openEdit(product)">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M11.5 2.5l2 2L6 12l-2.5.5L4 10l7.5-7.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="admin-btn danger" :title="$t('inventory.card.delete')" @click="openDelete(product)">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8h6l.5-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
               <div class="img-placeholder">
                 <!-- Ícono genérico de producto -->
                 <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
@@ -425,6 +455,8 @@ import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import SaleCheckoutModal from '../components/inventory/SaleCheckoutModal.vue'
+import ProductEditModal from '../components/inventory/ProductEditModal.vue'
+import ProductDeleteModal from '../components/inventory/ProductDeleteModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { calcSubtotal } from '@/utils/sales.js'
 
@@ -927,6 +959,87 @@ async function submitProduct(formData) {
     modalError.value = t('inventory.errors.networkError')
   } finally {
     modalLoading.value = false
+  }
+}
+
+/* ── editar producto ── */
+const showEdit    = ref(false)
+const editProduct = ref(null)
+const editLoading = ref(false)
+const editError   = ref(null)
+
+function openEdit(product) {
+  if (!canRestock(product)) return
+  editProduct.value = product
+  editError.value   = null
+  showEdit.value    = true
+}
+
+async function submitEdit(payload) {
+  const product = editProduct.value
+  if (!product) return
+  editLoading.value = true
+  editError.value   = null
+  try {
+    const res = await fetch(`/api/products/${product.id_producto}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(payload),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      editError.value = data.message || `Error ${res.status}`
+      return
+    }
+    showEdit.value = false
+    await loadData()
+  } catch {
+    editError.value = t('inventory.errors.networkError')
+  } finally {
+    editLoading.value = false
+  }
+}
+
+/* ── eliminar producto ── */
+const showDelete    = ref(false)
+const deleteProduct = ref(null)
+const deleteLoading = ref(false)
+const deleteError   = ref(null)
+
+function openDelete(product) {
+  if (!canRestock(product)) return
+  deleteProduct.value = product
+  deleteError.value   = null
+  showDelete.value    = true
+}
+
+async function confirmDelete() {
+  const product = deleteProduct.value
+  if (!product) return
+  deleteLoading.value = true
+  deleteError.value   = null
+  try {
+    const res = await fetch(`/api/products/${product.id_producto}`, {
+      method: 'DELETE',
+      headers: authHeader(),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      // 409 = el producto tiene movimientos y la FK lo protege. Es el caso
+      // habitual y merece una explicación propia, no el mensaje crudo de la API.
+      deleteError.value = res.status === 409
+        ? t('inventory.delete.hasMovements')
+        : data.message || `Error ${res.status}`
+      return
+    }
+    showDelete.value = false
+    // El producto puede estar en el carrito: el watch de `products` lo retira
+    // al recargar, así que la venta no queda apuntando a algo que ya no existe.
+    await loadData()
+  } catch {
+    deleteError.value = t('inventory.errors.networkError')
+  } finally {
+    deleteLoading.value = false
   }
 }
 

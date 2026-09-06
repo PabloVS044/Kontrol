@@ -556,6 +556,8 @@
       "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
+      "edit": "Edit product",
+      "delete": "Delete product",
       "cannotSell": "This product cannot be sold right now."
     },
     "checkout": {
@@ -606,6 +608,20 @@
       "exportInventory": "↓ Export inventory",
       "dataSource": "Data Source",
       "dataSourceText": "Inventory database · Live"
+    },
+    "edit": {
+      "title": "Edit product",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "stockNote": "Current stock changes through restocks and sales, not from here."
+    },
+    "delete": {
+      "title": "Delete product",
+      "question": "Delete {name}?",
+      "warning": "This action cannot be undone.",
+      "submit": "Delete",
+      "deleting": "Deleting…",
+      "hasMovements": "Cannot delete: the product has recorded movements. Its inventory history would stop adding up."
     },
     "modal": {
       "title": "New product",

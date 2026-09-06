@@ -531,3 +531,29 @@
     background: var(--k-shade-3);
   }
 }
+
+/* ── Gestión del producto sobre la imagen de la tarjeta ── */
+/* Editar y borrar viven aquí y no en el pie porque el pie es del POS: vender e
+   ingresar stock son las acciones de alta frecuencia y no deben competir con
+   dos botones destructivos. */
+.card-admin {
+  position: absolute;
+  top: 10px; left: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: var(--k-z-base);
+}
+.admin-btn {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--k-color-black-rgb), 0.55);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-text-muted);
+  cursor: pointer;
+  transition: var(--k-transition-ui);
+}
+.admin-btn:hover { color: var(--k-color-primary); border-color: var(--k-color-primary); }
+.admin-btn.danger:hover {
+  color: var(--k-alert-critical-text);
+  border-color: var(--k-alert-critical-border);
+}
