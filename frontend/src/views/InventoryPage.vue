@@ -660,24 +660,63 @@ function openScanner() {
   showScanner.value = true
 }
 
+// Un acierto se lee de un vistazo; un error hay que poder leerlo entero antes
+// de que desaparezca, sobre todo con el código en la mano.
+const SCAN_FEEDBACK_MS = { ok: 1800, warn: 3200, err: 3200 }
+
 function flashScanFeedback(type, msg) {
   scanFeedback.value = { type, msg }
   clearTimeout(scanFeedbackTimer)
-  scanFeedbackTimer = setTimeout(() => { scanFeedback.value = null }, 1800)
+  scanFeedbackTimer = setTimeout(() => { scanFeedback.value = null }, SCAN_FEEDBACK_MS[type])
 }
 
+/**
+ * Punto único de entrada del escaneo: lo llaman tanto la cámara como el campo
+ * manual del panel, así que ambos caminos producen exactamente los mismos
+ * estados controlados.
+ *
+ * Los cuatro casos que el POS tiene que distinguir:
+ *  - código inexistente     → error, no se toca el carrito
+ *  - producto sin stock     → error (incluye "sin permiso de venta")
+ *  - código ya en la venta  → aviso, y suma una unidad más
+ *  - código nuevo y vendible→ alta correcta
+ */
 function handleScan(code) {
+  const scanned = String(code ?? '').trim()
+  if (!scanned) return
+
   const match = products.value.find(
-    (p) => p.codigo_barras && String(p.codigo_barras) === String(code)
+    (p) => p.codigo_barras && String(p.codigo_barras) === scanned
   )
   if (!match) {
-    flashScanFeedback('err', t('inventory.scanner.notFound', { code }))
+    flashScanFeedback('err', t('inventory.scanner.notFound', { code: scanned }))
     return
   }
   if (!canSellProduct(match)) {
-    flashScanFeedback('err', t('inventory.card.cannotSell'))
+    flashScanFeedback('err', t('inventory.scanner.outOfStock', { name: match.nombre }))
     return
   }
+
+  const existing = getCartItem(match)
+  if (existing) {
+    // Duplicado: el código ya está en la venta. Se suma una unidad, salvo que
+    // eso pasara del stock disponible — ahí el aviso pasa a error y no se toca
+    // la cantidad, porque la venta no podría cerrarse.
+    if (existing.cantidad >= Number(match.stock_actual)) {
+      flashScanFeedback('err', t('inventory.scanner.stockLimit', {
+        name: match.nombre,
+        count: match.stock_actual,
+      }))
+      return
+    }
+    incrementCart(match)
+    flashScanFeedback('warn', t('inventory.scanner.duplicate', {
+      name: match.nombre,
+      count: existing.cantidad,
+    }))
+    return
+  }
+
   addToCart(match)
   flashScanFeedback('ok', t('inventory.scanner.added', { name: match.nombre }))
 }
