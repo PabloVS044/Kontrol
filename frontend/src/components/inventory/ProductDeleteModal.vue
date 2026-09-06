@@ -22,7 +22,7 @@
           :label="submitting ? $t('inventory.delete.deleting') : $t('inventory.delete.submit')"
           :disabled="submitting"
           back-color="var(--k-color-error)"
-          hover-back="var(--k-alert-critical-text)"
+          hover-back="var(--k-color-error)"
           @click="$emit('confirm')"
         />
       </div>
@@ -56,6 +56,10 @@ const show = computed({
 /**
  * Confirmación de borrado. El botón destructivo va en rojo de marca —no en el
  * dorado del resto de acciones— para que no se confunda con un "guardar".
+ *
+ * `hover-back` repite el color de fondo a propósito: así el hover solo aplica
+ * el aclarado del componente en vez de saltar al rojo claro de estado, que con
+ * texto blanco encima se queda por debajo del contraste legible.
  */
 
 .delete-body { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
