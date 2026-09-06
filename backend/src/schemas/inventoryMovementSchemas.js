@@ -2,12 +2,24 @@ import { z } from 'zod'
 
 const TIPOS_MOVIMIENTO = ['ENTRADA', 'SALIDA', 'AJUSTE']
 
+/**
+ * Zona horaria IANA del cliente: "America/Guatemala", "Europe/Madrid"…
+ *
+ * Los rangos `desde`/`hasta` llegan en hora local del navegador mientras que
+ * `movimiento_inventario.fecha` guarda hora UTC; sin esta zona el filtro se
+ * desplaza justo el desfase horario. El nombre viaja siempre como parámetro de
+ * la consulta, nunca interpolado en el SQL, y el patrón acota la forma para que
+ * un valor absurdo se rechace aquí y no en el motor.
+ */
+const tzSchema = z.string().regex(/^[A-Za-z0-9_+\-/]{1,64}$/).optional()
+
 export const getInventoryMovementsQuerySchema = z.object({
   id_producto: z.coerce.number().int().positive().optional(),
   projectId: z.coerce.number().int().positive().optional(),
   tipo:        z.enum(TIPOS_MOVIMIENTO).optional(),
   desde:       z.string().optional(),
   hasta:       z.string().optional(),
+  tz:          tzSchema,
 })
 
 export const getInventorySalesStatsQuerySchema = z.object({
@@ -15,6 +27,7 @@ export const getInventorySalesStatsQuerySchema = z.object({
   desde:     z.string().optional(),
   hasta:     z.string().optional(),
   bucket:    z.enum(['hour', 'day', 'week', 'month']).optional(),
+  tz:        tzSchema,
 })
 
 export const inventoryMovementIdParamSchema = z.object({

@@ -524,9 +524,7 @@
       "subtitle": "Explora y gestiona tu catálogo de productos",
       "newProduct": "Nuevo producto",
       "noWriteAccess": "Sin acceso de escritura",
-      "selectProjectFirst": "Selecciona un proyecto",
-      "noWriteAccessTitle": "No tienes acceso de escritura en este proyecto",
-      "selectProjectTitle": "Selecciona un proyecto primero",
+      "noWriteAccessTitle": "No tienes acceso de escritura en ningún proyecto",
       "settings": "Configuración",
       "history": "Historial"
     },
@@ -536,7 +534,7 @@
       "loading": "Cargando…"
     },
     "search": {
-      "placeholder": "Buscar por nombre o categoría..."
+      "placeholder": "Buscar por nombre, categoría o código..."
     },
     "filter": {
       "category": "Categoría",
@@ -558,7 +556,16 @@
       "restock": "Ingresar",
       "increase": "Agregar uno",
       "decrease": "Quitar uno",
+      "edit": "Editar producto",
+      "delete": "Eliminar producto",
       "cannotSell": "Este producto no puede venderse ahora."
+    },
+    "checkout": {
+      "title": "Cobrar venta",
+      "total": "Total a cobrar",
+      "confirm": "Confirmar venta",
+      "confirming": "Procesando…",
+      "back": "Volver"
     },
     "sale": {
       "title": "Venta en curso",
@@ -602,8 +609,23 @@
       "dataSource": "Fuente de Datos",
       "dataSourceText": "Base de datos de inventario · En vivo"
     },
+    "edit": {
+      "title": "Editar producto",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "stockNote": "El stock actual se ajusta con ingresos y ventas, no desde aquí."
+    },
+    "delete": {
+      "title": "Eliminar producto",
+      "question": "¿Eliminar {name}?",
+      "warning": "Esta acción no se puede deshacer.",
+      "submit": "Eliminar",
+      "deleting": "Eliminando…",
+      "hasMovements": "No se puede eliminar: el producto tiene movimientos registrados. Su historial de inventario dejaría de cuadrar."
+    },
     "modal": {
       "title": "Nuevo producto",
+      "project": "Proyecto",
       "name": "Nombre",
       "description": "Descripción",
       "salePrice": "Precio de venta",
@@ -625,7 +647,10 @@
       "boxPrice": "Precio por caja",
       "boxPreview": "→ {units} unidades · costo ${cost}/u",
       "barcode": "Código de barras",
-      "barcodePlaceholder": "Escanea o escribe el código"
+      "barcodePlaceholder": "Escanea o escribe el código",
+      "errors": {
+        "costOverPrice": "El costo no puede superar el precio de venta."
+      }
     },
     "scanner": {
       "scan": "Escanear código",
@@ -635,8 +660,15 @@
       "permissionError": "Permiso de cámara denegado. Habilítalo para escanear.",
       "noCamera": "No se pudo acceder a la cámara.",
       "insecureContext": "La cámara requiere HTTPS. Abre la app en localhost o por una URL https:// para escanear.",
+      "quantity": "Cantidad",
+      "available": "Disponible: {count}",
+      "inCart": "ya en la venta: {count}",
+      "add": "Agregar a la venta",
+      "discard": "Descartar lectura",
+      "addedQty": "Agregado: {count} × {name}",
       "notFound": "Sin producto para el código {code}.",
-      "added": "Agregado: {name}"
+      "outOfStock": "{name} no tiene stock disponible.",
+      "stockLimit": "Solo quedan {count} unidades de {name}."
     },
     "restock": {
       "title": "Ingresar stock",

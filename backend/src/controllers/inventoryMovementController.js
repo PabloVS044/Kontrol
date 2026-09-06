@@ -26,6 +26,28 @@ const MOVIMIENTO_SELECT = `
   pv.nombre AS proveedor_nombre
 `
 
+/**
+ * Traducción del rango de fechas entre el reloj del cliente y el de la columna.
+ *
+ * `movimiento_inventario.fecha` es `timestamp without time zone` y se rellena
+ * con CURRENT_TIMESTAMP; con el servidor en UTC, eso guarda el reloj UTC. El
+ * cliente, en cambio, construye `desde`/`hasta` con la hora local del
+ * navegador. Comparar ambos directamente descuadra el filtro exactamente en el
+ * desfase horario: en UTC-6 una venta recién registrada queda seis horas por
+ * delante de `hasta`, así que el informe la ignora y el POS parece no vender.
+ *
+ * Se convierten los EXTREMOS del rango y no la columna, para que el índice
+ * (id_proyecto, fecha) siga aprovechándose.
+ */
+const localBoundToUtc = (boundIdx, tzIdx) =>
+  `($${boundIdx}::timestamp AT TIME ZONE $${tzIdx}) AT TIME ZONE 'UTC'`
+
+/** Reloj UTC de la columna → reloj local del cliente, para agrupar por día. */
+const utcFechaToLocal = (tzIdx) => `((m.fecha AT TIME ZONE 'UTC') AT TIME ZONE $${tzIdx})`
+
+/** Zona IANA del cliente. Sin ella se asume UTC, que es como se comportaba antes. */
+const clientTz = (req) => req.query.tz || 'UTC'
+
 const getAccessibleInventoryProjectIds = async (req) => {
   if (hasEmpresaManagementAccess(req.empresa.rol_empresa)) {
     return null
@@ -80,13 +102,17 @@ export const getInventoryMovements = async (req, res) => {
     values.push(tipo)
     filters.push(`m.tipo = $${values.length}`)
   }
-  if (desde) {
-    values.push(desde)
-    filters.push(`m.fecha >= $${values.length}::timestamp`)
-  }
-  if (hasta) {
-    values.push(hasta)
-    filters.push(`m.fecha <= $${values.length}::timestamp`)
+  if (desde || hasta) {
+    values.push(clientTz(req))
+    const tzIdx = values.length
+    if (desde) {
+      values.push(desde)
+      filters.push(`m.fecha >= ${localBoundToUtc(values.length, tzIdx)}`)
+    }
+    if (hasta) {
+      values.push(hasta)
+      filters.push(`m.fecha <= ${localBoundToUtc(values.length, tzIdx)}`)
+    }
   }
 
   const result = await pool.query(
@@ -447,17 +473,32 @@ export const getInventorySalesStats = async (req, res) => {
     values.push(id_proyecto)
     filters.push(`m.id_proyecto = $${values.length}`)
   }
-  if (desde) {
-    values.push(desde)
-    filters.push(`m.fecha >= $${values.length}::timestamp`)
-  }
-  if (hasta) {
-    values.push(hasta)
-    filters.push(`m.fecha <= $${values.length}::timestamp`)
+  if (desde || hasta) {
+    values.push(clientTz(req))
+    const tzIdx = values.length
+    if (desde) {
+      values.push(desde)
+      filters.push(`m.fecha >= ${localBoundToUtc(values.length, tzIdx)}`)
+    }
+    if (hasta) {
+      values.push(hasta)
+      filters.push(`m.fecha <= ${localBoundToUtc(values.length, tzIdx)}`)
+    }
   }
 
   const where = filters.join(' AND ')
   const truncUnit = BUCKET_TRUNC[bucket] ?? 'day'
+
+  // La serie agrupa por día/hora del CLIENTE, no del servidor: si no, una venta
+  // de la tarde en UTC-6 cae en el bucket del día siguiente. La zona se añade
+  // como parámetro propio de esta consulta —las otras dos no la referencian, y
+  // Postgres rechaza un bind con parámetros de más.
+  const serieValues = [...values, clientTz(req)]
+  const serieTzIdx = serieValues.length
+  // `periodo` sale como texto y no como timestamp a propósito: ya viene en hora
+  // local del cliente, y devolverlo como instante haría que el driver lo
+  // reinterpretara y el eje del gráfico se desplazara otra vez.
+  const periodoExpr = `to_char(date_trunc('${truncUnit}', ${utcFechaToLocal(serieTzIdx)}), 'YYYY-MM-DD"T"HH24:MI:SS')`
 
   // costo de ventas: snapshot al vender, con fallback al costo actual del producto
   const cogsExpr = 'COALESCE(m.costo_unitario_venta, p.costo_promedio_ponderado, 0)'
@@ -480,7 +521,7 @@ export const getInventorySalesStats = async (req, res) => {
     ),
     pool.query(
       `SELECT
-         date_trunc('${truncUnit}', m.fecha) AS periodo,
+         ${periodoExpr} AS periodo,
          COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.precio_unitario * m.cantidad END), 0)                              AS ingreso,
          COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN (m.precio_unitario - ${cogsExpr}) * m.cantidad END), 0)              AS ganancia,
          COALESCE(SUM(CASE WHEN m.tipo='GASTO_ADMIN' THEN m.precio_unitario END), 0)
@@ -491,7 +532,7 @@ export const getInventorySalesStats = async (req, res) => {
        WHERE ${where}
        GROUP BY periodo
        ORDER BY periodo ASC`,
-      values
+      serieValues
     ),
     pool.query(
       `SELECT

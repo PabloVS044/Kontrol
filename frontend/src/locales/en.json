@@ -524,9 +524,7 @@
       "subtitle": "Browse and manage your product catalogue",
       "newProduct": "New product",
       "noWriteAccess": "No write access",
-      "selectProjectFirst": "Select project first",
-      "noWriteAccessTitle": "You do not have write access in this project",
-      "selectProjectTitle": "Select a project first",
+      "noWriteAccessTitle": "You do not have write access in any project",
       "settings": "Settings",
       "history": "History"
     },
@@ -536,7 +534,7 @@
       "loading": "Loading…"
     },
     "search": {
-      "placeholder": "Search by name or category..."
+      "placeholder": "Search by name, category or code..."
     },
     "filter": {
       "category": "Category",
@@ -558,7 +556,16 @@
       "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
+      "edit": "Edit product",
+      "delete": "Delete product",
       "cannotSell": "This product cannot be sold right now."
+    },
+    "checkout": {
+      "title": "Charge sale",
+      "total": "Amount due",
+      "confirm": "Confirm sale",
+      "confirming": "Processing…",
+      "back": "Back"
     },
     "sale": {
       "title": "Current sale",
@@ -602,8 +609,23 @@
       "dataSource": "Data Source",
       "dataSourceText": "Inventory database · Live"
     },
+    "edit": {
+      "title": "Edit product",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "stockNote": "Current stock changes through restocks and sales, not from here."
+    },
+    "delete": {
+      "title": "Delete product",
+      "question": "Delete {name}?",
+      "warning": "This action cannot be undone.",
+      "submit": "Delete",
+      "deleting": "Deleting…",
+      "hasMovements": "Cannot delete: the product has recorded movements. Its inventory history would stop adding up."
+    },
     "modal": {
       "title": "New product",
+      "project": "Project",
       "name": "Name",
       "description": "Description",
       "salePrice": "Sale price",
@@ -625,7 +647,10 @@
       "boxPrice": "Price per box",
       "boxPreview": "→ {units} units · cost ${cost}/u",
       "barcode": "Barcode",
-      "barcodePlaceholder": "Scan or type the code"
+      "barcodePlaceholder": "Scan or type the code",
+      "errors": {
+        "costOverPrice": "Cost cannot be greater than the sale price."
+      }
     },
     "scanner": {
       "scan": "Scan barcode",
@@ -635,8 +660,15 @@
       "permissionError": "Camera permission denied. Enable it to scan.",
       "noCamera": "Could not access the camera.",
       "insecureContext": "The camera requires HTTPS. Open the app on localhost or over an https:// URL to scan.",
+      "quantity": "Quantity",
+      "available": "Available: {count}",
+      "inCart": "already in the sale: {count}",
+      "add": "Add to sale",
+      "discard": "Discard scan",
+      "addedQty": "Added: {count} × {name}",
       "notFound": "No product for code {code}.",
-      "added": "Added: {name}"
+      "outOfStock": "{name} has no stock available.",
+      "stockLimit": "Only {count} units of {name} left."
     },
     "restock": {
       "title": "Add stock",

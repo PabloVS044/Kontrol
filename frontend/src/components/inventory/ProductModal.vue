@@ -1,18 +1,23 @@
 <template>
   <BaseModal v-model="show" :title="$t('inventory.modal.title')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.name') }} <span class="req">*</span></label>
+      <FormField :label="$t('inventory.modal.project')" :required="true">
+        <select v-model.number="form.id_proyecto">
+          <option v-for="p in projects" :key="p.id_proyecto" :value="p.id_proyecto">
+            {{ p.nombre }}
+          </option>
+        </select>
+      </FormField>
+
+      <FormField :label="$t('inventory.modal.name')" :required="true">
         <input v-model="form.nombre" type="text" :placeholder="$t('inventory.modal.namePlaceholder')" required />
-      </div>
+      </FormField>
 
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.description') }}</label>
+      <FormField :label="$t('inventory.modal.description')">
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
-      </div>
+      </FormField>
 
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.barcode') }}</label>
+      <FormField :label="$t('inventory.modal.barcode')">
         <div class="barcode-row">
           <input v-model="form.codigo_barras" type="text" :placeholder="$t('inventory.modal.barcodePlaceholder')" />
           <button type="button" class="barcode-scan" :title="$t('inventory.scanner.scan')" @click="showScanner = true">
@@ -22,24 +27,21 @@
             </svg>
           </button>
         </div>
-      </div>
+      </FormField>
 
       <BarcodeScanner v-model="showScanner" @detected="onBarcodeDetected" />
 
       <div class="form-row">
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.salePrice') }} <span class="req">*</span></label>
+        <FormField :label="$t('inventory.modal.salePrice')" :required="true">
           <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
-        </div>
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.minStock') }}</label>
+        </FormField>
+        <FormField :label="$t('inventory.modal.minStock')">
           <input v-model.number="form.stock_minimo" type="number" min="0" placeholder="0" />
-        </div>
+        </FormField>
       </div>
 
       <!-- Costo y stock inicial: por unidad o por caja -->
-      <div class="form-field">
-        <label>{{ $t('inventory.modal.costAndStock') }}</label>
+      <FormField :label="$t('inventory.modal.costAndStock')">
         <div class="mode-toggle">
           <button
             type="button"
@@ -54,36 +56,31 @@
             @click="form.modo = 'caja'"
           >{{ $t('inventory.modal.stockMode.box') }}</button>
         </div>
-      </div>
+      </FormField>
 
       <template v-if="form.modo === 'unidad'">
         <div class="form-row">
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.initialStock') }}</label>
+          <FormField :label="$t('inventory.modal.initialStock')">
             <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.costPrice') }} <span class="req">*</span></label>
+          </FormField>
+          <FormField :label="$t('inventory.modal.costPrice')" :required="true" :error="costError">
             <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" />
-          </div>
+          </FormField>
         </div>
       </template>
 
       <template v-else>
         <div class="form-row">
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.boxes') }}</label>
+          <FormField :label="$t('inventory.modal.boxes')">
             <input v-model.number="form.cajas" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.unitsPerBox') }} <span class="req">*</span></label>
+          </FormField>
+          <FormField :label="$t('inventory.modal.unitsPerBox')" :required="true">
             <input v-model.number="form.unidades_por_caja" type="number" min="1" placeholder="0" />
-          </div>
+          </FormField>
         </div>
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.boxPrice') }} <span class="req">*</span></label>
+        <FormField :label="$t('inventory.modal.boxPrice')" :required="true" :error="costError">
           <input v-model.number="form.precio_caja" type="number" min="0" step="0.01" placeholder="0.00" />
-        </div>
+        </FormField>
         <p v-if="resolved.cantidad" class="box-preview">
           {{ $t('inventory.modal.boxPreview', { units: resolved.cantidad, cost: resolved.costoUnitario.toFixed(2) }) }}
         </p>
@@ -92,10 +89,21 @@
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">{{ $t('inventory.modal.cancel') }}</button>
-        <button type="submit" class="btn-primary" :disabled="submitting || !canSubmit">
-          {{ submitting ? $t('inventory.modal.saving') : $t('inventory.modal.save') }}
-        </button>
+        <Button
+          class="btn-cancel"
+          :label="$t('inventory.modal.cancel')"
+          back-color="var(--k-shade-3)"
+          hover-back="var(--k-shade-4)"
+          @click="show = false"
+        />
+        <Button
+          class="btn-save"
+          type="submit"
+          :label="submitting ? $t('inventory.modal.saving') : $t('inventory.modal.save')"
+          :disabled="submitting || !canSubmit"
+          back-color="var(--k-color-primary)"
+          hover-back="var(--k-color-primary-2)"
+        />
       </div>
     </form>
   </BaseModal>
@@ -103,12 +111,22 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+import Button from '@/components/UI/Button/Button.vue'
+import FormField from '@/components/common/FormField.vue'
 import BarcodeScanner from '@/components/inventory/BarcodeScanner.vue'
 import { resolveStockEntry } from '@/utils/boxPricing'
 
+const { t } = useI18n()
+
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
+  // Proyectos donde el usuario puede dar de alta. El padre ya los filtra por
+  // permiso, así que cualquiera de la lista es un destino válido.
+  projects:   { type: Array, default: () => [] },
+  // Proyecto del filtro del catálogo, si hay uno: es el destino más probable.
+  defaultProjectId: { type: Number, default: null },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
 })
@@ -122,12 +140,23 @@ const show = computed({
 
 function emptyForm() {
   return {
+    id_proyecto: defaultProject(),
     nombre: '', descripcion: '', codigo_barras: '',
     precio_venta: null, precio_costo: null,
     stock_minimo: 0, stock_inicial: 0,
     modo: 'unidad',
     cajas: null, unidades_por_caja: null, precio_caja: null,
   }
+}
+
+/**
+ * Destino por defecto: el proyecto que se está mirando si se puede escribir en
+ * él y, si no, el primero disponible. Nunca se abre sin destino, que era lo que
+ * dejaba el alta bloqueada desde la vista de "todos los proyectos".
+ */
+function defaultProject() {
+  const enLista = props.projects.some((p) => p.id_proyecto === props.defaultProjectId)
+  return enLista ? props.defaultProjectId : (props.projects[0]?.id_proyecto ?? null)
 }
 
 const form = ref(emptyForm())
@@ -154,8 +183,33 @@ const resolved = computed(() =>
   })
 )
 
+/**
+ * Costo por unidad, venga escrito directamente o resuelto desde el precio por
+ * caja. Es el valor que se guarda y contra el que se compara el precio de
+ * venta, así que el modo "por caja" queda cubierto por la misma regla.
+ */
+const unitCost = computed(() =>
+  form.value.modo === 'caja' ? resolved.value.costoUnitario : form.value.precio_costo
+)
+
+// Un producto que cuesta más de lo que se vende nace con margen negativo: cada
+// venta se registraría como pérdida. El backend lo rechaza igualmente; aquí se
+// avisa antes de enviar y sobre el campo que hay que corregir.
+const costExceedsPrice = computed(() => {
+  const costo = Number(unitCost.value)
+  const venta = Number(form.value.precio_venta)
+  if (!Number.isFinite(costo) || !Number.isFinite(venta)) return false
+  return costo > venta
+})
+
+const costError = computed(() =>
+  costExceedsPrice.value ? t('inventory.modal.errors.costOverPrice') : ''
+)
+
 const canSubmit = computed(() => {
+  if (!form.value.id_proyecto) return false
   if (!form.value.nombre || form.value.precio_venta == null) return false
+  if (costExceedsPrice.value) return false
   if (form.value.modo === 'caja') {
     return resolved.value.cantidad != null && resolved.value.costoUnitario != null
   }
@@ -166,6 +220,7 @@ function handleSubmit() {
   if (!canSubmit.value) return
   const isBox = form.value.modo === 'caja'
   emit('submit', {
+    id_proyecto: form.value.id_proyecto,
     nombre: form.value.nombre,
     descripcion: form.value.descripcion,
     precio_venta: form.value.precio_venta,
@@ -178,59 +233,84 @@ function handleSubmit() {
 </script>
 
 <style scoped>
+/**
+ * Identidad visual v2 (SCRUM-19): etiquetas y errores los aporta `FormField`
+ * (SCRUM-14); aquí solo queda el estilo de los controles, ya sobre tokens.
+ */
+
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.form-field  { display: flex; flex-direction: column; gap: 6px; }
 .form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field input,
-.form-field textarea,
-.form-field select {
-  background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: var(--Text); font-family: 'Manrope', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none; resize: vertical;
-  transition: border-color 0.15s;
+
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+  transition: var(--k-transition-ui);
+  width: 100%;
 }
-.form-field input:focus,
-.form-field textarea:focus { border-color: #caa860; }
-.req { color: var(--Primary); }
-.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
+.modal-form input:focus,
+.modal-form textarea:focus {
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
+}
+.modal-form input::placeholder,
+.modal-form textarea::placeholder { color: var(--k-text-placeholder); }
+.modal-form select:focus { border-color: var(--k-color-primary); }
+.modal-form select option { background: var(--k-shade-2); color: var(--k-color-text); }
+
+.modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
 /* Unit / box mode toggle */
-.mode-toggle { display: flex; border: 1px solid #1f1f1f; }
+.mode-toggle { display: flex; border: var(--k-border-width) solid var(--k-shade-6); }
 .mode-btn {
-  flex: 1; padding: 9px 12px; background: #0a0a0a; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; color: var(--TextMuted);
-  transition: background 0.15s, color 0.15s;
+  flex: 1; padding: 9px 12px; background: var(--k-shade-1); border: none; cursor: pointer;
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold); color: var(--k-text-muted);
+  transition: var(--k-transition-ui);
 }
-.mode-btn + .mode-btn { border-left: 1px solid #1f1f1f; }
-.mode-btn.active { background: #caa860; color: var(--BtnText); }
+.mode-btn + .mode-btn { border-left: var(--k-border-width) solid var(--k-shade-6); }
+.mode-btn.active { background: var(--k-color-primary); color: var(--k-form-btn-text); }
+
 .box-preview {
-  font-size: 12px; color: var(--Primary); font-family: 'Manrope', sans-serif;
-  background: rgba(202,168,96,0.08); border: 1px solid rgba(202,168,96,0.2);
+  font-size: var(--k-font-size-caption-lg); color: var(--k-alert-watching-text);
+  font-family: var(--k-font-sans);
+  background: var(--k-alert-watching-bg);
+  border: var(--k-border-width) solid var(--k-alert-watching-border);
   padding: 8px 12px;
 }
 
 .barcode-row { display: flex; gap: 8px; }
 .barcode-row input { flex: 1; }
 .barcode-scan {
-  flex: 0 0 auto; width: 42px; background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: var(--TextMuted); cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: border-color .15s, color .15s;
+  flex: 0 0 auto; width: 42px; background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--k-transition-ui);
 }
-.barcode-scan:hover { border-color: #caa860; color: var(--Primary); }
+.barcode-scan:hover { border-color: var(--k-color-primary); color: var(--k-color-primary); }
 
-.btn-primary {
-  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: var(--BtnText); transition: filter 0.15s;
+/* El color de fondo se pasa por props (`back-color`/`hover-back`) para no
+   pelear con el hover del componente. Aquí solo queda lo que el POS impone:
+   esquina viva —igual que el resto de pantallas ya migradas— y tipografía. */
+.modal-actions .btn {
+  border-radius: 0;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
+  padding: 10px 20px;
 }
-.btn-primary:hover    { filter: brightness(1.1); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
-  font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
-  cursor: pointer; transition: border-color 0.15s;
+.modal-actions .btn-cancel {
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
 }
-.btn-secondary:hover { border-color: #333; }
+.modal-actions .btn-save { color: var(--k-form-btn-text); }
 </style>

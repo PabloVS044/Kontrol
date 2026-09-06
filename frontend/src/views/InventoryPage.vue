@@ -4,6 +4,8 @@
 
     <ProductModal
       v-model="showModal"
+      :projects="writableProjects"
+      :default-project-id="selectedProject?.id_proyecto ?? null"
       :submitting="modalLoading"
       :error="modalError"
       @submit="submitProduct"
@@ -20,25 +22,57 @@
     <BarcodeScanner
       v-model="showScanner"
       :feedback="scanFeedback"
+      :pending="pendingScan"
       @detected="handleScan"
+      @confirm="confirmScan"
+      @cancel="cancelScan"
+    />
+
+    <ProductEditModal
+      v-model="showEdit"
+      :product="editProduct"
+      :submitting="editLoading"
+      :error="editError"
+      @submit="submitEdit"
+    />
+
+    <ProductDeleteModal
+      v-model="showDelete"
+      :product="deleteProduct"
+      :submitting="deleteLoading"
+      :error="deleteError"
+      @confirm="confirmDelete"
+    />
+
+    <SaleCheckoutModal
+      v-model="showCheckout"
+      :items="saleCart"
+      :total="saleTotal"
+      :subtitle="saleSubtitle"
+      :error="saleError"
+      :submitting="saleSubmitting"
+      @confirm="submitSale"
     />
 
     <div class="inventory-layout">
 
     <!-- Estado: no autenticado -->
-    <div v-if="authError" class="state-screen">
-      <p class="state-title">{{ $t('inventory.authError.title') }}</p>
-      <p class="state-msg">{{ $t('inventory.authError.message') }}</p>
-    </div>
+    <ErrorState
+      v-if="authError"
+      :title="$t('inventory.authError.title')"
+      :message="$t('inventory.authError.message')"
+    />
 
     <!-- Estado: error genérico -->
-    <div v-else-if="fetchError" class="state-screen">
-      <p class="state-title">{{ $t('inventory.fetchError.title') }}</p>
-      <p class="state-msg">{{ fetchError }}</p>
-      <button class="btn-primary" style="margin-top:16px" @click="loadData">
-        <span>{{ $t('inventory.fetchError.retry') }}</span>
-      </button>
-    </div>
+    <ErrorState
+      v-else-if="fetchError"
+      :title="$t('inventory.fetchError.title')"
+      :message="fetchError"
+    >
+      <template #actions>
+        <Button :label="$t('inventory.fetchError.retry')" @click="loadData" />
+      </template>
+    </ErrorState>
 
     <template v-else>
 
@@ -56,24 +90,24 @@
               data-birdie="create-product"
               class="btn-primary"
               :class="{ 'btn-disabled': !canCreateProduct }"
-              :title="canCreateProduct ? '' : selectedProject ? $t('inventory.header.noWriteAccessTitle') : $t('inventory.header.selectProjectTitle')"
+              :title="canCreateProduct ? '' : $t('inventory.header.noWriteAccessTitle')"
               @click="canCreateProduct ? openNewProduct() : null"
             >
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
-              <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : selectedProject ? $t('inventory.header.noWriteAccess') : $t('inventory.header.selectProjectFirst') }}</span>
+              <span>{{ canCreateProduct ? $t('inventory.header.newProduct') : $t('inventory.header.noWriteAccess') }}</span>
             </button>
             <button class="icon-btn" :title="$t('inventory.header.settings')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="9" r="2.5" stroke="#666" stroke-width="1.4"/>
-                <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+                <circle cx="9" cy="9" r="2.5" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+                <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.697 3.697l1.414 1.414M12.889 12.889l1.414 1.414M3.697 14.303l1.414-1.414M12.889 5.111l1.414-1.414" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
             <button class="icon-btn" :title="$t('inventory.header.history')">
               <svg class="icon18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="9" r="7" stroke="#666" stroke-width="1.4"/>
-                <path d="M9 5v4.5l3 1.5" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+                <circle cx="9" cy="9" r="7" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+                <path d="M9 5v4.5l3 1.5" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
               </svg>
             </button>
           </div>
@@ -102,8 +136,8 @@
         <!-- Búsqueda -->
         <div class="search-bar">
           <svg class="icon18" viewBox="0 0 18 18" fill="none">
-            <circle cx="8" cy="8" r="5.5" stroke="#666" stroke-width="1.4"/>
-            <path d="M12.5 12.5L16 16" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+            <circle cx="8" cy="8" r="5.5" stroke="var(--k-gray-4)" stroke-width="1.4"/>
+            <path d="M12.5 12.5L16 16" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
           <input
             v-model="searchQuery"
@@ -118,13 +152,13 @@
             @click="openScanner"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
-              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="#666" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="var(--k-gray-4)" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
           </button>
           <button class="search-submit">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
             </svg>
           </button>
         </div>
@@ -171,19 +205,33 @@
             @click="openDetail(product)"
           >
             <div class="card-img">
+              <!-- Gestionar el producto vive aparte de venderlo: el pie de la
+                   tarjeta queda libre para las acciones del POS. -->
+              <div v-if="canRestock(product)" class="card-admin" @click.stop>
+                <button class="admin-btn" :title="$t('inventory.card.edit')" @click="openEdit(product)">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M11.5 2.5l2 2L6 12l-2.5.5L4 10l7.5-7.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="admin-btn danger" :title="$t('inventory.card.delete')" @click="openDelete(product)">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8h6l.5-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
               <div class="img-placeholder">
                 <!-- Ícono genérico de producto -->
                 <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-                  <rect x="10" y="8" width="28" height="34" rx="2" stroke="#faf8f5" stroke-width="1.5"/>
-                  <path d="M10 18h28M18 8v10" stroke="#faf8f5" stroke-width="1.5"/>
+                  <rect x="10" y="8" width="28" height="34" rx="2" stroke="var(--k-color-text)" stroke-width="1.5"/>
+                  <path d="M10 18h28M18 8v10" stroke="var(--k-color-text)" stroke-width="1.5"/>
                 </svg>
                 <span>image</span>
               </div>
               <Pill
                 :label="stockLabel(product)"
-                :btnColor="product.stock_actual === 0 ? 'rgba(251,113,133,0.12)' : product.stock_actual <= product.stock_minimo ? 'rgba(202,168,96,0.12)' : 'rgba(52,211,153,0.12)'"
-                :circleColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
-                :textColor="product.stock_actual === 0 ? '#fb7185' : product.stock_actual <= product.stock_minimo ? '#caa860' : '#34d399'"
+                :btnColor="stockPill(product).bg"
+                :circleColor="stockPill(product).fg"
+                :textColor="stockPill(product).fg"
               />
             </div>
 
@@ -283,11 +331,11 @@
           v-if="saleCart.length"
           :items="saleCart"
           :total="saleTotal"
-          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
           @remove="removeFromCart"
-          @submit="submitSale"
+          @submit="openCheckout"
           @cancel="clearSaleCart"
         />
 
@@ -383,11 +431,11 @@
         <SaleCartPanel
           :items="saleCart"
           :total="saleTotal"
-          :subtitle="selectedProject ? selectedProject.nombre : $t('inventory.sale.multiProject')"
+          :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
           @remove="removeFromCart"
-          @submit="submitSale"
+          @submit="openCheckout"
           @cancel="clearSaleCart"
         />
       </div>
@@ -401,6 +449,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
+import ErrorState from '../components/common/ErrorState.vue'
 import './InventoryPage.css'
 import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
@@ -408,8 +457,11 @@ import ProductModal from '../components/inventory/ProductModal.vue'
 import RestockModal from '../components/inventory/RestockModal.vue'
 import SaleCartPanel from '../components/inventory/SaleCartPanel.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
+import SaleCheckoutModal from '../components/inventory/SaleCheckoutModal.vue'
+import ProductEditModal from '../components/inventory/ProductEditModal.vue'
+import ProductDeleteModal from '../components/inventory/ProductDeleteModal.vue'
 import { useAuthStore } from '@/stores/auth'
-import { lineTotal, calcSubtotal } from '@/utils/sales.js'
+import { calcSubtotal } from '@/utils/sales.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -427,31 +479,40 @@ const activeCategory = ref('All')
 const projects        = ref([])
 const projectsLoading = ref(false)
 const selectedProject = ref(null)
-const canCreateProduct = computed(() => {
-  if (!selectedProject.value) return false
+/** ¿Puede el usuario dar de alta o reabastecer en este proyecto? */
+function canWriteProject(project) {
   if (authStore.canManageInventory) return true
-  return (selectedProject.value.mis_permisos || []).includes('gestionar_inventario')
-})
+  return (project?.mis_permisos || []).includes('gestionar_inventario')
+}
+
+const writableProjects = computed(() => projects.value.filter(canWriteProject))
+
+// Crear ya no depende del filtro del catálogo: el proyecto de destino se elige
+// dentro del modal. Antes, entrar en "Todos los proyectos" —que es la vista por
+// defecto— dejaba el botón bloqueado sin más salida que cambiar el filtro.
+const canCreateProduct = computed(() => writableProjects.value.length > 0)
 
 // Restock requires write access on the product's *own* project (works in the
 // "all projects" view too, where each product carries its id_proyecto).
 function canRestock(product) {
-  if (authStore.canManageInventory) return true
-  const proj = projects.value.find((p) => p.id_proyecto === product.id_proyecto)
-  return (proj?.mis_permisos || []).includes('gestionar_inventario')
+  return canWriteProject(projects.value.find((p) => p.id_proyecto === product.id_proyecto))
 }
 
 /* ── helpers API ── */
-function authHeader(includeProyecto = false) {
+/**
+ * `id_proyecto` explícito en vez de tomarlo del filtro: el alta de producto lo
+ * elige en su propio modal y puede no coincidir con lo que se está mirando.
+ */
+function authHeader(id_proyecto = null) {
   const token   = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
   if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  if (includeProyecto && selectedProject.value) headers['X-Project-ID'] = selectedProject.value.id_proyecto
+  if (id_proyecto) headers['X-Project-ID'] = id_proyecto
   return headers
 }
 
-async function apiFetch(path, write = false) {
-  const res = await fetch(path, { headers: authHeader(write) })
+async function apiFetch(path) {
+  const res = await fetch(path, { headers: authHeader() })
   if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -543,10 +604,14 @@ const categories = computed(() => {
 const filteredProducts = computed(() => {
   return products.value.filter(p => {
     const matchesCat = activeCategory.value === 'All' || p.categoria === activeCategory.value
-    const q = searchQuery.value.toLowerCase()
+    const q = searchQuery.value.trim().toLowerCase()
+    // El código de barras entra en la búsqueda: es la vía para localizar un
+    // producto por su código sin pasar por la cámara —lector USB, código a la
+    // vista, o permiso de cámara denegado—. El escáner queda solo para escanear.
     const matchesSearch = !q
       || p.nombre.toLowerCase().includes(q)
       || (p.categoria || '').toLowerCase().includes(q)
+      || String(p.codigo_barras ?? '').toLowerCase().includes(q)
     return matchesCat && matchesSearch
   })
 })
@@ -561,7 +626,18 @@ const stats = computed(() => {
   return { total, lowStock, outOfStock, totalValue: formatted }
 })
 
-const CAT_COLORS = ['#caa860', '#60a5fa', '#a78bfa', '#34d399', '#f97316', '#fb7185', '#e879f9']
+/* Rampa de barras por categoría. Los tonos anteriores (#60a5fa, #a78bfa,
+   #f97316, #e879f9…) eran los por defecto de Tailwind, ajenos a "Luxury Dark":
+   se sustituyen por la paleta de marca. */
+const CAT_COLORS = [
+  'var(--k-color-primary)',
+  'var(--k-color-primary-2)',
+  'var(--k-color-secondary)',
+  'var(--k-state-success-text)',
+  'var(--k-state-error-text)',
+  'var(--k-text-muted)',
+  'var(--k-text-dim)',
+]
 
 const categoryStats = computed(() => {
   const totals = {}
@@ -578,11 +654,29 @@ const categoryStats = computed(() => {
   }))
 })
 
-/* ── badge helpers (usan stock_actual vs stock_minimo) ── */
-function stockBadgeClass(p) {
-  if (p.stock_actual === 0) return 'badge-out'
-  if (p.stock_actual <= p.stock_minimo) return 'badge-low'
-  return 'badge-ok'
+/* ── estado de stock (usa stock_actual vs stock_minimo) ── */
+
+/**
+ * Tono semántico de un producto según SCRUM-12. Un único sitio decide el
+ * estado; la etiqueta, la píldora y el color del número se derivan de él, así
+ * que no pueden discrepar entre sí.
+ */
+function stockTone(p) {
+  if (p.stock_actual === 0) return 'critical'
+  if (p.stock_actual <= p.stock_minimo) return 'watching'
+  return 'ok'
+}
+
+const STOCK_PILL = {
+  critical: { bg: 'var(--k-alert-critical-bg)', fg: 'var(--k-alert-critical-text)' },
+  watching: { bg: 'var(--k-alert-watching-bg)', fg: 'var(--k-alert-watching-text)' },
+  ok:       { bg: 'var(--k-alert-ok-bg)',       fg: 'var(--k-alert-ok-text)' },
+}
+
+const STOCK_NUM_CLASS = { critical: 'red', watching: 'gold', ok: '' }
+
+function stockPill(p) {
+  return STOCK_PILL[stockTone(p)]
 }
 
 function stockLabel(p) {
@@ -592,9 +686,7 @@ function stockLabel(p) {
 }
 
 function stockNumClass(p) {
-  if (p.stock_actual === 0) return 'red'
-  if (p.stock_actual <= p.stock_minimo) return 'gold'
-  return ''
+  return STOCK_NUM_CLASS[stockTone(p)]
 }
 
 function detailLink(product) {
@@ -613,42 +705,118 @@ const saleCart        = ref([])
 const saleSubmitting  = ref(false)
 const saleError       = ref(null)
 const cartExpanded    = ref(false)  // mobile drawer open state
+const showCheckout    = ref(false)  // modal de cobro
 
 const saleItemCount = computed(() =>
   saleCart.value.reduce((acc, item) => acc + Number(item.cantidad), 0)
 )
 
+const saleSubtitle = computed(() =>
+  selectedProject.value ? selectedProject.value.nombre : t('inventory.sale.multiProject')
+)
+
+/**
+ * El carrito ya no vende directamente: abre el cobro. La venta solo sale
+ * cuando se confirma en el modal, que es el último punto donde el cajero ve
+ * artículos y total antes de descontar stock.
+ */
+function openCheckout() {
+  if (!saleCart.value.length) return
+  saleError.value = null
+  cartExpanded.value = false
+  showCheckout.value = true
+}
+
 /* ── escaneo de código de barras (POS) ── */
 const showScanner  = ref(false)
 const scanFeedback = ref(null)
+// Lectura pendiente de confirmar: { product, max, inCart }. Mientras exista,
+// el escáner muestra la tarjeta con el nombre y la cantidad a agregar.
+const pendingScan  = ref(null)
 let scanFeedbackTimer = null
 
 function openScanner() {
   if (!authStore.canSellInventory) return
   scanFeedback.value = null
-  showScanner.value = true
+  pendingScan.value  = null
+  showScanner.value  = true
 }
+
+// Cerrar el escáner descarta lo que estuviera a medio confirmar: al volver a
+// abrirlo se empieza limpio en vez de arrastrar una lectura vieja.
+watch(showScanner, (open) => {
+  if (!open) pendingScan.value = null
+})
+
+// Un acierto se lee de un vistazo; un error hay que poder leerlo entero antes
+// de que desaparezca, sobre todo con el código en la mano.
+const SCAN_FEEDBACK_MS = { ok: 1800, warn: 3200, err: 3200 }
 
 function flashScanFeedback(type, msg) {
   scanFeedback.value = { type, msg }
   clearTimeout(scanFeedbackTimer)
-  scanFeedbackTimer = setTimeout(() => { scanFeedback.value = null }, 1800)
+  scanFeedbackTimer = setTimeout(() => { scanFeedback.value = null }, SCAN_FEEDBACK_MS[type])
 }
 
+/**
+ * Resuelve el código leído y deja el producto a la espera de confirmación.
+ *
+ * Escanear ya no toca el carrito: la tarjeta del escáner enseña qué se leyó y
+ * cuánto se va a agregar, de modo que se puede validar y seguir escaneando sin
+ * salir de la cámara. Solo `confirmScan` mueve la venta.
+ *
+ * Los casos que se resuelven aquí, y que nunca llegan a tarjeta:
+ *  - código inexistente          → error
+ *  - producto sin stock vendible → error (incluye "sin permiso de venta")
+ *  - carrito ya con todo el stock→ error, no queda nada que agregar
+ *
+ * El duplicado no es un error: la tarjeta lo indica con lo que ya hay en la
+ * venta y ofrece el resto disponible.
+ */
 function handleScan(code) {
+  const scanned = String(code ?? '').trim()
+  if (!scanned) return
+
   const match = products.value.find(
-    (p) => p.codigo_barras && String(p.codigo_barras) === String(code)
+    (p) => p.codigo_barras && String(p.codigo_barras) === scanned
   )
   if (!match) {
-    flashScanFeedback('err', t('inventory.scanner.notFound', { code }))
+    flashScanFeedback('err', t('inventory.scanner.notFound', { code: scanned }))
     return
   }
   if (!canSellProduct(match)) {
-    flashScanFeedback('err', t('inventory.card.cannotSell'))
+    flashScanFeedback('err', t('inventory.scanner.outOfStock', { name: match.nombre }))
     return
   }
-  addToCart(match)
-  flashScanFeedback('ok', t('inventory.scanner.added', { name: match.nombre }))
+
+  const inCart = getCartItem(match)?.cantidad ?? 0
+  const max = Number(match.stock_actual) - inCart
+  if (max <= 0) {
+    flashScanFeedback('err', t('inventory.scanner.stockLimit', {
+      name: match.nombre,
+      count: match.stock_actual,
+    }))
+    return
+  }
+
+  scanFeedback.value = null
+  pendingScan.value = { product: match, max, inCart }
+}
+
+/** Confirmación explícita: es el único punto donde el escaneo entra al carrito. */
+function confirmScan(cantidad) {
+  const pendiente = pendingScan.value
+  if (!pendiente) return
+  addToCart(pendiente.product, cantidad)
+  pendingScan.value = null
+  flashScanFeedback('ok', t('inventory.scanner.addedQty', {
+    name: pendiente.product.nombre,
+    count: cantidad,
+  }))
+}
+
+function cancelScan() {
+  pendingScan.value = null
 }
 
 function getCartItem(product) {
@@ -660,15 +828,16 @@ function canSellProduct(product) {
   return Number(product.stock_actual) > 0
 }
 
-function addToCart(product) {
+function addToCart(product, cantidad = 1) {
   if (!canSellProduct(product)) return
   saleError.value = null
+  const stock = Number(product.stock_actual)
   const existing = getCartItem(product)
   if (existing) {
-    incrementCart(product)
+    existing.cantidad = Math.min(existing.cantidad + cantidad, stock)
     return
   }
-  saleCart.value.push({ product, cantidad: 1 })
+  saleCart.value.push({ product, cantidad: Math.min(cantidad, stock) })
 }
 
 function incrementCart(product) {
@@ -709,10 +878,7 @@ function clearSaleCart() {
   saleCart.value = []
   saleError.value = null
   cartExpanded.value = false
-}
-
-function saleItemSubtotal(item) {
-  return lineTotal(item)
+  showCheckout.value = false
 }
 
 const saleTotal = computed(() => calcSubtotal(saleCart.value))
@@ -769,6 +935,9 @@ watch(products, (next) => {
       return { product: fresh, cantidad }
     })
     .filter(Boolean)
+
+  // Si el refresco deja el carrito vacío no queda nada que cobrar.
+  if (!saleCart.value.length) showCheckout.value = false
 })
 
 /* ── modal nuevo producto ── */
@@ -783,7 +952,7 @@ function openNewProduct() {
 }
 
 async function submitProduct(formData) {
-  if (!selectedProject.value) {
+  if (!formData.id_proyecto) {
     modalError.value = t('inventory.errors.selectProject')
     return
   }
@@ -792,7 +961,7 @@ async function submitProduct(formData) {
   try {
     const res = await fetch('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader(true) },
+      headers: { 'Content-Type': 'application/json', ...authHeader(formData.id_proyecto) },
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
@@ -814,6 +983,87 @@ async function submitProduct(formData) {
     modalError.value = t('inventory.errors.networkError')
   } finally {
     modalLoading.value = false
+  }
+}
+
+/* ── editar producto ── */
+const showEdit    = ref(false)
+const editProduct = ref(null)
+const editLoading = ref(false)
+const editError   = ref(null)
+
+function openEdit(product) {
+  if (!canRestock(product)) return
+  editProduct.value = product
+  editError.value   = null
+  showEdit.value    = true
+}
+
+async function submitEdit(payload) {
+  const product = editProduct.value
+  if (!product) return
+  editLoading.value = true
+  editError.value   = null
+  try {
+    const res = await fetch(`/api/products/${product.id_producto}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(payload),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      editError.value = data.message || `Error ${res.status}`
+      return
+    }
+    showEdit.value = false
+    await loadData()
+  } catch {
+    editError.value = t('inventory.errors.networkError')
+  } finally {
+    editLoading.value = false
+  }
+}
+
+/* ── eliminar producto ── */
+const showDelete    = ref(false)
+const deleteProduct = ref(null)
+const deleteLoading = ref(false)
+const deleteError   = ref(null)
+
+function openDelete(product) {
+  if (!canRestock(product)) return
+  deleteProduct.value = product
+  deleteError.value   = null
+  showDelete.value    = true
+}
+
+async function confirmDelete() {
+  const product = deleteProduct.value
+  if (!product) return
+  deleteLoading.value = true
+  deleteError.value   = null
+  try {
+    const res = await fetch(`/api/products/${product.id_producto}`, {
+      method: 'DELETE',
+      headers: authHeader(),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      // 409 = el producto tiene movimientos y la FK lo protege. Es el caso
+      // habitual y merece una explicación propia, no el mensaje crudo de la API.
+      deleteError.value = res.status === 409
+        ? t('inventory.delete.hasMovements')
+        : data.message || `Error ${res.status}`
+      return
+    }
+    showDelete.value = false
+    // El producto puede estar en el carrito: el watch de `products` lo retira
+    // al recargar, así que la venta no queda apuntando a algo que ya no existe.
+    await loadData()
+  } catch {
+    deleteError.value = t('inventory.errors.networkError')
+  } finally {
+    deleteLoading.value = false
   }
 }
 
