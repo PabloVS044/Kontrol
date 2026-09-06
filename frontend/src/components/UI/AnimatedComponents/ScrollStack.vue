@@ -157,17 +157,11 @@ function updateCardTransforms() {
       translateY = pinEnd - cardTop + stackPositionPx + props.itemStackDistance * i;
     }
 
-    // ── Opacity: card only becomes visible when it's about to enter the viewport ──
-    const revealStart  = cardTop - containerHeight;          // card bottom hits viewport bottom
-    const revealEnd    = cardTop - containerHeight * 0.75;   // card is 25% into viewport
-    const opacity      = calculateProgress(scrollTop, revealStart, revealEnd);
-
     const next = {
       translateY: Math.round(translateY * 100) / 100,
       scale:      Math.round(scale * 1000) / 1000,
       rotation:   Math.round(rotation * 100) / 100,
       blur:       Math.round(blur * 100) / 100,
-      opacity:    Math.round(opacity * 100) / 100,
     };
 
     const last       = lastTransforms.get(i);
@@ -175,14 +169,12 @@ function updateCardTransforms() {
       || Math.abs(last.translateY - next.translateY) > 0.1
       || Math.abs(last.scale      - next.scale)      > 0.001
       || Math.abs(last.rotation   - next.rotation)   > 0.1
-      || Math.abs(last.blur       - next.blur)        > 0.1
-      || Math.abs(last.opacity    - next.opacity)     > 0.01;
+      || Math.abs(last.blur       - next.blur)        > 0.1;
 
     if (hasChanged) {
       const rotate = next.rotation !== 0 ? ` rotate(${next.rotation}deg)` : '';
       card.style.transform = `translateY(${next.translateY}px) scale(${next.scale})${rotate}`;
       card.style.filter    = next.blur > 0 ? `blur(${next.blur}px)` : 'none';
-      card.style.opacity   = next.opacity;
       lastTransforms.set(i, next);
     }
 
@@ -245,10 +237,9 @@ onMounted(() => {
 
   cards.forEach((card, i) => {
     if (i < cards.length - 1) card.style.marginBottom = `${props.itemDistance}px`;
-    card.style.willChange      = 'transform, opacity';
+    card.style.willChange      = 'transform';
     card.style.transformOrigin = 'top center';
     card.style.transform       = 'none';
-    card.style.opacity         = '0'; // hidden by default
   });
 
   // Measured while every card still has `transform: none`, so the cached

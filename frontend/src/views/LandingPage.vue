@@ -230,6 +230,10 @@
 
     <section id="features">
       <h2 class="sub-title">Features</h2>
+      <p class="description">
+        Everything a growing business needs, built into one system instead of
+        stitched together from five.
+      </p>
       <MagicBento
         :text-auto-hide="true"
         enable-stars
@@ -706,7 +710,12 @@ function setupScrollChoreography() {
 
   // ── Features: heading drops in from above, cards cascade in a stagger ──────
   revealOnScroll("#features .sub-title", { opacity: 0, y: -30, scale: 0.92 }, { start: "top 85%" });
-  revealOnScroll(gsap.utils.toArray("#features .magic-bento-card"), { opacity: 0, y: 40, stagger: 0.08 }, { start: "top 78%" });
+  revealOnScroll("#features .description", { opacity: 0, y: 20 }, { start: "top 82%" });
+  // No y-offset here: MagicBento's cards 3/4/6 use overlapping grid-column/row
+  // spans for its mosaic layout, so translating a card vertically while it
+  // reveals can visually ride over the neighboring cell. Scale-from-center
+  // grows within its own footprint instead.
+  revealOnScroll(gsap.utils.toArray("#features .magic-bento-card"), { opacity: 0, scale: 0.85, stagger: 0.08 }, { start: "top 78%" });
 
   // ── Steps: heading leans in with a slight skew, like a step tilting into place ──
   revealOnScroll("#steps .sub-title", { opacity: 0, x: -50, skewX: 6 }, { start: "top 85%" });

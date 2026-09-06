@@ -422,6 +422,11 @@
 }
 
 /* ─── Start CTA ──────────────────────────────────────────────────────────── */
+/* The page's closing moment — previously just plain text on the bare page
+   background, identical in weight to every section before it. A thin gradient
+   divider marks the handoff from Craft, and a soft radial glow behind the
+   copy (same gold used everywhere else via --k-color-primary-rgb) gives this
+   last push its own sense of climax before the footer. */
 #start {
   width: 100%;
   display: flex;
@@ -430,10 +435,39 @@
   align-items: center;
   text-align: center;
   gap: 1.25rem;
-  padding: 120px 20px;
+  padding: 140px 20px;
   box-sizing: border-box;
   position: relative;
   z-index: 20;
+  overflow: hidden;
+}
+
+#start::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(1100px, 90%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, var(--k-color-border) 50%, transparent);
+}
+
+#start::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 55% 60% at 50% 45%,
+    rgba(var(--k-color-primary-rgb), 0.16),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+#start .anchor {
+  box-shadow: var(--k-shadow-glow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
