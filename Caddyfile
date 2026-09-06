@@ -2,3 +2,14 @@
   encode zstd gzip
   reverse_proxy frontend:80
 }
+
+# SCRUM-25 — bloque del ambiente de pruebas. El valor por defecto evita que
+# el Caddyfile falle al parsear cuando TEST_PUBLIC_HOST no está definido
+# (deploy de solo producción, sin docker-compose.test.yml): Caddy sigue
+# arrancando y sirviendo el bloque de arriba con normalidad; lo único que
+# pasa es que intenta (y falla, sin efecto en el otro sitio) pedir un
+# certificado para un host que no existe.
+{$TEST_PUBLIC_HOST:test-env-not-configured.invalid} {
+  encode zstd gzip
+  reverse_proxy frontend-test:80
+}

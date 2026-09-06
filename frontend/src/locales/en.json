@@ -364,7 +364,16 @@
         "priority": "Priority",
         "status": "Status",
         "dueDate": "Due date",
-        "assignedTo": "Assigned to"
+        "assignedTo": "Assigned to",
+        "evidence": {
+          "title": "Evidence",
+          "empty": "No evidence attached yet.",
+          "uploadLabel": "Attach evidence",
+          "uploading": "Uploading…",
+          "uploadError": "Could not upload the file.",
+          "delete": "Delete",
+          "by": "by"
+        }
       }
     },
     "team": {
