@@ -4,7 +4,7 @@
     :style="useWindowScroll ? { overflow: 'visible' } : {}"
     ref="scrollerRef"
   >
-    <div class="scroll-stack-inner">
+    <div class="scroll-stack-inner" ref="innerRef">
       <slot />
       <div class="scroll-stack-end" />
     </div>
@@ -33,6 +33,7 @@ const props = defineProps({
 
 // ─── Refs ─────────────────────────────────────────────────────────────────────
 const scrollerRef = ref(null);
+const innerRef     = ref(null);
 
 let cards          = [];
 let lenis          = null;
@@ -63,11 +64,54 @@ function getScrollData() {
   return { scrollTop: scroller.scrollTop, containerHeight: scroller.clientHeight };
 }
 
-function getElementOffset(element) {
+// ─── Cached layout offsets ──────────────────────────────────────────────────────
+// `getBoundingClientRect()` reports the element's PAINTED position, which
+// includes any CSS transform already applied to it. Since this component sets
+// `translateY(...)` on every card, re-measuring a card's position with
+// `getBoundingClientRect()` on each scroll tick would read back its own
+// previous transform, feeding it into the next frame's calculation — the
+// stack would visibly jitter/drift instead of tracking the scroll smoothly.
+// Layout offsets are measured once (before any transform is applied) and
+// cached; only a resize re-measures them, since transforms never affect them.
+let cardOffsets = [];
+let endOffset   = 0;
+
+function measureOffsets() {
   if (props.useWindowScroll) {
-    return element.getBoundingClientRect().top + window.scrollY;
+    cardOffsets = cards.map(card => card.getBoundingClientRect().top + window.scrollY);
+    const endEl = document.querySelector('.scroll-stack-end');
+    endOffset   = endEl ? endEl.getBoundingClientRect().top + window.scrollY : 0;
+  } else {
+    cardOffsets = cards.map(card => card.offsetTop);
+    const endEl = scrollerRef.value?.querySelector('.scroll-stack-end');
+    endOffset   = endEl ? endEl.offsetTop : 0;
   }
-  return element.offsetTop;
+
+  updateRunway();
+}
+
+// The last card never scrolls away on its own: once released from pinning it
+// keeps a fixed translateY roughly equal to its own height plus the stack
+// offsets (see the release branch in updateCardTransforms). The trailing
+// space after the stack must be at least that tall, or the released card
+// visually overlaps whatever section comes next. `stackPosition` is a
+// percentage of the *viewport* height, so a fixed CSS value can never get
+// this right for every screen — it has to be computed from real measurements.
+function updateRunway() {
+  if (!innerRef.value || !cards.length) return;
+
+  const { containerHeight } = getScrollData();
+  const stackPositionPx = parsePercentage(props.stackPosition, containerHeight);
+  const lastIndex       = cards.length - 1;
+  // offsetHeight (not getBoundingClientRect) so a `scale()` already applied
+  // to the card mid-animation doesn't shrink the measurement.
+  const lastCardHeight  = cards[lastIndex].offsetHeight;
+
+  const releaseOffset = lastCardHeight - containerHeight / 2 + stackPositionPx
+    + props.itemStackDistance * lastIndex;
+
+  const EXTRA_GAP_PX = 64; // breathing room before the next section
+  innerRef.value.style.paddingBottom = `${Math.max(releaseOffset, 0) + EXTRA_GAP_PX}px`;
 }
 
 // ─── Core animation ───────────────────────────────────────────────────────────
@@ -79,16 +123,12 @@ function updateCardTransforms() {
   const stackPositionPx    = parsePercentage(props.stackPosition, containerHeight);
   const scaleEndPositionPx = parsePercentage(props.scaleEndPosition, containerHeight);
 
-  const endEl = props.useWindowScroll
-    ? document.querySelector('.scroll-stack-end')
-    : scrollerRef.value?.querySelector('.scroll-stack-end');
-
-  const endElementTop = endEl ? getElementOffset(endEl) : 0;
+  const endElementTop = endOffset;
 
   cards.forEach((card, i) => {
     if (!card) return;
 
-    const cardTop      = getElementOffset(card);
+    const cardTop      = cardOffsets[i];
     const triggerStart = cardTop - stackPositionPx - props.itemStackDistance * i;
     const triggerEnd   = cardTop - scaleEndPositionPx;
     const pinStart     = cardTop - stackPositionPx - props.itemStackDistance * i;
@@ -103,7 +143,7 @@ function updateCardTransforms() {
     if (props.blurAmount) {
       let topCardIndex = 0;
       for (let j = 0; j < cards.length; j++) {
-        const jTriggerStart = getElementOffset(cards[j]) - stackPositionPx - props.itemStackDistance * j;
+        const jTriggerStart = cardOffsets[j] - stackPositionPx - props.itemStackDistance * j;
         if (scrollTop >= jTriggerStart) topCardIndex = j;
       }
       if (i < topCardIndex) blur = Math.max(0, (topCardIndex - i) * props.blurAmount);
@@ -117,17 +157,11 @@ function updateCardTransforms() {
       translateY = pinEnd - cardTop + stackPositionPx + props.itemStackDistance * i;
     }
 
-    // ── Opacity: card only becomes visible when it's about to enter the viewport ──
-    const revealStart  = cardTop - containerHeight;          // card bottom hits viewport bottom
-    const revealEnd    = cardTop - containerHeight * 0.75;   // card is 25% into viewport
-    const opacity      = calculateProgress(scrollTop, revealStart, revealEnd);
-
     const next = {
       translateY: Math.round(translateY * 100) / 100,
       scale:      Math.round(scale * 1000) / 1000,
       rotation:   Math.round(rotation * 100) / 100,
       blur:       Math.round(blur * 100) / 100,
-      opacity:    Math.round(opacity * 100) / 100,
     };
 
     const last       = lastTransforms.get(i);
@@ -135,14 +169,12 @@ function updateCardTransforms() {
       || Math.abs(last.translateY - next.translateY) > 0.1
       || Math.abs(last.scale      - next.scale)      > 0.001
       || Math.abs(last.rotation   - next.rotation)   > 0.1
-      || Math.abs(last.blur       - next.blur)        > 0.1
-      || Math.abs(last.opacity    - next.opacity)     > 0.01;
+      || Math.abs(last.blur       - next.blur)        > 0.1;
 
     if (hasChanged) {
       const rotate = next.rotation !== 0 ? ` rotate(${next.rotation}deg)` : '';
       card.style.transform = `translateY(${next.translateY}px) scale(${next.scale})${rotate}`;
       card.style.filter    = next.blur > 0 ? `blur(${next.blur}px)` : 'none';
-      card.style.opacity   = next.opacity;
       lastTransforms.set(i, next);
     }
 
@@ -205,21 +237,40 @@ onMounted(() => {
 
   cards.forEach((card, i) => {
     if (i < cards.length - 1) card.style.marginBottom = `${props.itemDistance}px`;
-    card.style.willChange      = 'transform, opacity';
+    card.style.willChange      = 'transform';
     card.style.transformOrigin = 'top center';
     card.style.transform       = 'none';
-    card.style.opacity         = '0'; // hidden by default
   });
+
+  // Measured while every card still has `transform: none`, so the cached
+  // offsets reflect real layout position, not a previously-applied transform.
+  measureOffsets();
+
+  window.addEventListener('resize', handleResize);
+  // Late-loading web fonts/images can still shift layout after this point;
+  // the previous per-frame remeasurement absorbed that automatically, so a
+  // one-off re-measure on 'load' keeps that same guarantee with the cache.
+  window.addEventListener('load', handleResize);
 
   setupLenis();
   updateCardTransforms();
 });
 
+function handleResize() {
+  // A resize can change layout (offsets), but never a card's own transform,
+  // so re-measuring here is safe and keeps the stack aligned after reflow.
+  measureOffsets();
+  updateCardTransforms();
+}
+
 onUnmounted(() => {
   if (rafId)  cancelAnimationFrame(rafId);
   if (lenis)  lenis.destroy();
+  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('load', handleResize);
   stackCompleted = false;
   cards          = [];
+  cardOffsets    = [];
   lastTransforms.clear();
   isUpdating     = false;
 });
@@ -239,16 +290,20 @@ onUnmounted(() => {
 }
 
 .scroll-stack-inner {
-  padding: 0 5rem 50rem;
+  padding: 0 5rem;
+  /* Fallback for the instant before JS measures and sets the real value
+     inline (see updateRunway) — modest on purpose, not a magic number tuned
+     to cancel out elsewhere. */
+  padding-bottom: 6rem;
   min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-  .scroll-stack-inner { padding: 0 1.25rem 50rem; }
+  .scroll-stack-inner { padding-left: 1.25rem; padding-right: 1.25rem; }
 }
 
 @media (max-width: 480px) {
-  .scroll-stack-inner { padding: 0 0.5rem 50rem; }
+  .scroll-stack-inner { padding-left: 0.5rem; padding-right: 0.5rem; }
 }
 
 .scroll-stack-end {

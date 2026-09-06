@@ -22,6 +22,11 @@ const props = defineProps({
   scale: { type: Number, default: 1.0 },
   baseRotationY: { type: Number, default: Math.PI }, // flip 180° by default
   baseRotationX: { type: Number, default: 0 },
+  // Extra rotation/scale driven from outside (e.g. a GSAP ScrollTrigger scrub
+  // tweening a reactive object) — added on top of the mouse-follow/idle
+  // motion below rather than replacing it.
+  scrollRotationY: { type: Number, default: 0 },
+  scrollScale: { type: Number, default: 1 },
 })
 
 const containerRef = ref(null)
@@ -74,8 +79,9 @@ function tick(t) {
     }
     c.cur.x += (c.target.x - c.cur.x) * props.damping
     c.cur.y += (c.target.y - c.cur.y) * props.damping
-    c.model.rotation.y = props.baseRotationY + c.cur.x
+    c.model.rotation.y = props.baseRotationY + c.cur.x + props.scrollRotationY
     c.model.rotation.x = props.baseRotationX + c.cur.y
+    c.model.scale.setScalar(props.scrollScale)
     // Tiny constant breathing
     c.model.position.y = Math.sin(t * 0.0012) * 0.04
     void dt
