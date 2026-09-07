@@ -6,6 +6,7 @@
       v-model="showModal"
       :projects="writableProjects"
       :default-project-id="selectedProject?.id_proyecto ?? null"
+      :categories="productCategories"
       :submitting="modalLoading"
       :error="modalError"
       @submit="submitProduct"
@@ -31,6 +32,7 @@
     <ProductEditModal
       v-model="showEdit"
       :product="editProduct"
+      :categories="productCategories"
       :submitting="editLoading"
       :error="editError"
       @submit="submitEdit"
@@ -495,7 +497,7 @@ const canCreateProduct = computed(() => writableProjects.value.length > 0)
 // Restock requires write access on the product's *own* project (works in the
 // "all projects" view too, where each product carries its id_proyecto).
 function canRestock(product) {
-  return canWriteProject(projects.value.find((p) => p.id_proyecto === product.id_proyecto))
+  return Boolean(selectedProject.value) && canWriteProject(projects.value.find((p) => p.id_proyecto === product.id_proyecto))
 }
 
 /* ── helpers API ── */
@@ -598,6 +600,14 @@ watch(() => authStore.idEmpresaActual, async () => {
 const categories = computed(() => {
   const unique = [...new Set(products.value.map(p => p.categoria).filter(Boolean))]
   return ['All', ...unique.sort()]
+})
+
+const productCategories = computed(() => {
+  const byId = new Map()
+  products.value.forEach((product) => {
+    if (product.id_categoria && product.categoria) byId.set(product.id_categoria, { id_categoria: product.id_categoria, nombre: product.categoria })
+  })
+  return [...byId.values()].sort((a, b) => a.nombre.localeCompare(b.nombre))
 })
 
 /* ── productos filtrados ── */
@@ -970,6 +980,7 @@ async function submitProduct(formData) {
         stock_minimo:  formData.stock_minimo ?? 0,
         stock_inicial: formData.stock_inicial ?? 0,
         codigo_barras: formData.codigo_barras || undefined,
+        ...(formData.categoria_nombre ? { categoria_nombre: formData.categoria_nombre } : {}),
       }),
     })
     const data = await res.json()

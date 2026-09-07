@@ -17,6 +17,13 @@
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
       </FormField>
 
+      <FormField :label="$t('inventory.modal.category')">
+        <input v-model.trim="form.categoria_nombre" list="product-categories" :placeholder="$t('inventory.modal.categoryPlaceholder')" />
+        <datalist id="product-categories">
+          <option v-for="category in categories" :key="category.id_categoria" :value="category.nombre" />
+        </datalist>
+      </FormField>
+
       <FormField :label="$t('inventory.modal.barcode')">
         <div class="barcode-row">
           <input v-model="form.codigo_barras" type="text" :placeholder="$t('inventory.modal.barcodePlaceholder')" />
@@ -127,6 +134,7 @@ const props = defineProps({
   projects:   { type: Array, default: () => [] },
   // Proyecto del filtro del catálogo, si hay uno: es el destino más probable.
   defaultProjectId: { type: Number, default: null },
+  categories: { type: Array, default: () => [] },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
 })
@@ -141,7 +149,7 @@ const show = computed({
 function emptyForm() {
   return {
     id_proyecto: defaultProject(),
-    nombre: '', descripcion: '', codigo_barras: '',
+    nombre: '', descripcion: '', codigo_barras: '', categoria_nombre: '',
     precio_venta: null, precio_costo: null,
     stock_minimo: 0, stock_inicial: 0,
     modo: 'unidad',
@@ -228,6 +236,7 @@ function handleSubmit() {
     stock_minimo: form.value.stock_minimo ?? 0,
     stock_inicial: isBox ? resolved.value.cantidad : (form.value.stock_inicial ?? 0),
     codigo_barras: form.value.codigo_barras?.trim() || undefined,
+    categoria_nombre: form.value.categoria_nombre?.trim() || undefined,
   })
 }
 </script>

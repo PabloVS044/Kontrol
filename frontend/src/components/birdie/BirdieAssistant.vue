@@ -357,6 +357,36 @@ const FAQ_CATALOG = [
     answerKey:   'birdie.faqs.inventoryFilter.a',
     target: '.project-filter, .pf-tabs',
   },
+  {
+    id: 'inventory-category-filter',
+    contextRoutes: ['/inventory'],
+    questionKey: 'birdie.faqs.inventoryCategoryFilter.q',
+    answerKey:   'birdie.faqs.inventoryCategoryFilter.a',
+    target: '[data-birdie="inventory-category-filter"], .filter-row',
+  },
+
+  // ── Suppliers ───────────────────────────────────────────
+  {
+    id: 'suppliers-search',
+    contextRoutes: ['/suppliers'],
+    questionKey: 'birdie.faqs.suppliersSearch.q',
+    answerKey:   'birdie.faqs.suppliersSearch.a',
+    target: '[data-birdie="supplier-search"], .search-field',
+  },
+  {
+    id: 'suppliers-create',
+    contextRoutes: ['/suppliers'],
+    questionKey: 'birdie.faqs.suppliersCreate.q',
+    answerKey:   'birdie.faqs.suppliersCreate.a',
+    target: '[data-birdie="create-supplier"], .supplier-grid',
+  },
+  {
+    id: 'suppliers-details',
+    contextRoutes: ['/suppliers'],
+    questionKey: 'birdie.faqs.suppliersDetails.q',
+    answerKey:   'birdie.faqs.suppliersDetails.a',
+    target: '.supplier-card, .empty-state',
+  },
 
   // ── Budget ───────────────────────────────────────────────
   {

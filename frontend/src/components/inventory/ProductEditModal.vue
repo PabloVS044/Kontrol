@@ -9,6 +9,13 @@
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
       </FormField>
 
+      <FormField :label="$t('inventory.modal.category')">
+        <input v-model.trim="form.categoria_nombre" list="edit-product-categories" :placeholder="$t('inventory.modal.categoryPlaceholder')" />
+        <datalist id="edit-product-categories">
+          <option v-for="category in categories" :key="category.id_categoria" :value="category.nombre" />
+        </datalist>
+      </FormField>
+
       <FormField :label="$t('inventory.modal.barcode')">
         <div class="barcode-row">
           <input v-model="form.codigo_barras" type="text" :placeholder="$t('inventory.modal.barcodePlaceholder')" />
@@ -76,6 +83,7 @@ const { t } = useI18n()
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   product:    { type: Object, default: null },
+  categories: { type: Array, default: () => [] },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
 })
@@ -93,6 +101,7 @@ function formFromProduct(p) {
   return {
     nombre:        p?.nombre ?? '',
     descripcion:   p?.descripcion ?? '',
+    categoria_nombre: p?.categoria ?? '',
     codigo_barras: p?.codigo_barras ?? '',
     precio_venta:  p?.precio_venta != null ? Number(p.precio_venta) : null,
     precio_costo:  p?.precio_costo != null ? Number(p.precio_costo) : null,
@@ -142,6 +151,7 @@ function handleSubmit() {
     precio_venta:  form.value.precio_venta,
     precio_costo:  form.value.precio_costo,
     stock_minimo:  form.value.stock_minimo ?? 0,
+    categoria_nombre: form.value.categoria_nombre?.trim() || undefined,
   })
 }
 </script>

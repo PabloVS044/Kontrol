@@ -1,6 +1,8 @@
 FROM node:22-alpine
 
 WORKDIR /app
+RUN npm install -g npm@11.19.1
+
 
 COPY package.json ./
 # npm 10.9.8 crashes resolving vitest's newer @vitejs/devtools-* peer set
