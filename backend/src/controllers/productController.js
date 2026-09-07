@@ -42,6 +42,24 @@ const getProductScope = async (client, { id_producto, id_empresa }) => {
   return result.rows[0] ?? null
 }
 
+const resolveCategoryId = async (client, { categoryName, idEmpresa }) => {
+  if (categoryName === null || categoryName === '') return null
+  if (!categoryName) return undefined
+
+  const existing = await client.query(
+    'SELECT id_categoria FROM public.categoria WHERE id_empresa = $1 AND LOWER(nombre) = LOWER($2) LIMIT 1',
+    [idEmpresa, categoryName.trim()]
+  )
+  if (existing.rows.length) return existing.rows[0].id_categoria
+
+  const created = await client.query(
+    `INSERT INTO public.categoria (nombre, id_empresa)
+     VALUES ($1, $2) RETURNING id_categoria`,
+    [categoryName.trim(), idEmpresa]
+  )
+  return created.rows[0].id_categoria
+}
+
 const getInventoryAccessibleProjectIds = async (req) => {
   if (hasEmpresaManagementAccess(req.empresa.rol_empresa)) {
     return null
@@ -227,8 +245,9 @@ export const getProductById = async (req, res) => {
  * POST /api/products  — requires requireProject middleware
  */
 export const createProduct = async (req, res) => {
-  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, codigo_barras } = req.body
+  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, categoria_nombre, codigo_barras } = req.body
   const { id_proyecto } = req.proyecto
+  const categoryId = id_categoria ?? await resolveCategoryId(pool, { categoryName: categoria_nombre, idEmpresa: req.empresa.id_empresa })
 
   let inserted
   try {
@@ -236,7 +255,7 @@ export const createProduct = async (req, res) => {
       `INSERT INTO public.producto
          (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_proyecto, codigo_barras)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id_producto`,
-      [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, id_categoria ?? null, id_proyecto, codigo_barras ?? null]
+      [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, categoryId ?? null, id_proyecto, codigo_barras ?? null]
     )
   } catch (err) {
     if (err.code === '23505') return res.status(409).json({ success: false, message: 'That barcode is already in use in this project.' })
@@ -264,13 +283,17 @@ export const updateProduct = async (req, res) => {
     return res.status(access.status).json({ success: false, message: access.message })
   }
 
-  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria', 'codigo_barras']
+  const categoryId = req.body.categoria_nombre !== undefined
+    ? await resolveCategoryId(pool, { categoryName: req.body.categoria_nombre, idEmpresa: req.empresa.id_empresa })
+    : req.body.id_categoria
+  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'codigo_barras']
   const setClauses = []
   const values = []
 
   for (const field of ALLOWED) {
     if (req.body[field] !== undefined) { values.push(req.body[field]); setClauses.push(`${field} = $${values.length}`) }
   }
+  if (categoryId !== undefined) { values.push(categoryId); setClauses.push(`id_categoria = $${values.length}`) }
   values.push(id)
   try {
     await pool.query(`UPDATE public.producto SET ${setClauses.join(', ')} WHERE id_producto = $${values.length}`, values)

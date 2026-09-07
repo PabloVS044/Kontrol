@@ -104,6 +104,7 @@ const modalOpen = ref(false)
 const editingSupplier = ref(null)
 const detailsSupplier = ref(null)
 const form = reactive({ nombre: '', contacto_nombre: '', telefono: '', email: '' })
+const originalForm = ref(null)
 const canManage = computed(() => authStore.canManageInventory)
 
 const filteredSuppliers = computed(() => {
@@ -144,12 +145,14 @@ function resetForm() {
 function openCreate() {
   editingSupplier.value = null
   resetForm()
+  originalForm.value = null
   modalOpen.value = true
 }
 
 function openEdit(supplier) {
   editingSupplier.value = supplier
   Object.assign(form, { nombre: supplier.nombre, contacto_nombre: supplier.contacto_nombre || '', telefono: supplier.telefono || '', email: supplier.email || '' })
+  originalForm.value = { ...form }
   formError.value = ''
   modalOpen.value = true
 }
@@ -167,6 +170,11 @@ async function saveSupplier() {
   saving.value = true
   formError.value = ''
   const id = editingSupplier.value?.id_proveedor
+  if (id && JSON.stringify(form) === JSON.stringify(originalForm.value)) {
+    closeModal()
+    saving.value = false
+    return
+  }
   try {
     const response = await fetch(id ? `/api/suppliers/${id}` : '/api/suppliers', {
       method: id ? 'PUT' : 'POST',

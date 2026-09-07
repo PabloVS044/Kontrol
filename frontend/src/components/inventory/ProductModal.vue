@@ -13,12 +13,10 @@
 
       <div class="form-field">
         <label>Category</label>
-        <select v-model="form.id_categoria">
-          <option :value="null">Uncategorized</option>
-          <option v-for="category in categories" :key="category.id_categoria" :value="category.id_categoria">
-            {{ category.nombre }}
-          </option>
-        </select>
+        <input v-model.trim="form.categoria_nombre" list="product-categories" placeholder="Uncategorized or type a new category" />
+        <datalist id="product-categories">
+          <option v-for="category in categories" :key="category.id_categoria" :value="category.nombre" />
+        </datalist>
       </div>
 
       <div class="form-field">
@@ -163,7 +161,7 @@ watch(() => props.modelValue, (open) => {
         precio_venta: Number(product.precio_venta ?? 0),
         precio_costo: Number(product.precio_costo ?? 0),
         stock_minimo: Number(product.stock_minimo ?? 0),
-        id_categoria: product.id_categoria ?? null,
+        categoria_nombre: product.categoria || '',
       }
     : emptyForm()
 })
@@ -199,7 +197,7 @@ function handleSubmit() {
     stock_minimo: form.value.stock_minimo ?? 0,
     stock_inicial: isBox ? resolved.value.cantidad : (form.value.stock_inicial ?? 0),
     codigo_barras: form.value.codigo_barras?.trim() || undefined,
-    id_categoria: form.value.id_categoria ?? null,
+    categoria_nombre: form.value.categoria_nombre || undefined,
   })
 }
 </script>

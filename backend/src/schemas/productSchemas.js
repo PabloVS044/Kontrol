@@ -23,6 +23,7 @@ export const createProductSchema = z.object({
   stock_minimo:  z.number().int().min(0).optional().default(0),
   stock_inicial: z.number().int().min(0).optional().default(0),
   id_categoria:  z.number().int().positive().optional(),
+  categoria_nombre: z.string().trim().min(1).max(255).optional(),
   codigo_barras: z.string().trim().min(1).max(64).optional(),
 })
 
@@ -34,6 +35,7 @@ export const updateProductSchema = z
     precio_costo: z.number().min(0).optional(),
     stock_minimo: z.number().int().min(0).optional(),
     id_categoria: z.number().int().positive().nullable().optional(),
+    categoria_nombre: z.string().trim().min(1).max(255).nullable().optional(),
     codigo_barras: z.string().trim().min(1).max(64).nullable().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {

@@ -830,7 +830,7 @@ async function submitProduct(formData) {
         stock_minimo:  formData.stock_minimo ?? 0,
         stock_inicial: formData.stock_inicial ?? 0,
         codigo_barras: formData.codigo_barras || undefined,
-        id_categoria: formData.id_categoria ?? null,
+        ...(formData.categoria_nombre ? { categoria_nombre: formData.categoria_nombre } : {}),
       }),
     })
     const data = await res.json()

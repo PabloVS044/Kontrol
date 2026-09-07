@@ -280,7 +280,8 @@ export const createInventoryMovement = async (req, res) => {
     return res.status(201).json({ success: true, data: result.rows[0] })
   } catch (err) {
     await client.query('ROLLBACK')
-    throw err
+    console.error('Could not create inventory movement:', err)
+    return res.status(500).json({ success: false, message: 'Could not create inventory movement.' })
   } finally {
     client.release()
   }
