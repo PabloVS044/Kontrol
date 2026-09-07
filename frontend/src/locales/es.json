@@ -649,6 +649,8 @@
       "boxPreview": "→ {units} unidades · costo ${cost}/u",
       "barcode": "Código de barras",
       "barcodePlaceholder": "Escanea o escribe el código",
+      "category": "Categoría",
+      "categoryPlaceholder": "Sin categoría o escribe una nueva",
       "errors": {
         "costOverPrice": "El costo no puede superar el precio de venta."
       }

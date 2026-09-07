@@ -218,7 +218,7 @@ onMounted(() => {
 <style scoped>
 .suppliers-root { position: relative; isolation: isolate; min-height: 100vh; background: transparent; color: var(--k-color-text); font-family: var(--k-font-sans); }
 .suppliers-root::before { content: ''; position: fixed; inset: 0; z-index: -1; background: rgba(var(--k-color-black-rgb), .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none; }
-.suppliers-content { max-width: 1240px; margin: 56px auto 0; padding: 80px var(--k-space-6) var(--k-space-8); }
+.suppliers-content { max-width: 1240px; margin: 56px auto 0; padding: 80px var(--k-space-6) var(--k-space-7); }
 .page-header, .toolbar, .card-heading, .modal-heading, .modal-actions { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--k-space-4); }
 .page-header { margin-bottom: var(--k-space-6); padding-bottom: var(--k-space-5); border-bottom: var(--k-border-width) solid var(--k-color-border); }
 .eyebrow { color: var(--k-color-primary); font-size: var(--k-font-size-caption); letter-spacing: var(--k-tracking-caps); text-transform: uppercase; }
@@ -245,7 +245,7 @@ input:focus { border-color: var(--k-color-primary); outline: none; }
 dt { color: var(--k-text-muted); font-size: var(--k-font-size-caption); text-transform: uppercase; letter-spacing: var(--k-tracking-caps); }
 dd { margin: 0; overflow-wrap: anywhere; }
 .details-link { background: none; border: 0; border-top: var(--k-border-width) solid var(--k-color-border); color: var(--k-color-primary); padding: var(--k-space-3) 0 0; text-align: left; cursor: pointer; }
-.empty-state, .state-message { padding: var(--k-space-8); text-align: center; color: var(--k-text-muted); border: var(--k-border-width) dashed var(--k-color-border); background: rgba(var(--k-color-black-rgb), .24); }
+.empty-state, .state-message { padding: var(--k-space-7); text-align: center; color: var(--k-text-muted); border: var(--k-border-width) dashed var(--k-color-border); background: rgba(var(--k-color-black-rgb), .24); }
 .empty-state h2 { color: var(--k-color-text); margin-bottom: var(--k-space-2); }
 .state-error { color: var(--k-state-error-text); }
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: var(--k-space-4); background: rgba(var(--k-color-black-rgb), .78); }

@@ -245,7 +245,16 @@ export const getProductById = async (req, res) => {
 export const createProduct = async (req, res) => {
   const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, categoria_nombre, codigo_barras } = req.body
   const { id_proyecto } = req.proyecto
-  const categoryId = id_categoria ?? await resolveCategoryId(pool, { categoryName: categoria_nombre, idEmpresa: req.empresa.id_empresa })
+
+  // Resolver la categoría toca la BD, y aquí no hay manejador de errores async
+  // que recoja un rechazo: sin este try la petición se quedaría colgada.
+  let categoryId
+  try {
+    categoryId = id_categoria ?? await resolveCategoryId(pool, { categoryName: categoria_nombre, idEmpresa: req.empresa.id_empresa })
+  } catch (err) {
+    console.error('Could not resolve product category:', err)
+    return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
+  }
 
   // El stock inicial es la primera entrada del producto, así que su costo
   // promedio ponderado ES el costo unitario declarado al crearlo. Dejarlo en el
@@ -304,9 +313,15 @@ export const updateProduct = async (req, res) => {
     return res.status(400).json({ success: false, message: COST_OVER_PRICE_MESSAGE })
   }
 
-  const categoryId = req.body.categoria_nombre !== undefined
-    ? await resolveCategoryId(pool, { categoryName: req.body.categoria_nombre, idEmpresa: req.empresa.id_empresa })
-    : req.body.id_categoria
+  let categoryId
+  try {
+    categoryId = req.body.categoria_nombre !== undefined
+      ? await resolveCategoryId(pool, { categoryName: req.body.categoria_nombre, idEmpresa: req.empresa.id_empresa })
+      : req.body.id_categoria
+  } catch (err) {
+    console.error('Could not resolve product category:', err)
+    return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
+  }
   const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'codigo_barras']
   const setClauses = []
   const values = []

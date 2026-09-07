@@ -9,8 +9,8 @@
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
       </FormField>
 
-      <FormField label="Category">
-        <input v-model.trim="form.categoria_nombre" list="edit-product-categories" placeholder="Uncategorized or type a new category" />
+      <FormField :label="$t('inventory.modal.category')">
+        <input v-model.trim="form.categoria_nombre" list="edit-product-categories" :placeholder="$t('inventory.modal.categoryPlaceholder')" />
         <datalist id="edit-product-categories">
           <option v-for="category in categories" :key="category.id_categoria" :value="category.nombre" />
         </datalist>
