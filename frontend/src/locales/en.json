@@ -654,6 +654,36 @@
     "errors": {
       "selectProject": "Select a project before adding a product.",
       "networkError": "Network error, try again."
+    },
+    "suppliers": {
+      "eyebrow": "Inventory / partners",
+      "title": "Suppliers",
+      "subtitle": "Keep supplier contacts and purchasing relationships in one place.",
+      "add": "Add supplier",
+      "searchLabel": "Search suppliers",
+      "searchPlaceholder": "Name, contact or email",
+      "singular": "supplier",
+      "plural": "suppliers",
+      "emptyTitle": "No suppliers found",
+      "emptySearch": "Try another search.",
+      "emptyInitial": "Add your first supplier to start organizing purchasing contacts.",
+      "record": "Supplier record",
+      "addTitle": "Add supplier",
+      "editTitle": "Edit supplier",
+      "edit": "Edit",
+      "name": "Supplier name",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "Email",
+      "notProvided": "Not provided",
+      "details": "View details",
+      "detailsCopy": "Use this supplier when registering inventory movements or linking product quotes.",
+      "cancel": "Cancel",
+      "save": "Save supplier",
+      "saving": "Saving…",
+      "delete": "Delete supplier",
+      "deleteConfirm": "Delete {name}?",
+      "close": "Close"
     }
   },
   "budget": {

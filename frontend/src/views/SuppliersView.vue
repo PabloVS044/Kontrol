@@ -4,26 +4,26 @@
     <main class="suppliers-content">
       <header class="page-header">
         <div>
-          <p class="eyebrow">Inventory / partners</p>
-          <h1>Suppliers</h1>
-          <p class="subtitle">Keep supplier contacts and purchasing relationships in one place.</p>
+          <p class="eyebrow">{{ t('inventory.suppliers.eyebrow') }}</p>
+          <h1>{{ t('inventory.suppliers.title') }}</h1>
+          <p class="subtitle">{{ t('inventory.suppliers.subtitle') }}</p>
         </div>
-        <button v-if="canManage" data-birdie="create-supplier" class="primary-button" type="button" @click="openCreate">Add supplier</button>
+        <button v-if="canManage" data-birdie="create-supplier" class="primary-button" type="button" @click="openCreate">{{ t('inventory.suppliers.add') }}</button>
       </header>
 
       <div class="toolbar">
         <label class="search-field" data-birdie="supplier-search">
-          <span>Search suppliers</span>
-          <input v-model="searchQuery" type="search" placeholder="Name, contact or email" />
+          <span>{{ t('inventory.suppliers.searchLabel') }}</span>
+          <input v-model="searchQuery" type="search" :placeholder="t('inventory.suppliers.searchPlaceholder')" />
         </label>
-        <span class="result-count">{{ filteredSuppliers.length }} {{ filteredSuppliers.length === 1 ? 'supplier' : 'suppliers' }}</span>
+        <span class="result-count">{{ filteredSuppliers.length }} {{ filteredSuppliers.length === 1 ? t('inventory.suppliers.singular') : t('inventory.suppliers.plural') }}</span>
       </div>
 
       <p v-if="loading" class="state-message">Loading suppliers...</p>
       <p v-else-if="error" class="state-message state-error">{{ error }}</p>
       <div v-else-if="!filteredSuppliers.length" class="empty-state">
-        <h2>No suppliers found</h2>
-        <p>{{ searchQuery ? 'Try another search.' : 'Add your first supplier to start organizing purchasing contacts.' }}</p>
+        <h2>{{ t('inventory.suppliers.emptyTitle') }}</h2>
+        <p>{{ searchQuery ? t('inventory.suppliers.emptySearch') : t('inventory.suppliers.emptyInitial') }}</p>
       </div>
       <section v-else class="supplier-grid" aria-label="Supplier list">
         <article v-for="supplier in filteredSuppliers" :key="supplier.id_proveedor" class="supplier-card">
@@ -32,14 +32,14 @@
               <p class="supplier-id">SUP-{{ String(supplier.id_proveedor).padStart(3, '0') }}</p>
               <h2>{{ supplier.nombre }}</h2>
             </div>
-            <button v-if="canManage" class="icon-button" type="button" title="Edit supplier" @click="openEdit(supplier)">Edit</button>
+            <button v-if="canManage" class="icon-button" type="button" :title="t('inventory.suppliers.edit')" @click="openEdit(supplier)">{{ t('inventory.suppliers.edit') }}</button>
           </div>
           <dl class="contact-list">
-            <div><dt>Contact</dt><dd>{{ supplier.contacto_nombre || 'Not provided' }}</dd></div>
-            <div><dt>Phone</dt><dd>{{ supplier.telefono || 'Not provided' }}</dd></div>
-            <div><dt>Email</dt><dd>{{ supplier.email || 'Not provided' }}</dd></div>
+            <div><dt>{{ t('inventory.suppliers.contact') }}</dt><dd>{{ supplier.contacto_nombre || t('inventory.suppliers.notProvided') }}</dd></div>
+            <div><dt>{{ t('inventory.suppliers.phone') }}</dt><dd>{{ supplier.telefono || t('inventory.suppliers.notProvided') }}</dd></div>
+            <div><dt>{{ t('inventory.suppliers.email') }}</dt><dd>{{ supplier.email || t('inventory.suppliers.notProvided') }}</dd></div>
           </dl>
-          <button class="details-link" type="button" @click="openDetails(supplier)">View details <span aria-hidden="true">-></span></button>
+          <button class="details-link" type="button" @click="openDetails(supplier)">{{ t('inventory.suppliers.details') }} <span aria-hidden="true">-></span></button>
         </article>
       </section>
     </main>
@@ -48,21 +48,21 @@
       <form class="supplier-modal" @submit.prevent="saveSupplier">
         <div class="modal-heading">
           <div>
-            <p class="eyebrow">Supplier record</p>
-            <h2>{{ editingSupplier ? 'Edit supplier' : 'Add supplier' }}</h2>
+            <p class="eyebrow">{{ t('inventory.suppliers.record') }}</p>
+            <h2>{{ editingSupplier ? t('inventory.suppliers.editTitle') : t('inventory.suppliers.addTitle') }}</h2>
           </div>
           <button class="close-button" type="button" aria-label="Close" @click="closeModal">x</button>
         </div>
-        <label>Supplier name<input v-model.trim="form.nombre" required maxlength="255" /></label>
-        <label>Contact name<input v-model.trim="form.contacto_nombre" maxlength="255" /></label>
+        <label>{{ t('inventory.suppliers.name') }}<input v-model.trim="form.nombre" required maxlength="255" /></label>
+        <label>{{ t('inventory.suppliers.contact') }}<input v-model.trim="form.contacto_nombre" maxlength="255" /></label>
         <div class="form-row">
-          <label>Phone<input v-model.trim="form.telefono" maxlength="20" /></label>
-          <label>Email<input v-model.trim="form.email" type="email" /></label>
+          <label>{{ t('inventory.suppliers.phone') }}<input v-model.trim="form.telefono" maxlength="20" /></label>
+          <label>{{ t('inventory.suppliers.email') }}<input v-model.trim="form.email" type="email" /></label>
         </div>
         <p v-if="formError" class="state-error">{{ formError }}</p>
         <div class="modal-actions">
-          <button class="secondary-button" type="button" @click="closeModal">Cancel</button>
-          <button class="primary-button" type="submit" :disabled="saving">{{ saving ? 'Saving...' : 'Save supplier' }}</button>
+          <button class="secondary-button" type="button" @click="closeModal">{{ t('inventory.suppliers.cancel') }}</button>
+          <button class="primary-button" type="submit" :disabled="saving">{{ saving ? t('inventory.suppliers.saving') : t('inventory.suppliers.save') }}</button>
         </div>
       </form>
     </div>
@@ -70,18 +70,18 @@
     <div v-if="detailsSupplier" class="modal-backdrop" @click.self="detailsSupplier = null">
       <section class="supplier-modal details-modal">
         <div class="modal-heading">
-          <div><p class="eyebrow">Supplier record</p><h2>{{ detailsSupplier.nombre }}</h2></div>
+          <div><p class="eyebrow">{{ t('inventory.suppliers.record') }}</p><h2>{{ detailsSupplier.nombre }}</h2></div>
           <button class="close-button" type="button" aria-label="Close" @click="detailsSupplier = null">x</button>
         </div>
-        <p class="details-copy">Use this supplier when registering inventory movements or linking product quotes.</p>
+        <p class="details-copy">{{ t('inventory.suppliers.detailsCopy') }}</p>
         <dl class="contact-list details-list">
-          <div><dt>Contact</dt><dd>{{ detailsSupplier.contacto_nombre || 'Not provided' }}</dd></div>
-          <div><dt>Phone</dt><dd>{{ detailsSupplier.telefono || 'Not provided' }}</dd></div>
-          <div><dt>Email</dt><dd>{{ detailsSupplier.email || 'Not provided' }}</dd></div>
+          <div><dt>{{ t('inventory.suppliers.contact') }}</dt><dd>{{ detailsSupplier.contacto_nombre || t('inventory.suppliers.notProvided') }}</dd></div>
+          <div><dt>{{ t('inventory.suppliers.phone') }}</dt><dd>{{ detailsSupplier.telefono || t('inventory.suppliers.notProvided') }}</dd></div>
+          <div><dt>{{ t('inventory.suppliers.email') }}</dt><dd>{{ detailsSupplier.email || t('inventory.suppliers.notProvided') }}</dd></div>
         </dl>
         <div v-if="canManage" class="modal-actions">
-          <button class="danger-button" type="button" @click="removeSupplier(detailsSupplier)">Delete supplier</button>
-          <button class="secondary-button" type="button" @click="detailsSupplier = null">Close</button>
+          <button class="danger-button" type="button" @click="removeSupplier(detailsSupplier)">{{ t('inventory.suppliers.delete') }}</button>
+          <button class="secondary-button" type="button" @click="detailsSupplier = null">{{ t('inventory.suppliers.close') }}</button>
         </div>
       </section>
     </div>
@@ -90,10 +90,12 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const { t } = useI18n()
 const suppliers = ref([])
 const loading = ref(true)
 const saving = ref(false)
@@ -193,7 +195,7 @@ async function saveSupplier() {
 }
 
 async function removeSupplier(supplier) {
-  if (!window.confirm(`Delete ${supplier.nombre}?`)) return
+  if (!window.confirm(t('inventory.suppliers.deleteConfirm', { name: supplier.nombre }))) return
   try {
     const response = await fetch(`/api/suppliers/${supplier.id_proveedor}`, { method: 'DELETE', headers: headers() })
     const payload = await response.json().catch(() => ({}))

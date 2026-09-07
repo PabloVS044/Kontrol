@@ -654,6 +654,36 @@
     "errors": {
       "selectProject": "Selecciona un proyecto antes de agregar un producto.",
       "networkError": "Error de red, intenta de nuevo."
+    },
+    "suppliers": {
+      "eyebrow": "Inventario / proveedores",
+      "title": "Proveedores",
+      "subtitle": "Mantén en un solo lugar los contactos y relaciones de compra.",
+      "add": "Agregar proveedor",
+      "searchLabel": "Buscar proveedores",
+      "searchPlaceholder": "Nombre, contacto o correo",
+      "singular": "proveedor",
+      "plural": "proveedores",
+      "emptyTitle": "No se encontraron proveedores",
+      "emptySearch": "Prueba con otra búsqueda.",
+      "emptyInitial": "Agrega tu primer proveedor para organizar tus contactos de compra.",
+      "record": "Ficha del proveedor",
+      "addTitle": "Agregar proveedor",
+      "editTitle": "Editar proveedor",
+      "edit": "Editar",
+      "name": "Nombre del proveedor",
+      "contact": "Contacto",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "notProvided": "No proporcionado",
+      "details": "Ver detalles",
+      "detailsCopy": "Usa este proveedor al registrar movimientos de inventario o vincular cotizaciones de productos.",
+      "cancel": "Cancelar",
+      "save": "Guardar proveedor",
+      "saving": "Guardando…",
+      "delete": "Eliminar proveedor",
+      "deleteConfirm": "¿Eliminar a {name}?",
+      "close": "Cerrar"
     }
   },
   "budget": {
