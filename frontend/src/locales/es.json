@@ -1316,6 +1316,15 @@
       "SHORT": "Short",
       "AD": "Anuncio",
       "OTHER": "Otro"
+    },
+    "calendar": {
+      "viewList": "Lista",
+      "viewCalendar": "Calendario",
+      "today": "Hoy",
+      "prevMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "addOnDay": "Crear publicación el {date}",
+      "undated": "Publicaciones sin fecha ({count}): no se muestran en el calendario."
     }
   },
   "birdie": {

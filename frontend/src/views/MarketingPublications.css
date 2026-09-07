@@ -36,6 +36,44 @@
   font-size: var(--k-font-size-body-main);
 }
 
+/* ── Toggle lista/calendario ─────────────────────────────── */
+
+.mkt-view-toggle {
+  display: inline-flex;
+  gap: var(--k-space-1);
+  padding: var(--k-space-1);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: var(--k-color-bg-2);
+  margin-bottom: var(--k-space-4);
+}
+
+.mkt-view-btn {
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-4);
+  border: none;
+  border-radius: var(--k-radius-sm);
+  background: transparent;
+  color: var(--k-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+}
+
+.mkt-view-btn:hover {
+  color: var(--k-color-text);
+}
+
+.mkt-view-btn:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-view-btn--active {
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
+}
+
 /* ── Filtros ─────────────────────────────────────────────── */
 
 .mkt-filters {
