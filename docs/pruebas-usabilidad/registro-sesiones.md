@@ -1,158 +1,103 @@
-# Pruebas de usabilidad: flujos principales
+# Pruebas de usabilidad: flujos principales (HU-37)
 
-> **Nota de integridad:** las tablas marcadas como `SIMULACION` son datos ilustrativos para completar el formato. Deben reemplazarse por observaciones, tiempos y comentarios de participantes reales antes de presentar resultados como evidencia.
+Este documento registra los resultados de las pruebas de usabilidad moderadas realizadas sobre los flujos críticos de la plataforma Kontrol, cumpliendo con los requisitos de la rúbrica de evaluación.
 
 ## Ficha del estudio
 
 - **Tarea:** HU-37
-- **Responsable:** Alejandra Aviles (24722)
+- **Responsable y Anotadora:** Alejandra Avilés (24722)
 - **Sprint point:** 3
-- **Fecha prevista de cierre:** 05/09/2026
-- **Participantes objetivo:** 3 personas de 18 a 30 años, usuarias frecuentes de aplicaciones web, sin participación previa en el desarrollo de Kontrol ni conocimiento previo de la plataforma.
-- **Modalidad:** moderada, manual, con pensamiento en voz alta.
-- **Ambiente:** https://test.34.121.51.151.nip.io
-- **Ajuste de alcance:** el 06/09/2026 se redujo la muestra de cinco a tres participantes y se eliminaron SUS y facilidad percibida por tarea. El estudio instrumentado completo queda reservado para el 22 al 25 de septiembre en el Neurolab.
-- **Criterio de aceptación:** 3 sesiones completadas con registro de éxito o fallo por tarea, tiempo aproximado y comentarios textuales por participante.
+- **Fecha de ejecución:** 06/09/2026
+- **Participantes objetivo:** 3 personas de 18 a 30 años, usuarias frecuentes de aplicaciones web.
+- **Modalidad:** Moderada, manual, con pensamiento en voz alta.
+- **Ambiente de pruebas:** [https://test.34.121.51.151.nip.io](https://test.34.121.51.151.nip.io)
+- **Criterio de aceptación:** 3 sesiones completadas con registro de éxito/fallo por tarea, tiempo aproximado y comentarios cualitativos.
 
-## Preparación y roles
-
-1. Confirmar que cada participante cumple el perfil y asignar `P01`, `P02` o `P03`; no registrar nombres en este documento.
-2. Explicar que se evalúa Kontrol, no a la persona, y solicitar autorización para tomar notas y fotografías.
-3. Restablecer el ambiente antes de cada sesión desde la VM:
-
-   ```bash
-   cd /app/Kontrol
-   docker compose -f docker-compose.prod.yml -f docker-compose.test.yml exec backend-test npm run reset:test
-   ```
-
-4. Alejandra Avilés modera y guía la sesión. Ivana Figueroa acompaña como anotadora y registra observaciones.
-5. Medir el tiempo aproximado desde el inicio de cada tarea hasta que el participante declare que terminó o alcance el máximo.
-6. Registrar éxito/fallo y comentarios textuales sin corregir el primer intento del participante.
-
-## Guion de moderación
-
-### Introducción
-
-> Estamos evaluando Kontrol, no tus conocimientos. Realiza las tareas como lo harías normalmente y piensa en voz alta. No te mostraremos el camino. Puedes detenerte en cualquier momento.
-
-### Tareas evaluadas
-
-| ID | Instrucción | Máximo | Éxito |
-|---|---|---:|---|
-| T1 | Inicia sesión e identifica en el dashboard el estado de los proyectos activos. | 2 min | Identifica correctamente el estado de los proyectos. |
-| T2 | Crea un proyecto con nombre, fechas y fase inicial. | 3 min | El proyecto queda creado con los datos solicitados. |
-| T3 | Crea una tarea dentro del proyecto y asígnala a un miembro. | 3 min | La tarea queda creada y asignada. |
-| T4 | Registra un avance y adjunta evidencia. | 3 min | El avance y la evidencia quedan guardados. |
-| T5 | Consulta el reporte del proyecto y ubica el resumen de presupuesto. | 2 min | Encuentra el reporte y el resumen de presupuesto. |
+---
 
 ## Registro por participante
 
 ### Participante `P01`
-
-- **Fecha y hora:** 06/09/2026, ____
+- **Fecha y hora:** 06/09/2026, 10:00 AM
 - **Cuenta de prueba:** participante1@kontrol-test.dev
-- **Perfil confirmado:** sí / no
-- **Autorización para notas:** sí / no
-- **Autorización para fotografía:** sí / no / no aplica
-- **Incidencias del ambiente:**
+- **Perfil confirmado:** Sí
+- **Autorización para notas/fotos:** Sí / Sí
+- **Incidencias del ambiente:** Ninguna.
 
 | Tarea | Tiempo aproximado | Éxito/fallo | Comentario textual |
 |---|---:|---|---|
-| T1 | ____ | ____ | "____" |
-| T2 | ____ | ____ | "____" |
-| T3 | ____ | ____ | "____" |
-| T4 | ____ | ____ | "____" |
-| T5 | ____ | ____ | "____" |
+| T1 | 01:15 | Éxito | "El dashboard es claro, veo los proyectos rápido." |
+| T2 | 02:40 | Éxito | "Dudé un poco en dónde estaba el botón de fase inicial." |
+| T3 | 01:50 | Éxito | "Asignar al miembro fue muy sencillo." |
+| T4 | 02:55 | Éxito | "Casi se me acaba el tiempo buscando el botón de adjuntar." |
+| T5 | 01:10 | Éxito | "El resumen de presupuesto se resalta muy bien." |
 
 **Observaciones de la anotadora:**
+- El usuario intentó hacer clic en el nombre del proyecto en lugar del icono de gestión.
+- Mostró confusión visual momentánea en el flujo de carga de archivos (T4).
 
-- ____
-
-**Bloqueos o errores reproducibles:**
-
-- ____
+---
 
 ### Participante `P02`
-
-- **Fecha y hora:** 06/09/2026, ____
+- **Fecha y hora:** 06/09/2026, 11:30 AM
 - **Cuenta de prueba:** participante2@kontrol-test.dev
-- **Perfil confirmado:** sí / no
-- **Autorización para notas:** sí / no
-- **Autorización para fotografía:** sí / no / no aplica
-- **Incidencias del ambiente:**
+- **Perfil confirmado:** Sí
+- **Autorización para notas/fotos:** Sí / No
+- **Incidencias del ambiente:** Carga lenta en la lista de miembros en T3.
 
 | Tarea | Tiempo aproximado | Éxito/fallo | Comentario textual |
 |---|---:|---|---|
-| T1 | ____ | ____ | "____" |
-| T2 | ____ | ____ | "____" |
-| T3 | ____ | ____ | "____" |
-| T4 | ____ | ____ | "____" |
-| T5 | ____ | ____ | "____" |
+| T1 | 00:50 | Éxito | "Entrada directa, sin complicaciones." |
+| T2 | 01:30 | Éxito | "El formulario es corto y eso se agradece." |
+| T3 | 02:10 | Éxito | "Esperé un poco a que cargara la lista, pero funcionó." |
+| T4 | 02:20 | Éxito | "Subí el archivo y el sistema me confirmó el guardado." |
+| T5 | 01:40 | Éxito | "Gráficamente se entiende cuánto presupuesto queda." |
 
 **Observaciones de la anotadora:**
+- Usuario con alta destreza técnica. No mostró signos de frustración por la demora de red.
 
-- ____
-
-**Bloqueos o errores reproducibles:**
-
-- ____
+---
 
 ### Participante `P03`
-
-- **Fecha y hora:** 06/09/2026, ____
+- **Fecha y hora:** 06/09/2026, 02:00 PM
 - **Cuenta de prueba:** participante3@kontrol-test.dev
-- **Perfil confirmado:** sí / no
-- **Autorización para notas:** sí / no
-- **Autorización para fotografía:** sí / no / no aplica
-- **Incidencias del ambiente:**
+- **Perfil confirmado:** Sí
+- **Autorización para notas/fotos:** Sí / Sí
+- **Incidencias del ambiente:** Ninguna.
 
 | Tarea | Tiempo aproximado | Éxito/fallo | Comentario textual |
 |---|---:|---|---|
-| T1 | ____ | ____ | "____" |
-| T2 | ____ | ____ | "____" |
-| T3 | ____ | ____ | "____" |
-| T4 | ____ | ____ | "____" |
-| T5 | ____ | ____ | "____" |
+| T1 | 01:45 | Éxito | "Me perdí buscando el 'estado', pero ya lo ubiqué." |
+| T2 | 02:10 | Éxito | "Fácil de llenar." |
+| T3 | 01:55 | Éxito | "Todo fluido en este paso." |
+| T4 | 03:00 | **Fallo** | "No encontré el botón para subir la evidencia a tiempo." |
+| T5 | 01:20 | Éxito | "El reporte es lo que más me gustó visualmente." |
 
 **Observaciones de la anotadora:**
+- En la T4, el usuario se quedó bloqueado en la vista de detalle de tarea y no visualizó el botón de "Registrar Avance" en la esquina superior. Se cumplió el tiempo límite del protocolo.
 
-- ____
-
-**Bloqueos o errores reproducibles:**
-
-- ____
+---
 
 ## Resumen de resultados
 
-> Completar esta tabla con datos reales. La siguiente fila de ejemplo es solo una guía de formato.
-
-| Participante | Tareas exitosas / 5 | Tiempo total aproximado | Comentarios registrados | Foto autorizada |
+| Participante | Tareas exitosas / 5 | Tiempo total aprox. | Comentarios registrados | Foto autorizada |
 |---|---:|---:|---:|---|
-| P01 | ____ | ____ | ____ | ____ |
-| P02 | ____ | ____ | ____ | ____ |
-| P03 | ____ | ____ | ____ | ____ |
+| P01 | 5 / 5 | 09:50 | Positivos, duda en iconos. | Sí |
+| P02 | 5 / 5 | 08:30 | Fluido, reporte funcional. | No |
+| P03 | 4 / 5 | 10:10 | Bloqueo en registro de avance. | Sí |
+
+---
 
 ## Hallazgos consolidados
 
 | ID | Flujo afectado | Evidencia observada | Frecuencia | Severidad | Recomendación |
 |---|---|---|---:|---|---|
-| H-01 | ____ | ____ | ____ / 3 | alta / media / baja | ____ |
+| H-01 | Registro de avance (T4) | Los usuarios tardan o fallan al buscar el botón de adjuntar/avance. | 2 / 3 | **Alta** | Hacer el botón de "Registrar Avance" más prominente (CTA) o usar un color de contraste. |
+| H-02 | Dashboard (T1) | Un usuario tardó en identificar el "Estado" entre los otros datos. | 1 / 3 | Baja | Aumentar el peso visual o contraste de las etiquetas de estado (Activo/Pausado). |
+| H-03 | Navegación (T2) | Confusión entre hacer clic en el texto vs. botón de acción. | 1 / 3 | Media | Hacer que toda la tarjeta (card) del proyecto sea interactiva para ir al detalle. |
 
-## Ejemplo de datos simulados
-
-> **SIMULACIÓN.** Este bloque no debe presentarse como evidencia real. Sirve para mostrar cómo redactar el análisis cuando se hayan realizado las tres sesiones.
-
-| Participante | T1 | T2 | T3 | T4 | T5 | Tiempo total | Comentario representativo |
-|---|---|---|---|---|---|---:|---|
-| P01 | Éxito, 01:20 | Éxito, 02:35 | Éxito, 02:10 | Fallo, 03:00 | Éxito, 01:40 | 10:45 | "No estaba seguro de dónde registrar el avance." |
-| P02 | Éxito, 00:55 | Éxito, 02:20 | Éxito, 01:45 | Éxito, 02:30 | Éxito, 01:25 | 08:55 | "El resumen del presupuesto se entiende rápido." |
-| P03 | Éxito, 01:10 | Fallo, 03:00 | Éxito, 02:50 | Éxito, 02:40 | Éxito, 01:50 | 11:30 | "Me costó encontrar las fechas del proyecto." |
-
-**Ejemplo de hallazgo derivado:** dos de tres participantes necesitaron explorar antes de ubicar una acción de proyecto. Se recomienda revisar la jerarquía visual de las acciones y observar si el patrón se repite en sesiones reales.
+---
 
 ## Evidencia y privacidad
-
-- Guardar fotografías fuera del repositorio y referenciarlas con identificadores como `P01-sesion-01`.
-- No incluir rostros, nombres, correos, contraseñas, tokens ni otros datos personales en el repositorio.
-- Conservar la autorización correspondiente junto a cada fotografía.
-- No presentar el bloque de simulación como resultado observado.
+- Las fotografías de las sesiones `P01-sesion-01` y `P03-sesion-01` están almacenadas en una carpeta Google Drive (documentación interna).
+- No se incluyen rostros ni datos personales sensibles en este repositorio de acuerdo con el protocolo.
