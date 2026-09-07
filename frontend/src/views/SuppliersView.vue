@@ -207,13 +207,18 @@ async function removeSupplier(supplier) {
   }
 }
 
-onMounted(loadSuppliers)
+onMounted(() => {
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  document.documentElement.scrollTop = 0
+  document.body.scrollTop = 0
+  loadSuppliers()
+})
 </script>
 
 <style scoped>
 .suppliers-root { position: relative; isolation: isolate; min-height: 100vh; background: transparent; color: var(--k-color-text); font-family: var(--k-font-sans); }
 .suppliers-root::before { content: ''; position: fixed; inset: 0; z-index: -1; background: rgba(var(--k-color-black-rgb), .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none; }
-.suppliers-content { max-width: 1240px; margin: 0 auto; padding: 120px var(--k-space-6) var(--k-space-8); }
+.suppliers-content { max-width: 1240px; margin: 56px auto 0; padding: 80px var(--k-space-6) var(--k-space-8); }
 .page-header, .toolbar, .card-heading, .modal-heading, .modal-actions { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--k-space-4); }
 .page-header { margin-bottom: var(--k-space-6); padding-bottom: var(--k-space-5); border-bottom: var(--k-border-width) solid var(--k-color-border); }
 .eyebrow { color: var(--k-color-primary); font-size: var(--k-font-size-caption); letter-spacing: var(--k-tracking-caps); text-transform: uppercase; }
@@ -251,5 +256,5 @@ dd { margin: 0; overflow-wrap: anywhere; }
 .close-button { background: transparent; color: var(--k-text-muted); }
 .details-list { padding: var(--k-space-4) 0; }
 @media (max-width: 900px) { .supplier-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 620px) { .suppliers-content { padding: 96px var(--k-space-4) var(--k-space-6); } .page-header, .toolbar { flex-direction: column; align-items: stretch; } .supplier-grid, .form-row { grid-template-columns: 1fr; } .search-field input { min-width: 0; } }
+@media (max-width: 620px) { .suppliers-content { margin-top: 56px; padding: 48px var(--k-space-4) var(--k-space-6); } .page-header, .toolbar { flex-direction: column; align-items: stretch; } .supplier-grid, .form-row { grid-template-columns: 1fr; } .search-field input { min-width: 0; } }
 </style>
