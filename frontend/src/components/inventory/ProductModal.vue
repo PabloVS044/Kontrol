@@ -1,5 +1,5 @@
 <template>
-  <BaseModal v-model="show" :title="$t('inventory.modal.title')" max-width="480px">
+  <BaseModal v-model="show" :title="isEditing ? 'Edit product' : $t('inventory.modal.title')" max-width="480px">
     <form class="modal-form" @submit.prevent="handleSubmit">
       <div class="form-field">
         <label>{{ $t('inventory.modal.name') }} <span class="req">*</span></label>
@@ -9,6 +9,16 @@
       <div class="form-field">
         <label>{{ $t('inventory.modal.description') }}</label>
         <textarea v-model="form.descripcion" :placeholder="$t('inventory.modal.descriptionPlaceholder')" rows="2"></textarea>
+      </div>
+
+      <div class="form-field">
+        <label>Category</label>
+        <select v-model="form.id_categoria">
+          <option :value="null">Uncategorized</option>
+          <option v-for="category in categories" :key="category.id_categoria" :value="category.id_categoria">
+            {{ category.nombre }}
+          </option>
+        </select>
       </div>
 
       <div class="form-field">
@@ -38,7 +48,7 @@
       </div>
 
       <!-- Costo y stock inicial: por unidad o por caja -->
-      <div class="form-field">
+      <div v-if="!isEditing" class="form-field">
         <label>{{ $t('inventory.modal.costAndStock') }}</label>
         <div class="mode-toggle">
           <button
@@ -56,7 +66,7 @@
         </div>
       </div>
 
-      <template v-if="form.modo === 'unidad'">
+      <template v-if="!isEditing && form.modo === 'unidad'">
         <div class="form-row">
           <div class="form-field">
             <label>{{ $t('inventory.modal.initialStock') }}</label>
@@ -69,7 +79,7 @@
         </div>
       </template>
 
-      <template v-else>
+      <template v-else-if="!isEditing">
         <div class="form-row">
           <div class="form-field">
             <label>{{ $t('inventory.modal.boxes') }}</label>
@@ -94,7 +104,7 @@
       <div class="modal-actions">
         <button type="button" class="btn-secondary" @click="show = false">{{ $t('inventory.modal.cancel') }}</button>
         <button type="submit" class="btn-primary" :disabled="submitting || !canSubmit">
-          {{ submitting ? $t('inventory.modal.saving') : $t('inventory.modal.save') }}
+          {{ submitting ? $t('inventory.modal.saving') : isEditing ? 'Save changes' : $t('inventory.modal.save') }}
         </button>
       </div>
     </form>
@@ -111,6 +121,8 @@ const props = defineProps({
   modelValue: { type: Boolean, required: true },
   submitting: { type: Boolean, default: false },
   error:      { type: String, default: '' },
+  product:    { type: Object, default: null },
+  categories: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['update:modelValue', 'submit'])
@@ -132,6 +144,7 @@ function emptyForm() {
 
 const form = ref(emptyForm())
 const showScanner = ref(false)
+const isEditing = computed(() => Boolean(props.product))
 
 function onBarcodeDetected(code) {
   form.value.codigo_barras = code
@@ -139,7 +152,20 @@ function onBarcodeDetected(code) {
 }
 
 watch(() => props.modelValue, (open) => {
-  if (open) form.value = emptyForm()
+  if (!open) return
+  const product = props.product
+  form.value = product
+    ? {
+        ...emptyForm(),
+        nombre: product.nombre || '',
+        descripcion: product.descripcion || '',
+        codigo_barras: product.codigo_barras || '',
+        precio_venta: Number(product.precio_venta ?? 0),
+        precio_costo: Number(product.precio_costo ?? 0),
+        stock_minimo: Number(product.stock_minimo ?? 0),
+        id_categoria: product.id_categoria ?? null,
+      }
+    : emptyForm()
 })
 
 // Live resolution of units + per-unit cost from the box inputs.
@@ -173,6 +199,7 @@ function handleSubmit() {
     stock_minimo: form.value.stock_minimo ?? 0,
     stock_inicial: isBox ? resolved.value.cantidad : (form.value.stock_inicial ?? 0),
     codigo_barras: form.value.codigo_barras?.trim() || undefined,
+    id_categoria: form.value.id_categoria ?? null,
   })
 }
 </script>
@@ -219,6 +246,8 @@ function handleSubmit() {
   transition: border-color .15s, color .15s;
 }
 .barcode-scan:hover { border-color: #caa860; color: var(--Primary); }
+
+.form-field select { appearance: auto; }
 
 .btn-primary {
   background: #caa860; border: none; padding: 10px 18px; cursor: pointer;

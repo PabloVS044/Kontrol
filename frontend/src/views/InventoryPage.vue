@@ -6,6 +6,8 @@
       v-model="showModal"
       :submitting="modalLoading"
       :error="modalError"
+      :product="editingProduct"
+      :categories="productCategories"
       @submit="submitProduct"
     />
 
@@ -232,6 +234,13 @@
               >
                 + {{ $t('inventory.card.restock') }}
               </button>
+              <button
+                v-if="canRestock(product)"
+                class="edit-product-btn"
+                type="button"
+                title="Edit product"
+                @click="openEditProduct(product)"
+              >Edit</button>
               <!-- Sell button OR quantity stepper if product is already in cart -->
               <button
                 v-if="!getCartItem(product)"
@@ -776,11 +785,29 @@ watch(products, (next) => {
 const showModal    = ref(false)
 const modalLoading = ref(false)
 const modalError   = ref(null)
+const editingProduct = ref(null)
+
+const productCategories = computed(() => {
+  const categoriesById = new Map()
+  products.value.forEach((product) => {
+    if (product.id_categoria && product.categoria) {
+      categoriesById.set(product.id_categoria, { id_categoria: product.id_categoria, nombre: product.categoria })
+    }
+  })
+  return [...categoriesById.values()].sort((a, b) => a.nombre.localeCompare(b.nombre))
+})
 
 function openNewProduct() {
   if (!canCreateProduct.value) return
+  editingProduct.value = null
   modalError.value = null
   showModal.value  = true
+}
+
+function openEditProduct(product) {
+  editingProduct.value = product
+  modalError.value = null
+  showModal.value = true
 }
 
 async function submitProduct(formData) {
@@ -791,8 +818,9 @@ async function submitProduct(formData) {
   modalLoading.value = true
   modalError.value   = null
   try {
-    const res = await fetch('/api/products', {
-      method: 'POST',
+    const productId = editingProduct.value?.id_producto
+    const res = await fetch(productId ? `/api/products/${productId}` : '/api/products', {
+      method: productId ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader(true) },
       body: JSON.stringify({
         nombre:        formData.nombre,
@@ -802,6 +830,7 @@ async function submitProduct(formData) {
         stock_minimo:  formData.stock_minimo ?? 0,
         stock_inicial: formData.stock_inicial ?? 0,
         codigo_barras: formData.codigo_barras || undefined,
+        id_categoria: formData.id_categoria ?? null,
       }),
     })
     const data = await res.json()
@@ -810,6 +839,7 @@ async function submitProduct(formData) {
       return
     }
     showModal.value = false
+    editingProduct.value = null
     await loadData()
   } catch {
     modalError.value = t('inventory.errors.networkError')
