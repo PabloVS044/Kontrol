@@ -1,5 +1,13 @@
 <template>
-  <div class="circle" :style="{ '--back': color, '--roundedColor': roundedColor }">
+  <div
+    class="circle"
+    :style="{
+      '--back': color,
+      '--roundedColor': roundedColor,
+      '--outer-size': size + 'px',
+      '--inner-size': Math.max(size - 50, 0) + 'px',
+    }"
+  >
     <div class="circle-rounded">
       <component v-if="icon && typeof icon !== 'string'" :is="icon" :size="iconSize" :color="iconColor" stroke-width="1.5" />
       <img v-else-if="typeof icon === 'string'" :src="icon" alt="" />
