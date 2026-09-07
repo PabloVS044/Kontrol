@@ -9,8 +9,7 @@
         </span>
       </div>
 
-      <div class="form-field">
-        <label>{{ $t('inventory.restock.entryMode') }}</label>
+      <FormField :label="$t('inventory.restock.entryMode')">
         <div class="mode-toggle">
           <button
             type="button"
@@ -25,53 +24,58 @@
             @click="form.modo = 'caja'"
           >{{ $t('inventory.modal.stockMode.box') }}</button>
         </div>
-      </div>
+      </FormField>
 
       <template v-if="form.modo === 'unidad'">
         <div class="form-row">
-          <div class="form-field">
-            <label>{{ $t('inventory.restock.units') }} <span class="req">*</span></label>
+          <FormField :label="$t('inventory.restock.units')" :required="true">
             <input v-model.number="form.unidades" type="number" min="1" placeholder="0" />
-          </div>
-          <div class="form-field">
-            <label>{{ $t('inventory.restock.unitCost') }} <span class="req">*</span></label>
+          </FormField>
+          <FormField :label="$t('inventory.restock.unitCost')" :required="true">
             <input v-model.number="form.precio_unitario" type="number" min="0" step="0.01" placeholder="0.00" />
-          </div>
+          </FormField>
         </div>
       </template>
 
       <template v-else>
         <div class="form-row">
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.boxes') }} <span class="req">*</span></label>
+          <FormField :label="$t('inventory.modal.boxes')" :required="true">
             <input v-model.number="form.cajas" type="number" min="1" placeholder="0" />
-          </div>
-          <div class="form-field">
-            <label>{{ $t('inventory.modal.unitsPerBox') }} <span class="req">*</span></label>
+          </FormField>
+          <FormField :label="$t('inventory.modal.unitsPerBox')" :required="true">
             <input v-model.number="form.unidades_por_caja" type="number" min="1" placeholder="0" />
-          </div>
+          </FormField>
         </div>
-        <div class="form-field">
-          <label>{{ $t('inventory.modal.boxPrice') }} <span class="req">*</span></label>
+        <FormField :label="$t('inventory.modal.boxPrice')" :required="true">
           <input v-model.number="form.precio_caja" type="number" min="0" step="0.01" placeholder="0.00" />
-        </div>
+        </FormField>
         <p v-if="resolved.cantidad" class="box-preview">
           {{ $t('inventory.modal.boxPreview', { units: resolved.cantidad, cost: resolved.costoUnitario.toFixed(2) }) }}
         </p>
       </template>
 
-      <div class="form-field">
-        <label>{{ $t('inventory.restock.reason') }}</label>
+      <FormField :label="$t('inventory.restock.reason')">
         <input v-model="form.motivo" type="text" :placeholder="$t('inventory.restock.reasonPlaceholder')" />
-      </div>
+      </FormField>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">{{ $t('inventory.modal.cancel') }}</button>
-        <button type="submit" class="btn-primary" :disabled="submitting || !canSubmit">
-          {{ submitting ? $t('inventory.restock.saving') : $t('inventory.restock.save') }}
-        </button>
+        <Button
+          class="btn-cancel"
+          :label="$t('inventory.modal.cancel')"
+          back-color="var(--k-shade-3)"
+          hover-back="var(--k-shade-4)"
+          @click="show = false"
+        />
+        <Button
+          class="btn-save"
+          type="submit"
+          :label="submitting ? $t('inventory.restock.saving') : $t('inventory.restock.save')"
+          :disabled="submitting || !canSubmit"
+          back-color="var(--k-color-primary)"
+          hover-back="var(--k-color-primary-2)"
+        />
       </div>
     </form>
   </BaseModal>
@@ -80,6 +84,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+import Button from '@/components/UI/Button/Button.vue'
+import FormField from '@/components/common/FormField.vue'
 import { resolveStockEntry } from '@/utils/boxPricing'
 
 const props = defineProps({
@@ -137,55 +143,73 @@ function handleSubmit() {
 </script>
 
 <style scoped>
+/**
+ * Identidad visual v2 (SCRUM-19): etiquetas y errores los aporta `FormField`
+ * (SCRUM-14); aquí solo queda el estilo de los controles, ya sobre tokens.
+ */
+
 .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.form-field  { display: flex; flex-direction: column; gap: 6px; }
 .form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field input {
-  background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: var(--Text); font-family: 'Manrope', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none;
-  transition: border-color 0.15s;
+
+.modal-form input {
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  padding: 10px 12px;
+  outline: none;
+  transition: var(--k-transition-ui);
+  width: 100%;
 }
-.form-field input:focus { border-color: #caa860; }
-.req { color: var(--Primary); }
+.modal-form input:focus {
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
+}
+.modal-form input::placeholder { color: var(--k-text-placeholder); }
 
 .restock-product {
   display: flex; flex-direction: column; gap: 3px;
-  border: 1px solid #1f1f1f; background: rgba(15,15,15,0.7); padding: 12px 14px;
+  border: var(--k-border-width) solid var(--k-shade-6);
+  background: rgba(var(--k-color-black-rgb), 0.7); padding: 12px 14px;
 }
-.rp-name { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--Text); }
-.rp-meta { font-size: 11px; color: var(--TextMuted); font-family: 'Manrope', sans-serif; }
+.rp-name { font-family: var(--k-font-display); font-size: var(--k-font-size-body-large); color: var(--k-color-text); }
+.rp-meta { font-size: var(--k-font-size-caption); color: var(--k-text-muted); font-family: var(--k-font-sans); }
 
-.mode-toggle { display: flex; border: 1px solid #1f1f1f; }
+.mode-toggle { display: flex; border: var(--k-border-width) solid var(--k-shade-6); }
 .mode-btn {
-  flex: 1; padding: 9px 12px; background: #0a0a0a; border: none; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; color: var(--TextMuted);
-  transition: background 0.15s, color 0.15s;
+  flex: 1; padding: 9px 12px; background: var(--k-shade-1); border: none; cursor: pointer;
+  font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold); color: var(--k-text-muted);
+  transition: var(--k-transition-ui);
 }
-.mode-btn + .mode-btn { border-left: 1px solid #1f1f1f; }
-.mode-btn.active { background: #caa860; color: var(--BtnText); }
+.mode-btn + .mode-btn { border-left: var(--k-border-width) solid var(--k-shade-6); }
+.mode-btn.active { background: var(--k-color-primary); color: var(--k-form-btn-text); }
 
 .box-preview {
-  font-size: 12px; color: var(--Primary); font-family: 'Manrope', sans-serif;
-  background: rgba(202,168,96,0.08); border: 1px solid rgba(202,168,96,0.2);
+  font-size: var(--k-font-size-caption-lg); color: var(--k-alert-watching-text);
+  font-family: var(--k-font-sans);
+  background: var(--k-alert-watching-bg);
+  border: var(--k-border-width) solid var(--k-alert-watching-border);
   padding: 8px 12px;
 }
 
-.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
+.modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
-.btn-primary {
-  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: var(--BtnText); transition: filter 0.15s;
+/* El color de fondo se pasa por props (`back-color`/`hover-back`) para no
+   pelear con el hover del componente. Aquí solo queda lo que el POS impone:
+   esquina viva —igual que el resto de pantallas ya migradas— y tipografía. */
+.modal-actions .btn {
+  border-radius: 0;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
+  padding: 10px 20px;
 }
-.btn-primary:hover    { filter: brightness(1.1); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
-  font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
-  cursor: pointer; transition: border-color 0.15s;
+.modal-actions .btn-cancel {
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
 }
-.btn-secondary:hover { border-color: #333; }
+.modal-actions .btn-save { color: var(--k-form-btn-text); }
 </style>

@@ -2,23 +2,28 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 350px;
-    height: 350px;
+    width: var(--outer-size, 350px);
+    height: var(--outer-size, 350px);
+    max-width: 100%;
     position: relative;
     border: var(--roundedColor) solid 2px;
     background-color: color-mix(in srgb, var(--roundedColor) 50%, transparent);
     border-radius: 50%;
     z-index: 10;
+    box-sizing: border-box;
 }
 
 .circle-rounded {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 300px;
-    height: 300px;
+    width: var(--inner-size, 300px);
+    height: var(--inner-size, 300px);
+    max-width: 85%;
+    max-height: 85%;
     position: absolute;
     background-color: var(--back);
     border-radius: 50%;
     z-index: 30;
+    box-sizing: border-box;
 }

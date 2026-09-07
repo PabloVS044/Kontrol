@@ -7,6 +7,10 @@ import LandingPage from '../views/LandingPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    return { top: 0, behavior: 'instant' }
+  },
   routes: [
     {
       path: '/',
@@ -75,6 +79,12 @@ const router = createRouter({
       path: '/inventory/:id',
       name: 'inventory-detail',
       component: () => import('../views/ProductDetailView.vue'),
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/suppliers',
+      name: 'suppliers',
+      component: () => import('../views/SuppliersView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {

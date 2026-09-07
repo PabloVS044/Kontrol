@@ -32,6 +32,8 @@ services:
       args:
         VITE_API_URL: ${TEST_FRONTEND_URL:-}
         VITE_SOCKET_URL: ${TEST_FRONTEND_URL:-}
+    environment:
+      - BACKEND_HOST=backend-test
     expose:
       - "80"
     depends_on:

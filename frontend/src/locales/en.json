@@ -524,9 +524,7 @@
       "subtitle": "Browse and manage your product catalogue",
       "newProduct": "New product",
       "noWriteAccess": "No write access",
-      "selectProjectFirst": "Select project first",
-      "noWriteAccessTitle": "You do not have write access in this project",
-      "selectProjectTitle": "Select a project first",
+      "noWriteAccessTitle": "You do not have write access in any project",
       "settings": "Settings",
       "history": "History"
     },
@@ -536,7 +534,7 @@
       "loading": "Loading…"
     },
     "search": {
-      "placeholder": "Search by name or category..."
+      "placeholder": "Search by name, category or code..."
     },
     "filter": {
       "category": "Category",
@@ -554,11 +552,21 @@
       "exits": "Exits",
       "net": "Net",
       "viewDetails": "View details",
+      "edit": "Edit",
       "sell": "Sell",
       "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
+      "edit": "Edit product",
+      "delete": "Delete product",
       "cannotSell": "This product cannot be sold right now."
+    },
+    "checkout": {
+      "title": "Charge sale",
+      "total": "Amount due",
+      "confirm": "Confirm sale",
+      "confirming": "Processing…",
+      "back": "Back"
     },
     "sale": {
       "title": "Current sale",
@@ -602,8 +610,23 @@
       "dataSource": "Data Source",
       "dataSourceText": "Inventory database · Live"
     },
+    "edit": {
+      "title": "Edit product",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "stockNote": "Current stock changes through restocks and sales, not from here."
+    },
+    "delete": {
+      "title": "Delete product",
+      "question": "Delete {name}?",
+      "warning": "This action cannot be undone.",
+      "submit": "Delete",
+      "deleting": "Deleting…",
+      "hasMovements": "Cannot delete: the product has recorded movements. Its inventory history would stop adding up."
+    },
     "modal": {
       "title": "New product",
+      "project": "Project",
       "name": "Name",
       "description": "Description",
       "salePrice": "Sale price",
@@ -625,7 +648,12 @@
       "boxPrice": "Price per box",
       "boxPreview": "→ {units} units · cost ${cost}/u",
       "barcode": "Barcode",
-      "barcodePlaceholder": "Scan or type the code"
+      "barcodePlaceholder": "Scan or type the code",
+      "category": "Category",
+      "categoryPlaceholder": "Uncategorized or type a new category",
+      "errors": {
+        "costOverPrice": "Cost cannot be greater than the sale price."
+      }
     },
     "scanner": {
       "scan": "Scan barcode",
@@ -635,8 +663,15 @@
       "permissionError": "Camera permission denied. Enable it to scan.",
       "noCamera": "Could not access the camera.",
       "insecureContext": "The camera requires HTTPS. Open the app on localhost or over an https:// URL to scan.",
+      "quantity": "Quantity",
+      "available": "Available: {count}",
+      "inCart": "already in the sale: {count}",
+      "add": "Add to sale",
+      "discard": "Discard scan",
+      "addedQty": "Added: {count} × {name}",
       "notFound": "No product for code {code}.",
-      "added": "Added: {name}"
+      "outOfStock": "{name} has no stock available.",
+      "stockLimit": "Only {count} units of {name} left."
     },
     "restock": {
       "title": "Add stock",
@@ -654,6 +689,36 @@
     "errors": {
       "selectProject": "Select a project before adding a product.",
       "networkError": "Network error, try again."
+    },
+    "suppliers": {
+      "eyebrow": "Inventory / partners",
+      "title": "Suppliers",
+      "subtitle": "Keep supplier contacts and purchasing relationships in one place.",
+      "add": "Add supplier",
+      "searchLabel": "Search suppliers",
+      "searchPlaceholder": "Name, contact or email",
+      "singular": "supplier",
+      "plural": "suppliers",
+      "emptyTitle": "No suppliers found",
+      "emptySearch": "Try another search.",
+      "emptyInitial": "Add your first supplier to start organizing purchasing contacts.",
+      "record": "Supplier record",
+      "addTitle": "Add supplier",
+      "editTitle": "Edit supplier",
+      "edit": "Edit",
+      "name": "Supplier name",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "Email",
+      "notProvided": "Not provided",
+      "details": "View details",
+      "detailsCopy": "Use this supplier when registering inventory movements or linking product quotes.",
+      "cancel": "Cancel",
+      "save": "Save supplier",
+      "saving": "Saving…",
+      "delete": "Delete supplier",
+      "deleteConfirm": "Delete {name}?",
+      "close": "Close"
     }
   },
   "budget": {
@@ -1284,6 +1349,15 @@
       "SHORT": "Short",
       "AD": "Ad",
       "OTHER": "Other"
+    },
+    "calendar": {
+      "viewList": "List",
+      "viewCalendar": "Calendar",
+      "today": "Today",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "addOnDay": "Create publication on {date}",
+      "undated": "Publications without a date ({count}): not shown on the calendar."
     }
   },
   "birdie": {
@@ -1350,6 +1424,22 @@
       "inventoryFilter": {
         "q": "How do I filter by project?",
         "a": "These tabs let you scope the inventory to a single project or view all projects together. Switching the tab also scopes any new movement to that project."
+      },
+      "inventoryCategoryFilter": {
+        "q": "How do I filter by category?",
+        "a": "The Category row shows categories assigned to the visible products. Choose one to hide the others; if only All appears, assign categories when creating or editing products first."
+      },
+      "suppliersSearch": {
+        "q": "How do I find a supplier?",
+        "a": "Type part of the supplier name, contact, phone number or email in the search field. The list updates as you type."
+      },
+      "suppliersCreate": {
+        "q": "How do I add a supplier?",
+        "a": "Click Add supplier and enter the name. Contact, phone and email are optional; save to add the supplier to the list."
+      },
+      "suppliersDetails": {
+        "q": "What can I do with a supplier?",
+        "a": "Open View details to review its information. If you have management permissions, you can also edit or delete it. The same email may be used by more than one supplier because it identifies a contact, not a user account."
       },
       "addFunds": {
         "q": "What does the +Funds button do?",

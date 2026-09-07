@@ -1,0 +1,180 @@
+/* HU-32 · Vista de calendario del centro de marketing, identidad visual v2. */
+
+.mkt-cal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-3);
+}
+
+.mkt-cal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-space-3);
+  flex-wrap: wrap;
+}
+
+.mkt-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--k-space-3);
+}
+
+.mkt-cal-nav-btn {
+  min-height: var(--k-target-min-size);
+  min-width: var(--k-target-min-size);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: var(--k-color-bg-2);
+  color: var(--k-color-text);
+  cursor: pointer;
+  font-size: var(--k-font-size-body-large);
+}
+
+.mkt-cal-nav-btn:hover {
+  filter: brightness(var(--k-state-hover-brightness));
+  border-color: var(--k-color-primary);
+}
+
+.mkt-cal-nav-btn:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-cal-month {
+  font-family: var(--k-font-display);
+  font-weight: var(--k-font-weight-semibold);
+  font-size: var(--k-font-size-body-large);
+  min-width: 12ch;
+  text-align: center;
+}
+
+.mkt-cal-today {
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-3);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+  background: transparent;
+  color: var(--k-color-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+}
+
+.mkt-cal-today:hover {
+  filter: brightness(var(--k-state-hover-brightness));
+}
+
+.mkt-cal-today:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--k-color-border);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-lg);
+  overflow: hidden;
+}
+
+.mkt-cal-weekday {
+  padding: var(--k-space-2);
+  background: var(--k-color-bg-2);
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.mkt-cal-day {
+  position: relative;
+  min-height: 96px;
+  padding: var(--k-space-2);
+  background: var(--k-color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-1);
+}
+
+.mkt-cal-day--outside {
+  background: var(--k-color-bg-2);
+  color: var(--k-text-faint);
+}
+
+.mkt-cal-day--today {
+  box-shadow: inset 0 0 0 2px var(--k-color-primary);
+}
+
+.mkt-cal-day-number,
+.mkt-cal-day-add {
+  align-self: flex-start;
+  min-width: var(--k-space-6);
+  min-height: var(--k-space-6);
+  border-radius: var(--k-radius-pill);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mkt-cal-day-add {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mkt-cal-day-add:hover {
+  background: var(--k-color-bg-3);
+  color: var(--k-color-text);
+}
+
+.mkt-cal-day-add:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.mkt-cal-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mkt-cal-event {
+  padding: 2px var(--k-space-2);
+  border-radius: var(--k-radius-sm);
+  font-size: var(--k-font-size-caption);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mkt-cal-event:hover {
+  filter: brightness(var(--k-state-hover-brightness));
+}
+
+.mkt-cal-more {
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-muted);
+}
+
+.mkt-cal-undated {
+  margin: 0;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption);
+}
+
+@media (max-width: 640px) {
+  .mkt-cal-day {
+    min-height: 72px;
+  }
+}

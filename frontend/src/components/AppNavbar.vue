@@ -46,6 +46,7 @@
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">Suppliers</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
         <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>

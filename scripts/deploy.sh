@@ -104,11 +104,17 @@ $SSH "
   echo '==> .env actualizado'
 "
 
-echo "==> [2/3] Lanzando build en el servidor (corre en background, no depende de SSH)..."
+echo "==> [2/3] Lanzando build en el servidor (secuencial, para no saturar RAM/disco)..."
 $SSH "
   set -e
   cd /app/Kontrol
-  docker compose $COMPOSE_FILES up -d --build --remove-orphans
+  docker compose $COMPOSE_FILES build backend
+  docker compose $COMPOSE_FILES build frontend
+  if [ -n '${TEST_DATABASE_URL-}' ]; then
+    docker compose $COMPOSE_FILES build backend-test
+    docker compose $COMPOSE_FILES build frontend-test
+  fi
+  docker compose $COMPOSE_FILES up -d --remove-orphans
   docker image prune -f >/dev/null 2>&1 || true
 "
 
