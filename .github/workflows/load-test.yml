@@ -1,0 +1,63 @@
+name: Load and Stress Tests (k6)
+
+# Disparo manual únicamente: la batería completa de carga tarda ~40 min, la
+# de estrés puede tardar más, y ambas modifican datos del ambiente de
+# pruebas de SCRUM-25, que está reservado para sesiones de UX. Correrlo en
+# cada PR saturaría ese ambiente compartido sin coordinación — ver
+# docs/plan-maestro-pruebas.md, riesgo 7 de §17.
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Batería a correr"
+        required: true
+        type: choice
+        default: load
+        options:
+          - load
+          - stress
+      stress_scenario:
+        description: "Solo si test_type=stress: qué escenario (e1=login, e2=proyectos, e3=avance, e4=reportes, e5=venta)"
+        required: false
+        type: choice
+        default: e2
+        options: [e1, e2, e3, e4, e5]
+
+permissions:
+  contents: read
+
+jobs:
+  k6:
+    name: k6 — ${{ inputs.test_type }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Correr batería de carga (C1-C5)
+        if: inputs.test_type == 'load'
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: k6/load-test.js
+          flags: --summary-export=summary.json
+
+      - name: Correr escenario de estrés (${{ inputs.stress_scenario }})
+        if: inputs.test_type == 'stress'
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: k6/stress-test.js
+          flags: --summary-export=summary.json -e SCENARIO=${{ inputs.stress_scenario }}
+
+      - name: Publicar resumen de la corrida como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary-${{ inputs.test_type }}-${{ inputs.test_type == 'stress' && inputs.stress_scenario || 'c1-c5' }}
+          path: summary.json
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Recordatorio de reinicio obligatorio del ambiente
+        if: always()
+        run: |
+          echo "::notice title=Reiniciar el ambiente de pruebas::Esta corrida modificó datos en el ambiente de SCRUM-25. Antes de la próxima corrida de carga/estrés o sesión de UX, reiniciarlo desde la VM con: docker compose -f docker-compose.prod.yml -f docker-compose.test.yml exec backend-test npm run reset:test (ver docs/plan-maestro-pruebas.md, riesgo 7 de §17, y docs/test-environment.md)."
