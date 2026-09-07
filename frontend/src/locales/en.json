@@ -1351,6 +1351,22 @@
         "q": "How do I filter by project?",
         "a": "These tabs let you scope the inventory to a single project or view all projects together. Switching the tab also scopes any new movement to that project."
       },
+      "inventoryCategoryFilter": {
+        "q": "How do I filter by category?",
+        "a": "The Category row shows categories assigned to the visible products. Choose one to hide the others; if only All appears, assign categories when creating or editing products first."
+      },
+      "suppliersSearch": {
+        "q": "How do I find a supplier?",
+        "a": "Type part of the supplier name, contact, phone number or email in the search field. The list updates as you type."
+      },
+      "suppliersCreate": {
+        "q": "How do I add a supplier?",
+        "a": "Click Add supplier and enter the name. Contact, phone and email are optional; save to add the supplier to the list."
+      },
+      "suppliersDetails": {
+        "q": "What can I do with a supplier?",
+        "a": "Open View details to review its information. If you have management permissions, you can also edit or delete it. The same email may be used by more than one supplier because it identifies a contact, not a user account."
+      },
       "addFunds": {
         "q": "What does the +Funds button do?",
         "a": "+Funds lets you inject more budget into the selected project. Pick the project from the top selector, click +Funds, enter the amount and a short reason. The new total appears in the project budget cards instantly."

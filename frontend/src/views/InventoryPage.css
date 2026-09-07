@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .inventory-root {
-  background: var(--k-color-bg);
+  background: rgba(var(--k-color-black-rgb), 0.72);
   min-height: 100vh;
 }
 
@@ -182,7 +182,7 @@
 
 /* ── PANEL DE CONTEXTO ── */
 .context-panel {
-  width: 420px; min-height: 100vh; background: rgba(15, 15, 15, 0.92);
+  width: 420px; min-height: 100vh; background: rgba(15, 15, 15, 0.78);
   border-left: 1px solid #1f1f1f; padding: 32px;
   display: flex; flex-direction: column; gap: 28px; flex-shrink: 0;
 }

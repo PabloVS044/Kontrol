@@ -8,15 +8,15 @@
           <h1>Suppliers</h1>
           <p class="subtitle">Keep supplier contacts and purchasing relationships in one place.</p>
         </div>
-        <button v-if="canManage" class="primary-button" type="button" @click="openCreate">Add supplier</button>
+        <button v-if="canManage" data-birdie="create-supplier" class="primary-button" type="button" @click="openCreate">Add supplier</button>
       </header>
 
       <div class="toolbar">
-        <label class="search-field">
+        <label class="search-field" data-birdie="supplier-search">
           <span>Search suppliers</span>
           <input v-model="searchQuery" type="search" placeholder="Name, contact or email" />
         </label>
-        <span class="result-count">{{ filteredSuppliers.length }} suppliers</span>
+        <span class="result-count">{{ filteredSuppliers.length }} {{ filteredSuppliers.length === 1 ? 'supplier' : 'suppliers' }}</span>
       </div>
 
       <p v-if="loading" class="state-message">Loading suppliers...</p>

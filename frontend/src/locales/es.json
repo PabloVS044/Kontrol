@@ -1351,6 +1351,22 @@
         "q": "¿Cómo filtro por proyecto?",
         "a": "Estas pestañas acotan el inventario a un solo proyecto o muestran todos juntos. Cambiar de pestaña también enmarca cualquier nuevo movimiento dentro de ese proyecto."
       },
+      "inventoryCategoryFilter": {
+        "q": "¿Cómo filtro por categoría?",
+        "a": "La fila Categoría muestra las categorías asignadas a los productos visibles. Elige una categoría para ocultar las demás; si solo aparece All, primero asigna categorías al crear o editar productos."
+      },
+      "suppliersSearch": {
+        "q": "¿Cómo encuentro un proveedor?",
+        "a": "Escribe parte del nombre, contacto, teléfono o correo en el buscador. La lista se actualiza mientras escribes."
+      },
+      "suppliersCreate": {
+        "q": "¿Cómo agrego un proveedor?",
+        "a": "Haz clic en Agregar proveedor y completa el nombre. El contacto, teléfono y correo son opcionales; guarda para que aparezca en la lista."
+      },
+      "suppliersDetails": {
+        "q": "¿Qué puedo hacer con un proveedor?",
+        "a": "Abre Ver detalles para consultar sus datos. Si tienes permisos de gestión, también puedes editarlo o eliminarlo. El mismo correo puede registrarse en más de un proveedor porque identifica un contacto, no una cuenta de usuario."
+      },
       "addFunds": {
         "q": "¿Qué hace el botón +Fondos?",
         "a": "+Fondos te permite inyectar más presupuesto al proyecto seleccionado. Elige el proyecto en el selector superior, haz clic en +Fondos, ingresa el monto y una breve razón. El nuevo total se reflejará al instante en las tarjetas de presupuesto."

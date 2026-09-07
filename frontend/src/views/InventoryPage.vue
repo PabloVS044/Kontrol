@@ -136,6 +136,7 @@
             v-for="cat in categories"
             :key="cat"
             class="chip"
+            data-birdie="inventory-category-filter"
             :class="{ active: activeCategory === cat }"
             @click="activeCategory = cat"
           >{{ cat === 'All' ? $t('inventory.filter.all') : cat }}</button>
