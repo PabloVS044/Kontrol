@@ -434,16 +434,22 @@ Fuera del alcance directo de SCRUM-22, pero mantenidas como regresión igual que
 
 ### 19.4 Escenarios de carga y estrés del Sprint 7, HU-38 y SCRUM-28
 
-Ningún script de k6 existe todavía al momento de esta versión del plan; SCRUM-28 los implementa siguiendo estos escenarios de §7 y §8, por eso todos parten en estado Pendiente.
+Los scripts de k6 de SCRUM-28 ya existen y la batería de carga (C1-C5) ya
+corrió contra el ambiente de pruebas — ver `docs/pruebas-carga-estres.md`
+para la tabla de resultados completa, el punto de degradación y las
+acciones de mitigación. "Cubierto" aquí significa que el escenario tiene un
+script y corrió de verdad, no que haya pasado su umbral: 4 de 6 mediciones
+fallan latencia (0% fallan por error), hallazgo real documentado, no
+pendiente de implementación.
 
 | Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
 |---|---|---|---|---|---|
-| C1 | HU-38 / SCRUM-28 | Carga: inicio de sesión concurrente dentro del umbral de latencia y error | `POST /api/auth/login` | Script de k6 por escribir | Pendiente |
-| C2 | HU-38 / SCRUM-28 | Carga: listado de proyectos y métricas dentro del umbral de latencia y error | `GET /api/projects`, `GET /api/projects/:id/metrics` | Script de k6 por escribir | Pendiente |
-| C3 | HU-38 / SCRUM-28 | Carga: registro de avance de proyecto dentro del umbral de latencia y error | `POST /api/projects/:id/progress` | Script de k6 por escribir | Pendiente |
-| C4 | HU-38 / SCRUM-28 | Carga: listado y exportación de reportes dentro del umbral de latencia y error | `GET /api/reports`, `POST /api/reports/exports` | Script de k6 por escribir | Pendiente |
-| C5 | HU-38 / SCRUM-28 | Carga: flujo de venta con código de barras dentro del umbral de latencia y error | Búsqueda de producto y movimiento de inventario | Script de k6 por escribir | Pendiente |
-| E1-E5 | HU-38 / SCRUM-28 | Estrés: punto de degradación de cada escenario C1 a C5, según la rampa de §8.1 y la condición de parada de §8.2 | Mismos endpoints que C1 a C5 | Script de k6 por escribir | Pendiente |
+| C1 | HU-38 / SCRUM-28 | Carga: inicio de sesión concurrente dentro del umbral de latencia y error | `POST /api/auth/login` | `k6/load-test.js` | Cubierto: corrió, umbral de latencia no cumplido (p95=4.99s vs 300ms), 0% error — ver `docs/pruebas-carga-estres.md` §2 |
+| C2 | HU-38 / SCRUM-28 | Carga: listado de proyectos y métricas dentro del umbral de latencia y error | `GET /api/projects`, `GET /api/projects/:id/metrics` | `k6/load-test.js` | Cubierto: corrió, umbral de latencia no cumplido (p95=1.91s vs 500ms), 0% error |
+| C3 | HU-38 / SCRUM-28 | Carga: registro de avance de proyecto dentro del umbral de latencia y error | `POST /api/projects/:id/progress` | `k6/load-test.js` | Cubierto: corrió, dentro de umbral (p95=300ms vs 800ms), 0% error |
+| C4 | HU-38 / SCRUM-28 | Carga: listado y exportación de reportes dentro del umbral de latencia y error | `GET /api/reports`, `POST /api/reports/exports` | `k6/load-test.js` | Cubierto: corrió; exportación dentro de umbral (303ms vs 800ms), listado no (620ms vs 500ms), 0% error en ambas |
+| C5 | HU-38 / SCRUM-28 | Carga: flujo de venta con código de barras dentro del umbral de latencia y error | Búsqueda de producto y movimiento de inventario | `k6/load-test.js` | Cubierto: corrió, umbral de latencia no cumplido (p95=2.61s vs 800ms), 0% error |
+| E1-E5 | HU-38 / SCRUM-28 | Estrés: punto de degradación de cada escenario C1 a C5, según la rampa de §8.1 y la condición de parada de §8.2 | Mismos endpoints que C1 a C5 | `k6/stress-test.js` | Pendiente: script escrito y validado, corrida real pendiente hasta resolver el hallazgo de CPU insuficiente de la carga — ver `docs/pruebas-carga-estres.md` §3-4 |
 
 ### 19.5 Casos de seguridad del Sprint 7, HU-38
 
