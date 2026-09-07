@@ -1349,6 +1349,15 @@
       "SHORT": "Short",
       "AD": "Ad",
       "OTHER": "Other"
+    },
+    "calendar": {
+      "viewList": "List",
+      "viewCalendar": "Calendar",
+      "today": "Today",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "addOnDay": "Create publication on {date}",
+      "undated": "Publications without a date ({count}): not shown on the calendar."
     }
   },
   "birdie": {

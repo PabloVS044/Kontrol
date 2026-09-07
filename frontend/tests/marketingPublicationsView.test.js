@@ -460,6 +460,61 @@ describe('Eliminar una publicación (modal real)', () => {
   })
 })
 
+describe('Vista de calendario', () => {
+  it('el toggle cambia entre lista y calendario', async () => {
+    const wrapper = montar()
+    await esperarTarjetas(wrapper, 1)
+    expect(wrapper.find('.mkt-grid').exists()).toBe(true)
+
+    await wrapper.findAll('.mkt-view-btn')[1].trigger('click')
+
+    expect(wrapper.find('.mkt-grid').exists()).toBe(false)
+    expect(wrapper.find('.mkt-cal-grid').exists()).toBe(true)
+  })
+
+  it('crear desde un día del calendario precarga la fecha programada a las 09:00', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.findAll('.mkt-view-btn')[1].trigger('click')
+    await wrapper.find('.mkt-cal-day-add').trigger('click')
+
+    expect(wrapper.vm.showModal).toBe(true)
+    const fecha = document.querySelector('.mkt-form input[type="datetime-local"]')
+    expect(fecha.value).toMatch(/^\d{4}-\d{2}-\d{2}T09:00$/)
+  })
+
+  it('el botón de "Nueva publicación" del header sigue creando sin fecha precargada', async () => {
+    const wrapper = montarConModales()
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.find('.mkt-header button').trigger('click')
+
+    const fecha = document.querySelector('.mkt-form input[type="datetime-local"]')
+    expect(fecha.value).toBe('')
+  })
+
+  it('hacer clic en una publicación del calendario abre su edición', async () => {
+    const ahora = new Date()
+    const pad = (n) => String(n).padStart(2, '0')
+    const dia = new Date(ahora.getFullYear(), ahora.getMonth(), 15, 10, 0, 0)
+    const fecha = `${dia.getFullYear()}-${pad(dia.getMonth() + 1)}-${pad(dia.getDate())}T10:00:00`
+
+    const wrapper = montarConModales({
+      data: [publicacion({ status: 'SCHEDULED', scheduledFor: fecha })],
+    })
+    await esperarTarjetas(wrapper, 1)
+
+    await wrapper.findAll('.mkt-view-btn')[1].trigger('click')
+    const evento = wrapper.find('.mkt-cal-event')
+    expect(evento.exists()).toBe(true)
+
+    await evento.trigger('click')
+    expect(wrapper.vm.showModal).toBe(true)
+    expect(wrapper.vm.editing?.id).toBe(1)
+  })
+})
+
 describe('Detalles de la tarjeta', () => {
   it('una imagen rota se oculta en vez de romper la tarjeta', async () => {
     const wrapper = montar({ data: [publicacion({ assetUrl: 'https://ejemplo.test/roto.png' })] })
