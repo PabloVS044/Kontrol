@@ -16,6 +16,21 @@
         />
       </div>
 
+      <div class="mkt-view-toggle">
+        <button
+          type="button"
+          class="mkt-view-btn"
+          :class="{ 'mkt-view-btn--active': viewMode === 'list' }"
+          @click="viewMode = 'list'"
+        >{{ t('marketing.calendar.viewList') }}</button>
+        <button
+          type="button"
+          class="mkt-view-btn"
+          :class="{ 'mkt-view-btn--active': viewMode === 'calendar' }"
+          @click="viewMode = 'calendar'"
+        >{{ t('marketing.calendar.viewCalendar') }}</button>
+      </div>
+
       <!-- Filtros: estado, canal y proyecto -->
       <div class="mkt-filters">
         <select v-model="filters.status" class="mkt-select" :aria-label="t('marketing.filters.byStatus')">
@@ -45,6 +60,14 @@
       </div>
 
       <p v-if="fetchError" class="mkt-error">{{ fetchError }}</p>
+
+      <MarketingCalendar
+        v-else-if="viewMode === 'calendar'"
+        :publications="publications"
+        :can-manage="canManage"
+        @create-on-day="openCreate"
+        @select-publication="openEdit"
+      />
 
       <p v-else-if="loading" class="mkt-empty">{{ t('marketing.loading') }}</p>
 
@@ -239,6 +262,7 @@ import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Button from '../components/UI/Button/Button.vue'
+import MarketingCalendar from '../components/Marketing/MarketingCalendar.vue'
 import { useAuthStore } from '../stores/auth'
 import {
   createPublication,
@@ -268,6 +292,7 @@ const busyId = ref(null)
 const rowError = reactive({})
 
 const filters = reactive({ status: '', platform: '', projectId: '' })
+const viewMode = ref('list')
 
 const showModal = ref(false)
 const showScheduleModal = ref(false)
@@ -351,9 +376,13 @@ async function loadProjects() {
   }
 }
 
-function openCreate() {
+function openCreate(presetDate) {
   editing.value = null
   Object.assign(form, emptyForm())
+  // openCreate también se usa como handler de @click de un <Button>, que emite
+  // el MouseEvent nativo como primer argumento: solo tomamos la fecha si es
+  // el string 'YYYY-MM-DD' que manda el calendario.
+  if (typeof presetDate === 'string') form.scheduledFor = `${presetDate}T09:00`
   modalError.value = ''
   showModal.value = true
 }

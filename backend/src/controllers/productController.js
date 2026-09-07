@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { COST_OVER_PRICE_MESSAGE } from '../schemas/productSchemas.js'
 import {
   ensureProjectAccess,
   getAccessibleProjectIds,
@@ -29,6 +30,21 @@ const PRODUCTO_FROM = `
   LEFT JOIN public.categoria c ON c.id_categoria = p.id_categoria
   JOIN public.proyecto proj ON proj.id_proyecto = p.id_proyecto
 `
+
+const resolveCategoryId = async (client, { categoryName, idEmpresa }) => {
+  if (categoryName === null || categoryName === '') return null
+  if (!categoryName) return undefined
+  const existing = await client.query(
+    'SELECT id_categoria FROM public.categoria WHERE id_empresa = $1 AND LOWER(nombre) = LOWER($2) LIMIT 1',
+    [idEmpresa, categoryName.trim()]
+  )
+  if (existing.rows.length) return existing.rows[0].id_categoria
+  const created = await client.query(
+    'INSERT INTO public.categoria (nombre, id_empresa) VALUES ($1, $2) RETURNING id_categoria',
+    [categoryName.trim(), idEmpresa]
+  )
+  return created.rows[0].id_categoria
+}
 
 const getProductScope = async (client, { id_producto, id_empresa }) => {
   const result = await client.query(
@@ -227,16 +243,35 @@ export const getProductById = async (req, res) => {
  * POST /api/products  — requires requireProject middleware
  */
 export const createProduct = async (req, res) => {
-  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, codigo_barras } = req.body
+  const { nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_inicial, id_categoria, categoria_nombre, codigo_barras } = req.body
   const { id_proyecto } = req.proyecto
+
+  // Resolver la categoría toca la BD, y aquí no hay manejador de errores async
+  // que recoja un rechazo: sin este try la petición se quedaría colgada.
+  let categoryId
+  try {
+    categoryId = id_categoria ?? await resolveCategoryId(pool, { categoryName: categoria_nombre, idEmpresa: req.empresa.id_empresa })
+  } catch (err) {
+    console.error('Could not resolve product category:', err)
+    return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
+  }
+
+  // El stock inicial es la primera entrada del producto, así que su costo
+  // promedio ponderado ES el costo unitario declarado al crearlo. Dejarlo en el
+  // DEFAULT 0 hacía que el COGS de cada venta se registrase como cero —el
+  // snapshot `costo_unitario_venta` copia este campo— y los informes dieran una
+  // ganancia igual al ingreso, es decir margen del 100 %. Sin stock inicial no
+  // hay nada que ponderar todavía: queda en 0 y lo fija la primera ENTRADA.
+  const stockInicial = stock_inicial ?? 0
+  const costoPromedioInicial = stockInicial > 0 ? (precio_costo ?? 0) : 0
 
   let inserted
   try {
     inserted = await pool.query(
       `INSERT INTO public.producto
-         (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_proyecto, codigo_barras)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id_producto`,
-      [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stock_inicial ?? 0, id_categoria ?? null, id_proyecto, codigo_barras ?? null]
+        (nombre, descripcion, precio_venta, precio_costo, stock_minimo, stock_actual, id_categoria, id_proyecto, codigo_barras, costo_promedio_ponderado)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id_producto`,
+      [nombre, descripcion ?? null, precio_venta, precio_costo, stock_minimo ?? 0, stockInicial, categoryId ?? null, id_proyecto, codigo_barras ?? null, costoPromedioInicial]
     )
   } catch (err) {
     if (err.code === '23505') return res.status(409).json({ success: false, message: 'That barcode is already in use in this project.' })
@@ -264,13 +299,37 @@ export const updateProduct = async (req, res) => {
     return res.status(access.status).json({ success: false, message: access.message })
   }
 
-  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'id_categoria', 'codigo_barras']
+  // La regla "costo <= precio de venta" hay que comprobarla sobre el resultado
+  // de la edición, no sobre el cuerpo: quien solo manda `precio_venta` puede
+  // dejarlo por debajo del costo ya guardado, y el esquema —que es parcial— no
+  // tiene forma de verlo.
+  const actual = await pool.query(
+    'SELECT precio_venta, precio_costo FROM public.producto WHERE id_producto = $1',
+    [id]
+  )
+  const precioVenta = req.body.precio_venta ?? Number(actual.rows[0].precio_venta)
+  const precioCosto = req.body.precio_costo ?? Number(actual.rows[0].precio_costo)
+  if (precioCosto > precioVenta) {
+    return res.status(400).json({ success: false, message: COST_OVER_PRICE_MESSAGE })
+  }
+
+  let categoryId
+  try {
+    categoryId = req.body.categoria_nombre !== undefined
+      ? await resolveCategoryId(pool, { categoryName: req.body.categoria_nombre, idEmpresa: req.empresa.id_empresa })
+      : req.body.id_categoria
+  } catch (err) {
+    console.error('Could not resolve product category:', err)
+    return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
+  }
+  const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'codigo_barras']
   const setClauses = []
   const values = []
 
   for (const field of ALLOWED) {
     if (req.body[field] !== undefined) { values.push(req.body[field]); setClauses.push(`${field} = $${values.length}`) }
   }
+  if (categoryId !== undefined) { values.push(categoryId); setClauses.push(`id_categoria = $${values.length}`) }
   values.push(id)
   try {
     await pool.query(`UPDATE public.producto SET ${setClauses.join(', ')} WHERE id_producto = $${values.length}`, values)

@@ -391,3 +391,108 @@ describe('Caso 5 · Datos obligatorios de la publicación', () => {
     expect(res.body.data.campaignId).toBeNull()
   })
 })
+
+describe('Caso 6 · Creación con campos válidos', () => {
+  const publicacionCompleta = {
+    title: '  Lanzamiento de temporada  ',
+    caption: 'Contenido de la publicación con acentos y ñ',
+    platform: 'INSTAGRAM',
+    format: 'REEL',
+    campaignId: 3,
+    projectId: 10,
+    assetUrl: 'https://cdn.kontrol.gt/img.png',
+    publicationUrl: 'https://instagram.com/p/abc',
+    notes: 'Coordinar con diseño',
+  }
+
+  const parametrosDelInsert = () =>
+    pool.query.mock.calls.find(([sql]) => sql.includes('INSERT INTO public.marketing_publication'))[1]
+
+  it('persiste cada campo enviado en el INSERT', async () => {
+    comoRol('manager')
+    pool.query
+      .mockResolvedValueOnce(rows([{ id_campaign: 3, id_proyecto: 10 }]))
+      .mockResolvedValueOnce(rows([{ id_proyecto: 10, nombre: 'Proyecto A' }]))
+      .mockResolvedValueOnce(rows([{ id_publication: 5 }]))
+      .mockResolvedValueOnce(rows([filaPublicacion({ id_campaign: 3 })]))
+
+    const res = await request(app)
+      .post('/api/marketing/publications')
+      .set('Authorization', `Bearer ${signToken()}`)
+      .set('X-Company-ID', EMPRESA_A)
+      .send(publicacionCompleta)
+
+    expect(res.status).toBe(201)
+
+    const [
+      idEmpresa, idCampaign, idProyecto, title, caption, platform,
+      formato, status, scheduledFor, publishedAt, assetUrl, publicationUrl, notes, autor,
+    ] = parametrosDelInsert()
+
+    expect(idEmpresa).toBe(ID_EMPRESA_A)
+    expect(idCampaign).toBe(3)
+    expect(idProyecto).toBe(10)
+    expect(title).toBe('Lanzamiento de temporada')
+    expect(caption).toBe('Contenido de la publicación con acentos y ñ')
+    expect(platform).toBe('INSTAGRAM')
+    expect(formato).toBe('REEL')
+    expect(status).toBe('DRAFT')
+    expect(scheduledFor).toBeNull()
+    expect(publishedAt).toBeNull()
+    expect(assetUrl).toBe('https://cdn.kontrol.gt/img.png')
+    expect(publicationUrl).toBe('https://instagram.com/p/abc')
+    expect(notes).toBe('Coordinar con diseño')
+    expect(autor).toBe(7)
+  })
+
+  it('sin estado explícito la publicación nace como borrador', async () => {
+    comoRol('manager')
+    respuestasDeCreacion()
+
+    await request(app)
+      .post('/api/marketing/publications')
+      .set('Authorization', `Bearer ${signToken()}`)
+      .set('X-Company-ID', EMPRESA_A)
+      .send(nuevaPublicacion)
+
+    expect(parametrosDelInsert()[7]).toBe('DRAFT')
+  })
+
+  it('sin formato explícito se guarda POST, el valor por defecto del esquema', async () => {
+    comoRol('manager')
+    respuestasDeCreacion()
+
+    await request(app)
+      .post('/api/marketing/publications')
+      .set('Authorization', `Bearer ${signToken()}`)
+      .set('X-Company-ID', EMPRESA_A)
+      .send(nuevaPublicacion)
+
+    expect(parametrosDelInsert()[6]).toBe('POST')
+  })
+
+  it('responde 201 con el objeto ya mapeado, no con la fila cruda', async () => {
+    comoRol('manager')
+    respuestasDeCreacion()
+
+    const res = await request(app)
+      .post('/api/marketing/publications')
+      .set('Authorization', `Bearer ${signToken()}`)
+      .set('X-Company-ID', EMPRESA_A)
+      .send(nuevaPublicacion)
+
+    expect(res.status).toBe(201)
+    expect(res.body.success).toBe(true)
+    expect(res.body.data).toMatchObject({
+      id: 5,
+      projectId: 10,
+      title: 'Lanzamiento de temporada',
+      platform: 'INSTAGRAM',
+      format: 'POST',
+      status: 'DRAFT',
+      projectName: 'Proyecto A',
+    })
+    expect(res.body.data.id_publication).toBeUndefined()
+    expect(res.body.data.publication_format).toBeUndefined()
+  })
+})

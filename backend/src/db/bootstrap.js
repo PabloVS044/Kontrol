@@ -240,6 +240,31 @@ export const ensureDatabaseSchema = async () => {
       WHERE codigo_barras IS NOT NULL
   `)
 
+  // Suppliers stopped being global: every proveedor belongs to one company, and
+  // supplierController filters and inserts by pr.id_empresa. Nullable here (an
+  // existing database may hold rows created while they were still global);
+  // kontrol.sql declares it NOT NULL for fresh installs.
+  await pool.query(`
+    ALTER TABLE public.proveedor
+      ADD COLUMN IF NOT EXISTS id_empresa integer
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'proveedor_id_empresa_fkey'
+      ) THEN
+        ALTER TABLE public.proveedor
+          ADD CONSTRAINT proveedor_id_empresa_fkey
+          FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) NOT VALID;
+      END IF;
+    END $$
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS proveedor_id_empresa_idx
+      ON public.proveedor (id_empresa)
+  `)
+
   // Indexes for the sales/finance analytics + movement listings, which filter
   // by project + date range and by product. Avoids full scans as the ledger grows.
   await pool.query(`

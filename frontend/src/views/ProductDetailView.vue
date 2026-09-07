@@ -294,14 +294,12 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
-
 .product-detail-root {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
 }
 
 .product-detail-root::before {
@@ -309,7 +307,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(var(--k-color-black-rgb), 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   pointer-events: none;
@@ -332,12 +330,12 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .state-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 30px;
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
 }
 
 .state-msg {
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   max-width: 460px;
   line-height: 1.6;
 }
@@ -357,21 +355,21 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   gap: 8px;
   padding: 10px 16px;
   text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
 }
 
 .ghost-link {
-  color: var(--Text);
-  border: 1px solid #2a2a2a;
-  background: #111111;
+  color: var(--k-color-text);
+  border: var(--k-border-width) solid var(--k-shade-7);
+  background: var(--k-shade-3);
 }
 
 .btn-primary {
   border: none;
   cursor: pointer;
-  background: #caa860;
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
 }
 
 .detail-header {
@@ -391,31 +389,31 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .eyebrow,
 .section-kicker {
-  color: var(--Primary);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  color: var(--k-color-primary);
+  font-size: var(--k-font-size-caption);
+  letter-spacing: var(--k-tracking-caps);
   text-transform: uppercase;
 }
 
 .title {
-  font-family: 'Playfair Display', serif;
-  font-size: 44px;
-  font-weight: 400;
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-display-2);
+  font-weight: var(--k-font-weight-regular);
   margin: 8px 0 6px;
 }
 
 .subtitle {
-  color: var(--TextMuted);
-  font-size: 14px;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-body-main);
 }
 
 .stock-pill {
   border: 1px solid currentColor;
   padding: 8px 12px;
-  font-size: 11px;
-  letter-spacing: 0.1em;
+  font-size: var(--k-font-size-caption);
+  letter-spacing: var(--k-tracking-caps);
   text-transform: uppercase;
-  background: #111111;
+  background: var(--k-shade-3);
 }
 
 .hero-grid {
@@ -427,18 +425,18 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .hero-card,
 .suppliers-card {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  padding: 24px;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-color-border);
+  padding: var(--k-space-5);
 }
 
 .hero-card.secondary {
-  background: #0c0c0c;
+  background: var(--k-shade-1);
 }
 
 .description {
   margin-top: 14px;
-  color: var(--TextSoft);
+  color: var(--k-text-soft);
   line-height: 1.7;
   min-height: 72px;
 }
@@ -452,34 +450,34 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .stat-box,
 .mini-stat {
-  background: #111111;
-  border: 1px solid #1f1f1f;
-  padding: 14px;
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-color-border);
+  padding: var(--k-space-3);
   min-width: 0;
 }
 
 .stat-label,
 .mini-label {
   display: block;
-  color: var(--TextMuted);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption);
+  letter-spacing: var(--k-tracking-caps);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
 
 .stat-value,
 .mini-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--Text);
+  font-size: var(--k-font-size-heading-2);
+  font-weight: var(--k-font-weight-bold);
+  color: var(--k-color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .barcode-editor {
   margin-top: 18px;
   padding-top: 18px;
-  border-top: 1px solid #1f1f1f;
+  border-top: var(--k-border-width) solid var(--k-color-border);
 }
 .barcode-edit-row {
   display: flex;
@@ -488,37 +486,37 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 .barcode-input {
   flex: 1;
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-color-border);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
   padding: 10px 12px;
   outline: none;
   min-width: 0;
 }
-.barcode-input:focus { border-color: #caa860; }
+.barcode-input:focus { border-color: var(--k-color-primary); }
 .barcode-scan-btn {
   flex: 0 0 auto;
   width: 44px;
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
-  color: var(--TextMuted);
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-color-border);
+  color: var(--k-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.barcode-scan-btn:hover { border-color: #caa860; color: var(--Primary); }
+.barcode-scan-btn:hover { border-color: var(--k-color-primary); color: var(--k-color-primary); }
 .barcode-save-btn {
   flex: 0 0 auto;
-  background: #caa860;
+  background: var(--k-color-primary);
   border: none;
-  color: var(--BtnText);
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  color: var(--k-form-btn-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-bold);
   padding: 0 16px;
   cursor: pointer;
   transition: filter .15s;
@@ -527,11 +525,11 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .barcode-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .barcode-msg {
   margin-top: 8px;
-  font-size: 12px;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--k-font-size-caption-lg);
+  font-family: var(--k-font-sans);
 }
-.barcode-msg.ok { color: #34d399; }
-.barcode-msg.err { color: #fb7185; }
+.barcode-msg.ok { color: var(--k-state-success-text); }
+.barcode-msg.err { color: var(--k-state-error-text); }
 
 .stock-metric {
   margin-top: 14px;
@@ -549,7 +547,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 .stock-caption {
   display: block;
   margin-top: 6px;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
 }
 
 .stock-details {
@@ -567,14 +565,14 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .section-title {
   margin-top: 6px;
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
-  font-weight: 400;
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
+  font-weight: var(--k-font-weight-regular);
 }
 
 .section-count {
-  color: var(--TextMuted);
-  font-size: 12px;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-caption-lg);
 }
 
 .supplier-list {
@@ -588,37 +586,37 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   align-items: center;
   gap: 16px;
   padding: 16px;
-  border: 1px solid #1f1f1f;
-  background: #111111;
+  border: var(--k-border-width) solid var(--k-color-border);
+  background: var(--k-shade-3);
 }
 
 .supplier-name {
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 .supplier-date,
 .empty-box {
   margin-top: 4px;
-  color: var(--TextMuted);
-  font-size: 13px;
+  color: var(--k-text-muted);
+  font-size: var(--k-font-size-body-small);
 }
 
 .empty-box {
   margin-top: 0;
   padding: 20px;
-  border: 1px dashed #2a2a2a;
+  border: 1px dashed var(--k-shade-7);
   text-align: center;
 }
 
 .supplier-price {
   font-size: 18px;
   font-weight: 700;
-  color: #34d399;
+  color: var(--k-state-success-text);
   font-variant-numeric: tabular-nums;
 }
 
 .healthy {
-  color: #34d399;
+  color: var(--k-state-success-text);
 }
 
 .warning {
@@ -626,7 +624,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .danger {
-  color: #fb7185;
+  color: var(--k-state-error-text);
 }
 
 @media (max-width: 900px) {

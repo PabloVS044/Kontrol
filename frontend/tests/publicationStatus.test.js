@@ -28,8 +28,19 @@ describe('Estados del ciclo', () => {
     expect(new Set(colores).size).toBe(PUBLICATION_STATUSES.length)
   })
 
-  it('un estado sin color asignado cae al gris por defecto', () => {
-    expect(publicationStatusColors('PLANNED')).toEqual({ color: '#888', bg: '#8881a' })
+  it('un estado sin color asignado cae al token neutro por defecto', () => {
+    expect(publicationStatusColors('PLANNED')).toEqual({
+      color: 'var(--k-text-muted)',
+      bg: 'var(--k-color-bg-3)',
+    })
+  })
+
+  it('los tres colores son tokens --k-* de SCRUM-12, no literales', () => {
+    for (const estado of PUBLICATION_STATUSES) {
+      const { color, bg } = publicationStatusColors(estado)
+      expect(color).toMatch(/^var\(--k-/)
+      expect(bg).toMatch(/^var\(--k-/)
+    }
   })
 })
 

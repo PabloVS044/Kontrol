@@ -1,3 +1,32 @@
+/* ─── Background scroll video ────────────────────────────────────────────── */
+/* Fixed full-viewport, always behind every section (z-index: -1) — its
+   currentTime is driven entirely by scroll position in setupBackgroundVideoScrub,
+   never by native playback. The scrim sits directly above it (still behind
+   all real content) so text stays legible over a busy, high-motion clip
+   without every section needing its own overlay treatment. */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.bg-scroll-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bg-scroll-video-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 #header {
   width: 100%;
@@ -105,34 +134,175 @@
   color: var(--k-color-primary-2);
 }
 
-/* ─── Problem ────────────────────────────────────────────────────────────── */
-#problem {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 100px 20px;
-  box-sizing: border-box;
+/* ─── Control Center pilot (pin + scrub) ────────────────────────────────────
+   #control-center is tall (see height below) so there's scroll distance for
+   the timeline to play against; .control-center-viewport stays on screen via
+   native `position: sticky` (no JS pinning, no risk of the transform/measure
+   feedback loop fixed in ScrollStack) while GSAP scrubs the K's rotation/
+   scale and cross-fades the three .control-moment blocks in sync with scroll
+   position — see setupControlCenter() in LandingPage.vue. */
+#control-center {
+  position: relative;
+  height: 260vh;
 }
 
-.problem-container {
-  width: 70%;
-  z-index: 20;
+.control-center-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.control-k-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* KontrolLogo3D reads mouse position from `window`, not this element, so
+     this doesn't affect its own hover reactivity — just keeps it from
+     intercepting clicks meant for whatever sits in front of it. */
+  pointer-events: none;
+}
+
+.control-moment {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-space-4);
+  padding: 0 20px;
+  text-align: center;
+  opacity: 0; /* GSAP scrubs this; starts hidden so there's no flash before JS runs */
+}
+
+.control-moment-tags {
+  display: flex;
+  gap: var(--k-space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.control-moment-tags li {
+  padding: 0.5rem 1.25rem;
+  border: var(--k-border-width) solid var(--k-color-border);
+  border-radius: var(--k-radius-pill);
+  color: var(--k-color-text);
+  background: var(--k-color-tertiary);
+}
+
+/* Reduced motion (and the fallback if JS never wires up the timeline): no
+   pinning, no scrubbing — the three moments just stack as static content. */
+#control-center.no-pin {
+  height: auto;
+}
+
+#control-center.no-pin .control-center-viewport {
+  position: static;
+  height: auto;
+  flex-direction: column;
+  gap: 4rem;
+  padding: 120px 20px;
+  overflow: visible;
+}
+
+#control-center.no-pin .control-k-wrapper {
+  position: static;
+  width: 220px;
+  height: 220px;
+}
+
+#control-center.no-pin .control-moment {
+  position: static;
+  inset: auto;
+  opacity: 1;
+}
+
+/* No mobile height override here: below 768px `isMobile` (LandingPage.vue)
+   forces the `.no-pin` static layout, whose `#control-center.no-pin { height:
+   auto; }` already wins on specificity over any plain `#control-center { ... }`
+   rule regardless of media query — a `height` set here would just be dead. */
+
+/* ─── Problem (pin + scrub) ──────────────────────────────────────────────────
+   Same mechanism as #control-center: a tall section, a sticky viewport, and
+   a scrub timeline (setupProblemPin in LandingPage.vue). Chaos and Order sit
+   side by side (never stacked in the same spot) and fly in from opposite
+   sides as you scroll, so both are always independently visible — no
+   overlap, no one card ever hiding behind the other. `overflow-x: hidden`
+   contains the sideways entrance so it can't open a horizontal scrollbar. */
+#problem {
+  position: relative;
+  /* Was 220vh — that height is what sets how much scroll it takes to get
+     through the whole pin, independent of how early the reveal finishes
+     inside it. Now that the reveal completes almost immediately, the extra
+     distance just read as dead space before releasing into Solution. */
+  height: 150vh;
+  overflow-x: hidden;
+}
+
+.problem-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-space-6);
+  box-sizing: border-box;
+  padding: 0 20px;
+  /* The Chaos/Order cards are near-black (--k-color-tertiary / --k-color-bg-2),
+     so against the busy background video + its light global scrim they lost
+     contrast and read as barely-there even at full opacity. This section's
+     own darker backdrop gives them a calmer, more even background to sit on. */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.problem-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
   justify-content: center;
   align-items: center;
 }
 
-.cards {
+.problem-card-wrap {
+  flex: 1 1 380px;
+  max-width: 460px;
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
 }
 
 .marked {
   color: var(--k-color-primary-2);
+}
+
+/* Reduced motion: no pinning, no scrubbing — cards already render in their
+   final side-by-side layout above, so nothing extra is needed here. */
+#problem.no-pin {
+  height: auto;
+}
+
+#problem.no-pin .problem-viewport {
+  position: static;
+  height: auto;
+  padding: 100px 20px;
 }
 
 /* ─── Solution ───────────────────────────────────────────────────────────── */
@@ -143,13 +313,20 @@
 
 .solution-container {
   width: 100%;
-  background-color: var(--k-color-bg);
+  /* Was a near-opaque var(--k-color-bg); lowered so the scroll video reads
+     through here too, instead of this being the one section that blocks it. */
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
   z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 80px 0;
   box-sizing: border-box;
+  /* The four sub-cards converge from left/right on scroll (LandingPage.vue,
+     setupScrollChoreography) — contains that so it can't open a horizontal
+     scrollbar mid-animation. */
+  overflow-x: hidden;
 }
 
 .magic-circles-wrapper {
@@ -239,11 +416,6 @@
   margin-top: var(--k-space-3);
 }
 
-/* ─── Steps ──────────────────────────────────────────────────────────────── */
-#steps {
-  margin-bottom: -40rem;
-}
-
 /* ─── Features ───────────────────────────────────────────────────────────── */
 #features {
   width: 100%;
@@ -257,6 +429,11 @@
 }
 
 /* ─── Start CTA ──────────────────────────────────────────────────────────── */
+/* The page's closing moment — previously just plain text on the bare page
+   background, identical in weight to every section before it. A thin gradient
+   divider marks the handoff from Companies, and a soft radial glow behind the
+   copy (same gold used everywhere else via --k-color-primary-rgb) gives this
+   last push its own sense of climax before the footer. */
 #start {
   width: 100%;
   display: flex;
@@ -265,10 +442,39 @@
   align-items: center;
   text-align: center;
   gap: 1.25rem;
-  padding: 120px 20px;
+  padding: 140px 20px;
   box-sizing: border-box;
   position: relative;
   z-index: 20;
+  overflow: hidden;
+}
+
+#start::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(1100px, 90%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, var(--k-color-border) 50%, transparent);
+}
+
+#start::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 55% 60% at 50% 45%,
+    rgba(var(--k-color-primary-rgb), 0.16),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+#start .anchor {
+  box-shadow: var(--k-shadow-glow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -278,9 +484,6 @@
 /* ─── Tablet (≤ 1024px) ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .header-container {
-    width: 85%;
-  }
-  .problem-container {
     width: 85%;
   }
   .description {
@@ -321,17 +524,16 @@
     padding-top: 3.5rem;
   }
 
-  /* Problem */
-  #problem {
+  /* Problem: no height override — below 768px `isMobile` forces `.no-pin`,
+     whose `height: auto` already wins here regardless of media query. */
+  .problem-viewport {
+    gap: var(--k-space-4);
+  }
+  #problem.no-pin {
+    height: auto;
+  }
+  #problem.no-pin .problem-viewport {
     padding: 60px 16px;
-    min-height: auto;
-  }
-  .problem-container {
-    width: 100%;
-  }
-  .cards {
-    flex-direction: column;
-    align-items: center;
   }
 
   /* Solution graph → linear list */
@@ -349,6 +551,11 @@
   .sub-3,
   .sub-4 {
     grid-area: unset;
+  }
+  .graph .card {
+    width: 100%;
+    max-width: 420px;
+    align-self: stretch;
   }
 
   /* Companies */

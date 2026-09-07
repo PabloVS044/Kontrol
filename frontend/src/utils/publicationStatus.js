@@ -42,15 +42,25 @@ export const PUBLICATION_FORMATS = [
   'OTHER',
 ]
 
-const PUBLICATION_STATUS_COLOR = {
-  DRAFT: '#8b8b8b',
-  SCHEDULED: '#60a5fa',
-  PUBLISHED: '#34d399',
+/**
+ * HU-32 · Colores tokenizados (SCRUM-12) de los indicadores de estado.
+ *
+ * borrador: neutro, no es una alerta ni un logro. programada: reutiliza la
+ * superficie "watching" (algo pendiente que requiere atención). publicada:
+ * reutiliza la superficie "ok" (resultado exitoso). Ninguna introduce un
+ * color nuevo: las tres ya existen en theme.css para exactamente este tipo
+ * de indicador de estado.
+ */
+const PUBLICATION_STATUS_TOKEN = {
+  DRAFT: { color: 'var(--k-text-muted)', bg: 'var(--k-color-bg-3)' },
+  SCHEDULED: { color: 'var(--k-alert-watching-text)', bg: 'var(--k-alert-watching-bg)' },
+  PUBLISHED: { color: 'var(--k-alert-ok-text)', bg: 'var(--k-alert-ok-bg)' },
 }
 
+const DEFAULT_PUBLICATION_STATUS_TOKEN = { color: 'var(--k-text-muted)', bg: 'var(--k-color-bg-3)' }
+
 export function publicationStatusColors(status) {
-  const color = PUBLICATION_STATUS_COLOR[status] ?? '#888'
-  return { color, bg: `${color}1a` }
+  return PUBLICATION_STATUS_TOKEN[status] ?? DEFAULT_PUBLICATION_STATUS_TOKEN
 }
 
 export function isTransitionAllowed(current, next) {
