@@ -34,8 +34,15 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
+      # continue-on-error: k6 exits non-zero when a threshold is crossed —
+      # for load that's an expected, documented finding (docs/pruebas-carga-estres.md),
+      # not a pipeline defect, and for stress it's the entire point (find where
+      # it degrades). The job's real success criterion is "ran end-to-end and
+      # published a summary", checked explicitly below — not "every threshold passed".
       - name: Correr batería de carga (C1-C5)
         if: inputs.test_type == 'load'
+        id: k6_load
+        continue-on-error: true
         uses: grafana/k6-action@v0.3.1
         with:
           filename: k6/load-test.js
@@ -43,6 +50,8 @@ jobs:
 
       - name: Correr escenario de estrés (${{ inputs.stress_scenario }})
         if: inputs.test_type == 'stress'
+        id: k6_stress
+        continue-on-error: true
         uses: grafana/k6-action@v0.3.1
         with:
           filename: k6/stress-test.js
@@ -55,7 +64,16 @@ jobs:
           name: k6-summary-${{ inputs.test_type }}-${{ inputs.test_type == 'stress' && inputs.stress_scenario || 'c1-c5' }}
           path: summary.json
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
+
+      - name: Confirmar que la corrida terminó y publicó resultados
+        if: always()
+        run: |
+          if [ ! -s summary.json ]; then
+            echo "::error::k6 no generó summary.json — la corrida no llegó a terminar, esto sí es una falla del pipeline."
+            exit 1
+          fi
+          echo "k6 terminó y publicó summary.json. Umbrales cruzados (si los hay) son hallazgos documentados en docs/pruebas-carga-estres.md, no una falla de este workflow."
 
       - name: Recordatorio de reinicio obligatorio del ambiente
         if: always()
