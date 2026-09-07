@@ -227,7 +227,7 @@
 
             <div class="card-footer" @click.stop>
               <button
-                v-if="canRestock(product)"
+                v-if="selectedProject && canRestock(product)"
                 class="restock-btn"
                 :title="$t('inventory.card.restock')"
                 @click="openRestock(product)"
@@ -235,12 +235,12 @@
                 + {{ $t('inventory.card.restock') }}
               </button>
               <button
-                v-if="canRestock(product)"
+                v-if="selectedProject && canRestock(product)"
                 class="edit-product-btn"
                 type="button"
-                title="Edit product"
+                :title="$t('inventory.card.edit')"
                 @click="openEditProduct(product)"
-              >Edit</button>
+              >{{ $t('inventory.card.edit') }}</button>
               <!-- Sell button OR quantity stepper if product is already in cart -->
               <button
                 v-if="!getCartItem(product)"
@@ -811,14 +811,14 @@ function openEditProduct(product) {
 }
 
 async function submitProduct(formData) {
-  if (!selectedProject.value) {
+  const productId = editingProduct.value?.id_producto
+  if (!productId && !selectedProject.value) {
     modalError.value = t('inventory.errors.selectProject')
     return
   }
   modalLoading.value = true
   modalError.value   = null
   try {
-    const productId = editingProduct.value?.id_producto
     const res = await fetch(productId ? `/api/products/${productId}` : '/api/products', {
       method: productId ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader(true) },
