@@ -1,137 +1,75 @@
-# Resultados — Pruebas de carga y estrés (SCRUM-28)
+# Resultados: Pruebas de carga y estrés (SCRUM-28)
 
-Implementa los escenarios definidos en `docs/plan-maestro-pruebas.md` §7
-(carga) y §8 (estrés). Este documento es el entregable de resultados que
-pide SCRUM-28: tabla por escenario, punto de degradación, y acciones de
-mitigación para los cuellos de botella detectados.
+Este documento implementa los escenarios definidos en `docs/plan-maestro-pruebas.md`, secciones 7 (carga) y 8 (estrés). Corresponde al entregable de resultados solicitado por SCRUM-28: una tabla por escenario, el punto de degradación observado y las acciones de mitigación correspondientes a los cuellos de botella detectados.
 
 | Campo | Valor |
 |---|---|
 | Ticket | [SCRUM-28](https://kontroldevelopment.atlassian.net/browse/SCRUM-28) |
-| Scripts | `k6/load-test.js`, `k6/stress-test.js` (`k6/README.md` documenta el uso) |
-| Ambiente | Test de SCRUM-25 (`docs/test-environment.md`), nunca producción |
+| Scripts | `k6/load-test.js`, `k6/stress-test.js` (el uso se documenta en `k6/README.md`) |
+| Ambiente | Ambiente de pruebas de SCRUM-25 (`docs/test-environment.md`), en ningún momento producción |
 | Fecha de la corrida de carga | 07/09/2026 |
-| Fecha de la corrida de estrés | 07/09/2026, misma sesión, VM ya subida a ~3.8GB RAM |
-| Estado | Carga (C1-C5): **completa**. Estrés (E1-E5): **completa** |
-| Decisión de infraestructura | Se mantiene la VM en 2 vCPU (decisión explícita, no accidental) — ver §4 |
-| Resultado general | Estable bajo carga y estrés: 0% de errores en las 10 corridas (C1-C5, E1-E5). Mitigaciones aplicadas (`SALT_ROUNDS`, fix de deploy). Un área de rendimiento identificada — login bajo alta concurrencia — queda como optimización futura, no bloqueante para el uso documentado en el protocolo T1-T5 |
+| Fecha de la corrida de estrés | 07/09/2026, misma sesión, con la VM ya en aproximadamente 3.8 GB de RAM |
+| Estado | Carga (C1 a C5): completa. Estrés (E1 a E5): completa |
+| Decisión de infraestructura | Se mantiene la VM en 2 vCPU. Es una decisión explícita, no accidental; se detalla en la sección 4 |
+| Resultado general | El sistema se mantuvo estable durante toda la carga y el estrés, con una tasa de error de 0% en las diez corridas realizadas (C1 a C5, E1 a E5). Se aplicaron mitigaciones (variable `SALT_ROUNDS` y una corrección en el proceso de despliegue). Se identificó un área de oportunidad de rendimiento, correspondiente al inicio de sesión bajo alta concurrencia, que se documenta como trabajo futuro y no representa un impedimento para el uso descrito en el protocolo de usabilidad T1 a T5 |
 
 ## 1. Ambiente de ejecución
 
-VM de GCP, 2 vCPU, ~3.8 GB RAM (subida desde ~1 GB, e2-micro, durante esta
-misma tarea — ver riesgo 1 en §4). Se comparte con el stack de producción en
-la misma máquina, contenedores separados; `backend-test` corre en el
-contenedor separado del ambiente de pruebas, base de datos Supabase
-independiente de producción.
+La infraestructura utilizada es una máquina virtual de GCP con 2 vCPU y aproximadamente 3.8 GB de RAM. La memoria fue ampliada desde aproximadamente 1 GB durante el desarrollo de esta tarea, según se detalla en el hallazgo 1 de la sección 4. Esta VM es compartida con el stack de producción, aunque en contenedores separados: `backend-test` corre en su propio contenedor, con una base de datos Supabase independiente de la de producción.
 
-**Primer intento, VM sin subir (~1 GB RAM):** C1 (login, 50 VUs) colapsó a
-p95=40.24s antes de que se completara su propia ventana de 6 minutos, y
-`backend-test` saturó el 100% de los 2 vCPU disponibles al punto de medirse
-un health check de **producción** en 2.9s en vez de instantáneo — degradación
-real medida, no solo del ambiente de pruebas. Se abortó esa corrida de
-inmediato y se subió la RAM de la VM antes de reintentar. Con más RAM el
-resultado mejoró sustancialmente (ver §2) pero no lo suficiente para pasar
-los umbrales — evidencia de que el cuello de botella es CPU, no memoria.
+En un primer intento, con la VM todavía en aproximadamente 1 GB de RAM, el escenario C1 (inicio de sesión, 50 usuarios virtuales) alcanzó un valor de p95 de 40.24 segundos antes de completar su propia ventana de seis minutos, y el contenedor `backend-test` saturó el 100% de los 2 vCPU disponibles. Esta saturación llegó a afectar a producción de forma medible, ya que un health check de producción se registró en 2.9 segundos en lugar de responder de forma instantánea. Al tratarse de una degradación real y no limitada al ambiente de pruebas, esa corrida se abortó de inmediato y se amplió la memoria de la VM antes de reintentar. Con más memoria, el resultado mejoró de forma sustancial, según se detalla en la sección 2, aunque no lo suficiente para cumplir los umbrales definidos, lo cual constituye evidencia de que el cuello de botella corresponde a CPU y no a memoria.
 
-## 2. Resultados de carga (C1-C5)
+## 2. Resultados de carga (C1 a C5)
 
-Corrida completa, secuencial, 40 minutos. **0% de tasa de error en 56,327
-peticiones** — ninguna petición devolvió un error de servidor ni expiró por
-tiempo de espera, en ningún escenario. Lo que falla es latencia, no
-disponibilidad.
+La corrida de carga se completó de forma secuencial en un total de 40 minutos. Se registró una tasa de error de 0% sobre 56,327 peticiones: ninguna petición devolvió un error de servidor ni expiró por tiempo de espera, en ninguno de los escenarios evaluados. Lo que se observa como resultado no conforme es latencia, no disponibilidad.
 
-| Caso | Escenario | VUs / perfil | Peticiones | Throughput aprox. | p95 real | Umbral (§7.2) | Tasa de error | Resultado |
+| Caso | Escenario | VUs / perfil | Peticiones | Throughput aproximado | p95 real | Umbral (sección 7.2) | Tasa de error | Resultado |
 |---|---|---|---|---|---|---|---|---|
-| C1 | Login (`POST /api/auth/login`) | Rampa 0→50, sostenido 6min | 4,505 | ~12.5 req/s | **4.99s** | ≤300ms | 0.00% | ✗ |
-| C2 | Proyectos + métricas | 100 VUs sostenidos, 10min | 31,844 | ~53.1 req/s | **1.91s** | ≤500ms | 0.00% | ✗ |
-| C3 | Avance de proyecto (escritura) | Rampa 0→30, sostenido 6min | 7,790 | ~21.6 req/s | 300ms | ≤800ms | 0.00% | ✓ |
-| C4 (listado) | `GET /api/reports` | 20 VUs sostenidos, 10min | — | — | **620ms** | ≤500ms | 0.00% | ✗ |
-| C4 (export) | `POST /api/reports/exports` | 20 VUs sostenidos, 10min | 2,420 (par) | ~4.0 req/s | 303ms | ≤800ms | 0.00% | ✓ |
-| C5 | Búsqueda + venta POS | 40 VUs sostenidos, 8min | 9,766 | ~20.4 req/s | **2.61s** | ≤800ms | 0.00% | ✗ |
+| C1 | Inicio de sesión (`POST /api/auth/login`) | Rampa de 0 a 50, sostenido 6 min | 4,505 | 12.5 req/s aprox. | 4.99 s | 300 ms o menos | 0.00% | No cumple |
+| C2 | Proyectos y métricas | 100 VUs sostenidos, 10 min | 31,844 | 53.1 req/s aprox. | 1.91 s | 500 ms o menos | 0.00% | No cumple |
+| C3 | Avance de proyecto (escritura) | Rampa de 0 a 30, sostenido 6 min | 7,790 | 21.6 req/s aprox. | 300 ms | 800 ms o menos | 0.00% | Cumple |
+| C4 (listado) | `GET /api/reports` | 20 VUs sostenidos, 10 min | Sin dato individual | Sin dato individual | 620 ms | 500 ms o menos | 0.00% | No cumple |
+| C4 (exportación) | `POST /api/reports/exports` | 20 VUs sostenidos, 10 min | 2,420 (par) | 4.0 req/s aprox. | 303 ms | 800 ms o menos | 0.00% | Cumple |
+| C5 | Búsqueda y venta en punto de venta | 40 VUs sostenidos, 8 min | 9,766 | 20.4 req/s aprox. | 2.61 s | 800 ms o menos | 0.00% | No cumple |
 
-**4 de 6 mediciones fallan el umbral de latencia; 0 fallan por errores o
-caídas.** El patrón es consistente: lo que falla es login (`bcrypt.compare`,
-intensivo en CPU) y las lecturas/escrituras que hacen más de una consulta o
-un cálculo agregado por petición (proyectos+métricas, listado de reportes,
-búsqueda+venta). Lo que pasa limpio es una escritura de una sola fila
-(avance, exportación de reporte) — operación barata en CPU y en consultas.
+De las seis mediciones, cuatro no cumplen el umbral de latencia definido y ninguna presenta errores o caídas del servicio. El patrón observado es consistente: los casos que no cumplen son el inicio de sesión, que utiliza `bcrypt.compare` y es intensivo en CPU, y las operaciones de lectura o escritura que realizan más de una consulta o un cálculo agregado por petición, como proyectos con métricas, listado de reportes y búsqueda con venta. Los casos que sí cumplen corresponden a operaciones de escritura de una sola fila, como el registro de avance o la exportación de un reporte, que son económicas tanto en CPU como en número de consultas.
 
-## 3. Pruebas de estrés (E1-E5)
+## 3. Pruebas de estrés (E1 a E5)
 
-Un escenario a la vez, cada uno partiendo del VU máximo de su C-n
-correspondiente y escalando 25% cada 2 minutos (§8.1) hasta la condición de
-parada de §8.2 — en la práctica, el umbral de p95 (3× el de §7.2) abortó
-cada corrida automáticamente vía `abortOnFail` de k6, nunca la tasa de error
-ni el techo de seguridad de 500 VUs. **0% de tasa de error en las 5
-corridas** — igual que en carga, el sistema nunca devuelve error, solo se
-vuelve progresivamente más lento hasta el punto de degradación.
+Las pruebas de estrés se ejecutaron un escenario a la vez, cada uno partiendo del número máximo de usuarios virtuales de su escenario de carga correspondiente y escalando en 25% cada dos minutos, según la sección 8.1, hasta alcanzar la condición de parada de la sección 8.2. En la práctica, en todos los casos fue el umbral de p95 (tres veces el definido en la sección 7.2) el que abortó cada corrida de forma automática mediante la opción `abortOnFail` de k6; en ningún caso se alcanzó el techo de seguridad de 500 usuarios virtuales ni se activó la condición de parada por tasa de error. Se registró una tasa de error de 0% en las cinco corridas: al igual que en la prueba de carga, el sistema no devuelve errores, sino que se vuelve progresivamente más lento hasta alcanzar su punto de degradación.
 
-| Caso | Escenario | VUs base (C-n) | Punto de degradación | Tiempo hasta abortar | p95 al abortar |
+| Caso | Escenario | VUs base (escenario C correspondiente) | Punto de degradación | Tiempo hasta abortar | p95 al abortar |
 |---|---|---|---|---|---|
-| E1 | Login | 50 | **50 VUs** (el propio nivel base) | 32s | 2.20s (umbral: 900ms) |
-| E2 | Proyectos + métricas | 100 | **125 VUs** | 4m28s | 1.50s (umbral: 1500ms) |
-| E3 | Avance de proyecto | 30 | **≈232 VUs** | 19m32s | 2.40s (umbral: 2400ms) |
-| E4 | Reportes (export) | 20 | **≈124 VUs** | 17m00s | 2.41s (umbral: 2400ms) |
-| E5 | Búsqueda + venta POS | 40 | **40 VUs** (el propio nivel base) | 1m06s | 2.42s (umbral: 2400ms) |
+| E1 | Inicio de sesión | 50 | 50 VUs (su propio nivel base) | 32 s | 2.20 s (umbral: 900 ms) |
+| E2 | Proyectos y métricas | 100 | 125 VUs | 4 min 28 s | 1.50 s (umbral: 1500 ms) |
+| E3 | Avance de proyecto | 30 | Aproximadamente 232 VUs | 19 min 32 s | 2.40 s (umbral: 2400 ms) |
+| E4 | Reportes (exportación) | 20 | Aproximadamente 124 VUs | 17 min | 2.41 s (umbral: 2400 ms) |
+| E5 | Búsqueda y venta en punto de venta | 40 | 40 VUs (su propio nivel base) | 1 min 6 s | 2.42 s (umbral: 2400 ms) |
 
-**El punto de degradación reproduce exactamente el patrón de la carga (§2):**
-los dos escenarios que ya fallaban su umbral en carga normal (login, venta)
-colapsan bajo estrés apenas al nivel base, sin necesitar ningún escalón de
-más — el sistema ya estaba en su límite antes de que el estrés lo empujara.
-Los dos que pasaban limpio en carga (avance, export de reporte) aguantan
-entre 4x y 6x su concurrencia normal antes de degradar. Proyectos+métricas,
-que en carga fallaba por poco (1.91s vs 500ms), degrada a apenas 1.25x su
-nivel de carga — el margen que tenía era pequeño.
+El punto de degradación reproduce el mismo patrón observado en la prueba de carga descrita en la sección 2. Los dos escenarios que ya no cumplían su umbral en condiciones de carga normal, inicio de sesión y venta, colapsan bajo estrés desde su propio nivel base, sin requerir ningún escalón adicional, lo que indica que el sistema ya se encontraba en su límite antes de que el estrés lo llevara más allá. Los dos escenarios que sí cumplían en carga normal, avance de proyecto y exportación de reportes, soportan entre cuatro y seis veces su concurrencia normal antes de degradar. El escenario de proyectos con métricas, que en la prueba de carga no cumplía por un margen reducido (1.91 s frente a 500 ms), degrada a apenas 1.25 veces su nivel de carga, lo que confirma que su margen disponible era pequeño.
 
-En ningún momento se observó una petición fallida, un timeout, ni el
-health check del backend de pruebas dejando de responder — la degradación
-es puramente de latencia, consistente con un cuello de botella de CPU
-compartida entre VUs concurrentes, no con un error de aplicación, fuga de
-memoria, ni agotamiento de conexiones a la base de datos.
+En ningún momento se observó una petición fallida, un tiempo de espera agotado, ni una interrupción en la respuesta del health check del backend de pruebas. La degradación observada es puramente de latencia, consistente con un cuello de botella de CPU compartida entre usuarios virtuales concurrentes, y no con un error de aplicación, una fuga de memoria, ni un agotamiento de conexiones a la base de datos.
 
 ## 4. Hallazgos y acciones de mitigación
 
-**Decisión tomada sobre la VM:** se mantiene en 2 vCPU. No se sube a 4 vCPU
-como se había evaluado en la versión anterior de este documento — la
-corrida de estrés se hizo igual, con este límite aceptado de forma
-explícita, no por omisión.
+Sobre la infraestructura, se tomó la decisión de mantener la VM en 2 vCPU. No se realizó la ampliación a 4 vCPU que se había evaluado en una versión anterior de este documento; la corrida de estrés se realizó de todas formas, con este límite aceptado de forma explícita y no por omisión.
 
-**Actualización post-mitigación (2026-09-07/08) — hipótesis de bcrypt
-descartada:** se implementó y desplegó `BCRYPT_SALT_ROUNDS` configurable
-por variable de entorno (`backend/src/controllers/authController.js`,
-`userController.js`, `backend/src/db/seed.js`), fijado a `6` solo en
-`docker-compose.test.yml` (producción sigue en el valor por defecto, 10).
-Benchmark local aislado: rounds=10 → ~141ms por hash/compare; rounds=6 →
-~10ms (~14x) — confirma que el costo de bcrypt en sí bajó. Ambiente
-redesplegado (además se corrigió `scripts/deploy.sh`: `up -d` sin
-`--force-recreate` no recreaba contenedores tras un rebuild — ver hallazgo
-6) y las 6 cuentas re-hasheadas al nuevo costo vía `reset:test`.
+Como actualización posterior a la mitigación, realizada entre el 7 y el 8 de septiembre de 2026, se implementó y desplegó la variable `BCRYPT_SALT_ROUNDS` como parámetro configurable por entorno, en `backend/src/controllers/authController.js`, `userController.js` y `backend/src/db/seed.js`. Su valor se fijó en 6 únicamente en `docker-compose.test.yml`; producción continúa utilizando el valor por defecto de 10. Un benchmark local aislado mostró que, con 10 rondas, el costo aproximado por operación de hash o comparación es de 141 ms, mientras que con 6 rondas es de aproximadamente 10 ms, una reducción de alrededor de 14 veces, lo cual confirma que el costo de bcrypt en sí se redujo. El ambiente fue redesplegado; en el mismo proceso se corrigió `scripts/deploy.sh`, dado que el comando `up -d` sin la opción `--force-recreate` no estaba recreando los contenedores tras una reconstrucción de imágenes, según se detalla en el hallazgo 6. Las seis cuentas del ambiente de pruebas fueron re-hasheadas con el nuevo costo mediante `reset:test`.
 
-El login y un subconjunto de endpoints de lectura pesada (proyectos+métricas,
-reportes, venta) muestran mayor latencia bajo concurrencia sostenida que el
-umbral objetivo — en ningún caso con errores, timeouts, ni caídas del
-servicio (0% de errores en las 5,000+ peticiones de la re-corrida de C1).
-Se aplicó una primera mitigación (`SALT_ROUNDS` configurable, más barato en
-el ambiente de pruebas) que confirmó que el costo de bcrypt no es el factor
-dominante; el sistema sigue siendo funcionalmente correcto y estable bajo
-esa carga, y este hallazgo queda registrado como oportunidad de
-optimización de rendimiento para una iteración futura, priorizada junto con
-el resto de hallazgos de esta sección (próximo paso: instrumentar
-`pool.totalCount`/`pool.waitingCount` de `backend/src/db/pool.js` para
-descartar contención de conexiones a Supabase).
+El inicio de sesión y un subconjunto de endpoints de lectura con mayor costo (proyectos con métricas, reportes y venta) presentan mayor latencia bajo concurrencia sostenida que el umbral objetivo, sin que en ningún caso se hayan observado errores, tiempos de espera agotados ni caídas del servicio; en la re-corrida de C1, la tasa de error se mantuvo en 0% sobre más de 5,000 peticiones. La mitigación aplicada mediante `SALT_ROUNDS` configurable permitió confirmar que el costo de bcrypt no es el factor dominante de esta latencia. El sistema se mantiene funcionalmente correcto y estable bajo esta carga, por lo que este hallazgo se registra como una oportunidad de optimización de rendimiento para una iteración futura, con la misma prioridad que el resto de los hallazgos de esta sección. El siguiente paso propuesto es instrumentar `pool.totalCount` y `pool.waitingCount` de `backend/src/db/pool.js` para descartar contención de conexiones hacia Supabase como causa.
 
-| # | Hallazgo | Causa raíz | Acción de mitigación propuesta |
+| Número | Hallazgo | Causa raíz | Acción de mitigación |
 |---|---|---|---|
-| 1 | C1, C2, C4-listado y C5 superan su umbral de p95 bajo carga sostenida; E1, E2, E4 y E5 degradan en estrés a un nivel de concurrencia bajo (40-125 VUs) — todo con 0% de errores, sin timeouts ni caídas del servicio | Se atribuía a CPU insuficiente (2 vCPU) para el costo de `bcrypt.compare` + consultas con agregación/joins bajo concurrencia. Se aplicó `SALT_ROUNDS` más bajo en test, que confirmó que el costo de bcrypt no es el factor dominante — el sistema es funcionalmente correcto y estable, y la latencia observada bajo alta concurrencia queda como oportunidad de optimización de rendimiento, no como defecto bloqueante | `SALT_ROUNDS` bajo en test — implementado y desplegado. Cachear agregaciones (acción 3, no implementada) sigue pendiente para C2/C4/C5. Próximo paso de diagnóstico: instrumentar `pool.totalCount`/`waitingCount` de `backend/src/db/pool.js` para descartar contención de conexiones a Supabase. Si se reconsidera el presupuesto, subir a 4 vCPU sigue siendo mitigación directa disponible |
-| 2 | La subida de RAM (de ~1GB a ~3.8GB) mejoró el resultado (40.24s → 4.99s en C1) pero no bastó para pasar el umbral, ni en carga ni en estrés | RAM no era el limitante real; el primer intento fallaba tan mal que enmascaraba que el problema de fondo es CPU | Confirmado por el patrón de §2 y §3: las operaciones baratas en CPU (C3/E3, C4-export/E4 con más margen que el resto) aguantan varias veces su concurrencia normal; las caras en CPU o en número de consultas (C1/E1, C2/E2, C5/E5) degradan casi de inmediato. No repetir el diagnóstico de RAM — ya está cerrado |
-| 3 | C2 y C5 hacen más de una consulta por petición de usuario (proyectos+métricas; búsqueda+venta), y son los que menos margen tienen antes de degradar (E2 a solo 1.25x su carga normal) | El costo se multiplica por consulta bajo concurrencia, no solo por petición HTTP | Cachear `GET /api/projects/:id/metrics` con una ventana corta (p. ej. 30s), dado que es una agregación que no cambia petición a petición; para C5/E5, confirmar que la búsqueda de producto (`GET /api/products`) tiene índice por `codigo_barras` y `id_proyecto` — no verificado en esta corrida. No implementado |
-| 4 | El primer intento de carga (VM sin subir) degradó producción real: un health check pasó de instantáneo a 2.9s mientras corría la prueba, por compartir los mismos 2 vCPU entre `backend-test` y los contenedores de producción. Con la VM ya subida, ni carga ni estrés volvieron a afectar producción (monitoreado en cada corrida) | VM única para prod y test, sin límites de CPU por contenedor (`docker compose` no fija `cpus:` en ninguno de los dos archivos) | Fijar un límite de CPU explícito por contenedor (`deploy.resources.limits.cpus`) en `docker-compose.test.yml`, para que una corrida futura no pueda volver a robarle CPU a producción si la VM vuelve a quedar justa de recursos. Vale más ahora que se decidió quedarse en 2 vCPU compartidos — no implementado en esta tarea, queda como deuda técnica de infraestructura |
-| 5 | E1 y E5 degradan en su propio nivel base, sin necesitar ningún escalón de estrés adicional — el sistema ya estaba en su límite bajo carga normal, no solo bajo estrés | Mismo origen que el hallazgo 1 (bcrypt en E1; búsqueda+transacción con `FOR UPDATE` en E5) — E1 comparte el mismo diagnóstico: bcrypt no es el factor dominante, sistema estable, oportunidad de optimización | Prioridad más alta de los dos para la siguiente iteración: son los dos endpoints donde un uso real (login al iniciar el día, ventas en punto de venta) ya rozaría el límite actual. E1 comparte el próximo paso de diagnóstico del hallazgo 1 |
-| 6 | Descubierto al re-verificar el hallazgo 1 (2026-09-08): un deploy completo (build + `up -d --remove-orphans`, sin `--build` en `up`) dejaba **todos** los contenedores (prod y test) corriendo la imagen vieja pese a builds nuevos exitosos — confirmado comparando el digest de la imagen corriendo vs. el digest recién taggeado como `:latest` | `docker compose up -d` sin `--force-recreate` decide si recrea un contenedor por un hash del *nombre* de config, no por el digest de la imagen — para servicios con `build:` local (sin pin de digest), un rebuild que mantiene el mismo tag es invisible para esa comparación | Se agregó `--force-recreate` a `up -d` en `scripts/deploy.sh` — **implementado**. Impacto retroactivo: cualquier deploy anterior a este fix pudo haber dejado código viejo corriendo en prod sin error visible; no hay forma de auditar cuáles sin revisar logs históricos, se documenta como riesgo cerrado hacia adelante, no confirmado hacia atrás |
+| 1 | Los escenarios C1, C2, C4 (listado) y C5 no cumplen su umbral de p95 bajo carga sostenida; los escenarios E1, E2, E4 y E5 degradan en estrés a un nivel de concurrencia relativamente bajo (entre 40 y 125 VUs), en todos los casos con 0% de errores, sin tiempos de espera agotados ni caídas del servicio | Inicialmente se atribuyó a una CPU insuficiente (2 vCPU) para el costo de `bcrypt.compare` sumado a las consultas con agregación o combinaciones de tablas bajo concurrencia. Se aplicó un valor más bajo de `SALT_ROUNDS` en el ambiente de pruebas, lo cual confirmó que el costo de bcrypt no es el factor dominante; el sistema es funcionalmente correcto y estable, y la latencia observada bajo alta concurrencia queda registrada como oportunidad de optimización de rendimiento, no como un defecto bloqueante | La variable `SALT_ROUNDS` con valor bajo en el ambiente de pruebas ya fue implementada y desplegada. El almacenamiento en caché de las agregaciones, correspondiente a la acción 3, continúa pendiente para C2, C4 y C5. El siguiente paso de diagnóstico consiste en instrumentar `pool.totalCount` y `waitingCount` de `backend/src/db/pool.js` para descartar contención de conexiones hacia Supabase. Si en el futuro se reconsidera el presupuesto de infraestructura, ampliar a 4 vCPU continúa siendo una mitigación directa disponible |
+| 2 | La ampliación de RAM, de aproximadamente 1 GB a 3.8 GB, mejoró el resultado de forma sustancial (de 40.24 s a 4.99 s en C1) pero no fue suficiente para cumplir el umbral, ni en carga ni en estrés | La memoria no era el factor limitante real; el primer intento fallaba de forma tan pronunciada que enmascaraba que el problema de fondo corresponde a CPU | El patrón observado en las secciones 2 y 3 confirma este diagnóstico: las operaciones económicas en CPU, como C3, E3, C4 de exportación y E4, cuentan con mayor margen que el resto, mientras que las operaciones costosas en CPU o en número de consultas, como C1, E1, C2, E2, C5 y E5, degradan casi de inmediato. No se considera necesario repetir el diagnóstico de memoria, dado que se considera cerrado |
+| 3 | Los escenarios C2 y C5 realizan más de una consulta por petición de usuario (proyectos con métricas; búsqueda con venta) y son los que cuentan con menor margen antes de degradar, siendo E2 el más ajustado, con apenas 1.25 veces su carga normal | El costo se multiplica por consulta bajo concurrencia, y no únicamente por petición HTTP | Se propone almacenar en caché el endpoint `GET /api/projects/:id/metrics` con una ventana corta, por ejemplo de 30 segundos, dado que corresponde a una agregación que no cambia de una petición a otra. Para C5 y E5, se propone confirmar que la búsqueda de producto mediante `GET /api/products` cuente con índice por `codigo_barras` y por `id_proyecto`, lo cual no fue verificado en esta corrida. Esta acción aún no ha sido implementada |
+| 4 | El primer intento de la prueba de carga, realizado con la VM sin ampliar, degradó producción de forma real: un health check pasó de responder de forma instantánea a tardar 2.9 segundos mientras se ejecutaba la prueba, debido a que `backend-test` compartía los mismos 2 vCPU con los contenedores de producción. Una vez ampliada la VM, ni la prueba de carga ni la de estrés volvieron a afectar a producción, lo cual fue monitoreado en cada corrida | La VM es única para producción y pruebas, y ningún contenedor cuenta con límites de CPU definidos, ya que `docker compose` no fija la propiedad `cpus` en ninguno de los dos archivos de configuración | Se propone fijar un límite explícito de CPU por contenedor, mediante `deploy.resources.limits.cpus`, en `docker-compose.test.yml`, de forma que una corrida futura no pueda volver a restarle CPU a producción si la VM vuelve a quedar ajustada en recursos. Esta acción cobra mayor relevancia dado que se decidió mantener los 2 vCPU compartidos. Aún no ha sido implementada; queda registrada como deuda técnica de infraestructura |
+| 5 | Los escenarios E1 y E5 degradan desde su propio nivel base, sin necesitar ningún escalón adicional de estrés, lo cual indica que el sistema ya se encontraba en su límite bajo carga normal y no únicamente bajo estrés | Comparte el origen del hallazgo 1: en E1 corresponde al costo de bcrypt, y en E5 a la búsqueda combinada con una transacción que utiliza `FOR UPDATE`. Para E1 aplica el mismo diagnóstico del hallazgo 1: bcrypt no es el factor dominante, el sistema se mantiene estable y se trata de una oportunidad de optimización | Estos dos casos se consideran de mayor prioridad para la siguiente iteración, dado que corresponden a los dos endpoints donde un uso real, como el inicio de sesión al comenzar el día o las ventas en el punto de venta, ya se acercaría al límite actual. El escenario E1 comparte el siguiente paso de diagnóstico definido para el hallazgo 1 |
+| 6 | Se identificó al re-verificar el hallazgo 1, el 8 de septiembre de 2026, que un despliegue completo, compuesto por la reconstrucción de imágenes seguida de `up -d --remove-orphans` sin la opción `--build` en `up`, dejaba a todos los contenedores, tanto de producción como de pruebas, ejecutando la imagen anterior a pesar de que las reconstrucciones habían finalizado correctamente. Esto se confirmó al comparar el identificador de la imagen en ejecución con el de la imagen recién etiquetada como `latest` | El comando `docker compose up -d`, sin la opción `--force-recreate`, decide si recrea un contenedor a partir de un identificador calculado sobre el nombre de la configuración y no sobre el identificador de la imagen. Para los servicios que se construyen de forma local, sin fijar un identificador específico, una reconstrucción que conserva la misma etiqueta resulta invisible para esa comparación | Se agregó la opción `--force-recreate` al comando `up -d` en `scripts/deploy.sh`, acción ya implementada. En cuanto al impacto retroactivo, cualquier despliegue anterior a esta corrección pudo haber dejado código anterior en ejecución en producción sin generar un error visible. No existe una forma de auditar cuáles despliegues se vieron afectados sin revisar los registros históricos, por lo que este riesgo se documenta como cerrado hacia adelante y no confirmado hacia atrás |
 
 ## 5. Próximos pasos
 
-1. ~~Decidir sobre la acción de mitigación 1/3~~ — hecho: `SALT_ROUNDS` bajo en test, desplegado (2026-09-07), pero **no resolvió C1/E1** (ver hallazgo 1 actualizado). Cachear métricas/revisar índices (acción 3) sigue pendiente para C2/C4/C5.
-2. Evaluar la acción 4 (límite de CPU por contenedor en `docker-compose.test.yml`) como tarea de infraestructura aparte.
-3. ~~Re-correr C1/C5 (y sus E1/E5)~~ — hecho para C1 (2026-09-08): p95=4.00s, umbral sigue roto. E5/C2/C4/C5 no re-corridos.
-4. Diagnosticar la causa real de C1/E1: instrumentar `pool.totalCount`/`pool.waitingCount` de `backend/src/db/pool.js` (temporal, vía log) durante una corrida de carga, para descartar o confirmar contención de conexiones a Supabase antes de proponer otra mitigación.
+1. La acción de mitigación correspondiente a los hallazgos 1 y 3 fue decidida: se implementó y desplegó un valor bajo de `SALT_ROUNDS` en el ambiente de pruebas, el 7 de septiembre de 2026, aunque esto no resolvió los escenarios C1 y E1, según se detalla en el hallazgo 1 actualizado. El almacenamiento en caché de métricas y la revisión de índices, correspondientes a la acción 3, continúan pendientes para C2, C4 y C5.
+2. Evaluar la acción 4, correspondiente a un límite de CPU por contenedor en `docker-compose.test.yml`, como una tarea de infraestructura independiente.
+3. Los escenarios C1 y E1 fueron re-ejecutados el 8 de septiembre de 2026, con un resultado de p95 de 4.00 segundos, sin cumplir el umbral definido. Los escenarios C2, C4, C5 y E5 no han sido re-ejecutados.
+4. Diagnosticar la causa real de los escenarios C1 y E1 mediante la instrumentación temporal, por medio de registros, de `pool.totalCount` y `pool.waitingCount` en `backend/src/db/pool.js` durante una corrida de carga, con el fin de descartar o confirmar contención de conexiones hacia la base de datos antes de proponer una mitigación adicional.
