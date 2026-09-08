@@ -5,7 +5,12 @@
 import bcrypt from 'bcrypt'
 import pool from './pool.js'
 
-const SALT_ROUNDS = 10
+// Matches the app's own SALT_ROUNDS (authController.js/userController.js):
+// bcrypt.compare()'s cost is fixed by whatever's embedded in the stored
+// hash, not by this constant at compare time — so a lower BCRYPT_SALT_ROUNDS
+// only speeds up login once the seeded accounts are re-hashed at that cost,
+// which happens the next time this script runs (e.g. via reset:test).
+const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 const PARTICIPANT_PASSWORD = 'Kontrol2026!'
 const EMPRESA_EMAIL = 'contacto@lospinos-test.dev'
 const EMPRESA_NOMBRE = 'Ferretería Los Pinos'

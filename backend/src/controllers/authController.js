@@ -11,7 +11,10 @@ import {
 } from '../services/projectInvitationService.js'
 import { getFrontendBaseUrl } from '../utils/frontendUrl.js'
 
-const SALT_ROUNDS = 10
+// Configurable so the test environment can trade hash strength for CPU
+// headroom under load — see docs/pruebas-carga-estres.md. Production never
+// sets BCRYPT_SALT_ROUNDS, so it always falls back to 10.
+const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 
 const signToken = (user) =>
   jwt.sign(
