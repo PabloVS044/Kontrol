@@ -23,6 +23,11 @@ services:
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
       - FRONTEND_URL=${TEST_FRONTEND_URL}
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
+      # Login is bcrypt-bound (docs/pruebas-carga-estres.md, hallazgo 1) — a
+      # lower cost factor trades hash strength for CPU headroom, safe here
+      # because this environment only ever holds the shared, documented
+      # test-account passwords, never real credentials. Never set in prod.
+      - BCRYPT_SALT_ROUNDS=${TEST_BCRYPT_SALT_ROUNDS:-6}
     restart: unless-stopped
 
   frontend-test:
