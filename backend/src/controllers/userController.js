@@ -1,7 +1,10 @@
 import bcrypt from 'bcrypt'
 import pool from '../db/pool.js'
 
-const SALT_ROUNDS = 10
+// Configurable so the test environment can trade hash strength for CPU
+// headroom under load — see docs/pruebas-carga-estres.md. Production never
+// sets BCRYPT_SALT_ROUNDS, so it always falls back to 10.
+const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 
 // Columns returned in every user response (password_hash excluded)
 const USER_SELECT = `
