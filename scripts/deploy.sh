@@ -114,7 +114,13 @@ $SSH "
     docker compose $COMPOSE_FILES build backend-test
     docker compose $COMPOSE_FILES build frontend-test
   fi
-  docker compose $COMPOSE_FILES up -d --remove-orphans
+  # --force-recreate: compose's change-detection hashes the image *name*,
+  # not its digest, for locally-built (non-registry) images — a rebuild
+  # that keeps the same tag is invisible to it, so 'up -d' alone leaves the
+  # old container running the old image. Confirmed 2026-09-08: a full
+  # sequential build produced new images but every container kept serving
+  # the previous one until force-recreated.
+  docker compose $COMPOSE_FILES up -d --remove-orphans --force-recreate
   docker image prune -f >/dev/null 2>&1 || true
 "
 
