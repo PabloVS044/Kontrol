@@ -75,8 +75,11 @@ export default mergeConfig(
           // que casan siguen contando también en el umbral global de arriba.
           //
           // Ojo: un glob que no casa con ningún archivo del reporte pasa en
-          // vacío, sin avisar. Si se borra el test que cubre uno de estos
-          // archivos, su umbral deja de proteger nada.
+          // vacío, sin avisar. No es hipotético: entre SCRUM-23 y hoy, los
+          // tres umbrales de reportes casaban con cero archivos y pasaban en
+          // verde sin proteger nada. Cada glob de esta lista tiene al lado su
+          // medición real; si un glob no lleva número, no se ha comprobado
+          // que case con algo.
 
           // POS: subtotal, descuento e IVA de una venta. Es el cálculo con
           // mayor riesgo financiero del sistema. Medido 95.45/94.44/100/100.
@@ -101,24 +104,37 @@ export default mergeConfig(
 
           // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
           //
-          // Hoy (12/08/2026) ninguno de estos archivos entra al reporte de
-          // cobertura, porque ningún test los importa. Un glob sin archivos
-          // que casen pasa en vacío, así que estos tres umbrales no fallan
-          // pero tampoco protegen nada todavía: empiezan a tener efecto real
-          // cuando lleguen los tests del módulo el 17/08/2026.
-          'src/views/ReportsView.vue': {
+          // Los umbrales apuntaban a `views/ReportsView.vue`,
+          // `views/ReportDetailView.vue` y `components/reports/**`. Los tests
+          // del módulo que se esperaban para el 17/08/2026 nunca llegaron, así
+          // que esos quince archivos siguen a 0 % en las cuatro métricas y los
+          // tres globs pasaron un mes en verde sin proteger nada.
+          //
+          // Se redirigen a los tres archivos del módulo que sí tienen pruebas,
+          // que es donde vive la lógica de exportación: el resto de reportes es
+          // presentación. Las vistas y los componentes entran ahora al
+          // denominador global, así que su 0 % ya pesa en el umbral global en
+          // lugar de esconderse.
+          //
+          // Cubiertos por `reportExport.test.js` y `csvExportEdgeCases.test.js`.
+          // Medido el 20/09/2026.
+          'src/utils/reportExport.js': {
+            // 96.87 / 94.44 / 93.33 / 96.87
             statements: 70,
             branches: 70,
             functions: 70,
             lines: 70
           },
-          'src/views/ReportDetailView.vue': {
+          'src/utils/pdf/reportPdf.js': {
+            // 95.08 / 77.50 / 100 / 95.61
             statements: 70,
             branches: 70,
             functions: 70,
             lines: 70
           },
-          'src/components/reports/**': {
+          'src/utils/pdf/pdfDocument.js': {
+            // 89.04 / 75.26 / 96.66 / 90.40 — el más justo de los tres en
+            // ramas, y aun así 5 puntos por encima del umbral.
             statements: 70,
             branches: 70,
             functions: 70,
