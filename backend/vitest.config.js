@@ -68,8 +68,10 @@ export default defineConfig({
         // casan siguen contando también en el umbral global de arriba.
         //
         // Ojo: un glob que no casa con ningún archivo del reporte pasa en
-        // vacío, sin avisar. Si se borra el test que cubre uno de estos
-        // archivos, su umbral deja de proteger nada.
+        // vacío, sin avisar. Con `include` declarado eso ya solo pasa si la
+        // ruta no existe, pero el riesgo sigue: cada glob de esta lista lleva
+        // al lado su medición real, y si un glob no lleva número es que no se
+        // ha comprobado que case con algo.
 
         // Presupuesto: cálculo financiero puro. Medido 100 % en las cuatro.
         'src/utils/budgetCalculations.js': {
@@ -109,6 +111,39 @@ export default defineConfig({
           branches: 70,
           functions: 70,
           lines: 70
+        },
+
+        // POS: la venta real. Hasta ahora el único umbral de POS del proyecto
+        // era `frontend/src/utils/sales.js`, que mide 95 % — pero ahí solo
+        // están el subtotal y el total de línea del navegador, y `calcSale`
+        // (descuento e IVA) no lo importa nadie. La venta que descuenta stock
+        // y cobra vive aquí, y mide 0 % en las cuatro métricas: 198 sentencias
+        // sin una sola prueba.
+        //
+        // El umbral va en 0 a propósito. En 0 no protege nada: es un marcador
+        // que deja el módulo declarado como crítico con su cifra real a la
+        // vista. La tarea de validación de precios del POS lo sube en el mismo
+        // PR en que entren sus pruebas de caracterización.
+        'src/controllers/inventoryMovementController.js': {
+          // 0 / 0 / 0 / 0 — 180 sentencias
+          statements: 0,
+          branches: 0,
+          functions: 0,
+          lines: 0
+        },
+        'src/routes/inventoryMovementRoutes.js': {
+          // 0 / 0 / 0 / 0 — 11 sentencias
+          statements: 0,
+          branches: 0,
+          functions: 0,
+          lines: 0
+        },
+        'src/schemas/inventoryMovementSchemas.js': {
+          // 0 / 0 / 0 / 0 — 7 sentencias
+          statements: 0,
+          branches: 0,
+          functions: 0,
+          lines: 0
         }
       }
     }
