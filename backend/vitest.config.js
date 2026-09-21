@@ -14,16 +14,30 @@ export default defineConfig({
       // para el informe del sprint sin tener que abrir el reporte HTML.
       reporter: ['text', 'html', 'clover', 'json', 'json-summary'],
 
-      // En Vitest 4 `coverageConfigDefaults.exclude` viene vacío, así que sin
-      // esta línea `tests/helpers/authTestApp.js` cuenta como código medido y
-      // infla la cobertura del backend.
-      exclude: ['tests/**'],
+      // El denominador. `coverage.all` no existe en Vitest 4: sin `include`
+      // solo se mide lo que algún test importa, así que un archivo que nadie
+      // prueba no aparece en el reporte y no baja el porcentaje. SCRUM-23 lo
+      // dejó sin declarar a propósito para no poner el gate en rojo, y el
+      // resultado fue que 59 de los 94 archivos de `src/` eran invisibles y el
+      // 37 % que reportaba el gate no era cobertura real. Con `include` el
+      // denominador es todo `src/`: 83 archivos y 3 929 sentencias.
+      include: ['src/**/*.js'],
 
-      // Nota sobre el denominador: `coverage.all` ya no existe en Vitest 4. Sin
-      // declarar `coverage.include`, solo se mide lo que algún test importa; un
-      // archivo que nadie prueba no aparece en el reporte y no baja el
-      // porcentaje. Es intencional: mantiene el gate estable mientras entra
-      // código sin tests propios.
+      // Fuera del denominador. En Vitest 4 `coverageConfigDefaults.exclude`
+      // viene vacío, así que todo lo que no deba contar va listado aquí.
+      exclude: [
+        // Ayudantes de test (`tests/helpers/authTestApp.js` inflaba la cifra).
+        'tests/**',
+        // Arranque del proceso: `app.listen`, sin lógica que probar.
+        'src/index.js',
+        // Configuración del SDK de UploadThing.
+        'src/uploadthing.js',
+        // Pool de Postgres, conexión de Mongo, DDL de arranque y los scripts
+        // de `npm run seed:test` / `reset:test`.
+        'src/db/**',
+        // Esquemas de Mongoose: declaraciones, no comportamiento.
+        'src/models/**'
+      ],
 
       // Vitest sale con código 1 si no se cumple un umbral, así que el step
       // `npm run test:coverage -w backend` de ci.yml pone el job en rojo solo.
