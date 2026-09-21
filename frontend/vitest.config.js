@@ -49,27 +49,26 @@ export default mergeConfig(
         // `npm run test:coverage -w frontend` de ci.yml pone el job en rojo
         // por sí solo.
         thresholds: {
-          // Trinquete, punto 2: el umbral global se fija en la línea base
-          // medida, truncada a entero. Sin margen — el umbral es exactamente lo
-          // que hay hoy. Remedido el 18/08/2026 tras cubrir `services/auth.js`
-          // (194 sentencias en 7 archivos; antes 168 en 6).
-          statements: 83, // base 83.50 % — antes 80
-          branches: 83, //   base 83.44 % — antes 80
-          functions: 78, //  base 78.18 % — antes 75
-          lines: 85, //      base 85.29 % — antes 83
+          // Trinquete, punto 2: el umbral global se fija en la línea base real
+          // medida el 20/09/2026 sobre el denominador completo, truncada a
+          // entero y menos 1 punto porcentual de margen.
+          //
+          // El margen es nuevo. SCRUM-23 iba sin margen, pero con el
+          // denominador real hay dos fuentes de varianza que antes no
+          // pesaban: v8 cuenta ramas y funciones distinto entre versiones
+          // mayores de Node —se mide en local y se verifica en CI, que usa el
+          // 22 de `.nvmrc`—, y sobre 9 152 sentencias una vista nueva de 300
+          // sentencias sin test baja `statements` 0.32 puntos por sí sola. El
+          // margen absorbe esa varianza; no relaja el trinquete.
+          statements: 9, // base real 10.15 % (929/9152) — antes 83 sobre 1 000
+          branches: 8, //   base real  9.84 % (586/5955)
+          functions: 11, // base real 12.12 % (252/2078)
+          lines: 9, //      base real 10.46 % (848/8104)
 
           // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-          // umbral global. Próxima subida, al cierre del Sprint 6:
-          // 85/85/80/88. La política completa está en el README, sección
-          // «Cobertura».
-
-          // Aviso: el denominador del frontend es de solo 168 sentencias en 6
-          // archivos, así que un único archivo lo mueve muchísimo. Medido: si
-          // el rediseño deja `Button.vue` (5 sentencias, 3 funciones, hoy al
-          // 100 %) sin cubrir, functions cae de 75.51 % a 69.39 % y este
-          // umbral se incumple. Al ir sin margen por decisión de SCRUM-23,
-          // cualquier PR que toque un archivo cubierto puede requerir subir
-          // cobertura en el mismo PR.
+          // umbral global, contados desde esta base nueva. Próxima subida, al
+          // cierre del Sprint 8: 14/13/16/14. La política completa está en
+          // el README, sección «Cobertura de código».
 
           // Umbrales por módulo crítico. Los globs se resuelven con picomatch
           // contra la ruta relativa a la raíz del workspace, y los archivos

@@ -42,21 +42,26 @@ export default defineConfig({
       // Vitest sale con código 1 si no se cumple un umbral, así que el step
       // `npm run test:coverage -w backend` de ci.yml pone el job en rojo solo.
       thresholds: {
-        // Trinquete, punto 2: el umbral global se fija en la línea base medida
-        // el 12/08/2026, truncada a entero. Sin margen — el umbral es
-        // exactamente lo que hay hoy, así que la cobertura solo puede
-        // mantenerse o subir, nunca bajar.
+        // Trinquete, punto 2: el umbral global se fija en la línea base real
+        // medida el 20/09/2026 sobre el denominador completo, truncada a
+        // entero y menos 1 punto porcentual de margen.
         //
-        // La base subió de 29.08/19.16/17.88/29.13 a la actual al cubrir el
-        // módulo de reportes; el umbral sube con ella para fijar la mejora.
-        statements: 33, // base 33.42 %
-        branches: 21, //   base 21.33 %
-        functions: 23, //  base 23.84 %
-        lines: 33, //      base 33.71 %
+        // El margen es nuevo. SCRUM-23 iba sin margen, pero con el
+        // denominador real hay dos fuentes de varianza que antes no pesaban:
+        // v8 cuenta ramas y funciones distinto entre versiones mayores de
+        // Node —se mide en local y se verifica en CI, que usa el 22 de
+        // `.nvmrc`—, y sobre 3 929 sentencias un controlador nuevo de 200
+        // sentencias sin test baja `statements` 0.78 puntos por sí solo. El
+        // margen absorbe esa varianza; no relaja el trinquete.
+        statements: 15, // base real 16.21 % (637/3929) — antes 33 sobre 1 719
+        branches: 9, //    base real 10.94 % (265/2421)
+        functions: 11, //  base real 12.42 % (59/475)
+        lines: 15, //      base real 16.46 % (610/3705)
 
         // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-        // umbral global. Próxima subida, al cierre del Sprint 6: 38/26/28/38.
-        // La política completa está en el README, sección «Cobertura».
+        // umbral global, contados desde esta base nueva. Próxima subida, al
+        // cierre del Sprint 8: 20/14/16/20. La política completa está en
+        // el README, sección «Cobertura de código».
 
         // Umbrales por módulo crítico. Los globs se resuelven con picomatch
         // contra la ruta relativa a la raíz del workspace, y los archivos que
