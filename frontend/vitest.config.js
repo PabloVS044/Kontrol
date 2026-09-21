@@ -90,16 +90,26 @@ export default mergeConfig(
             lines: 70
           },
 
-          // Autenticación de frontend. Escalón temporal por debajo del 70 %:
-          // medido 66.66/60.41/59.25/69.73, es decir por debajo en las cuatro
-          // métricas pese a tener `authStore.test.js` propio. Se fija encima
-          // de lo medido para frenar regresiones; subir a 70 cuando se amplíe
-          // ese test.
+          // Autenticación de frontend. El escalón temporal de 60/55/55/60 se
+          // fijó sobre 66.66/60.41/59.25/69.73. Desde entonces
+          // `authStore.test.js` creció y hoy mide 71.60/66.66/70.37/75, así
+          // que tres de las cuatro métricas ya superan el 70 % y dejar el
+          // escalón donde estaba sería el mismo vicio que corrige esta tarea:
+          // un umbral muy por debajo de lo medido no frena ninguna regresión.
+          //
+          // Ramas se queda en 65 porque mide 66.66; sube a 70 cuando el test
+          // cubra las dos ramas que faltan.
+          //
+          // Aviso: en funciones el margen es de 0.37 puntos (19 de 27). Una
+          // función que deje de cubrirse baja a 66.66 % e incumple. Es
+          // deliberado —el trinquete existe para eso— pero conviene saberlo
+          // antes de tocar este archivo.
           'src/stores/auth.js': {
-            statements: 60,
-            branches: 55,
-            functions: 55,
-            lines: 60
+            // 71.60 / 66.66 / 70.37 / 75 — medido el 20/09/2026
+            statements: 70,
+            branches: 65,
+            functions: 70,
+            lines: 70
           },
 
           // Reportes: cuarto módulo crítico del trinquete de SCRUM-23.
