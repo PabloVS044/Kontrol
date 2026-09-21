@@ -17,15 +17,33 @@ export default mergeConfig(
         // exactos para el informe del sprint sin abrir el reporte HTML.
         reporter: ['text', 'html', 'clover', 'json', 'json-summary'],
 
-        // En Vitest 4 `coverageConfigDefaults.exclude` viene vacío; se declara
-        // explícitamente para que nada de `tests/` cuente como código medido.
-        exclude: ['tests/**'],
+        // El denominador. `coverage.all` no existe en Vitest 4: sin `include`
+        // solo se mide lo que algún test importa, así que un archivo que nadie
+        // prueba no aparece en el reporte y no baja el porcentaje. SCRUM-23 lo
+        // dejó sin declarar a propósito para no poner el gate en rojo, y el
+        // resultado fue que solo 19 de los 136 archivos `.js`/`.vue` de `src/`
+        // entraban al reporte, más seis `.css`, `.png` y `.json` que no son
+        // código ejecutable. El 92 % que reportaba el gate no era cobertura
+        // real. Con `include` el denominador es 129 archivos y 9 152
+        // sentencias, y las extensiones explícitas dejan fuera los recursos.
+        include: ['src/**/*.{js,vue}'],
 
-        // Nota sobre el denominador: `coverage.all` ya no existe en Vitest 4.
-        // Sin declarar `coverage.include`, solo se mide lo que algún test
-        // importa; un archivo que nadie prueba no aparece en el reporte y no
-        // baja el porcentaje. Es intencional: mantiene el gate estable
-        // mientras entra código sin tests propios.
+        // Fuera del denominador. En Vitest 4 `coverageConfigDefaults.exclude`
+        // viene vacío, así que todo lo que no deba contar va listado aquí.
+        exclude: [
+          'tests/**',
+          // Arranque de la aplicación: monta Vue, Pinia, i18n y el router.
+          'src/main.js',
+          // Tabla de rutas declarativa.
+          'src/router/**',
+          // Diccionarios de i18n.
+          'src/locales/**',
+          // Imágenes y hojas de estilo.
+          'src/assets/**',
+          'src/styles/**',
+          // Fondos WebGL (`ogl`): dibujan, no deciden nada.
+          'src/components/UI/Backgrounds/**'
+        ],
 
         // Vitest sale con código 1 si no se cumple un umbral, así que el step
         // `npm run test:coverage -w frontend` de ci.yml pone el job en rojo
