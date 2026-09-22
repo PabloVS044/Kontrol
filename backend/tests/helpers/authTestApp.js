@@ -6,6 +6,7 @@ import projectRoutes from '../../src/routes/projectRoutes.js'
 import taskRoutes from '../../src/routes/taskRoutes.js'
 import companyRoutes from '../../src/routes/companyRoutes.js'
 import marketingRoutes from '../../src/routes/marketingRoutes.js'
+import productRoutes from '../../src/routes/productRoutes.js'
 
 export const JWT_SECRET = 'secreto-de-pruebas-hu31'
 process.env.JWT_SECRET = JWT_SECRET
@@ -44,6 +45,7 @@ export function buildTestApp() {
   app.use('/api/projects/:projectId/tasks', taskRoutes)
   app.use('/api/companies', companyRoutes)
   app.use('/api/marketing', marketingRoutes)
+  app.use('/api/products', productRoutes)
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
