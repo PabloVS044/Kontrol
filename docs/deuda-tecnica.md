@@ -83,9 +83,9 @@ Referencias exactas para quien ejecute la refactorización.
 - El esquema se aplica con `ensureDatabaseSchema()` en el arranque, sin migraciones versionadas: endurecer el índice sobre datos sucios haría fallar el arranque del backend. La corrección de datos tiene que preceder al cambio de índice.
 
 ### DT-04 — Parámetro de ruta desajustado
-- `backend/src/routes/productRoutes.js:81,87` — `'/:id/suppliers/:supplierId'`.
+- `backend/src/routes/productRoutes.js:85,92` — `'/:id/suppliers/:supplierId'`.
 - `backend/src/schemas/productSchemas.js` — `productSupplierParamsSchema` valida `supplierId`.
-- `backend/src/controllers/productController.js:367,384,395,407` — lee y usa `pid`.
+- `backend/src/controllers/productController.js:402,419,430,442` — lee y usa `pid`.
 
 ### DT-05 — Autorización dispersa
 - `backend/src/routes/productRoutes.js:52-57` — `POST /` protege con `requireProject` + `requireProjectPermission('gestionar_inventario')`.

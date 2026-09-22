@@ -399,7 +399,7 @@ export const linkSupplier = async (req, res) => {
 }
 
 export const updateSupplierLink = async (req, res) => {
-  const { id, pid } = req.params
+  const { id, supplierId } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
     req,
@@ -416,7 +416,7 @@ export const updateSupplierLink = async (req, res) => {
   if (precio_unitario !== undefined) { values.push(precio_unitario); setClauses.push(`precio_unitario = $${values.length}`) }
   if (fecha_ultima_cotizacion !== undefined) { values.push(fecha_ultima_cotizacion); setClauses.push(`fecha_ultima_cotizacion = $${values.length}`) }
 
-  values.push(id, pid)
+  values.push(id, supplierId)
   const result = await pool.query(
     `UPDATE public.producto_proveedor SET ${setClauses.join(', ')}
      WHERE id_producto = $${values.length - 1} AND id_proveedor = $${values.length} RETURNING *`,
@@ -427,7 +427,7 @@ export const updateSupplierLink = async (req, res) => {
 }
 
 export const unlinkSupplier = async (req, res) => {
-  const { id, pid } = req.params
+  const { id, supplierId } = req.params
   const access = await ensureProductInventoryAccess({
     id_producto: id,
     req,
@@ -439,7 +439,7 @@ export const unlinkSupplier = async (req, res) => {
 
   const result = await pool.query(
     'DELETE FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2 RETURNING id_producto',
-    [id, pid]
+    [id, supplierId]
   )
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
   return res.json({ success: true, message: 'Supplier unlinked successfully.' })
