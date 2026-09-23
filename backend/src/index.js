@@ -3,9 +3,11 @@ import { createServer } from 'http'
 import express from 'express'
 import cors from 'cors'
 import router from './router.js'
+import helmet from 'helmet';
 import { ensureDatabaseSchema } from './db/bootstrap.js'
 import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
+import { securityMiddleware } from './middleware/security.middleware.js'
 
 const app        = express()
 const httpServer = createServer(app)
@@ -28,10 +30,21 @@ function corsOriginFn(origin, cb) {
 }
 
 app.set('trust proxy', true)
+securityMiddleware(app);
 app.use(cors({
   origin: corsOriginFn,
   credentials: true,
 }))
+app.use(
+  helmet({
+    xFrameOptions: { action: 'deny' },
+    strictTransportSecurity: {
+      maxAge: 15552000, // 180 días en segundos
+      includeSubDomains: true,
+      preload: true,
+    },
+  })
+);
 app.locals.corsOriginFn = corsOriginFn
 app.locals.allowedOrigins = allowedOrigins
 app.use(express.json())
@@ -57,3 +70,5 @@ try {
 httpServer.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`)
 })
+
+export default app;
