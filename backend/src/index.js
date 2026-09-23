@@ -54,21 +54,24 @@ setupSocket(httpServer, {
   corsOrigin: corsOriginFn,
 })
 
-try {
-  await ensureDatabaseSchema()
-} catch (error) {
-  console.error('Could not initialize the backend:', error)
-  process.exit(1)
+// Se conecta a DB y levanta el puerto cuando no está en entorno de prueba
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    await ensureDatabaseSchema()
+  } catch (error) {
+    console.error('Could not initialize the backend:', error)
+    process.exit(1)
+  }
+
+  try {
+    await connectMongo()
+  } catch (error) {
+    console.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
+  }
+
+  httpServer.listen(PORT, () => {
+    console.log(`Backend running at http://localhost:${PORT}`)
+  })
 }
 
-try {
-  await connectMongo()
-} catch (error) {
-  console.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
-}
-
-httpServer.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`)
-})
-
-export default app;
+export default app
