@@ -464,7 +464,7 @@ documentados, no pendientes de implementación.
 | Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
 |---|---|---|---|---|---|
 | SEC1 | HU-38 | Revisión de dependencias: cero vulnerabilidades críticas sin remediar | `backend/package.json`, `frontend/package.json` | Auditoría de dependencias en ambos workspaces; línea base en §9.1, 12 y 10 hallazgos, ninguno crítico | Cubierto: línea base documentada; la remediación de las altas es deuda técnica, ver riesgo 9 de §17 |
-| SEC2 | HU-38 | Cabeceras de seguridad HTTP presentes en las respuestas del backend | `backend/src/index.js`, stack de middleware | Verificación manual de las respuestas del backend; no hay cabeceras de seguridad configuradas, ver §9.2 | Pendiente: hallazgo de cabeceras ausentes, corrección fuera de alcance de HU-38, ver riesgo 8 de §17 |
+| SEC2 | HU-38 | Cabeceras de seguridad HTTP presentes en las respuestas del backend | `backend/src/index.js`, stack de middleware | Verificación manual de las respuestas del backend; no hay cabeceras de seguridad configuradas, ver §9.2 | Cubierto: En la DT-14 con el middleware helmet en backend |
 | SEC3 | HU-38 / SCRUM-9 | Trazabilidad de los nueve casos de autorización multi-rol y multi-empresa | `requireAuth.js`, `requireRole.js`, `requireCompanyRole.js` | `backend/tests/authz.controller.test.js`, la misma suite de regresión R5 de §19.2 | Cubierto |
 
 
