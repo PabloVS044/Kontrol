@@ -15,6 +15,7 @@ import request from 'supertest'
 import pool from '../src/db/pool.js'
 import supplierRoutes from '../src/routes/supplierRoutes.js'
 import companyRoutes from '../src/routes/companyRoutes.js'
+import { errorHandler } from '../src/middleware/errorHandler.js'
 import { signToken, companyMembership } from './helpers/authTestApp.js'
 
 function buildApp() {
@@ -22,6 +23,7 @@ function buildApp() {
   app.use(express.json())
   app.use('/api/suppliers', supplierRoutes)
   app.use('/api/companies', companyRoutes)
+  app.use(errorHandler)
   return app
 }
 
