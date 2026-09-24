@@ -43,7 +43,7 @@ beforeEach(() => {
   vi.resetAllMocks()
 })
 
-describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 / DT-04)', () => {
+describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 y SCRUM-42/ DT-04 y DT-05)', () => {
   it('T1 · PUT /:id/suppliers/:supplierId arma el UPDATE con el id del proveedor de la URL', async () => {
     encolarAccesoConcedido()
     pool.query.mockResolvedValueOnce(
