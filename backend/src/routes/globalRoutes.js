@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import { z } from 'zod'
 import requireAuth from '../middleware/requireAuth.js'
 import requireSuperUser from '../middleware/requireSuperUser.js'
@@ -13,7 +13,7 @@ const toggleCompanyStatusSchema = z.object({
   activo: z.boolean({ required_error: 'activo is required.' }),
 })
 
-const router = Router()
+const router = createRouter()
 
 router.use(requireAuth, requireSuperUser)
 

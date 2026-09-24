@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
@@ -26,7 +26,7 @@ import {
   updateCompanyMemberProjectAccessSchema,
 } from '../schemas/companySchemas.js'
 
-const router = Router()
+const router = createRouter()
 
 router.get(
   '/invitations/:token',

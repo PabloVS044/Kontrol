@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
@@ -16,7 +16,7 @@ import {
   deleteSupplier,
 } from '../controllers/supplierController.js'
 
-const router = Router()
+const router = createRouter()
 
 router.use(requireAuth)
 router.use(requireCompany)

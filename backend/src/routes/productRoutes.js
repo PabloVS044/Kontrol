@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
@@ -26,7 +26,7 @@ import {
   unlinkSupplier,
 } from '../controllers/productController.js'
 
-const router = Router()
+const router = createRouter()
 
 // All routes require authentication + company context
 router.use(requireAuth)

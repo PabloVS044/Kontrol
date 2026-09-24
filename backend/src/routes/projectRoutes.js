@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
@@ -43,7 +43,7 @@ import {
   updateProjectProgressEntry,
 } from '../controllers/projectProgressController.js'
 
-const router = Router()
+const router = createRouter()
 
 router.get('/invitations/:token', validate(projectInvitationTokenParamSchema, 'params'), getPublicProjectInvitation)
 router.post('/invitations/:token/accept', requireAuth, validate(projectInvitationTokenParamSchema, 'params'), acceptProjectInvitation)

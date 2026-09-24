@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
@@ -19,7 +19,7 @@ import {
   createSale,
 } from '../controllers/inventoryMovementController.js'
 
-const router = Router()
+const router = createRouter()
 
 router.use(requireAuth)
 router.use(requireCompany)
