@@ -8,6 +8,7 @@ import { ensureDatabaseSchema } from './db/bootstrap.js'
 import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
 import { securityMiddleware } from './middleware/security.middleware.js'
+import { errorHandler } from './middleware/errorHandler.js'
 
 const app        = express()
 const httpServer = createServer(app)
@@ -49,6 +50,8 @@ app.locals.corsOriginFn = corsOriginFn
 app.locals.allowedOrigins = allowedOrigins
 app.use(express.json())
 app.use('/api', router)
+// DT-01 — último de la cadena: recibe todo lo que llegue a next(err).
+app.use(errorHandler)
 setupSocket(httpServer, {
   isChatAvailable: isMongoReady,
   corsOrigin: corsOriginFn,
