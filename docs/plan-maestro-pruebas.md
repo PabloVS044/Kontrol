@@ -38,6 +38,7 @@
 | 1.2 | 04/09/2026 | Jonathan Tubac | HU-38: se agregan las secciones de pruebas de carga, estrés y seguridad, exigidas desde el séptimo sprint. Se actualiza el alcance en §2, §4 y §5 — ya no excluye carga ni seguridad, sí pruebas de penetración — y se extiende la matriz de trazabilidad en §19.4 y §19.5. Se renumeran las secciones 7 a 16 como 10 a 19 para insertar las tres nuevas. Precede a SCRUM-28. |
 | 1.3 | 06/09/2026 | Ivana Figueroa | SCRUM-35: se agrega §19.6 con los ocho casos de pruebas del centro de marketing, SCRUM-19, y de los bordes de exportación a CSV, SCRUM-20. Seis de los ocho ya estaban cubiertos por las suites S2, S3 y S4 de §19.3, que hasta ahora figuraban solo como regresión, sin caso ni descripción propios; los dos restantes son nuevos de esta entrega. |
 | 1.4 | 22/09/2026 | Ivana Figueroa | SCRUM-41: se agrega §19.7 con los seis casos que fijan el contrato del parámetro de ruta de los tres endpoints de producto-proveedor, elemento DT-04 del inventario de deuda técnica. Es la primera cobertura automatizada de `productController.js`, `productRoutes.js` y `productSchemas.js`, que hasta esta entrega medían 0 % en las cuatro métricas. |
+| 1.5 | 24/09/2026 | Ivana Figueroa | SCRUM-43: se agrega §19.8 con los siete casos que cubren la corrección del SSRF del probador de integraciones, elemento DT-12. Es la primera cobertura automatizada de `integrationController.js`, `integrationRoutes.js`, `integrationSchemas.js` y de los servicios de webhook, Slack y Teams. |
 
 > Este documento se actualiza por pull request. Cada cambio a la matriz de trazabilidad de §19 debe venir acompañado del commit que agrega o modifica el test correspondiente, de modo que la relación **plan → caso de prueba → test automatizado** quede explícita en el historial de git.
 
@@ -495,3 +496,19 @@ Los seis casos fijan el contrato del parámetro de ruta de los tres endpoints qu
 | PP4 | SCRUM-41 / DT-04 | Un identificador de proveedor no numérico se rechaza con 400 y no llega a consultar la relación | `productSchemas.js` → `productSupplierParamsSchema`; `middleware/validate.js` | `backend/tests/productSuppliers.controller.test.js` → T4 | Cubierto |
 | PP5 | SCRUM-41 / DT-04 | Una relación inexistente responde 404 habiendo armado la consulta con el proveedor correcto: separa el 404 legítimo del que produce un parámetro vacío | `productController.js` → `updateSupplierLink` | `backend/tests/productSuppliers.controller.test.js` → T5 | Cubierto |
 | PP6 | SCRUM-41 / DT-04 | Un cuerpo de actualización vacío se rechaza con 400, de modo que el SET del UPDATE nunca queda vacío | `productSchemas.js` → `updateSupplierLinkSchema` | `backend/tests/productSuppliers.controller.test.js` → T6 | Cubierto |
+
+### 19.8 Casos de la corrección del SSRF del probador de integraciones, SCRUM-43
+
+Los siete casos cubren la corrección del elemento DT-12: `POST /api/integrations/:slug/test` hacía una petición HTTP hacia una URL guardada por el propio usuario, sin validar el destino. En los casos bloqueados la aserción determinante no es el código 400 —el endpoint ya respondía 400 cuando el destino fallaba— sino que la petición no llegue a realizarse, que es lo único que demuestra que no hubo salida a la red. El caso SS4 es igual de necesario: sin él, un guard que rechazara toda URL pasaría los tres bloqueos en verde.
+
+| Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
+|---|---|---|---|---|---|
+| SS1 | SCRUM-43 / DT-12 | Familia loopback: una URL hacia 127.0.0.1 se rechaza y no se realiza la petición | `backend/src/services/ssrfGuard.js` → `assertPublicHttpUrl`; `webhookService.js` → `testWebhookConnection` | `backend/tests/integrationSsrf.test.js` → S1 | Cubierto |
+| SS2 | SCRUM-43 / DT-12 | Familia privada: una URL hacia 10.0.0.5 se rechaza y no se realiza la petición | `ssrfGuard.js` → `assertPublicHttpUrl` | `backend/tests/integrationSsrf.test.js` → S2 | Cubierto |
+| SS3 | SCRUM-43 / DT-12 | Familia enlace local: una URL hacia 169.254.169.254 se rechaza y no se realiza la petición | `ssrfGuard.js` → `assertPublicHttpUrl` | `backend/tests/integrationSsrf.test.js` → S3 | Cubierto |
+| SS4 | SCRUM-43 / DT-12 | Una URL pública legítima sí sale y el probador responde 200 | `ssrfGuard.js`; `integrationController.js` → `testIntegration` | `backend/tests/integrationSsrf.test.js` → S4 | Cubierto |
+| SS5 | SCRUM-43 / DT-12 | El esquema de guardado rechaza con 400 un valor de `url` que no es http o https, antes de llegar al controlador | `integrationSchemas.js` → `saveIntegrationSchema`; `middleware/validate.js` | `backend/tests/integrationSsrf.test.js` → S5 | Cubierto |
+| SS6 | SCRUM-43 / DT-12 | Slack: `webhook_url` hacia loopback se rechaza y no se realiza la petición | `slackService.js` → `testSlackConnection` | `backend/tests/integrationSsrf.test.js` → S6a | Cubierto |
+| SS7 | SCRUM-43 / DT-12 | Teams: `webhook_url` hacia una dirección privada se rechaza y no se realiza la petición | `teamsService.js` → `testTeamsConnection` | `backend/tests/integrationSsrf.test.js` → S6b | Cubierto |
+
+Hallazgo registrado con estos casos: `ssrfGuard.js` queda al 64 % en sentencias. Las ramas de IPv6, el rechazo de esquemas distintos de http y https, y el fallo de resolución DNS se verificaron de forma manual sobre catorce direcciones —incluidos los bordes 172.15, 172.16, 172.31 y 172.32, y `febf::` como tope de `fe80::/10`— con resultado correcto en todas, pero no cuentan con prueba permanente en el repositorio. Su cobertura queda pendiente de un ticket propio.
