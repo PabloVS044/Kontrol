@@ -27,33 +27,36 @@ import {
 
 const router = Router()
 
-// All routes require authentication + company context
+// All routes require authentication + company context + project context
 router.use(requireAuth)
 router.use(requireCompany)
+router.use(requireProject)
 
 // ── Products ──────────────────────────────────────────────────────────────────
 
 // /alerts/low-stock must come before /:id to avoid "alerts" matching as an id
 router.get(
   '/alerts/low-stock',
+  requireProjectPermission('ver_inventario'),
   getLowStockAlerts
 )
 
 router.get(
   '/',
+  requireProjectPermission('ver_inventario'),
   validate(getProductsQuerySchema, 'query'),
   getProducts
 )
 
 router.get(
   '/:id',
+  requireProjectPermission('ver_inventario'),
   validate(productIdParamSchema, 'params'),
   getProductById
 )
 
 router.post(
   '/',
-  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(createProductSchema),
   createProduct
@@ -61,6 +64,7 @@ router.post(
 
 router.put(
   '/:id',
+  requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   validate(updateProductSchema),
   updateProduct
@@ -68,6 +72,7 @@ router.put(
 
 router.delete(
   '/:id',
+  requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   deleteProduct
 )
@@ -76,6 +81,7 @@ router.delete(
 
 router.post(
   '/:id/suppliers',
+  requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   validate(linkSupplierSchema),
   linkSupplier
@@ -83,6 +89,7 @@ router.post(
 
 router.put(
   '/:id/suppliers/:supplierId',
+  requireProjectPermission('gestionar_inventario'),
   validate(productSupplierParamsSchema, 'params'),
   validate(updateSupplierLinkSchema),
   updateSupplierLink
@@ -90,6 +97,7 @@ router.put(
 
 router.delete(
   '/:id/suppliers/:supplierId',
+  requireProjectPermission('gestionar_inventario'),
   validate(productSupplierParamsSchema, 'params'),
   unlinkSupplier
 )

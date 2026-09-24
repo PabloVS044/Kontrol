@@ -10,7 +10,7 @@ import pool from '../src/db/pool.js'
 import { buildTestApp, signToken, companyMembership, dbRows } from './helpers/authTestApp.js'
 
 const app = buildTestApp()
-const auth = (req) => req.set('Authorization', `Bearer ${signToken()}`).set('X-Company-ID', '1')
+const auth = (req) => req.set('Authorization', `Bearer ${signToken()}`).set('X-Company-ID', '1').set('X-Project-ID', '10')
 
 /**
  * El contrato del parámetro de ruta en los endpoints de producto-proveedor.
@@ -33,10 +33,8 @@ const CONSULTA_BAJO_PRUEBA = 3
 const encolarAccesoConcedido = () => {
   pool.query
     .mockResolvedValueOnce(companyMembership('admin'))
-    .mockResolvedValueOnce(dbRows([{ id_producto: 1, id_proyecto: 10 }]))
-    .mockResolvedValueOnce(
-      dbRows([{ id_proyecto: 10, nombre: 'Proyecto A', estado: 'activo', id_encargado: 7 }])
-    )
+    .mockResolvedValueOnce(dbRows([{ id_proyecto: 10, nombre: 'Proyecto A', estado: 'activo' }]))
+    .mockResolvedValueOnce(dbRows([{ id_usuario: 1, rol: 'admin', permiso: 'gestionar_inventario' }]))
 }
 
 const parametrosDe = (indice) => pool.query.mock.calls[indice][1]
@@ -83,9 +81,10 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 / DT-0
   it('T3 · POST /:id/suppliers inserta con el id del producto de la URL y el proveedor del cuerpo', async () => {
     encolarAccesoConcedido()
     pool.query
+      .mockResolvedValueOnce(dbRows([{ id_producto: 1 }])) // Verificar si el producto existe
       .mockResolvedValueOnce(dbRows([{ id_proveedor: 2 }])) // el proveedor existe
-      .mockResolvedValueOnce(dbRows([])) //                    aún no está enlazado
-      .mockResolvedValueOnce(dbRows([])) //                    INSERT
+      .mockResolvedValueOnce(dbRows([])) // aún no está enlazado
+      .mockResolvedValueOnce(dbRows([{ id_producto: 1, id_proveedor: 2, precio_unitario: 12.5}])) // INSERT
 
     const res = await auth(request(app).post('/api/products/1/suppliers')).send({
       id_proveedor: 2,
@@ -93,11 +92,11 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 / DT-0
     })
 
     expect(res.status).toBe(201)
-    expect(parametrosDe(5)).toEqual([1, 2, 12.5])
+    expect(parametrosDe(6)).toEqual([1, 2, 12.5])
   })
 
   it('T4 · un supplierId no numérico se rechaza con 400 y no llega a consultar la relación', async () => {
-    pool.query.mockResolvedValueOnce(companyMembership('admin'))
+    encolarAccesoConcedido()
 
     const res = await auth(request(app).put('/api/products/1/suppliers/abc')).send({
       precio_unitario: 12.5,
@@ -105,7 +104,7 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 / DT-0
 
     expect(res.status).toBe(400)
     // Solo corrió la membresía de empresa: el esquema cortó antes del controlador.
-    expect(pool.query).toHaveBeenCalledTimes(1)
+    expect(pool.query).toHaveBeenCalledTimes(3)
   })
 
   it('T5 · una relación inexistente da 404, pero la consulta se hizo con el proveedor correcto', async () => {
@@ -124,11 +123,11 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 / DT-0
   })
 
   it('T6 · un cuerpo vacío se rechaza con 400, así el SET del UPDATE nunca queda vacío', async () => {
-    pool.query.mockResolvedValueOnce(companyMembership('admin'))
+    encolarAccesoConcedido()
 
     const res = await auth(request(app).put('/api/products/1/suppliers/2')).send({})
 
     expect(res.status).toBe(400)
-    expect(pool.query).toHaveBeenCalledTimes(1)
+    expect(pool.query).toHaveBeenCalledTimes(3)
   })
 })
