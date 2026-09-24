@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
+import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireProject from '../middleware/requireProject.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
@@ -41,6 +42,7 @@ router.get(
 
 router.get(
   '/',
+  expensiveLimiter,
   validate(getProductsQuerySchema, 'query'),
   getProducts
 )

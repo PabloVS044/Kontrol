@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
+import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
@@ -51,7 +52,7 @@ router.get('/:id', requireAuth, requireCompany, validate(projectIdParamSchema, '
 router.post('/', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(createProjectSchema), createProject)
 router.put('/:id', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), validate(updateProjectSchema), updateProject)
 router.delete('/:id', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), deleteProject)
-router.get('/:id/metrics', requireAuth, requireCompany, validate(projectIdParamSchema, 'params'), requireProjectPermission(), getProjectMetrics)
+router.get('/:id/metrics', requireAuth, expensiveLimiter, requireCompany, validate(projectIdParamSchema, 'params'), requireProjectPermission(), getProjectMetrics)
 router.get('/:id/progress', requireAuth, requireCompany, validate(projectIdParamSchema, 'params'), requireProjectPermission(), getProjectProgress)
 router.post('/:id/progress', requireAuth, requireCompany, validate(projectIdParamSchema, 'params'), requireProjectPermission(), validate(createProjectProgressEntrySchema), createProjectProgressEntry)
 router.put('/:id/progress/:entryId', requireAuth, requireCompany, validate(projectProgressEntryParamSchema, 'params'), requireProjectPermission(), validate(updateProjectProgressEntrySchema), updateProjectProgressEntry)
