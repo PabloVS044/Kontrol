@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
-import requireCompanyRole from '../middleware/requireCompanyRole.js'
+import requireProject from '../middleware/requireProject.js'
+import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
 import {
   supplierIdParamSchema,
@@ -20,28 +21,31 @@ const router = Router()
 
 router.use(requireAuth)
 router.use(requireCompany)
+router.use(requireProject)
 
 router.get(
   '/',
+  requireProjectPermission('ver_proveedores'),
   getSuppliers
 )
 
 router.get(
   '/:id',
+  requireProjectPermission('ver_proveedores'),
   validate(supplierIdParamSchema, 'params'),
   getSupplierById
 )
 
 router.post(
   '/',
-  requireCompanyRole('owner', 'admin', 'manager'),
+  requireProjectPermission('gestionar_proveedores'),
   validate(createSupplierSchema),
   createSupplier
 )
 
 router.put(
   '/:id',
-  requireCompanyRole('owner', 'admin', 'manager'),
+  requireProjectPermission('gestionar_proveedores'),
   validate(supplierIdParamSchema, 'params'),
   validate(updateSupplierSchema),
   updateSupplier
@@ -49,7 +53,7 @@ router.put(
 
 router.delete(
   '/:id',
-  requireCompanyRole('owner', 'admin', 'manager'),
+  requireProjectPermission('gestionar_proveedores'),
   validate(supplierIdParamSchema, 'params'),
   deleteSupplier
 )
