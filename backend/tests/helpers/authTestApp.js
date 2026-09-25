@@ -8,6 +8,7 @@ import companyRoutes from '../../src/routes/companyRoutes.js'
 import marketingRoutes from '../../src/routes/marketingRoutes.js'
 import productRoutes from '../../src/routes/productRoutes.js'
 import { errorHandler } from '../../src/middleware/errorHandler.js'
+import integrationRoutes from '../../src/routes/integrationRoutes.js'
 
 export const JWT_SECRET = 'secreto-de-pruebas-hu31'
 process.env.JWT_SECRET = JWT_SECRET
@@ -47,6 +48,7 @@ export function buildTestApp() {
   app.use('/api/companies', companyRoutes)
   app.use('/api/marketing', marketingRoutes)
   app.use('/api/products', productRoutes)
+  app.use('/api/integrations', integrationRoutes)
 
   app.use(errorHandler)
 
