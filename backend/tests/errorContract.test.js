@@ -28,7 +28,15 @@ function buildApp() {
 }
 
 const app = buildApp()
-const auth = { Authorization: `Bearer ${signToken()}`, 'X-Company-ID': '1' }
+const auth = { Authorization: `Bearer ${signToken()}`, 'X-Company-ID': '1', 'X-Project-ID': '10' }
+
+// `supplierRoutes` valida el acceso al proyecto (requireProject) y luego el
+// permiso concreto (requireProjectPermission) antes de llegar al controlador.
+// Para un rol de gestión de empresa (owner/admin/manager) ambas capas solo
+// verifican que el proyecto exista, así que basta con encolar dos filas.
+const projectExists = { rows: [{ id_proyecto: 10, nombre: 'Proyecto A', estado: 'activo', id_encargado: null }] }
+const queueManagementProjectAccess = () =>
+  pool.query.mockResolvedValueOnce(projectExists).mockResolvedValueOnce(projectExists)
 
 const pgError = (code) => Object.assign(new Error(`pg error ${code}`), { code })
 
@@ -53,19 +61,35 @@ describe('DT-01 · Contrato de error actual de la API', () => {
   })
 
   it('rol insuficiente → 403 { success: false, message }', async () => {
-    pool.query.mockResolvedValueOnce(companyMembership('member'))
+    // Miembro con acceso al proyecto pero sin el permiso 'gestionar_proveedores'.
+    const assignment = {
+      rows: [{
+        id_usuario: 7,
+        id_proyecto: 10,
+        proyecto_nombre: 'Proyecto A',
+        proyecto_estado: 'activo',
+        id_encargado: null,
+        rol_proyecto: 'member',
+        permisos: ['ver_proveedores'],
+      }],
+    }
+    pool.query
+      .mockResolvedValueOnce(companyMembership('member'))
+      .mockResolvedValueOnce(assignment) // requireProject
+      .mockResolvedValueOnce(assignment) // requireProjectPermission
 
     const res = await request(app).delete('/api/suppliers/5').set(auth)
 
     expect(res.status).toBe(403)
     expect(res.body).toEqual({
       success: false,
-      message: 'You do not have sufficient permissions within this company.',
+      message: 'You do not have sufficient permissions to operate in this project.',
     })
   })
 
   it('validación Zod → 400 { success: false, message, errors[] }', async () => {
     pool.query.mockResolvedValueOnce(companyMembership('owner'))
+    queueManagementProjectAccess()
 
     const res = await request(app).post('/api/suppliers').set(auth).send({ nombre: '' })
 
@@ -78,9 +102,9 @@ describe('DT-01 · Contrato de error actual de la API', () => {
   })
 
   it('recurso inexistente → 404 { success: false, message }', async () => {
-    pool.query
-      .mockResolvedValueOnce(companyMembership('owner'))
-      .mockResolvedValueOnce({ rows: [] })
+    pool.query.mockResolvedValueOnce(companyMembership('owner'))
+    queueManagementProjectAccess()
+    pool.query.mockResolvedValueOnce({ rows: [] })
 
     const res = await request(app).delete('/api/suppliers/5').set(auth)
 
@@ -89,9 +113,9 @@ describe('DT-01 · Contrato de error actual de la API', () => {
   })
 
   it('violación de FK que el controlador ya maneja (23503) → 409 con mensaje propio', async () => {
-    pool.query
-      .mockResolvedValueOnce(companyMembership('owner'))
-      .mockRejectedValueOnce(pgError('23503'))
+    pool.query.mockResolvedValueOnce(companyMembership('owner'))
+    queueManagementProjectAccess()
+    pool.query.mockRejectedValueOnce(pgError('23503'))
 
     const res = await request(app).delete('/api/suppliers/5').set(auth)
 

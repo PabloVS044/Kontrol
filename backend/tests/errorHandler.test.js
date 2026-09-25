@@ -33,6 +33,13 @@ const app = buildApp()
 const bearer = `Bearer ${signToken()}`
 const pgError = (code) => Object.assign(new Error(`insert or update violates constraint (${code})`), { code })
 
+// `supplierRoutes` valida el proyecto (requireProject) y el permiso
+// (requireProjectPermission) antes del controlador. Para un rol de gestión
+// (owner/admin/manager) ambas capas solo comprueban que el proyecto exista.
+const projectExists = { rows: [{ id_proyecto: 1 }] }
+const queueManagementProjectAccess = () =>
+  pool.query.mockResolvedValueOnce(projectExists).mockResolvedValueOnce(projectExists)
+
 // Cualquier rechazo que se escape falla la prueba, igual que tumbaría Node.
 const unhandled = vi.fn()
 
@@ -76,16 +83,27 @@ describe('DT-01 · Middleware central de errores', () => {
     expect(client.release).toHaveBeenCalledOnce()
 
     // El mismo proceso sigue atendiendo la siguiente petición.
-    pool.query.mockResolvedValueOnce(companyMembership('owner')).mockResolvedValueOnce({ rows: [] })
-    const next = await request(app).get('/api/suppliers').set('Authorization', bearer).set('X-Company-ID', '1')
+    pool.query.mockResolvedValueOnce(companyMembership('owner'))
+    queueManagementProjectAccess()
+    pool.query.mockResolvedValueOnce({ rows: [] })
+    const next = await request(app)
+      .get('/api/suppliers')
+      .set('Authorization', bearer)
+      .set('X-Company-ID', '1')
+      .set('X-Project-ID', '1')
     expect(next.status).toBe(200)
   })
 
   it('un fallo del pool en el handler devuelve 500 sin filtrar el detalle', async () => {
     pool.query.mockResolvedValueOnce(companyMembership('owner'))
+    queueManagementProjectAccess()
     pool.query.mockRejectedValueOnce(new Error('connection terminated unexpectedly: host db-01'))
 
-    const res = await request(app).get('/api/suppliers').set('Authorization', bearer).set('X-Company-ID', '1')
+    const res = await request(app)
+      .get('/api/suppliers')
+      .set('Authorization', bearer)
+      .set('X-Company-ID', '1')
+      .set('X-Project-ID', '1')
 
     expect(res.status).toBe(500)
     expect(res.body).toEqual({ success: false, message: 'Internal server error.' })
