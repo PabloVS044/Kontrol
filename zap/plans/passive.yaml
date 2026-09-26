@@ -1,0 +1,124 @@
+# SCRUM-52 — passive baseline. Sends only GET requests and never writes
+# data. Values in ${...} are rendered by zap/run-zap.sh with envsubst
+# (the token is injected through ZAP_AUTH_HEADER_VALUE and never appears here).
+env:
+  contexts:
+    - name: kontrol-test
+      urls:
+        - https://test.34.121.51.151.nip.io
+      includePaths:
+        - "https://test\\.34\\.121\\.51\\.151\\.nip\\.io.*"
+      excludePaths:
+        - ".*/api/auth/google.*"
+        - ".*/socket\\.io.*"
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: replacer
+    name: company-header
+    parameters:
+      deleteAllRules: true
+    rules:
+      - description: X-Company-ID on every API request
+        url: "https://test\\.34\\.121\\.51\\.151\\.nip\\.io/api/.*"
+        matchType: req_header
+        matchString: X-Company-ID
+        matchRegex: false
+        replacementString: "${COMPANY_ID}"
+
+  - type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+      scanOnlyInScope: true
+
+  - type: requestor
+    name: api-get-inventory
+    requests:
+      # Public
+      - url: https://test.34.121.51.151.nip.io/api/health
+      - url: https://test.34.121.51.151.nip.io/api/projects/invitations/0000000000000000
+      - url: https://test.34.121.51.151.nip.io/api/companies/invitations/0000000000000000
+      # Authenticated — must answer 200, otherwise the token did not apply
+      - url: https://test.34.121.51.151.nip.io/api/auth/me
+        responseCode: 200
+      - url: https://test.34.121.51.151.nip.io/api/users
+      - url: https://test.34.121.51.151.nip.io/api/users/${USER_ID}
+      - url: https://test.34.121.51.151.nip.io/api/companies/my-companies
+      - url: https://test.34.121.51.151.nip.io/api/companies/access-context
+      - url: https://test.34.121.51.151.nip.io/api/companies/members-panel
+      # Needs X-Company-ID: a non-200 here means the company header did not apply
+      - url: https://test.34.121.51.151.nip.io/api/projects
+        responseCode: 200
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/metrics
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/progress
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/members
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/members-panel
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks/${TASK_ID}
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks/${TASK_ID}/evidence
+      - url: https://test.34.121.51.151.nip.io/api/products
+      - url: https://test.34.121.51.151.nip.io/api/products?projectId=${PROJECT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/products/alerts/low-stock
+      - url: https://test.34.121.51.151.nip.io/api/products/${PRODUCT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/suppliers
+      - url: https://test.34.121.51.151.nip.io/api/suppliers/${SUPPLIER_ID}
+      - url: https://test.34.121.51.151.nip.io/api/inventory-movements
+      - url: https://test.34.121.51.151.nip.io/api/inventory-movements/stats
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/summary
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/trend
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/products-financial
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/funding
+      - url: https://test.34.121.51.151.nip.io/api/reports
+      - url: https://test.34.121.51.151.nip.io/api/reports/summary
+      - url: https://test.34.121.51.151.nip.io/api/reports/${REPORT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/teams
+      - url: https://test.34.121.51.151.nip.io/api/teams/context
+      - url: https://test.34.121.51.151.nip.io/api/marketing/campaigns
+      - url: https://test.34.121.51.151.nip.io/api/marketing/items
+      - url: https://test.34.121.51.151.nip.io/api/marketing/publications
+      - url: https://test.34.121.51.151.nip.io/api/integrations
+      - url: https://test.34.121.51.151.nip.io/api/integrations/webhook
+      # Read-only, but backed by the MongoDB shared with production: GET only,
+      # excluded from the active scan.
+      - url: https://test.34.121.51.151.nip.io/api/chat/conversations
+      - url: https://test.34.121.51.151.nip.io/api/agent/status
+      # Super-user only: 403 expected for a company manager
+      - url: https://test.34.121.51.151.nip.io/api/admin/stats
+      - url: https://test.34.121.51.151.nip.io/api/global/stats
+
+  - type: spider
+    parameters:
+      context: kontrol-test
+      url: https://test.34.121.51.151.nip.io/
+      maxDuration: 3
+      maxDepth: 5
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - type: report
+    parameters:
+      template: traditional-md
+      reportDir: /zap/wrk/out
+      reportFile: passive-summary
+      reportTitle: "SCRUM-52 — ZAP passive baseline (test environment)"
+    risks: [high, medium, low, info]
+    confidences: [high, medium, low]
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk/out
+      reportFile: passive-report
+      reportTitle: "SCRUM-52 — ZAP passive baseline (test environment)"
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk/out
+      reportFile: passive-report

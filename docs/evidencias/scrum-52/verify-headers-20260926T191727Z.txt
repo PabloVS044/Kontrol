@@ -1,0 +1,32 @@
+# headers — https://test.34.121.51.151.nip.io — 2026-09-26T19:17:27Z
+## public: GET /api/health
+HTTP/2 200 
+  OK      content-security-policy: default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests
+  OK      x-content-type-options: nosniff
+  OK      x-frame-options: DENY
+  OK      strict-transport-security: max-age=15552000; includeSubDomains; preload
+  OK      referrer-policy: no-referrer
+  OK      x-powered-by absent
+  result: 5/5
+
+## authenticated: GET /api/auth/me
+HTTP/2 200 
+  OK      content-security-policy: default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests
+  OK      x-content-type-options: nosniff
+  OK      x-frame-options: DENY
+  OK      strict-transport-security: max-age=15552000; includeSubDomains; preload
+  OK      referrer-policy: no-referrer
+  OK      x-powered-by absent
+  result: 5/5
+
+## SPA document (nginx, outside the SEC2 criterion): GET /
+HTTP/2 200 
+  MISSING content-security-policy
+  MISSING x-content-type-options
+  MISSING x-frame-options
+  MISSING strict-transport-security
+  MISSING referrer-policy
+  OK      x-powered-by absent
+  result: 0/5
+
+log: /home/pablo/Desktop/Kontrol/zap/out/verify-headers-20260926T191727Z.txt

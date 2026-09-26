@@ -1,0 +1,12 @@
+2026-09-26T19:41:55Z
+participante1 login=200 company=1 projects=3
+participante2 login=200 company=1 projects=3
+participante3 login=200 company=1 projects=3
+participante4 login=429 company=null projects=0
+participante5 login=429 company=null projects=0
+reserva login=429 company=null projects=0
+frontend / -> 200
+retry after authLimiter window reset 2026-09-26T19:42:19Z:
+participante4 login=200 company=1 projects=3
+participante5 login=200 company=1 projects=3
+reserva login=200 company=1 projects=3

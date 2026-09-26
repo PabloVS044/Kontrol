@@ -1,0 +1,13 @@
+# ssrf-redirect — https://test.34.121.51.151.nip.io — 2026-09-26T19:18:05Z
+probe company id_empresa=2 (owner: reserva@kontrol-test.dev)
+
+kind               | save   | test   | verdict  | url -> message
+bypass-hypothesis  | 200    | 400    | REACHED  | https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=307 -> El webhook respondió con status 404.
+
+SCHEMA/GUARD = rejected before any outbound request; REACHED = the backend sent the request.
+A must-block or bypass-hypothesis row marked REACHED is an open SSRF path.
+log: /home/pablo/Desktop/Kontrol/zap/out/verify-ssrf-redirect-20260926T191805Z.txt
+status_code=302 save=200 test=200 -> Conexión exitosa.
+status_code=307 save=200 test=400 -> El webhook respondió con status 404.
+cleanup delete=200
+control: POST httpbin redirect-to directly -> 307

@@ -1,0 +1,44 @@
+# ratelimit — https://test.34.121.51.151.nip.io — 2026-09-26T19:34:40Z
+ 1 -> 429
+ 2 -> 429
+ 3 -> 429
+ 4 -> 429
+ 5 -> 429
+ 6 -> 429
+ 7 -> 429
+ 8 -> 429
+ 9 -> 429
+10 -> 429
+11 -> 429
+12 -> 429
+13 -> 429
+14 -> 429
+15 -> 429
+16 -> 429
+17 -> 429
+18 -> 429
+19 -> 429
+20 -> 429
+summary:
+  HTTP 429 x 20
+rate limit triggered: yes
+spoofed X-Forwarded-For after the limit:
+  X-Forwarded-For: 203.0.113.7 -> 429
+  X-Forwarded-For: 198.51.100.23 -> 429
+  X-Forwarded-For: 192.0.2.99 -> 429
+(429 on every spoofed request = the limiter ignores client-sent X-Forwarded-For)
+log: /home/pablo/Desktop/Kontrol/zap/out/verify-ratelimit-20260926T193440Z.txt
+HTTP/2 429 
+ratelimit: limit=100, remaining=0, reset=394
+ratelimit-policy: 100;w=900
+retry-after: 394
+{"success":false,"message":"Too many requests. Please try again later."}
+
+transition check 2026-09-26T19:42:33Z, fresh unknown account zap-probe-2@kontrol-test.dev:
+1 -> 401 ratelimit: limit=5, remaining=4, reset=900 | {"success":false,"message":"Invalid credentials."}
+2 -> 401 ratelimit: limit=5, remaining=3, reset=900 | {"success":false,"message":"Invalid credentials."}
+3 -> 401 ratelimit: limit=5, remaining=2, reset=900 | {"success":false,"message":"Invalid credentials."}
+4 -> 401 ratelimit: limit=5, remaining=1, reset=899 | {"success":false,"message":"Invalid credentials."}
+5 -> 401 ratelimit: limit=5, remaining=0, reset=899 | {"success":false,"message":"Invalid credentials."}
+6 -> 429 ratelimit: limit=5, remaining=0, reset=899 | {"success":false,"message":"Too many failed login attempts for this account. Please try again later."}
+7 -> 429 ratelimit: limit=5, remaining=0, reset=898 | {"success":false,"message":"Too many failed login attempts for this account. Please try again later."}
