@@ -64,8 +64,14 @@ case "$CHECK" in
   ssrf|ssrf-redirect)
     login
     api POST /companies '{"nombre":"ZAP SSRF probe","industria":"security test"}'
-    [ "$LAST_STATUS" = 201 ] || { echo "could not create the probe company (HTTP $LAST_STATUS): $RESPONSE"; exit 1; }
-    COMPANY_ID="$(json '.data.id_empresa')"
+    if [ "$LAST_STATUS" = 201 ]; then
+      COMPANY_ID="$(json '.data.id_empresa')"
+    else
+      # One company per owner: reuse the probe company from a previous run.
+      api GET /companies/my-companies
+      COMPANY_ID="$(json '[.data[] | select(.nombre == "ZAP SSRF probe")][0].id_empresa // empty')"
+      [ -n "$COMPANY_ID" ] || { echo "could not create or find the probe company: $RESPONSE"; exit 1; }
+    fi
     echo "probe company id_empresa=$COMPANY_ID (owner: $ZAP_USER)"
     echo
 
@@ -92,7 +98,11 @@ case "$CHECK" in
         "control-public|https://example.com/"
       )
     else
+      # 302 turns the POST into a GET, so an internal /api/health answers 200
+      # and the tester reports success: unambiguous proof the redirect was
+      # followed. 307 keeps the POST and gets the internal 404 instead.
       targets=(
+        "bypass-hypothesis|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=302"
         "bypass-hypothesis|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=307"
       )
     fi
