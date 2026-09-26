@@ -6,8 +6,8 @@
 #
 # The bearer token is obtained here, right before the run, and handed to ZAP
 # through its native ZAP_AUTH_HEADER* variables, restricted to the test host.
-# It never touches a file; the raw reports in out/ do contain it, which is why
-# out/ is not versioned.
+# It never touches a file, and ZAP's traditional report templates do not
+# record request headers, so it does not end up in out/ either.
 set -euo pipefail
 
 PLAN="${1:?usage: run-zap.sh passive|active}"

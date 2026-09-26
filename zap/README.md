@@ -83,6 +83,9 @@ docker compose -p kontrol -f docker-compose.prod.yml -f docker-compose.test.yml 
 
 ## Qué se versiona
 
-`out/` no se versiona: los reportes HTML y JSON de ZAP pesan varios MB y
-guardan las peticiones completas, con el token Bearer incluido. Solo el
-resumen de los hallazgos se incorpora a `docs/pruebas-seguridad-zap.md`.
+`out/` no se versiona: cada corrida lo regenera, y los reportes HTML y JSON
+repiten lo que ya dicen los resúmenes. Las plantillas de reporte usadas no
+guardan las cabeceras de las peticiones, así que el token no queda escrito en
+ningún archivo. La evidencia de cada corrida que sí se versiona (resúmenes de
+ZAP, salidas de `verify-controls.sh` y CSV del monitor) se copia a
+`docs/evidencias/<ticket>/`.
