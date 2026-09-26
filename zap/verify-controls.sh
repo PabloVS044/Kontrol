@@ -59,6 +59,18 @@ case "$CHECK" in
     done
     echo "summary:"; for c in "${!codes[@]}"; do echo "  HTTP $c x ${codes[$c]}"; done
     echo "rate limit triggered: $([ -n "${codes[429]:-}" ] && echo yes || echo no)"
+    # The limiter keys on req.ip with `trust proxy` on; it relies on Caddy
+    # discarding a client-sent X-Forwarded-For. If a spoofed header resets
+    # the counter, the limit can be bypassed by rotating it.
+    echo "spoofed X-Forwarded-For after the limit:"
+    for ip in 203.0.113.7 198.51.100.23 192.0.2.99; do
+      code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 -X POST \
+        -H 'Content-Type: application/json' -H "X-Forwarded-For: $ip" \
+        --data '{"email":"zap-probe@kontrol-test.dev","password":"wrong-password"}' \
+        "$BASE_URL/api/auth/login")"
+      echo "  X-Forwarded-For: $ip -> $code"
+    done
+    echo "(429 on every spoofed request = the limiter ignores client-sent X-Forwarded-For)"
     ;;
 
   ssrf|ssrf-redirect)
