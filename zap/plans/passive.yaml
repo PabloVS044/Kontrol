@@ -1,5 +1,5 @@
 # SCRUM-52 — passive baseline. Sends only GET requests and never writes
-# data. Values in ${...} are resolved from the environment by zap/run-zap.sh
+# data. Values in ${...} are rendered by zap/run-zap.sh with envsubst
 # (the token is injected through ZAP_AUTH_HEADER_VALUE and never appears here).
 env:
   contexts:
@@ -49,7 +49,9 @@ jobs:
       - url: https://test.34.121.51.151.nip.io/api/companies/my-companies
       - url: https://test.34.121.51.151.nip.io/api/companies/access-context
       - url: https://test.34.121.51.151.nip.io/api/companies/members-panel
+      # Needs X-Company-ID: a non-200 here means the company header did not apply
       - url: https://test.34.121.51.151.nip.io/api/projects
+        responseCode: 200
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/metrics
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/progress

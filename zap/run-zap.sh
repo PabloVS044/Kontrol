@@ -22,6 +22,13 @@ CONTAINER="${ZAP_CONTAINER:-kontrol-zap}"
 login
 discover_ids
 
+# ZAP's Automation Framework expands ${VAR} in URLs but not in every field
+# (replacer rules keep the literal text), so the plan is rendered here with
+# only the id variables. The rendered copy lands in out/ and holds no token.
+RENDERED="$OUT_DIR/$PLAN.rendered.yaml"
+envsubst '$COMPANY_ID $PROJECT_ID $TASK_ID $PRODUCT_ID $SUPPLIER_ID $REPORT_ID $USER_ID' \
+  < "$PLAN_FILE" > "$RENDERED"
+
 echo "==> $PLAN scan against $BASE_URL (container $CONTAINER, abort with: docker kill $CONTAINER)"
 started="$(date -u +%FT%TZ)"
 
@@ -31,8 +38,7 @@ docker run --rm --name "$CONTAINER" \
   -e ZAP_AUTH_HEADER=Authorization \
   -e ZAP_AUTH_HEADER_VALUE="Bearer $TOKEN" \
   -e ZAP_AUTH_HEADER_SITE="$TEST_HOST_MARKER" \
-  -e COMPANY_ID -e PROJECT_ID -e TASK_ID -e PRODUCT_ID -e SUPPLIER_ID -e REPORT_ID -e USER_ID \
-  "$ZAP_IMAGE" zap.sh -cmd -autorun "/zap/wrk/plans/$PLAN.yaml"
+  "$ZAP_IMAGE" zap.sh -cmd -autorun "/zap/wrk/out/$PLAN.rendered.yaml"
 status=$?
 set -e
 

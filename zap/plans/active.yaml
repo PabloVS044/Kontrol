@@ -81,6 +81,7 @@ jobs:
         responseCode: 200
       - url: https://test.34.121.51.151.nip.io/api/users/${USER_ID}
       - url: https://test.34.121.51.151.nip.io/api/projects?id_empresa=${COMPANY_ID}
+        responseCode: 200
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/metrics
       - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/progress
