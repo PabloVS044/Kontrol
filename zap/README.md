@@ -68,7 +68,8 @@ código 2 si ocurre cualquiera de estas condiciones:
 - 3 muestras seguidas por encima de 1 s;
 - el backend de producción pasa del 70 % de CPU durante 30 s;
 - el load average de la VM pasa de 3.0 (tiene 2 vCPU);
-- `backend-test` se reinicia.
+- `backend-test` se reinicia;
+- el disco de la VM baja de 400 MB libres (los logs de los contenedores no rotan y el Postgres de producción escribe en el mismo disco).
 
 Los umbrales se ajustan con `HARD_LIMIT_S`, `SOFT_LIMIT_S`, `CPU_LIMIT` y
 `LOAD_LIMIT`.

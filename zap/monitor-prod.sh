@@ -14,6 +14,8 @@
 #   - production backend CPU > CPU_LIMIT % in 2 consecutive stats (30 s)
 #   - VM load average (1 min) > LOAD_LIMIT
 #   - backend-test restart count increases
+#   - free disk on the VM drops below DISK_MIN_MB (container logs have no
+#     rotation and production Postgres writes to the same disk)
 set -uo pipefail
 
 MODE="${1:?usage: monitor-prod.sh baseline [seconds] | watch <label>}"
@@ -29,6 +31,7 @@ HARD_LIMIT_S="${HARD_LIMIT_S:-2.0}"
 SOFT_LIMIT_S="${SOFT_LIMIT_S:-1.0}"
 CPU_LIMIT="${CPU_LIMIT:-70}"
 LOAD_LIMIT="${LOAD_LIMIT:-3.0}"
+DISK_MIN_MB="${DISK_MIN_MB:-400}"
 ABORT_CMD="${ABORT_CMD:-docker kill kontrol-zap}"
 
 OUT_DIR="$(cd "$(dirname "$0")" && pwd)/out"
@@ -68,7 +71,7 @@ stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 hfile="$OUT_DIR/monitor-$label-$stamp-health.csv"
 sfile="$OUT_DIR/monitor-$label-$stamp-stats.csv"
 echo "timestamp,http_code,seconds" > "$hfile"
-echo "timestamp,prod_cpu_pct,test_cpu_pct,load1,test_restarts" > "$sfile"
+echo "timestamp,prod_cpu_pct,test_cpu_pct,load1,test_restarts,disk_free_mb" > "$sfile"
 
 abort() {
   echo "!!! ABORT $(date -u +%FT%TZ): $1" | tee -a "$hfile.abort"
@@ -79,7 +82,8 @@ abort() {
 stats() {
   "${SSH[@]}" "docker stats --no-stream --format '{{.Name}} {{.CPUPerc}}' $PROD_CONTAINER $TEST_CONTAINER;
     cut -d' ' -f1 /proc/loadavg;
-    docker inspect -f '{{.RestartCount}}' $TEST_CONTAINER" 2>/dev/null
+    docker inspect -f '{{.RestartCount}}' $TEST_CONTAINER;
+    df --output=avail -m / | tail -1 | tr -d ' '" 2>/dev/null
 }
 
 slow_streak=0
@@ -104,15 +108,17 @@ while true; do
       test_cpu=$(awk -v c="$TEST_CONTAINER" '$1 == c { gsub("%", "", $2); print $2 }' <<<"$out")
       load1=$(sed -n 3p <<<"$out")
       restarts=$(sed -n 4p <<<"$out")
-      echo "$(date -u +%FT%TZ),${prod_cpu:-},${test_cpu:-},${load1:-},${restarts:-}" >> "$sfile"
-      printf '%s prod=%ss cpu prod=%s%% test=%s%% load=%s\n' "$(date +%T)" "$t" "${prod_cpu:-?}" "${test_cpu:-?}" "${load1:-?}"
+      disk_mb=$(sed -n 5p <<<"$out")
+      echo "$(date -u +%FT%TZ),${prod_cpu:-},${test_cpu:-},${load1:-},${restarts:-},${disk_mb:-}" >> "$sfile"
+      printf '%s prod=%ss cpu prod=%s%% test=%s%% load=%s disk=%sMB\n' "$(date +%T)" "$t" "${prod_cpu:-?}" "${test_cpu:-?}" "${load1:-?}" "${disk_mb:-?}"
+      [ -n "${disk_mb:-}" ] && [ "$disk_mb" -lt "$DISK_MIN_MB" ] && abort "VM free disk ${disk_mb} MB < ${DISK_MIN_MB} MB"
       if [ -n "${prod_cpu:-}" ] && gt "$prod_cpu" "$CPU_LIMIT"; then cpu_streak=$((cpu_streak + 1)); else cpu_streak=0; fi
       [ "$cpu_streak" -ge 2 ] && abort "production backend CPU > ${CPU_LIMIT}% for 30 s"
       [ -n "${load1:-}" ] && gt "$load1" "$LOAD_LIMIT" && abort "VM load average $load1 > $LOAD_LIMIT"
       [ -z "$restarts0" ] && restarts0="${restarts:-}"
       [ -n "${restarts:-}" ] && [ -n "$restarts0" ] && [ "$restarts" -gt "$restarts0" ] && abort "backend-test restarted ($restarts0 -> $restarts)"
     else
-      echo "$(date -u +%FT%TZ),,,," >> "$sfile"
+      echo "$(date -u +%FT%TZ),,,,," >> "$sfile"
       echo "$(date +%T) warning: could not read docker stats over SSH"
     fi
   fi
