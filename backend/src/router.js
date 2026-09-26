@@ -17,6 +17,7 @@ import integrationRoutes from './routes/integrationRoutes.js'
 import marketingRoutes from './routes/marketingRoutes.js'
 import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
+import { authLimiter } from './middleware/rateLimit.js'
 
 
 const router = Router()
@@ -25,7 +26,7 @@ router.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
 
-router.use('/auth', authRoutes)
+router.use('/auth', authLimiter, authRoutes)
 router.use('/users', userRoutes)
 router.use('/global', globalRoutes)
 router.use('/products', productRoutes)

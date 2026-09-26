@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
@@ -13,7 +13,7 @@ import {
   deleteIntegrationConfig,
 } from '../controllers/integrationController.js'
 
-const router = Router()
+const router = createRouter()
 
 const base = [requireAuth, requireCompany]
 const admin = [...base, requireCompanyRole('owner', 'admin')]

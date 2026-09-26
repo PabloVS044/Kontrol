@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import validate from '../middleware/validate.js'
 import {
@@ -18,7 +18,7 @@ import {
     deleteTaskEvidence,
 } from '../controllers/evidenciaController.js'
 
-const router = Router({ mergeParams: true })
+const router = createRouter({ mergeParams: true })
 
 router.use(requireAuth)
 

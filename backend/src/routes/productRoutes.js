@@ -1,5 +1,6 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
+import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireProject from '../middleware/requireProject.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
@@ -25,7 +26,7 @@ import {
   unlinkSupplier,
 } from '../controllers/productController.js'
 
-const router = Router()
+const router = createRouter()
 
 // All routes require authentication + company context + project context
 router.use(requireAuth)
@@ -43,6 +44,7 @@ router.get(
 
 router.get(
   '/',
+  expensiveLimiter,
   requireProjectPermission('ver_inventario'),
   validate(getProductsQuerySchema, 'query'),
   getProducts
