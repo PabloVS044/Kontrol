@@ -671,7 +671,10 @@
       "addedQty": "Added: {count} × {name}",
       "notFound": "No product for code {code}.",
       "outOfStock": "{name} has no stock available.",
-      "stockLimit": "Only {count} units of {name} left."
+      "stockLimit": "Only {count} units of {name} left.",
+      "chooseProject": "Same code in several projects — pick the inventory to sell from:",
+      "noStockAnywhere": "This code exists in {count} projects, none with stock available.",
+      "addedQtyProject": "Added: {count} × {name} ({project})"
     },
     "restock": {
       "title": "Add stock",
