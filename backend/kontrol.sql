@@ -174,10 +174,21 @@ CREATE TABLE public.producto (
   stock_minimo integer NOT NULL DEFAULT 0 CHECK (stock_minimo >= 0),
   id_categoria integer,
   id_proyecto integer NOT NULL,
+  -- Código de barras para el escaneo con cámara del POS. Nullable: un producto
+  -- puede no tener código impreso.
+  codigo_barras character varying,
   CONSTRAINT producto_id_categoria_fkey FOREIGN KEY (id_categoria) REFERENCES public.categoria(id_categoria),
   CONSTRAINT producto_id_proyecto_fkey FOREIGN KEY (id_proyecto) REFERENCES public.proyecto(id_proyecto),
   CONSTRAINT producto_proyecto_id_unique UNIQUE (id_proyecto, id_producto)
 );
+
+-- Único por proyecto, no por empresa: el inventario es por proyecto, así que el
+-- mismo producto físico puede existir en varios proyectos, cada uno con su
+-- stock. Dentro de un proyecto el código resuelve a un solo producto. Parcial
+-- porque NULL no es un código y varios productos pueden no tenerlo.
+CREATE UNIQUE INDEX producto_codigo_barras_unique
+  ON public.producto (id_proyecto, codigo_barras)
+  WHERE codigo_barras IS NOT NULL;
 
 CREATE TABLE public.producto_proveedor (
   id_producto integer NOT NULL,
