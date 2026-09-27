@@ -51,13 +51,15 @@ CREATE TABLE public.categoria (
   CONSTRAINT categoria_empresa_nombre_unique UNIQUE (id_empresa, nombre)
 );
 
--- Proveedores globales: pueden ser compartidos entre empresas
+-- Proveedores por empresa: cada proveedor pertenece a una sola empresa
 CREATE TABLE public.proveedor (
   id_proveedor SERIAL PRIMARY KEY,
   nombre character varying NOT NULL,
   contacto_nombre character varying,
   telefono character varying,
-  email character varying
+  email character varying,
+  id_empresa integer NOT NULL,
+  CONSTRAINT proveedor_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa)
 );
 
 -- 3. ROLES Y RELACIÓN EMPRESA - USUARIO (MUCHOS A MUCHOS ESTRICTO)
