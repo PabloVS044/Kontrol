@@ -1155,9 +1155,11 @@ async function submitEdit(payload) {
   editLoading.value = true
   editError.value   = null
   try {
+    // El proyecto sale del producto, no del filtro: editar desde la vista de
+    // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
     const res = await fetch(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeader(product.id_proyecto) },
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1195,7 +1197,7 @@ async function confirmDelete() {
   try {
     const res = await fetch(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeader(),
+      headers: authHeader(product.id_proyecto),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {

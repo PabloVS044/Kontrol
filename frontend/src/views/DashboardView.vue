@@ -34,6 +34,20 @@ function budgetLevelClass(level) {
   return ''
 }
 
+/**
+ * Ancho del relleno de una barra de progreso, acotado a [0, 100].
+ *
+ * Un proyecto sobregirado da más de 100 —132% en el portafolio— y la barra se
+ * salía por la derecha. La barra solo puede representar hasta el 100%; que se
+ * haya pasado lo dicen el color crítico y el porcentaje escrito al lado, no un
+ * relleno más largo que su propio carril.
+ */
+function barWidth(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n < 0) return '0%'
+  return `${Math.min(n, 100)}%`
+}
+
 function money(n) {
   const num = Number(n || 0)
   return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
@@ -819,7 +833,7 @@ watch(() => authStore.idEmpresaActual, () => {
                 </span>
               </div>
               <div class="bar-bg">
-                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: row.pct + '%' }"></div>
+                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: barWidth(row.pct) }"></div>
               </div>
             </div>
           </div>
@@ -840,7 +854,7 @@ watch(() => authStore.idEmpresaActual, () => {
             <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
           </div>
           <div class="snapshot-bar bar-bg">
-            <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
+            <div class="bar-fill" :style="{ width: barWidth(spentPct) }"></div>
           </div>
           <p class="snapshot-foot">{{ $t('dashboard.snapshot.summary', projects.length, { named: { pct: spentPct, count: projects.length } }) }}</p>
         </div>
@@ -1131,6 +1145,10 @@ watch(() => authStore.idEmpresaActual, () => {
 .kpi-grid :deep(.card-title) {
   font-size: var(--k-font-size-heading-1);
   font-family: var(--k-font-display);
+  /* El valor del KPI es casi siempre una cifra y la fuente display usa figuras
+     oldstyle: sin esto, "132" queda más bajo y pequeño que el texto que lo
+     acompaña. Ver la misma corrección en Pill.css. */
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .kpi-grid :deep(.card-subtitle) {
@@ -1241,6 +1259,10 @@ watch(() => authStore.idEmpresaActual, () => {
   background: var(--k-shade-3);
   height: 6px;
   border-radius: 3px;
+  /* Un proyecto sobregirado da un porcentaje mayor que 100 y el relleno se
+     salía por la derecha, pisando lo que hubiera al lado. El ancho ya se limita
+     al pintarlo; esto es la red por si algún cálculo vuelve a pasarse. */
+  overflow: hidden;
 }
 
 .bar-fill {

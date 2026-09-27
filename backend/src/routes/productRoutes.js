@@ -63,14 +63,11 @@ router.get(
   getProducts
 )
 
-// A partir de aquí todo opera sobre UN proyecto, así que sí exigen su contexto.
-// requireProject debe seguir presente en las rutas con `:id`: sin él,
-// requireProjectPermission cae a `req.params.id`, que es el id del PRODUCTO, y
-// comprobaría el acceso al proyecto contra un id que no es de proyecto.
+// El detalle tampoco lleva contexto de proyecto: se abre desde el catálogo de
+// "todos los proyectos", donde no hay ninguno seleccionado, y el proyecto se
+// deduce del propio producto. Autoriza dentro del controller como los listados.
 router.get(
   '/:id',
-  requireProject,
-  requireProjectPermission('ver_inventario'),
   validate(productIdParamSchema, 'params'),
   getProductById
 )
