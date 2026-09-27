@@ -265,6 +265,22 @@ export const ensureDatabaseSchema = async () => {
       ON public.proveedor (id_empresa)
   `)
 
+  // POS configuration, one row per company: whether VAT and discounts apply and
+  // within what limits. Both default to off so enabling this on an existing
+  // database does not silently change what any company charges — a company opts
+  // in. Missing row is read as "all defaults", so no backfill is needed.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.empresa_config (
+      id_empresa integer PRIMARY KEY,
+      iva_activo boolean NOT NULL DEFAULT false,
+      iva_tasa numeric NOT NULL DEFAULT 0.12 CHECK (iva_tasa >= 0::numeric AND iva_tasa <= 1::numeric),
+      descuento_activo boolean NOT NULL DEFAULT false,
+      descuento_max_pct numeric NOT NULL DEFAULT 0 CHECK (descuento_max_pct >= 0::numeric AND descuento_max_pct <= 100::numeric),
+      CONSTRAINT empresa_config_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+    )
+  `)
+
   // Indexes for the sales/finance analytics + movement listings, which filter
   // by project + date range and by product. Avoids full scans as the ledger grows.
   await pool.query(`

@@ -41,3 +41,27 @@ export const updateCompanyMemberProjectAccessSchema = z.object({
     })
   ).optional().default([]),
 })
+
+/**
+ * Configuración del POS de la empresa: IVA y descuento.
+ *
+ * Todos los campos son opcionales para permitir un PATCH parcial (activar solo
+ * el IVA sin tocar el descuento). La tasa se expresa como fracción —0.12 es el
+ * 12%— y el tope de descuento como porcentaje, igual que en la tabla.
+ */
+export const updateCompanySaleConfigSchema = z.object({
+  iva_activo: z.boolean().optional(),
+  iva_tasa: z.coerce
+    .number()
+    .min(0, 'The tax rate cannot be negative.')
+    .max(1, 'The tax rate is a fraction: 0.12 means 12%.')
+    .optional(),
+  descuento_activo: z.boolean().optional(),
+  descuento_max_pct: z.coerce
+    .number()
+    .min(0, 'The maximum discount cannot be negative.')
+    .max(100, 'The maximum discount cannot exceed 100%.')
+    .optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+  message: 'Send at least one setting to update.',
+})

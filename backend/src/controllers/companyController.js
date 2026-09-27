@@ -14,6 +14,7 @@ import {
   getCompanyProjects,
   getProjectPermissionsCatalog,
 } from '../services/projectAccessService.js'
+import { normalizeSaleConfig } from '../services/saleCalculation.js'
 
 const MEMBER_SELECT = `
   SELECT
@@ -685,4 +686,76 @@ export const removeCompanyMember = async (req, res) => {
   } finally {
     client.release()
   }
+}
+
+/* ── configuración del POS ────────────────────────────────────────────────── */
+
+/**
+ * GET /api/companies/sale-config
+ *
+ * IVA y descuento de la empresa seleccionada. La lee cualquier miembro: el POS
+ * necesita saber si mostrar el campo de descuento y qué IVA pintar. Escribirla
+ * está restringido al owner.
+ *
+ * Una empresa sin fila devuelve los defaults (ni IVA ni descuento) en lugar de
+ * 404: la ausencia de configuración es un estado válido, no un error.
+ */
+export const getCompanySaleConfig = async (req, res) => {
+  const { id_empresa } = req.empresa
+
+  const result = await pool.query(
+    `SELECT iva_activo, iva_tasa, descuento_activo, descuento_max_pct
+     FROM public.empresa_config
+     WHERE id_empresa = $1`,
+    [id_empresa]
+  )
+
+  return res.json({
+    success: true,
+    data: normalizeSaleConfig(result.rows[0]),
+  })
+}
+
+/**
+ * PUT /api/companies/sale-config
+ * Body: cualquier subconjunto de { iva_activo, iva_tasa, descuento_activo, descuento_max_pct }
+ *
+ * Upsert parcial: crea la fila si no existía y deja intactos los campos que no
+ * vengan en el body, de modo que activar el IVA no reinicia el descuento.
+ */
+export const updateCompanySaleConfig = async (req, res) => {
+  const { id_empresa } = req.empresa
+  const patch = req.body
+
+  // COALESCE sobre el parámetro: si llega null (campo ausente), la fila
+  // existente conserva su valor y la nueva toma el DEFAULT de la columna.
+  const result = await pool.query(
+    `INSERT INTO public.empresa_config
+       (id_empresa, iva_activo, iva_tasa, descuento_activo, descuento_max_pct)
+     VALUES (
+       $1,
+       COALESCE($2::boolean, false),
+       COALESCE($3::numeric, 0.12),
+       COALESCE($4::boolean, false),
+       COALESCE($5::numeric, 0)
+     )
+     ON CONFLICT (id_empresa) DO UPDATE SET
+       iva_activo        = COALESCE($2::boolean, public.empresa_config.iva_activo),
+       iva_tasa          = COALESCE($3::numeric, public.empresa_config.iva_tasa),
+       descuento_activo  = COALESCE($4::boolean, public.empresa_config.descuento_activo),
+       descuento_max_pct = COALESCE($5::numeric, public.empresa_config.descuento_max_pct)
+     RETURNING iva_activo, iva_tasa, descuento_activo, descuento_max_pct`,
+    [
+      id_empresa,
+      patch.iva_activo ?? null,
+      patch.iva_tasa ?? null,
+      patch.descuento_activo ?? null,
+      patch.descuento_max_pct ?? null,
+    ]
+  )
+
+  return res.json({
+    success: true,
+    data: normalizeSaleConfig(result.rows[0]),
+  })
 }

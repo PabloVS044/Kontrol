@@ -42,6 +42,25 @@ CREATE TABLE public.empresa (
   activo boolean NOT NULL DEFAULT true
 );
 
+-- Configuración del punto de venta, una fila por empresa. El IVA y el descuento
+-- no son universales: cada empresa decide si los cobra y con qué límites.
+--
+-- Ambos arrancan DESACTIVADOS a propósito. Activar el IVA por defecto subiría
+-- un 12% el total de cada venta de las empresas que ya operan, en silencio; se
+-- opta dentro, no fuera. `iva_tasa` guarda la tasa a usar cuando se active
+-- (0.12 = 12%, el IVA de Guatemala).
+--
+-- `descuento_max_pct` es el tope que puede aplicar un cajero. Sin tope, el
+-- descuento vacía el control de precios que valida el backend al vender.
+CREATE TABLE public.empresa_config (
+  id_empresa integer PRIMARY KEY,
+  iva_activo boolean NOT NULL DEFAULT false,
+  iva_tasa numeric NOT NULL DEFAULT 0.12 CHECK (iva_tasa >= 0::numeric AND iva_tasa <= 1::numeric),
+  descuento_activo boolean NOT NULL DEFAULT false,
+  descuento_max_pct numeric NOT NULL DEFAULT 0 CHECK (descuento_max_pct >= 0::numeric AND descuento_max_pct <= 100::numeric),
+  CONSTRAINT empresa_config_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+);
+
 CREATE TABLE public.categoria (
   id_categoria SERIAL PRIMARY KEY,
   nombre character varying NOT NULL,
