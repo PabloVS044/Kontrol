@@ -225,14 +225,14 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     expect(wrapper.find('.appnav-avatar').attributes('aria-expanded')).toBe('true')
   })
 
-  it('la configuración de empresa solo aparece para owner o admin', async () => {
-    const { wrapper: miembro } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol: 'member' } })
-    await miembro.find('.appnav-avatar').trigger('click')
-    expect(miembro.find('.ud-item[href="/settings"]').exists()).toBe(false)
-
-    const { wrapper: owner } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol: 'owner' } })
-    await owner.find('.appnav-avatar').trigger('click')
-    expect(owner.find('.ud-item[href="/settings"]').exists()).toBe(true)
+  it('la configuración está al alcance de cualquier rol', async () => {
+    // La pantalla tiene preferencias personales —ocultar el asistente— además
+    // de la configuración de empresa; esa se reserva al dueño dentro de la vista.
+    for (const rol of ['member', 'manager', 'owner']) {
+      const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol } })
+      await wrapper.find('.appnav-avatar').trigger('click')
+      expect(wrapper.find('.ud-item[href="/settings"]').exists()).toBe(true)
+    }
   })
 
   it('el selector de idioma alterna y persiste la preferencia', async () => {

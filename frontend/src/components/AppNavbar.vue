@@ -97,8 +97,10 @@
 
             <div class="ud-divider" />
 
+            <!-- Visible para todos: la pantalla tiene preferencias personales
+                 —ocultar el asistente— además de la configuración de empresa,
+                 que sí queda reservada al dueño dentro de la propia vista. -->
             <RouterLink
-              v-if="isAdminOrOwner"
               class="ud-item"
               role="menuitem"
               to="/settings"

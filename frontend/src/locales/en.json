@@ -1529,7 +1529,15 @@
   },
   "settings": {
     "title": "Company settings",
-    "subtitle": "Applies to every sale made by this company.",
+    "subtitle": "Your preferences, and how this company sells.",
+    "back": "Back",
+    "ownerOnly": "Only the company owner or an admin can change how this company sells.",
+    "prefs": {
+      "title": "Your preferences",
+      "hint": "Saved in this browser, for your account only. They do not affect anyone else on the team.",
+      "birdie": "Show the Birdie assistant bubble",
+      "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here."
+    },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
     "save": "Save changes",

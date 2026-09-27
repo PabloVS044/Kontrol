@@ -1,17 +1,46 @@
 <template>
   <section class="settings">
     <header class="set-head">
+      <!-- La configuración se abre desde el menú de cuenta, que no deja rastro
+           de dónde se venía: sin esto la única salida es el botón atrás. -->
+      <button type="button" class="set-back" @click="goBack">
+        <span aria-hidden="true">←</span>
+        <span>{{ $t('settings.back') }}</span>
+      </button>
       <h1 class="set-title">{{ $t('settings.title') }}</h1>
       <p class="set-sub">{{ $t('settings.subtitle') }}</p>
     </header>
 
-    <p v-if="loading" class="set-state">{{ $t('settings.loading') }}</p>
+    <!-- Preferencias de quien mira, no de la empresa: se guardan en este
+         navegador y no dependen del rol. -->
+    <section class="set-card set-card--prefs">
+      <h2 class="sc-title">{{ $t('settings.prefs.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.prefs.hint') }}</p>
 
-    <p v-else-if="loadError" class="set-state set-state--err">
+      <div class="sc-row sc-row--last">
+        <label class="sc-toggle">
+          <input
+            type="checkbox"
+            :checked="prefsStore.birdieVisible"
+            @change="prefsStore.setBirdieVisible($event.target.checked)"
+          />
+          <span class="sc-toggle-label">{{ $t('settings.prefs.birdie') }}</span>
+        </label>
+        <p class="sc-note">{{ $t('settings.prefs.birdieNote') }}</p>
+      </div>
+    </section>
+
+    <p v-if="!canManageCompany" class="set-state">
+      {{ $t('settings.ownerOnly') }}
+    </p>
+
+    <p v-if="canManageCompany && loading" class="set-state">{{ $t('settings.loading') }}</p>
+
+    <p v-else-if="canManageCompany && loadError" class="set-state set-state--err">
       {{ loadError }}
     </p>
 
-    <form v-else class="set-card" @submit.prevent="save">
+    <form v-else-if="canManageCompany" class="set-card" @submit.prevent="save">
       <h2 class="sc-title">{{ $t('settings.sale.title') }}</h2>
       <p class="sc-hint">{{ $t('settings.sale.hint') }}</p>
 
@@ -107,11 +136,29 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { usePreferencesStore } from '../stores/preferences'
+import { useSaleConfigStore } from '../stores/saleConfig'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()
+const prefsStore = usePreferencesStore()
+const saleConfigStore = useSaleConfigStore()
+const router = useRouter()
 const { t } = useI18n()
+
+/** La configuración de la empresa mueve lo que se cobra: solo owner y admin. */
+const canManageCompany = computed(() =>
+  ['owner', 'admin'].includes(authStore.empresaActual?.rol)
+)
+
+function goBack() {
+  // Si se llegó por un enlace directo no hay historia a la que volver, así que
+  // el dashboard hace de destino en vez de dejar el botón sin efecto.
+  if (window.history.length > 1) router.back()
+  else router.push({ name: 'dashboard' })
+}
 
 const loading   = ref(true)
 const loadError = ref(null)
@@ -184,6 +231,9 @@ async function save() {
       throw new Error(body.errors?.[0]?.message || body.message || `HTTP ${res.status}`)
     }
     form.value = { ...form.value, ...body.data }
+    // El resto de la app lee la moneda del store: sin esto, el dashboard
+    // seguiría en la anterior hasta recargar la página.
+    saleConfigStore.apply(body.data)
     saved.value = true
   } catch (err) {
     formError.value = err.message
@@ -192,7 +242,11 @@ async function save() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  prefsStore.load()
+  if (canManageCompany.value) load()
+  else loading.value = false
+})
 </script>
 
 <style scoped>
@@ -203,6 +257,30 @@ onMounted(load)
 }
 
 .set-head { margin-bottom: var(--k-space-6); }
+
+.set-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-space-2);
+  margin-bottom: var(--k-space-4);
+  padding: 0;
+  min-height: var(--k-target-min-size);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: var(--k-transition-ui);
+}
+.set-back:hover { color: var(--k-color-primary); }
+
+.set-card--prefs { margin-bottom: var(--k-space-5); }
+/* La última fila de una tarjeta no necesita separación inferior. */
+.sc-row--last { margin-bottom: 0; }
+
 .set-title {
   margin: 0 0 var(--k-space-2);
   font-family: var(--k-font-display);

@@ -6,11 +6,13 @@ import Card from '../components/UI/Card/Card.vue'
 import Button from '../components/UI/Button/Button.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
+import { useSaleConfigStore } from '../stores/saleConfig'
 import { statusLabel } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const saleConfigStore = useSaleConfigStore()
 
 const projects = ref([])
 const budgetByProj = ref({}) // id_proyecto -> summary
@@ -71,9 +73,10 @@ function isOverBudget(pct) {
   return Number.isFinite(n) && n > 100
 }
 
+// La moneda sale de la configuración de la empresa; estaba fija en USD y
+// contradecía lo que el POS ya mostraba en quetzales. Sin decimales, como antes.
 function money(n) {
-  const num = Number(n || 0)
-  return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  return saleConfigStore.money(n, { decimals: false })
 }
 
 const totalSpent = computed(() =>
@@ -215,7 +218,9 @@ const chartData = computed(() => {
   // Y ticks (0, 25, 50, 75, 100 %)
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
     y: yScale(total * f),
-    label: (total * f).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+    // Mismo formateador que el resto de la pantalla: el eje no puede quedarse
+    // en dólares mientras las cifras de al lado están en otra moneda.
+    label: money(total * f),
   }))
 
   // X ticks (start, mid, end) — plus today if inside range

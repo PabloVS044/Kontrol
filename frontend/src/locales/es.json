@@ -1529,7 +1529,15 @@
   },
   "settings": {
     "title": "Configuración de la empresa",
-    "subtitle": "Se aplica a todas las ventas de esta empresa.",
+    "subtitle": "Tus preferencias y cómo vende esta empresa.",
+    "back": "Volver",
+    "ownerOnly": "Solo el dueño de la empresa o un administrador puede cambiar cómo vende esta empresa.",
+    "prefs": {
+      "title": "Tus preferencias",
+      "hint": "Se guardan en este navegador y solo para tu cuenta. No afectan a nadie más del equipo.",
+      "birdie": "Mostrar la burbuja del asistente Birdie",
+      "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí."
+    },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",
     "save": "Guardar cambios",
