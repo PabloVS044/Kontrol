@@ -704,7 +704,7 @@ export const getCompanySaleConfig = async (req, res) => {
   const { id_empresa } = req.empresa
 
   const result = await pool.query(
-    `SELECT iva_activo, iva_tasa, descuento_activo, descuento_max_pct
+    `SELECT iva_activo, iva_tasa, descuento_activo, descuento_max_pct, moneda
      FROM public.empresa_config
      WHERE id_empresa = $1`,
     [id_empresa]
@@ -731,26 +731,29 @@ export const updateCompanySaleConfig = async (req, res) => {
   // existente conserva su valor y la nueva toma el DEFAULT de la columna.
   const result = await pool.query(
     `INSERT INTO public.empresa_config
-       (id_empresa, iva_activo, iva_tasa, descuento_activo, descuento_max_pct)
+       (id_empresa, iva_activo, iva_tasa, descuento_activo, descuento_max_pct, moneda)
      VALUES (
        $1,
        COALESCE($2::boolean, false),
        COALESCE($3::numeric, 0.12),
        COALESCE($4::boolean, false),
-       COALESCE($5::numeric, 0)
+       COALESCE($5::numeric, 0),
+       COALESCE($6::varchar, 'USD')
      )
      ON CONFLICT (id_empresa) DO UPDATE SET
        iva_activo        = COALESCE($2::boolean, public.empresa_config.iva_activo),
        iva_tasa          = COALESCE($3::numeric, public.empresa_config.iva_tasa),
        descuento_activo  = COALESCE($4::boolean, public.empresa_config.descuento_activo),
-       descuento_max_pct = COALESCE($5::numeric, public.empresa_config.descuento_max_pct)
-     RETURNING iva_activo, iva_tasa, descuento_activo, descuento_max_pct`,
+       descuento_max_pct = COALESCE($5::numeric, public.empresa_config.descuento_max_pct),
+       moneda            = COALESCE($6::varchar, public.empresa_config.moneda)
+     RETURNING iva_activo, iva_tasa, descuento_activo, descuento_max_pct, moneda`,
     [
       id_empresa,
       patch.iva_activo ?? null,
       patch.iva_tasa ?? null,
       patch.descuento_activo ?? null,
       patch.descuento_max_pct ?? null,
+      patch.moneda ?? null,
     ]
   )
 

@@ -52,12 +52,15 @@ CREATE TABLE public.empresa (
 --
 -- `descuento_max_pct` es el tope que puede aplicar un cajero. Sin tope, el
 -- descuento vacía el control de precios que valida el backend al vender.
+-- `moneda` guarda el código ISO 4217, no el símbolo: "$" lo comparten varias
+-- monedas y no dice cuál es. El símbolo y su posición los decide la interfaz.
 CREATE TABLE public.empresa_config (
   id_empresa integer PRIMARY KEY,
   iva_activo boolean NOT NULL DEFAULT false,
   iva_tasa numeric NOT NULL DEFAULT 0.12 CHECK (iva_tasa >= 0::numeric AND iva_tasa <= 1::numeric),
   descuento_activo boolean NOT NULL DEFAULT false,
   descuento_max_pct numeric NOT NULL DEFAULT 0 CHECK (descuento_max_pct >= 0::numeric AND descuento_max_pct <= 100::numeric),
+  moneda character varying NOT NULL DEFAULT 'USD' CHECK (moneda IN ('USD', 'GTQ')),
   CONSTRAINT empresa_config_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
 );
 

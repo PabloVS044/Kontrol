@@ -118,11 +118,17 @@ export function calcSale(lines, { discountPercent = 0, taxRate = 0 } = {}) {
  * anterior a esta función (total = subtotal), de modo que habilitar la tabla no
  * cambia lo que cobra nadie hasta que lo activa.
  */
+/** Monedas admitidas, por código ISO 4217. */
+export const SUPPORTED_CURRENCIES = Object.freeze(['USD', 'GTQ'])
+
 export const DEFAULT_SALE_CONFIG = Object.freeze({
   iva_activo: false,
   iva_tasa: IVA_RATE,
   descuento_activo: false,
   descuento_max_pct: 0,
+  // USD es lo que la interfaz mostraba fijo antes de que esto se pudiera
+  // configurar, así que es el default que no cambia nada.
+  moneda: 'USD',
 })
 
 /** Normaliza una fila de `empresa_config` (o su ausencia) a valores usables. */
@@ -135,6 +141,9 @@ export function normalizeSaleConfig(row) {
     iva_tasa: Number.isFinite(tasa) && tasa >= 0 && tasa <= 1 ? tasa : IVA_RATE,
     descuento_activo: row.descuento_activo === true,
     descuento_max_pct: Number.isFinite(maxPct) ? clampPercent(maxPct) : 0,
+    // Una moneda desconocida cae al default en vez de propagarse: la interfaz
+    // no sabría qué símbolo poner y acabaría enseñando un importe sin unidad.
+    moneda: SUPPORTED_CURRENCIES.includes(row.moneda) ? row.moneda : DEFAULT_SALE_CONFIG.moneda,
   }
 }
 

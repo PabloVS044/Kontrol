@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import { SUPPORTED_CURRENCIES } from '../services/saleCalculation.js'
+
+// Zod necesita una tupla literal; el servicio es la fuente de la lista.
+const SALE_CURRENCIES = /** @type {[string, ...string[]]} */ ([...SUPPORTED_CURRENCIES])
 
 export const PROJECT_PERMISSION_NAMES = [
   'ver_inventario',
@@ -62,6 +66,10 @@ export const updateCompanySaleConfigSchema = z.object({
     .min(0, 'The maximum discount cannot be negative.')
     .max(100, 'The maximum discount cannot exceed 100%.')
     .optional(),
+  // Código ISO 4217, no el símbolo.
+  moneda: z.enum(SALE_CURRENCIES, {
+    message: `The currency must be one of: ${SALE_CURRENCIES.join(', ')}.`,
+  }).optional(),
 }).refine((data) => Object.keys(data).length > 0, {
   message: 'Send at least one setting to update.',
 })

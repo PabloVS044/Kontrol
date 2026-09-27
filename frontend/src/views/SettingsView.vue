@@ -15,6 +15,23 @@
       <h2 class="sc-title">{{ $t('settings.sale.title') }}</h2>
       <p class="sc-hint">{{ $t('settings.sale.hint') }}</p>
 
+      <!-- Moneda -->
+      <div class="sc-row">
+        <label class="sc-field">
+          <span class="sc-label">{{ $t('settings.sale.currency') }}</span>
+          <select v-model="form.moneda" class="sc-select">
+            <option v-for="c in CURRENCY_OPTIONS" :key="c.code" :value="c.code">
+              {{ c.label }}
+            </option>
+          </select>
+        </label>
+        <p class="sc-note">
+          {{ $t('settings.sale.currencyNote', { sample: formatMoney(1234.5, form.moneda) }) }}
+        </p>
+      </div>
+
+      <div class="sc-divider" />
+
       <!-- IVA -->
       <div class="sc-row">
         <label class="sc-toggle">
@@ -91,6 +108,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()
 const { t } = useI18n()
@@ -106,6 +124,7 @@ const form = ref({
   iva_tasa: 0.12,
   descuento_activo: false,
   descuento_max_pct: 0,
+  moneda: DEFAULT_CURRENCY,
 })
 
 /**
@@ -155,6 +174,7 @@ async function save() {
         iva_tasa: Number(form.value.iva_tasa),
         descuento_activo: form.value.descuento_activo,
         descuento_max_pct: Number(form.value.descuento_max_pct),
+        moneda: form.value.moneda,
       }),
     })
     const body = await res.json().catch(() => ({}))
@@ -247,6 +267,29 @@ onMounted(load)
   color: var(--k-text-soft);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.sc-select {
+  max-width: 260px;
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-3);
+  background: var(--k-form-input-bg);
+  border: var(--k-border-width) solid var(--k-shade-7);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
+  cursor: pointer;
+}
+.sc-select:focus {
+  outline: none;
+  background: var(--k-form-input-focus-bg);
+  border-color: var(--k-color-primary);
+}
+/* El desplegable lo pinta el sistema: sin esto, en un tema claro salen las
+   opciones en blanco sobre blanco. */
+.sc-select option {
+  background: var(--k-shade-2);
+  color: var(--k-color-text);
 }
 
 .sc-input-wrap { display: flex; align-items: stretch; max-width: 180px; }

@@ -26,6 +26,7 @@
       :pending="pendingScan"
       :choices="scanChoices"
       :show-project="!selectedProject"
+      :currency="saleConfig.moneda"
       @detected="handleScan"
       @confirm="confirmScan"
       @choose="chooseScanProject"
@@ -70,19 +71,19 @@
       </div>
       <div class="sr-row">
         <span>{{ $t('inventory.checkout.subtotal') }}</span>
-        <span>${{ Number(lastSale.subtotal).toFixed(2) }}</span>
+        <span>{{ money(lastSale.subtotal) }}</span>
       </div>
       <div v-if="Number(lastSale.descuento) > 0" class="sr-row sr-row--minus">
         <span>{{ $t('inventory.checkout.discountLine', { pct: Number(lastSale.descuento_pct) }) }}</span>
-        <span>−${{ Number(lastSale.descuento).toFixed(2) }}</span>
+        <span>−{{ money(lastSale.descuento) }}</span>
       </div>
       <div v-if="Number(lastSale.iva) > 0" class="sr-row">
         <span>{{ $t('inventory.checkout.vatLine', { pct: Math.round(Number(lastSale.iva_tasa) * 10000) / 100 }) }}</span>
-        <span>${{ Number(lastSale.iva).toFixed(2) }}</span>
+        <span>{{ money(lastSale.iva) }}</span>
       </div>
       <div class="sr-row sr-row--total">
         <span>{{ $t('inventory.checkout.total') }}</span>
-        <span>${{ Number(lastSale.total).toFixed(2) }}</span>
+        <span>{{ money(lastSale.total) }}</span>
       </div>
     </div>
 
@@ -274,7 +275,7 @@
               <div class="card-meta">
                 <div>
                   <div class="card-price-label">{{ $t('inventory.card.price') }}</div>
-                  <div class="card-price">${{ Number(product.precio_venta).toFixed(2) }}</div>
+                  <div class="card-price">{{ money(product.precio_venta) }}</div>
                 </div>
                 <div class="card-stock">
                   <div class="card-stock-num" :class="stockNumClass(product)">
@@ -366,6 +367,7 @@
           :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
+          :currency="saleConfig.moneda"
           @remove="removeFromCart"
           @submit="openCheckout"
           @cancel="clearSaleCart"
@@ -399,7 +401,7 @@
               <span class="s-sub red">{{ $t('inventory.context.actionNeeded') }}</span>
             </div>
             <div class="summary-card">
-              <span class="s-value">${{ stats.totalValue }}</span>
+              <span class="s-value">{{ money(stats.totalValue) }}</span>
               <span class="s-label">{{ $t('inventory.context.totalValue') }}</span>
             </div>
           </div>
@@ -454,7 +456,7 @@
     <button class="mobile-cart-bar" @click="cartExpanded = true">
       <span class="mcb-count">{{ saleItemCount }}</span>
       <span class="mcb-label">{{ $t('inventory.sale.viewSale') }}</span>
-      <span class="mcb-total">${{ saleTotal.toFixed(2) }}</span>
+      <span class="mcb-total">{{ money(saleTotal) }}</span>
     </button>
 
     <div v-if="cartExpanded" class="cart-drawer-overlay" @click.self="cartExpanded = false">
@@ -466,6 +468,7 @@
           :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
+          :currency="saleConfig.moneda"
           @remove="removeFromCart"
           @submit="openCheckout"
           @cancel="clearSaleCart"
@@ -494,6 +497,7 @@ import ProductEditModal from '../components/inventory/ProductEditModal.vue'
 import ProductDeleteModal from '../components/inventory/ProductDeleteModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { calcSubtotal } from '@/utils/sales.js'
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -753,6 +757,7 @@ const saleConfig = ref({
   iva_tasa: 0,
   descuento_activo: false,
   descuento_max_pct: 0,
+  moneda: DEFAULT_CURRENCY,
 })
 const saleDiscountPct = ref(0)
 // Desglose devuelto por la última venta registrada, tal como quedó guardado.
@@ -765,6 +770,11 @@ async function loadSaleConfig() {
   } catch {
     /* Sin config el POS vende sin IVA ni descuento, como antes. */
   }
+}
+
+/** Importe con la moneda de la empresa. Ver `utils/currency.js`. */
+function money(amount) {
+  return formatMoney(amount, saleConfig.value.moneda)
 }
 
 /* ── carrito de venta ── */

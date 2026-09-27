@@ -280,6 +280,24 @@ export const ensureDatabaseSchema = async () => {
         FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
     )
   `)
+  // Moneda de venta. Se guarda el código ISO 4217 y no el símbolo: "$" lo usan
+  // varias monedas y no dice cuál es. USD por defecto, que es lo que la interfaz
+  // mostraba fijo hasta ahora, así que nada cambia sin tocarlo.
+  await pool.query(`
+    ALTER TABLE public.empresa_config
+      ADD COLUMN IF NOT EXISTS moneda character varying NOT NULL DEFAULT 'USD'
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'empresa_config_moneda_check'
+      ) THEN
+        ALTER TABLE public.empresa_config
+          ADD CONSTRAINT empresa_config_moneda_check CHECK (moneda IN ('USD', 'GTQ'));
+      END IF;
+    END $$
+  `)
 
   // Sale header. Discount and VAT belong to the sale, not to a line, and until
   // now there was nowhere to keep them: the ticket total lived only in the

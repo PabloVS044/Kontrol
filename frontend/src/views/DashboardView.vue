@@ -34,18 +34,41 @@ function budgetLevelClass(level) {
   return ''
 }
 
-/**
- * Ancho del relleno de una barra de progreso, acotado a [0, 100].
+/*
+ * Barra de presupuesto en dos tramos.
  *
- * Un proyecto sobregirado da más de 100 —132% en el portafolio— y la barra se
- * salía por la derecha. La barra solo puede representar hasta el 100%; que se
- * haya pasado lo dicen el color crítico y el porcentaje escrito al lado, no un
- * relleno más largo que su propio carril.
+ * Por debajo del 100% la barra va a medias y el tramo rojo no existe. Al
+ * pasarse, la barra se llena y el carril entero pasa a representar TODO lo
+ * gastado, así que el exceso ocupa la fracción que le toca: con 200% la mitad
+ * del carril es roja, con 132% lo es el 24%.
+ *
+ * El denominador es max(pct, 100), que cubre los dos casos con una sola
+ * fórmula: por debajo del límite el carril sigue valiendo 100 y el relleno mide
+ * el porcentaje tal cual.
  */
+function barDenominator(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n < 0) return 100
+  return Math.max(n, 100)
+}
+
+/** Tramo dentro de presupuesto: lo gastado hasta el límite. */
 function barWidth(pct) {
   const n = Number(pct)
   if (!Number.isFinite(n) || n < 0) return '0%'
-  return `${Math.min(n, 100)}%`
+  return `${(Math.min(n, 100) / barDenominator(n)) * 100}%`
+}
+
+/** Tramo excedido, en rojo. Vacío mientras no se haya pasado del 100%. */
+function barOverWidth(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n <= 100) return '0%'
+  return `${((n - 100) / barDenominator(n)) * 100}%`
+}
+
+function isOverBudget(pct) {
+  const n = Number(pct)
+  return Number.isFinite(n) && n > 100
 }
 
 function money(n) {
@@ -834,6 +857,7 @@ watch(() => authStore.idEmpresaActual, () => {
               </div>
               <div class="bar-bg">
                 <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: barWidth(row.pct) }"></div>
+                <div v-if="isOverBudget(row.pct)" class="bar-over" :style="{ width: barOverWidth(row.pct) }"></div>
               </div>
             </div>
           </div>
@@ -855,6 +879,7 @@ watch(() => authStore.idEmpresaActual, () => {
           </div>
           <div class="snapshot-bar bar-bg">
             <div class="bar-fill" :style="{ width: barWidth(spentPct) }"></div>
+            <div v-if="isOverBudget(spentPct)" class="bar-over" :style="{ width: barOverWidth(spentPct) }"></div>
           </div>
           <p class="snapshot-foot">{{ $t('dashboard.snapshot.summary', projects.length, { named: { pct: spentPct, count: projects.length } }) }}</p>
         </div>
@@ -1259,21 +1284,35 @@ watch(() => authStore.idEmpresaActual, () => {
   background: var(--k-shade-3);
   height: 6px;
   border-radius: 3px;
-  /* Un proyecto sobregirado da un porcentaje mayor que 100 y el relleno se
-     salía por la derecha, pisando lo que hubiera al lado. El ancho ya se limita
-     al pintarlo; esto es la red por si algún cálculo vuelve a pasarse. */
+  /* Los dos tramos —lo gastado dentro de presupuesto y el exceso— van en fila y
+     juntos llenan el carril. `overflow: hidden` recorta las esquinas y sirve de
+     red por si algún cálculo se pasara de 100. */
+  display: flex;
   overflow: hidden;
 }
 
 .bar-fill {
   background: var(--k-color-primary);
   height: 100%;
-  border-radius: 3px;
+  /* Sin esto flex encoge los tramos y el reparto deja de ser proporcional. */
+  flex: 0 0 auto;
   transition: width .4s ease;
 }
 
 .bar-fill.advertencia { background: #f59e0b; } /* cambiar a token color ambar */
+/* Cuando hay exceso, el rojo es el tramo que se pasó, no la barra entera: el
+   tramo base sigue siendo el presupuesto consumido. Solo pinta todo de rojo
+   cuando el nivel es crítico SIN haberse pasado (justo en el límite). */
 .bar-fill.critico     { background: var(--k-state-error-text); }
+.bar-fill.critico:not(:only-child) { background: var(--k-color-primary); }
+
+/* Tramo excedido. */
+.bar-over {
+  background: var(--k-state-error-text);
+  height: 100%;
+  flex: 0 0 auto;
+  transition: width .4s ease;
+}
 
 .chart-state {
   padding: var(--k-space-5) 0;

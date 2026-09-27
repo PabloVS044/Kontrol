@@ -1537,6 +1537,8 @@
     "saved": "Settings saved.",
     "sale": {
       "title": "Point of sale",
+      "currency": "Sales currency",
+      "currencyNote": "Used across the cart, the checkout and the receipt. Amounts show as {sample}.",
       "hint": "VAT and discounts are off until you enable them here, so nothing a company already charges changes on its own.",
       "vatEnabled": "Charge VAT on sales",
       "vatEnabledNote": "Adds the tax on top of the discounted subtotal. The ticket shows it as its own line.",

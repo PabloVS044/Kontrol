@@ -109,6 +109,7 @@ describe('normalizeSaleConfig', () => {
       iva_tasa: 0.12,
       descuento_activo: true,
       descuento_max_pct: 15,
+      moneda: 'USD',
     })
   })
 

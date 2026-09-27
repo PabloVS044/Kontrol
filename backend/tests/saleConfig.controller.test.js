@@ -61,6 +61,7 @@ describe('GET /api/companies/sale-config', () => {
       iva_tasa: 0.12,
       descuento_activo: false,
       descuento_max_pct: 0,
+      moneda: 'USD',
     })
   })
 
@@ -133,7 +134,7 @@ describe('PUT /api/companies/sale-config', () => {
     const [sql, params] = pool.query.mock.calls[1]
     expect(sql).toContain('ON CONFLICT')
     expect(sql).toContain('COALESCE')
-    expect(params).toEqual([1, true, null, null, null])
+    expect(params).toEqual([1, true, null, null, null, null])
   })
 
   it('rechaza una tasa de IVA mayor que 1 (la tasa es fracción, no porcentaje)', async () => {

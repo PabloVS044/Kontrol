@@ -31,7 +31,7 @@
           <span class="sco-project">{{ opt.product.proyecto_nombre }}</span>
           <span class="sco-meta">
             {{ opt.product.nombre }}
-            · ${{ Number(opt.product.precio_venta).toFixed(2) }}
+            · {{ money(opt.product.precio_venta) }}
             · {{ $t('inventory.scanner.available', { count: opt.max }) }}
             <template v-if="opt.inCart">
               · {{ $t('inventory.scanner.inCart', { count: opt.inCart }) }}
@@ -52,7 +52,7 @@
             {{ pending.product.proyecto_nombre }}
           </span>
           <span class="sc-meta">
-            ${{ Number(pending.product.precio_venta).toFixed(2) }}
+            {{ money(pending.product.precio_venta) }}
             · {{ $t('inventory.scanner.available', { count: pending.max }) }}
             <template v-if="pending.inCart">
               · {{ $t('inventory.scanner.inCart', { count: pending.inCart }) }}
@@ -99,6 +99,7 @@
 </template>
 
 <script setup>
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 // @zxing is loaded on demand (dynamic import inside start) so it ships as its
@@ -126,6 +127,8 @@ const props = defineProps({
   choices:    { type: Object, default: null },
   /** Mostrar el proyecto de cada producto (vista de "todos los proyectos"). */
   showProject: { type: Boolean, default: false },
+  /** Código ISO 4217 de la moneda de venta de la empresa. */
+  currency: { type: String, default: DEFAULT_CURRENCY },
 })
 
 const emit = defineEmits(['update:modelValue', 'detected', 'confirm', 'choose', 'cancel'])
@@ -263,6 +266,12 @@ watch(() => props.modelValue, (open) => {
 })
 
 onBeforeUnmount(stop)
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.currency)
+}
 </script>
 
 <style scoped>

@@ -1537,6 +1537,8 @@
     "saved": "Configuración guardada.",
     "sale": {
       "title": "Punto de venta",
+      "currency": "Moneda de venta",
+      "currencyNote": "Se usa en el carrito, el cobro y el ticket. Los importes se ven como {sample}.",
       "hint": "El IVA y el descuento están desactivados hasta que los active aquí, para que no cambie por sí solo lo que ya cobra una empresa.",
       "vatEnabled": "Cobrar IVA en las ventas",
       "vatEnabledNote": "Se suma sobre el subtotal ya descontado. El ticket lo muestra en su propia línea.",

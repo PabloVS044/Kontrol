@@ -11,7 +11,7 @@
         >
           <span class="cl-qty">{{ item.cantidad }}×</span>
           <span class="cl-name">{{ item.product.nombre }}</span>
-          <span class="cl-amount">${{ subtotal(item).toFixed(2) }}</span>
+          <span class="cl-amount">{{ money(subtotal(item)) }}</span>
         </div>
       </div>
 
@@ -41,25 +41,25 @@
       <div class="checkout-breakdown">
         <div class="cb-row">
           <span class="cb-label">{{ $t('inventory.checkout.subtotal') }}</span>
-          <span class="cb-value">${{ breakdown.subtotal.toFixed(2) }}</span>
+          <span class="cb-value">{{ money(breakdown.subtotal) }}</span>
         </div>
         <div v-if="breakdown.discount > 0" class="cb-row cb-row--minus">
           <span class="cb-label">
             {{ $t('inventory.checkout.discountLine', { pct: discountPercent }) }}
           </span>
-          <span class="cb-value">−${{ breakdown.discount.toFixed(2) }}</span>
+          <span class="cb-value">−{{ money(breakdown.discount) }}</span>
         </div>
         <div v-if="breakdown.tax > 0" class="cb-row">
           <span class="cb-label">
             {{ $t('inventory.checkout.vatLine', { pct: vatPercentLabel }) }}
           </span>
-          <span class="cb-value">${{ breakdown.tax.toFixed(2) }}</span>
+          <span class="cb-value">{{ money(breakdown.tax) }}</span>
         </div>
       </div>
 
       <div class="checkout-total">
         <span class="ct-label">{{ $t('inventory.checkout.total') }}</span>
-        <span class="ct-value">${{ breakdown.total.toFixed(2) }}</span>
+        <span class="ct-value">{{ money(breakdown.total) }}</span>
       </div>
 
       <p v-if="error" class="checkout-error">{{ error }}</p>
@@ -88,6 +88,7 @@
 </template>
 
 <script setup>
+import { formatMoney } from '@/utils/currency.js'
 import { computed } from 'vue'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import Button from '@/components/UI/Button/Button.vue'
@@ -151,6 +152,12 @@ function onDiscountInput(e) {
   if (next > max) next = max
   emit('update:discountPercent', next)
   if (next !== Number(e.target.value)) e.target.value = next
+}
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.config.moneda)
 }
 </script>
 
