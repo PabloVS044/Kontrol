@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppNavbar           from '@/components/AppNavbar.vue'
@@ -19,6 +20,7 @@ import AddFundsModal           from '@/components/budget/AddFundsModal.vue'
 const route = useRoute()
 const authStore = useAuthStore()
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 const projects = ref([])
 const selectedProjectId = ref(null)
@@ -208,9 +210,8 @@ const plannedVsBudgetPct = computed(() => {
   return Math.min(100, (totalPlanned.value / totalAllocated.value) * 100)
 })
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 
 // ── Activity CRUD ─────────────────────────────────────────────────────────────
@@ -487,21 +488,21 @@ async function submitFunds(payload) {
               <p v-if="totalAllocated > 0">
                 {{ $t('budget.health.projectPrefix') }} <strong>{{ summary.proyecto?.nombre }}</strong> {{ $t('budget.health.hasUsed') }}
                 <strong :class="usageRatio > 1 ? 'danger' : 'gold'">{{ completedPct }}%</strong>
-                {{ $t('budget.health.ofAllocated', { spent: formatMoney(totalGastado), total: formatMoney(totalAllocated) }) }}
+                {{ $t('budget.health.ofAllocated', { spent: money(totalGastado), total: money(totalAllocated) }) }}
                 <span v-if="totalAjustes !== 0" class="muted">
                   {{ $t('budget.health.includes') }}
                   <span :class="totalAjustes < 0 ? 'danger' : 'income'">
-                    {{ totalAjustes < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(totalAjustes)) }}
+                    {{ totalAjustes < 0 ? '−' : '+' }}{{ money(Math.abs(totalAjustes)) }}
                   </span>
                   {{ $t('budget.health.inAdjustments') }}
                 </span>
               </p>
               <p v-else>{{ $t('budget.health.noBudget') }}</p>
               <p v-if="totalIngresos > 0" class="health-extra">
-                <span class="gold">{{ $t('budget.health.salesLabel') }}</span> ${{ formatMoney(totalIngresos) }} —
+                <span class="gold">{{ $t('budget.health.salesLabel') }}</span> {{ money(totalIngresos) }} —
                 <span :class="resultadoNeto < 0 ? 'danger' : 'income'">
                   {{ resultadoNeto < 0 ? $t('budget.health.loss') : $t('budget.health.profit') }}
-                  ${{ formatMoney(Math.abs(resultadoNeto)) }}
+                  {{ money(Math.abs(resultadoNeto)) }}
                 </span>.
               </p>
             </div>

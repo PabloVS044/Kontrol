@@ -655,7 +655,7 @@
       "boxes": "Cajas",
       "unitsPerBox": "Unidades por caja",
       "boxPrice": "Precio por caja",
-      "boxPreview": "→ {units} unidades · costo ${cost}/u",
+      "boxPreview": "→ {units} unidades · costo {cost}/u",
       "barcode": "Código de barras",
       "barcodePlaceholder": "Escanea o escribe el código",
       "category": "Categoría",

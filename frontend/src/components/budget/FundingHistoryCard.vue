@@ -4,10 +4,10 @@
       <div>
         <h3 class="section-subtitle">{{ $t('budget.fundingHistory.title') }}</h3>
         <p class="fh-meta">
-          Base ${{ formatMoney(presupuestoBase) }}
+          Base {{ money(presupuestoBase) }}
           <template v-if="totalAjustes !== 0">
             <span :class="totalAjustes < 0 ? 'danger' : 'income'">
-              {{ totalAjustes < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(totalAjustes)) }} {{ $t('budget.fundingHistory.adjustments') }}
+              {{ totalAjustes < 0 ? '−' : '+' }}{{ money(Math.abs(totalAjustes)) }} {{ $t('budget.fundingHistory.adjustments') }}
             </span>
           </template>
           <span v-else class="muted">{{ $t('budget.fundingHistory.noAdjustments') }}</span>
@@ -25,7 +25,7 @@
         <li v-for="row in history" :key="row.id_ajuste" class="fh-item">
           <div class="fh-item-top">
             <span :class="row.monto < 0 ? 'danger' : 'income'" class="fh-amount">
-              {{ row.monto < 0 ? '−' : '+' }}${{ formatMoney(Math.abs(row.monto)) }}
+              {{ row.monto < 0 ? '−' : '+' }}{{ money(Math.abs(row.monto)) }}
             </span>
             <span class="fh-date">{{ formatDate(row.fecha) }}</span>
           </div>
@@ -40,8 +40,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 defineProps({
   history:         { type: Array, default: () => [] },
@@ -52,9 +54,8 @@ defineProps({
 
 const open = ref(false)
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 function formatDate(v) {
   if (!v) return ''

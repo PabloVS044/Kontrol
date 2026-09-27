@@ -10,7 +10,7 @@
           <span class="row-dot" :style="{ background: src.color }"></span>
           {{ src.label }}
         </span>
-        <span class="row-amount">${{ formatMoney(src.value) }}</span>
+        <span class="row-amount">{{ money(src.value) }}</span>
       </div>
       <ProgressBar
         :pct="expenseScale ? (src.value / expenseScale) * 100 : 0"
@@ -21,7 +21,7 @@
 
     <div class="subtotal-row">
       <span>{{ $t('budget.breakdown.totalExpenses') }}</span>
-      <span class="subtotal-value">${{ formatMoney(totalExpenses) }}</span>
+      <span class="subtotal-value">{{ money(totalExpenses) }}</span>
     </div>
 
     <div class="group-label" style="margin-top: 18px">{{ $t('budget.breakdown.incomeLabel') }}</div>
@@ -31,7 +31,7 @@
           <span class="row-dot" style="background: var(--k-state-success-text)"></span>
           {{ $t('budget.breakdown.productSales') }}
         </span>
-        <span class="row-amount income">${{ formatMoney(totalIncome) }}</span>
+        <span class="row-amount income">{{ money(totalIncome) }}</span>
       </div>
       <ProgressBar
         :pct="expenseScale ? (totalIncome / expenseScale) * 100 : 0"
@@ -43,7 +43,7 @@
     <div class="net-row" :class="netClass">
       <span class="net-label">{{ $t('budget.breakdown.netResult') }}</span>
       <span class="net-value">
-        {{ netResult < 0 ? '-' : '' }}${{ formatMoney(Math.abs(netResult)) }}
+        {{ netResult < 0 ? '-' : '' }}{{ money(Math.abs(netResult)) }}
       </span>
     </div>
   </section>
@@ -52,9 +52,11 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 import ProgressBar from '@/components/UI/ProgressBar/ProgressBar.vue'
 
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 const props = defineProps({
   totalBudget:           { type: Number, default: 0 },
@@ -89,9 +91,8 @@ const expenseScale = computed(() => Math.max(
   1,
 ))
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 </script>
 

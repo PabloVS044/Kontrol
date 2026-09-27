@@ -17,17 +17,17 @@
       <div class="pf-totals" :class="{ compact: !hasSales }">
         <div class="pf-total-cell">
           <span class="pf-total-label">{{ $t('budget.productTable.totalInvested') }}</span>
-          <span class="pf-total-value">${{ formatMoney(totals.total_invertido) }}</span>
+          <span class="pf-total-value">{{ money(totals.total_invertido) }}</span>
         </div>
         <template v-if="hasSales">
           <div class="pf-total-cell">
             <span class="pf-total-label">{{ $t('budget.productTable.totalSold') }}</span>
-            <span class="pf-total-value income">${{ formatMoney(totals.total_vendido) }}</span>
+            <span class="pf-total-value income">{{ money(totals.total_vendido) }}</span>
           </div>
           <div class="pf-total-cell">
             <span class="pf-total-label">{{ $t('budget.productTable.totalGrossProfit') }}</span>
             <span class="pf-total-value" :class="totals.utilidad_bruta < 0 ? 'danger' : 'income'">
-              {{ totals.utilidad_bruta < 0 ? '-' : '' }}${{ formatMoney(Math.abs(totals.utilidad_bruta || 0)) }}
+              {{ totals.utilidad_bruta < 0 ? '-' : '' }}{{ money(Math.abs(totals.utilidad_bruta || 0)) }}
             </span>
           </div>
           <div class="pf-total-cell">
@@ -77,18 +77,18 @@
               <td class="num">{{ p.stock_actual }}</td>
               <td class="num">{{ p.unidades_compradas }}</td>
               <td class="num">{{ p.unidades_vendidas }}</td>
-              <td class="num">${{ formatMoney(p.total_invertido) }}</td>
+              <td class="num">{{ money(p.total_invertido) }}</td>
               <template v-if="hasSales">
-                <td class="num income">${{ formatMoney(p.total_vendido) }}</td>
+                <td class="num income">{{ money(p.total_vendido) }}</td>
                 <td class="num" :class="p.utilidad_bruta < 0 ? 'danger' : 'income'">
-                  {{ p.utilidad_bruta < 0 ? '-' : '' }}${{ formatMoney(Math.abs(p.utilidad_bruta)) }}
+                  {{ p.utilidad_bruta < 0 ? '-' : '' }}{{ money(Math.abs(p.utilidad_bruta)) }}
                 </td>
                 <td class="num" :class="p.margen_pct < 0 ? 'danger' : 'gold'">
                   {{ p.margen_pct }}%
                 </td>
               </template>
               <template v-else>
-                <td class="num">${{ formatMoney(p.costo_promedio_ponderado) }}</td>
+                <td class="num">{{ money(p.costo_promedio_ponderado) }}</td>
               </template>
             </tr>
           </tbody>
@@ -101,8 +101,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 const props = defineProps({
   products: { type: Array, default: () => [] },
@@ -127,9 +129,8 @@ const totalUnitsUsed = computed(() =>
   props.products.reduce((sum, p) => sum + Number(p.unidades_vendidas || 0), 0)
 )
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 </script>
 
