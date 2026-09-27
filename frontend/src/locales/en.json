@@ -561,12 +561,21 @@
       "delete": "Delete product",
       "cannotSell": "This product cannot be sold right now."
     },
+    "receipt": {
+      "title": "Sale #{id} recorded",
+      "close": "Dismiss"
+    },
     "checkout": {
       "title": "Charge sale",
       "total": "Amount due",
       "confirm": "Confirm sale",
       "confirming": "Processing…",
-      "back": "Back"
+      "back": "Back",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "discountMax": "Up to {max}% allowed",
+      "discountLine": "Discount ({pct}%)",
+      "vatLine": "VAT ({pct}%)"
     },
     "sale": {
       "title": "Current sale",
@@ -1518,6 +1527,27 @@
       }
     }
   },
+  "settings": {
+    "title": "Company settings",
+    "subtitle": "Applies to every sale made by this company.",
+    "loading": "Loading settings…",
+    "loadError": "Could not load the settings.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Settings saved.",
+    "sale": {
+      "title": "Point of sale",
+      "hint": "VAT and discounts are off until you enable them here, so nothing a company already charges changes on its own.",
+      "vatEnabled": "Charge VAT on sales",
+      "vatEnabledNote": "Adds the tax on top of the discounted subtotal. The ticket shows it as its own line.",
+      "vatRate": "VAT rate",
+      "vatRateNote": "Entered as a percentage. Guatemala is 12%.",
+      "discountEnabled": "Allow discounts at the till",
+      "discountEnabledNote": "Lets the cashier apply a percentage to the whole sale.",
+      "discountMax": "Maximum discount",
+      "discountMaxNote": "A sale asking for more than this is rejected, not trimmed down. Leave it at 0 to allow none."
+    }
+  },
   "navbar": {
     "dashboard": "Dashboard",
     "inventory": "Inventory",
@@ -1529,6 +1559,15 @@
     "ai": "AI",
     "integrations": "Integrations",
     "marketing": "Marketing",
+    "account": {
+      "open": "Account menu",
+      "settings": "Company settings",
+      "signOut": "Sign out"
+    },
+    "menu": {
+      "open": "Open navigation",
+      "close": "Close navigation"
+    },
     "yourWorkspaces": "YOUR WORKSPACES",
     "createWorkspace": "+ Create new workspace",
     "admin": {

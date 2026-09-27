@@ -561,12 +561,21 @@
       "delete": "Eliminar producto",
       "cannotSell": "Este producto no puede venderse ahora."
     },
+    "receipt": {
+      "title": "Venta #{id} registrada",
+      "close": "Cerrar"
+    },
     "checkout": {
       "title": "Cobrar venta",
       "total": "Total a cobrar",
       "confirm": "Confirmar venta",
       "confirming": "Procesando…",
-      "back": "Volver"
+      "back": "Volver",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "discountMax": "Hasta {max}% permitido",
+      "discountLine": "Descuento ({pct}%)",
+      "vatLine": "IVA ({pct}%)"
     },
     "sale": {
       "title": "Venta en curso",
@@ -1518,6 +1527,27 @@
       }
     }
   },
+  "settings": {
+    "title": "Configuración de la empresa",
+    "subtitle": "Se aplica a todas las ventas de esta empresa.",
+    "loading": "Cargando la configuración…",
+    "loadError": "No se pudo cargar la configuración.",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "saved": "Configuración guardada.",
+    "sale": {
+      "title": "Punto de venta",
+      "hint": "El IVA y el descuento están desactivados hasta que los active aquí, para que no cambie por sí solo lo que ya cobra una empresa.",
+      "vatEnabled": "Cobrar IVA en las ventas",
+      "vatEnabledNote": "Se suma sobre el subtotal ya descontado. El ticket lo muestra en su propia línea.",
+      "vatRate": "Tasa de IVA",
+      "vatRateNote": "Se escribe en porcentaje. En Guatemala es 12%.",
+      "discountEnabled": "Permitir descuentos en caja",
+      "discountEnabledNote": "Deja que el cajero aplique un porcentaje a toda la venta.",
+      "discountMax": "Descuento máximo",
+      "discountMaxNote": "Una venta que pida más que esto se rechaza, no se recorta. Déjalo en 0 para no permitir ninguno."
+    }
+  },
   "navbar": {
     "dashboard": "Dashboard",
     "inventory": "Inventario",
@@ -1529,6 +1559,15 @@
     "ai": "IA",
     "integrations": "Integraciones",
     "marketing": "Marketing",
+    "account": {
+      "open": "Menú de cuenta",
+      "settings": "Configuración de la empresa",
+      "signOut": "Cerrar sesión"
+    },
+    "menu": {
+      "open": "Abrir navegación",
+      "close": "Cerrar navegación"
+    },
     "yourWorkspaces": "TUS ESPACIOS DE TRABAJO",
     "createWorkspace": "+ Crear nuevo espacio",
     "admin": {

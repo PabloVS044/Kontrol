@@ -51,13 +51,40 @@
 
     <SaleCheckoutModal
       v-model="showCheckout"
+      v-model:discount-percent="saleDiscountPct"
       :items="saleCart"
-      :total="saleTotal"
       :subtitle="saleSubtitle"
       :error="saleError"
       :submitting="saleSubmitting"
+      :config="saleConfig"
       @confirm="submitSale"
     />
+
+    <!-- Ticket de la venta registrada. Las cifras son las que devolvió el
+         servidor, no las que calculó esta vista: es lo que garantiza que el
+         ticket y el informe de ventas digan lo mismo. -->
+    <div v-if="lastSale" class="sale-receipt" role="status">
+      <div class="sr-head">
+        <span class="sr-title">{{ $t('inventory.receipt.title', { id: lastSale.id_venta }) }}</span>
+        <button class="sr-close" :aria-label="$t('inventory.receipt.close')" @click="lastSale = null">✕</button>
+      </div>
+      <div class="sr-row">
+        <span>{{ $t('inventory.checkout.subtotal') }}</span>
+        <span>${{ Number(lastSale.subtotal).toFixed(2) }}</span>
+      </div>
+      <div v-if="Number(lastSale.descuento) > 0" class="sr-row sr-row--minus">
+        <span>{{ $t('inventory.checkout.discountLine', { pct: Number(lastSale.descuento_pct) }) }}</span>
+        <span>−${{ Number(lastSale.descuento).toFixed(2) }}</span>
+      </div>
+      <div v-if="Number(lastSale.iva) > 0" class="sr-row">
+        <span>{{ $t('inventory.checkout.vatLine', { pct: Math.round(Number(lastSale.iva_tasa) * 10000) / 100 }) }}</span>
+        <span>${{ Number(lastSale.iva).toFixed(2) }}</span>
+      </div>
+      <div class="sr-row sr-row--total">
+        <span>{{ $t('inventory.checkout.total') }}</span>
+        <span>${{ Number(lastSale.total).toFixed(2) }}</span>
+      </div>
+    </div>
 
     <div class="inventory-layout">
 
@@ -590,6 +617,9 @@ onMounted(async () => {
   }
   await loadProjects()
   await loadData()
+  // No bloquea el catálogo: si tarda, el POS ya es usable y el desglose aparece
+  // en cuanto llega.
+  loadSaleConfig()
 })
 
 watch(() => authStore.idEmpresaActual, async () => {
@@ -711,6 +741,30 @@ function detailLink(product) {
 
 function openDetail(product) {
   router.push(detailLink(product))
+}
+
+/* ── configuración de venta (IVA y descuento de la empresa) ── */
+// Arranca sin IVA ni descuento: si la petición falla, el POS sigue vendiendo con
+// el comportamiento anterior en vez de quedarse bloqueado. El servidor calcula
+// lo que se cobra de todos modos, así que un default equivocado aquí no puede
+// cobrar de más.
+const saleConfig = ref({
+  iva_activo: false,
+  iva_tasa: 0,
+  descuento_activo: false,
+  descuento_max_pct: 0,
+})
+const saleDiscountPct = ref(0)
+// Desglose devuelto por la última venta registrada, tal como quedó guardado.
+const lastSale = ref(null)
+
+async function loadSaleConfig() {
+  try {
+    const res = await apiFetch('/api/companies/sale-config')
+    saleConfig.value = { ...saleConfig.value, ...res.data }
+  } catch {
+    /* Sin config el POS vende sin IVA ni descuento, como antes. */
+  }
 }
 
 /* ── carrito de venta ── */
@@ -957,6 +1011,9 @@ function clearSaleCart() {
   saleError.value = null
   cartExpanded.value = false
   showCheckout.value = false
+  // El descuento no se arrastra a la venta siguiente: se aplicaría sin que nadie
+  // lo volviera a pedir.
+  saleDiscountPct.value = 0
 }
 
 const saleTotal = computed(() => calcSubtotal(saleCart.value))
@@ -976,6 +1033,10 @@ async function submitSale() {
         id_producto: item.product.id_producto,
         id_proyecto,
         cantidad: item.cantidad,
+        // Se envía el precio que se enseñó en pantalla, no para que el servidor
+        // lo use —cobra siempre el del producto— sino para que lo contraste: si
+        // el catálogo cambió mientras el carrito estaba abierto, la venta se
+        // rechaza en vez de cobrar un precio que el cajero no vio.
         precio_unitario: Number(item.product.precio_venta),
       }
     })
@@ -984,11 +1045,21 @@ async function submitSale() {
     const res = await fetch('/api/inventory-movements/sale', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ items, motivo: t('inventory.sale.movementReason') }),
+      body: JSON.stringify({
+        items,
+        motivo: t('inventory.sale.movementReason'),
+        // Solo se manda si la empresa lo permite; el servidor lo revalida.
+        descuento_pct: saleConfig.value.descuento_activo ? saleDiscountPct.value : 0,
+      }),
     })
 
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.message || `Error ${res.status}`)
+
+    // El ticket se queda con las cifras del servidor, que son las que quedaron
+    // persistidas: calcularlas otra vez aquí es lo que hacía divergir el ticket
+    // del informe de ventas.
+    lastSale.value = data.data?.venta ?? null
 
     clearSaleCart()
     await loadData()

@@ -43,7 +43,11 @@
         </Teleport>
       </div>
 
-      <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
+      <!-- Un toque fuera cierra el cajón. Sin esto había que volver al hamburguesa
+           con el menú tapando media pantalla. -->
+      <div v-if="isMenuOpen" class="appnav-backdrop" @click="closeMenu" />
+
+      <div id="appnav-links" class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">Suppliers</RouterLink>
@@ -72,9 +76,52 @@
             <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="setLocale('es')">Español</button>
           </div>
         </div>
-        <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
+        <!-- El avatar abre un menú en vez de cerrar sesión de golpe: una inicial
+             suelta se lee como "ver mi perfil", y el clic destruía la sesión sin
+             decir que eso iba a pasar. Aquí el cierre de sesión está escrito. -->
+        <div ref="userMenuRef" class="user-menu">
+          <button
+            class="appnav-avatar"
+            :class="{ active: isUserMenuOpen }"
+            :aria-label="$t('navbar.account.open')"
+            :aria-expanded="isUserMenuOpen"
+            aria-haspopup="menu"
+            @click.stop="isUserMenuOpen = !isUserMenuOpen"
+          >{{ userInitial }}</button>
 
-        <button class="hamburger" @click="toggleMenu" aria-label="Menu">
+          <div v-if="isUserMenuOpen" class="user-dropdown" role="menu">
+            <div class="ud-identity">
+              <span class="ud-name">{{ userDisplayName }}</span>
+              <span v-if="authStore.user?.email" class="ud-email">{{ authStore.user.email }}</span>
+            </div>
+
+            <div class="ud-divider" />
+
+            <RouterLink
+              v-if="isAdminOrOwner"
+              class="ud-item"
+              role="menuitem"
+              to="/settings"
+              @click="closeUserMenu"
+            >
+              <Settings :size="15" />
+              <span>{{ $t('navbar.account.settings') }}</span>
+            </RouterLink>
+
+            <button class="ud-item ud-item--signout" role="menuitem" @click="logout">
+              <LogOut :size="15" />
+              <span>{{ $t('navbar.account.signOut') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          class="hamburger"
+          :aria-label="isMenuOpen ? $t('navbar.menu.close') : $t('navbar.menu.open')"
+          :aria-expanded="isMenuOpen"
+          aria-controls="appnav-links"
+          @click.stop="toggleMenu"
+        >
           <span :class="{'line': true, 'line-top': isMenuOpen}"></span>
           <span :class="{'line': true, 'line-middle': isMenuOpen}"></span>
           <span :class="{'line': true, 'line-bottom': isMenuOpen}"></span>
@@ -86,9 +133,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Languages } from 'lucide-vue-next'
+import { Languages, LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import logo from '../assets/img/kontrol.png'
@@ -104,6 +151,8 @@ const triggerEl     = ref(null)
 const isMenuOpen  = ref(false)
 const isLangOpen  = ref(false)
 const langBtnRef  = ref(null)
+const isUserMenuOpen = ref(false)
+const userMenuRef    = ref(null)
 
 const isAdminOrOwner = computed(() => {
   const rol = authStore.empresaActual?.rol
@@ -114,6 +163,17 @@ const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
+
+/** Nombre para el menú de cuenta; el email queda como respaldo. */
+const userDisplayName = computed(() => {
+  const u = authStore.user
+  const full = [u?.nombre, u?.apellido].filter(Boolean).join(' ').trim()
+  return full || u?.email || 'Kontrol'
+})
+
+function closeUserMenu() {
+  isUserMenuOpen.value = false
+}
 
 function toggleDropdown(e) {
   if (!dropdownOpen.value) {
@@ -165,11 +225,27 @@ function handleClickOutside(e) {
   if (langBtnRef.value && !langBtnRef.value.contains(e.target)) {
     isLangOpen.value = false
   }
+  if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
+    isUserMenuOpen.value = false
+  }
 }
 
+// Escape cierra lo que esté abierto: con el cajón de navegación ocupando la
+// pantalla, no tener salida por teclado deja atrapado a quien no usa ratón.
 function onKeydown(e) {
-  if (e.key === 'Escape') closeDropdown()
+  if (e.key !== 'Escape') return
+  closeDropdown()
+  closeUserMenu()
+  closeMenu()
+  isLangOpen.value = false
 }
+
+// Navegar cierra el cajón. Los links ya llaman a closeMenu, pero un cambio de
+// ruta por el botón atrás del navegador lo dejaba abierto sobre la vista nueva.
+watch(() => route.fullPath, () => {
+  closeMenu()
+  closeUserMenu()
+})
 
 onMounted(() => {
   const saved = localStorage.getItem(localeKey())
@@ -477,23 +553,95 @@ const closeMenu = () => {
 .lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
 .lang-opt.selected { color: var(--Primary); }
 
+/* ── Menú de cuenta ── */
+.user-menu { position: relative; }
+
 .appnav-avatar {
   width: 32px;
   height: 32px;
   background: var(--k-shade-6);
-  border: var(--k-border-width) solid #2e2e2e;
+  border: var(--k-border-width) solid var(--k-shade-7);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
   font-weight: 600;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   cursor: pointer;
+  padding: 0;
   transition: border-color 0.15s;
 }
 
-.appnav-avatar:hover {
-  border-color: var(--k-gray-3);
+.appnav-avatar:hover,
+.appnav-avatar.active {
+  border-color: var(--k-color-primary);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + var(--k-space-2));
+  right: 0;
+  min-width: 220px;
+  z-index: 200;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  padding: var(--k-space-2) 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ud-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--k-space-2) var(--k-space-4) var(--k-space-3);
+}
+.ud-name {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-color-text);
+  overflow-wrap: anywhere;
+}
+.ud-email {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ud-divider {
+  height: var(--k-border-width);
+  background: var(--k-shade-6);
+  margin: 0 0 var(--k-space-2);
+}
+
+.ud-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-space-3);
+  width: 100%;
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-text-soft);
+  transition: var(--k-transition-ui);
+}
+.ud-item:hover {
+  background: var(--k-shade-4);
+  color: var(--k-color-text);
+}
+/* Cerrar sesión se distingue del resto: es la acción destructiva del menú. */
+.ud-item--signout { color: var(--k-state-error-text); }
+.ud-item--signout:hover {
+  background: var(--k-shade-4);
+  color: var(--k-state-error-text);
 }
 
 /* Tablet */
@@ -533,32 +681,57 @@ const closeMenu = () => {
   transform: translateY(-9px) rotate(-45deg);
 }
 
-/* Tablet: reducir gap y padding */
-@media (max-width: 900px) {
+/* Cierra el cajón al tocar fuera. Bajo la barra para no taparla. */
+.appnav-backdrop {
+  position: fixed;
+  top: 56px;
+  left: 0; right: 0; bottom: 0;
+  z-index: 98;
+  background: rgba(var(--k-color-black-rgb), 0.5);
+}
+
+/* Compactar antes de plegar: gana sitio y retrasa el cajón. */
+@media (max-width: 1400px) {
   .appnav-inner { padding: 0 var(--k-space-5); }
   .appnav-link  { padding: 0 10px; font-size: var(--k-font-size-caption); }
   .empresa-name { max-width: 100px; }
 }
 
-/* Mobile */
-@media (max-width: 640px) {
+/*
+ * Cajón de navegación.
+ *
+ * El umbral estaba en 640px, pero la fila de enlaces necesita ~1300px para
+ * caber: entre 641px y ahí, `.appnav-links` seguía en fila sin `flex-wrap` ni
+ * desbordamiento visible, así que los últimos enlaces —marketing, IA,
+ * integraciones— quedaban cortados fuera del ancho y no había hamburguesa para
+ * alcanzarlos. En una tablet o un portátil estrecho simplemente no existían.
+ *
+ * Ahora se plega en cuanto la fila deja de caber, que es el único momento en el
+ * que el cajón hace falta.
+ */
+@media (max-width: 1300px) {
   .hamburger { display: block; }
 
   .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
-
-  .empresa-role { display: none; }
 
   .appnav-links {
     position: fixed;
     top: 56px;
     left: 0;
     right: 0;
-    background: #090909;
+    z-index: 99;
+    background: var(--k-shade-1);
     border-bottom: var(--k-border-width) solid var(--k-shade-6);
     flex-direction: column;
-    padding: 20px 0;
-    gap: var(--k-space-4);
-    align-items: center;
+    padding: var(--k-space-3) 0;
+    gap: 0;
+    align-items: stretch;
+    /* Once enlaces no caben en un móvil apaisado: el cajón se desplaza en vez
+       de dejar los últimos fuera de la pantalla, que es el fallo que se
+       arrastraba en la fila. */
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
     transition: clip-path 0.3s ease-in-out;
     pointer-events: none;
@@ -570,10 +743,33 @@ const closeMenu = () => {
   }
 
   .appnav-link {
-    font-size: var(--k-font-size-body-large);
-    padding: 10px 20px;
+    font-size: var(--k-font-size-body-main);
+    padding: 0 var(--k-space-5);
+    min-height: var(--k-target-min-size);
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
   }
+
+  /* En fila el subrayado marca la activa; apilado se lee mejor como barra
+     lateral, y el subrayado a 16px del borde quedaba flotando. El eje de la
+     escala cambia con la orientación: scaleX no abre una barra vertical. */
+  .appnav-link::after {
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+    transform: scaleY(0);
+  }
+
+  .appnav-link.router-link-active::after {
+    transform: scaleY(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .empresa-role { display: none; }
+  .appnav-link { font-size: var(--k-font-size-body-large); }
 }
 </style>
