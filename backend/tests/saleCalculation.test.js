@@ -6,6 +6,7 @@ import {
   IVA_RATE,
   DEFAULT_SALE_CONFIG,
   calcSale,
+  calcSaleWithAllocation,
   calcSubtotal,
   lineTotal,
   normalizeSaleConfig,
@@ -171,5 +172,143 @@ describe('resolveSaleOptions — la config manda sobre lo que pide el cliente', 
   it('sin config guardada no hay IVA ni descuento posible', () => {
     expect(resolveSaleOptions(null).options.taxRate).toBe(0)
     expect(resolveSaleOptions(null, { discountPercent: 1 }).code).toBe('DISCOUNT_DISABLED')
+  })
+})
+
+/**
+ * Reparto del descuento y del IVA entre las líneas.
+ *
+ * La propiedad que importa es que el reparto sume EXACTAMENTE el importe de la
+ * cabecera. Si no, el informe filtrado por proyecto deja de cuadrar con el
+ * ticket por céntimos, y ese descuadre no se nota hasta que alguien audita.
+ */
+describe('calcSaleWithAllocation — el reparto cuadra al céntimo', () => {
+  // Se suma en céntimos enteros, no en decimales: `0.12 + 3.06` en coma flotante
+  // da 3.1799999999999997 y el descuadre sería del test, no del reparto. En la
+  // base la columna es `numeric`, que es aritmética decimal exacta, así que
+  // sumar céntimos es lo que refleja lo que hará SUM() en Postgres.
+  const sum = (arr, key) =>
+    arr.reduce((acc, l) => acc + Math.round(l[key] * 100), 0) / 100
+
+  it('una sola línea se queda todo el descuento y todo el IVA', () => {
+    const { header, lines } = calcSaleWithAllocation(
+      [{ precio: 100, cantidad: 1 }],
+      { discountPercent: 10, taxRate: 0.12 }
+    )
+    expect(lines).toHaveLength(1)
+    expect(lines[0].descuento_linea).toBe(header.discount)
+    expect(lines[0].iva_linea).toBe(header.tax)
+  })
+
+  it('tres líneas iguales: el céntimo que no divide no se pierde', () => {
+    // 10.00 entre tres da 3.333…; redondear cada parte daría 9.99 o 10.01.
+    const { header, lines } = calcSaleWithAllocation(
+      [
+        { precio: 33.34, cantidad: 1 },
+        { precio: 33.33, cantidad: 1 },
+        { precio: 33.33, cantidad: 1 },
+      ],
+      { discountPercent: 10, taxRate: 0 }
+    )
+    expect(header.subtotal).toBe(100)
+    expect(header.discount).toBe(10)
+    expect(sum(lines, 'descuento_linea')).toBe(10)
+  })
+
+  it('el reparto es proporcional al importe de cada línea', () => {
+    const { lines } = calcSaleWithAllocation(
+      [
+        { precio: 75, cantidad: 1 },
+        { precio: 25, cantidad: 1 },
+      ],
+      { discountPercent: 20, taxRate: 0 }
+    )
+    // 20% de 100 = 20, repartido 75/25.
+    expect(lines[0].descuento_linea).toBe(15)
+    expect(lines[1].descuento_linea).toBe(5)
+  })
+
+  it('con IVA y descuento, ambos repartos suman su cabecera', () => {
+    const { header, lines } = calcSaleWithAllocation(
+      [
+        { precio: 19.99, cantidad: 2 },
+        { precio: 5.25, cantidad: 4 },
+        { precio: 0.99, cantidad: 7 },
+      ],
+      { discountPercent: 15, taxRate: 0.12 }
+    )
+    expect(sum(lines, 'descuento_linea')).toBe(header.discount)
+    expect(sum(lines, 'iva_linea')).toBe(header.tax)
+  })
+
+  it('una línea con importe cero no recibe reparto', () => {
+    const { lines } = calcSaleWithAllocation(
+      [
+        { precio: 100, cantidad: 1 },
+        { precio: 50, cantidad: 0 },
+      ],
+      { discountPercent: 10, taxRate: 0.12 }
+    )
+    expect(lines[1].descuento_linea).toBe(0)
+    expect(lines[1].iva_linea).toBe(0)
+  })
+
+  it('sin descuento ni IVA el reparto es todo cero', () => {
+    const { lines } = calcSaleWithAllocation(
+      [{ precio: 100, cantidad: 2 }],
+      { discountPercent: 0, taxRate: 0 }
+    )
+    expect(lines[0].descuento_linea).toBe(0)
+    expect(lines[0].iva_linea).toBe(0)
+  })
+
+  it('un descuento del 100% se reparte entero y deja el total en cero', () => {
+    const { header, lines } = calcSaleWithAllocation(
+      [
+        { precio: 33.33, cantidad: 1 },
+        { precio: 66.67, cantidad: 1 },
+      ],
+      { discountPercent: 100, taxRate: 0.12 }
+    )
+    expect(header.total).toBe(0)
+    expect(sum(lines, 'descuento_linea')).toBe(100)
+    expect(sum(lines, 'iva_linea')).toBe(0)
+  })
+
+  it('una venta vacía no produce líneas', () => {
+    const { header, lines } = calcSaleWithAllocation([], { taxRate: 0.12 })
+    expect(lines).toEqual([])
+    expect(header.total).toBe(0)
+  })
+
+  it('el reparto no depende del orden de las líneas', () => {
+    const a = calcSaleWithAllocation(
+      [{ precio: 10, cantidad: 1 }, { precio: 20, cantidad: 1 }],
+      { discountPercent: 7, taxRate: 0.12 }
+    )
+    const b = calcSaleWithAllocation(
+      [{ precio: 20, cantidad: 1 }, { precio: 10, cantidad: 1 }],
+      { discountPercent: 7, taxRate: 0.12 }
+    )
+    expect(a.lines[0].descuento_linea).toBe(b.lines[1].descuento_linea)
+    expect(a.lines[1].descuento_linea).toBe(b.lines[0].descuento_linea)
+  })
+
+  it('cuadra con muchas líneas de céntimos incómodos (propiedad, 200 casos)', () => {
+    // Barrido: es donde aparecen los descuadres de un céntimo.
+    for (let n = 1; n <= 8; n++) {
+      for (let pct = 1; pct <= 25; pct++) {
+        const lines = Array.from({ length: n }, (_, i) => ({
+          precio: 0.01 + i * 3.37,
+          cantidad: (i % 3) + 1,
+        }))
+        const { header, lines: split } = calcSaleWithAllocation(lines, {
+          discountPercent: pct,
+          taxRate: 0.12,
+        })
+        expect(sum(split, 'descuento_linea')).toBe(header.discount)
+        expect(sum(split, 'iva_linea')).toBe(header.tax)
+      }
+    }
   })
 })

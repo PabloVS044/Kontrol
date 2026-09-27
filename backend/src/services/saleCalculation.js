@@ -178,3 +178,75 @@ export function resolveSaleOptions(config, { discountPercent = 0 } = {}) {
     },
   }
 }
+
+/* ── reparto del descuento y del IVA entre las líneas ─────────────────────── */
+
+/**
+ * Reparte `totalCents` entre `amounts` en proporción a cada importe, de forma
+ * que la suma del reparto sea EXACTAMENTE `totalCents`.
+ *
+ * Se trabaja en céntimos enteros: repartir en decimales y redondear cada parte
+ * por separado no suma el total (tres líneas iguales sobre 10.00 dan 3.33 × 3 =
+ * 9.99). Los céntimos que sobran tras truncar se entregan de uno en uno a las
+ * líneas con mayor resto —el método del resto mayor—, con el importe de la línea
+ * como desempate para que el reparto sea estable y no dependa del orden.
+ *
+ * @param {number[]} amounts Importe de cada línea.
+ * @param {number}   totalCents Total a repartir, en céntimos enteros.
+ * @returns {number[]} Céntimos asignados a cada línea.
+ */
+function allocateCents(amounts, totalCents) {
+  const n = amounts.length
+  const zeros = new Array(n).fill(0)
+  if (!n || !Number.isFinite(totalCents) || totalCents <= 0) return zeros
+
+  const total = amounts.reduce((acc, a) => acc + a, 0)
+  // Sin base proporcional no hay reparto posible: un descuento sobre líneas a
+  // cero no puede caer en ninguna parte.
+  if (!(total > 0)) return zeros
+
+  const exact = amounts.map((a) => (totalCents * a) / total)
+  const floors = exact.map((e) => Math.floor(e))
+  const assigned = floors.reduce((acc, f) => acc + f, 0)
+  let leftover = totalCents - assigned
+
+  const order = exact
+    .map((e, i) => ({ i, rest: e - floors[i], amount: amounts[i] }))
+    .sort((a, b) => (b.rest - a.rest) || (b.amount - a.amount) || (a.i - b.i))
+
+  const out = [...floors]
+  for (let k = 0; k < order.length && leftover > 0; k++, leftover--) {
+    out[order[k].i] += 1
+  }
+  return out
+}
+
+/**
+ * Desglose de una venta con el reparto por línea ya resuelto.
+ *
+ * Devuelve la cabecera (lo que se cobró, lo que ve el ticket) y una entrada por
+ * línea con su parte del descuento y del IVA. La suma del reparto es idéntica al
+ * importe de la cabecera, que es lo que permite que el informe cuadre con el
+ * ticket tanto filtrando por proyecto como sin filtrar.
+ *
+ * @param {Array}  lines   Líneas `{ precio_unitario|precio, cantidad }`.
+ * @param {object} options Igual que `calcSale`.
+ * @returns {{header:object, lines:Array<{importe:number, descuento_linea:number, iva_linea:number}>}}
+ */
+export function calcSaleWithAllocation(lines, options = {}) {
+  const header = calcSale(lines, options)
+  const safeLines = Array.isArray(lines) ? lines : []
+  const amounts = safeLines.map((l) => lineTotal(l))
+
+  const discountCents = allocateCents(amounts, Math.round(header.discount * 100))
+  const taxCents = allocateCents(amounts, Math.round(header.tax * 100))
+
+  return {
+    header,
+    lines: amounts.map((importe, i) => ({
+      importe,
+      descuento_linea: discountCents[i] / 100,
+      iva_linea: taxCents[i] / 100,
+    })),
+  }
+}

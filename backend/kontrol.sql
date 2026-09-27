@@ -233,6 +233,39 @@ CREATE TABLE public.presupuesto_actividad (
 -- id_producto es nullable: permite registrar gastos administrativos del proyecto
 -- que impactan el presupuesto sin corresponder a un item de inventario.
 -- cantidad también nullable por la misma razón (un gasto admin no tiene unidades).
+-- venta va antes de movimiento_inventario: este la referencia por FK (mi_venta_fkey).
+--
+-- Cabecera de una venta del POS. Descuento e IVA son por VENTA, no por línea, y
+-- sin una cabecera no había dónde guardarlos: el total del ticket vivía solo en
+-- el navegador. Aquí queda lo que realmente se cobró, calculado en el servidor.
+--
+-- Guarda tanto los porcentajes/tasas como los importes ya resueltos. Recalcular
+-- el importe desde el porcentaje años después daría otra cifra en cuanto cambie
+-- el redondeo o la tasa de la empresa; un ticket reimpreso debe cuadrar con el
+-- que se entregó.
+--
+-- No lleva id_proyecto: una venta puede abarcar varios proyectos (el POS vende
+-- desde la vista de "todos los proyectos"). El reparto por proyecto vive en las
+-- líneas, en movimiento_inventario.
+CREATE TABLE public.venta (
+  id_venta SERIAL PRIMARY KEY,
+  fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  subtotal numeric NOT NULL CHECK (subtotal >= 0::numeric),
+  descuento_pct numeric NOT NULL DEFAULT 0 CHECK (descuento_pct >= 0::numeric AND descuento_pct <= 100::numeric),
+  descuento numeric NOT NULL DEFAULT 0 CHECK (descuento >= 0::numeric),
+  base_imponible numeric NOT NULL CHECK (base_imponible >= 0::numeric),
+  iva_tasa numeric NOT NULL DEFAULT 0 CHECK (iva_tasa >= 0::numeric AND iva_tasa <= 1::numeric),
+  iva numeric NOT NULL DEFAULT 0 CHECK (iva >= 0::numeric),
+  total numeric NOT NULL CHECK (total >= 0::numeric),
+  motivo text,
+  id_empresa integer NOT NULL,
+  id_usuario integer NOT NULL,
+  CONSTRAINT venta_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
+  CONSTRAINT venta_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+);
+
+CREATE INDEX venta_empresa_fecha_idx ON public.venta (id_empresa, fecha DESC);
+
 -- id_actividad opcional: enlaza un GASTO_ADMIN a una actividad de presupuesto
 -- para que la actividad pueda mostrar su historia de gastos sin tabla aparte.
 CREATE TABLE public.movimiento_inventario (
@@ -248,8 +281,25 @@ CREATE TABLE public.movimiento_inventario (
   id_proyecto integer NOT NULL,
   id_proveedor integer,
   id_actividad integer,
+  -- Coste unitario congelado al vender: la ganancia histórica no debe moverse
+  -- cuando cambie el coste promedio del producto.
+  costo_unitario_venta numeric,
+  -- Venta a la que pertenece la línea. NULL en ENTRADA/AJUSTE/GASTO_ADMIN, que
+  -- no son ventas, y en las SALIDA anteriores a la cabecera.
+  id_venta integer,
+  -- Reparto por línea del descuento y del IVA de la venta.
+  --
+  -- La cabecera es la autoridad de lo que se cobró, pero el informe filtra por
+  -- proyecto y una venta puede abarcar varios: sumar la cabecera atribuiría el
+  -- descuento completo a cada proyecto que la toque. El reparto se calcula en
+  -- proporción al importe de cada línea y suma EXACTAMENTE el total de la
+  -- cabecera —los céntimos sobrantes del truncado se reparten por el método del
+  -- resto mayor—, de modo que informe y ticket cuadran con y sin filtro.
+  descuento_linea numeric NOT NULL DEFAULT 0 CHECK (descuento_linea >= 0::numeric),
+  iva_linea numeric NOT NULL DEFAULT 0 CHECK (iva_linea >= 0::numeric),
   -- FK compuesta: producto (si existe) debe pertenecer al mismo proyecto
   CONSTRAINT mi_producto_proyecto_fkey FOREIGN KEY (id_proyecto, id_producto) REFERENCES public.producto(id_proyecto, id_producto),
+  CONSTRAINT mi_venta_fkey FOREIGN KEY (id_venta) REFERENCES public.venta(id_venta),
   CONSTRAINT mi_proyecto_empresa_fkey FOREIGN KEY (id_empresa, id_proyecto) REFERENCES public.proyecto(id_empresa, id_proyecto),
   CONSTRAINT movimiento_inventario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario),
   CONSTRAINT movimiento_inventario_id_proveedor_fkey FOREIGN KEY (id_proveedor) REFERENCES public.proveedor(id_proveedor),

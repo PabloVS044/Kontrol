@@ -281,6 +281,70 @@ export const ensureDatabaseSchema = async () => {
     )
   `)
 
+  // Sale header. Discount and VAT belong to the sale, not to a line, and until
+  // now there was nowhere to keep them: the ticket total lived only in the
+  // browser. Amounts are stored resolved, not just as percentages — recomputing
+  // from a percentage later would give a different figure once rounding or the
+  // company's rate changes, and a reprinted ticket has to match the one handed
+  // over. No id_proyecto: a sale can span projects, so the per-project split
+  // lives on the movement lines.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.venta (
+      id_venta SERIAL PRIMARY KEY,
+      fecha timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      subtotal numeric NOT NULL CHECK (subtotal >= 0::numeric),
+      descuento_pct numeric NOT NULL DEFAULT 0 CHECK (descuento_pct >= 0::numeric AND descuento_pct <= 100::numeric),
+      descuento numeric NOT NULL DEFAULT 0 CHECK (descuento >= 0::numeric),
+      base_imponible numeric NOT NULL CHECK (base_imponible >= 0::numeric),
+      iva_tasa numeric NOT NULL DEFAULT 0 CHECK (iva_tasa >= 0::numeric AND iva_tasa <= 1::numeric),
+      iva numeric NOT NULL DEFAULT 0 CHECK (iva >= 0::numeric),
+      total numeric NOT NULL CHECK (total >= 0::numeric),
+      motivo text,
+      id_empresa integer NOT NULL,
+      id_usuario integer NOT NULL,
+      CONSTRAINT venta_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa),
+      CONSTRAINT venta_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+    )
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS venta_empresa_fecha_idx
+      ON public.venta (id_empresa, fecha DESC)
+  `)
+
+  // Link each sale line to its header, plus the per-line split of the sale's
+  // discount and VAT. The header is authoritative for what was charged, but the
+  // report filters by project and a sale can span several: summing the header
+  // would credit the whole discount to every project it touches. The split is
+  // proportional to each line's amount and adds up to the header exactly.
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS id_venta integer
+  `)
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS descuento_linea numeric NOT NULL DEFAULT 0
+  `)
+  await pool.query(`
+    ALTER TABLE public.movimiento_inventario
+      ADD COLUMN IF NOT EXISTS iva_linea numeric NOT NULL DEFAULT 0
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'mi_venta_fkey'
+      ) THEN
+        ALTER TABLE public.movimiento_inventario
+          ADD CONSTRAINT mi_venta_fkey
+          FOREIGN KEY (id_venta) REFERENCES public.venta(id_venta) NOT VALID;
+      END IF;
+    END $$
+  `)
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS movimiento_inventario_venta_idx
+      ON public.movimiento_inventario (id_venta)
+  `)
+
   // Indexes for the sales/finance analytics + movement listings, which filter
   // by project + date range and by product. Avoids full scans as the ledger grows.
   await pool.query(`
