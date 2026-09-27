@@ -28,30 +28,48 @@ import {
 
 const router = createRouter()
 
-// All routes require authentication + company context + project context
+// Auth + company context for everything. El contexto de PROYECTO se aplica ruta
+// por ruta, no en bloque: los dos listados agregan varios proyectos a la vez y
+// un guard de un solo proyecto no puede expresar eso (ver más abajo).
 router.use(requireAuth)
 router.use(requireCompany)
-router.use(requireProject)
 
 // ── Products ──────────────────────────────────────────────────────────────────
 
-// /alerts/low-stock must come before /:id to avoid "alerts" matching as an id
+/*
+ * Los dos listados NO llevan requireProject ni requireProjectPermission.
+ *
+ * Están hechos para responder a nivel de empresa —"todos los proyectos" es la
+ * vista por defecto del inventario— y hacen su propio control dentro del
+ * controller con `getInventoryAccessibleProjectIds`: un owner/admin ve toda la
+ * empresa, cualquier otro solo los proyectos donde tiene `ver_inventario`, la
+ * lista vacía devuelve [], y pedir un projectId al que no se tiene acceso da 403.
+ *
+ * Exigirles la cabecera X-Project-ID los rompía por completo: el frontend no la
+ * envía en la vista de todos los proyectos —usa ?projectId cuando filtra—, así
+ * que el inventario respondía 400 "Select a project to continue." siempre. Un
+ * guard por cabecera no puede autorizar una consulta que abarca N proyectos;
+ * eso solo se resuelve filtrando por los accesibles, que es lo que ya hace.
+ */
 router.get(
   '/alerts/low-stock',
-  requireProjectPermission('ver_inventario'),
   getLowStockAlerts
 )
 
 router.get(
   '/',
   expensiveLimiter,
-  requireProjectPermission('ver_inventario'),
   validate(getProductsQuerySchema, 'query'),
   getProducts
 )
 
+// A partir de aquí todo opera sobre UN proyecto, así que sí exigen su contexto.
+// requireProject debe seguir presente en las rutas con `:id`: sin él,
+// requireProjectPermission cae a `req.params.id`, que es el id del PRODUCTO, y
+// comprobaría el acceso al proyecto contra un id que no es de proyecto.
 router.get(
   '/:id',
+  requireProject,
   requireProjectPermission('ver_inventario'),
   validate(productIdParamSchema, 'params'),
   getProductById
@@ -59,6 +77,7 @@ router.get(
 
 router.post(
   '/',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(createProductSchema),
   createProduct
@@ -66,6 +85,7 @@ router.post(
 
 router.put(
   '/:id',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   validate(updateProductSchema),
@@ -74,6 +94,7 @@ router.put(
 
 router.delete(
   '/:id',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   deleteProduct
@@ -83,6 +104,7 @@ router.delete(
 
 router.post(
   '/:id/suppliers',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(productIdParamSchema, 'params'),
   validate(linkSupplierSchema),
@@ -91,6 +113,7 @@ router.post(
 
 router.put(
   '/:id/suppliers/:supplierId',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(productSupplierParamsSchema, 'params'),
   validate(updateSupplierLinkSchema),
@@ -99,6 +122,7 @@ router.put(
 
 router.delete(
   '/:id/suppliers/:supplierId',
+  requireProject,
   requireProjectPermission('gestionar_inventario'),
   validate(productSupplierParamsSchema, 'params'),
   unlinkSupplier
