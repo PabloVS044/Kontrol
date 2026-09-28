@@ -152,3 +152,99 @@ describe('SaleCheckoutModal — modal de cobro', () => {
     expect(document.querySelector('.checkout-error').textContent).toBe('Error de red, intenta de nuevo.')
   })
 })
+
+/**
+ * Desglose del cobro (descuento e IVA).
+ *
+ * El modal enseñaba una sola cifra —el subtotal— llamada "total a cobrar",
+ * mientras el descuento y el IVA vivían sin usarse en `utils/sales.js`. Estas
+ * pruebas fijan que el desglose se muestre, que el descuento solo exista si la
+ * empresa lo permite, y que el campo respete su tope antes de llegar al servidor.
+ *
+ * BaseModal se teletransporta al body, así que se consulta por `document`.
+ */
+describe('SaleCheckoutModal — desglose de descuento e IVA', () => {
+  const abrir = (over = {}) =>
+    montar(SaleCheckoutModal, { modelValue: true, items, ...over })
+
+  const sinNada = { iva_activo: false, iva_tasa: 0, descuento_activo: false, descuento_max_pct: 0 }
+  const conIva  = { iva_activo: true, iva_tasa: 0.12, descuento_activo: false, descuento_max_pct: 0 }
+  const conTodo = { iva_activo: true, iva_tasa: 0.12, descuento_activo: true, descuento_max_pct: 20 }
+
+  const textos = (sel) => [...document.querySelectorAll(sel)].map((n) => n.textContent)
+
+  it('sin IVA ni descuento el total es el subtotal y no hay líneas extra', () => {
+    abrir({ config: sinNada })
+
+    expect(document.querySelector('.ct-value').textContent).toBe('$81.00')
+    expect(document.querySelector('.cb-row--minus')).toBeNull()
+    expect(document.querySelector('.checkout-discount')).toBeNull()
+  })
+
+  it('con IVA activo lo muestra como línea propia y lo suma al total', () => {
+    abrir({ config: conIva })
+
+    expect(textos('.cb-label').some((l) => l.includes('IVA (12%)'))).toBe(true)
+    // 81 + 12% = 90.72
+    expect(document.querySelector('.ct-value').textContent).toBe('$90.72')
+  })
+
+  it('el campo de descuento solo aparece si la empresa lo permite', () => {
+    abrir({ config: conIva })
+    expect(document.querySelector('.checkout-discount')).toBeNull()
+
+    document.body.innerHTML = ''
+    abrir({ config: conTodo })
+    expect(document.querySelector('.checkout-discount')).not.toBeNull()
+  })
+
+  it('el descuento se aplica antes del IVA', () => {
+    abrir({ config: conTodo, discountPercent: 10 })
+
+    // 81 − 8.10 = 72.90; IVA 12% de 72.90 = 8.75; total 81.65
+    const valores = textos('.cb-value')
+    expect(valores).toContain('−$8.10')
+    expect(valores).toContain('$8.75')
+    expect(document.querySelector('.ct-value').textContent).toBe('$81.65')
+  })
+
+  it('anuncia el tope de descuento de la empresa', () => {
+    abrir({ config: conTodo })
+
+    expect(document.querySelector('.cd-max').textContent).toContain('20')
+    expect(document.querySelector('.cd-input').getAttribute('max')).toBe('20')
+  })
+
+  it('recorta el descuento al tope al escribirlo, no al confirmar', () => {
+    // Dejar pasar un 50 y que el servidor lo rechace descubre el problema con el
+    // cliente ya esperando en el mostrador.
+    const wrapper = abrir({ config: conTodo })
+    const input = document.querySelector('.cd-input')
+
+    input.value = '50'
+    input.dispatchEvent(new Event('input'))
+
+    const emitido = wrapper.emitted('update:discountPercent')
+    expect(emitido[emitido.length - 1]).toEqual([20])
+  })
+
+  it('un descuento negativo se trata como cero', () => {
+    const wrapper = abrir({ config: conTodo })
+    const input = document.querySelector('.cd-input')
+
+    input.value = '-5'
+    input.dispatchEvent(new Event('input'))
+
+    const emitido = wrapper.emitted('update:discountPercent')
+    expect(emitido[emitido.length - 1]).toEqual([0])
+  })
+
+  it('con el descuento desactivado, un porcentaje suelto no se aplica', () => {
+    // Defensa por si la config cambia con el modal abierto: el servidor lo
+    // rechazaría, y aquí no debe pintarse un total que no se va a cobrar.
+    abrir({ config: conIva, discountPercent: 30 })
+
+    expect(document.querySelector('.cb-row--minus')).toBeNull()
+    expect(document.querySelector('.ct-value').textContent).toBe('$90.72')
+  })
+})

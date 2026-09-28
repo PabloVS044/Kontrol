@@ -14,10 +14,10 @@
         <span class="sale-item-qty">{{ item.cantidad }}×</span>
         <div class="sale-item-info">
           <span class="sale-item-name">{{ item.product.nombre }}</span>
-          <span class="sale-item-unit">${{ Number(item.product.precio_venta).toFixed(2) }} {{ $t('inventory.sale.perUnit') }}</span>
+          <span class="sale-item-unit">{{ money(item.product.precio_venta) }} {{ $t('inventory.sale.perUnit') }}</span>
         </div>
         <div class="sale-item-right">
-          <span class="sale-item-subtotal">${{ subtotal(item).toFixed(2) }}</span>
+          <span class="sale-item-subtotal">{{ money(subtotal(item)) }}</span>
           <button class="sale-item-remove" :aria-label="$t('inventory.sale.remove')" @click="$emit('remove', item.product)">×</button>
         </div>
       </div>
@@ -25,7 +25,7 @@
 
     <div class="sale-total-row">
       <span class="sale-total-label">{{ $t('inventory.sale.total') }}</span>
-      <span class="sale-total-value">${{ total.toFixed(2) }}</span>
+      <span class="sale-total-value">{{ money(total) }}</span>
     </div>
 
     <p v-if="error" class="sale-error">{{ error }}</p>
@@ -47,9 +47,12 @@
 </template>
 
 <script setup>
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 import { lineTotal } from '@/utils/sales.js'
 
-defineProps({
+const props = defineProps({
+  /** Código ISO 4217 de la moneda de venta de la empresa. */
+  currency: { type: String, default: DEFAULT_CURRENCY },
   items:      { type: Array, default: () => [] },
   total:      { type: Number, default: 0 },
   subtitle:   { type: String, default: '' },
@@ -63,6 +66,12 @@ defineEmits(['remove', 'submit', 'cancel'])
 // `utils/sales.js`: el panel no vuelve a multiplicar precio por cantidad.
 function subtotal(item) {
   return lineTotal(item)
+}
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.currency)
 }
 </script>
 

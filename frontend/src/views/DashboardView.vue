@@ -6,11 +6,13 @@ import Card from '../components/UI/Card/Card.vue'
 import Button from '../components/UI/Button/Button.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
+import { useSaleConfigStore } from '../stores/saleConfig'
 import { statusLabel } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const saleConfigStore = useSaleConfigStore()
 
 const projects = ref([])
 const budgetByProj = ref({}) // id_proyecto -> summary
@@ -34,9 +36,47 @@ function budgetLevelClass(level) {
   return ''
 }
 
+/*
+ * Barra de presupuesto en dos tramos.
+ *
+ * Por debajo del 100% la barra va a medias y el tramo rojo no existe. Al
+ * pasarse, la barra se llena y el carril entero pasa a representar TODO lo
+ * gastado, así que el exceso ocupa la fracción que le toca: con 200% la mitad
+ * del carril es roja, con 132% lo es el 24%.
+ *
+ * El denominador es max(pct, 100), que cubre los dos casos con una sola
+ * fórmula: por debajo del límite el carril sigue valiendo 100 y el relleno mide
+ * el porcentaje tal cual.
+ */
+function barDenominator(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n < 0) return 100
+  return Math.max(n, 100)
+}
+
+/** Tramo dentro de presupuesto: lo gastado hasta el límite. */
+function barWidth(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n < 0) return '0%'
+  return `${(Math.min(n, 100) / barDenominator(n)) * 100}%`
+}
+
+/** Tramo excedido, en rojo. Vacío mientras no se haya pasado del 100%. */
+function barOverWidth(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n <= 100) return '0%'
+  return `${((n - 100) / barDenominator(n)) * 100}%`
+}
+
+function isOverBudget(pct) {
+  const n = Number(pct)
+  return Number.isFinite(n) && n > 100
+}
+
+// La moneda sale de la configuración de la empresa; estaba fija en USD y
+// contradecía lo que el POS ya mostraba en quetzales. Sin decimales, como antes.
 function money(n) {
-  const num = Number(n || 0)
-  return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  return saleConfigStore.money(n, { decimals: false })
 }
 
 const totalSpent = computed(() =>
@@ -178,7 +218,9 @@ const chartData = computed(() => {
   // Y ticks (0, 25, 50, 75, 100 %)
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
     y: yScale(total * f),
-    label: (total * f).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+    // Mismo formateador que el resto de la pantalla: el eje no puede quedarse
+    // en dólares mientras las cifras de al lado están en otra moneda.
+    label: money(total * f),
   }))
 
   // X ticks (start, mid, end) — plus today if inside range
@@ -819,7 +861,8 @@ watch(() => authStore.idEmpresaActual, () => {
                 </span>
               </div>
               <div class="bar-bg">
-                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: row.pct + '%' }"></div>
+                <div class="bar-fill" :class="budgetLevelClass(row.level)" :style="{ width: barWidth(row.pct) }"></div>
+                <div v-if="isOverBudget(row.pct)" class="bar-over" :style="{ width: barOverWidth(row.pct) }"></div>
               </div>
             </div>
           </div>
@@ -840,7 +883,8 @@ watch(() => authStore.idEmpresaActual, () => {
             <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
           </div>
           <div class="snapshot-bar bar-bg">
-            <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
+            <div class="bar-fill" :style="{ width: barWidth(spentPct) }"></div>
+            <div v-if="isOverBudget(spentPct)" class="bar-over" :style="{ width: barOverWidth(spentPct) }"></div>
           </div>
           <p class="snapshot-foot">{{ $t('dashboard.snapshot.summary', projects.length, { named: { pct: spentPct, count: projects.length } }) }}</p>
         </div>
@@ -1131,6 +1175,10 @@ watch(() => authStore.idEmpresaActual, () => {
 .kpi-grid :deep(.card-title) {
   font-size: var(--k-font-size-heading-1);
   font-family: var(--k-font-display);
+  /* El valor del KPI es casi siempre una cifra y la fuente display usa figuras
+     oldstyle: sin esto, "132" queda más bajo y pequeño que el texto que lo
+     acompaña. Ver la misma corrección en Pill.css. */
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .kpi-grid :deep(.card-subtitle) {
@@ -1241,17 +1289,35 @@ watch(() => authStore.idEmpresaActual, () => {
   background: var(--k-shade-3);
   height: 6px;
   border-radius: 3px;
+  /* Los dos tramos —lo gastado dentro de presupuesto y el exceso— van en fila y
+     juntos llenan el carril. `overflow: hidden` recorta las esquinas y sirve de
+     red por si algún cálculo se pasara de 100. */
+  display: flex;
+  overflow: hidden;
 }
 
 .bar-fill {
   background: var(--k-color-primary);
   height: 100%;
-  border-radius: 3px;
+  /* Sin esto flex encoge los tramos y el reparto deja de ser proporcional. */
+  flex: 0 0 auto;
   transition: width .4s ease;
 }
 
 .bar-fill.advertencia { background: #f59e0b; } /* cambiar a token color ambar */
+/* Cuando hay exceso, el rojo es el tramo que se pasó, no la barra entera: el
+   tramo base sigue siendo el presupuesto consumido. Solo pinta todo de rojo
+   cuando el nivel es crítico SIN haberse pasado (justo en el límite). */
 .bar-fill.critico     { background: var(--k-state-error-text); }
+.bar-fill.critico:not(:only-child) { background: var(--k-color-primary); }
+
+/* Tramo excedido. */
+.bar-over {
+  background: var(--k-state-error-text);
+  height: 100%;
+  flex: 0 0 auto;
+  transition: width .4s ease;
+}
 
 .chart-state {
   padding: var(--k-space-5) 0;

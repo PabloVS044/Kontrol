@@ -561,12 +561,21 @@
       "delete": "Delete product",
       "cannotSell": "This product cannot be sold right now."
     },
+    "receipt": {
+      "title": "Sale #{id} recorded",
+      "close": "Dismiss"
+    },
     "checkout": {
       "title": "Charge sale",
       "total": "Amount due",
       "confirm": "Confirm sale",
       "confirming": "Processing…",
-      "back": "Back"
+      "back": "Back",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "discountMax": "Up to {max}% allowed",
+      "discountLine": "Discount ({pct}%)",
+      "vatLine": "VAT ({pct}%)"
     },
     "sale": {
       "title": "Current sale",
@@ -646,7 +655,7 @@
       "boxes": "Boxes",
       "unitsPerBox": "Units per box",
       "boxPrice": "Price per box",
-      "boxPreview": "→ {units} units · cost ${cost}/u",
+      "boxPreview": "→ {units} units · cost {cost}/u",
       "barcode": "Barcode",
       "barcodePlaceholder": "Scan or type the code",
       "category": "Category",
@@ -671,7 +680,10 @@
       "addedQty": "Added: {count} × {name}",
       "notFound": "No product for code {code}.",
       "outOfStock": "{name} has no stock available.",
-      "stockLimit": "Only {count} units of {name} left."
+      "stockLimit": "Only {count} units of {name} left.",
+      "chooseProject": "Same code in several projects — pick the inventory to sell from:",
+      "noStockAnywhere": "This code exists in {count} projects, none with stock available.",
+      "addedQtyProject": "Added: {count} × {name} ({project})"
     },
     "restock": {
       "title": "Add stock",
@@ -1515,6 +1527,37 @@
       }
     }
   },
+  "settings": {
+    "title": "Company settings",
+    "subtitle": "Your preferences, and how this company sells.",
+    "back": "Back",
+    "ownerOnly": "Only the company owner or an admin can change how this company sells.",
+    "prefs": {
+      "title": "Your preferences",
+      "hint": "Saved in this browser, for your account only. They do not affect anyone else on the team.",
+      "birdie": "Show the Birdie assistant bubble",
+      "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here."
+    },
+    "loading": "Loading settings…",
+    "loadError": "Could not load the settings.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Settings saved.",
+    "sale": {
+      "title": "Point of sale",
+      "currency": "Sales currency",
+      "currencyNote": "Used across the cart, the checkout and the receipt. Amounts show as {sample}.",
+      "hint": "VAT and discounts are off until you enable them here, so nothing a company already charges changes on its own.",
+      "vatEnabled": "Charge VAT on sales",
+      "vatEnabledNote": "Adds the tax on top of the discounted subtotal. The ticket shows it as its own line.",
+      "vatRate": "VAT rate",
+      "vatRateNote": "Entered as a percentage. Guatemala is 12%.",
+      "discountEnabled": "Allow discounts at the till",
+      "discountEnabledNote": "Lets the cashier apply a percentage to the whole sale.",
+      "discountMax": "Maximum discount",
+      "discountMaxNote": "A sale asking for more than this is rejected, not trimmed down. Leave it at 0 to allow none."
+    }
+  },
   "navbar": {
     "dashboard": "Dashboard",
     "inventory": "Inventory",
@@ -1526,6 +1569,15 @@
     "ai": "AI",
     "integrations": "Integrations",
     "marketing": "Marketing",
+    "account": {
+      "open": "Account menu",
+      "settings": "Company settings",
+      "signOut": "Sign out"
+    },
+    "menu": {
+      "open": "Open navigation",
+      "close": "Close navigation"
+    },
     "yourWorkspaces": "YOUR WORKSPACES",
     "createWorkspace": "+ Create new workspace",
     "admin": {

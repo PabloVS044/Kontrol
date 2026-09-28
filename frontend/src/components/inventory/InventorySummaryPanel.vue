@@ -28,7 +28,7 @@
           <span class="s-sub red">Action needed</span>
         </div>
         <div class="summary-card">
-          <span class="s-value">${{ stats.totalValue }}</span>
+          <span class="s-value">{{ money(stats.totalValue) }}</span>
           <span class="s-label">Total value</span>
         </div>
       </div>
@@ -94,10 +94,13 @@
 </template>
 
 <script setup>
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 import { computed } from 'vue'
 import Button from '../UI/Button/Button.vue'
 
 const props = defineProps({
+  /** Código ISO 4217 de la moneda de venta de la empresa. */
+  currency: { type: String, default: DEFAULT_CURRENCY },
   stats: Object,
   categoryStats: Array,
   stockAlerts: Array,
@@ -111,6 +114,12 @@ const lowStockColor = computed(() => {
   return props.stats.lowStock > 0 ? '#caa860' : '#555'
 })
 
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.currency)
+}
 </script>
 
 <style scoped>

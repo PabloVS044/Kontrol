@@ -27,7 +27,7 @@
       <div class="card-meta">
         <div>
           <div class="card-price-label">Price</div>
-          <div class="card-price">${{ Number(product.precio_venta).toFixed(2) }}</div>
+          <div class="card-price">{{ money(product.precio_venta) }}</div>
         </div>
         <div class="card-stock">
           <div class="card-stock-num" :class="stockNumClass">
@@ -69,11 +69,14 @@
 </template>
 
 <script setup>
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 import { computed } from 'vue'
 import Pill from '../UI/Pill/Pill.vue'
 import Anchor from '../UI/Button/Anchor.vue'
 
 const props = defineProps({
+  /** Código ISO 4217 de la moneda de venta de la empresa. */
+  currency: { type: String, default: DEFAULT_CURRENCY },
   product: { type: Object, required: true },
   showProjectTag: { type: Boolean, default: true },
   showUsage: { type: Boolean, default: false }
@@ -114,6 +117,12 @@ const netDisplay = computed(() => {
 })
 
 const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.currency)
+}
 </script>
 
 <style scoped>

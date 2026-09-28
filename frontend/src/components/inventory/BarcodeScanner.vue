@@ -16,11 +16,43 @@
       <!-- Confirmación del código leído. Sin esto, escanear metía la unidad en
            el carrito a ciegas y había que salir del escáner para comprobar qué
            se había añadido. -->
+      <!-- Código presente en varios proyectos: cada uno es un inventario
+           distinto y el movimiento atribuye el ingreso a ese proyecto, así que
+           elegir por el cajero sería adivinar de dónde descontar. -->
+      <div v-if="choices" class="scan-choose">
+        <p class="sco-title">{{ $t('inventory.scanner.chooseProject') }}</p>
+        <button
+          v-for="opt in choices.options"
+          :key="opt.product.id_producto"
+          type="button"
+          class="sco-option"
+          @click="$emit('choose', opt)"
+        >
+          <span class="sco-project">{{ opt.product.proyecto_nombre }}</span>
+          <span class="sco-meta">
+            {{ opt.product.nombre }}
+            · {{ money(opt.product.precio_venta) }}
+            · {{ $t('inventory.scanner.available', { count: opt.max }) }}
+            <template v-if="opt.inCart">
+              · {{ $t('inventory.scanner.inCart', { count: opt.inCart }) }}
+            </template>
+          </span>
+        </button>
+        <button type="button" class="sc-discard" @click="$emit('cancel')">
+          {{ $t('inventory.scanner.discard') }}
+        </button>
+      </div>
+
       <div v-if="pending" class="scan-confirm">
         <div class="sc-info">
           <span class="sc-name">{{ pending.product.nombre }}</span>
+          <!-- De qué inventario va a salir. En la vista de un solo proyecto es
+               redundante; en "todos los proyectos" es lo único que lo dice. -->
+          <span v-if="showProject && pending.product.proyecto_nombre" class="sc-project">
+            {{ pending.product.proyecto_nombre }}
+          </span>
           <span class="sc-meta">
-            ${{ Number(pending.product.precio_venta).toFixed(2) }}
+            {{ money(pending.product.precio_venta) }}
             · {{ $t('inventory.scanner.available', { count: pending.max }) }}
             <template v-if="pending.inCart">
               · {{ $t('inventory.scanner.inCart', { count: pending.inCart }) }}
@@ -67,6 +99,7 @@
 </template>
 
 <script setup>
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 // @zxing is loaded on demand (dynamic import inside start) so it ships as its
@@ -85,9 +118,20 @@ const props = defineProps({
    * panel es el de siempre, que es como lo usan los formularios de producto.
    */
   pending:    { type: Object, default: null },
+  /**
+   * Lectura ambigua: `{ code, options: [{ product, max, inCart }] }`. El mismo
+   * código puede existir en varios proyectos —el índice único es por
+   * (id_proyecto, codigo_barras)— y cada uno es un inventario aparte, así que
+   * de cuál descontar lo decide el cajero, no el orden de la lista.
+   */
+  choices:    { type: Object, default: null },
+  /** Mostrar el proyecto de cada producto (vista de "todos los proyectos"). */
+  showProject: { type: Boolean, default: false },
+  /** Código ISO 4217 de la moneda de venta de la empresa. */
+  currency: { type: String, default: DEFAULT_CURRENCY },
 })
 
-const emit = defineEmits(['update:modelValue', 'detected', 'confirm', 'cancel'])
+const emit = defineEmits(['update:modelValue', 'detected', 'confirm', 'choose', 'cancel'])
 
 const videoEl     = ref(null)
 const cameraError = ref(null)
@@ -192,7 +236,7 @@ async function start() {
         // dispararla: el producto sigue delante de la cámara mientras el
         // usuario ajusta la cantidad. Un código distinto sí la sustituye, que
         // es lo que se espera al haber escaneado el artículo equivocado.
-        if (props.pending && text === lastCode) return
+        if ((props.pending || props.choices) && text === lastCode) return
         lastCode = text
         lastTime = now
         emit('detected', text)
@@ -222,6 +266,12 @@ watch(() => props.modelValue, (open) => {
 })
 
 onBeforeUnmount(stop)
+
+// Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
+// cuanto una empresa cobraba en otra moneda.
+function money(amount) {
+  return formatMoney(amount, props.currency)
+}
 </script>
 
 <style scoped>
@@ -333,6 +383,62 @@ onBeforeUnmount(stop)
   font-size: var(--k-font-size-caption);
   color: var(--k-text-muted);
 }
+/* El proyecto del que se va a descontar: destacado sobre el resto del meta
+   porque es el dato que evita vender contra el inventario equivocado. */
+.sc-project {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-color-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* ── desambiguación: un código en varios proyectos ── */
+.scan-choose {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-color-primary);
+}
+.sco-title {
+  margin: 0 0 2px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-color-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sco-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  min-height: var(--k-target-min-size);
+  background: var(--k-shade-2);
+  color: var(--k-color-text);
+  border: var(--k-border-width) solid transparent;
+  cursor: pointer;
+  transition: var(--k-transition-ui);
+}
+.sco-option:hover { border-color: var(--k-color-primary); }
+.sco-project {
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-body-main);
+  line-height: var(--k-leading-snug);
+  overflow-wrap: anywhere;
+}
+.sco-meta {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-muted);
+  overflow-wrap: anywhere;
+}
 
 .sc-qty {
   display: flex;
@@ -410,6 +516,8 @@ onBeforeUnmount(stop)
 @media (max-width: 600px) {
   .scanner-footer { padding: 12px 14px 16px; max-height: 70vh; }
   .scan-confirm { padding: 12px; gap: 10px; }
+  .scan-choose { padding: 12px; }
+  .sco-option { min-height: 56px; }
   .sc-step { flex-basis: 60px; min-height: 56px; }
   .sc-add { min-height: 56px; }
 }

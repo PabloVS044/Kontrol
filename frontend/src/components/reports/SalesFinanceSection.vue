@@ -108,9 +108,11 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
+import { useSaleConfigStore } from '../../stores/saleConfig'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const saleConfigStore = useSaleConfigStore()
 
 defineProps({
   projects: { type: Array, default: () => [] },
@@ -210,8 +212,9 @@ watch([selectedProjectId, preset, customDesde, customHasta], load)
 onMounted(load)
 
 // ── Money + chart helpers ───────────────────────────────────────────────────
+// El símbolo ya no va fijo: sale de la moneda configurada por la empresa.
 function money(n) {
-  return '$' + Number(n ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 })
+  return saleConfigStore.money(n)
 }
 
 const chartPoints = computed(() => {

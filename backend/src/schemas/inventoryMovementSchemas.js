@@ -36,13 +36,20 @@ export const inventoryMovementIdParamSchema = z.object({
 
 export const createSaleSchema = z.object({
   motivo: z.string().optional(),
+  // Descuento de la VENTA, no de la línea. El servidor lo valida contra la
+  // configuración de la empresa (si está activo y su tope) y calcula el importe;
+  // lo que llega aquí es solo la intención del cajero.
+  descuento_pct: z.number().min(0).max(100).optional().default(0),
   items: z
     .array(
       z.object({
         id_producto:     z.number().int().positive(),
         id_proyecto:     z.number().int().positive(),
         cantidad:        z.number().int().positive(),
-        precio_unitario: z.number().min(0).optional().default(0),
+        // Se sigue aceptando para que el cliente declare a qué precio cree que
+        // vende, pero NO es la fuente: el controller lo contrasta contra
+        // producto.precio_venta y rechaza la venta si no coinciden.
+        precio_unitario: z.number().min(0).optional(),
       })
     )
     .min(1, { message: 'The sale must have at least one item.' }),
