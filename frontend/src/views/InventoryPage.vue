@@ -700,9 +700,8 @@ function stockNumClass(p) {
 }
 
 function detailLink(product) {
-  const query = selectedProject.value
-    ? `?project=${selectedProject.value.id_proyecto}`
-    : ''
+  const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
+  const query = projectId ? `?project=${projectId}` : ''
   return `/inventory/${product.id_producto}${query}`
 }
 

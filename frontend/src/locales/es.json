@@ -719,6 +719,16 @@
       "delete": "Eliminar proveedor",
       "deleteConfirm": "¿Eliminar a {name}?",
       "close": "Cerrar"
+    },
+    "productDetail": {
+      "supplier": "Proveedor",
+      "selectSupplier": "Selecciona un proveedor",
+      "quotedPrice": "Precio cotizado",
+      "linkSupplier": "Vincular proveedor",
+      "linking": "Vinculando…",
+      "supplierLinked": "Proveedor vinculado correctamente.",
+      "supplierLoadError": "No se pudieron cargar los proveedores.",
+      "supplierLinkError": "No se pudo vincular el proveedor."
     }
   },
   "budget": {

@@ -113,7 +113,11 @@ const netDisplay = computed(() => {
   return `${net >= 0 ? '+' : ''}${net}`
 })
 
-const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
+const detailLink = computed(() => {
+  const projectId = props.product.id_proyecto
+  const query = projectId ? `?project=${projectId}` : ''
+  return `/inventory/${props.product.id_producto}${query}`
+})
 </script>
 
 <style scoped>
@@ -240,4 +244,3 @@ const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
   padding: 12px 16px;
 }
 </style>
-

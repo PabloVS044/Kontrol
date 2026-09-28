@@ -119,6 +119,26 @@
             </span>
           </div>
 
+          <form v-if="canLinkSuppliers" class="supplier-link-form" @submit.prevent="linkSupplier">
+            <label>
+              <span>{{ t('inventory.productDetail.supplier') }}</span>
+              <select v-model.number="selectedSupplierId" required>
+                <option :value="null" disabled>{{ t('inventory.productDetail.selectSupplier') }}</option>
+                <option v-for="supplier in availableSuppliers" :key="supplier.id_proveedor" :value="supplier.id_proveedor">
+                  {{ supplier.nombre }}
+                </option>
+              </select>
+            </label>
+            <label>
+              <span>{{ t('inventory.productDetail.quotedPrice') }}</span>
+              <input v-model.number="supplierPrice" type="number" min="0" step="0.01" required />
+            </label>
+            <button class="btn-primary supplier-link-button" type="submit" :disabled="linkingSupplier || !availableSuppliers.length">
+              {{ linkingSupplier ? t('inventory.productDetail.linking') : t('inventory.productDetail.linkSupplier') }}
+            </button>
+          </form>
+          <p v-if="supplierMsg" class="supplier-message" :class="supplierMsgType">{{ supplierMsg }}</p>
+
           <div v-if="!suppliers.length" class="empty-box">
             No suppliers linked to this product yet.
           </div>
@@ -145,12 +165,14 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import BarcodeScanner from '../components/inventory/BarcodeScanner.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)
@@ -162,6 +184,12 @@ const savingBarcode = ref(false)
 const barcodeMsg = ref('')
 const barcodeMsgType = ref('ok')
 const showScanner = ref(false)
+const supplierCatalog = ref([])
+const selectedSupplierId = ref(null)
+const supplierPrice = ref(null)
+const linkingSupplier = ref(false)
+const supplierMsg = ref('')
+const supplierMsgType = ref('ok')
 
 function onBarcodeDetected(code) {
   barcodeInput.value = code
@@ -207,6 +235,11 @@ const backTarget = computed(() =>
 )
 
 const suppliers = computed(() => product.value?.proveedores ?? [])
+const canLinkSuppliers = computed(() => authStore.canManageInventory)
+const availableSuppliers = computed(() => {
+  const linkedIds = new Set(suppliers.value.map(({ id_proveedor }) => id_proveedor))
+  return supplierCatalog.value.filter(({ id_proveedor }) => !linkedIds.has(id_proveedor))
+})
 
 const stockLabel = computed(() => {
   if (!product.value) return ''
@@ -222,11 +255,54 @@ const stockTone = computed(() => {
   return 'healthy'
 })
 
-function authHeader() {
+function authHeader(projectId = projectQuery.value ?? product.value?.id_proyecto) {
   const token = localStorage.getItem('token')
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
   if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
+  if (projectId) headers['X-Project-ID'] = projectId
   return headers
+}
+
+async function loadSupplierCatalog() {
+  if (!canLinkSuppliers.value || !product.value?.id_proyecto) return
+  try {
+    const res = await fetch('/api/suppliers', { headers: authHeader(product.value.id_proyecto) })
+    const payload = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(payload.message || t('inventory.productDetail.supplierLoadError'))
+    supplierCatalog.value = payload.data ?? []
+  } catch (err) {
+    supplierCatalog.value = []
+    supplierMsg.value = err.message || t('inventory.productDetail.supplierLoadError')
+    supplierMsgType.value = 'err'
+  }
+}
+
+async function linkSupplier() {
+  if (!selectedSupplierId.value || supplierPrice.value == null || !product.value) return
+  linkingSupplier.value = true
+  supplierMsg.value = ''
+  try {
+    const res = await fetch(`/api/products/${productId.value}/suppliers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader(product.value.id_proyecto) },
+      body: JSON.stringify({
+        id_proveedor: selectedSupplierId.value,
+        precio_unitario: supplierPrice.value,
+      }),
+    })
+    const payload = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(payload.message || t('inventory.productDetail.supplierLinkError'))
+    selectedSupplierId.value = null
+    supplierPrice.value = null
+    supplierMsg.value = t('inventory.productDetail.supplierLinked')
+    supplierMsgType.value = 'ok'
+    await loadProduct()
+  } catch (err) {
+    supplierMsg.value = err.message || t('inventory.productDetail.supplierLinkError')
+    supplierMsgType.value = 'err'
+  } finally {
+    linkingSupplier.value = false
+  }
 }
 
 async function loadProduct() {
@@ -262,6 +338,7 @@ async function loadProduct() {
     product.value = payload.data
     barcodeInput.value = payload.data?.codigo_barras || ''
     barcodeMsg.value = ''
+    await loadSupplierCatalog()
   } catch (err) {
     product.value = null
     error.value = err.message
@@ -575,6 +652,34 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   font-size: var(--k-font-size-caption-lg);
 }
 
+.supplier-link-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(140px, .7fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: var(--k-border-width) solid var(--k-color-border);
+}
+
+.supplier-link-form label { display: grid; gap: 7px; color: var(--k-text-muted); font-size: var(--k-font-size-caption); }
+.supplier-link-form select,
+.supplier-link-form input {
+  min-height: var(--k-target-min-size);
+  border: var(--k-border-width) solid var(--k-color-border);
+  background: var(--k-shade-1);
+  color: var(--k-color-text);
+  padding: 10px 12px;
+  font: inherit;
+}
+.supplier-link-form select:focus,
+.supplier-link-form input:focus { border-color: var(--k-color-primary); outline: none; }
+.supplier-link-button { min-height: var(--k-target-min-size); }
+.supplier-link-button:disabled { opacity: .55; cursor: not-allowed; }
+.supplier-message { margin: -6px 0 16px; font-size: var(--k-font-size-caption-lg); }
+.supplier-message.ok { color: var(--k-state-success-text); }
+.supplier-message.err { color: var(--k-state-error-text); }
+
 .supplier-list {
   display: grid;
   gap: 12px;
@@ -639,6 +744,8 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   .hero-stats {
     grid-template-columns: 1fr;
   }
+
+  .supplier-link-form { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
