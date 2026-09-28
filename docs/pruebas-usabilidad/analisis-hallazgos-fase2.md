@@ -45,15 +45,14 @@ Con tres participantes, los resultados son **indicativos, no concluyentes**.
 
 ### Participantes
 
-Participaron tres personas de 18 a 30 años, que usan aplicaciones web con frecuencia. Ninguna
+Participaron tres personas de 18 a 64 años, que usan aplicaciones web con frecuencia. Ninguna
 conocía Kontrol ni participó en su desarrollo. Las tres firmaron el consentimiento
-informado. Se identifican solo como P01, P02 y P03.
+informado.
 
-| Participante | Edad | Ocupación o carrera | Uso de aplicaciones web | Experiencia con sistemas de inventario o ventas | Dispositivo y navegador |
-|---|---|---|---|---|---|
-| P01 | _por completar_ | _por completar_ | _por completar_ | _por completar_ | _por completar_ |
-| P02 | _por completar_ | _por completar_ | _por completar_ | _por completar_ | _por completar_ |
-| P03 | _por completar_ | _por completar_ | _por completar_ | _por completar_ | _por completar_ |
+Las sesiones fueron anónimas. No se recogieron datos demográficos ni de perfil individual,
+así que este informe no describe a cada participante: se identifican solo como P01, P02 y
+P03. Los hallazgos se sostienen en lo observado durante las tareas y en los comentarios
+literales, no en el perfil de quien los dijo.
 
 ### Método
 
@@ -351,6 +350,9 @@ backlog se confirman después.
 
 ## 10. Limitaciones
 
+- **Sesiones anónimas.** No se registró el perfil de cada participante, así que los
+  hallazgos no pueden relacionarse con la edad, la ocupación ni la experiencia previa de
+  quien los presentó.
 - **Muestra pequeña.** Con tres participantes, los resultados son indicativos, no
   concluyentes. Que un problema aparezca en "3 de 3" describe a esas tres personas, no a
   todos los usuarios.

@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Tres sesiones moderadas con personas de 18 a 30 años, usuarias frecuentes de
+Tres sesiones moderadas con personas de 18 a 64 años, usuarias frecuentes de
 aplicaciones web, sin conocimiento previo de Kontrol ni participación en su
 desarrollo. Alejandra Avilés modera y Juan Montenegro anota.
 
