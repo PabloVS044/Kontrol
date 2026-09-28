@@ -118,8 +118,20 @@ const filteredSuppliers = computed(() => {
 function headers() {
   const token = localStorage.getItem('token')
   const result = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) result['X-Company-ID'] = authStore.idEmpresaActual
-  return { ...result, 'Content-Type': 'application/json' }
+
+  if (authStore.idEmpresaActual) {
+    result['X-Company-ID'] = authStore.idEmpresaActual
+  }
+
+  const projectId = authStore.accessContext?.inventory_project_ids?.[0]
+  if (projectId) {
+    result['X-Project-ID'] = projectId
+  }
+
+  return {
+    ...result,
+    'Content-Type': 'application/json',
+  }
 }
 
 async function loadSuppliers() {
