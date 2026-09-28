@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import { SUPPORTED_CURRENCIES } from '../services/saleCalculation.js'
+
+// Zod necesita una tupla literal; el servicio es la fuente de la lista.
+const SALE_CURRENCIES = /** @type {[string, ...string[]]} */ ([...SUPPORTED_CURRENCIES])
 
 export const PROJECT_PERMISSION_NAMES = [
   'ver_inventario',
@@ -40,4 +44,32 @@ export const updateCompanyMemberProjectAccessSchema = z.object({
       message: `Each permission must be one of: ${PROJECT_PERMISSION_NAMES.join(', ')}.`,
     })
   ).optional().default([]),
+})
+
+/**
+ * Configuración del POS de la empresa: IVA y descuento.
+ *
+ * Todos los campos son opcionales para permitir un PATCH parcial (activar solo
+ * el IVA sin tocar el descuento). La tasa se expresa como fracción —0.12 es el
+ * 12%— y el tope de descuento como porcentaje, igual que en la tabla.
+ */
+export const updateCompanySaleConfigSchema = z.object({
+  iva_activo: z.boolean().optional(),
+  iva_tasa: z.coerce
+    .number()
+    .min(0, 'The tax rate cannot be negative.')
+    .max(1, 'The tax rate is a fraction: 0.12 means 12%.')
+    .optional(),
+  descuento_activo: z.boolean().optional(),
+  descuento_max_pct: z.coerce
+    .number()
+    .min(0, 'The maximum discount cannot be negative.')
+    .max(100, 'The maximum discount cannot exceed 100%.')
+    .optional(),
+  // Código ISO 4217, no el símbolo.
+  moneda: z.enum(SALE_CURRENCIES, {
+    message: `The currency must be one of: ${SALE_CURRENCIES.join(', ')}.`,
+  }).optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+  message: 'Send at least one setting to update.',
 })

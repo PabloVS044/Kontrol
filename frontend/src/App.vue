@@ -22,7 +22,7 @@
       <RouterView />
     </div>
     <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat'" />
-    <BirdieFloatingButton v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
+    <BirdieFloatingButton v-if="authStore.isLoggedIn && authStore.hasEmpresa && prefsStore.birdieVisible" />
     <BirdieAssistant v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
   </div>
@@ -38,15 +38,25 @@ import BirdieAssistant from "./components/birdie/BirdieAssistant.vue";
 import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
 import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
+import { useSaleConfigStore } from './stores/saleConfig'
+import { usePreferencesStore } from './stores/preferences'
 
 const authStore = useAuthStore()
 const chatStore = useChatStore()
+const saleConfigStore = useSaleConfigStore()
+const prefsStore = usePreferencesStore()
 const route = useRoute()
 
 onMounted(() => {
+  prefsStore.load()
   if (authStore.isLoggedIn) {
     authStore.loadEmpresas()
-    if (authStore.hasEmpresa) chatStore.connect()
+    if (authStore.hasEmpresa) {
+      chatStore.connect()
+      // La moneda la necesitan pantallas fuera del POS, así que se carga una
+      // vez aquí en lugar de que cada vista la resuelva por su cuenta.
+      saleConfigStore.load()
+    }
   }
 })
 
@@ -56,8 +66,18 @@ watch(() => authStore.isLoggedIn, (loggedIn) => {
 })
 
 watch(() => authStore.hasEmpresa, (has) => {
-  if (has && authStore.isLoggedIn) chatStore.connect()
+  if (has && authStore.isLoggedIn) {
+    chatStore.connect()
+    saleConfigStore.load()
+  }
 })
+
+// Cambiar de empresa cambia la moneda: cada una tiene su propia configuración.
+watch(() => authStore.idEmpresaActual, (id) => {
+  if (id && authStore.isLoggedIn) saleConfigStore.load({ force: true })
+})
+
+watch(() => authStore.idUsuario, () => prefsStore.load())
 </script>
 
 <style scoped>

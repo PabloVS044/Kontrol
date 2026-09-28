@@ -184,6 +184,23 @@ export const getLowStockAlerts = async (req, res) => {
 export const getProductById = async (req, res) => {
   const { id } = req.params
 
+  // El proyecto se deduce del producto, no de una cabecera. Se llega aquí desde
+  // el catálogo de "todos los proyectos", donde no hay ninguno seleccionado, y
+  // exigirlo dejaba el detalle inalcanzable. El acceso se comprueba igual que en
+  // los listados: filtrando por los proyectos donde el usuario ve inventario.
+  const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.status(404).json({ success: false, message: 'Product not found.' })
+  }
+
+  const values = [id, req.empresa.id_empresa]
+  let scope = ''
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    scope = `AND p.id_proyecto = ANY($${values.length}::int[])`
+  }
+
   const result = await pool.query(
     `SELECT ${PRODUCTO_SELECT},
        COALESCE(json_agg(json_build_object(
@@ -194,11 +211,13 @@ export const getProductById = async (req, res) => {
      ${PRODUCTO_FROM}
      LEFT JOIN public.producto_proveedor pp ON pp.id_producto = p.id_producto
      LEFT JOIN public.proveedor pv ON pv.id_proveedor = pp.id_proveedor
-     WHERE p.id_producto = $1 AND proj.id_empresa = $2
+     WHERE p.id_producto = $1 AND proj.id_empresa = $2 ${scope}
      GROUP BY p.id_producto, proj.nombre, c.nombre, c.id_categoria`,
-    [id, req.empresa.id_empresa]
+    values
   )
 
+  // 404 y no 403 cuando el producto existe pero cae fuera de su alcance: el
+  // mensaje no debe confirmar que ese id existe en otro proyecto.
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Product not found.' })
   return res.json({ success: true, data: result.rows[0] })
 }

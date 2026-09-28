@@ -39,8 +39,8 @@
     </div>
 
     <div class="bar-amounts">
-      <span><span class="amt-label">{{ $t('budget.activityRow.planned') }}</span> ${{ formatMoney(activity.monto_planificado) }}</span>
-      <span><span class="amt-label">{{ $t('budget.activityRow.actual') }}</span> ${{ formatMoney(efectivo) }}</span>
+      <span><span class="amt-label">{{ $t('budget.activityRow.planned') }}</span> {{ money(activity.monto_planificado) }}</span>
+      <span><span class="amt-label">{{ $t('budget.activityRow.actual') }}</span> {{ money(efectivo) }}</span>
     </div>
     <ProgressBar
       :pct="Math.min(100, usagePct)"
@@ -48,7 +48,7 @@
       height="10px"
     />
     <div v-if="usagePct > 100" class="bar-overrun">
-      {{ $t('budget.activityRow.overPlan', { amount: formatMoney(efectivo - Number(activity.monto_planificado || 0)) }) }}
+      {{ $t('budget.activityRow.overPlan', { amount: money(efectivo - Number(activity.monto_planificado || 0)) }) }}
     </div>
 
     <!-- Expandable history -->
@@ -60,7 +60,7 @@
           <div v-if="manualReal > 0" class="detail-row manual">
             <span class="detail-tag">{{ $t('budget.activityRow.manual') }}</span>
             <span class="detail-text">{{ $t('budget.activityRow.directEntry') }}</span>
-            <span class="detail-amount">${{ formatMoney(manualReal) }}</span>
+            <span class="detail-amount">{{ money(manualReal) }}</span>
           </div>
           <div v-for="g in history" :key="g.id_movimiento" class="detail-row">
             <span class="detail-date">{{ formatDate(g.fecha) }}</span>
@@ -68,7 +68,7 @@
               {{ g.motivo || t('budget.activityRow.registeredExpense') }}
               <span v-if="g.usuario" class="detail-user">— {{ g.usuario }}</span>
             </span>
-            <span class="detail-amount">${{ formatMoney(g.monto) }}</span>
+            <span class="detail-amount">{{ money(g.monto) }}</span>
           </div>
         </div>
 
@@ -76,7 +76,7 @@
           <div class="detail-row manual">
             <span class="detail-tag">{{ $t('budget.activityRow.manual') }}</span>
             <span class="detail-text">{{ $t('budget.activityRow.directEntry') }}</span>
-            <span class="detail-amount">${{ formatMoney(manualReal) }}</span>
+            <span class="detail-amount">{{ money(manualReal) }}</span>
           </div>
         </div>
 
@@ -91,9 +91,11 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 import ProgressBar from '@/components/UI/ProgressBar/ProgressBar.vue'
 
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 const props = defineProps({
   activity:    { type: Object, required: true },
@@ -156,9 +158,8 @@ watch(gastosCount, (now, before) => {
   if (now !== before) history.value = null
 })
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 function formatDate(v) {
   if (!v) return ''

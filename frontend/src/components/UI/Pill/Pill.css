@@ -34,4 +34,11 @@
   line-height: 1;
   letter-spacing: var(--k-tracking-caps);
   width: auto;
+  /* La pila de display es Playfair Display → Georgia, y ambas usan cifras
+     "oldstyle" por defecto: los dígitos se dibujan a altura de x y con
+     descendentes, así que junto a texto en mayúsculas se veían más pequeños y
+     desalineados ("132% DEL PRESUPUESTO"). lining-nums los lleva a altura de
+     mayúscula; tabular-nums les da ancho fijo para que un contador que cambia
+     no mueva el resto de la píldora. */
+  font-variant-numeric: lining-nums tabular-nums;
 }

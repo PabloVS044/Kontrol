@@ -18,7 +18,7 @@
             </span>
           </div>
           <div class="bar-bg">
-            <div class="bar-fill" :class="row.level?.toLowerCase()" :style="{ width: row.pct + '%' }"></div>
+            <div class="bar-fill" :class="row.level?.toLowerCase()" :style="{ width: barWidth(row.pct) }"></div>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
         <span class="snapshot-value gold">{{ money(totalAllocated - totalSpent) }}</span>
       </div>
       <div class="snapshot-bar bar-bg">
-        <div class="bar-fill" :style="{ width: spentPct + '%' }"></div>
+        <div class="bar-fill" :style="{ width: barWidth(spentPct) }"></div>
       </div>
       <p class="snapshot-foot">{{ spentPct }}% of total budget used across {{ projectCount }} project{{ projectCount === 1 ? '' : 's' }}.</p>
     </div>
@@ -57,6 +57,17 @@ defineProps({
   projectCount: { type: Number, default: 0 },
   money: { type: Function, required: true },
 })
+
+/**
+ * Ancho del relleno, acotado a [0, 100]. Un proyecto sobregirado supera el 100%
+ * y la barra se salía por la derecha; que se haya pasado lo dicen el color y el
+ * porcentaje escrito, no un relleno más largo que su carril.
+ */
+function barWidth(pct) {
+  const n = Number(pct)
+  if (!Number.isFinite(n) || n < 0) return '0%'
+  return `${Math.min(n, 100)}%`
+}
 </script>
 
 <style scoped>
@@ -127,6 +138,8 @@ defineProps({
   background: #111;
   height: 6px;
   border-radius: 3px;
+  /* Red por si un porcentaje vuelve a pasarse de 100. */
+  overflow: hidden;
 }
 
 .bar-fill {

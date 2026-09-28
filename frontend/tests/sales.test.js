@@ -8,6 +8,10 @@ import {
   calcSale,
 } from '@/utils/sales.js'
 
+// Contrato compartido con el backend. Fuera de `src/` a propósito: no viaja en
+// ninguna imagen de Docker, solo lo leen las dos suites de pruebas.
+import vectors from '../../shared/test-vectors/sale-calculation.json'
+
 // Lógica del punto de venta (POS): es el cálculo con mayor riesgo financiero
 // del sistema, por eso cada caso de negocio se prueba de forma aislada.
 describe('POS · lógica de ventas', () => {
@@ -122,4 +126,32 @@ describe('POS · lógica de ventas', () => {
     expect(() => lineTotal({ precio: 100, cantidad: 'x' })).toThrow()
     expect(() => calcSubtotal([{ precio: 100, cantidad: -2 }])).toThrow()
   })
+})
+
+/**
+ * Paridad con el cálculo del backend.
+ *
+ * El backend es la autoridad: calcula, persiste y devuelve las cifras que se
+ * cobran e informan. Este módulo solo pinta el carrito, pero si las dos
+ * implementaciones divergen, el ticket enseña un total distinto del que se
+ * registra —que es exactamente el fallo que se está cerrando—. Los vectores
+ * viven en `shared/` y los corre también `backend/tests/saleCalculation.test.js`.
+ */
+describe('POS · paridad con el cálculo del backend', () => {
+  it('los vectores están presentes (si no, la parity no prueba nada)', () => {
+    expect(vectors.cases.length).toBeGreaterThan(0)
+  })
+
+  for (const c of vectors.cases) {
+    it(c.name, () => {
+      const got = calcSale(c.lines, c.options ?? {})
+      expect({
+        subtotal: got.subtotal,
+        discount: got.discount,
+        taxableBase: got.taxableBase,
+        tax: got.tax,
+        total: got.total,
+      }).toEqual(c.expected)
+    })
+  }
 })
