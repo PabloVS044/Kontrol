@@ -29,3 +29,7 @@ Thumbs.db
 .claude
 # Test coverage
 coverage/
+
+# Volume tests: raw per-transaction pgbench logs (large); summaries are kept
+volume/results/*/pgbench/*.[0-9]*
+volume/results/*/explain.sql

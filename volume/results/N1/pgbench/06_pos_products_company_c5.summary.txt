@@ -1,0 +1,13 @@
+pgbench (17.11 (Debian 17.11-1.pgdg13+2), server 17.6)
+transaction type: sql/bench/06_pos_products_company.sql
+scaling factor: 1
+query mode: simple
+number of clients: 5
+number of threads: 5
+maximum number of tries: 1
+duration: 30 s
+number of transactions actually processed: 3542
+number of failed transactions: 0 (0.000%)
+latency average = 42.131 ms
+initial connection time = 201.610 ms
+tps = 118.678860 (without initial connection time)

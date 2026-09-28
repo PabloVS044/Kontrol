@@ -1,0 +1,13 @@
+pgbench (17.11 (Debian 17.11-1.pgdg13+2), server 17.6)
+transaction type: sql/bench/08_barcode_company.sql
+scaling factor: 1
+query mode: simple
+number of clients: 5
+number of threads: 5
+maximum number of tries: 1
+duration: 30 s
+number of transactions actually processed: 5538
+number of failed transactions: 0 (0.000%)
+latency average = 26.927 ms
+initial connection time = 203.054 ms
+tps = 185.687653 (without initial connection time)
