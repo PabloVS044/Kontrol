@@ -86,6 +86,13 @@ FROM public.proyecto p
 WHERE p.nombre LIKE 'VOL Proyecto %'
   AND p.id_proyecto <> (SELECT id_proyecto FROM vol_hot);
 
+-- Projects of the filler companies only. Tables counted per company (venta,
+-- reporte) spread their cold share here, so none of it lands in the test
+-- company and is mistaken for its share on the next top-up.
+CREATE TEMP TABLE vol_cold_ext AS
+SELECT row_number() OVER (ORDER BY id_proyecto) AS idx, id_proyecto, id_empresa
+FROM vol_cold WHERE id_empresa <> (SELECT id_empresa FROM vol_hot);
+
 -- Top-up helper: how many rows are missing in a bucket.
 CREATE FUNCTION pg_temp.vol_missing(total int, share numeric, have bigint, hot boolean)
 RETURNS int LANGUAGE sql AS $$
@@ -146,9 +153,16 @@ DECLARE
   share numeric := current_setting('vol.hot_share')::numeric;
   v_emp int := (SELECT id_empresa FROM vol_hot);
   v_user int := (SELECT id_usuario FROM public.usuario WHERE email = 'participante1@kontrol-test.dev');
-  n_cold int := (SELECT count(*) FROM vol_cold);
+  n_cold int := (SELECT count(*) FROM vol_cold_ext);
   have_hot bigint; have_cold bigint; add_hot int; add_cold int;
 BEGIN
+  -- The sale header came after main's 07/09 schema; a database deployed from
+  -- that point has no venta table, and its SALIDA lines carry no header.
+  IF to_regclass('public.venta') IS NULL THEN
+    RAISE NOTICE 'venta: la tabla no existe en este esquema; las ventas quedan como líneas SALIDA sin cabecera';
+    RETURN;
+  END IF;
+
   SELECT count(*) FILTER (WHERE id_empresa = v_emp), count(*) FILTER (WHERE id_empresa <> v_emp)
     INTO have_hot, have_cold
   FROM public.venta WHERE motivo = 'VOL';
@@ -163,7 +177,7 @@ BEGIN
     UNION ALL
     SELECT g, c.id_empresa, round((20 + (g % 300) * 3.5)::numeric, 2)
     FROM generate_series(1, add_cold) g
-    JOIN vol_cold c ON c.idx = 1 + (g % n_cold)
+    JOIN vol_cold_ext c ON c.idx = 1 + (g % n_cold)
   ) v;
 
   RAISE NOTICE 'venta: +% (empresa de prueba), +% (resto)', add_hot, add_cold;
@@ -181,6 +195,8 @@ DECLARE
   v_user int := (SELECT id_usuario FROM public.usuario WHERE email = 'participante1@kontrol-test.dev');
   have_hot bigint; have_cold bigint; add_hot int; add_cold int;
   n_hot_prod int; n_cold_prod int;
+  has_venta boolean := to_regclass('public.venta') IS NOT NULL;
+  venta_col text;
 BEGIN
   SELECT count(*) FILTER (WHERE id_proyecto = hot), count(*) FILTER (WHERE id_proyecto <> hot)
     INTO have_hot, have_cold
@@ -197,31 +213,36 @@ BEGIN
   WHERE p.nombre LIKE 'VOL Producto %';
   CREATE INDEX ON vol_prod (is_hot, idx);
 
-  CREATE TEMP TABLE vol_sale ON COMMIT DROP AS
-  SELECT id_empresa, row_number() OVER (PARTITION BY id_empresa ORDER BY id_venta) AS idx,
-         count(*) OVER (PARTITION BY id_empresa) AS n, id_venta
-  FROM public.venta WHERE motivo = 'VOL';
+  -- Empty when the schema has no sale header: the lookup below then yields NULL.
+  CREATE TEMP TABLE vol_sale (id_empresa int, idx bigint, n bigint, id_venta int) ON COMMIT DROP;
+  IF has_venta THEN
+    INSERT INTO vol_sale
+    SELECT id_empresa, row_number() OVER (PARTITION BY id_empresa ORDER BY id_venta),
+           count(*) OVER (PARTITION BY id_empresa), id_venta
+    FROM public.venta WHERE motivo = 'VOL';
+  END IF;
   CREATE INDEX ON vol_sale (id_empresa, idx);
 
   SELECT count(*) FILTER (WHERE is_hot), count(*) FILTER (WHERE NOT is_hot)
     INTO n_hot_prod, n_cold_prod FROM vol_prod;
 
-  INSERT INTO public.movimiento_inventario (tipo, cantidad, precio_unitario, fecha, motivo, id_empresa,
-                                            id_producto, id_usuario, id_proyecto, costo_unitario_venta, id_venta)
+  -- Staged first, so the final insert can leave id_venta out on a schema
+  -- that does not have the column.
+  CREATE TEMP TABLE vol_mov ON COMMIT DROP AS
   SELECT t.tipo,
-         CASE WHEN t.tipo = 'GASTO_ADMIN' THEN NULL ELSE 1 + (m.g % 12) END,
+         CASE WHEN t.tipo = 'GASTO_ADMIN' THEN NULL ELSE 1 + (m.g % 12) END AS cantidad,
          CASE WHEN t.tipo = 'SALIDA' THEN p.precio_venta
               WHEN t.tipo = 'GASTO_ADMIN' THEN 150 + (m.g % 50) * 10
-              ELSE p.precio_costo END,
-         now() - make_interval(mins => (m.g * 97) % 1051200),
-         'VOL', p.id_empresa,
-         CASE WHEN t.tipo = 'GASTO_ADMIN' THEN NULL ELSE p.id_producto END,
-         v_user, p.id_proyecto,
-         CASE WHEN t.tipo = 'SALIDA' THEN p.precio_costo END,
+              ELSE p.precio_costo END AS precio_unitario,
+         now() - make_interval(mins => (m.g * 97) % 1051200) AS fecha,
+         'VOL'::text AS motivo, p.id_empresa,
+         CASE WHEN t.tipo = 'GASTO_ADMIN' THEN NULL ELSE p.id_producto END AS id_producto,
+         v_user AS id_usuario, p.id_proyecto,
+         CASE WHEN t.tipo = 'SALIDA' THEN p.precio_costo END AS costo_unitario_venta,
          CASE WHEN t.tipo = 'SALIDA' THEN
            (SELECT s.id_venta FROM vol_sale s
              WHERE s.id_empresa = p.id_empresa AND s.idx = 1 + (m.g % s.n))
-         END
+         END AS id_venta
   FROM (
     SELECT g, true AS is_hot, 1 + ((g::bigint * 7919) % n_hot_prod) AS pidx
     FROM generate_series(1, CASE WHEN n_hot_prod > 0 THEN add_hot ELSE 0 END) g
@@ -236,6 +257,14 @@ BEGIN
                 WHEN m.g % 20 = 18 THEN 'AJUSTE'
                 ELSE 'GASTO_ADMIN' END AS tipo
   ) t;
+
+  venta_col := CASE WHEN has_venta THEN ', id_venta' ELSE '' END;
+  EXECUTE format(
+    'INSERT INTO public.movimiento_inventario (tipo, cantidad, precio_unitario, fecha, motivo, id_empresa,
+       id_producto, id_usuario, id_proyecto, costo_unitario_venta%1$s)
+     SELECT tipo, cantidad, precio_unitario, fecha, motivo, id_empresa,
+       id_producto, id_usuario, id_proyecto, costo_unitario_venta%1$s
+     FROM vol_mov', venta_col);
 
   RAISE NOTICE 'movimiento_inventario: +% (proyecto caliente), +% (resto)', add_hot, add_cold;
 END $$;
@@ -322,7 +351,7 @@ DECLARE
   share numeric := current_setting('vol.hot_share')::numeric;
   v_emp int := (SELECT id_empresa FROM vol_hot);
   v_user int := (SELECT id_usuario FROM public.usuario WHERE email = 'participante1@kontrol-test.dev');
-  n_cold int := (SELECT count(*) FROM vol_cold);
+  n_cold int := (SELECT count(*) FROM vol_cold_ext);
   have_hot bigint; have_cold bigint; add_hot int; add_cold int; base bigint;
 BEGIN
   SELECT count(*) FILTER (WHERE id_empresa = v_emp), count(*) FILTER (WHERE id_empresa <> v_emp)
@@ -345,13 +374,19 @@ BEGIN
     JOIN vol_emp_proj ep ON ep.idx = 1 + (g % ep.n)
     UNION ALL
     SELECT add_hot + g, c.id_proyecto, c.id_empresa FROM generate_series(1, add_cold) g
-    JOIN vol_cold c ON c.idx = 1 + (g % n_cold)
+    JOIN vol_cold_ext c ON c.idx = 1 + (g % n_cold)
   ) q;
   RAISE NOTICE 'reporte: +% (empresa de prueba), +% (resto)', add_hot, add_cold;
 END $$;
 
 -- Fresh statistics, as autovacuum would have produced on a database that grew
 -- to this size over time; without them the planner judges on stale counts.
-ANALYZE public.producto, public.movimiento_inventario, public.venta, public.tarea,
+ANALYZE public.producto, public.movimiento_inventario, public.tarea,
         public.project_progress_entry, public.presupuesto_actividad, public.reporte,
         public.proyecto, public.proyecto_usuario, public.categoria;
+DO $$
+BEGIN
+  IF to_regclass('public.venta') IS NOT NULL THEN
+    ANALYZE public.venta;
+  END IF;
+END $$;

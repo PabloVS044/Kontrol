@@ -19,9 +19,10 @@ const reps = Number(process.argv.find((a) => a.startsWith('--reps='))?.split('='
 // rest extend the curve past N3 to locate where the export stops being usable.
 const SIZES = [
   [3, 1],
-  [12, 2300],
-  [53, 11400],
-  [103, 22800],
+  [13, 1001],
+  [53, 5001],
+  [103, 10001],
+  [200, 25000],
   [200, 50000],
   [400, 100000],
 ]

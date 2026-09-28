@@ -27,6 +27,8 @@ pgbench cubre lo mismo que HammerDB para PostgreSQL, pero ejecuta las consultas 
 
 ## 2. Niveles de volumen
 
+**Esquema de la base de pruebas.** El ambiente de pruebas corre `main` del 07/09, anterior a la cabecera de venta: no existe la tabla `venta` ni la columna `movimiento_inventario.id_venta`. Ahí una venta del POS se guarda como líneas `SALIDA` sin cabecera, y así la genera `populate.sql` cuando no encuentra la tabla. El volumen de ventas queda representado por esas líneas, el 40% de los movimientos. Las consultas medidas no leen `venta`, así que no cambian.
+
 Tres niveles acumulativos más la línea base. Las cifras son filas generadas en toda la base. El 20% de cada tabla va a un proyecto "caliente" de la empresa de prueba, que es el que se mide. El resto se reparte entre los demás proyectos de esa empresa y los de 20 empresas de relleno, para que las consultas también tengan que descartar filas ajenas, como ocurre en una base multiempresa real.
 
 | Nivel | producto | movimiento_inventario | venta | tarea | avance | reporte | presupuesto_actividad |
@@ -79,14 +81,15 @@ Umbrales de `docs/plan-maestro-pruebas.md` §7.2: 500 ms para lecturas y 800 ms 
 
 Los archivos se construyen en el navegador (`frontend/src/utils/reportExport.js`) a partir de lo que devuelven `/api/reports/summary` y `/api/reports`. Su costo depende de cuántas filas tiene la vista, no de la base. `volume/export-bench.mjs` ejecuta los mismos módulos con ese número de filas. Tiempos en Node, mediana de 3 repeticiones; un navegador en un equipo modesto será más lento, así que son una cota inferior.
 
-| Proyectos | Reportes | JSON descargado | PDF: tiempo | PDF: tamaño | PDF: páginas | CSV: tiempo | CSV: tamaño |
-|---|---|---|---|---|---|---|---|
-| 3 | 1 | 1 KB | 2 ms | 7 KB | 1 | 0.1 ms | 0.2 KB |
-| 12 | 2,300 | 292 KB | 61 ms | 978 KB | 63 | 0.1 ms | 0.6 KB |
-| 53 | 11,400 | 1.4 MB | 269 ms | 4.7 MB | 310 | 0.1 ms | 2.4 KB |
-| 103 | 22,800 | 2.9 MB | 507 ms | 9.5 MB | 620 | 0.2 ms | 4.6 KB |
-| 200 | 50,000 | 6.4 MB | 1.2 s | 20.8 MB | 1,358 | 0.3 ms | 9.0 KB |
-| 400 | 100,000 | 12.7 MB | 2.4 s | 41.6 MB | 2,714 | 16.8 ms | 17.9 KB |
+| Proyectos | Reportes | Nivel equivalente | JSON descargado | PDF: tiempo | PDF: tamaño | PDF: páginas | CSV: tiempo | CSV: tamaño |
+|---|---|---|---|---|---|---|---|---|
+| 3 | 1 | N0 | 1 KB | 2 ms | 7 KB | 1 | 0.1 ms | 0.2 KB |
+| 13 | 1,001 | N1 | 127 KB | 15 ms | 431 KB | 28 | 0.1 ms | 0.6 KB |
+| 53 | 5,001 | N2 | 643 KB | 121 ms | 2.1 MB | 138 | 0.2 ms | 2.4 KB |
+| 103 | 10,001 | N3 | 1.3 MB | 219 ms | 4.2 MB | 274 | 0.2 ms | 4.6 KB |
+| 200 | 25,000 | — | 3.2 MB | 433 ms | 10.4 MB | 682 | 0.2 ms | 9.0 KB |
+| 200 | 50,000 | — | 6.4 MB | 1.1 s | 20.8 MB | 1,358 | 0.3 ms | 9.0 KB |
+| 400 | 100,000 | — | 12.7 MB | 2.4 s | 41.6 MB | 2,714 | 0.6 ms | 17.9 KB |
 
 El CSV exporta solo la sección de proyectos (`renderExport`), así que el volumen de reportes no lo afecta. El PDF incluye **todos** los reportes de la empresa, uno por fila: crece de forma lineal en tiempo, tamaño y páginas.
 
@@ -109,7 +112,7 @@ Conclusión sobre el hallazgo 3: la búsqueda de producto **no** carece de índi
 
 _Pendiente de la corrida en Supabase._ Se define como el primer nivel en que el p95 extremo a extremo con 5 usuarios virtuales supera el umbral de §7.2 para ese endpoint.
 
-Para la exportación, el plan maestro no define umbral. Se propone considerar degradada la experiencia cuando el PDF supera los 2 s de generación o las 100 páginas. Con ese criterio, el PDF deja de ser útil a partir de unos 3,600 reportes en la empresa (unos 36 por página), entre N1 y N2, por el número de páginas, mucho antes que por el tiempo.
+Para la exportación, el plan maestro no define umbral. Se propone considerar degradada la experiencia cuando el PDF supera los 2 s de generación o las 100 páginas. Con ese criterio, el PDF deja de ser útil a partir de unos 3,600 reportes en la empresa (unos 36 por página): entre N1 y N2, por el número de páginas, mucho antes que por el tiempo.
 
 ## 6. Acciones de mitigación
 
