@@ -1,0 +1,53 @@
+## Filas y tamaño por tabla
+         tabla          | filas_estimadas |  datos  | indices 
+------------------------+-----------------+---------+---------
+ movimiento_inventario  |          500007 | 46 MB   | 38 MB
+ tarea                  |          100008 | 12 MB   | 5456 kB
+ project_progress_entry |          100003 | 14 MB   | 7584 kB
+ producto               |          100000 | 13 MB   | 9552 kB
+ reporte                |           50001 | 4152 kB | 3160 kB
+ presupuesto_actividad  |           20003 | 1432 kB | 456 kB
+ proyecto               |             203 | 64 kB   | 32 kB
+ empresa                |              -1 | 16 kB   | 32 kB
+(8 rows)
+
+## Filas exactas en el ámbito medido (empresa de prueba y proyecto caliente)
+ proyectos_empresa | productos_proyecto | productos_empresa | movimientos_proyecto | tareas_proyecto | avances_proyecto | reportes_empresa | tamano_base 
+-------------------+--------------------+-------------------+----------------------+-----------------+------------------+------------------+-------------
+               103 |              20000 |             51057 |               100000 |           20000 |            20000 |            10001 | 167 MB
+(1 row)
+
+## Índices existentes en las tablas medidas
+         tabla          |                   indice                    |                                                                          definicion                                                                           
+------------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ movimiento_inventario  | movimiento_inventario_actividad_idx         | CREATE INDEX movimiento_inventario_actividad_idx ON public.movimiento_inventario USING btree (id_actividad) WHERE (id_actividad IS NOT NULL)
+ movimiento_inventario  | movimiento_inventario_pkey                  | CREATE UNIQUE INDEX movimiento_inventario_pkey ON public.movimiento_inventario USING btree (id_movimiento)
+ movimiento_inventario  | movimiento_inventario_producto_idx          | CREATE INDEX movimiento_inventario_producto_idx ON public.movimiento_inventario USING btree (id_producto) WHERE (id_producto IS NOT NULL)
+ movimiento_inventario  | movimiento_inventario_proyecto_fecha_idx    | CREATE INDEX movimiento_inventario_proyecto_fecha_idx ON public.movimiento_inventario USING btree (id_proyecto, fecha)
+ presupuesto_actividad  | presupuesto_actividad_pkey                  | CREATE UNIQUE INDEX presupuesto_actividad_pkey ON public.presupuesto_actividad USING btree (id_actividad)
+ producto               | producto_codigo_barras_unique               | CREATE UNIQUE INDEX producto_codigo_barras_unique ON public.producto USING btree (id_proyecto, codigo_barras) WHERE (codigo_barras IS NOT NULL)
+ producto               | producto_pkey                               | CREATE UNIQUE INDEX producto_pkey ON public.producto USING btree (id_producto)
+ producto               | producto_proyecto_id_unique                 | CREATE UNIQUE INDEX producto_proyecto_id_unique ON public.producto USING btree (id_proyecto, id_producto)
+ project_progress_entry | project_progress_entry_pkey                 | CREATE UNIQUE INDEX project_progress_entry_pkey ON public.project_progress_entry USING btree (id_progress_entry)
+ project_progress_entry | project_progress_entry_project_happened_idx | CREATE INDEX project_progress_entry_project_happened_idx ON public.project_progress_entry USING btree (id_proyecto, happened_at DESC, id_progress_entry DESC)
+ proyecto               | proyecto_empresa_id_unique                  | CREATE UNIQUE INDEX proyecto_empresa_id_unique ON public.proyecto USING btree (id_empresa, id_proyecto)
+ proyecto               | proyecto_pkey                               | CREATE UNIQUE INDEX proyecto_pkey ON public.proyecto USING btree (id_proyecto)
+ proyecto_usuario       | proyecto_usuario_pkey                       | CREATE UNIQUE INDEX proyecto_usuario_pkey ON public.proyecto_usuario USING btree (id_proyecto, id_usuario)
+ reporte                | reporte_empresa_fecha_idx                   | CREATE INDEX reporte_empresa_fecha_idx ON public.reporte USING btree (id_empresa, fecha_generacion DESC)
+ reporte                | reporte_pkey                                | CREATE UNIQUE INDEX reporte_pkey ON public.reporte USING btree (id_reporte)
+ tarea                  | tarea_pkey                                  | CREATE UNIQUE INDEX tarea_pkey ON public.tarea USING btree (id_tarea)
+ tarea                  | tarea_proyecto_id_unique                    | CREATE UNIQUE INDEX tarea_proyecto_id_unique ON public.tarea USING btree (id_proyecto, id_tarea)
+(17 rows)
+
+## Comprobación del hallazgo 3 de SCRUM-28: índices que empiezan por id_proyecto o codigo_barras
+         tabla          |    columna    |                  indices_que_la_encabezan                  
+------------------------+---------------+------------------------------------------------------------
+ movimiento_inventario  | id_proyecto   | movimiento_inventario_proyecto_fecha_idx
+ presupuesto_actividad  | id_proyecto   | (ninguno)
+ producto               | codigo_barras | (ninguno)
+ producto               | id_proyecto   | producto_proyecto_id_unique, producto_codigo_barras_unique
+ project_progress_entry | id_proyecto   | project_progress_entry_project_happened_idx
+ reporte                | id_empresa    | reporte_empresa_fecha_idx
+ tarea                  | id_proyecto   | tarea_proyecto_id_unique
+(7 rows)
+
