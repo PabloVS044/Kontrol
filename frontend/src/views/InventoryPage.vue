@@ -547,9 +547,20 @@ function authHeader(id_proyecto = null) {
   return headers
 }
 
+function requestProjectId() {
+  return selectedProject.value?.id_proyecto
+    ?? projects.value[0]?.id_proyecto
+    ?? authStore.accessContext?.inventory_project_ids?.[0]
+    ?? null
+}
+
 async function apiFetch(path) {
-  const res = await fetch(path, { headers: authHeader() })
-  if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
+  const res = await fetch(path, {
+    headers: authHeader(requestProjectId()),
+  })
+  if (res.status === 401) {
+    throw Object.assign(new Error('unauthenticated'), { status: 401 })
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
@@ -737,9 +748,8 @@ function stockNumClass(p) {
 }
 
 function detailLink(product) {
-  const query = selectedProject.value
-    ? `?project=${selectedProject.value.id_proyecto}`
-    : ''
+  const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
+  const query = projectId ? `?project=${projectId}` : ''
   return `/inventory/${product.id_producto}${query}`
 }
 

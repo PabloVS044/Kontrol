@@ -731,6 +731,16 @@
       "delete": "Delete supplier",
       "deleteConfirm": "Delete {name}?",
       "close": "Close"
+    },
+    "productDetail": {
+      "supplier": "Supplier",
+      "selectSupplier": "Select a supplier",
+      "quotedPrice": "Quoted price",
+      "linkSupplier": "Link supplier",
+      "linking": "Linking…",
+      "supplierLinked": "Supplier linked successfully.",
+      "supplierLoadError": "Could not load suppliers.",
+      "supplierLinkError": "Could not link the supplier."
     }
   },
   "budget": {

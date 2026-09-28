@@ -4,6 +4,9 @@ Ambiente aislado para las sesiones de UX (protocolo T1–T5) y para el material
 que el Neurolab requiere antes del 15/09. Misma aplicación que producción;
 base de datos separada (Supabase) y datos de ejemplo verosímiles.
 
+El `seed` también cubre las sesiones de Fase 2: carga dos proveedores para F2
+y una publicación en borrador para F5.
+
 ## URL
 
 **https://test.34.121.51.151.nip.io** (`TEST_PUBLIC_HOST` en `.env.deploy` —
@@ -37,6 +40,14 @@ cd /app/Kontrol
 docker compose -f docker-compose.prod.yml -f docker-compose.test.yml exec backend-test npm run reset:test
 ```
 
+Después del reset, verificar los prerrequisitos de Fase 2:
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.test.yml exec backend-test npm run verify:ux-phase2
+```
+
+El comando debe terminar con `AMBIENTE LISTO`. Si falla, no iniciar la sesión.
+
 Tarda menos de un minuto. Borra todos los datos de negocio (usuarios,
 empresa, proyectos, tareas, avances, evidencia, gastos, reportes), elimina
 los archivos de evidencia subidos a UploadThing, y vuelve a sembrar el
@@ -57,6 +68,8 @@ accidente aunque se ejecute el comando equivocado.
   adjunta, para verificar que la vista de detalle de tarea la muestra.
 - **Gastos** cargados contra el presupuesto de cada proyecto.
 - **1 reporte** consolidado de ejemplo.
+- **2 proveedores** disponibles para vincular a un producto en F2.
+- **1 publicación de marketing** en estado borrador, visible al filtrar en F5.
 
 Script fuente: `backend/src/db/seed.js`. Es idempotente — correrlo de nuevo
 sin resetear antes no duplica datos.

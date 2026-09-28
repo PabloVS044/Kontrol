@@ -254,6 +254,40 @@ async function ensureReporte({ idEmpresa, idUsuario, titulo, tipo }) {
   return reporte.id_reporte
 }
 
+async function ensureProveedor({ idEmpresa, nombre, contactoNombre, telefono, email }) {
+  const existing = await pool.query(
+    'SELECT id_proveedor FROM public.proveedor WHERE id_empresa = $1 AND nombre = $2',
+    [idEmpresa, nombre]
+  )
+  if (existing.rows.length) return existing.rows[0].id_proveedor
+
+  const { rows: [proveedor] } = await pool.query(
+    `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id_proveedor`,
+    [nombre, contactoNombre, telefono, email, idEmpresa]
+  )
+  return proveedor.id_proveedor
+}
+
+async function ensureMarketingPublication({ idEmpresa, idProyecto, idUsuario, title, caption }) {
+  const existing = await pool.query(
+    'SELECT id_publication FROM public.marketing_publication WHERE id_empresa = $1 AND title = $2',
+    [idEmpresa, title]
+  )
+  if (existing.rows.length) return existing.rows[0].id_publication
+
+  const { rows: [publication] } = await pool.query(
+    `INSERT INTO public.marketing_publication
+       (id_empresa, id_proyecto, title, caption, platform, publication_format,
+        status, created_by, updated_by, notes)
+     VALUES ($1, $2, $3, $4, 'INSTAGRAM', 'POST', 'DRAFT', $5, $5, $6)
+     RETURNING id_publication`,
+    [idEmpresa, idProyecto, title, caption, idUsuario, 'Dato base para la prueba de usabilidad de Fase 2.']
+  )
+  return publication.id_publication
+}
+
 async function ensureEvidenciaConArchivo({ idTarea, idUsuario, idProgressEntry, descripcion }) {
   const existing = await pool.query(
     'SELECT id_evidencia FROM public.evidencia WHERE id_tarea = $1 AND descripcion = $2',
@@ -349,6 +383,31 @@ export async function seed() {
     }
   }
   console.log('  3 proyectos listos, con los 6 participantes como miembros.')
+
+  await ensureProveedor({
+    idEmpresa,
+    nombre: 'Distribuidora Central',
+    contactoNombre: 'María López',
+    telefono: '+502 2233 4455',
+    email: 'ventas@distribuidora-central.test',
+  })
+  await ensureProveedor({
+    idEmpresa,
+    nombre: 'Suministros El Faro',
+    contactoNombre: 'Carlos Méndez',
+    telefono: '+502 2456 7788',
+    email: 'cotizaciones@elfaro.test',
+  })
+  console.log('  2 proveedores listos para vincular en F2.')
+
+  await ensureMarketingPublication({
+    idEmpresa,
+    idProyecto: proyecto2,
+    idUsuario: p1,
+    title: 'Consejos para instalaciones eléctricas seguras',
+    caption: 'Cinco recomendaciones para elegir materiales eléctricos certificados.',
+  })
+  console.log('  1 publicación de marketing lista para filtrar en F5.')
 
   await ensureTarea({ idProyecto: proyecto1, nombre: 'Cotizar estanterías industriales', descripcion: 'Solicitar 3 cotizaciones de proveedores locales.', estado: 'PENDIENTE', prioridad: 'ALTA', fechaVencimiento: daysFromNow(10), idAsignado: p1 })
   await ensureTarea({ idProyecto: proyecto1, nombre: 'Definir plano de distribución', descripcion: 'Layout final de pasillos y zonas de producto.', estado: 'PENDIENTE', prioridad: 'MEDIA', fechaVencimiento: daysFromNow(15), idAsignado: null })

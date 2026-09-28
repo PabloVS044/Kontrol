@@ -116,7 +116,11 @@ const netDisplay = computed(() => {
   return `${net >= 0 ? '+' : ''}${net}`
 })
 
-const detailLink = computed(() => `/inventory/${props.product.id_producto}`)
+const detailLink = computed(() => {
+  const projectId = props.product.id_proyecto
+  const query = projectId ? `?project=${projectId}` : ''
+  return `/inventory/${props.product.id_producto}${query}`
+})
 
 // Los importes se pintan con la moneda de la empresa: el "$" fijo mentía en
 // cuanto una empresa cobraba en otra moneda.
@@ -249,4 +253,3 @@ function money(amount) {
   padding: 12px 16px;
 }
 </style>
-
