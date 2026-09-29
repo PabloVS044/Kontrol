@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Tres sesiones moderadas con personas de 18 a 30 años, usuarias frecuentes de
+Tres sesiones moderadas con personas de 18 a 64 años, usuarias frecuentes de
 aplicaciones web, sin conocimiento previo de Kontrol ni participación en su
 desarrollo. Alejandra Avilés modera y Juan Montenegro anota.
 
@@ -95,7 +95,8 @@ que acabas de crear.”
 - “¿Qué esperabas que ocurriera?” y “¿qué buscarías ahora?” son preguntas
   neutrales permitidas.
 - No nombrar un botón, ruta o campo durante el tiempo de la tarea.
-- Al llegar al límite, detener la tarea y registrar Fallo por tiempo.
+- Al sobrepasar el límite, detener la tarea y registrar Fallo por tiempo. Una
+  tarea completada exactamente en el límite cuenta como éxito.
 - Si el participante pide ayuda imprescindible, darla solo después de marcar
   Fallo con ayuda y registrar la intervención literal.
 - Registrar el tiempo aunque la tarea falle.
