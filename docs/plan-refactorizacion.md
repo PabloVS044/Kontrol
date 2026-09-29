@@ -2,15 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Documento | Plan de refactorización de Kontrol para el resto del semestre |
 | Ticket | [SCRUM-56](https://kontroldevelopment.atlassian.net/browse/SCRUM-56) · Parte 2 |
 | Responsable | Ivana Figueroa (24785) |
-| Versión | 1.0 |
 | Fecha | 28/09/2026 |
-| Rama analizada | `develop` @ `273a763` |
-| Línea base | Inventario de deuda técnica de SCRUM-30, `docs/deuda-tecnica.md` v1.0: 17 elementos, 60 SP |
-| Alcance temporal | Sprint 8 (en curso), Sprint 9 y Sprint 10. Después del Sprint 10 queda la entrega final del semestre, sin elementos de refactorización asignados |
-| Documento hermano | `docs/analisis-requisitos-no-funcionales.md` (SCRUM-56, Parte 1) |
 
 ---
 

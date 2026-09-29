@@ -2,14 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Documento | Análisis de los requisitos no funcionales de Kontrol frente a las pruebas no funcionales ejecutadas |
 | Ticket | [SCRUM-56](https://kontroldevelopment.atlassian.net/browse/SCRUM-56) · Parte 1 |
 | Responsable | Ivana Figueroa (24785) |
-| Versión | 1.0 |
 | Fecha | 28/09/2026 |
-| Rama analizada | `develop` @ `273a763` |
-| Línea base | Documento «Requisitos no funcionales — Kontrol» del curso de Ingeniería de Software 1, Grupo 3. Su tabla coincide palabra por palabra con la sección «c. Requisitos no funcionales» del informe «Corte 2 IDS Grupo 3» |
-| Documento hermano | `docs/plan-refactorizacion.md` (SCRUM-56, Parte 2) |
 
 ---
 
@@ -17,11 +12,9 @@
 
 ### 1.1 Línea base
 
-La línea base son los **42 requisitos no funcionales** del diseño original, agrupados en 14 categorías de tres requisitos cada una. Se transcriben en la sección 2 tal como aparecen en el documento de origen, sin corregir redacción ni ortografía. Los que resultan ambiguos o citan elementos que no existen en el sistema se marcan en la columna de observación, pero no se modifican: la propuesta de ajuste va aparte, en §4.4.
+La línea base son los **42 requisitos no funcionales** definidos en el curso de Ingeniería de Software 1, agrupados en 14 categorías de tres requisitos cada una. Se listan en la sección 2 sin modificarlos. Los que resultan ambiguos o citan elementos que no existen en el sistema se marcan en la columna de observación: la propuesta de ajuste va aparte, en §4.4.
 
-La tabla de actividades del mismo informe del Corte 2 registra la tarea «Definición de requisitos no funcionales (17 RNF con métricas)». La tabla de requisitos contiene 42. Este análisis usa los 42.
-
-Identificador: `RNF-<categoría>.<orden dentro de la categoría>`, en el orden del documento de origen.
+Identificador: `RNF-<categoría>.<orden dentro de la categoría>`, en el orden en que se definieron.
 
 ### 1.2 Pruebas contrastadas
 
@@ -56,7 +49,7 @@ Todas las pruebas se ejecutaron sobre el ambiente de pruebas de SCRUM-25 (`docs/
 
 ## 2. Requisitos no funcionales de la línea base
 
-Transcripción literal. La columna Observación es de este análisis.
+Requisitos tal como se definieron en Ingeniería de Software 1. La columna Observación es de este análisis.
 
 | ID | Requisito no funcional | Categoría | Forma en que se medirá su cumplimiento | Observación |
 |---|---|---|---|---|
@@ -272,7 +265,7 @@ Elementos del plan (`docs/plan-refactorizacion.md`) que mejoran el cumplimiento 
 
 | Requisito del ticket, Parte 1 | Estado |
 |---|---|
-| Listar los requisitos no funcionales del diseño original | Cumplido: 42 requisitos transcritos en la sección 2, con los ambiguos marcados sin modificarlos |
+| Listar los requisitos no funcionales del diseño original | Cumplido: 42 requisitos listados en la sección 2, con los ambiguos marcados sin modificarlos |
 | Contrastarlos contra todas las pruebas no funcionales ejecutadas: k6 (SCRUM-28), ZAP (SCRUM-52) y volumen e inundación (SCRUM-53) | Cumplido en la sección 3, que añade usabilidad y autorización. Las pruebas de inundación de SCRUM-53 no se ejecutaron; se declaran como faltantes en §4.1 |
 | Pregunta a: qué pruebas faltarían | Respondida en §4.1 |
 | Pregunta b: qué tanto se han cumplido | Respondida en §4.2 |
