@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import {
   addTeamMember,
   assignTeamProject,
@@ -21,7 +21,7 @@ import {
   teamSchema,
 } from '../schemas/teamSchema.js'
 
-const router = Router()
+const router = createRouter()
 const canManageTeams = requireCompanyRole('owner', 'admin', 'manager')
 
 router.use(requireAuth, requireCompany, canManageTeams)

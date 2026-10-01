@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
@@ -9,6 +9,7 @@ import {
   createOrGetCompanyInvitation,
   deactivateCompanyInvitation,
   getCompanyAccessContext,
+  getCompanySaleConfig,
   getCompanyUsersPanel,
   getMyCompanies,
   getPublicCompanyInvitation,
@@ -16,6 +17,7 @@ import {
   removeCompanyMemberProjectAccess,
   upsertCompanyMemberProjectAccess,
   updateCompanyMemberRole,
+  updateCompanySaleConfig,
 } from '../controllers/companyController.js'
 import {
   createCompanySchema,
@@ -24,9 +26,10 @@ import {
   companyMemberProjectParamsSchema,
   updateCompanyMemberRoleSchema,
   updateCompanyMemberProjectAccessSchema,
+  updateCompanySaleConfigSchema,
 } from '../schemas/companySchemas.js'
 
-const router = Router()
+const router = createRouter()
 
 router.get(
   '/invitations/:token',
@@ -79,6 +82,23 @@ router.delete(
   requireCompanyOwner,
   validate(companyMemberParamSchema, 'params'),
   removeCompanyMember
+)
+
+// Leerla es para cualquier miembro: el POS necesita saber si pedir descuento y
+// qué IVA mostrar. Cambiarla mueve lo que se cobra, así que es solo del owner.
+router.get(
+  '/sale-config',
+  requireAuth,
+  requireCompany,
+  getCompanySaleConfig
+)
+router.put(
+  '/sale-config',
+  requireAuth,
+  requireCompany,
+  requireCompanyOwner,
+  validate(updateCompanySaleConfigSchema),
+  updateCompanySaleConfig
 )
 
 export default router

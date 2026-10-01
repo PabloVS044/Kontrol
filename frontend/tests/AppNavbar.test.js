@@ -173,14 +173,66 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     expect(sinDatos.find('.appnav-avatar').text()).toBe('U')
   })
 
-  it('click en el avatar cierra sesión y redirige a login', async () => {
+  it('el avatar abre el menú de cuenta en vez de cerrar sesión de golpe', async () => {
+    // Una inicial suelta se lee como "ver mi perfil": el clic destruía la sesión
+    // sin anunciarlo. Ahora abre un menú donde el cierre está escrito.
+    const { wrapper, store } = await montar()
+
+    expect(wrapper.find('.user-dropdown').exists()).toBe(false)
+
+    await wrapper.find('.appnav-avatar').trigger('click')
+
+    expect(wrapper.find('.user-dropdown').exists()).toBe(true)
+    expect(store.isLoggedIn).toBe(true)
+  })
+
+  it('el menú de cuenta nombra la acción de cerrar sesión', async () => {
+    const { wrapper } = await montar()
+    await wrapper.find('.appnav-avatar').trigger('click')
+
+    expect(wrapper.find('.ud-item--signout').text()).toContain('Cerrar sesión')
+  })
+
+  it('cerrar sesión desde el menú termina la sesión y redirige a login', async () => {
     const { wrapper, store } = await montar()
     const pushSpy = vi.spyOn(router, 'push')
 
     await wrapper.find('.appnav-avatar').trigger('click')
+    await wrapper.find('.ud-item--signout').trigger('click')
 
     expect(store.isLoggedIn).toBe(false)
     expect(pushSpy).toHaveBeenCalledWith({ name: 'login' })
+  })
+
+  it('el menú muestra el nombre y el email de quien ha entrado', async () => {
+    const { wrapper } = await montar({
+      user: { id_usuario: 9, nombre: 'Martina', apellido: 'Lopez', email: 'martina@kontrol.dev' },
+    })
+    await wrapper.find('.appnav-avatar').trigger('click')
+
+    expect(wrapper.find('.ud-name').text()).toBe('Martina Lopez')
+    expect(wrapper.find('.ud-email').text()).toBe('martina@kontrol.dev')
+  })
+
+  it('el avatar declara que abre un menú y si está abierto', async () => {
+    const { wrapper } = await montar()
+    const avatar = wrapper.find('.appnav-avatar')
+
+    expect(avatar.attributes('aria-haspopup')).toBe('menu')
+    expect(avatar.attributes('aria-expanded')).toBe('false')
+
+    await avatar.trigger('click')
+    expect(wrapper.find('.appnav-avatar').attributes('aria-expanded')).toBe('true')
+  })
+
+  it('la configuración está al alcance de cualquier rol', async () => {
+    // La pantalla tiene preferencias personales —ocultar el asistente— además
+    // de la configuración de empresa; esa se reserva al dueño dentro de la vista.
+    for (const rol of ['member', 'manager', 'owner']) {
+      const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol } })
+      await wrapper.find('.appnav-avatar').trigger('click')
+      expect(wrapper.find('.ud-item[href="/settings"]').exists()).toBe(true)
+    }
   })
 
   it('el selector de idioma alterna y persiste la preferencia', async () => {
@@ -206,5 +258,47 @@ describe('AppNavbar.vue — sesión e idioma', () => {
 
     await wrapper.find('.appnav-link').trigger('click')
     expect(wrapper.find('.appnav-links').classes()).not.toContain('is-open')
+  })
+
+  it('el hamburger declara qué controla y si está abierto', async () => {
+    const { wrapper } = await montar()
+    const burger = wrapper.find('.hamburger')
+
+    expect(burger.attributes('aria-controls')).toBe('appnav-links')
+    expect(burger.attributes('aria-expanded')).toBe('false')
+
+    await burger.trigger('click')
+    expect(wrapper.find('.hamburger').attributes('aria-expanded')).toBe('true')
+  })
+
+  it('tocar fuera cierra el cajón sin tener que volver al hamburger', async () => {
+    const { wrapper } = await montar()
+    await wrapper.find('.hamburger').trigger('click')
+    expect(wrapper.find('.appnav-backdrop').exists()).toBe(true)
+
+    await wrapper.find('.appnav-backdrop').trigger('click')
+    expect(wrapper.find('.appnav-links').classes()).not.toContain('is-open')
+  })
+
+  it('Escape cierra el cajón: sin ratón no había salida', async () => {
+    const { wrapper } = await montar()
+    await wrapper.find('.hamburger').trigger('click')
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.appnav-links').classes()).not.toContain('is-open')
+  })
+
+  it('todos los enlaces permitidos están en el cajón, no solo los que caben', async () => {
+    // El fallo original: la fila cortaba marketing, IA e integraciones fuera del
+    // ancho y no había forma de alcanzarlos. El cajón los contiene todos.
+    const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol: 'owner' } })
+    await wrapper.find('.hamburger').trigger('click')
+
+    const hrefs = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+    for (const esperado of ['/dashboard', '/marketing', '/agent', '/integrations']) {
+      expect(hrefs).toContain(esperado)
+    }
   })
 })

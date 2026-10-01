@@ -1,7 +1,9 @@
 import crypto from 'crypto'
+import { assertPublicHttpUrl } from './ssrfGuard.js'
 
 export async function testWebhookConnection({ url, secret }) {
   if (!url) throw new Error('url es requerido.')
+  await assertPublicHttpUrl(url)
 
   const payload = {
     event: 'test',

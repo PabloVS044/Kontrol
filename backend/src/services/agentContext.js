@@ -52,8 +52,8 @@ rol_empresa(id_rol_empresa PK, nombre, descripcion)
 
 categoria(id_categoria PK, nombre, descripcion, id_empresa FK)
 
-proveedor(id_proveedor PK, nombre, contacto_nombre, telefono, email)
-  -- GLOBAL: not tied to a single empresa.
+proveedor(id_proveedor PK, nombre, contacto_nombre, telefono, email,
+          id_empresa FK)
 
 proyecto(id_proyecto PK, nombre, descripcion, fecha_inicio,
          fecha_fin_planificada, presupuesto_total NUMERIC,
@@ -95,12 +95,11 @@ reporte(id_reporte PK, titulo, fecha_generacion, tipo, contenido_url,
 
 EMPRESA SCOPING — how to filter by the current company ($1):
   - Tables WITH id_empresa column → filter directly:
-      empresa, categoria, proyecto, movimiento_inventario, empresa_usuario.
+      empresa, categoria, proyecto, movimiento_inventario, empresa_usuario,
+      proveedor.
   - Tables WITHOUT id_empresa column → join through "proyecto":
       producto, tarea, asignacion, presupuesto_actividad, reporte,
       proyecto_usuario, evidencia (via tarea→proyecto).
-  - "proveedor" is global; only filter via producto_proveedor → producto →
-    proyecto.id_empresa = $1 when scoping is required.
 `.trim()
 
 export const AGENT_RULES = `

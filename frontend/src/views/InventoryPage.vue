@@ -24,8 +24,12 @@
       v-model="showScanner"
       :feedback="scanFeedback"
       :pending="pendingScan"
+      :choices="scanChoices"
+      :show-project="!selectedProject"
+      :currency="saleConfig.moneda"
       @detected="handleScan"
       @confirm="confirmScan"
+      @choose="chooseScanProject"
       @cancel="cancelScan"
     />
 
@@ -48,13 +52,40 @@
 
     <SaleCheckoutModal
       v-model="showCheckout"
+      v-model:discount-percent="saleDiscountPct"
       :items="saleCart"
-      :total="saleTotal"
       :subtitle="saleSubtitle"
       :error="saleError"
       :submitting="saleSubmitting"
+      :config="saleConfig"
       @confirm="submitSale"
     />
+
+    <!-- Ticket de la venta registrada. Las cifras son las que devolvió el
+         servidor, no las que calculó esta vista: es lo que garantiza que el
+         ticket y el informe de ventas digan lo mismo. -->
+    <div v-if="lastSale" class="sale-receipt" role="status">
+      <div class="sr-head">
+        <span class="sr-title">{{ $t('inventory.receipt.title', { id: lastSale.id_venta }) }}</span>
+        <button class="sr-close" :aria-label="$t('inventory.receipt.close')" @click="lastSale = null">✕</button>
+      </div>
+      <div class="sr-row">
+        <span>{{ $t('inventory.checkout.subtotal') }}</span>
+        <span>{{ money(lastSale.subtotal) }}</span>
+      </div>
+      <div v-if="Number(lastSale.descuento) > 0" class="sr-row sr-row--minus">
+        <span>{{ $t('inventory.checkout.discountLine', { pct: Number(lastSale.descuento_pct) }) }}</span>
+        <span>−{{ money(lastSale.descuento) }}</span>
+      </div>
+      <div v-if="Number(lastSale.iva) > 0" class="sr-row">
+        <span>{{ $t('inventory.checkout.vatLine', { pct: Math.round(Number(lastSale.iva_tasa) * 10000) / 100 }) }}</span>
+        <span>{{ money(lastSale.iva) }}</span>
+      </div>
+      <div class="sr-row sr-row--total">
+        <span>{{ $t('inventory.checkout.total') }}</span>
+        <span>{{ money(lastSale.total) }}</span>
+      </div>
+    </div>
 
     <div class="inventory-layout">
 
@@ -244,7 +275,7 @@
               <div class="card-meta">
                 <div>
                   <div class="card-price-label">{{ $t('inventory.card.price') }}</div>
-                  <div class="card-price">${{ Number(product.precio_venta).toFixed(2) }}</div>
+                  <div class="card-price">{{ money(product.precio_venta) }}</div>
                 </div>
                 <div class="card-stock">
                   <div class="card-stock-num" :class="stockNumClass(product)">
@@ -336,6 +367,7 @@
           :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
+          :currency="saleConfig.moneda"
           @remove="removeFromCart"
           @submit="openCheckout"
           @cancel="clearSaleCart"
@@ -369,7 +401,7 @@
               <span class="s-sub red">{{ $t('inventory.context.actionNeeded') }}</span>
             </div>
             <div class="summary-card">
-              <span class="s-value">${{ stats.totalValue }}</span>
+              <span class="s-value">{{ money(stats.totalValue) }}</span>
               <span class="s-label">{{ $t('inventory.context.totalValue') }}</span>
             </div>
           </div>
@@ -424,7 +456,7 @@
     <button class="mobile-cart-bar" @click="cartExpanded = true">
       <span class="mcb-count">{{ saleItemCount }}</span>
       <span class="mcb-label">{{ $t('inventory.sale.viewSale') }}</span>
-      <span class="mcb-total">${{ saleTotal.toFixed(2) }}</span>
+      <span class="mcb-total">{{ money(saleTotal) }}</span>
     </button>
 
     <div v-if="cartExpanded" class="cart-drawer-overlay" @click.self="cartExpanded = false">
@@ -436,6 +468,7 @@
           :subtitle="saleSubtitle"
           :error="saleError"
           :submitting="saleSubmitting"
+          :currency="saleConfig.moneda"
           @remove="removeFromCart"
           @submit="openCheckout"
           @cancel="clearSaleCart"
@@ -464,6 +497,7 @@ import ProductEditModal from '../components/inventory/ProductEditModal.vue'
 import ProductDeleteModal from '../components/inventory/ProductDeleteModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { calcSubtotal } from '@/utils/sales.js'
+import { formatMoney, DEFAULT_CURRENCY } from '@/utils/currency.js'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -513,9 +547,20 @@ function authHeader(id_proyecto = null) {
   return headers
 }
 
+function requestProjectId() {
+  return selectedProject.value?.id_proyecto
+    ?? projects.value[0]?.id_proyecto
+    ?? authStore.accessContext?.inventory_project_ids?.[0]
+    ?? null
+}
+
 async function apiFetch(path) {
-  const res = await fetch(path, { headers: authHeader() })
-  if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
+  const res = await fetch(path, {
+    headers: authHeader(requestProjectId()),
+  })
+  if (res.status === 401) {
+    throw Object.assign(new Error('unauthenticated'), { status: 401 })
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
@@ -587,6 +632,9 @@ onMounted(async () => {
   }
   await loadProjects()
   await loadData()
+  // No bloquea el catálogo: si tarda, el POS ya es usable y el desglose aparece
+  // en cuanto llega.
+  loadSaleConfig()
 })
 
 watch(() => authStore.idEmpresaActual, async () => {
@@ -700,14 +748,43 @@ function stockNumClass(p) {
 }
 
 function detailLink(product) {
-  const query = selectedProject.value
-    ? `?project=${selectedProject.value.id_proyecto}`
-    : ''
+  const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
+  const query = projectId ? `?project=${projectId}` : ''
   return `/inventory/${product.id_producto}${query}`
 }
 
 function openDetail(product) {
   router.push(detailLink(product))
+}
+
+/* ── configuración de venta (IVA y descuento de la empresa) ── */
+// Arranca sin IVA ni descuento: si la petición falla, el POS sigue vendiendo con
+// el comportamiento anterior en vez de quedarse bloqueado. El servidor calcula
+// lo que se cobra de todos modos, así que un default equivocado aquí no puede
+// cobrar de más.
+const saleConfig = ref({
+  iva_activo: false,
+  iva_tasa: 0,
+  descuento_activo: false,
+  descuento_max_pct: 0,
+  moneda: DEFAULT_CURRENCY,
+})
+const saleDiscountPct = ref(0)
+// Desglose devuelto por la última venta registrada, tal como quedó guardado.
+const lastSale = ref(null)
+
+async function loadSaleConfig() {
+  try {
+    const res = await apiFetch('/api/companies/sale-config')
+    saleConfig.value = { ...saleConfig.value, ...res.data }
+  } catch {
+    /* Sin config el POS vende sin IVA ni descuento, como antes. */
+  }
+}
+
+/** Importe con la moneda de la empresa. Ver `utils/currency.js`. */
+function money(amount) {
+  return formatMoney(amount, saleConfig.value.moneda)
 }
 
 /* ── carrito de venta ── */
@@ -743,19 +820,27 @@ const scanFeedback = ref(null)
 // Lectura pendiente de confirmar: { product, max, inCart }. Mientras exista,
 // el escáner muestra la tarjeta con el nombre y la cantidad a agregar.
 const pendingScan  = ref(null)
+// Un mismo código puede existir en varios proyectos: el índice único es
+// (id_proyecto, codigo_barras), no por empresa. Cuando la lectura sale ambigua
+// aquí queda la lista de candidatos para que el cajero elija de cuál descontar.
+const scanChoices  = ref(null)
 let scanFeedbackTimer = null
 
 function openScanner() {
   if (!authStore.canSellInventory) return
   scanFeedback.value = null
   pendingScan.value  = null
+  scanChoices.value  = null
   showScanner.value  = true
 }
 
 // Cerrar el escáner descarta lo que estuviera a medio confirmar: al volver a
 // abrirlo se empieza limpio en vez de arrastrar una lectura vieja.
 watch(showScanner, (open) => {
-  if (!open) pendingScan.value = null
+  if (!open) {
+    pendingScan.value = null
+    scanChoices.value = null
+  }
 })
 
 // Un acierto se lee de un vistazo; un error hay que poder leerlo entero antes
@@ -783,34 +868,81 @@ function flashScanFeedback(type, msg) {
  * El duplicado no es un error: la tarjeta lo indica con lo que ya hay en la
  * venta y ofrece el resto disponible.
  */
+/**
+ * Prepara un candidato para la tarjeta de confirmación, o devuelve el motivo
+ * por el que no se puede vender. `max` descuenta lo que ya está en el carrito.
+ */
+function buildScanCandidate(product) {
+  const inCart = getCartItem(product)?.cantidad ?? 0
+  const max = Number(product.stock_actual) - inCart
+  return { product, max, inCart, sellable: canSellProduct(product) && max > 0 }
+}
+
 function handleScan(code) {
   const scanned = String(code ?? '').trim()
   if (!scanned) return
 
-  const match = products.value.find(
+  // El stock vive en producto.stock_actual y cada producto pertenece a un solo
+  // proyecto, así que el mismo código en dos proyectos son dos inventarios
+  // distintos. Resolver con el primer match descontaba del proyecto de id más
+  // bajo, no del que tiene el cajero delante. Se recogen todos y se decide.
+  const matches = products.value.filter(
     (p) => p.codigo_barras && String(p.codigo_barras) === scanned
   )
-  if (!match) {
+  if (!matches.length) {
     flashScanFeedback('err', t('inventory.scanner.notFound', { code: scanned }))
     return
   }
-  if (!canSellProduct(match)) {
-    flashScanFeedback('err', t('inventory.scanner.outOfStock', { name: match.nombre }))
+
+  // Con un proyecto en el filtro la lista ya viene acotada a ese proyecto, así
+  // que no hay ambigüedad posible. La hay en "todos los proyectos".
+  const candidates = matches.map(buildScanCandidate)
+  const sellable   = candidates.filter((c) => c.sellable)
+
+  if (!sellable.length) {
+    // Nada vendible: si había varios candidatos hay que decirlo, porque
+    // "sin stock" a secas sobre un producto que se tiene en la mano parece
+    // un fallo del lector y no un inventario vacío en todos los proyectos.
+    if (candidates.length > 1) {
+      flashScanFeedback('err', t('inventory.scanner.noStockAnywhere', {
+        count: candidates.length,
+      }))
+      return
+    }
+    const only = candidates[0]
+    if (!canSellProduct(only.product)) {
+      flashScanFeedback('err', t('inventory.scanner.outOfStock', { name: only.product.nombre }))
+    } else {
+      flashScanFeedback('err', t('inventory.scanner.stockLimit', {
+        name: only.product.nombre,
+        count: only.product.stock_actual,
+      }))
+    }
     return
   }
 
-  const inCart = getCartItem(match)?.cantidad ?? 0
-  const max = Number(match.stock_actual) - inCart
-  if (max <= 0) {
-    flashScanFeedback('err', t('inventory.scanner.stockLimit', {
-      name: match.nombre,
-      count: match.stock_actual,
-    }))
+  if (sellable.length > 1) {
+    // Elegir por el cajero sería adivinar de qué inventario descontar, y el
+    // movimiento además atribuye el ingreso a ese proyecto. Se pregunta.
+    scanFeedback.value = null
+    pendingScan.value  = null
+    scanChoices.value  = { code: scanned, options: sellable }
     return
   }
 
   scanFeedback.value = null
-  pendingScan.value = { product: match, max, inCart }
+  scanChoices.value = null
+  pendingScan.value = sellable[0]
+}
+
+/** El cajero resolvió la ambigüedad: seguimos con el candidato que eligió. */
+function chooseScanProject(option) {
+  const picked = scanChoices.value?.options.find(
+    (c) => c.product.id_producto === option.product.id_producto
+  )
+  if (!picked) return
+  scanChoices.value = null
+  pendingScan.value = picked
 }
 
 /** Confirmación explícita: es el único punto donde el escaneo entra al carrito. */
@@ -819,14 +951,24 @@ function confirmScan(cantidad) {
   if (!pendiente) return
   addToCart(pendiente.product, cantidad)
   pendingScan.value = null
-  flashScanFeedback('ok', t('inventory.scanner.addedQty', {
-    name: pendiente.product.nombre,
-    count: cantidad,
-  }))
+  // Sin proyecto en el filtro se confirma de qué inventario salió: es la única
+  // señal de que se descontó del proyecto correcto sin cerrar la cámara.
+  const proyecto = pendiente.product.proyecto_nombre
+  flashScanFeedback('ok', (!selectedProject.value && proyecto)
+    ? t('inventory.scanner.addedQtyProject', {
+        name: pendiente.product.nombre,
+        count: cantidad,
+        project: proyecto,
+      })
+    : t('inventory.scanner.addedQty', {
+        name: pendiente.product.nombre,
+        count: cantidad,
+      }))
 }
 
 function cancelScan() {
   pendingScan.value = null
+  scanChoices.value = null
 }
 
 function getCartItem(product) {
@@ -889,6 +1031,9 @@ function clearSaleCart() {
   saleError.value = null
   cartExpanded.value = false
   showCheckout.value = false
+  // El descuento no se arrastra a la venta siguiente: se aplicaría sin que nadie
+  // lo volviera a pedir.
+  saleDiscountPct.value = 0
 }
 
 const saleTotal = computed(() => calcSubtotal(saleCart.value))
@@ -908,6 +1053,10 @@ async function submitSale() {
         id_producto: item.product.id_producto,
         id_proyecto,
         cantidad: item.cantidad,
+        // Se envía el precio que se enseñó en pantalla, no para que el servidor
+        // lo use —cobra siempre el del producto— sino para que lo contraste: si
+        // el catálogo cambió mientras el carrito estaba abierto, la venta se
+        // rechaza en vez de cobrar un precio que el cajero no vio.
         precio_unitario: Number(item.product.precio_venta),
       }
     })
@@ -916,11 +1065,21 @@ async function submitSale() {
     const res = await fetch('/api/inventory-movements/sale', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ items, motivo: t('inventory.sale.movementReason') }),
+      body: JSON.stringify({
+        items,
+        motivo: t('inventory.sale.movementReason'),
+        // Solo se manda si la empresa lo permite; el servidor lo revalida.
+        descuento_pct: saleConfig.value.descuento_activo ? saleDiscountPct.value : 0,
+      }),
     })
 
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.message || `Error ${res.status}`)
+
+    // El ticket se queda con las cifras del servidor, que son las que quedaron
+    // persistidas: calcularlas otra vez aquí es lo que hacía divergir el ticket
+    // del informe de ventas.
+    lastSale.value = data.data?.venta ?? null
 
     clearSaleCart()
     await loadData()
@@ -1016,9 +1175,11 @@ async function submitEdit(payload) {
   editLoading.value = true
   editError.value   = null
   try {
+    // El proyecto sale del producto, no del filtro: editar desde la vista de
+    // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
     const res = await fetch(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeader(product.id_proyecto) },
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1056,7 +1217,7 @@ async function confirmDelete() {
   try {
     const res = await fetch(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeader(),
+      headers: authHeader(product.id_proyecto),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {

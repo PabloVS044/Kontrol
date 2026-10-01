@@ -1,0 +1,25 @@
+# ssrf — https://test.34.121.51.151.nip.io — 2026-09-26T19:17:35Z
+probe company id_empresa=2 (owner: reserva@kontrol-test.dev)
+
+kind               | save   | test   | verdict  | url -> message
+must-block         | 200    | 400    | GUARD    | http://127.0.0.1:3000/api/health -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://localhost:3000/api/health -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://10.0.0.1/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://172.17.0.1/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://192.168.1.1/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://169.254.169.254/computeMetadata/v1/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://metadata.google.internal/computeMetadata/v1/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://[::1]:3000/api/health -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://[fe80::1]/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://[fd00::1]/ -> La URL debe apuntar a un host público.
+must-block         | 200    | 400    | GUARD    | http://127.0.0.1.nip.io:3000/api/health -> La URL debe apuntar a un host público.
+must-block         | 400    | -      | SCHEMA   | file:///etc/passwd -> Invalid data.
+bypass-hypothesis  | 200    | 400    | REACHED  | http://0.0.0.0:3000/api/health -> El webhook respondió con status 404.
+bypass-hypothesis  | 200    | 400    | REACHED  | http://[::ffff:127.0.0.1]:3000/api/health -> El webhook respondió con status 404.
+bypass-hypothesis  | 200    | 400    | GUARD    | http://127.1:3000/api/health -> La URL debe apuntar a un host público.
+bypass-hypothesis  | 200    | 400    | GUARD    | http://2130706433:3000/api/health -> La URL debe apuntar a un host público.
+control-public     | 200    | 400    | REACHED  | https://example.com/ -> El webhook respondió con status 405.
+
+SCHEMA/GUARD = rejected before any outbound request; REACHED = the backend sent the request.
+A must-block or bypass-hypothesis row marked REACHED is an open SSRF path.
+log: /home/pablo/Desktop/Kontrol/zap/out/verify-ssrf-20260926T191735Z.txt

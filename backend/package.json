@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "seed:test": "node src/db/seed.js",
-    "reset:test": "node src/db/reset.js"
+    "reset:test": "node src/db/reset.js",
+    "verify:ux-phase2": "node src/db/verifyUxPhase2.js"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.10",
@@ -26,7 +27,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.21.0",
+    "express-rate-limit": "^8.7.0",
     "google-auth-library": "^10.6.2",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.5.0",
     "pg": "^8.20.0",

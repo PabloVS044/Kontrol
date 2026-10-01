@@ -130,6 +130,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresEmpresa: true },
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue'),
+      meta: { requiresAuth: true, requiresEmpresa: true },
+    },
+    {
       path: '/admin',
       component: () => import('../views/admin/AdminLayout.vue'),
       meta: { requiresAuth: true, requiresSuperUser: true },

@@ -198,6 +198,85 @@ describe('BarcodeScanner — panel de confirmación', () => {
     expect(wrapper.find('.scanner-msg').classes()).toContain('err')
     expect(wrapper.find('.scanner-msg').text()).toBe('Sin producto para el código 123.')
   })
+
+  it('en varios proyectos el panel dice de cuál se va a descontar', () => {
+    const wrapper = montar({
+      pending: pendiente({ product: producto({ proyecto_nombre: 'Sucursal Norte' }) }),
+      showProject: true,
+    })
+    expect(wrapper.find('.sc-project').text()).toBe('Sucursal Norte')
+  })
+
+  it('con un solo proyecto en el filtro no repite el proyecto', () => {
+    const wrapper = montar({
+      pending: pendiente({ product: producto({ proyecto_nombre: 'Sucursal Norte' }) }),
+      showProject: false,
+    })
+    expect(wrapper.find('.sc-project').exists()).toBe(false)
+  })
+})
+
+/* ── Desambiguación por proyecto ─────────────────────────────────────────────
+ *
+ * El índice único de códigos es (id_proyecto, codigo_barras), así que el mismo
+ * código puede existir en varios proyectos, y cada uno es un inventario
+ * separado con su propio stock. Elegir solo puede hacerlo el cajero: de ello
+ * depende de qué stock se descuenta y a qué proyecto se atribuye el ingreso.
+ */
+describe('BarcodeScanner — código en varios proyectos', () => {
+  const opcion = (over = {}) => ({ product: producto(over.product), max: 10, inCart: 0, ...over })
+
+  const ambiguo = () => ({
+    code: '7501234567890',
+    options: [
+      opcion({ product: { id_producto: 41, proyecto_nombre: 'Sucursal Centro', stock_actual: 2 }, max: 2 }),
+      opcion({ product: { id_producto: 88, proyecto_nombre: 'Sucursal Norte', stock_actual: 50 }, max: 50 }),
+    ],
+  })
+
+  it('sin ambigüedad no muestra el selector', () => {
+    const wrapper = montar({ pending: pendiente() })
+    expect(wrapper.find('.scan-choose').exists()).toBe(false)
+  })
+
+  it('lista un candidato por proyecto con su stock disponible', () => {
+    const wrapper = montar({ choices: ambiguo() })
+
+    const opciones = wrapper.findAll('.sco-option')
+    expect(opciones).toHaveLength(2)
+    expect(opciones[0].find('.sco-project').text()).toBe('Sucursal Centro')
+    expect(opciones[0].find('.sco-meta').text()).toContain('Disponible: 2')
+    expect(opciones[1].find('.sco-project').text()).toBe('Sucursal Norte')
+    expect(opciones[1].find('.sco-meta').text()).toContain('Disponible: 50')
+  })
+
+  it('elegir un proyecto emite choose con ese candidato', async () => {
+    const choices = ambiguo()
+    const wrapper = montar({ choices })
+
+    await wrapper.findAll('.sco-option')[1].trigger('click')
+
+    const eventos = wrapper.emitted('choose')
+    expect(eventos).toHaveLength(1)
+    // El candidato, no solo el id: el padre necesita el `max` ya calculado.
+    expect(eventos[0][0].product.id_producto).toBe(88)
+    expect(eventos[0][0].max).toBe(50)
+  })
+
+  it('mientras se elige no se ha añadido nada a la venta', async () => {
+    const wrapper = montar({ choices: ambiguo() })
+    await wrapper.findAll('.sco-option')[0].trigger('click')
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+  })
+
+  it('descartar la lectura ambigua emite cancel', async () => {
+    const wrapper = montar({ choices: ambiguo() })
+    await wrapper.find('.scan-choose .sc-discard').trigger('click')
+
+    expect(wrapper.emitted('cancel')).toHaveLength(1)
+    expect(wrapper.emitted('choose')).toBeUndefined()
+  })
+
 })
 
 /* ── Arranque de la cámara ──────────────────────────────────────────────────
@@ -294,5 +373,30 @@ describe('BarcodeScanner — arranque de la cámara', () => {
     emitirLectura('222')
 
     expect(wrapper.emitted('detected')).toEqual([['111'], ['222']])
+  })
+
+  it('con el selector de proyecto abierto el mismo código no vuelve a dispararse', async () => {
+    setMediaDevices({ getUserMedia: () => Promise.resolve({}) })
+    setSecureContext(true)
+
+    const wrapper = await abrir()
+    emitirLectura('7501234567890')
+    expect(wrapper.emitted('detected')).toHaveLength(1)
+
+    // El artículo sigue delante de la cámara mientras el cajero decide de qué
+    // proyecto descontar; sin esta guarda la elección se reiniciaría sola.
+    await wrapper.setProps({
+      choices: {
+        code: '7501234567890',
+        options: [
+          { product: producto({ id_producto: 41 }), max: 2, inCart: 0 },
+          { product: producto({ id_producto: 88 }), max: 50, inCart: 0 },
+        ],
+      },
+    })
+    avanzarAntirrebote()
+    emitirLectura('7501234567890')
+
+    expect(wrapper.emitted('detected')).toHaveLength(1)
   })
 })

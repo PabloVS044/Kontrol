@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireRole from '../middleware/requireRole.js'
 import validate from '../middleware/validate.js'
@@ -16,7 +16,7 @@ import {
   deleteUser,
 } from '../controllers/userController.js'
 
-const router = Router()
+const router = createRouter()
 
 // All user management endpoints require authentication and admin role
 router.get(

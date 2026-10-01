@@ -1,9 +1,9 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireSuperUser from '../middleware/requireSuperUser.js'
 import { getAdminStats, getAdminCompanies, getAdminUsers, toggleUserStatus } from '../controllers/adminController.js'
 
-const router = Router()
+const router = createRouter()
 
 router.get('/stats',              requireAuth, requireSuperUser, getAdminStats)
 router.get('/companies',          requireAuth, requireSuperUser, getAdminCompanies)

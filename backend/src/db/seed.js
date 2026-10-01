@@ -66,10 +66,14 @@ async function ensureEmpresaUsuario(idEmpresa, idUsuario, rolNombre) {
     'SELECT id_rol_empresa FROM public.rol_empresa WHERE nombre = $1',
     [rolNombre]
   )
+  // El rol converge en vez de quedarse con el de la primera siembra: con DO
+  // NOTHING, cambiar el rol que asigna el seed no tenía efecto sobre un ambiente
+  // ya sembrado, y había que borrar la base para verlo.
   await pool.query(
     `INSERT INTO public.empresa_usuario (id_empresa, id_usuario, id_rol_empresa)
      VALUES ($1, $2, $3)
-     ON CONFLICT (id_empresa, id_usuario) DO NOTHING`,
+     ON CONFLICT (id_empresa, id_usuario)
+       DO UPDATE SET id_rol_empresa = EXCLUDED.id_rol_empresa`,
     [idEmpresa, idUsuario, rol.id_rol_empresa]
   )
 }
@@ -177,6 +181,63 @@ async function ensureGasto({ idEmpresa, idProyecto, idUsuario, idActividad, moti
   return gasto.id_movimiento
 }
 
+async function ensureCategoria({ idEmpresa, nombre }) {
+  const existing = await pool.query(
+    'SELECT id_categoria FROM public.categoria WHERE id_empresa = $1 AND nombre = $2',
+    [idEmpresa, nombre]
+  )
+  if (existing.rows.length) return existing.rows[0].id_categoria
+
+  const { rows: [categoria] } = await pool.query(
+    'INSERT INTO public.categoria (nombre, id_empresa) VALUES ($1, $2) RETURNING id_categoria',
+    [nombre, idEmpresa]
+  )
+  return categoria.id_categoria
+}
+
+async function ensureProveedor({ idEmpresa, nombre, contacto, telefono, email }) {
+  const existing = await pool.query(
+    'SELECT id_proveedor FROM public.proveedor WHERE id_empresa = $1 AND nombre = $2',
+    [idEmpresa, nombre]
+  )
+  if (existing.rows.length) return existing.rows[0].id_proveedor
+
+  const { rows: [proveedor] } = await pool.query(
+    `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id_proveedor`,
+    [nombre, contacto, telefono, email, idEmpresa]
+  )
+  return proveedor.id_proveedor
+}
+
+/**
+ * El inventario es por proyecto: cada producto pertenece a uno solo y su stock
+ * es independiente. La identidad para no duplicar es (proyecto, nombre), porque
+ * el código de barras sí puede repetirse entre proyectos.
+ */
+async function ensureProducto({
+  idProyecto, idCategoria, nombre, descripcion,
+  precioVenta, precioCosto, stockActual, stockMinimo, codigoBarras = null,
+}) {
+  const existing = await pool.query(
+    'SELECT id_producto FROM public.producto WHERE id_proyecto = $1 AND nombre = $2',
+    [idProyecto, nombre]
+  )
+  if (existing.rows.length) return existing.rows[0].id_producto
+
+  const { rows: [producto] } = await pool.query(
+    `INSERT INTO public.producto
+       (nombre, descripcion, precio_venta, precio_costo, costo_promedio_ponderado,
+        stock_actual, stock_minimo, id_categoria, id_proyecto, codigo_barras)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING id_producto`,
+    [nombre, descripcion, precioVenta, precioCosto, precioCosto,
+     stockActual, stockMinimo, idCategoria, idProyecto, codigoBarras]
+  )
+  return producto.id_producto
+}
+
 async function ensureReporte({ idEmpresa, idUsuario, titulo, tipo }) {
   const existing = await pool.query(
     'SELECT id_reporte FROM public.reporte WHERE id_empresa = $1 AND titulo = $2',
@@ -191,6 +252,40 @@ async function ensureReporte({ idEmpresa, idUsuario, titulo, tipo }) {
     [titulo, tipo, idEmpresa, idUsuario]
   )
   return reporte.id_reporte
+}
+
+async function ensureProveedor({ idEmpresa, nombre, contactoNombre, telefono, email }) {
+  const existing = await pool.query(
+    'SELECT id_proveedor FROM public.proveedor WHERE id_empresa = $1 AND nombre = $2',
+    [idEmpresa, nombre]
+  )
+  if (existing.rows.length) return existing.rows[0].id_proveedor
+
+  const { rows: [proveedor] } = await pool.query(
+    `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id_proveedor`,
+    [nombre, contactoNombre, telefono, email, idEmpresa]
+  )
+  return proveedor.id_proveedor
+}
+
+async function ensureMarketingPublication({ idEmpresa, idProyecto, idUsuario, title, caption }) {
+  const existing = await pool.query(
+    'SELECT id_publication FROM public.marketing_publication WHERE id_empresa = $1 AND title = $2',
+    [idEmpresa, title]
+  )
+  if (existing.rows.length) return existing.rows[0].id_publication
+
+  const { rows: [publication] } = await pool.query(
+    `INSERT INTO public.marketing_publication
+       (id_empresa, id_proyecto, title, caption, platform, publication_format,
+        status, created_by, updated_by, notes)
+     VALUES ($1, $2, $3, $4, 'INSTAGRAM', 'POST', 'DRAFT', $5, $5, $6)
+     RETURNING id_publication`,
+    [idEmpresa, idProyecto, title, caption, idUsuario, 'Dato base para la prueba de usabilidad de Fase 2.']
+  )
+  return publication.id_publication
 }
 
 async function ensureEvidenciaConArchivo({ idTarea, idUsuario, idProgressEntry, descripcion }) {
@@ -235,13 +330,17 @@ export async function seed() {
   const idEmpresa = await upsertEmpresa()
   console.log(`  Empresa: ${EMPRESA_NOMBRE} (#${idEmpresa})`)
 
+  // El primer participante es owner y el resto managers. Con los seis como
+  // manager, el ambiente no podía ejercitar nada reservado al dueño —la
+  // configuración de IVA y descuento, entre otras—: no había ninguna cuenta
+  // capaz de abrir esas pantallas.
   const userIds = {}
-  for (const p of PARTICIPANTS) {
+  for (const [i, p] of PARTICIPANTS.entries()) {
     const id = await upsertUsuario(p)
     userIds[p.email] = id
-    await ensureEmpresaUsuario(idEmpresa, id, 'manager')
+    await ensureEmpresaUsuario(idEmpresa, id, i === 0 ? 'owner' : 'manager')
   }
-  console.log(`  ${PARTICIPANTS.length} cuentas de participante listas.`)
+  console.log(`  ${PARTICIPANTS.length} cuentas listas (participante1 es owner, el resto manager).`)
 
   const [p1, p2, p3, p4, p5, reserva] = PARTICIPANTS.map((p) => userIds[p.email])
 
@@ -285,6 +384,31 @@ export async function seed() {
   }
   console.log('  3 proyectos listos, con los 6 participantes como miembros.')
 
+  await ensureProveedor({
+    idEmpresa,
+    nombre: 'Distribuidora Central',
+    contactoNombre: 'María López',
+    telefono: '+502 2233 4455',
+    email: 'ventas@distribuidora-central.test',
+  })
+  await ensureProveedor({
+    idEmpresa,
+    nombre: 'Suministros El Faro',
+    contactoNombre: 'Carlos Méndez',
+    telefono: '+502 2456 7788',
+    email: 'cotizaciones@elfaro.test',
+  })
+  console.log('  2 proveedores listos para vincular en F2.')
+
+  await ensureMarketingPublication({
+    idEmpresa,
+    idProyecto: proyecto2,
+    idUsuario: p1,
+    title: 'Consejos para instalaciones eléctricas seguras',
+    caption: 'Cinco recomendaciones para elegir materiales eléctricos certificados.',
+  })
+  console.log('  1 publicación de marketing lista para filtrar en F5.')
+
   await ensureTarea({ idProyecto: proyecto1, nombre: 'Cotizar estanterías industriales', descripcion: 'Solicitar 3 cotizaciones de proveedores locales.', estado: 'PENDIENTE', prioridad: 'ALTA', fechaVencimiento: daysFromNow(10), idAsignado: p1 })
   await ensureTarea({ idProyecto: proyecto1, nombre: 'Definir plano de distribución', descripcion: 'Layout final de pasillos y zonas de producto.', estado: 'PENDIENTE', prioridad: 'MEDIA', fechaVencimiento: daysFromNow(15), idAsignado: null })
 
@@ -318,6 +442,50 @@ export async function seed() {
   await ensureGasto({ idEmpresa, idProyecto: proyecto3, idUsuario: p3, idActividad: actividad3, motivo: 'Remodelación del local', monto: 52000, fecha: daysFromNow(-40) })
   await ensureGasto({ idEmpresa, idProyecto: proyecto3, idUsuario: p3, idActividad: actividad3, motivo: 'Mobiliario y sistema POS', monto: 24000, fecha: daysFromNow(-10) })
   console.log('  Gastos sembrados (proyecto 3 queda cerca del límite de presupuesto).')
+
+  // ── Inventario ──────────────────────────────────────────────────────────────
+  // Faltaba por completo: la empresa se sembraba con proyectos y gastos pero sin
+  // un solo producto, así que el inventario y el POS salían vacíos.
+  const catElectrico  = await ensureCategoria({ idEmpresa, nombre: 'Material eléctrico' })
+  const catFerreteria = await ensureCategoria({ idEmpresa, nombre: 'Ferretería general' })
+  const catPintura    = await ensureCategoria({ idEmpresa, nombre: 'Pinturas y solventes' })
+
+  await ensureProveedor({
+    idEmpresa, nombre: 'Distribuidora Eléctrica del Sur',
+    contacto: 'Marta Solís', telefono: '+502 2245 8890', email: 'ventas@deselectrica.gt',
+  })
+  await ensureProveedor({
+    idEmpresa, nombre: 'Tornillos y Herrajes Quetzal',
+    contacto: 'Byron Cifuentes', telefono: '+502 2298 1170', email: 'pedidos@thquetzal.gt',
+  })
+
+  // Proyecto 1 — remodelación: material de obra, con dos artículos bajo mínimo
+  // para que las alertas de stock bajo tengan algo que mostrar.
+  await ensureProducto({ idProyecto: proyecto1, idCategoria: catFerreteria, nombre: 'Tornillo drywall 1" (caja 100)', descripcion: 'Caja de 100 unidades, punta fina.', precioVenta: 28.50, precioCosto: 17.00, stockActual: 64, stockMinimo: 20, codigoBarras: '7501001000017' })
+  await ensureProducto({ idProyecto: proyecto1, idCategoria: catFerreteria, nombre: 'Cinta métrica 5 m', descripcion: 'Carcasa de ABS con freno.', precioVenta: 75.00, precioCosto: 44.00, stockActual: 12, stockMinimo: 6, codigoBarras: '7501001000024' })
+  await ensureProducto({ idProyecto: proyecto1, idCategoria: catPintura, nombre: 'Pintura blanca mate (galón)', descripcion: 'Base agua, rendimiento 40 m².', precioVenta: 185.00, precioCosto: 121.00, stockActual: 3, stockMinimo: 10, codigoBarras: '7501001000031' })
+  await ensureProducto({ idProyecto: proyecto1, idCategoria: catPintura, nombre: 'Brocha 3"', descripcion: 'Cerda natural, mango de madera.', precioVenta: 42.00, precioCosto: 23.50, stockActual: 2, stockMinimo: 8, codigoBarras: '7501001000048' })
+  // Sin código de barras a propósito: el escáner no lo encuentra y la búsqueda sí.
+  await ensureProducto({ idProyecto: proyecto1, idCategoria: catFerreteria, nombre: 'Lija de agua #220 (pliego)', descripcion: 'Pliego suelto, grano 220.', precioVenta: 6.50, precioCosto: 3.10, stockActual: 240, stockMinimo: 50 })
+
+  // Proyecto 2 — inventario eléctrico.
+  await ensureProducto({ idProyecto: proyecto2, idCategoria: catElectrico, nombre: 'Cable THHN 12 AWG (metro)', descripcion: 'Cobre, aislamiento termoplástico.', precioVenta: 9.75, precioCosto: 5.90, stockActual: 820, stockMinimo: 200, codigoBarras: '7501002000014' })
+  await ensureProducto({ idProyecto: proyecto2, idCategoria: catElectrico, nombre: 'Interruptor simple blanco', descripcion: 'Placa incluida, 15 A.', precioVenta: 34.00, precioCosto: 19.50, stockActual: 96, stockMinimo: 30, codigoBarras: '7501002000021' })
+  await ensureProducto({ idProyecto: proyecto2, idCategoria: catElectrico, nombre: 'Foco LED 9 W luz cálida', descripcion: 'Rosca E27, 806 lm.', precioVenta: 27.00, precioCosto: 14.25, stockActual: 150, stockMinimo: 40, codigoBarras: '7501002000038' })
+  // Agotado: el POS debe decir "sin stock" en vez de dejar venderlo.
+  await ensureProducto({ idProyecto: proyecto2, idCategoria: catElectrico, nombre: 'Tubo conduit 1/2" (3 m)', descripcion: 'PVC rígido, tramo de 3 metros.', precioVenta: 38.00, precioCosto: 21.00, stockActual: 0, stockMinimo: 25, codigoBarras: '7501002000045' })
+
+  // Proyecto 3 — nueva sucursal. Repite DOS códigos de los proyectos anteriores
+  // a propósito: el índice único es (id_proyecto, codigo_barras), así que el
+  // mismo artículo físico puede estar en dos sucursales con stock distinto. Es
+  // el caso que obliga al escáner a preguntar de qué proyecto descontar.
+  await ensureProducto({ idProyecto: proyecto3, idCategoria: catElectrico, nombre: 'Foco LED 9 W luz cálida', descripcion: 'Mismo artículo que en el proyecto 2, stock aparte.', precioVenta: 27.00, precioCosto: 14.25, stockActual: 48, stockMinimo: 20, codigoBarras: '7501002000038' })
+  await ensureProducto({ idProyecto: proyecto3, idCategoria: catFerreteria, nombre: 'Tornillo drywall 1" (caja 100)', descripcion: 'Mismo artículo que en el proyecto 1, stock aparte.', precioVenta: 28.50, precioCosto: 17.00, stockActual: 25, stockMinimo: 15, codigoBarras: '7501001000017' })
+  await ensureProducto({ idProyecto: proyecto3, idCategoria: catFerreteria, nombre: 'Candado de bronce 40 mm', descripcion: 'Dos llaves incluidas.', precioVenta: 68.00, precioCosto: 38.00, stockActual: 33, stockMinimo: 10, codigoBarras: '7501003000011' })
+  await ensureProducto({ idProyecto: proyecto3, idCategoria: catPintura, nombre: 'Thinner estándar (litro)', descripcion: 'Envase metálico de 1 litro.', precioVenta: 52.00, precioCosto: 29.00, stockActual: 7, stockMinimo: 12, codigoBarras: '7501003000028' })
+  console.log('  Inventario sembrado: 13 productos en los 3 proyectos, 2 proveedores.')
+  console.log('    · 3 artículos bajo el mínimo y 1 agotado, para las alertas de stock.')
+  console.log('    · 2 códigos de barras repetidos entre proyectos, para probar el escáner.')
 
   await ensureReporte({ idEmpresa, idUsuario: p1, titulo: 'Resumen general de proyectos — Q3', tipo: 'CONSOLIDADO' })
   console.log('  Reporte de ejemplo listo.')

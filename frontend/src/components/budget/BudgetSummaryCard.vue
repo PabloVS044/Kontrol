@@ -5,31 +5,31 @@
       <div class="amount-grid">
         <div class="amount-group">
           <span class="label">{{ $t('budget.summary.totalAllocated') }}</span>
-          <h3 class="total-value">${{ formatMoney(totalAllocated) }}</h3>
+          <h3 class="total-value">{{ money(totalAllocated) }}</h3>
         </div>
         <div class="amount-group">
           <span class="label">{{ $t('budget.summary.expenses') }}</span>
-          <h3 class="spent-value">${{ formatMoney(totalSpent) }}</h3>
+          <h3 class="spent-value">{{ money(totalSpent) }}</h3>
         </div>
         <div class="amount-group">
           <span class="label income">{{ $t('budget.summary.income') }}</span>
-          <h3 class="income-value">${{ formatMoney(totalIncome) }}</h3>
+          <h3 class="income-value">{{ money(totalIncome) }}</h3>
         </div>
         <div class="amount-group">
           <span class="label" :class="netClass">{{ $t('budget.summary.net') }}</span>
           <h3 class="net-value" :class="netClass">
-            {{ netResult < 0 ? '-' : '' }}${{ formatMoney(Math.abs(netResult)) }}
+            {{ netResult < 0 ? '-' : '' }}{{ money(Math.abs(netResult)) }}
           </h3>
         </div>
         <div class="amount-group">
           <span class="label" :class="remainingClass">{{ $t('budget.summary.remaining') }}</span>
           <h3 class="remaining-value" :class="remainingClass">
-            {{ remaining < 0 ? '-' : '' }}${{ formatMoney(Math.abs(remaining)) }}
+            {{ remaining < 0 ? '-' : '' }}{{ money(Math.abs(remaining)) }}
           </h3>
         </div>
         <div class="amount-group">
           <span class="label">{{ $t('budget.summary.planned') }}</span>
-          <h3 class="planned-value">${{ formatMoney(totalPlanned) }}</h3>
+          <h3 class="planned-value">{{ money(totalPlanned) }}</h3>
         </div>
       </div>
     </div>
@@ -54,6 +54,8 @@
 </template>
 
 <script setup>
+import { useSaleConfigStore } from '@/stores/saleConfig'
+const saleConfigStore = useSaleConfigStore()
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -87,9 +89,8 @@ const progressColor = computed(() => {
   return 'var(--k-color-primary)'
 })
 
-function formatMoney(v) {
-  const n = Number(v || 0)
-  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+function money(v) {
+  return saleConfigStore.money(v)
 }
 </script>
 

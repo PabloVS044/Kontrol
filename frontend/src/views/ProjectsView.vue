@@ -212,9 +212,9 @@
 
               <!-- Budget -->
               <div class="lr-budget-col">
-                <span class="lr-budget-spent">${{ budgetSpent(project) }}</span>
+                <span class="lr-budget-spent">{{ budgetSpent(project) }}</span>
                 <span class="lr-budget-sep">/</span>
-                <span>${{ budgetTotal(project) }}</span>
+                <span>{{ budgetTotal(project) }}</span>
               </div>
 
               <!-- Due date -->
@@ -317,7 +317,7 @@
                 <div class="budget-line">
                   <div class="budget-labels">
                     <span>{{ $t('projects.budget') }}</span>
-                    <span class="budget-val">${{ budgetSpent(project) }} / ${{ budgetTotal(project) }}</span>
+                    <span class="budget-val">{{ budgetSpent(project) }} / {{ budgetTotal(project) }}</span>
                   </div>
                   <div class="progress-bg">
                     <div class="progress-fill" :style="{ width: budgetPct(project) + '%', backgroundColor: budgetColor(project) }"></div>
@@ -466,6 +466,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Pill      from '../components/UI/Pill/Pill.vue'
@@ -476,6 +477,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 const authStore    = useAuthStore()
+const saleConfigStore = useSaleConfigStore()
 const projects     = ref([])
 const searchQuery  = ref('')
 const viewMode     = ref(localStorage.getItem('projects-view-mode') || 'grid')
@@ -527,7 +529,8 @@ function isWarningBudgetLevel(level) {
 }
 
 // ── Budget helpers ────────────────────────────────────────────────────────────
-const money = (v) => Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+// Devolvía el número pelado y la plantilla le anteponía el símbolo a mano.
+const money = (v) => saleConfigStore.money(v)
 const budgetTotal  = (p) => money(budgetByProj.value[p.id_proyecto]?.presupuesto_total ?? p.presupuesto_total)
 const budgetSpent  = (p) => money(budgetByProj.value[p.id_proyecto]?.total_gastado ?? 0)
 const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_completado ?? 0

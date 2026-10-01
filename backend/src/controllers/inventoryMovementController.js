@@ -6,6 +6,11 @@ import {
   hasEmpresaManagementAccess,
   INVENTORY_VIEW_PERMISSION_NAMES,
 } from '../services/projectAccessService.js'
+import {
+  calcSaleWithAllocation,
+  resolveSaleOptions,
+  round2,
+} from '../services/saleCalculation.js'
 
 const MOVIMIENTO_SELECT = `
   m.id_movimiento,
@@ -327,7 +332,7 @@ export const createInventoryMovement = async (req, res) => {
  * permission), mirroring the single-movement SALIDA gate.
  */
 export const createSale = async (req, res) => {
-  const { items, motivo } = req.body
+  const { items, motivo, descuento_pct = 0 } = req.body
   const id_usuario = req.user.id_usuario
   const { id_empresa } = req.empresa
 
@@ -354,12 +359,32 @@ export const createSale = async (req, res) => {
   try {
     await client.query('BEGIN')
 
-    const createdIds = []
-    const lowStock = []
+    // La configuración se lee DENTRO de la transacción: leerla antes dejaría una
+    // ventana en la que el owner desactiva el descuento y la venta en vuelo
+    // todavía lo aplica.
+    const configResult = await client.query(
+      `SELECT iva_activo, iva_tasa, descuento_activo, descuento_max_pct
+       FROM public.empresa_config
+       WHERE id_empresa = $1`,
+      [id_empresa]
+    )
 
+    const resolved = resolveSaleOptions(configResult.rows[0], { discountPercent: descuento_pct })
+    if (!resolved.ok) {
+      await client.query('ROLLBACK')
+      return res.status(422).json({ success: false, code: resolved.code, message: resolved.message })
+    }
+
+    // Primera pasada: bloquear cada producto, comprobar stock y —lo que faltaba—
+    // contrastar el precio. El precio de venta sale SIEMPRE del producto, nunca
+    // del body: aceptarlo del cliente permitía registrar la venta a cualquier
+    // importe. Si el cliente declara un precio y no coincide con el vigente, se
+    // rechaza en vez de corregirlo en silencio, porque significa que el cajero
+    // vio en pantalla un precio distinto del que se cobraría.
+    const locked = []
     for (const item of items) {
       const productoResult = await client.query(
-        `SELECT p.id_producto, p.stock_actual, p.costo_promedio_ponderado,
+        `SELECT p.id_producto, p.stock_actual, p.costo_promedio_ponderado, p.precio_venta,
                 p.nombre, p.stock_minimo, pr.nombre AS proyecto_nombre
          FROM public.producto p
          JOIN public.proyecto pr ON pr.id_proyecto = p.id_proyecto
@@ -382,12 +407,56 @@ export const createSale = async (req, res) => {
         })
       }
 
+      const precioVigente = round2(producto.precio_venta)
+      if (item.precio_unitario !== undefined && round2(item.precio_unitario) !== precioVigente) {
+        await client.query('ROLLBACK')
+        return res.status(409).json({
+          success: false,
+          code: 'PRICE_MISMATCH',
+          message: `The price for ${producto.nombre} changed. Expected ${precioVigente}, received ${round2(item.precio_unitario)}. Reload the catalogue and try again.`,
+        })
+      }
+
+      locked.push({ item, producto, precio_unitario: precioVigente })
+    }
+
+    // El desglose se calcula aquí, sobre los precios vigentes, y es lo que se
+    // persiste y se devuelve para el ticket.
+    const { header, lines } = calcSaleWithAllocation(
+      locked.map((l) => ({ precio: l.precio_unitario, cantidad: l.item.cantidad })),
+      resolved.options
+    )
+
+    const ventaResult = await client.query(
+      `INSERT INTO public.venta
+         (subtotal, descuento_pct, descuento, base_imponible, iva_tasa, iva, total, motivo, id_empresa, id_usuario)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id_venta, fecha`,
+      [
+        header.subtotal, header.discountPercent, header.discount, header.taxableBase,
+        header.taxRate, header.tax, header.total, motivo ?? null, id_empresa, id_usuario,
+      ]
+    )
+    const venta = ventaResult.rows[0]
+
+    const createdIds = []
+    const lowStock = []
+
+    for (let i = 0; i < locked.length; i++) {
+      const { item, producto, precio_unitario } = locked[i]
+      const split = lines[i]
+
       const inserted = await client.query(
         `INSERT INTO public.movimiento_inventario
-           (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_empresa, costo_unitario_venta)
-         VALUES ('SALIDA', $1, $2, $3, $4, $5, $6, $7, $8)
+           (tipo, cantidad, precio_unitario, motivo, id_producto, id_usuario, id_proyecto, id_empresa,
+            costo_unitario_venta, id_venta, descuento_linea, iva_linea)
+         VALUES ('SALIDA', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING id_movimiento`,
-        [item.cantidad, item.precio_unitario ?? 0, motivo ?? null, item.id_producto, id_usuario, item.id_proyecto, id_empresa, producto.costo_promedio_ponderado]
+        [
+          item.cantidad, precio_unitario, motivo ?? null, item.id_producto, id_usuario,
+          item.id_proyecto, id_empresa, producto.costo_promedio_ponderado,
+          venta.id_venta, split.descuento_linea, split.iva_linea,
+        ]
       )
       createdIds.push(inserted.rows[0].id_movimiento)
 
@@ -417,7 +486,27 @@ export const createSale = async (req, res) => {
       })
     }
 
-    return res.status(201).json({ success: true, data: { id_movimientos: createdIds, count: createdIds.length } })
+    // El desglose viaja de vuelta: el ticket se imprime con las cifras que se
+    // persistieron, no con las que el navegador calculó por su cuenta. Es lo que
+    // garantiza que ticket e informe digan lo mismo.
+    return res.status(201).json({
+      success: true,
+      data: {
+        id_movimientos: createdIds,
+        count: createdIds.length,
+        venta: {
+          id_venta: venta.id_venta,
+          fecha: venta.fecha,
+          subtotal: header.subtotal,
+          descuento_pct: header.discountPercent,
+          descuento: header.discount,
+          base_imponible: header.taxableBase,
+          iva_tasa: header.taxRate,
+          iva: header.tax,
+          total: header.total,
+        },
+      },
+    })
   } catch (err) {
     await client.query('ROLLBACK')
     throw err
@@ -446,7 +535,8 @@ export const getInventorySalesStats = async (req, res) => {
 
   const empty = {
     resumen: {
-      ingreso_bruto: 0, costo_ventas: 0, ganancia_bruta: 0,
+      ingreso_bruto: 0, descuentos: 0, ingreso_neto: 0, iva_cobrado: 0, cobrado_total: 0,
+      costo_ventas: 0, ganancia_bruta: 0,
       gastos_admin: 0, compras: 0, ganancia_neta: 0,
       unidades_vendidas: 0, operaciones_venta: 0, ticket_promedio: 0,
     },
@@ -508,12 +598,17 @@ export const getInventorySalesStats = async (req, res) => {
     pool.query(
       `SELECT
          COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.precio_unitario * m.cantidad END), 0)        AS ingreso_bruto,
+         COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.descuento_linea END), 0)                     AS descuentos,
+         COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.iva_linea END), 0)                           AS iva_cobrado,
          COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN ${cogsExpr} * m.cantidad END), 0)              AS costo_ventas,
          COALESCE(SUM(CASE WHEN m.tipo='GASTO_ADMIN' THEN m.precio_unitario END), 0)                AS gastos_admin,
          COALESCE(SUM(CASE WHEN m.tipo='ENTRADA' THEN m.precio_unitario * m.cantidad END), 0)       AS compras,
          COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.cantidad END), 0)                            AS unidades_vendidas,
-         COUNT(DISTINCT CASE WHEN m.tipo='SALIDA'
-           THEN date_trunc('second', m.fecha)::text || '#' || m.id_usuario::text END)              AS operaciones_venta
+         -- Con cabecera se cuentan ventas de verdad; el fallback por timestamp
+         -- es solo para las SALIDA anteriores a la tabla venta, sin id_venta.
+         COUNT(DISTINCT CASE WHEN m.tipo='SALIDA' THEN
+           COALESCE(m.id_venta::text,
+                    date_trunc('second', m.fecha)::text || '#' || m.id_usuario::text) END)         AS operaciones_venta
        FROM public.movimiento_inventario m
        JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
        LEFT JOIN public.producto p ON p.id_producto = m.id_producto
@@ -523,8 +618,12 @@ export const getInventorySalesStats = async (req, res) => {
     pool.query(
       `SELECT
          ${periodoExpr} AS periodo,
-         COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN m.precio_unitario * m.cantidad END), 0)                              AS ingreso,
-         COALESCE(SUM(CASE WHEN m.tipo='SALIDA' THEN (m.precio_unitario - ${cogsExpr}) * m.cantidad END), 0)              AS ganancia,
+         -- Neto de descuento y sin IVA, igual que el resumen: si no, la serie
+         -- dibujaría un ingreso que nunca entró.
+         COALESCE(SUM(CASE WHEN m.tipo='SALIDA'
+           THEN m.precio_unitario * m.cantidad - m.descuento_linea END), 0)                                               AS ingreso,
+         COALESCE(SUM(CASE WHEN m.tipo='SALIDA'
+           THEN (m.precio_unitario - ${cogsExpr}) * m.cantidad - m.descuento_linea END), 0)                               AS ganancia,
          COALESCE(SUM(CASE WHEN m.tipo='GASTO_ADMIN' THEN m.precio_unitario END), 0)
            + COALESCE(SUM(CASE WHEN m.tipo='ENTRADA' THEN m.precio_unitario * m.cantidad END), 0)                         AS gastos
        FROM public.movimiento_inventario m
@@ -539,8 +638,10 @@ export const getInventorySalesStats = async (req, res) => {
       `SELECT
          m.id_producto,
          p.nombre,
-         COALESCE(SUM(m.cantidad), 0)                      AS unidades,
-         COALESCE(SUM(m.precio_unitario * m.cantidad), 0)  AS ingreso
+         COALESCE(SUM(m.cantidad), 0)                                            AS unidades,
+         -- Neto de descuento, para que el ranking no premie al producto que más
+         -- se rebajó por encima del que de verdad dejó más dinero.
+         COALESCE(SUM(m.precio_unitario * m.cantidad - m.descuento_linea), 0)     AS ingreso
        FROM public.movimiento_inventario m
        JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
        JOIN public.producto p ON p.id_producto = m.id_producto
@@ -554,21 +655,38 @@ export const getInventorySalesStats = async (req, res) => {
 
   const r = resumenRes.rows[0]
   const ingresoBruto = Number(r.ingreso_bruto)
+  const descuentos = Number(r.descuentos)
+  const ivaCobrado = Number(r.iva_cobrado)
   const costoVentas = Number(r.costo_ventas)
   const gastosAdmin = Number(r.gastos_admin)
-  const gananciaBruta = ingresoBruto - costoVentas
   const operaciones = Number(r.operaciones_venta)
 
+  // El ingreso real es el bruto menos el descuento, y SIN el IVA: el impuesto se
+  // cobra para entregarlo, no es ingreso de la empresa, y sumarlo aquí infla la
+  // ganancia. `cobrado_total` es lo que pagó el cliente, y es la cifra que debe
+  // coincidir con el total del ticket.
+  const ingresoNeto = round2(ingresoBruto - descuentos)
+  const cobradoTotal = round2(ingresoNeto + ivaCobrado)
+  const gananciaBruta = round2(ingresoNeto - costoVentas)
+
+  // Nota sobre datos anteriores: en las ventas sin cabecera, descuento_linea e
+  // iva_linea son 0, así que ingreso_neto == ingreso_bruto y ninguna cifra
+  // histórica se mueve al introducir estas columnas.
   const resumen = {
     ingreso_bruto: ingresoBruto,
+    descuentos,
+    ingreso_neto: ingresoNeto,
+    iva_cobrado: ivaCobrado,
+    cobrado_total: cobradoTotal,
     costo_ventas: costoVentas,
     ganancia_bruta: gananciaBruta,
     gastos_admin: gastosAdmin,
     compras: Number(r.compras),
-    ganancia_neta: gananciaBruta - gastosAdmin,
+    ganancia_neta: round2(gananciaBruta - gastosAdmin),
     unidades_vendidas: Number(r.unidades_vendidas),
     operaciones_venta: operaciones,
-    ticket_promedio: operaciones ? ingresoBruto / operaciones : 0,
+    // El ticket promedio es lo que paga el cliente, IVA incluido.
+    ticket_promedio: operaciones ? round2(cobradoTotal / operaciones) : 0,
   }
 
   const serie = serieRes.rows.map((row) => ({

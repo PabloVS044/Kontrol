@@ -29,6 +29,21 @@ docker run --rm -v "$(pwd)/k6:/scripts" grafana/k6:latest run /scripts/load-test
 Variables de entorno opcionales: `BASE_URL` (default: la URL del ambiente de
 pruebas), `TEST_ACCOUNT_PASSWORD`, `TEST_COMPANY_ID`, `TEST_PROJECT_ID`.
 
+## Límite de peticiones (DT-13)
+
+El backend limita el login por IP y por cuenta, y los endpoints costosos por
+usuario. k6 manda todo desde una sola IP, así que con el límite activo:
+
+- **C2–C5 / E2–E5** fallan en el login inicial de cada VU. Para medir la
+  latencia real del endpoint, levantar `backend-test` con
+  `TEST_RATE_LIMIT_ENABLED=false` y volver a dejarlo en `true` al terminar.
+- **C1 / E1** se corren con el límite **activo**: lo que se mide es que las
+  peticiones por encima del umbral se rechazan con 429 sin pasar por bcrypt,
+  y que el resto del servicio (health check, otros endpoints) sigue
+  respondiendo. Los 429 cuentan como error en `http_req_failed`, así que en
+  esta corrida el criterio es la latencia y la estabilidad, no la tasa de
+  error.
+
 ## Reinicio obligatorio después de correr
 
 Cualquier corrida real, de carga o de estrés, deja datos nuevos (avances,

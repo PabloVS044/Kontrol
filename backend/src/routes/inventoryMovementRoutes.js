@@ -1,5 +1,6 @@
-import { Router } from 'express'
+import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
+import { expensiveLimiter } from '../middleware/rateLimit.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
@@ -18,7 +19,7 @@ import {
   createSale,
 } from '../controllers/inventoryMovementController.js'
 
-const router = Router()
+const router = createRouter()
 
 router.use(requireAuth)
 router.use(requireCompany)
@@ -62,6 +63,7 @@ router.post(
 // controller (cart may span projects), so no single-project gate here.
 router.post(
   '/sale',
+  expensiveLimiter,
   validate(createSaleSchema),
   createSale
 )

@@ -39,7 +39,7 @@
       <BarcodeScanner v-model="showScanner" @detected="onBarcodeDetected" />
 
       <div class="form-row">
-        <FormField :label="$t('inventory.modal.salePrice')" :required="true">
+        <FormField :label="`${$t('inventory.modal.salePrice')} (${saleConfigStore.moneda})`" :required="true">
           <input v-model.number="form.precio_venta" type="number" min="0" step="0.01" placeholder="0.00" required />
         </FormField>
         <FormField :label="$t('inventory.modal.minStock')">
@@ -70,7 +70,7 @@
           <FormField :label="$t('inventory.modal.initialStock')">
             <input v-model.number="form.stock_inicial" type="number" min="0" placeholder="0" />
           </FormField>
-          <FormField :label="$t('inventory.modal.costPrice')" :required="true" :error="costError">
+          <FormField :label="`${$t('inventory.modal.costPrice')} (${saleConfigStore.moneda})`" :required="true" :error="costError">
             <input v-model.number="form.precio_costo" type="number" min="0" step="0.01" placeholder="0.00" />
           </FormField>
         </div>
@@ -85,11 +85,11 @@
             <input v-model.number="form.unidades_por_caja" type="number" min="1" placeholder="0" />
           </FormField>
         </div>
-        <FormField :label="$t('inventory.modal.boxPrice')" :required="true" :error="costError">
+        <FormField :label="`${$t('inventory.modal.boxPrice')} (${saleConfigStore.moneda})`" :required="true" :error="costError">
           <input v-model.number="form.precio_caja" type="number" min="0" step="0.01" placeholder="0.00" />
         </FormField>
         <p v-if="resolved.cantidad" class="box-preview">
-          {{ $t('inventory.modal.boxPreview', { units: resolved.cantidad, cost: resolved.costoUnitario.toFixed(2) }) }}
+          {{ $t('inventory.modal.boxPreview', { units: resolved.cantidad, cost: saleConfigStore.money(resolved.costoUnitario) }) }}
         </p>
       </template>
 
@@ -119,6 +119,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaleConfigStore } from '@/stores/saleConfig'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
 import Button from '@/components/UI/Button/Button.vue'
 import FormField from '@/components/common/FormField.vue'
@@ -126,6 +127,7 @@ import BarcodeScanner from '@/components/inventory/BarcodeScanner.vue'
 import { resolveStockEntry } from '@/utils/boxPricing'
 
 const { t } = useI18n()
+const saleConfigStore = useSaleConfigStore()
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },

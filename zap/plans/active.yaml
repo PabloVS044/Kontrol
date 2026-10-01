@@ -1,0 +1,205 @@
+# SCRUM-52 — active scan. WRITES AND DELETES DATA in the test environment:
+# run `npm run reset:test` afterwards (docs/test-environment.md).
+#
+# Scope is /api only. Excluded surfaces and why:
+#   /api/chat, /api/agent   MongoDB shared with production; reset does not clean it
+#   /api/uploadthing        UploadThing account shared with production
+#   /api/integrations       injected webhook URLs would be called by
+#                           sendWebhookEvent on every later event; the SSRF
+#                           guard is verified by zap/verify-controls.sh instead
+#   /api/marketing/generate calls an LLM
+#   /api/auth/google        redirects to Google, out of scope
+#   /api/admin, /api/global super-user only; covered by the passive baseline
+#   /socket.io              realtime chat, same MongoDB
+env:
+  contexts:
+    - name: kontrol-test-api
+      urls:
+        - https://test.34.121.51.151.nip.io/api
+      includePaths:
+        - "https://test\\.34\\.121\\.51\\.151\\.nip\\.io/api/.*"
+      excludePaths:
+        - ".*/api/chat.*"
+        - ".*/api/agent.*"
+        - ".*/api/uploadthing.*"
+        - ".*/api/integrations.*"
+        - ".*/api/marketing/generate.*"
+        - ".*/api/auth/google.*"
+        - ".*/api/admin.*"
+        - ".*/api/global.*"
+        - ".*/socket\\.io.*"
+      technology:
+        exclude:
+          - Db.CouchDB
+          - Db.Firebird
+          - Db.HypersonicSQL
+          - Db.IBM DB2
+          - Db.Microsoft Access
+          - Db.Microsoft SQL Server
+          - Db.MySQL
+          - Db.Oracle
+          - Db.SAP MaxDB
+          - Db.SQLite
+          - Db.Sybase
+          - Language.ASP
+          - Language.C
+          - Language.JSP/Servlet
+          - Language.PHP
+          - Language.Python
+          - Language.Ruby
+          - OS.MacOS
+          - OS.Windows
+          - WS.Apache
+          - WS.IIS
+          - WS.Tomcat
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: replacer
+    name: company-header
+    parameters:
+      deleteAllRules: true
+    rules:
+      - description: X-Company-ID on every API request
+        url: "https://test\\.34\\.121\\.51\\.151\\.nip\\.io/api/.*"
+        matchType: req_header
+        matchString: X-Company-ID
+        matchRegex: false
+        replacementString: "${COMPANY_ID}"
+
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+
+  - type: requestor
+    name: api-seed-requests
+    requests:
+      - url: https://test.34.121.51.151.nip.io/api/auth/me
+        responseCode: 200
+      - url: https://test.34.121.51.151.nip.io/api/users/${USER_ID}
+      - url: https://test.34.121.51.151.nip.io/api/projects?id_empresa=${COMPANY_ID}
+        responseCode: 200
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/metrics
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/progress
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks/${TASK_ID}
+      - url: https://test.34.121.51.151.nip.io/api/products?projectId=${PROJECT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/products/${PRODUCT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/suppliers/${SUPPLIER_ID}
+      - url: https://test.34.121.51.151.nip.io/api/inventory-movements?projectId=${PROJECT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/summary
+      - url: https://test.34.121.51.151.nip.io/api/reports/${REPORT_ID}
+      - url: https://test.34.121.51.151.nip.io/api/marketing/items?search=zap&limit=10
+      - url: https://test.34.121.51.151.nip.io/api/projects/invitations/0000000000000000
+      # Writes: one representative body per resource
+      - url: https://test.34.121.51.151.nip.io/api/auth/login
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"email":"zap-probe@kontrol-test.dev","password":"not-a-real-password"}'
+      - url: https://test.34.121.51.151.nip.io/api/auth/register
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"Zap","apellido":"Probe","email":"zap-register@kontrol-test.dev","password":"ZapProbe-2026","role":"usuario"}'
+      - url: https://test.34.121.51.151.nip.io/api/companies
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan company","industria":"test"}'
+      - url: https://test.34.121.51.151.nip.io/api/projects
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan project","fecha_inicio":"2026-09-26","presupuesto_total":1000}'
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/progress
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"title":"ZAP scan update","details":"zap","progressPercentage":10}'
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan task","descripcion":"zap"}'
+      - url: https://test.34.121.51.151.nip.io/api/projects/${PROJECT_ID}/tasks/${TASK_ID}
+        method: PUT
+        headers: ["Content-Type: application/json"]
+        data: '{"descripcion":"zap"}'
+      - url: https://test.34.121.51.151.nip.io/api/products
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan product","precio_venta":1,"precio_costo":1}'
+      - url: https://test.34.121.51.151.nip.io/api/suppliers
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan supplier","email":"zap-supplier@kontrol-test.dev"}'
+      - url: https://test.34.121.51.151.nip.io/api/inventory-movements
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"tipo":"ENTRADA","cantidad":1,"motivo":"zap","id_producto":${PRODUCT_ID},"id_proyecto":${PROJECT_ID}}'
+      - url: https://test.34.121.51.151.nip.io/api/budgets/project/${PROJECT_ID}/funding
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"monto":1,"motivo":"zap"}'
+      - url: https://test.34.121.51.151.nip.io/api/reports
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"titulo":"ZAP scan report","tipo":"AVANCE","id_proyecto":${PROJECT_ID}}'
+      - url: https://test.34.121.51.151.nip.io/api/teams
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"nombre":"ZAP scan team","descripcion":"zap","id_lider":${USER_ID}}'
+      - url: https://test.34.121.51.151.nip.io/api/marketing/campaigns
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"name":"ZAP scan campaign","projectId":${PROJECT_ID}}'
+      - url: https://test.34.121.51.151.nip.io/api/marketing/items
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"title":"ZAP scan item","content":"zap","contentType":"IDEA"}'
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  - type: activeScan
+    parameters:
+      context: kontrol-test-api
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 60
+      threadPerHost: 2
+      delayInMs: 100
+      addQueryParam: false
+      injectPluginIdInHeader: true
+      handleAntiCSRFTokens: false
+    policyDefinition:
+      defaultStrength: medium
+      defaultThreshold: medium
+      rules:
+        # Irrelevant for a Node.js API and expensive in request count
+        - id: 30001   # Buffer Overflow
+          threshold: "off"
+        - id: 30002   # Format String Error
+          threshold: "off"
+        - id: 10104   # User Agent Fuzzer (~12x every request)
+          threshold: "off"
+
+  - type: report
+    parameters:
+      template: traditional-md
+      reportDir: /zap/wrk/out
+      reportFile: active-summary
+      reportTitle: "SCRUM-52 — ZAP active scan (test environment)"
+    risks: [high, medium, low, info]
+    confidences: [high, medium, low]
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk/out
+      reportFile: active-report
+      reportTitle: "SCRUM-52 — ZAP active scan (test environment)"
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk/out
+      reportFile: active-report

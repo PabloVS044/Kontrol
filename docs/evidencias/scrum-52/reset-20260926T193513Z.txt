@@ -1,0 +1,12 @@
+  Tareas sembradas en los 3 proyectos.
+⚠️ [uploadthing][deprecated] `file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.
+⚠️ [uploadthing][deprecated] `file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.
+  Avances sembrados, incluido uno con evidencia adjunta.
+  Gastos sembrados (proyecto 3 queda cerca del límite de presupuesto).
+  Reporte de ejemplo listo.
+==> Seed completado.
+==> Reset completado.
+
+real	0m7.852s
+user	0m0.082s
+sys	0m0.119s

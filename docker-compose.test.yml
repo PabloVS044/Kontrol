@@ -28,6 +28,10 @@ services:
       # because this environment only ever holds the shared, documented
       # test-account passwords, never real credentials. Never set in prod.
       - BCRYPT_SALT_ROUNDS=${TEST_BCRYPT_SALT_ROUNDS:-6}
+      # DT-13 — every k6 VU comes from the same IP, so C2-C5 (which log in
+      # once per VU) trip the per-IP login limit. Set to false only while
+      # re-running C2-C5; E1 must run with it on to measure the limiter.
+      - RATE_LIMIT_ENABLED=${TEST_RATE_LIMIT_ENABLED:-true}
     restart: unless-stopped
 
   frontend-test:

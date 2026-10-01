@@ -37,6 +37,9 @@
 | 1.1 | 21/08/2026 | Jonathan Tubac | SCRUM-22 finalizado: los 10 casos de la matriz, hoy §19.1, pasan de "Pendiente" a "Cubierto". Queda pendiente enlazar el commit o PR exacto de los casos 1-6, ver riesgo 2 en §17. |
 | 1.2 | 04/09/2026 | Jonathan Tubac | HU-38: se agregan las secciones de pruebas de carga, estrés y seguridad, exigidas desde el séptimo sprint. Se actualiza el alcance en §2, §4 y §5 — ya no excluye carga ni seguridad, sí pruebas de penetración — y se extiende la matriz de trazabilidad en §19.4 y §19.5. Se renumeran las secciones 7 a 16 como 10 a 19 para insertar las tres nuevas. Precede a SCRUM-28. |
 | 1.3 | 06/09/2026 | Ivana Figueroa | SCRUM-35: se agrega §19.6 con los ocho casos de pruebas del centro de marketing, SCRUM-19, y de los bordes de exportación a CSV, SCRUM-20. Seis de los ocho ya estaban cubiertos por las suites S2, S3 y S4 de §19.3, que hasta ahora figuraban solo como regresión, sin caso ni descripción propios; los dos restantes son nuevos de esta entrega. |
+| 1.4 | 22/09/2026 | Ivana Figueroa | SCRUM-41: se agrega §19.7 con los seis casos que fijan el contrato del parámetro de ruta de los tres endpoints de producto-proveedor, elemento DT-04 del inventario de deuda técnica. Es la primera cobertura automatizada de `productController.js`, `productRoutes.js` y `productSchemas.js`, que hasta esta entrega medían 0 % en las cuatro métricas. |
+| 1.5 | 24/09/2026 | Ivana Figueroa | SCRUM-43: se agrega §19.8 con los siete casos que cubren la corrección del SSRF del probador de integraciones, elemento DT-12. Es la primera cobertura automatizada de `integrationController.js`, `integrationRoutes.js`, `integrationSchemas.js` y de los servicios de webhook, Slack y Teams. |
+| 1.6 | 26/09/2026 | Pablo Vásquez | SCRUM-52: pruebas de seguridad con OWASP ZAP sobre el ambiente de SCRUM-25 (`docs/pruebas-seguridad-zap.md`). Se agrega a §9.1 la medición de `npm audit` del 26/09, se registra en §9.2 la verificación de las cinco cabeceras sobre el ambiente desplegado, se cierra el riesgo 8, se actualiza la evidencia de SEC1 y SEC2, y se agregan a §19.8 los casos SS8 a SS10, en estado Pendiente, para los tres caminos de SSRF que el guard no bloquea. |
 
 > Este documento se actualiza por pull request. Cada cambio a la matriz de trazabilidad de §19 debe venir acompañado del commit que agrega o modifica el test correspondiente, de modo que la relación **plan → caso de prueba → test automatizado** quede explícita en el historial de git.
 
@@ -212,6 +215,8 @@ Es el escalón de usuarios virtuales inmediatamente anterior al que dispara la c
 | backend | 0 | 6 | 5 | 1 | 12 |
 | frontend | 0 | 6 | 3 | 1 | 10 |
 
+**Medición del 26/09/2026, SCRUM-52** (`develop` @ `ae99f0f`), igual en ambos workspaces y en la raíz: 0 críticas, 3 altas, 0 moderadas, 0 bajas. Las tres altas son una sola cadena, `uploadthing` → `@uploadthing/shared` → `effect`, cuya corrección sigue implicando un cambio de versión mayor. Detalle y comparación en `docs/pruebas-seguridad-zap.md`, sección 5.
+
 **Criterio de aceptación:** cero vulnerabilidades críticas sin remediar. Las vulnerabilidades de severidad alta de esta línea base están concentradas en el paquete `uploadthing` y sus dependencias, presentes en ambos workspaces, y su corrección disponible implica un cambio de versión mayor. Quedan registradas como deuda técnica en el riesgo 9 de §17 y no bloquean esta entrega. Una vulnerabilidad crítica nueva sí bloquea el merge del pull request que la introduce.
 
 ### 9.2 Cabeceras de seguridad HTTP
@@ -221,6 +226,8 @@ Es el escalón de usuarios virtuales inmediatamente anterior al que dispara la c
 **Estado actual, línea base del 04/09/2026:** el backend hoy solo aplica los middlewares `cors` y `express.json`, y no agrega ninguna de estas cabeceras de seguridad. Este plan registra el hallazgo; la corrección es una tarea de desarrollo fuera del alcance de HU-38, anotada como riesgo abierto en el riesgo 8 de §17.
 
 **Criterio de aceptación:** las cinco cabeceras están presentes en las respuestas de al menos un endpoint autenticado y uno público. Mientras la corrección no se implemente, este caso se documenta en la matriz de §19.5 con estado Pendiente, no Cubierto.
+
+**Verificación del 26/09/2026, SCRUM-52:** la corrección de DT-14 (`helmet`) está en `develop` y se verificó sobre el ambiente de SCRUM-25 desplegado desde `ae99f0f`. Las cinco cabeceras están presentes en `GET /api/health` (público) y en `GET /api/auth/me` (autenticado), y `X-Powered-By` ya no aparece; el criterio se cumple. Quedan dos salvedades registradas como deuda: la política de seguridad de contenido efectiva es la de `helmet` por defecto y no la configurada, porque `helmet` se aplica dos veces, y el documento HTML del SPA, que sirve nginx, no lleva ninguna de las cinco cabeceras. Producción no emite estas cabeceras hasta que `develop` se promueva a `main`. Evidencia en `docs/pruebas-seguridad-zap.md`, sección 4.1.
 
 ### 9.3 Trazabilidad hacia SCRUM-9: autorización multi-rol y multi-empresa
 
@@ -369,7 +376,7 @@ Los nueve casos de autorización multi-rol y multi-empresa de SCRUM-9 ya están 
 | 5 | Una actualización de la librería de lectura de códigos cambia la forma del evento emitido | Baja probabilidad, medio impacto | El contrato de prueba fija el evento como un texto plano desacoplado de la librería, según §6; un cambio de la librería no debería romper los tests si el componente sigue emitiendo texto plano |
 | 6 | La cobertura del frontend tiene un denominador pequeño, así que un solo archivo sin cubrir mueve mucho el porcentaje global | Media probabilidad, medio impacto, ya documentado en la configuración de cobertura del frontend | Cualquier pull request que toque un archivo ya cubierto revisa si necesita subir cobertura en el mismo cambio, no en uno posterior |
 | 7 | El ambiente de pruebas está reservado para sesiones de UX del protocolo T1-T5 antes del 15/09 | Media probabilidad, alto impacto: una corrida de carga o estrés puede chocar con una sesión programada o dejar datos en mal estado | Coordinar el horario con el calendario de sesiones de UX y reiniciar el ambiente obligatoriamente después de cada corrida de carga o estrés, antes de la siguiente prueba o sesión |
-| 8 | El backend no tiene cabeceras de seguridad HTTP configuradas, hallazgo de la línea base de §9.2 | Alta probabilidad de persistir, medio impacto: el caso correspondiente parte en estado Pendiente, no Cubierto | Registrado como hallazgo de este plan; requiere una tarea de desarrollo fuera del alcance de HU-38, anotada en la matriz de §19.5 |
+| 8 | El backend no tiene cabeceras de seguridad HTTP configuradas, hallazgo de la línea base de §9.2 | Alta probabilidad de persistir, medio impacto: el caso correspondiente parte en estado Pendiente, no Cubierto | Registrado como hallazgo de este plan; requiere una tarea de desarrollo fuera del alcance de HU-38, anotada en la matriz de §19.5. **Cerrado el 26/09/2026:** DT-14 resuelto y verificado sobre el ambiente desplegado en SCRUM-52 |
 | 9 | Hay vulnerabilidades de severidad alta en una dependencia de terceros sin corrección menor disponible, según la línea base de §9.1 | Media probabilidad, medio impacto | La corrección disponible implica un cambio de versión mayor de esa dependencia; se registra como deuda técnica y no bloquea esta entrega salvo que aparezca una vulnerabilidad crítica |
 
 ---
@@ -462,8 +469,8 @@ documentados, no pendientes de implementación.
 
 | Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
 |---|---|---|---|---|---|
-| SEC1 | HU-38 | Revisión de dependencias: cero vulnerabilidades críticas sin remediar | `backend/package.json`, `frontend/package.json` | Auditoría de dependencias en ambos workspaces; línea base en §9.1, 12 y 10 hallazgos, ninguno crítico | Cubierto: línea base documentada; la remediación de las altas es deuda técnica, ver riesgo 9 de §17 |
-| SEC2 | HU-38 | Cabeceras de seguridad HTTP presentes en las respuestas del backend | `backend/src/index.js`, stack de middleware | Verificación manual de las respuestas del backend; no hay cabeceras de seguridad configuradas, ver §9.2 | Pendiente: hallazgo de cabeceras ausentes, corrección fuera de alcance de HU-38, ver riesgo 8 de §17 |
+| SEC1 | HU-38 | Revisión de dependencias: cero vulnerabilidades críticas sin remediar | `backend/package.json`, `frontend/package.json` | Auditoría de dependencias en ambos workspaces; línea base en §9.1, 12 y 10 hallazgos, ninguno crítico; medición del 26/09 (SCRUM-52): 3 altas y ninguna crítica | Cubierto: línea base documentada; la remediación de las altas es deuda técnica, ver riesgo 9 de §17 |
+| SEC2 | HU-38 | Cabeceras de seguridad HTTP presentes en las respuestas del backend | `backend/src/index.js`, stack de middleware | `zap/verify-controls.sh headers` sobre el ambiente de SCRUM-25: 5/5 en `GET /api/health` y 5/5 en `GET /api/auth/me`, ver §9.2 y `docs/pruebas-seguridad-zap.md` §4.1 | Cubierto: DT-14 (`helmet`) verificado en ambiente desplegado el 26/09/2026 (SCRUM-52) |
 | SEC3 | HU-38 / SCRUM-9 | Trazabilidad de los nueve casos de autorización multi-rol y multi-empresa | `requireAuth.js`, `requireRole.js`, `requireCompanyRole.js` | `backend/tests/authz.controller.test.js`, la misma suite de regresión R5 de §19.2 | Cubierto |
 
 
@@ -481,3 +488,35 @@ Los casos 1 a 6 verifican el centro de marketing de SCRUM-19; los casos 7 y 8 re
 | M6 | SCRUM-35 / SCRUM-19 | Aislamiento multi-empresa: una empresa no accede a publicaciones de otra, ni al listar, ni al leer, ni al borrar | `marketingController.js`, filtro `id_empresa` en toda consulta; `requireCompany` | `backend/tests/marketingPublications.test.js` → Caso 2 · Aislamiento multi-empresa | Cubierto |
 | M7 | SCRUM-35 / SCRUM-20 | Exportación con conjunto de datos vacío: genera archivo válido con cabecera, BOM y CRLF, sin lanzar error | `frontend/src/utils/csvExport.js` → `toCsv`, `csvBlob`; `reportExport.js` → `renderExport` | `frontend/tests/csvExportEdgeCases.test.js` → Caso 7 · Conjunto de datos vacío | Cubierto |
 | M8 | SCRUM-35 / SCRUM-20 | Exportación con caracteres especiales y acentos: vocales acentuadas, diéresis, eñe, comillas, emojis y símbolos de moneda se codifican correctamente | `frontend/src/utils/csvExport.js` → `escapeCsvValue`, `guardFormula`, `toCsv` | `frontend/tests/csvExportEdgeCases.test.js` → Caso 8 · Caracteres especiales y acentos | Cubierto |
+
+### 19.7 Casos del contrato de parámetro de ruta en producto-proveedor, SCRUM-41
+
+Los seis casos fijan el contrato del parámetro de ruta de los tres endpoints que relacionan un producto con sus proveedores, corregidos en SCRUM-41 a partir del elemento DT-04 del inventario de deuda técnica. Las aserciones se hacen sobre los parámetros con los que se arma la consulta y no solo sobre el código de estado: el defecto corregido hacía que el identificador del proveedor llegara vacío a la capa de datos, de modo que la consulta se ejecutaba sin error, no encontraba fila y respondía un 404 indistinguible del de una relación que de verdad no existe. El caso PP5 aísla esa distinción, y es la razón por la que la suite mira parámetros.
+
+| Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
+|---|---|---|---|---|---|
+| PP1 | SCRUM-41 / DT-04 | La actualización de un enlace arma el UPDATE con el identificador de proveedor que viene en la URL | `backend/src/controllers/productController.js` → `updateSupplierLink`; `productRoutes.js` → `PUT /:id/suppliers/:supplierId` | `backend/tests/productSuppliers.controller.test.js` → T1 | Cubierto |
+| PP2 | SCRUM-41 / DT-04 | La eliminación de un enlace arma el DELETE con el identificador de proveedor que viene en la URL | `productController.js` → `unlinkSupplier`; `productRoutes.js` → `DELETE /:id/suppliers/:supplierId` | `backend/tests/productSuppliers.controller.test.js` → T2 | Cubierto |
+| PP3 | SCRUM-41 / DT-04 | El enlace de un proveedor inserta con el producto de la URL y el proveedor del cuerpo | `productController.js` → `linkSupplier`; `productRoutes.js` → `POST /:id/suppliers` | `backend/tests/productSuppliers.controller.test.js` → T3 | Cubierto |
+| PP4 | SCRUM-41 / DT-04 | Un identificador de proveedor no numérico se rechaza con 400 y no llega a consultar la relación | `productSchemas.js` → `productSupplierParamsSchema`; `middleware/validate.js` | `backend/tests/productSuppliers.controller.test.js` → T4 | Cubierto |
+| PP5 | SCRUM-41 / DT-04 | Una relación inexistente responde 404 habiendo armado la consulta con el proveedor correcto: separa el 404 legítimo del que produce un parámetro vacío | `productController.js` → `updateSupplierLink` | `backend/tests/productSuppliers.controller.test.js` → T5 | Cubierto |
+| PP6 | SCRUM-41 / DT-04 | Un cuerpo de actualización vacío se rechaza con 400, de modo que el SET del UPDATE nunca queda vacío | `productSchemas.js` → `updateSupplierLinkSchema` | `backend/tests/productSuppliers.controller.test.js` → T6 | Cubierto |
+
+### 19.8 Casos de la corrección del SSRF del probador de integraciones, SCRUM-43
+
+Los siete casos cubren la corrección del elemento DT-12: `POST /api/integrations/:slug/test` hacía una petición HTTP hacia una URL guardada por el propio usuario, sin validar el destino. En los casos bloqueados la aserción determinante no es el código 400 —el endpoint ya respondía 400 cuando el destino fallaba— sino que la petición no llegue a realizarse, que es lo único que demuestra que no hubo salida a la red. El caso SS4 es igual de necesario: sin él, un guard que rechazara toda URL pasaría los tres bloqueos en verde.
+
+| Caso | Historia/Ticket | Descripción | Elemento bajo prueba | Test automatizado | Estado |
+|---|---|---|---|---|---|
+| SS1 | SCRUM-43 / DT-12 | Familia loopback: una URL hacia 127.0.0.1 se rechaza y no se realiza la petición | `backend/src/services/ssrfGuard.js` → `assertPublicHttpUrl`; `webhookService.js` → `testWebhookConnection` | `backend/tests/integrationSsrf.test.js` → S1 | Cubierto |
+| SS2 | SCRUM-43 / DT-12 | Familia privada: una URL hacia 10.0.0.5 se rechaza y no se realiza la petición | `ssrfGuard.js` → `assertPublicHttpUrl` | `backend/tests/integrationSsrf.test.js` → S2 | Cubierto |
+| SS3 | SCRUM-43 / DT-12 | Familia enlace local: una URL hacia 169.254.169.254 se rechaza y no se realiza la petición | `ssrfGuard.js` → `assertPublicHttpUrl` | `backend/tests/integrationSsrf.test.js` → S3 | Cubierto |
+| SS4 | SCRUM-43 / DT-12 | Una URL pública legítima sí sale y el probador responde 200 | `ssrfGuard.js`; `integrationController.js` → `testIntegration` | `backend/tests/integrationSsrf.test.js` → S4 | Cubierto |
+| SS5 | SCRUM-43 / DT-12 | El esquema de guardado rechaza con 400 un valor de `url` que no es http o https, antes de llegar al controlador | `integrationSchemas.js` → `saveIntegrationSchema`; `middleware/validate.js` | `backend/tests/integrationSsrf.test.js` → S5 | Cubierto |
+| SS6 | SCRUM-43 / DT-12 | Slack: `webhook_url` hacia loopback se rechaza y no se realiza la petición | `slackService.js` → `testSlackConnection` | `backend/tests/integrationSsrf.test.js` → S6a | Cubierto |
+| SS7 | SCRUM-43 / DT-12 | Teams: `webhook_url` hacia una dirección privada se rechaza y no se realiza la petición | `teamsService.js` → `testTeamsConnection` | `backend/tests/integrationSsrf.test.js` → S6b | Cubierto |
+| SS8 | SCRUM-52 / DT-18 | `0.0.0.0` y una IPv6 mapeada a IPv4 (`[::ffff:127.0.0.1]`) se rechazan y no se realiza la petición | `ssrfGuard.js` → `assertPublicHttpUrl` | Sin test. Verificado a mano en SCRUM-52: hoy ambas alcanzan el backend interno | Pendiente |
+| SS9 | SCRUM-52 / DT-18 | Una URL pública que redirige hacia una dirección interna no se sigue | `webhookService.js`, `slackService.js`, `teamsService.js` → opciones de `fetch` | Sin test. Verificado a mano en SCRUM-52: hoy una redirección 302 hacia `127.0.0.1` devuelve «Conexión exitosa.» | Pendiente |
+| SS10 | SCRUM-52 / DT-18 | `sendWebhookEvent` valida el destino antes de cada envío | `webhookService.js` → `sendWebhookEvent` | Sin test. Revisión de código en SCRUM-52: no llama a `assertPublicHttpUrl` | Pendiente |
+
+Hallazgo registrado con estos casos: `ssrfGuard.js` queda al 64 % en sentencias. Las ramas de IPv6, el rechazo de esquemas distintos de http y https, y el fallo de resolución DNS se verificaron de forma manual sobre catorce direcciones —incluidos los bordes 172.15, 172.16, 172.31 y 172.32, y `febf::` como tope de `fe80::/10`— con resultado correcto en todas, pero no cuentan con prueba permanente en el repositorio. Su cobertura queda pendiente de un ticket propio.

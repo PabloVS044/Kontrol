@@ -1,0 +1,107 @@
+{
+  "$comment": [
+    "Contrato compartido del cálculo de ventas del POS.",
+    "",
+    "Lo cargan DOS suites: backend/tests/saleCalculation.test.js sobre",
+    "backend/src/services/saleCalculation.js (la autoridad, la que persiste), y",
+    "frontend/tests/sales.test.js sobre frontend/src/utils/sales.js (la que",
+    "pinta el carrito). Mientras las dos pasen estos vectores, el ticket no",
+    "puede mostrar un total distinto del que se cobra y se informa.",
+    "",
+    "Los Dockerfiles construyen backend/ y frontend/ con contextos separados, así",
+    "que un módulo importable por ambos no cabe sin cambiar el despliegue. Este",
+    "fichero fija el contrato sin tocarlo: no viaja en ninguna imagen, solo lo",
+    "leen los tests.",
+    "",
+    "`taxRate` va siempre explícito: los valores por defecto de cada lado",
+    "difieren a propósito (el backend exige decirlo) y un vector no debe",
+    "depender de ellos.",
+    "",
+    "Se asertan solo los campos comunes: subtotal, discount, taxableBase, tax,",
+    "total. El backend devuelve además discountPercent y taxRate."
+  ],
+  "cases": [
+    {
+      "name": "una línea, cantidad 1, sin impuesto ni descuento",
+      "lines": [{ "precio": 100, "cantidad": 1 }],
+      "options": { "taxRate": 0 },
+      "expected": { "subtotal": 100, "discount": 0, "taxableBase": 100, "tax": 0, "total": 100 }
+    },
+    {
+      "name": "varias líneas con cantidades distintas",
+      "lines": [
+        { "precio": 100, "cantidad": 2 },
+        { "precio": 55.5, "cantidad": 3 },
+        { "precio": 10, "cantidad": 1 }
+      ],
+      "options": { "taxRate": 0 },
+      "expected": { "subtotal": 376.5, "discount": 0, "taxableBase": 376.5, "tax": 0, "total": 376.5 }
+    },
+    {
+      "name": "descuento del 10% sin impuesto",
+      "lines": [{ "precio": 100, "cantidad": 1 }],
+      "options": { "discountPercent": 10, "taxRate": 0 },
+      "expected": { "subtotal": 100, "discount": 10, "taxableBase": 90, "tax": 0, "total": 90 }
+    },
+    {
+      "name": "descuento del 100% deja el total en 0, nunca negativo",
+      "lines": [{ "precio": 250, "cantidad": 2 }],
+      "options": { "discountPercent": 100, "taxRate": 0 },
+      "expected": { "subtotal": 500, "discount": 500, "taxableBase": 0, "tax": 0, "total": 0 }
+    },
+    {
+      "name": "un descuento por encima de 100 se recorta a 100",
+      "lines": [{ "precio": 250, "cantidad": 2 }],
+      "options": { "discountPercent": 150, "taxRate": 0 },
+      "expected": { "subtotal": 500, "discount": 500, "taxableBase": 0, "tax": 0, "total": 0 }
+    },
+    {
+      "name": "IVA del 12% sobre el subtotal sin descuento",
+      "lines": [{ "precio": 100, "cantidad": 1 }],
+      "options": { "taxRate": 0.12 },
+      "expected": { "subtotal": 100, "discount": 0, "taxableBase": 100, "tax": 12, "total": 112 }
+    },
+    {
+      "name": "el descuento se aplica ANTES del impuesto",
+      "lines": [{ "precio": 100, "cantidad": 1 }],
+      "options": { "discountPercent": 10, "taxRate": 0.12 },
+      "expected": { "subtotal": 100, "discount": 10, "taxableBase": 90, "tax": 10.8, "total": 100.8 }
+    },
+    {
+      "name": "descuento e IVA sobre varias líneas",
+      "lines": [
+        { "precio": 19.99, "cantidad": 2 },
+        { "precio": 5.25, "cantidad": 4 }
+      ],
+      "options": { "discountPercent": 15, "taxRate": 0.12 },
+      "expected": { "subtotal": 60.98, "discount": 9.15, "taxableBase": 51.83, "tax": 6.22, "total": 58.05 }
+    },
+    {
+      "name": "una línea con cantidad cero no suma",
+      "lines": [
+        { "precio": 100, "cantidad": 1 },
+        { "precio": 50, "cantidad": 0 }
+      ],
+      "options": { "taxRate": 0 },
+      "expected": { "subtotal": 100, "discount": 0, "taxableBase": 100, "tax": 0, "total": 100 }
+    },
+    {
+      "name": "redondeo a dos decimales con IVA",
+      "lines": [{ "precio": 10.1, "cantidad": 1 }],
+      "options": { "taxRate": 0.12 },
+      "expected": { "subtotal": 10.1, "discount": 0, "taxableBase": 10.1, "tax": 1.21, "total": 11.31 }
+    },
+    {
+      "name": "una venta vacía queda en cero",
+      "lines": [],
+      "options": { "taxRate": 0.12 },
+      "expected": { "subtotal": 0, "discount": 0, "taxableBase": 0, "tax": 0, "total": 0 }
+    },
+    {
+      "name": "precio con céntimos y cantidad alta no acumula error de coma flotante",
+      "lines": [{ "precio": 0.07, "cantidad": 300 }],
+      "options": { "taxRate": 0 },
+      "expected": { "subtotal": 21, "discount": 0, "taxableBase": 21, "tax": 0, "total": 21 }
+    }
+  ]
+}

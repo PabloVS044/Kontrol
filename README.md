@@ -243,39 +243,107 @@ npm run test:coverage -w frontend
 
 ### Política de trinquete
 
-Acordada en la retrospectiva del Sprint 5 (SCRUM-23). La retrospectiva planteaba un umbral global único del 60 %, pero ocho de los doce módulos de negocio siguen sin cobertura propia y ese valor habría dejado el pipeline en rojo de inmediato. Se adoptó en su lugar un trinquete de tres reglas:
+Acordada en la retrospectiva del Sprint 5 (SCRUM-23) y recalibrada el 20/09/2026 al declarar `coverage.include` y remedir sobre el denominador completo. Tres reglas:
 
-1. **Umbral del 70 % por módulo crítico** — POS, presupuesto, autenticación y reportes.
-2. **Umbral global fijado en la línea base medida**, sin margen. El umbral es exactamente la cobertura actual: puede mantenerse o subir, nunca bajar.
-3. **+5 puntos porcentuales por sprint** sobre el umbral global.
+1. **Umbral del 70 % por módulo crítico** — POS, presupuesto, autenticación y reportes. Dos excepciones vigentes, documentadas más abajo: el POS de backend arranca en 0 y `stores/auth.js` lleva 65 en ramas.
+2. **Umbral global fijado en la línea base medida, menos 1 punto porcentual de margen.** El umbral no autoriza a bajar cobertura: el margen solo cubre la varianza de la medición.
+3. **+5 puntos porcentuales por sprint** sobre el umbral global, contados desde esta base nueva.
+
+Hasta el 20/09/2026 la regla 2 iba sin margen, y funcionaba mientras el denominador era pequeño y estable. Con el denominador real hay dos fuentes de varianza que antes no pesaban. La primera es la versión de Node: v8 contabiliza ramas y funciones de forma distinta entre versiones mayores, y la medición se hace en local mientras el CI usa el 22 de `.nvmrc`. La segunda es el tamaño del denominador: sobre 3 929 sentencias de backend, un controlador nuevo de 200 sentencias sin prueba baja `statements` 0.78 puntos por sí solo, y sobre 9 152 de frontend una vista nueva de 300 sentencias lo baja 0.32. Sin margen, cualquier PR que añada un archivo sin prueba quedaría rojo aunque no tocara nada de lo ya cubierto.
+
+### Línea base: antes y después
+
+La caída del 20/09/2026 es una corrección de medición, no una regresión. No se eliminó ninguna prueba y ninguna línea dejó de estar cubierta: el numerador es idéntico, 637 sentencias en backend y 929 en frontend. Lo único que cambió es el denominador, que antes contenía solo los archivos que algún test importaba.
+
+| Backend | Antes | Después |
+|---|---|---|
+| Statements | 37.05 % (637/1 719) | **16.21 % (637/3 929)** |
+| Branches | 23.96 % (265/1 106) | **10.94 % (265/2 421)** |
+| Functions | 27.44 % (59/215) | **12.42 % (59/475)** |
+| Lines | 37.24 % (610/1 638) | **16.46 % (610/3 705)** |
+| Archivos en el reporte | 35 de 94 | **83 de 83** |
+
+| Frontend | Antes | Después |
+|---|---|---|
+| Statements | 92.90 % (929/1 000) | **10.15 % (929/9 152)** |
+| Branches | 87.07 % (586/673) | **9.84 % (586/5 955)** |
+| Functions | 91.30 % (252/276) | **12.12 % (252/2 078)** |
+| Lines | 93.90 % (848/903) | **10.46 % (848/8 104)** |
+| Archivos en el reporte | 19 de código, más 6 recursos | **129 de 129** |
 
 ### Umbrales vigentes
 
-Línea base medida el 12/08/2026.
+Línea base medida el 20/09/2026.
 
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
-| Backend — actual | 33 | 21 | 23 | 33 |
-| Backend — cierre Sprint 6 | 38 | 26 | 28 | 38 |
-| Frontend — actual | 83 | 83 | 78 | 85 |
-| Frontend — cierre Sprint 6 | 85 | 85 | 80 | 88 |
+| Backend — actual | 15 | 9 | 11 | 15 |
+| Backend — cierre Sprint 8 | 20 | 14 | 16 | 20 |
+| Frontend — actual | 9 | 8 | 11 | 9 |
+| Frontend — cierre Sprint 8 | 14 | 13 | 16 | 14 |
 
-Por módulo crítico, al 70 % en las cuatro métricas:
+Por módulo crítico, con su medición real al lado:
 
-| Módulo | Archivos |
-|---|---|
-| POS | `frontend/src/utils/sales.js` |
-| Presupuesto | `backend/src/utils/budgetCalculations.js` |
-| Autenticación | `backend/src/middleware/require{Auth,Role}.js` |
-| Reportes | `backend/src/controllers/reportsController.js`, `backend/src/routes/reportsRoutes.js`, `backend/src/schemas/reportsSchemas.js` |
+| Módulo | Archivo | Medido | Umbral |
+|---|---|---|---|
+| Presupuesto | `backend/src/utils/budgetCalculations.js` | 100 / 100 / 100 / 100 | 70 × 4 |
+| Autenticación | `backend/src/middleware/require{Auth,Role}.js` | 100 / 100 / 100 / 100 | 70 × 4 |
+| Reportes | `backend/src/controllers/reportsController.js` | 97.53 / 100 / 100 / 97.53 | 70 × 4 |
+| Reportes | `backend/src/routes/reportsRoutes.js` | 100 / 100 / 100 / 100 | 70 × 4 |
+| Reportes | `backend/src/schemas/reportsSchemas.js` | 100 / 100 / 100 / 100 | 70 × 4 |
+| POS | `backend/src/controllers/inventoryMovementController.js` | 0 / 0 / 0 / 0 | 0 × 4 |
+| POS | `backend/src/routes/inventoryMovementRoutes.js` | 0 / 0 / 0 / 0 | 0 × 4 |
+| POS | `backend/src/schemas/inventoryMovementSchemas.js` | 0 / 0 / 0 / 0 | 0 × 4 |
+| POS | `frontend/src/utils/sales.js` | 95.45 / 94.44 / 100 / 100 | 70 × 4 |
+| Autenticación | `frontend/src/stores/auth.js` | 71.60 / 66.66 / 70.37 / 75 | 70 / 65 / 70 / 70 |
+| Reportes | `frontend/src/utils/reportExport.js` | 96.87 / 94.44 / 93.33 / 96.87 | 70 × 4 |
+| Reportes | `frontend/src/utils/pdf/reportPdf.js` | 95.08 / 77.50 / 100 / 95.61 | 70 × 4 |
+| Reportes | `frontend/src/utils/pdf/pdfDocument.js` | 89.04 / 75.26 / 96.66 / 90.40 | 70 × 4 |
 
-`frontend/src/stores/auth.js` lleva un escalón temporal más bajo (60/55/55/60) porque hoy mide 66.66/60.41/59.25/69.73; sube a 70 cuando se amplíe `authStore.test.js`.
+Tres notas sobre esta tabla:
+
+- Los umbrales de reportes del frontend apuntaban antes a `views/ReportsView.vue`, `views/ReportDetailView.vue` y `components/reports/**`, y casaban con cero archivos. Los tests que esperaban nunca llegaron: esos quince archivos siguen a 0 %. Se redirigieron a los tres archivos del módulo que sí tienen pruebas, donde vive la lógica de exportación. Las vistas y los componentes no quedan desprotegidos: ahora entran al denominador global, así que su 0 % pesa ahí en lugar de esconderse detrás de un glob vacío.
+- El POS de backend va en 0 a propósito. En 0 no protege nada: es un marcador que deja el módulo declarado como crítico con su cifra real a la vista, hasta que lleguen sus pruebas de caracterización. El único umbral de POS que existía antes era `frontend/src/utils/sales.js`, pero ahí solo están el subtotal y el total de línea del navegador; la venta que descuenta stock y cobra mide 0 % sobre 198 sentencias.
+- `frontend/src/stores/auth.js` subió de 60/55/55/60, escalón fijado cuando el archivo medía 66.66/60.41/59.25/69.73. Ramas se queda en 65 porque mide 66.66. En funciones el margen es de 0.37 puntos (19 de 27): una función que deje de cubrirse incumple el umbral.
+
+### Cobertura real por módulo
+
+Punto de partida de las tareas de caracterización del Sprint 8. Formato: statements / branches / functions / lines.
+
+| Módulo | Archivos | Cobertura | Sentencias |
+|---|---|---|---|
+| POS backend | 3 | **0 / 0 / 0 / 0** | 0 / 198 |
+| Inventario backend | 3 | **0 / 0 / 0 / 0** | 0 / 205 |
+| Proveedores backend | 3 | **0 / 0 / 0 / 0** | 0 / 72 |
+| Autenticación backend | 3 | **0 / 0 / 0 / 0** | 0 / 126 |
+| Autorización (`middleware/**`) | 9 | **50.00 / 37.33 / 66.67 / 48.39** | 50 / 100 |
+| Presupuesto backend | 4 | 20.22 / 28.48 / 21.05 / 18.36 | 54 / 267 |
+| Reportes backend | 3 | 97.92 / 100 / 100 / 97.92 | 94 / 96 |
+| POS frontend — `utils/sales.js` | 1 | 95.45 / 94.44 / 100 / 100 | 42 / 44 |
+| POS frontend — componentes de venta | 3 | 95.45 / 93.15 / 93.33 / 97.37 | 126 / 132 |
+| Inventario frontend | 10 | 14.52 / 10.48 / 10.65 / 15.06 | 126 / 868 |
+| Proveedores frontend (`SuppliersView.vue`) | 1 | **0 / 0 / 0 / 0** | 0 / 121 |
+| Autenticación frontend | 3 | 70.94 / 67.90 / 70.59 / 72.90 | 83 / 117 |
+| Reportes frontend — exportación | 3 | 92.33 / 83.41 / 96.92 / 93.36 | 277 / 300 |
+| Reportes frontend — vistas y componentes | 15 | **0 / 0 / 0 / 0** | 0 / 887 |
+
+Autorización es el único de los módulos bloqueantes que no parte de cero: `requireAuth.js` y `requireRole.js` al 100 %, `validate.js` 100/75/100/100, `requireCompanyRole.js` 87.50, `requireCompany.js` 61.90, `requireCompanyOwner.js` 14.28, `requireProjectPermission.js` 13.04, y `requireProject.js` y `requireSuperUser.js` a 0.
+
+El 14.52 % de inventario del frontend se concentra en los tres componentes de venta, que están al 95 %. El resto del módulo, `InventoryPage.vue` incluido, está sin cubrir.
 
 ### Qué se mide
 
-Se mide **solo lo que algún test importa**. `coverage.all` no existe en Vitest 4 y no se declara `coverage.include`, así que un archivo que ningún test toca no aparece en el reporte ni afecta al porcentaje. Es intencional: mantiene el gate estable mientras entra código sin tests propios.
+`coverage.all` no existe en Vitest 4, así que el denominador lo fija `coverage.include`. Desde el 20/09/2026 está declarado en los dos workspaces.
 
-Consecuencia a tener presente: un glob de umbral que no case con ningún archivo del reporte **pasa en vacío, sin avisar**. Si se borra el test que cubre uno de los archivos de la tabla, su umbral deja de proteger nada.
+| | Backend | Frontend |
+|---|---|---|
+| `include` | `src/**/*.js` | `src/**/*.{js,vue}` |
+| `exclude` | `tests/**`, `src/index.js`, `src/uploadthing.js`, `src/db/**`, `src/models/**` | `tests/**`, `src/main.js`, `src/router/**`, `src/locales/**`, `src/assets/**`, `src/styles/**`, `src/components/UI/Backgrounds/**` |
+| Denominador | 83 archivos, 3 929 sentencias | 129 archivos, 9 152 sentencias |
+
+Queda fuera el arranque del proceso, la configuración de SDK externos, las conexiones y scripts de base de datos, los esquemas declarativos de Mongoose, la tabla de rutas, los diccionarios de i18n, los recursos estáticos y los fondos WebGL. `src/socket/index.js` sí entra: son 450 líneas de lógica de chat, no infraestructura. Las extensiones explícitas del `include` del frontend dejan fuera los `.css`, `.png` y `.json` que antes figuraban como archivos medidos.
+
+Consecuencia a tener presente: un glob de umbral que no case con ningún archivo del reporte **pasa en vacío, sin avisar**. No es hipotético — es lo que ocurrió con los tres umbrales de reportes del frontend durante un mes. Por eso cada umbral por módulo lleva su medición real en un comentario al lado en el config: un glob sin número es un glob que nadie ha comprobado.
 
 ---
 

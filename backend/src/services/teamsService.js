@@ -1,5 +1,8 @@
+import { assertPublicHttpUrl } from './ssrfGuard.js'
+
 export async function testTeamsConnection({ webhook_url }) {
   if (!webhook_url) throw new Error('webhook_url es requerido.')
+  await assertPublicHttpUrl(webhook_url)
 
   const res = await fetch(webhook_url, {
     method: 'POST',
