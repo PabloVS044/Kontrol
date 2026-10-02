@@ -23,6 +23,13 @@ services:
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
       - FRONTEND_URL=${TEST_FRONTEND_URL}
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
+      - AGENT_API_URL=${AGENT_API_URL:-}
+      - AGENT_API_KEY=${AGENT_API_KEY:-}
+      - AGENT_MODEL=${AGENT_MODEL:-}
+      - AGENT_TEMPERATURE=${AGENT_TEMPERATURE:-}
+      - AGENT_MAX_TOKENS=${AGENT_MAX_TOKENS:-}
+      - AGENT_MAX_STEPS=${AGENT_MAX_STEPS:-}
+      - AGENT_DISABLE_THINKING=${AGENT_DISABLE_THINKING:-}
       # Login is bcrypt-bound (docs/pruebas-carga-estres.md, hallazgo 1) — a
       # lower cost factor trades hash strength for CPU headroom, safe here
       # because this environment only ever holds the shared, documented

@@ -105,3 +105,15 @@ export const expensiveLimiter = createRateLimiter({
   limit: envInt('RATE_LIMIT_EXPENSIVE_MAX', 60),
   keyGenerator: byUserOrIp,
 })
+
+/**
+ * Chat del agente de IA: cada mensaje puede disparar hasta AGENT_MAX_STEPS+1
+ * llamadas al endpoint del modelo, que tiene cuota y costo propios. Por
+ * usuario, igual que expensiveLimiter.
+ */
+export const agentChatLimiter = createRateLimiter({
+  windowMs: MINUTE,
+  limit: envInt('RATE_LIMIT_AGENT_MAX', 10),
+  keyGenerator: byUserOrIp,
+  message: 'Too many messages to the AI agent. Please wait a moment and try again.',
+})

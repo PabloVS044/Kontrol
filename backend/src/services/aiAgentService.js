@@ -820,7 +820,7 @@ async function callLlm({ messages, signal, cfg, profile }) {
 
   if (!cfg.apiKey) {
     throw new Error(
-      'AGENT_API_KEY is not configured. Add the Bearer token for the ClawStitch Qwen endpoint in backend/.env.'
+      'AGENT_API_KEY is not configured. Add the Bearer token for the ClawStitch Qwen endpoint to the backend environment.'
     )
   }
 
@@ -882,6 +882,7 @@ async function callLlm({ messages, signal, cfg, profile }) {
   // Reasoning models (Qwen 3.6) emit the thinking trace in `reasoning` /
   // `reasoning_content` and the actual turn in `content`. Fall back to those
   // fields if `content` is empty.
+  const fromReasoning = !message?.content
   const content =
     message?.content ||
     message?.reasoning_content ||
@@ -895,7 +896,7 @@ async function callLlm({ messages, signal, cfg, profile }) {
     }
     throw new Error('AI inference server returned a malformed response.')
   }
-  return content
+  return { content, fromReasoning }
 }
 
 /** Trim history to the most recent N pairs and clip oversized user input. */
@@ -995,13 +996,14 @@ export async function runAgentTurn({ history, user, company, signal }) {
       err.name = 'AbortError'
       throw err
     }
-    const raw = await callLlm({ messages, signal, cfg, profile })
+    const { content: raw, fromReasoning } = await callLlm({ messages, signal, cfg, profile })
     const turn = parseJsonTurn(raw)
 
     if (!turn || typeof turn.action !== 'string') {
-      // Last-resort: surface the raw text so the user is not stuck.
+      // Last-resort: surface plain prose so the user is not stuck — but never
+      // the reasoning trace, which leaks SQL and internal notes.
       return {
-        answer: raw.trim() || 'No pude procesar la respuesta del modelo. Inténtalo de nuevo.',
+        answer: (!fromReasoning && raw.trim()) || 'No pude procesar la respuesta del modelo. Inténtalo de nuevo.',
         queries,
       }
     }

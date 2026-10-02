@@ -39,8 +39,7 @@ export const SCHEMA_REFERENCE = `
 PostgreSQL schema (all tables live in schema "public"; column types are
 shortened for brevity):
 
-usuario(id_usuario PK, nombre, apellido, email UNIQUE, telefono, id_rol FK,
-        activo, google_id)
+usuario(id_usuario PK, nombre, apellido, email UNIQUE, telefono, id_rol FK, activo)
 
 empresa(id_empresa PK, nombre, industria, telefono, direccion, email UNIQUE)
 
