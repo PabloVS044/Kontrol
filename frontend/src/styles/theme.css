@@ -62,7 +62,9 @@
   --k-text-disabled: #565045;
 
   /* ── visualStates/ ──────────────────────────────────────── */
-  --k-state-error-text: #e05252;
+  /* #e05252 → #e46868: solo luminosidad. Sobre el pico del fondo animado
+     (#272727) daba 3.91:1; ahora 4.61:1 (5.83:1 sobre #111). */
+  --k-state-error-text: #e46868;
   --k-state-success-text: #48c774;
 
   /* ── forms/ ─────────────────────────────────────────────── */
@@ -201,7 +203,7 @@
   --k-gray-2: #909090; /* 5.91:1 · 4.63:1 */
   --k-gray-3: #929292; /* 6.07:1 · 4.75:1 */
   --k-gray-4: #939393; /* 6.15:1 · 4.81:1 */
-  --k-gray-5: #888888;
+  --k-gray-5: #8f8f8f; /* era #888: 4.21:1 sobre el pico del fondo animado */
   --k-gray-6: #8f8f8f;
 
   /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de

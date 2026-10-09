@@ -394,8 +394,11 @@ describe('theme.css — contraste del texto (WCAG AA)', () => {
   }
 
   // Superficies sobre las que hay texto: página, barras, tarjetas, filas en
-  // hover. bg-3 (#282825) es la más clara y solo se usa para la rampa.
-  const TEXT_SURFACES = ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4']
+  // hover, y el pico del fondo animado medido en pantalla con el tope de
+  // App.vue (#272727). bg-3 (#282825) es la más clara y solo se usa para la
+  // rampa.
+  const WAVE_PEAK = '#272727'
+  const TEXT_SURFACES = ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', WAVE_PEAK]
   const LIGHTEST = '--k-color-bg-3'
   const hexOf = (s) => (s.startsWith('#') ? s : value(s))
 
