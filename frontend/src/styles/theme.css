@@ -44,11 +44,17 @@
   --k-color-white-rgb: 255, 255, 255;
 
   /* ── text/ ──────────────────────────────────────────────── */
+  /* Toda la rampa cumple WCAG AA (4.5:1) incluso sobre la superficie más
+     clara en uso, `--k-color-bg-3` (#282825). Valores anteriores
+     (muted #989083, dim #6e6558, faint #565045, placeholder #4a4030) bajaban
+     hasta 1.5:1 y en pruebas de usabilidad se volvían ilegibles con brillo
+     bajo o a distancia. Solo se subió la luminosidad: tono y saturación son
+     los de Figma. La jerarquía entre niveles la sostienen tamaño y peso. */
   --k-text-soft: #cfc9bf;
-  --k-text-muted: #989083;
-  --k-text-dim: #6e6558;
-  --k-text-faint: #565045;
-  --k-text-placeholder: #4a4030;
+  --k-text-muted: #a0998d; /* 6.69:1 sobre #111 · 5.23:1 sobre bg-3 */
+  --k-text-dim: #9e9485; /* 6.32:1 · 4.95:1 */
+  --k-text-faint: #988f7e; /* 5.90:1 · 4.62:1 */
+  --k-text-placeholder: #a18d6d; /* 5.89:1 · 4.61:1 — más cálido, para no confundirse con un valor escrito */
   /* Solo para controles deshabilitados. WCAG 1.4.3 exime al texto de un
      componente inactivo, así que puede quedar por debajo de 4.5:1 a
      propósito: es lo que lo separa de una opción no seleccionada, que sí
