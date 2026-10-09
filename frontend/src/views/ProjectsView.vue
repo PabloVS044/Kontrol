@@ -762,7 +762,7 @@ async function submitProject() {
   padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
 }
 .tab.active { color: var(--k-color-primary); border-bottom-color: var(--k-color-primary); }
-.tab:hover:not(.active) { color: var(--k-gray-5); }
+.tab:hover:not(.active) { color: var(--k-text-soft); }
 
 .section-header  { display: flex; justify-content: space-between; align-items: center; }
 .section-title   { font-family: var(--k-font-display); font-size: var(--k-font-size-heading-2); color: var(--k-color-text); }
@@ -786,7 +786,7 @@ async function submitProject() {
   background: none; border: none; color: var(--k-gray-3); cursor: pointer;
   font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
 }
-.search-clear:hover { color: var(--k-gray-5); }
+.search-clear:hover { color: var(--k-text-soft); }
 
 /* View toggle */
 .view-toggle { display: flex; border: 1px solid var(--k-shade-6); }
@@ -796,7 +796,7 @@ async function submitProject() {
   transition: color 0.15s, background 0.15s;
 }
 .vt-btn.active { color: var(--k-shade-1); background: var(--k-color-primary); }
-.vt-btn:hover:not(.active) { color: var(--k-gray-5); }
+.vt-btn:hover:not(.active) { color: var(--k-text-soft); }
 
 .project-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;

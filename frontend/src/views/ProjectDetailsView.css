@@ -58,7 +58,7 @@
   transition: color 0.15s;
   width: fit-content;
 }
-.pd-back:hover { color: var(--k-gray-5); }
+.pd-back:hover { color: var(--k-text-soft); }
 
 .pd-header-body {
   display: flex;
@@ -204,7 +204,7 @@
   transition: color 0.15s, background 0.15s;
 }
 .pd-tab.active { color: var(--k-color-primary); border-bottom: 2px solid var(--k-color-primary); background: var(--k-shade-3); }
-.pd-tab:hover:not(.active) { color: var(--k-gray-5); }
+.pd-tab:hover:not(.active) { color: var(--k-text-soft); }
 
 /* ── Tab panels ── */
 .tab-panel {
