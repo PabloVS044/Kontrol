@@ -17,12 +17,6 @@
 
 :root,
 [data-theme='dark'] {
-  /* Le dice al navegador que pinte oscuros sus controles nativos: listas de
-     <select>, calendarios de fecha, autocompletado y barras de scroll. Sin
-     esto se abrían en blanco y heredaban el texto claro de la app: gris claro
-     sobre blanco. El tema claro lo redefinirá cuando exista su paleta. */
-  color-scheme: dark;
-
   /* ── color/ ─────────────────────────────────────────────── */
   --k-color-primary: #caa860;
   --k-color-primary-2: #b27f2a;
