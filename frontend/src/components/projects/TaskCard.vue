@@ -165,7 +165,7 @@ const isDone = computed(() =>
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: var(--k-gray-1); color: var(--k-color-text); }
+.task-action-btn:hover { border-color: var(--k-shade-8); color: var(--k-color-text); }
 .task-action-btn--close { border-color: rgba(var(--k-color-success-rgb), 0.2); color: var(--k-state-success-text); }
 .task-action-btn--close:hover { border-color: rgba(var(--k-color-success-rgb), 0.4); }
 .task-action-btn:disabled { opacity: 0.5; cursor: wait; }

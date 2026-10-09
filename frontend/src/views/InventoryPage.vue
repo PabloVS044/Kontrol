@@ -153,6 +153,7 @@
             <button
               class="pf-tab"
               :class="{ active: !selectedProject }"
+              :aria-pressed="!selectedProject"
               @click="selectProject(null)"
             >{{ $t('inventory.projectFilter.allProjects') }}</button>
             <button
@@ -160,6 +161,7 @@
               :key="p.id_proyecto"
               class="pf-tab"
               :class="{ active: selectedProject?.id_proyecto === p.id_proyecto }"
+              :aria-pressed="selectedProject?.id_proyecto === p.id_proyecto"
               @click="selectProject(p)"
             >{{ p.nombre }}</button>
           </div>
@@ -204,6 +206,7 @@
             :key="cat"
             class="chip"
             :class="{ active: activeCategory === cat }"
+            :aria-pressed="activeCategory === cat"
             @click="activeCategory = cat"
           >{{ cat === 'All' ? $t('inventory.filter.all') : cat }}</button>
         </div>

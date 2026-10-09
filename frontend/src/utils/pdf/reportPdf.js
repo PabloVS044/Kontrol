@@ -15,14 +15,19 @@ import { A4, PdfDocument, measureText, wrapText } from './pdfDocument.js'
 // Identity v2 tokens, resolved to the literals the PDF operators need.
 const BRAND = {
   gold: '#caa860',
-  goldDeep: '#b27f2a',
+  // Sobre papel el dorado oscuro de marca (#b27f2a) daba 3.52:1; esta
+  // variante solo baja la luminosidad para llegar a WCAG AA (4.62:1).
+  goldOnPaper: '#986d24',
   ink: '#12120e',
   inkSoft: '#282825',
   paper: '#ffffff',
   paperAlt: '#faf8f5',
   text: '#1c1913',
   textMuted: '#6e6558',
-  textFaint: '#8a8070',
+  // Texto tenue sobre papel: #8a8070 daba 3.67:1 sobre paperAlt, el "gris
+  // claro sobre blanco" de las pruebas. Sobre la franja oscura se mantiene.
+  textFaint: '#787062',
+  textFaintOnInk: '#8a8070',
   onInk: '#faf8f5',
   border: '#e0dacd',
 }
@@ -80,7 +85,7 @@ function drawMasthead(doc, meta) {
     size: 17, bold: true, color: BRAND.gold, tracking: 2.6,
   })
   doc.text(meta.labels.tagline, MARGIN, 48, {
-    size: 6.5, color: BRAND.textFaint, tracking: CAPS_TRACKING * 6.5,
+    size: 6.5, color: BRAND.textFaintOnInk, tracking: CAPS_TRACKING * 6.5,
   })
 
   // A project export titles itself with the project, so repeating it in the
@@ -90,7 +95,7 @@ function drawMasthead(doc, meta) {
 
   doc.text(meta.title, MARGIN, 76, { size: 19, bold: true, color: BRAND.onInk, maxWidth: titleWidth })
   if (meta.subtitle) {
-    doc.text(meta.subtitle, MARGIN, 90, { size: 8, color: BRAND.textFaint, maxWidth: titleWidth })
+    doc.text(meta.subtitle, MARGIN, 90, { size: 8, color: BRAND.textFaintOnInk, maxWidth: titleWidth })
   }
 
   // Right rail: the facts that make an exported file self-explanatory.
@@ -103,7 +108,7 @@ function drawMasthead(doc, meta) {
 
 function drawStackedLabel(doc, right, y, label, value) {
   doc.text(label, right, y, {
-    size: 6.5, bold: true, color: BRAND.textFaint, align: 'right', tracking: CAPS_TRACKING * 6.5,
+    size: 6.5, bold: true, color: BRAND.textFaintOnInk, align: 'right', tracking: CAPS_TRACKING * 6.5,
   })
   doc.text(value, right, y + 12, { size: 9, color: BRAND.onInk, align: 'right', maxWidth: 200 })
 }
@@ -157,7 +162,7 @@ function drawKpiRow(doc, kpis, y) {
     })
     if (kpi.hint) {
       doc.text(kpi.hint, x + 10, y + 50, {
-        size: 7.5, color: BRAND.goldDeep, maxWidth: width - 20,
+        size: 7.5, color: BRAND.goldOnPaper, maxWidth: width - 20,
       })
     }
   })
@@ -277,7 +282,7 @@ function startContinuationPage(doc, meta) {
 
   doc.text('KONTROL', MARGIN, 22, { size: 9, bold: true, color: BRAND.gold, tracking: 1.8 })
   doc.text(meta.title, doc.width - MARGIN, 22, {
-    size: 8, color: BRAND.textFaint, align: 'right', maxWidth: 300,
+    size: 8, color: BRAND.textFaintOnInk, align: 'right', maxWidth: 300,
   })
 
   return RUNNING_HEAD_HEIGHT + 1.5 + 20

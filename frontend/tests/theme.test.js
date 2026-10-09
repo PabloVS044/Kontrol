@@ -125,7 +125,7 @@ describe('theme.css — catálogo de tokens', () => {
     ],
     rampaNeutra: [
       '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
-      '--k-shade-5', '--k-shade-6', '--k-shade-7',
+      '--k-shade-5', '--k-shade-6', '--k-shade-7', '--k-shade-8',
       '--k-gray-1', '--k-gray-2', '--k-gray-3',
       '--k-gray-4', '--k-gray-5', '--k-gray-6',
     ],
@@ -136,6 +136,8 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-font-size-display-2',
     ],
     radiosExtra: ['--k-radius-xs', '--k-radius-field'],
+    estados: ['--k-text-disabled', '--k-state-selected-indicator', '--k-state-disabled-outline'],
+    fondoAnimado: ['--k-bg-wave-line'],
     alertas: [
       '--k-alert-watching-bg',
       '--k-alert-watching-border',
@@ -355,5 +357,103 @@ describe('globals.css — capa de compatibilidad legacy', () => {
     const tailwindIdx = globalsCss.indexOf('@tailwind')
     expect(importIdx).toBeGreaterThanOrEqual(0)
     expect(tailwindIdx).toBeGreaterThan(importIdx)
+  })
+})
+
+/**
+ * Contraste WCAG 2.1 de los tokens de texto.
+ *
+ * Las pruebas de usabilidad registraron texto secundario ilegible con brillo
+ * bajo, a distancia y sin lentes: la rampa llegaba a 1.5:1. Aquí se fija el
+ * piso de 4.5:1 (AA, texto normal) con la fórmula de luminancia relativa de
+ * WCAG 2.1, para que un ajuste de paleta no lo vuelva a bajar sin que nadie
+ * se entere.
+ */
+describe('theme.css — contraste del texto (WCAG AA)', () => {
+  const value = (name) => {
+    // Anclado a inicio de línea: los comentarios de theme.css citan tokens.
+    let v = themeCss.match(new RegExp(`^\\s*${name}:\\s*([^;]+);`, 'm'))[1].trim()
+    while (v.startsWith('var(')) v = value(v.match(/var\((--[\w-]+)\)/)[1])
+    return v
+  }
+  const rgb = (hex) => {
+    const x = hex.replace('#', '')
+    const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+    return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
+  }
+  const lum = (c) =>
+    c
+      .map((v) => {
+        const x = v / 255
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+      })
+      .reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
+  const ratio = (a, b) => {
+    const [hi, lo] = [lum(rgb(a)), lum(rgb(b))].sort((x, y) => y - x)
+    return (hi + 0.05) / (lo + 0.05)
+  }
+
+  // Superficies sobre las que hay texto: página, barras, tarjetas, filas en
+  // hover, y el pico del fondo animado medido en pantalla con el tope de
+  // App.vue (#272727). bg-3 (#282825) es la más clara y solo se usa para la
+  // rampa.
+  const WAVE_PEAK = '#272727'
+  const TEXT_SURFACES = ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', WAVE_PEAK]
+  const LIGHTEST = '--k-color-bg-3'
+  const hexOf = (s) => (s.startsWith('#') ? s : value(s))
+
+  const RAMP = [
+    '--k-text-soft',
+    '--k-text-muted',
+    '--k-text-dim',
+    '--k-text-faint',
+    '--k-text-placeholder',
+    '--k-gray-1',
+    '--k-gray-2',
+    '--k-gray-3',
+    '--k-gray-4',
+  ]
+  const OTHER_TEXT = [
+    '--k-color-text',
+    '--k-color-primary',
+    '--k-gray-5',
+    '--k-gray-6',
+    '--k-state-error-text',
+    '--k-state-success-text',
+  ]
+
+  for (const token of RAMP) {
+    it(`${token} supera 4.5:1 incluso sobre bg-3`, () => {
+      for (const s of [...TEXT_SURFACES, LIGHTEST]) {
+        const r = ratio(value(token), hexOf(s))
+        expect(r, `${token} sobre ${s}: ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
+
+  for (const token of OTHER_TEXT) {
+    it(`${token} supera 4.5:1 sobre las superficies de texto`, () => {
+      for (const s of TEXT_SURFACES) {
+        const r = ratio(value(token), hexOf(s))
+        expect(r, `${token} sobre ${s}: ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
+
+  it('el texto de botón supera 4.5:1 sobre el dorado de marca', () => {
+    for (const bg of ['--k-color-primary', '--k-color-primary-2']) {
+      const r = ratio(value('--k-form-btn-text'), value(bg))
+      expect(r, `btn-text sobre ${bg}: ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it('el texto deshabilitado se distingue del de una opción no seleccionada', () => {
+    // Una opción no seleccionada usa la rampa (AA); la deshabilitada queda
+    // por debajo a propósito (WCAG 1.4.3 la exime). Si se igualan, vuelve el
+    // problema de que lo inactivo parezca deshabilitado.
+    const disabled = value('--k-text-disabled')
+    for (const token of ['--k-text-muted', '--k-text-faint']) {
+      expect(ratio(value(token), '#111111')).toBeGreaterThan(ratio(disabled, '#111111') + 2)
+    }
   })
 })

@@ -58,7 +58,7 @@
   transition: color 0.15s;
   width: fit-content;
 }
-.pd-back:hover { color: var(--k-gray-5); }
+.pd-back:hover { color: var(--k-text-soft); }
 
 .pd-header-body {
   display: flex;
@@ -204,7 +204,7 @@
   transition: color 0.15s, background 0.15s;
 }
 .pd-tab.active { color: var(--k-color-primary); border-bottom: 2px solid var(--k-color-primary); background: var(--k-shade-3); }
-.pd-tab:hover:not(.active) { color: var(--k-gray-5); }
+.pd-tab:hover:not(.active) { color: var(--k-text-soft); }
 
 /* ── Tab panels ── */
 .tab-panel {
@@ -480,7 +480,7 @@
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.task-action-btn:hover { border-color: var(--k-gray-1); color: var(--k-color-text); }
+.task-action-btn:hover { border-color: var(--k-shade-8); color: var(--k-color-text); }
 .task-action-btn--close { border-color: rgba(var(--k-color-success-rgb), 0.2); color: var(--k-state-success-text); }
 .task-action-btn--close:hover { border-color: rgba(var(--k-color-success-rgb), 0.4); }
 .task-action-btn:disabled { opacity: 0.5; cursor: wait; }
@@ -548,7 +548,7 @@
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.btn-secondary:hover { border-color: var(--k-gray-1); }
+.btn-secondary:hover { border-color: var(--k-shade-8); }
 
 .empty-state { text-align: center; padding: 60px 0; color: var(--k-gray-3); font-size: var(--k-font-size-body-main); }
 

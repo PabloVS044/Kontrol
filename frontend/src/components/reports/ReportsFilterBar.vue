@@ -5,6 +5,7 @@
       :key="filter.key"
       class="filter-btn"
       :class="{ active: modelValue === filter.key }"
+      :aria-pressed="modelValue === filter.key"
       @click="$emit('update:modelValue', filter.key)"
     >
       {{ filter.label }}
@@ -46,11 +47,18 @@ defineEmits(['update:modelValue'])
   transition: color .2s, border-color .2s, background .2s;
 }
 
-.filter-btn.active,
-.filter-btn:hover {
+.filter-btn:hover:not(.active) {
+  color: var(--k-text-soft);
+  border-color: var(--k-shade-8);
+}
+
+/* Antes el filtro elegido y el hover eran idénticos: no había forma de saber
+   cuál estaba aplicado sin mover el cursor fuera. */
+.filter-btn.active {
   color: var(--Primary);
   border-color: rgba(202,168,96,0.35);
-  background: #111111;
+  background: var(--k-surface-primary-tint-2);
+  box-shadow: var(--k-state-selected-indicator);
 }
 
 .chevron { opacity: .8; }

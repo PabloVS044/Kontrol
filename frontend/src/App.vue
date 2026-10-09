@@ -1,5 +1,10 @@
 <template>
   <div id="app">
+    <!-- Sin tope, los destellos de las líneas llegaban a blanco (#fff) detrás
+         de subtítulos y burbujas. Con maxIntensity 0.11 el pico medido en
+         pantalla, sumado al fondo de página, es #272727: todo token de texto
+         supera 4.5:1 sobre él (tests/theme.test.js). El resto del dibujo no
+         cambia. -->
     <div class="background">
       <LineWaves
         :speed="0.2"
@@ -10,9 +15,10 @@
         :edgeFadeWidth="0"
         :colorCycleSpeed="1"
         :brightness="0.08"
-        color1="var(--Text)"
-        color2="var(--Text)"
-        color3="var(--Text)"
+        :maxIntensity="0.11"
+        color1="var(--k-bg-wave-line)"
+        color2="var(--k-bg-wave-line)"
+        color3="var(--k-bg-wave-line)"
         :enableMouseInteraction="true"
         :mouseInfluence="2"
       />

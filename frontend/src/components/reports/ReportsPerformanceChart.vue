@@ -116,7 +116,7 @@ const dots = [
 .x-axis span {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #333;
+  color: var(--k-gray-1);
 }
 
 .chart-area { flex: 1; }

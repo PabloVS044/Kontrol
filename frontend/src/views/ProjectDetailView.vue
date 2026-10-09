@@ -139,6 +139,7 @@
             :key="tab.id"
             class="pd-tab"
             :class="{ active: activeTab === tab.id }"
+            :aria-pressed="activeTab === tab.id"
             :data-birdie="tab.id === 'tasks' ? 'tasks-tab' : (tab.id === 'members' ? 'invite-members' : null)"
             @click="activeTab = tab.id"
           >

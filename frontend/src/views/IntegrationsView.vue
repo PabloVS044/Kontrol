@@ -31,6 +31,7 @@
           <button
             class="chip"
             :class="{ active: activeCategory === 'all' }"
+            :aria-pressed="activeCategory === 'all'"
             @click="activeCategory = 'all'"
           >Todas</button>
           <button
@@ -38,6 +39,7 @@
             :key="cat"
             class="chip"
             :class="{ active: activeCategory === cat }"
+            :aria-pressed="activeCategory === cat"
             @click="activeCategory = cat"
           >{{ categoryLabel(cat) }}</button>
         </div>
