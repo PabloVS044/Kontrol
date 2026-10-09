@@ -63,6 +63,8 @@
   background: rgba(202, 168, 96, 0.12);
   border-color: #caa860;
   color: var(--Primary);
+  /* Borde doble: en una píldora la barra inferior se vería cortada. */
+  box-shadow: inset 0 0 0 1px var(--k-color-primary);
 }
 
 /* ── Grid ── */

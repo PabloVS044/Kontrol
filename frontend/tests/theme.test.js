@@ -136,7 +136,7 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-font-size-display-2',
     ],
     radiosExtra: ['--k-radius-xs', '--k-radius-field'],
-    estados: ['--k-text-disabled'],
+    estados: ['--k-text-disabled', '--k-state-selected-indicator', '--k-state-disabled-outline'],
     fondoAnimado: ['--k-bg-wave-line'],
     alertas: [
       '--k-alert-watching-bg',

@@ -44,6 +44,7 @@
             :key="f.key"
             class="filter-btn"
             :class="{ active: activeFilter === f.key }"
+            :aria-pressed="activeFilter === f.key"
             @click="activeFilter = f.key"
           >
             {{ f.label }}

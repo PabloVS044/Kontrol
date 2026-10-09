@@ -108,6 +108,7 @@
               :key="tab.key"
               class="tab"
               :class="{ active: activeTab === tab.key }"
+              :aria-pressed="activeTab === tab.key"
               @click="activeTab = tab.key"
             >
               {{ tab.label }} ({{ tab.count }})
@@ -137,7 +138,7 @@
                 <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">×</button>
               </div>
               <div class="view-toggle">
-                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'" :title="$t('projects.list.gridView')">
+                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" :aria-pressed="viewMode === 'grid'" @click="viewMode = 'grid'" :title="$t('projects.list.gridView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                     <rect x="8" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
@@ -145,7 +146,7 @@
                     <rect x="8" y="8" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                   </svg>
                 </button>
-                <button class="vt-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'" :title="$t('projects.list.listView')">
+                <button class="vt-btn" :class="{ active: viewMode === 'list' }" :aria-pressed="viewMode === 'list'" @click="viewMode = 'list'" :title="$t('projects.list.listView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>

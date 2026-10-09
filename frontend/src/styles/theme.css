@@ -122,6 +122,13 @@
   --k-state-hover-brightness: 1.15;
   --k-state-active-scale: 0.98;
   --k-state-disabled-opacity: 0.3;
+  /* Seleccionado vs no seleccionado vs deshabilitado no puede depender solo
+     del color: en pruebas, las opciones no seleccionadas se leían como
+     deshabilitadas. Seleccionado lleva una barra inferior (sin mover el
+     layout); deshabilitado, un contorno punteado. El no seleccionado no lleva
+     marca: texto en AA y su borde normal. */
+  --k-state-selected-indicator: inset 0 -2px 0 var(--k-color-primary);
+  --k-state-disabled-outline: var(--k-border-width) dashed var(--k-text-disabled);
   --k-focus-ring-width: 2px;
   --k-focus-ring-offset: 2px;
   --k-focus-ring: var(--k-focus-ring-width) solid var(--k-color-primary);

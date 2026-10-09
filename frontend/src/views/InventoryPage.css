@@ -119,7 +119,7 @@
   transition: var(--k-transition-ui);
 }
 .chip:hover { border-color: var(--k-shade-7); color: var(--k-color-text); }
-.chip.active { border-color: var(--k-color-primary); color: var(--k-color-primary); }
+.chip.active { border-color: var(--k-color-primary); color: var(--k-color-primary); background: var(--k-surface-primary-tint-2); box-shadow: var(--k-state-selected-indicator); }
 
 /* Encabezado de sección */
 .section-header { display: flex; align-items: center; justify-content: space-between; }
@@ -201,7 +201,7 @@
   font-family: var(--k-font-sans); transition: var(--k-transition-ui);
 }
 .sell-btn:hover:not(:disabled) { background: rgba(var(--k-color-primary-rgb), 0.08); color: var(--k-color-text); }
-.sell-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; }
+.sell-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; outline: var(--k-state-disabled-outline); outline-offset: -4px; }
 
 /* Quantity stepper */
 .qty-stepper {
@@ -214,7 +214,7 @@
   transition: var(--k-transition-ui);
 }
 .qty-btn:hover:not(:disabled) { background: var(--k-surface-primary-tint); color: var(--k-color-text); }
-.qty-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; }
+.qty-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; outline: var(--k-state-disabled-outline); outline-offset: -4px; }
 .qty-input {
   flex: 1; min-width: 0; background: transparent; border: none;
   text-align: center; color: var(--k-color-text); font-family: var(--k-font-sans);
@@ -416,7 +416,7 @@
 .pf-tab {
   background: var(--k-shade-3);
   border: var(--k-border-width) solid var(--k-shade-6);
-  color: var(--k-text-faint);
+  color: var(--k-text-muted);
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption);
   padding: 5px 12px;
@@ -429,6 +429,7 @@
   color: var(--k-color-primary);
   border-color: var(--k-color-primary);
   background: rgba(var(--k-color-primary-rgb), 0.08);
+  box-shadow: var(--k-state-selected-indicator);
 }
 .pf-loading { font-size: var(--k-font-size-caption); color: var(--k-text-faint); flex-shrink: 0; }
 
