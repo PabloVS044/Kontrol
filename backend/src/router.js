@@ -19,15 +19,13 @@ import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
 import { authLimiter } from './middleware/rateLimit.js'
 import pool from './db/pool.js'
-import { getPoolStats } from './db/poolStats.js'
+import { createHealthHandler } from './db/poolStats.js'
 
 
 const router = Router()
 
 // DT-15 — `db` expone los contadores del pool para muestrearlos desde k6.
-router.get('/health', (req, res) => {
-  res.json({ status: 'ok', db: getPoolStats(pool) })
-})
+router.get('/health', createHealthHandler(pool))
 
 router.use('/auth', authLimiter, authRoutes)
 router.use('/users', userRoutes)

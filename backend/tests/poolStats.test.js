@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import pg from 'pg'
 import request from 'supertest'
 import express from 'express'
-import { getPoolStats, startPoolStatsLogger, resolveStatsIntervalMs } from '../src/db/poolStats.js'
+import { getPoolStats, createHealthHandler, startPoolStatsLogger, resolveStatsIntervalMs } from '../src/db/poolStats.js'
 
 /**
  * DT-15 — cierra el pendiente de SCRUM-28: totalCount y waitingCount.
@@ -47,18 +47,13 @@ describe('DT-15 · getPoolStats', () => {
 
 describe('DT-15 · /api/health', () => {
   it('incluye los contadores del pool', async () => {
-    vi.resetModules()
-    vi.doMock('../src/db/pool.js', () => ({
-      default: { totalCount: 4, idleCount: 1, waitingCount: 2, options: { max: 10 } },
-    }))
-    const { default: router } = await import('../src/router.js')
-    const app = express().use('/api', router)
+    const pool = { totalCount: 4, idleCount: 1, waitingCount: 2, options: { max: 10 } }
+    const app = express().get('/api/health', createHealthHandler(pool))
 
     const res = await request(app).get('/api/health')
 
     expect(res.status).toBe(200)
     expect(res.body).toEqual({ status: 'ok', db: { total: 4, idle: 1, waiting: 2, max: 10 } })
-    vi.doUnmock('../src/db/pool.js')
   })
 })
 

@@ -19,6 +19,13 @@ export function getPoolStats(pool) {
   }
 }
 
+/** Handler de `GET /api/health`: `db` permite muestrear el pool desde k6. */
+export function createHealthHandler(pool) {
+  return (req, res) => {
+    res.json({ status: 'ok', db: getPoolStats(pool) })
+  }
+}
+
 export function resolveStatsIntervalMs(env = process.env) {
   const parsed = Number.parseInt(env.DB_POOL_STATS_INTERVAL_MS, 10)
   return Number.isInteger(parsed) && parsed > 0 ? parsed : 0
