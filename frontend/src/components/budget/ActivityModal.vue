@@ -97,5 +97,5 @@ function handleSubmit() {
   font-family: var(--k-font-sans); font-size: var(--k-font-size-caption-lg); padding: 10px 18px;
   cursor: pointer; transition: border-color 0.15s;
 }
-.btn-secondary:hover { border-color: var(--k-gray-1); }
+.btn-secondary:hover { border-color: var(--k-shade-8); }
 </style>

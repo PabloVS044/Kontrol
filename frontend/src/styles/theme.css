@@ -189,12 +189,18 @@
   --k-shade-5: #1e1e1e;
   --k-shade-6: #1f1f1f; /* bordes neutros */
   --k-shade-7: #2a2a2a; /* borde de control interactivo */
+  --k-shade-8: #333333; /* borde de control en hover (antes se tomaba de gray-1) */
 
   /* Texto neutro: gris frío, distinto de la rampa cálida `--k-text-*`. */
-  --k-gray-1: #333333; /* etiquetas de sección — bajo contraste, uso decorativo */
-  --k-gray-2: #444444;
-  --k-gray-3: #555555; /* texto terciario, estado inactivo */
-  --k-gray-4: #666666;
+  /* gray-1..4 eran #333 / #444 / #555 / #666 (1.5–3.3:1 sobre #111) y
+     pintaban títulos secundarios, opciones inactivas y el ícono de idioma.
+     Suben a WCAG AA sobre bg-3 (#282825). Los cuatro quedan casi iguales a
+     propósito: la jerarquía la marcan tamaño y peso, no un gris ilegible.
+     Bordes y fondos que usaban gray-1 pasaron a --k-shade-8. */
+  --k-gray-1: #909090; /* 5.91:1 sobre #111 · 4.63:1 sobre bg-3 */
+  --k-gray-2: #909090; /* 5.91:1 · 4.63:1 */
+  --k-gray-3: #929292; /* 6.07:1 · 4.75:1 */
+  --k-gray-4: #939393; /* 6.15:1 · 4.81:1 */
   --k-gray-5: #888888;
   --k-gray-6: #8f8f8f;
 

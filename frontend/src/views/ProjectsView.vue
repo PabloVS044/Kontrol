@@ -896,7 +896,7 @@ async function submitProject() {
   background: var(--k-shade-2); border: 1px solid var(--k-shade-6);
   display: flex; flex-direction: column; transition: border-color 0.2s;
 }
-.project-card:hover { border-color: var(--k-gray-1); }
+.project-card:hover { border-color: var(--k-shade-8); }
 
 .card-accent { height: 3px; flex-shrink: 0; }
 

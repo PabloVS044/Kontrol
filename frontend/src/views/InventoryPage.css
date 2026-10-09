@@ -424,7 +424,7 @@
   white-space: nowrap;
   transition: var(--k-transition-ui);
 }
-.pf-tab:hover { color: var(--k-color-text); border-color: var(--k-gray-1); }
+.pf-tab:hover { color: var(--k-color-text); border-color: var(--k-shade-8); }
 .pf-tab.active {
   color: var(--k-color-primary);
   border-color: var(--k-color-primary);

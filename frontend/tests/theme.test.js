@@ -125,7 +125,7 @@ describe('theme.css — catálogo de tokens', () => {
     ],
     rampaNeutra: [
       '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
-      '--k-shade-5', '--k-shade-6', '--k-shade-7',
+      '--k-shade-5', '--k-shade-6', '--k-shade-7', '--k-shade-8',
       '--k-gray-1', '--k-gray-2', '--k-gray-3',
       '--k-gray-4', '--k-gray-5', '--k-gray-6',
     ],
