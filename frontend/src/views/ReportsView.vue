@@ -228,7 +228,7 @@
                   <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="#caa860"/>
                   <circle v-for="pt in chartPoints" :key="pt.x + '-p'" :cx="pt.x" :cy="pt.progressY" r="3" fill="#60a5fa"/>
                 </template>
-                <text v-else x="300" y="88" text-anchor="middle" fill="#333" font-size="11" font-family="Manrope, sans-serif">No data</text>
+                <text v-else x="300" y="88" text-anchor="middle" fill="var(--k-gray-1)" font-size="11" font-family="Manrope, sans-serif">No data</text>
               </svg>
               <div class="x-axis">
                 <span v-for="pt in chartPoints" :key="pt.x" :title="pt.name">{{ truncName(pt.name) }}</span>
@@ -907,7 +907,7 @@ async function submitCreate(payload) {
 .y-axis span {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #333;
+  color: var(--k-gray-1);
 }
 
 .chart-area { flex: 1; }
@@ -927,7 +927,7 @@ async function submitCreate(payload) {
 .x-axis span {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #333;
+  color: var(--k-gray-1);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */

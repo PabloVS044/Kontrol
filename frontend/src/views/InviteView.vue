@@ -325,7 +325,7 @@ watch(() => route.params.token, loadInvitation)
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #7f7a72;
+  color: var(--k-text-muted);
 }
 
 .summary-value {

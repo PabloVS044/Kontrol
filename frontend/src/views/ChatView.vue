@@ -285,8 +285,8 @@ onMounted(() => {
 
         <div class="sidebar-search">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="8" stroke="#666" stroke-width="1.8" />
-            <path d="M21 21l-4.35-4.35" stroke="#666" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="11" cy="11" r="8" stroke="var(--k-gray-4)" stroke-width="1.8" />
+            <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-4)" stroke-width="1.8" stroke-linecap="round" />
           </svg>
           <input v-model="searchQuery" type="text" placeholder="Buscar mensajes..." />
         </div>
@@ -532,8 +532,8 @@ onMounted(() => {
 
           <div class="ndm-search">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="8" stroke="#666" stroke-width="1.8" />
-              <path d="M21 21l-4.35-4.35" stroke="#666" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="11" cy="11" r="8" stroke="var(--k-gray-4)" stroke-width="1.8" />
+              <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-4)" stroke-width="1.8" stroke-linecap="round" />
             </svg>
             <input v-model="userSearch" type="text" placeholder="Buscar usuario..." autofocus />
           </div>

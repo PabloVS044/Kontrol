@@ -151,7 +151,7 @@ defineEmits(['create-project'])
 .ds-label {
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: #333;
+  color: var(--k-gray-1);
   margin-bottom: 4px;
 }
 .ds-text {
