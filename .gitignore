@@ -33,3 +33,6 @@ coverage/
 # Volume tests: raw per-transaction pgbench logs (large); summaries are kept
 volume/results/*/pgbench/*.[0-9]*
 volume/results/*/explain.sql
+
+# Reportes de las suites de integración y regresión (artefactos del CI)
+backend/reports/
