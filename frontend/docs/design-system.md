@@ -3,7 +3,7 @@
 **Project:** Kontrol - Management for Micro-businesses  
 **Visual Identity:** Luxury Dark Mode (Gold & Black)  
 **Status:** Fully synchronized with `src/styles/theme.css` + `globals.css`
-**Sync Date:** 2026-08-16
+**Sync Date:** 2026-10-08 (secondary text contrast raised to WCAG AA)
 
 ---
 
@@ -36,18 +36,21 @@ All values below are defined as `--k-*` in `src/styles/theme.css` and aliased in
 | Token Name | CSS Variable | Hex Value | Usage |
 | :--- | :--- | :--- | :--- |
 | text/TextSoft | `--k-text-soft` | `#cfc9bf` | Secondary labels, less prominent text. |
-| text/TextMuted | `--k-text-muted` | `#8a8070` | Neutral gray for disabled/secondary labels. |
-| text/TextDim | `--k-text-dim` | `#6e6558` | Tertiary labels, metadata. |
-| text/TextFaint | `--k-text-faint` | `#565045` | Disabled/tenue text. |
-| text/TextPlaceholder | `--k-text-placeholder` | `#4a4030` | Input placeholders. |
+| text/TextMuted | `--k-text-muted` | `#a0998d` | Secondary labels; text of unselected options. |
+| text/TextDim | `--k-text-dim` | `#9e9485` | Tertiary labels, metadata. |
+| text/TextFaint | `--k-text-faint` | `#988f7e` | Lowest-emphasis readable text (hints, captions). |
+| text/TextPlaceholder | `--k-text-placeholder` | `#a18d6d` | Input placeholders (warmer, so it never reads as a typed value). |
+| — (implementation) | `--k-text-disabled` | `#565045` | **Only** for disabled controls. Exempt from WCAG 1.4.3; never for informative text. |
 
-**Note:** `--TextMuted` (`#8a8070`) is **neutral gray**, not warm. Do not confuse with warm grays.
+**Note:** every token in this ramp reaches **at least 4.5:1** (WCAG AA) on the lightest surface in use, `--k-color-bg-3` (#282825). Previous values (muted `#989083`, dim `#6e6558`, faint `#565045`, placeholder `#4a4030`) went down to 1.5:1 and were reported illegible in usability tests at low brightness, at distance and without glasses. Only lightness changed; hue and saturation are the Figma ones. Hierarchy between levels comes from size and weight, not from an unreadable gray.
+
+The neutral implementation ramp follows the same rule: `--k-gray-1`/`-2` `#909090`, `--k-gray-3` `#929292`, `--k-gray-4` `#939393`, `--k-gray-5`/`-6` `#8f8f8f`. Hover borders that used to borrow `--k-gray-1` now use `--k-shade-8` (`#333333`).
 
 ### Status & Semantic Colors
 | Token Name | CSS Variable | Value | Usage |
 | :--- | :--- | :--- | :--- |
 | visualStates/SuccessText | `--k-state-success-text` | `#48c774` | Text for success messages. |
-| visualStates/ErrorText | `--k-state-error-text` | `#e05252` | Text for error messages. |
+| visualStates/ErrorText | `--k-state-error-text` | `#e46868` | Text for error messages (was `#e05252`; lightened to stay ≥ 4.5:1 over the animated background). |
 | color/success | `--k-color-success` | `rgb(15, 77, 15)` | Success badge/background. |
 | color/error | `--k-color-error` | `rgb(128, 13, 13)` | Error badge/background. |
 | color/warning | `--k-color-warning` | `rgb(120, 80, 10)` | Warning badge/background. |
@@ -155,6 +158,8 @@ All shadows are designed for dark backgrounds using depth and glow effects.
 | Hover | `--k-state-hover-brightness` | 1.15 | `filter: brightness(1.15)` on buttons. |
 | Active/Pressed | `--k-state-active-scale` | 0.98 | `transform: scale(0.98)` for tactile feedback. |
 | Disabled | `--k-state-disabled-opacity` | 0.3 | `opacity: 0.3` + `cursor: not-allowed`. |
+| Selected indicator | `--k-state-selected-indicator` | `inset 0 -2px 0 var(--k-color-primary)` | `box-shadow` on the selected option of a tab/filter group. |
+| Disabled outline | `--k-state-disabled-outline` | `1px dashed var(--k-text-disabled)` | `outline` on disabled borderless controls. |
 | Focus Ring Width | `--k-focus-ring-width` | 2px | Outline width for keyboard navigation. |
 | Focus Ring Offset | `--k-focus-ring-offset` | 2px | Space between element and outline. |
 | Focus Ring | `--k-focus-ring` | `2px solid var(--k-color-primary)` | Complete focus style (used in :focus-visible). |
@@ -165,6 +170,15 @@ All shadows are designed for dark backgrounds using depth and glow effects.
 - **Active:** `transform: scale(var(--k-state-active-scale))`
 - **Disabled:** `opacity: var(--k-state-disabled-opacity)`, `cursor: not-allowed`
 - **Focus:** `outline: var(--k-focus-ring)`, `outline-offset: var(--k-focus-ring-offset)`
+
+### Option States (tabs, filters, segmented controls)
+Selected, unselected and disabled must differ by more than color: in usability tests unselected options read as disabled.
+
+| State | Text | Non-color cue |
+| :--- | :--- | :--- |
+| Unselected | `--k-text-muted` (AA) | Normal border; hover active. |
+| Selected | `--k-color-primary` | Tinted background + `--k-state-selected-indicator` (pills: doubled ring) + `aria-pressed="true"`. |
+| Disabled | `--k-text-disabled` | `--k-state-disabled-outline` (dashed), `cursor: not-allowed`, no hover, `disabled` attribute. |
 
 ### Form Element States
 - **Default:** `border: 1px solid var(--k-color-border)`, `background: var(--k-form-input-bg)`
@@ -186,10 +200,26 @@ All shadows are designed for dark backgrounds using depth and glow effects.
 ### Verified Contrast Ratios
 | Text Color | Background Color | Ratio | Level |
 | :--- | :--- | :--- | :--- |
-| `--k-color-text` (#faf8f5) | `--k-color-bg` (black) | **14.2:1** | ✅ AAA |
-| `--k-color-primary` (#caa860) | `--k-color-bg-2` (#120f07) | **6.8:1** | ✅ AA |
-| `--k-text-muted` (#8a8070) | `--k-color-bg-2` (#120f07) | **5.4:1** | ✅ AA |
-| `--k-text-dim` (#6e6558) | `--k-color-bg-2` (#120f07) | **3.8:1** | ⚠️ Fails AA (advisory: use only for tertiary labels) |
+Computed with the WCAG 2.1 relative-luminance formula and enforced by `tests/theme.test.js`. Columns: card surface `#111111`, lightest surface `--k-color-bg-3` (#282825), and the brightest pixel of the animated background behind text (`#272727`, measured in the browser).
+
+| Text Color | on #111111 | on bg-3 | on bg peak | Level |
+| :--- | :--- | :--- | :--- | :--- |
+| `--k-color-text` (#faf8f5) | **17.81:1** | 13.95:1 | 14.09:1 | ✅ AAA |
+| `--k-color-primary` (#caa860) | **8.35:1** | 6.53:1 | 6.60:1 | ✅ AA |
+| `--k-text-soft` (#cfc9bf) | **11.47:1** | 8.98:1 | 9.08:1 | ✅ AAA |
+| `--k-text-muted` (#a0998d) | **6.69:1** | 5.23:1 | 5.29:1 | ✅ AA |
+| `--k-text-dim` (#9e9485) | **6.32:1** | 4.95:1 | 5.00:1 | ✅ AA |
+| `--k-text-faint` (#988f7e) | **5.90:1** | 4.62:1 | 4.67:1 | ✅ AA |
+| `--k-text-placeholder` (#a18d6d) | **5.89:1** | 4.61:1 | 4.66:1 | ✅ AA |
+| `--k-gray-1..4` (#909090–#939393) | **5.91–6.15:1** | 4.63–4.81:1 | 4.68–4.86:1 | ✅ AA |
+| `--k-gray-5`/`-6` (#8f8f8f) | **5.84:1** | — | 4.62:1 | ✅ AA |
+| `--k-state-error-text` (#e46868) | **5.83:1** | — | 4.61:1 | ✅ AA |
+| `--k-state-success-text` (#48c774) | **8.72:1** | — | 6.90:1 | ✅ AA |
+| `--k-form-btn-text` (#0e0c08) on `--k-color-primary` | **8.64:1** | | | ✅ AA |
+| `--k-text-disabled` (#565045) | 2.36:1 | | | Exempt (disabled controls only, WCAG 1.4.3) |
+
+### Animated Background
+The app background (`Waves`, mounted in `App.vue`) reads its own token, `--k-bg-wave-line` (`#faf8f5`), not the text token, and is capped with `maxIntensity="0.11"` so its glare never sits behind text: measured peak `#272727` instead of `#ffffff`. Native controls (`input`, `select`, `textarea`, `option`) declare `color-scheme: dark` in `globals.css` so their popups open dark.
 
 ### Accessibility Requirements
 - **Target Size:** All interactive elements ≥ 40px height for mobile touch targets
@@ -218,14 +248,14 @@ color/
 
 text/
   soft: #cfc9bf
-  muted: #8a8070
-  dim: #6e6558
-  faint: #565045
-  placeholder: #4a4030
+  muted: #a0998d
+  dim: #9e9485
+  faint: #988f7e
+  placeholder: #a18d6d
 
 visualStates/
   success-text: #48c774
-  error-text: #e05252
+  error-text: #e46868
 
 forms/
   input-bg: rgba(255, 255, 255, 0.04)
