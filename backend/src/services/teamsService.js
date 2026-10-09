@@ -1,10 +1,11 @@
 import { assertPublicHttpUrl } from './ssrfGuard.js'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
 
 export async function testTeamsConnection({ webhook_url }) {
   if (!webhook_url) throw new Error('webhook_url es requerido.')
   await assertPublicHttpUrl(webhook_url)
 
-  const res = await fetch(webhook_url, {
+  const res = await fetchWithTimeout(webhook_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -56,7 +57,7 @@ export async function sendTeamsNotification({ webhook_url }, { title, text }) {
       }
     : { type: 'message', text }
 
-  const res = await fetch(webhook_url, {
+  const res = await fetchWithTimeout(webhook_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

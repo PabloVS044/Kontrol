@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
+
 const TWILIO_BASE = 'https://api.twilio.com/2010-04-01'
 
 export async function testTwilioSmsConnection({ account_sid, auth_token, from_number, to_number }) {
@@ -16,7 +18,7 @@ export async function sendSms({ account_sid, auth_token, from_number, to_number 
 
   const params = new URLSearchParams({ From: from_number, To: to_number, Body: body })
 
-  const res = await fetch(`${TWILIO_BASE}/Accounts/${account_sid}/Messages.json`, {
+  const res = await fetchWithTimeout(`${TWILIO_BASE}/Accounts/${account_sid}/Messages.json`, {
     method: 'POST',
     headers: {
       Authorization: `Basic ${auth}`,
