@@ -201,7 +201,7 @@
   font-family: var(--k-font-sans); transition: var(--k-transition-ui);
 }
 .sell-btn:hover:not(:disabled) { background: rgba(var(--k-color-primary-rgb), 0.08); color: var(--k-color-text); }
-.sell-btn:disabled { color: var(--k-text-faint); cursor: not-allowed; }
+.sell-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; }
 
 /* Quantity stepper */
 .qty-stepper {
@@ -214,7 +214,7 @@
   transition: var(--k-transition-ui);
 }
 .qty-btn:hover:not(:disabled) { background: var(--k-surface-primary-tint); color: var(--k-color-text); }
-.qty-btn:disabled { color: var(--k-text-faint); cursor: not-allowed; }
+.qty-btn:disabled { color: var(--k-text-disabled); cursor: not-allowed; }
 .qty-input {
   flex: 1; min-width: 0; background: transparent; border: none;
   text-align: center; color: var(--k-color-text); font-family: var(--k-font-sans);

@@ -459,7 +459,7 @@ function money(amount) {
   transition: var(--k-transition-ui);
 }
 .sc-step:hover:not(:disabled) { background: var(--k-surface-primary-tint); }
-.sc-step:disabled { color: var(--k-text-faint); cursor: not-allowed; }
+.sc-step:disabled { color: var(--k-text-disabled); cursor: not-allowed; }
 
 .sc-qty-input {
   flex: 1; min-width: 0;

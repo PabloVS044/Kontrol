@@ -49,6 +49,11 @@
   --k-text-dim: #6e6558;
   --k-text-faint: #565045;
   --k-text-placeholder: #4a4030;
+  /* Solo para controles deshabilitados. WCAG 1.4.3 exime al texto de un
+     componente inactivo, así que puede quedar por debajo de 4.5:1 a
+     propósito: es lo que lo separa de una opción no seleccionada, que sí
+     está activa y tiene que leerse. No usar para texto informativo. */
+  --k-text-disabled: #565045;
 
   /* ── visualStates/ ──────────────────────────────────────── */
   --k-state-error-text: #e05252;
