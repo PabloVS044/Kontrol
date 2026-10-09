@@ -20,6 +20,10 @@ const props = defineProps({
   color3:                 { type: String,  default: '#ffffff' },
   enableMouseInteraction: { type: Boolean, default: true },
   mouseInfluence:         { type: Number,  default: 2.0 },
+  // Tope de intensidad visible (0–1, sobre negro). Con 1 no se aplica. Sirve
+  // para que los destellos de las líneas no pasen de cierta luminosidad
+  // detrás del texto, sin apagar el resto del dibujo.
+  maxIntensity:           { type: Number,  default: 1.0 },
 })
 
 const containerRef = ref(null)
@@ -79,6 +83,7 @@ uniform vec3 uColor3;
 uniform vec2 uMouse;
 uniform float uMouseInfluence;
 uniform bool uEnableMouse;
+uniform float uMaxIntensity;
 
 #define HALF_PI 1.5707963
 
@@ -142,6 +147,12 @@ void main() {
   float bChannel = (pattern + lines * ridge) * (cos(blended.x + cycleT * 0.534) * 0.5 + 1.0);
   vec3 col = (rChannel * uColor1 + gChannel * uColor2 + bChannel * uColor3) * uBrightness;
   float alpha = clamp(length(col), 0.0, 1.0);
+  if (uMaxIntensity < 1.0) {
+    // Lo que se ve sobre negro es col * alpha (premultipliedAlpha: false).
+    // Se escala solo el color para recortar los picos sin tocar la forma.
+    float peak = max(col.r, max(col.g, col.b)) * alpha;
+    col *= min(1.0, uMaxIntensity / max(peak, 1e-5));
+  }
   gl_FragColor = vec4(col, alpha);
 }
 `
@@ -206,6 +217,7 @@ onMounted(() => {
       uMouse:           { value: new Float32Array([0.5, 0.5]) },
       uMouseInfluence:  { value: props.mouseInfluence },
       uEnableMouse:     { value: props.enableMouseInteraction },
+      uMaxIntensity:    { value: props.maxIntensity },
     },
   })
 

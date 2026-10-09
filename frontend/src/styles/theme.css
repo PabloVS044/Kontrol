@@ -254,6 +254,14 @@
   --k-z-modal: 1001;
   --k-z-tooltip: 2000;
 
+  /* ── fondo animado ──────────────────────────────────────── */
+  /* Color de las líneas de `Waves` (App.vue). Antes leía `--Text`, el mismo
+     token que el texto: cualquier ajuste al texto movía el fondo y, con un
+     tema claro, lo habría dejado invisible. Mismo blanco cálido de hoy para
+     conservar la identidad; App.vue le pone tope a sus picos para que no
+     compitan con las letras. Hex de 6 dígitos: es lo que parsea Waves.vue. */
+  --k-bg-wave-line: #faf8f5;
+
   /* ── superficies derivadas ──────────────────────────────── */
   /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para
      que el mismo tinte no se reescriba con literales distintos en cada hoja. */
