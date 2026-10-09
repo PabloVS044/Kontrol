@@ -55,6 +55,12 @@ fi
 : "${UPLOADTHING_TOKEN:?Falta UPLOADTHING_TOKEN en .env.deploy}"
 : "${PUBLIC_HOST:?No se pudo derivar PUBLIC_HOST desde FRONTEND_URL}"
 
+# Agente de IA — opcional. Sin AGENT_API_KEY el backend arranca igual y
+# /api/agent/status reporta configured:false.
+if [ -z "${AGENT_API_KEY:-}" ]; then
+  echo "Aviso: AGENT_API_KEY no está en .env.deploy; el agente de IA quedará deshabilitado."
+fi
+
 # Ambiente de pruebas (SCRUM-25) — opcional. Si no se define TEST_DATABASE_URL
 # en .env.deploy, este deploy se comporta exactamente como antes: solo prod.
 COMPOSE_FILES="-f docker-compose.prod.yml"
@@ -80,6 +86,13 @@ ENV_B64=$(printf '%s\n' \
   "FRONTEND_URL=$FRONTEND_URL" \
   "PUBLIC_HOST=$PUBLIC_HOST" \
   "UPLOADTHING_TOKEN=$UPLOADTHING_TOKEN" \
+  "AGENT_API_URL=${AGENT_API_URL-}" \
+  "AGENT_API_KEY=${AGENT_API_KEY-}" \
+  "AGENT_MODEL=${AGENT_MODEL-}" \
+  "AGENT_TEMPERATURE=${AGENT_TEMPERATURE-}" \
+  "AGENT_MAX_TOKENS=${AGENT_MAX_TOKENS-}" \
+  "AGENT_MAX_STEPS=${AGENT_MAX_STEPS-}" \
+  "AGENT_DISABLE_THINKING=${AGENT_DISABLE_THINKING-}" \
   "VITE_API_URL=${VITE_API_URL-}" \
   "VITE_SOCKET_URL=${VITE_SOCKET_URL-}" \
   "VITE_WEBRTC_ICE_SERVERS=${VITE_WEBRTC_ICE_SERVERS-}" \

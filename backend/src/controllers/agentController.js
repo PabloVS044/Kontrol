@@ -77,7 +77,7 @@ export const chat = async (req, res) => {
   if (!isAgentConfigured()) {
     return res.status(503).json({
       success: false,
-      message: 'AI agent is not configured. Set AGENT_API_KEY in backend/.env. AGENT_API_URL is optional and defaults to the ClawStitch Qwen endpoint.',
+      message: 'AI agent is not configured. Set AGENT_API_KEY in the backend environment (backend/.env locally, .env.deploy for scripts/deploy.sh).',
     })
   }
 
@@ -125,10 +125,17 @@ export const chat = async (req, res) => {
     })
   }
 
-  // ── 3) Abort plumbing: link the client connection to an AbortController
+  // ── 3) Abort plumbing: link the client connection to an AbortController.
+  // Listen on `res`, not `req`: since Node 16 `req` emits 'close' as soon as
+  // the body is consumed, which either aborted every turn instantly (no await
+  // before this line) or fired before the listener existed, so Stop never
+  // cancelled anything. `res` closes on disconnect or after the reply is
+  // sent; `writableEnded` tells those apart.
   const ac = new AbortController()
-  const onClose = () => ac.abort()
-  req.on('close', onClose)
+  const onClose = () => {
+    if (!res.writableEnded) ac.abort()
+  }
+  res.on('close', onClose)
 
   try {
     const { answer, queries } = await runAgentTurn({
@@ -186,13 +193,15 @@ export const chat = async (req, res) => {
       // Client cut the request. Don't try to write to res — it's gone.
       return
     }
+    // Upstream errors embed the inference server's response body; keep that
+    // in the logs, not in the client payload.
     console.error('agentController.chat:', err)
     return res.status(500).json({
       success: false,
-      message: err.message || 'AI agent failed to respond.',
+      message: 'AI agent failed to respond. Please try again.',
     })
   } finally {
-    req.off('close', onClose)
+    res.off('close', onClose)
   }
 }
 
