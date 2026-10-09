@@ -9,6 +9,8 @@ import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
 import { securityMiddleware } from './middleware/security.middleware.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import pool from './db/pool.js'
+import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
 
 const app        = express()
 const httpServer = createServer(app)
@@ -75,6 +77,9 @@ if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => {
     console.log(`Backend running at http://localhost:${PORT}`)
   })
+
+  // DT-15 — apagado por defecto; se enciende con DB_POOL_STATS_INTERVAL_MS.
+  startPoolStatsLogger(pool, resolveStatsIntervalMs())
 }
 
 export default app

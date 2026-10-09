@@ -15,6 +15,9 @@ services:
       - PORT=3000
       - DATABASE_URL=${TEST_DATABASE_URL}
       - DATABASE_SSL=${TEST_DATABASE_SSL:-true}
+      # DT-15 — CA of the test database (Supabase signs with its own). Inline PEM
+      # with "\n" escapes, since deploy.sh writes a single-line .env.
+      - DATABASE_SSL_CA=${TEST_DATABASE_SSL_CA:-}
       - MONGODB_URI=${MONGODB_URI}
       - JWT_SECRET=${TEST_JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}

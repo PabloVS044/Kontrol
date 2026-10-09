@@ -1,10 +1,11 @@
 import { assertPublicHttpUrl } from './ssrfGuard.js'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
 
 export async function testSlackConnection({ webhook_url, channel }) {
   if (!webhook_url) throw new Error('webhook_url es requerido.')
   await assertPublicHttpUrl(webhook_url)
 
-  const res = await fetch(webhook_url, {
+  const res = await fetchWithTimeout(webhook_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -21,7 +22,7 @@ export async function testSlackConnection({ webhook_url, channel }) {
 export async function sendSlackNotification({ webhook_url }, { text, blocks } = {}) {
   if (!webhook_url) throw new Error('webhook_url es requerido.')
 
-  const res = await fetch(webhook_url, {
+  const res = await fetchWithTimeout(webhook_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, blocks }),
