@@ -1,4 +1,5 @@
 import pool from './pool.js'
+import { AGENT_DB_ROLE } from '../services/agentSql.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
@@ -806,4 +807,30 @@ export const ensureDatabaseSchema = async () => {
     CREATE INDEX IF NOT EXISTS evidencia_id_tarea_idx
       ON public.evidencia (id_tarea)
   `)
+
+  await ensureAgentRole()
+}
+
+/**
+ * NOLOGIN role the AI agent's SQL runs as (see agentSql.js). It owns no
+ * privileges: it reads only the per-request temp views it is granted.
+ * Non-fatal — without it the agent fails closed (GRANT on the views errors),
+ * and the rest of the app keeps working.
+ */
+async function ensureAgentRole() {
+  try {
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${AGENT_DB_ROLE}') THEN
+          CREATE ROLE ${AGENT_DB_ROLE} NOLOGIN;
+        END IF;
+      END $$
+    `)
+    // Superusers can SET ROLE to anything; a CREATEROLE user (e.g. Supabase's
+    // postgres) needs membership. Ignore failure on servers that refuse it.
+    await pool.query(`GRANT ${AGENT_DB_ROLE} TO CURRENT_USER`).catch(() => {})
+  } catch (err) {
+    console.warn(`Could not ensure DB role ${AGENT_DB_ROLE}; the AI agent will not run queries:`, err.message)
+  }
 }

@@ -2,6 +2,7 @@ import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import validate from '../middleware/validate.js'
+import { agentChatLimiter } from '../middleware/rateLimit.js'
 import { agentChatSchema, agentUpdateMessageSchema } from '../schemas/agentSchemas.js'
 import {
   chat,
@@ -29,6 +30,6 @@ router.patch('/messages/:id', requireCompany, validate(agentUpdateMessageSchema)
 router.delete('/messages/:id', requireCompany, deleteMessage)
 
 // Main chat endpoint
-router.post('/chat', requireCompany, validate(agentChatSchema), chat)
+router.post('/chat', agentChatLimiter, requireCompany, validate(agentChatSchema), chat)
 
 export default router

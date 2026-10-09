@@ -6,9 +6,14 @@ import pool from '../db/pool.js'
  * The agent is restricted to read-only access. Defense in depth:
  *   1. Static parser-style validation (this file).
  *   2. Postgres "READ ONLY" transaction + statement_timeout at execution time.
- *   3. The connecting role itself should ideally be granted SELECT only on
- *      the agent-exposed tables in production.
+ *   3. Agent queries run as AGENT_DB_ROLE, a NOLOGIN role with no table
+ *      privileges. It can read only the scoped temp views (which execute
+ *      with their owner's privileges), so any reference that escapes the
+ *      views — e.g. `public . usuario` or another schema — is denied by
+ *      Postgres instead of leaking other tenants' rows.
  */
+
+export const AGENT_DB_ROLE = 'kontrol_agent'
 
 const FORBIDDEN_KEYWORDS = [
   'INSERT', 'UPDATE', 'DELETE', 'DROP', 'TRUNCATE', 'ALTER', 'CREATE',
@@ -37,10 +42,11 @@ function toIntArrayLiteral(ids) {
   return `ARRAY[${normalized.join(', ')}]::int[]`
 }
 
+// Postgres allows whitespace around the dot (`public . usuario`), so the
+// pattern must too; otherwise the name skips the temp view. AGENT_DB_ROLE is
+// what actually enforces the boundary — this only keeps such queries working.
 function rewriteAgentSql(sql) {
-  return String(sql || '')
-    .replace(/"public"\./gi, '')
-    .replace(/\bpublic\./gi, '')
+  return String(sql || '').replace(/(?:"public"|\bpublic)\s*\.\s*/gi, '')
 }
 
 function alignSqlParams(sql, params = []) {
@@ -62,6 +68,7 @@ function alignSqlParams(sql, params = []) {
 
 async function createTempView(client, name, selectSql) {
   await client.query(`CREATE OR REPLACE TEMP VIEW ${name} AS ${selectSql}`)
+  await client.query(`GRANT SELECT ON ${name} TO ${AGENT_DB_ROLE}`)
 }
 
 async function setupAgentScope(client, scope) {
@@ -146,7 +153,8 @@ async function setupAgentScope(client, scope) {
   await createTempView(
     client,
     'usuario',
-    `SELECT u.*
+    // Explicit columns: never expose password_hash, google_id or token_version.
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.id_rol, u.activo
      FROM public.usuario u
      JOIN public.empresa_usuario eu
        ON eu.id_usuario = u.id_usuario
@@ -331,6 +339,10 @@ export function validateReadOnlySql(rawSql) {
     return { ok: false, error: 'Access to system catalogs is not allowed.' }
   }
 
+  if (/\b(set_config|current_setting)\b/i.test(masked)) {
+    return { ok: false, error: 'Access to server settings is not allowed.' }
+  }
+
   const placeholders = masked.match(/\$\d+/g) || []
   for (const p of placeholders) {
     if (p !== '$1' && p !== '$2') {
@@ -372,6 +384,7 @@ export async function executeReadOnly(sql, params, scope = null) {
     await client.query('BEGIN TRANSACTION READ ONLY')
     if (scope) {
       await client.query('SET LOCAL search_path = pg_temp')
+      await client.query(`SET LOCAL ROLE ${AGENT_DB_ROLE}`)
     }
     await client.query(`SET LOCAL statement_timeout = ${STATEMENT_TIMEOUT_MS}`)
     const result = await client.query(finalSql, finalParams)
