@@ -486,13 +486,14 @@ const closeMenu = () => {
   transform: scaleX(1);
 }
 
+/* --Secondary (#886911) daba 3.82:1 sobre la barra: no llega a AA. Se usa el
+   dorado de marca; la ruta activa sigue marcada por el subrayado. */
 .appnav-link--agent {
-  color: var(--Secondary);
+  color: var(--Primary);
 }
 
-.appnav-link--agent:hover,
-.appnav-link--agent.router-link-active {
-  color: var(--Primary);
+.appnav-link--agent:hover {
+  color: var(--Text);
 }
 
 /* ── End ── */
