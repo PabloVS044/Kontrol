@@ -29,6 +29,7 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Desarrollo sin Docker (opcional)](#desarrollo-sin-docker-opcional)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Cobertura de código](#cobertura-de-código)
+- [Pruebas de integración y regresión](#pruebas-de-integración-y-regresión)
 - [Solución de problemas](#solución-de-problemas)
 - [Contribuir](#contribuir)
 
@@ -344,6 +345,32 @@ El 14.52 % de inventario del frontend se concentra en los tres componentes de ve
 Queda fuera el arranque del proceso, la configuración de SDK externos, las conexiones y scripts de base de datos, los esquemas declarativos de Mongoose, la tabla de rutas, los diccionarios de i18n, los recursos estáticos y los fondos WebGL. `src/socket/index.js` sí entra: son 450 líneas de lógica de chat, no infraestructura. Las extensiones explícitas del `include` del frontend dejan fuera los `.css`, `.png` y `.json` que antes figuraban como archivos medidos.
 
 Consecuencia a tener presente: un glob de umbral que no case con ningún archivo del reporte **pasa en vacío, sin avisar**. No es hipotético — es lo que ocurrió con los tres umbrales de reportes del frontend durante un mes. Por eso cada umbral por módulo lleva su medición real en un comentario al lado en el config: un glob sin número es un glob que nadie ha comprobado.
+
+---
+
+## Pruebas de integración y regresión
+
+Además de las pruebas unitarias (`npm test`, con el pool de Postgres simulado), el backend tiene dos suites que corren contra un **PostgreSQL real**: la app de `src/index.js` recibe peticiones HTTP de Supertest y sus consultas llegan a una base desechable con el esquema de `backend/kontrol.sql` más las migraciones de `ensureDatabaseSchema()`.
+
+```bash
+npm run db:test:up -w backend          # Postgres 16 en localhost:5433 (docker-compose.integration.yml)
+npm run test:integration -w backend    # tests/integration/
+npm run test:regression -w backend     # tests/regression/
+npm run db:test:down -w backend
+```
+
+| Suite | Archivo | Qué verifica |
+|---|---|---|
+| I1 | `tests/integration/auth.int.test.js` | Registro → login → `/me` a través de Postgres, bcrypt y JWT |
+| I2 | `tests/integration/posSale.int.test.js` | Venta POS atómica: `venta`, `movimiento_inventario` y stock coherentes; ROLLBACK si falla |
+| I3 | `tests/integration/productBarcode.int.test.js` | Unicidad del código de barras por proyecto impuesta por el índice único de la base |
+| RG1 | `tests/regression/saleTotals.regression.test.js` | El IVA se calcula sobre la base con descuento (Q100 − 10 % + IVA = Q100.80) |
+| RG2 | `tests/regression/salePriceAuthority.regression.test.js` | El precio lo dicta la base; un precio del cliente distinto da 409 `PRICE_MISMATCH` |
+| RG3 | `tests/regression/tenantIsolation.regression.test.js` | Un usuario no ve ni vende datos de otra empresa |
+
+`globalSetup` **borra el esquema `public`** antes de cada ejecución, así que `tests/db/testDatabase.js` se niega a correr si `TEST_DATABASE_URL` no apunta a un host local con una base cuyo nombre contenga `test`. El `.env` de desarrollo (Supabase) nunca se usa.
+
+En CI las corre `.github/workflows/integration-regression.yml` en cada PR a `main` o `develop` (y a mano con *Run workflow*): un job por suite, con Postgres como *service container*, resumen por prueba en la página del run y los reportes JUnit/JSON como artefactos `reporte-integration` y `reporte-regression`.
 
 ---
 
