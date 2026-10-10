@@ -298,16 +298,14 @@ async function loadOverview() {
     if (!pr.ok) throw new Error(prPayload.message || `HTTP ${pr.status}`)
     projects.value = prPayload.data || []
 
-    const results = await Promise.allSettled(
-      projects.value.map(p =>
-        fetch(`/api/budgets/project/${p.id_proyecto}/summary`, { headers })
-          .then(r => r.json().then(j => [p.id_proyecto, j]))
-      )
-    )
+    // TODO DT-07: migrar a services/http.js
+    const ids = projects.value.map(p => p.id_proyecto)
     const map = {}
-    for (const r of results) {
-      if (r.status === 'fulfilled' && r.value[1]?.success) {
-        map[r.value[0]] = r.value[1].data
+    if (ids.length) {
+      const sr = await fetch(`/api/budgets/summary?projectIds=${ids.join(',')}`, { headers }).catch(() => null)
+      const sp = sr ? await sr.json().catch(() => null) : null
+      if (sr?.ok && sp?.success) {
+        for (const row of sp.data) map[row.id_proyecto] = row
       }
     }
     budgetByProj.value = map
