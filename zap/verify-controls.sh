@@ -5,13 +5,14 @@
 #   zap/verify-controls.sh ratelimit   # SCRUM-44 / DT-13
 #   zap/verify-controls.sh ssrf        # SCRUM-43 / DT-12
 #   zap/verify-controls.sh ssrf-redirect  # needs an external redirector (httpbin.org)
+#   zap/verify-controls.sh timeout        # DT-15, needs a slow public endpoint (httpbin.org)
 #
 # headers and ssrf need ZAP_USER / ZAP_PASSWORD. ssrf creates a company owned
 # by that account (the DT-12 vector) and leaves it for `reset:test` to remove.
 set -euo pipefail
 source "$(dirname "$0")/lib/common.sh"
 
-CHECK="${1:?usage: verify-controls.sh headers|ratelimit|ssrf|ssrf-redirect}"
+CHECK="${1:?usage: verify-controls.sh headers|ratelimit|ssrf|ssrf-redirect|timeout}"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 log="$OUT_DIR/verify-$CHECK-$stamp.txt"
 exec > >(tee "$log") 2>&1
@@ -73,7 +74,7 @@ case "$CHECK" in
     echo "(429 on every spoofed request = the limiter ignores client-sent X-Forwarded-For)"
     ;;
 
-  ssrf|ssrf-redirect)
+  ssrf|ssrf-redirect|timeout)
     login
     api POST /companies '{"nombre":"ZAP SSRF probe","industria":"security test"}'
     if [ "$LAST_STATUS" = 201 ]; then
@@ -86,6 +87,29 @@ case "$CHECK" in
     fi
     echo "probe company id_empresa=$COMPANY_ID (owner: $ZAP_USER)"
     echo
+
+    if [ "$CHECK" = timeout ]; then
+      # DT-15: outgoing integration calls abort after INTEGRATION_HTTP_TIMEOUT_MS
+      # (10 s by default). httpbin caps its delay at 10 s and answers at ~10.5 s,
+      # so with the wrapper the tester reports a timeout at ~10 s; without it,
+      # it waits for the answer and reports the upstream status.
+      url="${TIMEOUT_PROBE_URL:-https://httpbin.org/delay/10}"
+      body="$(jq -nc --arg u "$url" '{credentials:{url:$u},config:{}}')"
+      api PUT /integrations/webhook "$body"
+      echo "save: HTTP $LAST_STATUS"
+      for i in 1 2 3; do
+        t0="$(date +%s.%N)"
+        api POST /integrations/webhook/test
+        t1="$(date +%s.%N)"
+        printf 'attempt %d: HTTP %s in %.2f s -> %s\n' "$i" "$LAST_STATUS" \
+          "$(echo "$t1 - $t0" | bc)" "$(json '.message // empty')"
+      done
+      api DELETE /integrations/webhook || true
+      echo
+      echo "PASS = every attempt ends near 10 s with the timeout message; FAIL = the upstream answer came back."
+      echo "log: $log"
+      exit 0
+    fi
 
     if [ "$CHECK" = ssrf ]; then
       # Every internal target points at the test backend's own harmless
