@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { invalidateCompanyBudgetCache } from '../utils/budgetSummaryCache.js'
 import {
   DEFAULT_PROJECT_PERMISSION_NAMES,
   ensureProjectAccess,
@@ -253,6 +254,7 @@ export const updateProject = async (req, res) => {
     `UPDATE public.proyecto SET ${setClauses.join(', ')} WHERE id_proyecto = $${values.length} RETURNING ${PROJECT_SELECT}`,
     values
   )
+  invalidateCompanyBudgetCache(id_empresa)
 
   return res.json({ success: true, data: result.rows[0] })
 }
@@ -267,6 +269,8 @@ export const deleteProject = async (req, res) => {
   if (!result.rows.length) {
     return res.status(404).json({ success: false, message: 'Project not found.' })
   }
+
+  invalidateCompanyBudgetCache(id_empresa)
 
   return res.json({ success: true, message: 'Project deleted successfully.' })
 }

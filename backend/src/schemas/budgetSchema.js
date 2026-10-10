@@ -56,6 +56,20 @@ export const projectIdParamSchema = z.union([
   })),
 ])
 
+export const MAX_SUMMARY_PROJECT_IDS = 100
+
+export const projectIdsQuerySchema = z.object({
+  projectIds: z
+    .string({ message: 'projectIds is required.' })
+    .regex(/^\d+(,\d+)*$/, 'projectIds must be a comma-separated list of project ids.')
+    .transform((value) => [...new Set(value.split(',').map(Number))])
+    .refine((ids) => ids.every((id) => id > 0), 'The project id must be valid.')
+    .refine(
+      (ids) => ids.length <= MAX_SUMMARY_PROJECT_IDS,
+      `At most ${MAX_SUMMARY_PROJECT_IDS} project ids are allowed.`
+    ),
+})
+
 export const createActivitySchema = z.union([
   z.object({
     nombre: z.string().min(1, 'Name is required.').max(200),

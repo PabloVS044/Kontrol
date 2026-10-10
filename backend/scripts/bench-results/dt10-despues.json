@@ -1,0 +1,237 @@
+{
+  "ticket": "SCRUM-68 (DT-10)",
+  "etiqueta": "despues",
+  "corridas": {
+    "10_proyectos": {
+      "fecha": "2026-10-09T19:15:26.753Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 11,
+          "consultas_bd": 53,
+          "tiempo_ms": {
+            "media": 13.49,
+            "p50": 11.19,
+            "p95": 23.34,
+            "min": 9.28,
+            "max": 26.29
+          },
+          "pico_cola_pool": 8
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 11,
+          "consultas_bd": 53,
+          "tiempo_ms": {
+            "media": 7.63,
+            "p50": 7.03,
+            "p95": 9.83,
+            "min": 5.85,
+            "max": 11.49
+          },
+          "pico_cola_pool": 20
+        },
+        {
+          "escenario": "agg · caché fría",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 6,
+          "tiempo_ms": {
+            "media": 7.08,
+            "p50": 7.07,
+            "p95": 9.96,
+            "min": 3.57,
+            "max": 10.12
+          },
+          "pico_cola_pool": 2
+        },
+        {
+          "escenario": "agg · caché caliente",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 5,
+          "tiempo_ms": {
+            "media": 2.64,
+            "p50": 2.46,
+            "p95": 3.65,
+            "min": 2,
+            "max": 4.53
+          },
+          "pico_cola_pool": 2
+        }
+      ],
+      "paridad": {
+        "proyectos_comparados": 10,
+        "campos": [
+          "presupuesto_total",
+          "total_gastado",
+          "alerta_nivel",
+          "porcentaje_uso"
+        ],
+        "diferencias": []
+      }
+    },
+    "50_proyectos": {
+      "fecha": "2026-10-09T19:15:29.232Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 51,
+          "consultas_bd": 253,
+          "tiempo_ms": {
+            "media": 42.95,
+            "p50": 41.72,
+            "p95": 54.82,
+            "min": 26.01,
+            "max": 68.22
+          },
+          "pico_cola_pool": 8
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 51,
+          "consultas_bd": 253,
+          "tiempo_ms": {
+            "media": 30.4,
+            "p50": 26.29,
+            "p95": 43.11,
+            "min": 20.27,
+            "max": 48.54
+          },
+          "pico_cola_pool": 140
+        },
+        {
+          "escenario": "agg · caché fría",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 6,
+          "tiempo_ms": {
+            "media": 4.63,
+            "p50": 4.26,
+            "p95": 6.93,
+            "min": 3.67,
+            "max": 7.31
+          },
+          "pico_cola_pool": 2
+        },
+        {
+          "escenario": "agg · caché caliente",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 5,
+          "tiempo_ms": {
+            "media": 5.02,
+            "p50": 5.38,
+            "p95": 8.97,
+            "min": 1.95,
+            "max": 9.81
+          },
+          "pico_cola_pool": 2
+        }
+      ],
+      "paridad": {
+        "proyectos_comparados": 50,
+        "campos": [
+          "presupuesto_total",
+          "total_gastado",
+          "alerta_nivel",
+          "porcentaje_uso"
+        ],
+        "diferencias": []
+      }
+    },
+    "100_proyectos": {
+      "fecha": "2026-10-09T19:15:33.350Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 101,
+          "consultas_bd": 503,
+          "tiempo_ms": {
+            "media": 76.24,
+            "p50": 66.76,
+            "p95": 130.84,
+            "min": 53.57,
+            "max": 155.65
+          },
+          "pico_cola_pool": 8
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 101,
+          "consultas_bd": 503,
+          "tiempo_ms": {
+            "media": 59.03,
+            "p50": 53.21,
+            "p95": 97.36,
+            "min": 38.33,
+            "max": 97.48
+          },
+          "pico_cola_pool": 289
+        },
+        {
+          "escenario": "agg · caché fría",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 6,
+          "tiempo_ms": {
+            "media": 6.92,
+            "p50": 6.28,
+            "p95": 9.97,
+            "min": 4.77,
+            "max": 11.51
+          },
+          "pico_cola_pool": 2
+        },
+        {
+          "escenario": "agg · caché caliente",
+          "iteraciones": 20,
+          "peticiones_http": 2,
+          "consultas_bd": 5,
+          "tiempo_ms": {
+            "media": 4.59,
+            "p50": 4.53,
+            "p95": 5.85,
+            "min": 2.94,
+            "max": 6.05
+          },
+          "pico_cola_pool": 2
+        }
+      ],
+      "paridad": {
+        "proyectos_comparados": 100,
+        "campos": [
+          "presupuesto_total",
+          "total_gastado",
+          "alerta_nivel",
+          "porcentaje_uso"
+        ],
+        "diferencias": []
+      }
+    }
+  }
+}
