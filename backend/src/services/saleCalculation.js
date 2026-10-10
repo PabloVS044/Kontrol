@@ -104,7 +104,7 @@ export function calcSale(lines, { discountPercent = 0, taxRate = 0 } = {}) {
   const taxableBase = round2(Math.max(subtotal - discount, 0))
 
   const rate = Number.isFinite(Number(taxRate)) && Number(taxRate) > 0 ? Number(taxRate) : 0
-  const tax = round2(subtotal * rate)
+  const tax = round2(taxableBase * rate)
   const total = round2(Math.max(taxableBase + tax, 0))
 
   return { subtotal, discountPercent: pct, discount, taxableBase, taxRate: rate, tax, total }
