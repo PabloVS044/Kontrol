@@ -1,0 +1,123 @@
+{
+  "ticket": "SCRUM-68 (DT-10)",
+  "etiqueta": "antes",
+  "corridas": {
+    "10_proyectos": {
+      "fecha": "2026-10-09T18:46:01.177Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 11,
+          "consultas_bd": 53,
+          "tiempo_ms": {
+            "media": 12.55,
+            "p50": 11.49,
+            "p95": 18.09,
+            "min": 8.35,
+            "max": 22.94
+          },
+          "pico_cola_pool": 8
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 11,
+          "consultas_bd": 53,
+          "tiempo_ms": {
+            "media": 10.14,
+            "p50": 7.84,
+            "p95": 17.06,
+            "min": 5.91,
+            "max": 17.23
+          },
+          "pico_cola_pool": 20
+        }
+      ]
+    },
+    "50_proyectos": {
+      "fecha": "2026-10-09T18:46:03.032Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 51,
+          "consultas_bd": 253,
+          "tiempo_ms": {
+            "media": 36.89,
+            "p50": 36.22,
+            "p95": 46.37,
+            "min": 25.19,
+            "max": 58.84
+          },
+          "pico_cola_pool": 7
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 51,
+          "consultas_bd": 253,
+          "tiempo_ms": {
+            "media": 27.16,
+            "p50": 27.45,
+            "p95": 37.65,
+            "min": 16.99,
+            "max": 42.58
+          },
+          "pico_cola_pool": 139
+        }
+      ]
+    },
+    "100_proyectos": {
+      "fecha": "2026-10-09T18:46:06.006Z",
+      "entorno": {
+        "node": "v24.13.1",
+        "postgres": "16.13",
+        "pool_max": 10
+      },
+      "calentamiento": 3,
+      "resultados": [
+        {
+          "escenario": "n1 · concurrencia 6 (navegador)",
+          "iteraciones": 20,
+          "peticiones_http": 101,
+          "consultas_bd": 503,
+          "tiempo_ms": {
+            "media": 60.66,
+            "p50": 56.73,
+            "p95": 77.26,
+            "min": 48.13,
+            "max": 89.49
+          },
+          "pico_cola_pool": 8
+        },
+        {
+          "escenario": "n1 · sin límite de concurrencia",
+          "iteraciones": 20,
+          "peticiones_http": 101,
+          "consultas_bd": 503,
+          "tiempo_ms": {
+            "media": 51.94,
+            "p50": 49.69,
+            "p95": 69.95,
+            "min": 32.52,
+            "max": 73.93
+          },
+          "pico_cola_pool": 289
+        }
+      ]
+    }
+  }
+}
