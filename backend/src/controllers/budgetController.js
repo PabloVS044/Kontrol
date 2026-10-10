@@ -5,6 +5,8 @@ import {
   computeAlert,
   sumExpenses,
 } from '../utils/budgetCalculations.js'
+import { getBudgetOverview } from '../services/budgetOverviewService.js'
+import { invalidateCompanyBudgetCache } from '../utils/budgetSummaryCache.js'
 
 const ACTIVITY_SELECT = `
   pa.id_actividad, pa.nombre, pa.monto_planificado, pa.monto_real, pa.id_proyecto
@@ -223,6 +225,7 @@ export const createActivity = async (req, res) => {
      RETURNING id_actividad, nombre, monto_planificado, monto_real, id_proyecto`,
     [nombre, monto_planificado, monto_real ?? null, projectId]
   )
+  invalidateCompanyBudgetCache(id_empresa)
 
   return res.status(201).json({ success: true, data: result.rows[0] })
 }
@@ -261,6 +264,7 @@ export const updateActivity = async (req, res) => {
      RETURNING id_actividad, nombre, monto_planificado, monto_real, id_proyecto`,
     values
   )
+  invalidateCompanyBudgetCache(id_empresa)
 
   return res.json({ success: true, data: result.rows[0] })
 }
@@ -277,6 +281,7 @@ export const deleteActivity = async (req, res) => {
     'DELETE FROM public.presupuesto_actividad WHERE id_actividad = $1',
     [req.params.id]
   )
+  invalidateCompanyBudgetCache(id_empresa)
 
   return res.json({ success: true, message: 'Activity deleted successfully.' })
 }
@@ -305,6 +310,20 @@ export const getProjectBudgetSummary = async (req, res) => {
   }
 
   return res.json({ success: true, data: summary })
+}
+
+// GET /api/budgets/summary?projectIds=3,7,12
+export const getBudgetsOverview = async (req, res) => {
+  const { id_empresa, rol_empresa } = req.empresa
+
+  const data = await getBudgetOverview(pool, {
+    id_empresa,
+    id_usuario: req.user.id_usuario,
+    rol_empresa,
+    projectIds: req.query.projectIds,
+  })
+
+  return res.json({ success: true, data })
 }
 
 // GET /api/budgets/project/:projectId/products-financial
@@ -466,6 +485,7 @@ export const registerExpense = async (req, res) => {
     )
 
     await client.query('COMMIT')
+    invalidateCompanyBudgetCache(id_empresa)
   } catch (error) {
     try {
       await client.query('ROLLBACK')
@@ -537,6 +557,7 @@ export const addProjectFunding = async (req, res) => {
      VALUES ($1, $2, $3, $4)`,
     [projectId, monto, motivo ?? null, id_usuario]
   )
+  invalidateCompanyBudgetCache(id_empresa)
 
   req.params = { projectId }
   return getProjectBudgetSummary(req, res)
