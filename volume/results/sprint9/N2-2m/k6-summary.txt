@@ -1,0 +1,99 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{scenario:v1_projects_list}
+    ✓ 'p(95)<500' p(95)=75.5ms
+
+    http_req_duration{scenario:v2_project_metrics}
+    ✓ 'p(95)<500' p(95)=219.18ms
+
+    http_req_duration{scenario:v3_reports_list}
+    ✓ 'p(95)<500' p(95)=267.34ms
+
+    http_req_duration{scenario:v4_reports_summary}
+    ✓ 'p(95)<500' p(95)=94.07ms
+
+    http_req_duration{scenario:v5_pos_products}
+    ✓ 'p(95)<800' p(95)=788.94ms
+
+    http_req_failed{scenario:v1_projects_list}
+    ✓ 'rate<0.01' rate=0.00%
+
+    http_req_failed{scenario:v2_project_metrics}
+    ✓ 'rate<0.01' rate=0.00%
+
+    http_req_failed{scenario:v3_reports_list}
+    ✓ 'rate<0.01' rate=0.00%
+
+    http_req_failed{scenario:v4_reports_summary}
+    ✓ 'rate<0.01' rate=0.00%
+
+    http_req_failed{scenario:v5_pos_products}
+    ✓ 'rate<0.01' rate=0.00%
+
+    response_kb{scenario:v1_projects_list}
+    ✓ 'avg>=0' avg=8.760742
+
+    response_kb{scenario:v2_project_metrics}
+    ✓ 'avg>=0' avg=0.714844
+
+    response_kb{scenario:v3_reports_list}
+    ✓ 'avg>=0' avg=886.389648
+
+    response_kb{scenario:v4_reports_summary}
+    ✓ 'avg>=0' avg=22.31543
+
+    response_kb{scenario:v5_pos_products}
+    ✓ 'avg>=0' avg=4045.49707
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 2310    3.840586/s
+    checks_succeeded...: 100.00% 2310 out of 2310
+    checks_failed......: 0.00%   0 out of 2310
+
+    ✓ login succeeded
+    ✓ v1_projects_list: 200
+    ✓ v2_project_metrics: 200
+    ✓ v3_reports_list: 200
+    ✓ v4_reports_summary: 200
+    ✓ v5_pos_products: 200
+
+    CUSTOM
+    response_kb.........................: avg=898.100634 min=0.714844   med=22.31543   max=4045.49707 p(90)=4045.49707 p(95)=4045.49707
+      { scenario:v1_projects_list }.....: avg=8.760742   min=8.760742   med=8.760742   max=8.760742   p(90)=8.760742   p(95)=8.760742  
+      { scenario:v2_project_metrics }...: avg=0.714844   min=0.714844   med=0.714844   max=0.714844   p(90)=0.714844   p(95)=0.714844  
+      { scenario:v3_reports_list }......: avg=886.389648 min=886.389648 med=886.389648 max=886.389648 p(90)=886.389648 p(95)=886.389648
+      { scenario:v4_reports_summary }...: avg=22.31543   min=22.31543   med=22.31543   max=22.31543   p(90)=22.31543   p(95)=22.31543  
+      { scenario:v5_pos_products }......: avg=4045.49707 min=4045.49707 med=4045.49707 max=4045.49707 p(90)=4045.49707 p(95)=4045.49707
+
+    HTTP
+    http_req_duration...................: avg=185.94ms   min=44.94ms    med=114ms      max=1.95s      p(90)=477.26ms   p(95)=562.56ms  
+      { expected_response:true }........: avg=185.94ms   min=44.94ms    med=114ms      max=1.95s      p(90)=477.26ms   p(95)=562.56ms  
+      { scenario:v1_projects_list }.....: avg=73.87ms    min=60.38ms    med=70.53ms    max=286.06ms   p(90)=73.44ms    p(95)=75.5ms    
+      { scenario:v2_project_metrics }...: avg=203.17ms   min=44.94ms    med=188.06ms   max=1.17s      p(90)=200.02ms   p(95)=219.18ms  
+      { scenario:v3_reports_list }......: avg=158.35ms   min=108.52ms   med=133.42ms   max=1.34s      p(90)=183.06ms   p(95)=267.34ms  
+      { scenario:v4_reports_summary }...: avg=84.14ms    min=69.44ms    med=74.11ms    max=692.81ms   p(90)=91.38ms    p(95)=94.07ms   
+      { scenario:v5_pos_products }......: avg=514.81ms   min=294.51ms   med=483.73ms   max=1.95s      p(90)=692.53ms   p(95)=788.94ms  
+    http_req_failed.....................: 0.00%  0 out of 2310
+      { scenario:v1_projects_list }.....: 0.00%  0 out of 565
+      { scenario:v2_project_metrics }...: 0.00%  0 out of 280
+      { scenario:v3_reports_list }......: 0.00%  0 out of 517
+      { scenario:v4_reports_summary }...: 0.00%  0 out of 555
+      { scenario:v5_pos_products }......: 0.00%  0 out of 393
+    http_reqs...........................: 2310   3.840586/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.31s      min=1.06s      med=1.12s      max=3.25s      p(90)=2.17s      p(95)=2.19s     
+    iterations..........................: 2300   3.82396/s
+    vus.................................: 2      min=2         max=10
+    vus_max.............................: 10     min=10        max=10
+
+    NETWORK
+    data_received.......................: 2.1 GB 3.5 MB/s
+    data_sent...........................: 2.1 MB 3.5 kB/s
+
+
+
