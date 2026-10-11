@@ -729,7 +729,9 @@
       "saving": "Guardando…",
       "delete": "Eliminar proveedor",
       "deleteConfirm": "¿Eliminar a {name}?",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "loading": "Cargando proveedores…",
+      "listLabel": "Lista de proveedores"
     },
     "productDetail": {
       "supplier": "Proveedor",
@@ -739,7 +741,39 @@
       "linking": "Vinculando…",
       "supplierLinked": "Proveedor vinculado correctamente.",
       "supplierLoadError": "No se pudieron cargar los proveedores.",
-      "supplierLinkError": "No se pudo vincular el proveedor."
+      "supplierLinkError": "No se pudo vincular el proveedor.",
+      "loadingTitle": "Cargando el producto",
+      "loadingMsg": "Buscando los datos de inventario más recientes.",
+      "errorTitle": "No se pudo cargar el producto",
+      "back": "Volver al inventario",
+      "retry": "Reintentar",
+      "uncategorized": "Sin categoría",
+      "noProject": "Proyecto no disponible",
+      "overview": "Resumen",
+      "noDescription": "Este producto todavía no tiene descripción.",
+      "salePrice": "Precio de venta",
+      "costPrice": "Precio de costo",
+      "weightedCost": "Costo promedio ponderado",
+      "barcode": "Código de barras",
+      "noBarcode": "Sin código de barras asignado",
+      "scan": "Escanear",
+      "saveBarcode": "Guardar",
+      "savingBarcode": "Guardando…",
+      "stock": "Stock",
+      "unitsAvailable": "unidades disponibles",
+      "minimumStock": "Stock mínimo",
+      "status": "Estado",
+      "project": "Proyecto",
+      "suppliers": "Proveedores",
+      "quotesTitle": "Cotizaciones de proveedores vinculadas",
+      "countSingular": "{count} proveedor",
+      "countPlural": "{count} proveedores",
+      "noSuppliers": "Este producto todavía no tiene proveedores vinculados.",
+      "lastQuote": "Última cotización: {date}",
+      "barcodeInUse": "Ese código de barras ya está en uso.",
+      "barcodeForbidden": "No tienes permiso para editar este producto.",
+      "barcodeSaved": "Código de barras guardado.",
+      "networkError": "Error de red, inténtalo de nuevo."
     }
   },
   "budget": {
@@ -1162,7 +1196,8 @@
       "sideInfoManager": "Encargado",
       "sideInfoBudget": "Presupuesto",
       "sideRiskLevel": "Nivel de Riesgo"
-    }
+    },
+    "noData": "Sin datos"
   },
   "teams": {
     "header": {
@@ -1571,7 +1606,7 @@
     }
   },
   "navbar": {
-    "dashboard": "Dashboard",
+    "dashboard": "Panel",
     "inventory": "Inventario",
     "projects": "Proyectos",
     "teams": "Equipos",
@@ -1597,10 +1632,19 @@
       "companies": "Empresas",
       "users": "Usuarios",
       "superUser": "Superusuario"
-    }
+    },
+    "suppliers": "Proveedores"
   },
   "language": {
     "label": "Idioma",
     "change": "Cambiar de idioma"
+  },
+  "roles": {
+    "owner": "Propietario",
+    "admin": "Administrador",
+    "manager": "Gerente",
+    "collaborator": "Colaborador",
+    "member": "Miembro",
+    "superUser": "Superusuario"
   }
 }

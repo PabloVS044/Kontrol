@@ -729,7 +729,9 @@
       "saving": "Saving…",
       "delete": "Delete supplier",
       "deleteConfirm": "Delete {name}?",
-      "close": "Close"
+      "close": "Close",
+      "loading": "Loading suppliers…",
+      "listLabel": "Supplier list"
     },
     "productDetail": {
       "supplier": "Supplier",
@@ -739,7 +741,39 @@
       "linking": "Linking…",
       "supplierLinked": "Supplier linked successfully.",
       "supplierLoadError": "Could not load suppliers.",
-      "supplierLinkError": "Could not link the supplier."
+      "supplierLinkError": "Could not link the supplier.",
+      "loadingTitle": "Loading product",
+      "loadingMsg": "Fetching the latest inventory details.",
+      "errorTitle": "Could not load product",
+      "back": "Back to inventory",
+      "retry": "Retry",
+      "uncategorized": "Uncategorized",
+      "noProject": "Project not available",
+      "overview": "Overview",
+      "noDescription": "No description available for this product yet.",
+      "salePrice": "Sale price",
+      "costPrice": "Cost price",
+      "weightedCost": "Weighted avg. cost",
+      "barcode": "Barcode",
+      "noBarcode": "No barcode assigned",
+      "scan": "Scan",
+      "saveBarcode": "Save",
+      "savingBarcode": "Saving…",
+      "stock": "Stock",
+      "unitsAvailable": "units available",
+      "minimumStock": "Minimum stock",
+      "status": "Status",
+      "project": "Project",
+      "suppliers": "Suppliers",
+      "quotesTitle": "Linked supplier quotes",
+      "countSingular": "{count} supplier",
+      "countPlural": "{count} suppliers",
+      "noSuppliers": "No suppliers linked to this product yet.",
+      "lastQuote": "Last quote: {date}",
+      "barcodeInUse": "That barcode is already in use.",
+      "barcodeForbidden": "You do not have permission to edit this product.",
+      "barcodeSaved": "Barcode saved.",
+      "networkError": "Network error, try again."
     }
   },
   "budget": {
@@ -1162,7 +1196,8 @@
       "sideInfoManager": "Manager",
       "sideInfoBudget": "Budget",
       "sideRiskLevel": "Risk Level"
-    }
+    },
+    "noData": "No data"
   },
   "teams": {
     "header": {
@@ -1597,10 +1632,19 @@
       "companies": "Companies",
       "users": "Users",
       "superUser": "Super User"
-    }
+    },
+    "suppliers": "Suppliers"
   },
   "language": {
     "label": "Language",
     "change": "Change language"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "manager": "Manager",
+    "collaborator": "Collaborator",
+    "member": "Member",
+    "superUser": "Super User"
   }
 }

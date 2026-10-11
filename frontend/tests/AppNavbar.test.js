@@ -89,7 +89,26 @@ describe('AppNavbar.vue — visibilidad por permisos', () => {
   it('muestra el nombre y rol de la empresa actual', async () => {
     const { wrapper } = await montar()
     expect(wrapper.find('.empresa-name').text()).toBe('Skiot')
-    expect(wrapper.find('.empresa-role').text()).toBe('owner')
+    // El rol llega en inglés desde la base de datos; en pantalla va traducido.
+    expect(wrapper.find('.empresa-role').text()).toBe('Propietario')
+  })
+
+  it('traduce el rol que llega en inglés de la base de datos', async () => {
+    // El perfil decía "COLLABORATOR" con la app en español: el valor es del
+    // esquema (hay permisos que dependen de esa cadena), la etiqueta no.
+    const { wrapper } = await montar({
+      empresaActual: { id_empresa: 1, nombre: 'Skiot', rol: 'collaborator' },
+    })
+    expect(wrapper.find('.empresa-role').text()).toBe('Colaborador')
+  })
+
+  it('el menú lateral nombra Proveedores en español', async () => {
+    // "Suppliers" estaba escrito en el código de navegación, no en el
+    // diccionario, así que no cambiaba de idioma nunca.
+    const { wrapper } = await montar({ capabilities: { can_view_inventory: true } })
+    const enlaces = wrapper.findAll('.appnav-link').map((l) => l.text())
+    expect(enlaces).toContain('Proveedores')
+    expect(enlaces).not.toContain('Suppliers')
   })
 
   it('oculta inventario, proyectos, equipos e integraciones sin capacidad', async () => {

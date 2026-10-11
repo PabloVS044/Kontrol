@@ -19,13 +19,13 @@
         <span class="result-count">{{ filteredSuppliers.length }} {{ filteredSuppliers.length === 1 ? t('inventory.suppliers.singular') : t('inventory.suppliers.plural') }}</span>
       </div>
 
-      <p v-if="loading" class="state-message">Loading suppliers...</p>
+      <p v-if="loading" class="state-message">{{ t('inventory.suppliers.loading') }}</p>
       <p v-else-if="error" class="state-message state-error">{{ error }}</p>
       <div v-else-if="!filteredSuppliers.length" class="empty-state">
         <h2>{{ t('inventory.suppliers.emptyTitle') }}</h2>
         <p>{{ searchQuery ? t('inventory.suppliers.emptySearch') : t('inventory.suppliers.emptyInitial') }}</p>
       </div>
-      <section v-else class="supplier-grid" aria-label="Supplier list">
+      <section v-else class="supplier-grid" :aria-label="t('inventory.suppliers.listLabel')">
         <article v-for="supplier in filteredSuppliers" :key="supplier.id_proveedor" class="supplier-card">
           <div class="card-heading">
             <div>
@@ -51,7 +51,7 @@
             <p class="eyebrow">{{ t('inventory.suppliers.record') }}</p>
             <h2>{{ editingSupplier ? t('inventory.suppliers.editTitle') : t('inventory.suppliers.addTitle') }}</h2>
           </div>
-          <button class="close-button" type="button" aria-label="Close" @click="closeModal">x</button>
+          <button class="close-button" type="button" :aria-label="t('inventory.suppliers.close')" @click="closeModal">x</button>
         </div>
         <label>{{ t('inventory.suppliers.name') }}<input v-model.trim="form.nombre" required maxlength="255" /></label>
         <label>{{ t('inventory.suppliers.contact') }}<input v-model.trim="form.contacto_nombre" maxlength="255" /></label>
@@ -71,7 +71,7 @@
       <section class="supplier-modal details-modal">
         <div class="modal-heading">
           <div><p class="eyebrow">{{ t('inventory.suppliers.record') }}</p><h2>{{ detailsSupplier.nombre }}</h2></div>
-          <button class="close-button" type="button" aria-label="Close" @click="detailsSupplier = null">x</button>
+          <button class="close-button" type="button" :aria-label="t('inventory.suppliers.close')" @click="detailsSupplier = null">x</button>
         </div>
         <p class="details-copy">{{ t('inventory.suppliers.detailsCopy') }}</p>
         <dl class="contact-list details-list">

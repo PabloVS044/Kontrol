@@ -11,7 +11,7 @@
       <div v-if="authStore.hasEmpresa" class="empresa-selector" @click.stop="toggleDropdown">
         <div class="empresa-current">
           <span class="empresa-name">{{ authStore.empresaActual?.nombre ?? '—' }}</span>
-          <span class="empresa-role">{{ authStore.empresaActual?.rol ?? '' }}</span>
+          <span class="empresa-role">{{ roleLabel(authStore.empresaActual?.rol) }}</span>
           <svg class="chevron" :class="{ open: dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M2 4l4 4 4-4" stroke="var(--k-gray-3)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
@@ -33,7 +33,7 @@
               @click="selectEmpresa(empresa)"
             >
               <span class="dd-item-name">{{ empresa.nombre }}</span>
-              <span class="dd-item-role">{{ empresa.rol }}</span>
+              <span class="dd-item-role">{{ roleLabel(empresa.rol) }}</span>
             </button>
             <div class="dd-divider" />
             <RouterLink class="dd-new" to="/onboarding" @click="closeDropdown">
@@ -50,7 +50,7 @@
       <div id="appnav-links" class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
-        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">Suppliers</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">{{ $t('navbar.suppliers') }}</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
         <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
@@ -132,13 +132,18 @@ import { useI18n } from 'vue-i18n'
 import { LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { translateRole } from '../utils/roles.js'
 import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// El rol llega en inglés desde la base de datos: es un valor del esquema, no
+// una etiqueta. Lo que se pinta sí se traduce.
+const roleLabel = (rol) => translateRole(rol, { t, te })
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
