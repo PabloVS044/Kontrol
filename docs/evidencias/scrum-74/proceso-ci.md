@@ -16,7 +16,7 @@ El job de carga es una prueba de regresión de rendimiento: confirma en cada cam
 
 ## Herramientas automatizadas
 
-Versiones exactas tomadas de los logs de la corrida [38161910366](https://github.com/PabloVS044/Kontrol/actions/runs/38161910366) (11/10/2026) y del `package-lock.json` que instala `npm ci`.
+Versiones exactas tomadas de los logs de las corridas [38161910366](https://github.com/PabloVS044/Kontrol/actions/runs/38161910366) y [38163669132](https://github.com/PabloVS044/Kontrol/actions/runs/38163669132) (11/10/2026), idénticas en ambas, y del `package-lock.json` que instala `npm ci`.
 
 | Herramienta | Versión | Uso |
 |---|---|---|
@@ -39,27 +39,31 @@ Versiones exactas tomadas de los logs de la corrida [38161910366](https://github
 
 ## Frecuencia durante el sprint (08 al 12/10/2026)
 
-Corte: domingo 11/10/2026. Detalle por corrida en `historial-corridas.md`.
+Corte: domingo 11/10/2026, después de la corrida 38163669132. Detalle por corrida en `historial-corridas.md`.
 
-- **Pruebas unitarias:** 9 corridas en 4 días distintos (jueves 08, viernes 09, sábado 10 y domingo 11), siempre disparadas por un pull request. 8 en verde y 1 en rojo. El rojo fue una falla real, 5 pruebas de cálculo de ventas rotas en el PR #135; se corrigió en el siguiente push, 3 minutos después, que pasó en verde.
-- **Pruebas de carga:** el job automático entró al pipeline el domingo 11/10 (PR #141). Su primera corrida, ese mismo día, fue en verde, junto con los dos jobs unitarios. Del 08 al 10/10 no hubo corridas de carga: hasta entonces solo existía la batería manual, que no se lanzó en el sprint, y el ambiente de pruebas de la VM, su objetivo, no respondía.
-- **Ambos tipos en verde en la misma corrida:** desde el 11/10. Las corridas posteriores al corte quedan registradas en la pestaña Actions del repositorio con su fecha real.
+- **Pruebas unitarias:** 11 corridas en 4 días distintos (jueves 08, viernes 09, sábado 10 y domingo 11), siempre disparadas por un pull request. 10 en verde y 1 en rojo. El rojo fue una falla real, 5 pruebas de cálculo de ventas rotas en el PR #135; se corrigió en el siguiente push, 3 minutos después, que pasó en verde.
+- **Pruebas de carga:** el job automático entró al pipeline el domingo 11/10 (PR #141) y ese día corrió 3 veces, las 3 en verde junto con los dos jobs unitarios. Del 08 al 10/10 no hubo corridas de carga: hasta entonces solo existía la batería manual, que no se lanzó en el sprint, y el ambiente de pruebas de la VM, su objetivo, no respondía.
+- **Ambos tipos en verde en la misma corrida:** 3 corridas, todas del 11/10. Las corridas posteriores al corte quedan registradas en la pestaña Actions del repositorio con su fecha real.
 
-Resultados de la corrida 38161910366, la más reciente al corte:
+## Cobertura y umbrales
 
-| | Statements | Branches | Functions | Lines | Umbral global |
-|---|---|---|---|---|---|
-| Backend (359 pruebas) | 37.79 % | 24.30 % | 35.72 % | 38.33 % | 25 / 19 / 21 / 25 |
-| Frontend (345 pruebas) | 10.61 % | 10.43 % | 12.72 % | 10.96 % | 9 / 8 / 11 / 9 |
+El 11/10/2026 se aplicó el trinquete de cobertura que estaba atrasado. En backend se subió el umbral global de 15/9/11/15 a 25/19/21/25 (pasos del Sprint 8 y del Sprint 9 juntos). En frontend, la cobertura no alcanzaba ni el paso del Sprint 8; se añadieron 95 pruebas unitarias de utilidades, servicios, stores y del composable de tema, y con ellas se subió el umbral de 9/8/11/9 a 14/13/16/14. El paso del Sprint 9 en frontend (19/18/21/19) queda pendiente.
+
+Resultados de la corrida 38163669132, la más reciente al corte:
+
+| | Pruebas | Statements | Branches | Functions | Lines | Umbral global |
+|---|---|---|---|---|---|---|
+| Backend | 359 | 37.79 % | 24.30 % | 35.72 % | 38.33 % | 25 / 19 / 21 / 25 |
+| Frontend | 440 | 16.24 % | 16.49 % | 18.47 % | 16.65 % | 14 / 13 / 16 / 14 |
 
 | Escenario k6 | p95 medido | Umbral | Errores |
 |---|---|---|---|
-| C1 inicio de sesión | 81.50 ms | 300 ms | 0 % |
-| C2 proyectos y métricas | 6.51 ms | 500 ms | 0 % |
-| C3 registro de avance | 11.92 ms | 800 ms | 0 % |
-| C4 listado de reportes | 8.27 ms | 500 ms | 0 % |
-| C4 exportación de reporte | 8.16 ms | 800 ms | 0 % |
-| C5 venta en POS | 13.46 ms | 800 ms | 0 % |
+| C1 inicio de sesión | 50.94 ms | 300 ms | 0 % |
+| C2 proyectos y métricas | 3.49 ms | 500 ms | 0 % |
+| C3 registro de avance | 7.16 ms | 800 ms | 0 % |
+| C4 listado de reportes | 5.11 ms | 500 ms | 0 % |
+| C4 exportación de reporte | 4.54 ms | 800 ms | 0 % |
+| C5 venta en POS | 7.21 ms | 800 ms | 0 % |
 
 1 571 de 1 571 verificaciones aprobadas (100 %).
 

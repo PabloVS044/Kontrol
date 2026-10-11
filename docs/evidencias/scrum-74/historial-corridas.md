@@ -1,6 +1,6 @@
 # Historial de corridas de CI — sprint del 08 al 12/10/2026
 
-Fuente: `gh run list` y `gh run view` sobre el repositorio `PabloVS044/Kontrol`, workflows `CI` (`ci.yml`) y `Load and Stress Tests (k6)` (`load-test.yml`). Horas en hora local de Guatemala (UTC−6). Corte: domingo 11/10/2026, después de la corrida 38161910366. Ninguna corrida de esta tabla se relanzó: cada una lleva la fecha en que se ejecutó por primera vez.
+Fuente: `gh run list` y `gh run view` sobre el repositorio `PabloVS044/Kontrol`, workflows `CI` (`ci.yml`) y `Load and Stress Tests (k6)` (`load-test.yml`). Horas en hora local de Guatemala (UTC−6). Corte: domingo 11/10/2026, después de la corrida 38163669132. Ninguna corrida de esta tabla se relanzó: cada una lleva la fecha en que se ejecutó por primera vez.
 
 ## Por día
 
@@ -9,7 +9,7 @@ Fuente: `gh run list` y `gh run view` sobre el repositorio `PabloVS044/Kontrol`,
 | Jue 08/10 | 4 corridas, 4 en verde | **Sin corridas** |
 | Vie 09/10 | 3 corridas: 1 en rojo, 2 en verde | **Sin corridas** |
 | Sáb 10/10 | 1 corrida, en verde | **Sin corridas** |
-| Dom 11/10 | 1 corrida, en verde | 1 corrida, en verde |
+| Dom 11/10 | 3 corridas, 3 en verde | 3 corridas, 3 en verde |
 | Lun 12/10 | — (posterior al corte) | — (posterior al corte) |
 
 ## Huecos y por qué
@@ -31,11 +31,13 @@ Fuente: `gh run list` y `gh run view` sobre el repositorio `PabloVS044/Kontrol`,
 | Vie 09/10 22:46 | [38025223622](https://github.com/PabloVS044/Kontrol/actions/runs/38025223622) | `refactor/aggregated-budget-endpoint` | ✅ | ✅ | — |
 | Sáb 10/10 23:19 | [38114402060](https://github.com/PabloVS044/Kontrol/actions/runs/38114402060) | `feat/integrations-cards-ux` | ✅ | ✅ | — |
 | Dom 11/10 11:59 | [38161910366](https://github.com/PabloVS044/Kontrol/actions/runs/38161910366) | `feat/unit-load-ci` | ✅ | ✅ | ✅ |
+| Dom 11/10 12:11 | [38162739574](https://github.com/PabloVS044/Kontrol/actions/runs/38162739574) | `feat/unit-load-ci` | ✅ | ✅ | ✅ |
+| Dom 11/10 12:24 | [38163669132](https://github.com/PabloVS044/Kontrol/actions/runs/38163669132) | `feat/unit-load-ci` | ✅ | ✅ (umbral nuevo 14/13/16/14) | ✅ |
 
 El único rojo (run 38024416498) fue una falla real: 5 pruebas de `saleCalculation.test.js` y `createSale.controller.test.js` fallaron en el PR #135. El autor corrigió el código y el siguiente push, 3 minutos después (run 38024578307), pasó. El pipeline hizo lo que tenía que hacer: frenó un cambio con pruebas rotas.
 
 ## Resumen
 
-- 9 corridas de `ci.yml` del 08 al 11/10, en 4 días distintos. 8 en verde y 1 en rojo por una falla real.
+- 11 corridas de `ci.yml` del 08 al 11/10, en 4 días distintos. 10 en verde y 1 en rojo por una falla real.
 - Pruebas unitarias en verde los 4 días con corridas (08, 09, 10 y 11/10).
-- Pruebas de carga automáticas en verde desde el 11/10. Antes de esa fecha no hubo corridas de carga en el sprint.
+- Pruebas de carga automáticas en verde en las 3 corridas del 11/10. Antes de esa fecha no hubo corridas de carga en el sprint.
