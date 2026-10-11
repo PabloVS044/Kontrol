@@ -67,15 +67,7 @@
       </div>
 
       <div class="appnav-end">
-        <div ref="langBtnRef" class="lang-picker">
-          <button class="lang-btn" @click.stop="isLangOpen = !isLangOpen" :class="{ active: isLangOpen }">
-            <Languages :size="16" />
-          </button>
-          <div v-if="isLangOpen" class="lang-dropdown">
-            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="chooseLocale('en')">English</button>
-            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="chooseLocale('es')">Español</button>
-          </div>
-        </div>
+        <LanguageSelector />
         <!-- El avatar abre un menú en vez de cerrar sesión de golpe: una inicial
              suelta se lee como "ver mi perfil", y el clic destruía la sesión sin
              decir que eso iba a pasar. Aquí el cierre de sesión está escrito. -->
@@ -137,24 +129,21 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Languages, LogOut, Settings } from 'lucide-vue-next'
+import { LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { useLocale } from '../composables/useLocale.js'
+import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
 const { t } = useI18n()
-const { locale, setLocale } = useLocale()
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
 const triggerEl     = ref(null)
 const isMenuOpen  = ref(false)
-const isLangOpen  = ref(false)
-const langBtnRef  = ref(null)
 const isUserMenuOpen = ref(false)
 const userMenuRef    = ref(null)
 
@@ -219,15 +208,7 @@ function logout() {
   router.push({ name: 'login' })
 }
 
-function chooseLocale(lang) {
-  setLocale(lang)
-  isLangOpen.value = false
-}
-
 function handleClickOutside(e) {
-  if (langBtnRef.value && !langBtnRef.value.contains(e.target)) {
-    isLangOpen.value = false
-  }
   if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
     isUserMenuOpen.value = false
   }
@@ -240,7 +221,6 @@ function onKeydown(e) {
   closeDropdown()
   closeUserMenu()
   closeMenu()
-  isLangOpen.value = false
 }
 
 // Navegar cierra el cajón. Los links ya llaman a closeMenu, pero un cambio de
@@ -503,57 +483,6 @@ const closeMenu = () => {
   align-items: center;
   gap: var(--k-space-4);
 }
-
-.lang-picker {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.lang-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--k-gray-2);
-  transition: color 0.15s;
-  border-radius: var(--k-radius-sm);
-}
-
-.lang-btn:hover,
-.lang-btn.active { color: var(--Primary); }
-
-.lang-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: var(--k-shade-2);
-  border: var(--k-border-width) solid var(--k-shade-6);
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 110px;
-  z-index: 200;
-}
-
-.lang-opt {
-  background: transparent;
-  border: none;
-  text-align: left;
-  padding: 7px 10px;
-  font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-caption-lg);
-  color: var(--k-gray-3);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-
-.lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: var(--Primary); }
 
 /* ── Menú de cuenta ── */
 .user-menu { position: relative; }

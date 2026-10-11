@@ -552,7 +552,6 @@
       "exits": "Salidas",
       "net": "Neto",
       "viewDetails": "Ver detalles",
-      "edit": "Editar",
       "sell": "Vender",
       "restock": "Ingresar",
       "increase": "Agregar uno",
@@ -1547,7 +1546,9 @@
       "title": "Tus preferencias",
       "hint": "Se guardan en este navegador y solo para tu cuenta. No afectan a nadie más del equipo.",
       "birdie": "Mostrar la burbuja del asistente Birdie",
-      "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí."
+      "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
+      "language": "Idioma",
+      "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión."
     },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",
@@ -1594,7 +1595,12 @@
     "admin": {
       "overview": "Resumen",
       "companies": "Empresas",
-      "users": "Usuarios"
+      "users": "Usuarios",
+      "superUser": "Superusuario"
     }
+  },
+  "language": {
+    "label": "Idioma",
+    "change": "Cambiar de idioma"
   }
 }

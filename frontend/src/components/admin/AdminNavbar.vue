@@ -8,7 +8,7 @@
       </RouterLink>
 
       <div class="admin-badge-wrap">
-        <span class="admin-badge">Super User</span>
+        <span class="admin-badge">{{ $t('navbar.admin.superUser') }}</span>
       </div>
 
       <div class="appnav-links" :class="{ 'is-open': isMenuOpen }">
@@ -18,17 +18,9 @@
       </div>
 
       <div class="appnav-end">
-        <div ref="langBtnRef" class="lang-picker">
-          <button class="lang-btn" @click.stop="isLangOpen = !isLangOpen" :class="{ active: isLangOpen }">
-            <Languages :size="16" />
-          </button>
-          <div v-if="isLangOpen" class="lang-dropdown">
-            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="chooseLocale('en')">English</button>
-            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="chooseLocale('es')">Español</button>
-          </div>
-        </div>
-        <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
-        <button class="hamburger" @click="toggleMenu" aria-label="Menu">
+        <LanguageSelector />
+        <div class="appnav-avatar" @click="logout" :title="$t('navbar.account.signOut')">{{ userInitial }}</div>
+        <button class="hamburger" @click="toggleMenu" :aria-label="$t('navbar.menu.open')">
           <span :class="{ line: true, 'line-top': isMenuOpen }"></span>
           <span :class="{ line: true, 'line-middle': isMenuOpen }"></span>
           <span :class="{ line: true, 'line-bottom': isMenuOpen }"></span>
@@ -40,38 +32,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Languages } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
-import { useLocale } from '@/composables/useLocale.js'
+import LanguageSelector from '@/components/common/LanguageSelector.vue'
 import logo from '@/assets/img/kontrol.png'
 
 const authStore  = useAuthStore()
 const router     = useRouter()
-const { locale, setLocale } = useLocale()
 const isMenuOpen  = ref(false)
-const isLangOpen  = ref(false)
-const langBtnRef  = ref(null)
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
   return name.charAt(0).toUpperCase()
 })
-
-function chooseLocale(lang) {
-  setLocale(lang)
-  isLangOpen.value = false
-}
-
-function handleClickOutside(e) {
-  if (langBtnRef.value && !langBtnRef.value.contains(e.target)) {
-    isLangOpen.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 // El idioma sobrevive al cierre de sesión: es del navegador, no de la cuenta.
 function logout() {
@@ -184,57 +158,6 @@ function closeMenu()   { isMenuOpen.value = false }
   align-items: center;
   gap: 16px;
 }
-
-.lang-picker {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.lang-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--TextFaint);
-  transition: color 0.15s;
-  border-radius: 4px;
-}
-
-.lang-btn:hover,
-.lang-btn.active { color: var(--Primary); }
-
-.lang-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 110px;
-  z-index: 200;
-}
-
-.lang-opt {
-  background: transparent;
-  border: none;
-  text-align: left;
-  padding: 7px 10px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: var(--TextFaint);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-
-.lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: var(--Primary); }
 
 .appnav-avatar {
   width: 32px;
