@@ -60,19 +60,21 @@ export default mergeConfig(
           // 22 de `.nvmrc`—, y sobre 9 152 sentencias una vista nueva de 300
           // sentencias sin test baja `statements` 0.32 puntos por sí sola. El
           // margen absorbe esa varianza; no relaja el trinquete.
-          statements: 9, // base real 10.15 % (929/9152) — antes 83 sobre 1 000
-          branches: 8, //   base real  9.84 % (586/5955)
-          functions: 11, // base real 12.12 % (252/2078)
-          lines: 9, //      base real 10.46 % (848/8104)
-
+          //
           // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-          // umbral global, contados desde esta base nueva. La subida del
-          // Sprint 8 (14/13/16/14) NO se aplica: medido el 11/10/2026,
-          // 10.61 / 10.43 / 12.72 / 10.96 (1008/9494, 644/6172, 274/2154,
-          // 922/8411), por debajo de las cuatro metas. Subirlo pondría el
-          // pipeline en rojo; el umbral se queda donde está hasta que entren
-          // las pruebas que faltan. La política completa está en el README,
-          // sección «Cobertura de código».
+          // umbral global, contados desde la base del 20/09/2026 (9/8/11/9).
+          // La subida del Sprint 8 (14/13/16/14) no se aplicó a tiempo: el
+          // 11/10/2026 la cobertura medía 10.61 / 10.43 / 12.72 / 10.96 y no
+          // la alcanzaba. Se aplica el mismo día, después de añadir pruebas
+          // de utilidades, servicios y los stores de chat, venta y tema.
+          // Medido entonces: 16.24 / 16.49 / 18.47 / 16.65 (1542/9494,
+          // 1018/6172, 398/2154, 1401/8411). La subida del Sprint 9
+          // (19/18/21/19) sigue sin alcanzarse. La política completa está en
+          // el README, sección «Cobertura de código».
+          statements: 14, // medido 16.24 % — base 20/09: 10.15 %
+          branches: 13, //   medido 16.49 % — base 20/09:  9.84 %
+          functions: 16, //  medido 18.47 % — base 20/09: 12.12 %
+          lines: 14, //      medido 16.65 % — base 20/09: 10.46 %
 
           // Umbrales por módulo crítico. Los globs se resuelven con picomatch
           // contra la ruta relativa a la raíz del workspace, y los archivos

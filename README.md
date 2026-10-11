@@ -297,11 +297,12 @@ Línea base medida el 20/09/2026. Remedido el 11/10/2026.
 | Backend — medido 11/10/2026 | 37.79 | 24.26 | 35.72 | 38.33 |
 | Backend — actual (Sprint 8 + Sprint 9) | 25 | 19 | 21 | 25 |
 | Backend — cierre Sprint 10 | 30 | 24 | 26 | 30 |
-| Frontend — medido 11/10/2026 | 10.61 | 10.43 | 12.72 | 10.96 |
-| Frontend — actual | 9 | 8 | 11 | 9 |
-| Frontend — meta Sprint 8, no alcanzada | 14 | 13 | 16 | 14 |
+| Frontend — medido 11/10/2026, antes de las pruebas nuevas | 10.61 | 10.43 | 12.72 | 10.96 |
+| Frontend — medido 11/10/2026, con las pruebas nuevas | 16.24 | 16.49 | 18.47 | 16.65 |
+| Frontend — actual (Sprint 8) | 14 | 13 | 16 | 14 |
+| Frontend — meta Sprint 9, no alcanzada | 19 | 18 | 21 | 19 |
 
-La subida del Sprint 8 no se aplicó a tiempo en ningún workspace. En backend se aplican juntas la del Sprint 8 y la del Sprint 9 (+10 sobre la base), y la cobertura medida las supera con al menos 5 puntos de margen. En frontend la cobertura medida no alcanza ni la meta del Sprint 8, así que el umbral se queda en 9/8/11/9: subirlo dejaría el pipeline en rojo sin que ninguna prueba hubiera empeorado. Queda como incumplimiento de la regla 3 hasta que entren las pruebas que faltan.
+La subida del Sprint 8 no se aplicó a tiempo en ningún workspace. En backend se aplican juntas la del Sprint 8 y la del Sprint 9 (+10 sobre la base), y la cobertura medida las supera con al menos 5 puntos de margen. En frontend la cobertura no alcanzaba ni la meta del Sprint 8; se añadieron pruebas de utilidades (`utils/chat.js`, `boxPricing.js`, `authFlow.js`, `markdown.js`, `taskIndicatorColors.js`), servicios (`agent`, `integrations`, `marketing`), stores (`chat`, `saleConfig`, `birdie`) y `composables/useTheme.js`, y con ellas se aplica la del Sprint 8 con al menos 2.2 puntos de margen. La del Sprint 9 en frontend (19/18/21/19) queda pendiente: exige unos 260 statements más, que ya pasan por probar vistas.
 
 Por módulo crítico, con su medición real al lado:
 
