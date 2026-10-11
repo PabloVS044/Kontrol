@@ -23,8 +23,8 @@
             <Languages :size="16" />
           </button>
           <div v-if="isLangOpen" class="lang-dropdown">
-            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="setLocale('en')">English</button>
-            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="setLocale('es')">Español</button>
+            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="chooseLocale('en')">English</button>
+            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="chooseLocale('es')">Español</button>
           </div>
         </div>
         <div class="appnav-avatar" @click="logout" title="Sign out">{{ userInitial }}</div>
@@ -41,15 +41,15 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { Languages } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { useLocale } from '@/composables/useLocale.js'
 import logo from '@/assets/img/kontrol.png'
 
 const authStore  = useAuthStore()
 const router     = useRouter()
-const { locale } = useI18n()
+const { locale, setLocale } = useLocale()
 const isMenuOpen  = ref(false)
 const isLangOpen  = ref(false)
 const langBtnRef  = ref(null)
@@ -59,11 +59,8 @@ const userInitial = computed(() => {
   return name.charAt(0).toUpperCase()
 })
 
-function localeKey() { return `locale_${authStore.idUsuario}` }
-
-function setLocale(lang) {
-  locale.value = lang
-  localStorage.setItem(localeKey(), lang)
+function chooseLocale(lang) {
+  setLocale(lang)
   isLangOpen.value = false
 }
 
@@ -73,16 +70,12 @@ function handleClickOutside(e) {
   }
 }
 
-onMounted(() => {
-  const saved = localStorage.getItem(localeKey())
-  if (saved) locale.value = saved
-  document.addEventListener('click', handleClickOutside)
-})
+onMounted(() => document.addEventListener('click', handleClickOutside))
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
+// El idioma sobrevive al cierre de sesión: es del navegador, no de la cuenta.
 function logout() {
   authStore.logout()
-  locale.value = 'en'
   router.push({ name: 'login' })
 }
 function toggleMenu()  { isMenuOpen.value = !isMenuOpen.value }

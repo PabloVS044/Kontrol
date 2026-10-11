@@ -72,8 +72,8 @@
             <Languages :size="16" />
           </button>
           <div v-if="isLangOpen" class="lang-dropdown">
-            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="setLocale('en')">English</button>
-            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="setLocale('es')">Español</button>
+            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="chooseLocale('en')">English</button>
+            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="chooseLocale('es')">Español</button>
           </div>
         </div>
         <!-- El avatar abre un menú en vez de cerrar sesión de golpe: una inicial
@@ -140,12 +140,14 @@ import { useI18n } from 'vue-i18n'
 import { Languages, LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useLocale } from '../composables/useLocale.js'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
-const { locale, t } = useI18n()
+const { t } = useI18n()
+const { locale, setLocale } = useLocale()
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
@@ -209,17 +211,16 @@ async function selectEmpresa(empresa) {
   }
 }
 
+// El idioma NO se reinicia al cerrar sesión: es una preferencia del navegador,
+// no de la cuenta. Volver al inglés en la pantalla de login era justo lo que
+// hacía parecer que la app no recuerda nada.
 function logout() {
   authStore.logout()
-  locale.value = 'en'
   router.push({ name: 'login' })
 }
 
-function localeKey() { return `locale_${authStore.idUsuario}` }
-
-function setLocale(lang) {
-  locale.value = lang
-  localStorage.setItem(localeKey(), lang)
+function chooseLocale(lang) {
+  setLocale(lang)
   isLangOpen.value = false
 }
 
@@ -250,8 +251,6 @@ watch(() => route.fullPath, () => {
 })
 
 onMounted(() => {
-  const saved = localStorage.getItem(localeKey())
-  if (saved) locale.value = saved
   window.addEventListener('keydown', onKeydown)
   document.addEventListener('click', handleClickOutside)
 })

@@ -246,7 +246,23 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.lang-dropdown').exists()).toBe(false)
-    expect(localStorage.getItem('locale_42')).toBe('es')
+    // Clave del navegador, no de la cuenta: la preferencia tiene que seguir ahí
+    // después de cerrar sesión, cuando ya no hay id de usuario que consultar.
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
+  })
+
+  it('cerrar sesión no devuelve la app al inglés', async () => {
+    // Antes el logout hacía `locale.value = 'en'`, así que la pantalla de login
+    // aparecía en inglés justo después de haber elegido español.
+    const { wrapper } = await montar({ user: { id_usuario: 42 }, locale: 'es' })
+
+    await wrapper.find('.lang-btn').trigger('click')
+    await wrapper.findAll('.lang-opt')[1].trigger('click') // Español
+    await wrapper.find('.appnav-avatar').trigger('click')
+    await wrapper.find('.ud-item--signout').trigger('click')
+
+    expect(wrapper.vm.$i18n.locale).toBe('es')
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
   })
 
   it('el hamburger alterna el menú y los links lo cierran', async () => {
