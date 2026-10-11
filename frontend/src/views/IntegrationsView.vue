@@ -78,39 +78,49 @@
                 <span class="card-name">{{ integration.nombre }}</span>
                 <span class="cat-badge">{{ categoryLabel(integration.categoria) }}</span>
               </div>
-              <!-- Toggle enable/disable -->
+            </div>
+
+            <!-- Descripción -->
+            <p class="card-description">{{ integration.descripcion }}</p>
+
+            <!-- Estado de la conexión: texto informativo, no clicable -->
+            <p class="card-status">
+              <span class="status-dot" :class="`status-${statusKey(integration)}`" aria-hidden="true"></span>
+              <span class="status-text" :class="`status-${statusKey(integration)}`">{{ statusLabel(integration) }}</span>
+              <template v-if="integration.updated_at">
+                <span class="status-sep" aria-hidden="true">·</span>
+                <span class="updated-at">Actualizado {{ fmtDate(integration.updated_at) }}</span>
+              </template>
+            </p>
+
+            <!-- Interruptor rotulado: es el único control para pausar/reanudar -->
+            <div v-if="integration.is_configured" class="card-switch-row">
+              <div class="switch-text">
+                <span class="switch-title">Envío de notificaciones</span>
+                <span class="switch-hint">
+                  {{ integration.status === 'active' ? 'Kontrol está enviando avisos' : 'Pausada: no se envían avisos' }}
+                </span>
+              </div>
               <button
-                v-if="integration.is_configured"
+                type="button"
+                role="switch"
                 class="toggle-btn"
                 :class="{ 'toggle-on': integration.status === 'active' }"
+                :aria-checked="integration.status === 'active'"
+                :aria-label="`${integration.status === 'active' ? 'Pausar' : 'Activar'} ${integration.nombre}`"
                 :disabled="togglingSlug === integration.slug"
-                :title="integration.status === 'active' ? 'Desactivar' : 'Activar'"
+                :title="integration.status === 'active' ? 'Pausar envíos sin borrar la configuración' : 'Reanudar envíos'"
                 @click="handleToggle(integration)"
               >
+                <span class="toggle-label">{{ integration.status === 'active' ? 'Activa' : 'Pausada' }}</span>
                 <span class="toggle-track">
                   <span class="toggle-thumb"></span>
                 </span>
               </button>
             </div>
 
-            <!-- Descripción -->
-            <p class="card-description">{{ integration.descripcion }}</p>
-
-            <!-- Estado + última actualización -->
-            <div class="card-meta-row">
-              <Pill
-                :label="statusLabel(integration.status)"
-                :btnColor="statusPillColors(integration.status).bg"
-                :circleColor="statusPillColors(integration.status).dot"
-                :textColor="statusPillColors(integration.status).text"
-              />
-              <span v-if="integration.updated_at" class="updated-at">
-                Actualizado {{ fmtDate(integration.updated_at) }}
-              </span>
-            </div>
-
             <!-- Acciones primarias -->
-            <div class="card-actions">
+            <div class="card-actions" :class="{ 'single': !integration.is_configured }">
               <button
                 class="btn-configure"
                 @click="openConfigure(integration)"
@@ -123,6 +133,9 @@
                 :disabled="testingSlug === integration.slug"
                 @click="handleTest(integration)"
               >
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M7.5 1.5 3 7.5h3.5l-1 4 4.5-6H6.5l1-4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                </svg>
                 {{ testingSlug === integration.slug ? 'Probando…' : 'Probar conexión' }}
               </button>
             </div>
@@ -130,34 +143,23 @@
             <!-- Acciones secundarias -->
             <div class="card-secondary-actions">
               <button class="btn-how" @click="openTutorial(integration)">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
                   <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
                   <path d="M6.5 5.5v4M6.5 3.8v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
                 ¿Cómo conectar?
               </button>
 
-              <template v-if="integration.is_configured">
-                <template v-if="confirmingDisconnect === integration.slug">
-                  <button
-                    class="btn-confirm-disconnect"
-                    :disabled="disconnectingSlug === integration.slug"
-                    @click="handleDisconnect(integration)"
-                  >
-                    {{ disconnectingSlug === integration.slug ? 'Cerrando…' : 'Sí, cerrar' }}
-                  </button>
-                  <button class="btn-cancel-disconnect" @click="confirmingDisconnect = null">
-                    Cancelar
-                  </button>
-                </template>
-                <button
-                  v-else
-                  class="btn-disconnect"
-                  @click="confirmingDisconnect = integration.slug"
-                >
-                  Cerrar conexión
-                </button>
-              </template>
+              <button
+                v-if="integration.is_configured"
+                class="btn-disconnect"
+                @click="confirmingDisconnect = integration"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 3h8M4.5 3V2h3v1M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+                </svg>
+                Eliminar configuración
+              </button>
             </div>
 
             <!-- Feedback inline -->
@@ -175,6 +177,37 @@
       v-if="showSuccessAnimation"
       @done="showSuccessAnimation = false"
     />
+
+    <!-- Confirmación de eliminación -->
+    <BaseModal
+      :modelValue="!!confirmingDisconnect"
+      :title="`¿Eliminar la configuración de ${confirmingDisconnect?.nombre ?? ''}?`"
+      max-width="460px"
+      @update:modelValue="(v) => { if (!v && !disconnectingSlug) confirmingDisconnect = null }"
+    >
+      <div class="confirm-body" v-if="confirmingDisconnect">
+        <p class="confirm-text">
+          Se borrarán las credenciales guardadas y Kontrol dejará de enviar notificaciones a
+          {{ confirmingDisconnect.nombre }}. Para volver a usarla tendrás que configurarla de nuevo.
+        </p>
+        <p class="confirm-hint">
+          ¿Solo quieres detenerla por un tiempo? Usa el interruptor
+          <strong>Activa / Pausada</strong> de la tarjeta: conserva la configuración.
+        </p>
+        <div class="confirm-footer">
+          <button
+            class="btn-cancel-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="confirmingDisconnect = null"
+          >Cancelar</button>
+          <button
+            class="btn-confirm-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="handleDisconnect(confirmingDisconnect)"
+          >{{ disconnectingSlug ? 'Eliminando…' : 'Sí, eliminar configuración' }}</button>
+        </div>
+      </div>
+    </BaseModal>
 
     <!-- Modal tutorial -->
     <BaseModal v-model="showTutorial" :title="`Cómo conectar ${tutorialIntegration?.nombre ?? ''}`" max-width="500px">
@@ -247,7 +280,6 @@
 import { ref, computed, onMounted } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ConnectionSuccessAnimation from '../components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue'
 import { useAuthStore } from '../stores/auth'
@@ -306,7 +338,7 @@ const filteredIntegrations = computed(() => {
 function categoryLabel(cat) {
   const map = {
     comunicacion: 'Comunicación',
-    email: 'Email',
+    email: 'Correo electrónico',
     automatizacion: 'Automatización',
     crm: 'CRM',
     storage: 'Almacenamiento',
@@ -314,15 +346,16 @@ function categoryLabel(cat) {
   return map[cat] ?? cat
 }
 
-function statusLabel(status) {
-  const map = { active: 'Activo', inactive: 'Inactivo', error: 'Error' }
-  return map[status] ?? status
+// Describe la conexión; el encendido/pausa lo comunica solo el interruptor.
+function statusLabel(integration) {
+  if (!integration.is_configured) return 'Sin configurar'
+  if (integration.status === 'error') return 'Con error'
+  return 'Configurada'
 }
 
-function statusPillColors(status) {
-  if (status === 'active')  return { bg: 'rgba(52,211,153,0.1)',  dot: '#34d399', text: '#34d399' }
-  if (status === 'error')   return { bg: 'rgba(251,113,133,0.1)', dot: '#fb7185', text: '#fb7185' }
-  return                           { bg: 'rgba(255,255,255,0.05)', dot: '#444',   text: '#666'    }
+function statusKey(integration) {
+  if (!integration.is_configured) return 'none'
+  return integration.status === 'error' ? 'error' : 'ok'
 }
 
 function fmtDate(d) {
@@ -513,12 +546,13 @@ async function handleDisconnect(integration) {
       integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    confirmingDisconnect.value = null
-    setFeedback(integration.slug, 'success', 'Conexión cerrada correctamente.')
+    setFeedback(integration.slug, 'success', 'Configuración eliminada.')
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
   } finally {
     disconnectingSlug.value = null
+    // Cierra el modal también en error para que el mensaje de la tarjeta quede visible
+    confirmingDisconnect.value = null
   }
 }
 

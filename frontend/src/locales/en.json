@@ -1254,6 +1254,7 @@
     "companies": {
       "title": "Companies",
       "subtitle": "All registered companies on the platform",
+      "sortBy": "Sort by:",
       "sortName": "Name",
       "sortProjects": "Projects",
       "sortId": "ID",

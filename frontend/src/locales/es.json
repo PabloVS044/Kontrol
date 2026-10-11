@@ -1254,6 +1254,7 @@
     "companies": {
       "title": "Empresas",
       "subtitle": "Todas las empresas registradas en la plataforma",
+      "sortBy": "Ordenar por:",
       "sortName": "Nombre",
       "sortProjects": "Proyectos",
       "sortId": "ID",
