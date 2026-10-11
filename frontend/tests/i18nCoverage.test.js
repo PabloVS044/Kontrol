@@ -18,12 +18,15 @@ const RAIZ = resolve(__dirname, '..', 'src')
 /** Pantallas y componentes que las pruebas señalaron, ya conectados. */
 const ARCHIVOS = [
   'components/AppNavbar.vue',
+  'components/Footer.vue',
+  'components/Navbar.vue',
   'components/admin/AdminNavbar.vue',
   'components/common/LanguageSelector.vue',
   'components/chat/FloatingChat.vue',
   'components/chat/VideoCallOverlay.vue',
   'views/AgentView.vue',
   'views/ChatView.vue',
+  'views/LandingPage.vue',
   'views/IntegrationsView.vue',
   'views/InviteView.vue',
   'views/OnboardingView.vue',
@@ -42,6 +45,11 @@ const PERMITIDO = new Set([
   'AGENT_API_URL',
   'English',
   'Español',
+  // Nombres propios de redes sociales: no se traducen en ningún idioma.
+  'Twitter',
+  'LinkedIn',
+  'Instagram',
+  'GitHub',
 ])
 
 /** Devuelve el `<template>` sin comentarios. */

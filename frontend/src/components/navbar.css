@@ -139,11 +139,17 @@ ul {
   border-radius: var(--k-radius-lg);
 }
 
+.mobile-lang {
+  display: flex;
+  padding-top: var(--k-space-4);
+  border-top: var(--k-border-width) solid var(--k-color-border);
+  margin-top: var(--k-space-2);
+}
+
 .mobile-actions {
   display: flex;
   gap: 10px; /* --k-space-3 son 12px */
-  padding-top: var(--k-space-4);
-  border-top: var(--k-border-width) solid var(--k-color-border);
+  padding-top: var(--k-space-3);
   margin-top: var(--k-space-2);
 }
 

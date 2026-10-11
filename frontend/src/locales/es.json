@@ -1990,5 +1990,203 @@
     "number": "Escribe un número.",
     "pattern": "Este valor no tiene el formato esperado.",
     "invalid": "Revisa este valor."
+  },
+  "landing": {
+    "nav": {
+      "home": "Inicio",
+      "features": "Funciones",
+      "steps": "Cómo funciona",
+      "companies": "Empresas",
+      "login": "Iniciar sesión",
+      "getStarted": "Crear cuenta",
+      "menu": "Menú"
+    },
+    "hero": {
+      "pill": "El futuro de los negocios",
+      "title": "Toma el control de tu negocio",
+      "copy": "Gestiona proyectos, finanzas, marketing y comunicación desde una sola plataforma. Hecha para quien tiene ambición.",
+      "start": "Empieza a gestionar tu negocio",
+      "seeHow": "Mira cómo funciona"
+    },
+    "control": {
+      "one": "Un solo centro de control.",
+      "every": "Cada parte de tu negocio.",
+      "yours": "Bajo tu control.",
+      "tags": {
+        "projects": "Proyectos",
+        "finance": "Finanzas",
+        "marketing": "Marketing",
+        "inventory": "Inventario"
+      }
+    },
+    "problem": {
+      "titleStart": "Deja de hacer malabares con herramientas para",
+      "titleMark": "llevar tu negocio",
+      "chaos": {
+        "title": "El caos",
+        "subtitle": "Sistemas sueltos que te frenan.",
+        "items": [
+          "Avances de proyecto en hilos de WhatsApp",
+          "Hojas de Excel repartidas por todos lados",
+          "Cuadernos y notas adhesivas",
+          "Facturas perdidas y pagos atrasados"
+        ]
+      },
+      "order": {
+        "title": "El orden",
+        "subtitle": "Un solo ecosistema, pensado para crecer.",
+        "items": [
+          "Mando centralizado de proyectos",
+          "Inteligencia financiera automatizada",
+          "Marketing en un solo lugar",
+          "Análisis de datos con IA"
+        ]
+      }
+    },
+    "solution": {
+      "title": "El centro de control",
+      "copy": "Toda tu operación en un panel de alta fidelidad que se adelanta a tu siguiente movimiento.",
+      "finances": {
+        "title": "Finanzas",
+        "subtitle": "Flujo de caja al día"
+      },
+      "crm": {
+        "title": "CRM de equipo",
+        "subtitle": "Colaborar sin complicaciones"
+      },
+      "marketing": {
+        "title": "Marketing",
+        "subtitle": "Campañas en todos los canales"
+      },
+      "inventory": {
+        "title": "Inventario",
+        "subtitle": "Control de stock automático"
+      }
+    },
+    "features": {
+      "title": "Funciones",
+      "copy": "Todo lo que necesita un negocio que crece, en un solo sistema en vez de cinco pegados con cinta.",
+      "cards": {
+        "analytics": {
+          "label": "Datos",
+          "title": "Analítica",
+          "description": "Sigue el comportamiento de tus usuarios"
+        },
+        "dashboard": {
+          "label": "Resumen",
+          "title": "Panel",
+          "description": "Todos los datos en una vista"
+        },
+        "collaboration": {
+          "label": "Equipo",
+          "title": "Colaboración",
+          "description": "Trabajen juntos sin fricción"
+        },
+        "automation": {
+          "label": "Eficiencia",
+          "title": "Automatización",
+          "description": "Simplifica los flujos de trabajo"
+        },
+        "integration": {
+          "label": "Conexiones",
+          "title": "Integraciones",
+          "description": "Conecta tus herramientas favoritas"
+        },
+        "security": {
+          "label": "Protección",
+          "title": "Seguridad",
+          "description": "Protección de nivel empresarial"
+        }
+      }
+    },
+    "steps": {
+      "title": "Pasos para tener el control",
+      "connect": {
+        "title": "Conecta tu ecosistema",
+        "description": "Reúne tus herramientas en un solo centro de control.",
+        "process": [
+          "Conecta ventas, finanzas y operaciones en un solo lugar",
+          "Importa tus flujos y ordena las entregas entre áreas",
+          "Activa avisos automáticos para todo el equipo"
+        ]
+      },
+      "automate": {
+        "title": "Automatiza tu flujo de trabajo",
+        "description": "Convierte las entregas manuales en procesos que avanzan solos.",
+        "process": [
+          "Define disparadores y condiciones",
+          "Manda cada tarea al equipo que le toca, al instante",
+          "Sigue cada paso sin perder de vista nada"
+        ]
+      },
+      "optimize": {
+        "title": "Mejora los resultados",
+        "description": "Usa los datos en vivo para ajustar procesos y mejorar resultados.",
+        "process": [
+          "Mide tus métricas clave en tiempo real",
+          "Detecta los cuellos de botella y resuélvelos rápido",
+          "Haz crecer el sistema al ritmo de tu equipo"
+        ]
+      }
+    },
+    "companies": {
+      "title": "Hecho para cualquier negocio de hoy",
+      "copy": "Se adapta a cualquier negocio, de una tienda pequeña a una operación grande, con las herramientas para gestionar, crecer y escalar sin esfuerzo",
+      "store": {
+        "tag": "Dueños de tienda",
+        "title": "Control total de tu negocio",
+        "copy": "Gestiona la operación, mide el desempeño y optimiza tu tienda con herramientas que simplifican el día a día.",
+        "items": [
+          "Ventas en tiempo real",
+          "Gestión de inventario",
+          "Datos de clientes y reportes"
+        ]
+      },
+      "auto": {
+        "tag": "Automotriz",
+        "title": "Hecho para operaciones exigentes",
+        "copy": "Maneja flujos complejos, servicios e inventario con la precisión que pide el sector automotriz.",
+        "items": [
+          "Control de servicios y reparaciones",
+          "Inventario de repuestos",
+          "Automatización de flujos"
+        ]
+      },
+      "food": {
+        "tag": "Negocios de comida",
+        "title": "Rápido, confiable, siempre listo",
+        "copy": "Mantén los pedidos en marcha y a los clientes contentos, también en las horas pico.",
+        "items": [
+          "Gestión de pedidos",
+          "Menú actualizado al instante",
+          "Rendimiento en horas pico"
+        ]
+      }
+    },
+    "start": {
+      "title": "Empieza a controlar tu negocio hoy.",
+      "copy": "Más de 50,000 negocios usan Kontrol para dejar atrás el caos y crecer.",
+      "cta": "Entra al centro de control"
+    }
+  },
+  "footer": {
+    "logoAlt": "Logotipo de Kontrol",
+    "tagline": "El centro de control todo en uno para negocios con ambición.",
+    "product": "Producto",
+    "features": "Funciones",
+    "commandCenter": "Centro de control",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Precios",
+    "company": "Empresa",
+    "about": "Nosotros",
+    "blog": "Blog",
+    "careers": "Empleo",
+    "contact": "Contacto",
+    "legal": "Legal",
+    "privacy": "Aviso de privacidad",
+    "terms": "Términos del servicio",
+    "cookies": "Política de cookies",
+    "rights": "© {year} Kontrol. Todos los derechos reservados.",
+    "builtFor": "Hecho para quien tiene ambición."
   }
 }
