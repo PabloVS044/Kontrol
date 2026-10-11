@@ -1,0 +1,10 @@
+==> Restableciendo ambiente de pruebas...
+==> Sembrando ambiente de pruebas...
+==> Seed completado.
+==> Reset completado.
+duration: 7 s
+ db_size | vol_prod | movs | vol_proj 
+---------+----------+------+----------
+ 14 MB   |        0 |    7 |        0
+(1 row)
+

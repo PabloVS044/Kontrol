@@ -1,0 +1,42 @@
+2026-10-11T07:16:35Z k6 N3 project=4
+    ✓ v3_reports_list: 200
+    ✓ v4_reports_summary: 200
+    ✓ v5_pos_products: 200
+
+    CUSTOM
+    response_kb.........................: avg=1343.261807 min=0.71582     med=43.408203   max=8104.480469 p(90)=8104.480469 p(95)=8104.480469
+      { scenario:v1_projects_list }.....: avg=8.769531    min=8.769531    med=8.769531    max=8.769531    p(90)=8.769531    p(95)=8.769531   
+      { scenario:v2_project_metrics }...: avg=0.71582     min=0.71582     med=0.71582     max=0.71582     p(90)=0.71582     p(95)=0.71582    
+      { scenario:v3_reports_list }......: avg=1786.868164 min=1786.868164 med=1786.868164 max=1786.868164 p(90)=1786.868164 p(95)=1786.868164
+      { scenario:v4_reports_summary }...: avg=43.408203   min=43.408203   med=43.408203   max=43.408203   p(90)=43.408203   p(95)=43.408203  
+      { scenario:v5_pos_products }......: avg=8104.480469 min=8104.480469 med=8104.480469 max=8104.480469 p(90)=8104.480469 p(95)=8104.480469
+
+    HTTP
+    http_req_duration...................: avg=305.11ms    min=47.52ms     med=157.25ms    max=3.78s       p(90)=840.32ms    p(95)=1.54s      
+      { expected_response:true }........: avg=305.11ms    min=47.52ms     med=157.25ms    max=3.78s       p(90)=840.32ms    p(95)=1.54s      
+      { scenario:v1_projects_list }.....: avg=71.89ms     min=49.15ms     med=66.25ms     max=624.59ms    p(90)=68.34ms     p(95)=72.15ms    
+      { scenario:v2_project_metrics }...: avg=192.15ms    min=47.52ms     med=178.5ms     max=466.48ms    p(90)=243.72ms    p(95)=262.61ms   
+      { scenario:v3_reports_list }......: avg=244.31ms    min=173.14ms    med=200.65ms    max=1.42s       p(90)=340.52ms    p(95)=499.46ms   
+      { scenario:v4_reports_summary }...: avg=139.67ms    min=77.71ms     med=129.32ms    max=535.85ms    p(90)=173.57ms    p(95)=197.13ms   
+      { scenario:v5_pos_products }......: avg=1.5s        min=569.83ms    med=1.46s       max=3.78s       p(90)=2.18s       p(95)=2.41s      
+    http_req_failed.....................: 0.00%  0 out of 1053
+      { scenario:v1_projects_list }.....: 0.00%  0 out of 285
+      { scenario:v2_project_metrics }...: 0.00%  0 out of 144
+      { scenario:v3_reports_list }......: 0.00%  0 out of 241
+      { scenario:v4_reports_summary }...: 0.00%  0 out of 265
+      { scenario:v5_pos_products }......: 0.00%  0 out of 118
+    http_reqs...........................: 1053   3.496998/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.45s       min=1.05s       med=1.18s       max=4.84s       p(90)=2.24s       p(95)=2.63s      
+    iterations..........................: 1043   3.463788/s
+    vus.................................: 1      min=1         max=9 
+    vus_max.............................: 10     min=10        max=10
+
+    NETWORK
+    data_received.......................: 1.4 GB 4.8 MB/s
+    data_sent...........................: 1.5 MB 4.9 kB/s
+
+
+
+2026-10-11T07:21:37Z k6 N3 exit=99

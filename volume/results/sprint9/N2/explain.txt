@@ -1,0 +1,304 @@
+################ 00_rtt.sql
+                                     QUERY PLAN                                     
+------------------------------------------------------------------------------------
+ Result  (cost=0.00..0.01 rows=1 width=4) (actual time=0.002..0.002 rows=1 loops=1)
+ Planning Time: 0.052 ms
+ Execution Time: 0.024 ms
+(3 rows)
+
+################ 01_projects_list.sql
+                                                QUERY PLAN                                                
+----------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=5.04..5.05 rows=1 width=8) (actual time=0.047..0.047 rows=1 loops=1)
+   Buffers: shared hit=3
+   ->  Seq Scan on proyecto  (cost=0.00..4.91 rows=53 width=0) (actual time=0.017..0.039 rows=53 loops=1)
+         Filter: (id_empresa = 1)
+         Rows Removed by Filter: 100
+         Buffers: shared hit=3
+ Planning Time: 0.077 ms
+ Execution Time: 0.762 ms
+(8 rows)
+
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.14..2.15 rows=20 width=98) (actual time=0.081..0.093 rows=20 loops=1)
+   Buffers: shared hit=4
+   ->  Index Scan using proyecto_empresa_id_unique on proyecto  (cost=0.14..5.47 rows=53 width=98) (actual time=0.080..0.090 rows=20 loops=1)
+         Index Cond: (id_empresa = 1)
+         Buffers: shared hit=4
+ Planning Time: 0.126 ms
+ Execution Time: 0.120 ms
+(7 rows)
+
+################ 02_project_metrics.sql
+                                                         QUERY PLAN                                                          
+-----------------------------------------------------------------------------------------------------------------------------
+ Index Only Scan using proyecto_pkey on proyecto  (cost=0.14..2.36 rows=1 width=4) (actual time=0.008..0.009 rows=1 loops=1)
+   Index Cond: (id_proyecto = 4)
+   Heap Fetches: 1
+   Buffers: shared hit=2
+ Planning Time: 0.069 ms
+ Execution Time: 0.029 ms
+(6 rows)
+
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=841.91..841.96 rows=4 width=14) (actual time=38.530..38.532 rows=4 loops=1)
+   Group Key: estado
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=178
+   ->  Index Scan using tarea_proyecto_id_unique on tarea  (cost=0.29..792.07 rows=9967 width=10) (actual time=2.513..35.818 rows=10000 loops=1)
+         Index Cond: (id_proyecto = 4)
+         Buffers: shared hit=178
+ Planning Time: 0.147 ms
+ Execution Time: 38.599 ms
+(9 rows)
+
+                                                          QUERY PLAN                                                           
+-------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=222.04..222.05 rows=1 width=64) (actual time=13.512..13.513 rows=1 loops=1)
+   Buffers: shared hit=87
+   ->  Seq Scan on presupuesto_actividad  (cost=0.00..212.04 rows=2000 width=12) (actual time=0.658..13.173 rows=2000 loops=1)
+         Filter: (id_proyecto = 4)
+         Rows Removed by Filter: 8003
+         Buffers: shared hit=87
+ Planning Time: 1.354 ms
+ Execution Time: 13.548 ms
+(8 rows)
+
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=5061.37..5061.43 rows=4 width=43) (actual time=61.456..61.458 rows=4 loops=1)
+   Group Key: tipo
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=903
+   ->  Bitmap Heap Scan on movimiento_inventario  (cost=668.84..4448.11 rows=49061 width=17) (actual time=18.329..38.530 rows=50000 loops=1)
+         Recheck Cond: (id_proyecto = 4)
+         Heap Blocks: exact=634
+         Buffers: shared hit=903
+         ->  Bitmap Index Scan on movimiento_inventario_proyecto_fecha_idx  (cost=0.00..656.58 rows=49061 width=0) (actual time=18.194..18.195 rows=50000 loops=1)
+               Index Cond: (id_proyecto = 4)
+               Buffers: shared hit=269
+ Planning Time: 1.882 ms
+ Execution Time: 61.509 ms
+(13 rows)
+
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=9.08..9.16 rows=6 width=36) (actual time=1.771..1.773 rows=1 loops=1)
+   Group Key: rp.nombre
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=1
+   ->  Nested Loop Left Join  (cost=0.16..9.05 rows=6 width=32) (actual time=1.758..1.764 rows=6 loops=1)
+         Buffers: shared hit=1
+         ->  Seq Scan on proyecto_usuario pu  (cost=0.00..1.30 rows=6 width=4) (actual time=1.181..1.183 rows=6 loops=1)
+               Filter: (id_proyecto = 4)
+               Rows Removed by Filter: 18
+               Buffers: shared hit=1
+         ->  Memoize  (cost=0.16..1.28 rows=1 width=36) (actual time=0.096..0.096 rows=0 loops=6)
+               Cache Key: pu.id_rol_proyecto
+               Cache Mode: logical
+               Hits: 5  Misses: 1  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+               ->  Index Scan using rol_proyecto_pkey on rol_proyecto rp  (cost=0.15..1.27 rows=1 width=36) (actual time=0.005..0.005 rows=0 loops=1)
+                     Index Cond: (id_rol_proyecto = pu.id_rol_proyecto)
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 2.750 ms
+ Execution Time: 1.875 ms
+(20 rows)
+
+                                                                                      QUERY PLAN                                                                                       
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=1082.49..1082.50 rows=1 width=20) (actual time=219.903..219.904 rows=1 loops=1)
+   Buffers: shared hit=4190
+   ->  Index Scan using project_progress_entry_project_happened_idx on project_progress_entry  (cost=0.41..931.48 rows=10067 width=15) (actual time=1.992..217.474 rows=10000 loops=1)
+         Index Cond: (id_proyecto = 4)
+         Buffers: shared hit=4190
+ Planning Time: 0.756 ms
+ Execution Time: 219.950 ms
+(7 rows)
+
+                                                                                   QUERY PLAN                                                                                    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.41..0.51 rows=1 width=16) (actual time=0.026..0.026 rows=1 loops=1)
+   Buffers: shared hit=4
+   ->  Index Scan using project_progress_entry_project_happened_idx on project_progress_entry  (cost=0.41..931.48 rows=10067 width=16) (actual time=0.025..0.025 rows=1 loops=1)
+         Index Cond: (id_proyecto = 4)
+         Buffers: shared hit=4
+ Planning Time: 0.088 ms
+ Execution Time: 0.048 ms
+(7 rows)
+
+################ 03_reports_list.sql
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=585.16..585.47 rows=125 width=83) (actual time=197.383..197.699 rows=5001 loops=1)
+   Sort Key: r.fecha_generacion DESC
+   Sort Method: quicksort  Memory: 542kB
+   Buffers: shared hit=260
+   ->  Hash Left Join  (cost=6.44..580.80 rows=125 width=83) (actual time=0.739..186.158 rows=5001 loops=1)
+         Hash Cond: (r.id_proyecto = p.id_proyecto)
+         Filter: (COALESCE(r.id_empresa, p.id_empresa) = 1)
+         Rows Removed by Filter: 20000
+         Buffers: shared hit=260
+         ->  Seq Scan on reporte r  (cost=0.00..506.96 rows=24996 width=83) (actual time=0.658..89.571 rows=25001 loops=1)
+               Buffers: shared hit=257
+         ->  Hash  (cost=4.53..4.53 rows=153 width=8) (actual time=0.066..0.068 rows=153 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 14kB
+               Buffers: shared hit=3
+               ->  Seq Scan on proyecto p  (cost=0.00..4.53 rows=153 width=8) (actual time=0.011..0.039 rows=153 loops=1)
+                     Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=2
+ Planning Time: 0.198 ms
+ Execution Time: 198.003 ms
+(20 rows)
+
+################ 04_reports_summary.sql
+                                                                                         QUERY PLAN                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2575.11..2575.25 rows=53 width=202) (actual time=138.108..138.119 rows=53 loops=1)
+   Sort Key: p.fecha_inicio DESC
+   Sort Method: quicksort  Memory: 32kB
+   Buffers: shared hit=1041
+   ->  Nested Loop Left Join  (cost=2511.52..2573.60 rows=53 width=202) (actual time=88.758..137.941 rows=53 loops=1)
+         Buffers: shared hit=1041
+         ->  Hash Right Join  (cost=2511.11..2516.80 rows=53 width=170) (actual time=85.106..85.309 rows=53 loops=1)
+               Hash Cond: (tarea.id_proyecto = p.id_proyecto)
+               Buffers: shared hit=829
+               ->  HashAggregate  (cost=2238.58..2241.64 rows=153 width=20) (actual time=80.010..80.113 rows=153 loops=1)
+                     Group Key: tarea.id_proyecto
+                     Batches: 1  Memory Usage: 64kB
+                     Buffers: shared hit=739
+                     ->  Seq Scan on tarea  (cost=0.00..1238.86 rows=49986 width=14) (actual time=0.024..35.303 rows=50008 loops=1)
+                           Buffers: shared hit=739
+               ->  Hash  (cost=271.87..271.87 rows=53 width=154) (actual time=4.528..4.532 rows=53 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 16kB
+                     Buffers: shared hit=90
+                     ->  Hash Right Join  (cost=267.63..271.87 rows=53 width=154) (actual time=4.405..4.509 rows=53 loops=1)
+                           Hash Cond: (presupuesto_actividad.id_proyecto = p.id_proyecto)
+                           Buffers: shared hit=90
+                           ->  HashAggregate  (cost=262.05..264.35 rows=153 width=68) (actual time=3.742..3.810 rows=153 loops=1)
+                                 Group Key: presupuesto_actividad.id_proyecto
+                                 Batches: 1  Memory Usage: 160kB
+                                 Buffers: shared hit=87
+                                 ->  Seq Scan on presupuesto_actividad  (cost=0.00..187.03 rows=10003 width=16) (actual time=0.007..0.777 rows=10003 loops=1)
+                                       Buffers: shared hit=87
+                           ->  Hash  (cost=4.91..4.91 rows=53 width=90) (actual time=0.063..0.064 rows=53 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                 Buffers: shared hit=3
+                                 ->  Seq Scan on proyecto p  (cost=0.00..4.91 rows=53 width=90) (actual time=0.018..0.043 rows=53 loops=1)
+                                       Filter: (id_empresa = 1)
+                                       Rows Removed by Filter: 100
+                                       Buffers: shared hit=3
+         ->  Limit  (cost=0.41..1.05 rows=1 width=16) (actual time=0.991..0.991 rows=1 loops=53)
+               Buffers: shared hit=212
+               ->  Index Scan using project_progress_entry_project_happened_idx on project_progress_entry  (cost=0.41..208.59 rows=327 width=16) (actual time=0.990..0.990 rows=1 loops=53)
+                     Index Cond: (id_proyecto = p.id_proyecto)
+                     Buffers: shared hit=212
+ Planning Time: 0.370 ms
+ Execution Time: 138.932 ms
+(41 rows)
+
+################ 05_pos_products_project.sql
+                                                                                       QUERY PLAN                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=6570.21..6974.33 rows=10103 width=155) (actual time=123.513..155.672 rows=10000 loops=1)
+   Group Key: p.id_producto, proj.nombre, c.id_categoria
+   Buffers: shared hit=1106, temp read=953 written=957
+   ->  Sort  (cost=6570.21..6595.46 rows=10103 width=142) (actual time=123.493..131.157 rows=48000 loops=1)
+         Sort Key: p.id_producto, proj.nombre, c.id_categoria
+         Sort Method: external merge  Disk: 7624kB
+         Buffers: shared hit=1106, temp read=953 written=957
+         ->  Nested Loop  (cost=1681.12..5898.23 rows=10103 width=142) (actual time=26.991..79.972 rows=48000 loops=1)
+               Buffers: shared hit=1106
+               ->  Index Scan using proyecto_empresa_id_unique on proyecto proj  (cost=0.14..2.36 rows=1 width=19) (actual time=0.008..0.012 rows=1 loops=1)
+                     Index Cond: ((id_empresa = 1) AND (id_proyecto = 4))
+                     Buffers: shared hit=2
+               ->  Hash Left Join  (cost=1680.97..5794.84 rows=10103 width=127) (actual time=26.980..72.901 rows=48000 loops=1)
+                     Hash Cond: (p.id_categoria = c.id_categoria)
+                     Buffers: shared hit=1104
+                     ->  Hash Right Join  (cost=1679.64..5765.46 rows=10103 width=110) (actual time=26.948..61.455 rows=48000 loops=1)
+                           Hash Cond: (m.id_producto = p.id_producto)
+                           Buffers: shared hit=1103
+                           ->  Bitmap Heap Scan on movimiento_inventario m  (cost=668.25..4631.49 rows=46696 width=19) (actual time=3.644..21.102 rows=47500 loops=1)
+                                 Recheck Cond: (id_proyecto = 4)
+                                 Filter: ((tipo)::text = ANY ('{ENTRADA,SALIDA,AJUSTE}'::text[]))
+                                 Rows Removed by Filter: 2500
+                                 Heap Blocks: exact=634
+                                 Buffers: shared hit=903
+                                 ->  Bitmap Index Scan on movimiento_inventario_proyecto_fecha_idx  (cost=0.00..656.58 rows=49061 width=0) (actual time=3.553..3.553 rows=50000 loops=1)
+                                       Index Cond: (id_proyecto = 4)
+                                       Buffers: shared hit=269
+                           ->  Hash  (cost=885.10..885.10 rows=10103 width=99) (actual time=23.293..23.294 rows=10000 loops=1)
+                                 Buckets: 16384  Batches: 1  Memory Usage: 1477kB
+                                 Buffers: shared hit=200
+                                 ->  Index Scan using producto_proyecto_id_unique on producto p  (cost=0.29..885.10 rows=10103 width=99) (actual time=0.057..3.732 rows=10000 loops=1)
+                                       Index Cond: (id_proyecto = 4)
+                                       Buffers: shared hit=200
+                     ->  Hash  (cost=1.15..1.15 rows=15 width=21) (actual time=0.021..0.022 rows=15 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on categoria c  (cost=0.00..1.15 rows=15 width=21) (actual time=0.009..0.011 rows=15 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=13
+ Planning Time: 0.578 ms
+ Execution Time: 157.586 ms
+(42 rows)
+
+################ 06_pos_products_company.sql
+                                                                           QUERY PLAN                                                                            
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=0.58..2576.96 rows=17325 width=135) (actual time=0.028..32.897 rows=21178 loops=1)
+   Buffers: shared hit=1264
+   ->  Merge Join  (cost=0.43..2144.48 rows=17325 width=118) (actual time=0.020..24.085 rows=21178 loops=1)
+         Merge Cond: (p.id_proyecto = proj.id_proyecto)
+         Buffers: shared hit=1234
+         ->  Index Scan using producto_proyecto_id_unique on producto p  (cost=0.29..1840.59 rows=50013 width=99) (actual time=0.010..14.032 rows=50013 loops=1)
+               Buffers: shared hit=1230
+         ->  Index Scan using proyecto_empresa_id_unique on proyecto proj  (cost=0.14..5.47 rows=53 width=19) (actual time=0.006..0.021 rows=53 loops=1)
+               Index Cond: (id_empresa = 1)
+               Buffers: shared hit=4
+   ->  Memoize  (cost=0.15..0.16 rows=1 width=21) (actual time=0.000..0.000 rows=0 loops=21178)
+         Cache Key: p.id_categoria
+         Cache Mode: logical
+         Hits: 21162  Misses: 16  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+         Buffers: shared hit=30
+         ->  Index Scan using categoria_pkey on categoria c  (cost=0.14..0.15 rows=1 width=21) (actual time=0.001..0.001 rows=1 loops=16)
+               Index Cond: (id_categoria = p.id_categoria)
+               Buffers: shared hit=30
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.345 ms
+ Execution Time: 34.627 ms
+(22 rows)
+
+################ 07_barcode_in_project.sql
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using producto_codigo_barras_unique on producto p  (cost=0.29..2.51 rows=1 width=32) (actual time=0.023..0.024 rows=1 loops=1)
+   Index Cond: ((id_proyecto = 4) AND ((codigo_barras)::text = 'VOL-17999'::text))
+   Buffers: shared hit=3
+ Planning Time: 0.134 ms
+ Execution Time: 0.070 ms
+(5 rows)
+
+################ 08_barcode_company.sql
+                                                                    QUERY PLAN                                                                    
+--------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.29..132.97 rows=1 width=36) (actual time=0.039..0.244 rows=1 loops=1)
+   Buffers: shared hit=110
+   ->  Seq Scan on proyecto proj  (cost=0.00..4.91 rows=53 width=4) (actual time=0.013..0.039 rows=53 loops=1)
+         Filter: (id_empresa = 1)
+         Rows Removed by Filter: 100
+         Buffers: shared hit=3
+   ->  Index Scan using producto_codigo_barras_unique on producto p  (cost=0.29..2.41 rows=1 width=36) (actual time=0.004..0.004 rows=0 loops=53)
+         Index Cond: ((id_proyecto = proj.id_proyecto) AND ((codigo_barras)::text = 'VOL-17999'::text))
+         Buffers: shared hit=107
+ Planning:
+   Buffers: shared hit=10
+ Planning Time: 0.291 ms
+ Execution Time: 0.270 ms
+(13 rows)
+
