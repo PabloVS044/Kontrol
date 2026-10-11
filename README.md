@@ -273,14 +273,18 @@ La caída del 20/09/2026 es una corrección de medición, no una regresión. No 
 
 ### Umbrales vigentes
 
-Línea base medida el 20/09/2026.
+Línea base medida el 20/09/2026. Remedido el 11/10/2026.
 
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
-| Backend — actual | 15 | 9 | 11 | 15 |
-| Backend — cierre Sprint 8 | 20 | 14 | 16 | 20 |
+| Backend — medido 11/10/2026 | 37.79 | 24.26 | 35.72 | 38.33 |
+| Backend — actual (Sprint 8 + Sprint 9) | 25 | 19 | 21 | 25 |
+| Backend — cierre Sprint 10 | 30 | 24 | 26 | 30 |
+| Frontend — medido 11/10/2026 | 10.61 | 10.43 | 12.72 | 10.96 |
 | Frontend — actual | 9 | 8 | 11 | 9 |
-| Frontend — cierre Sprint 8 | 14 | 13 | 16 | 14 |
+| Frontend — meta Sprint 8, no alcanzada | 14 | 13 | 16 | 14 |
+
+La subida del Sprint 8 no se aplicó a tiempo en ningún workspace. En backend se aplican juntas la del Sprint 8 y la del Sprint 9 (+10 sobre la base), y la cobertura medida las supera con al menos 5 puntos de margen. En frontend la cobertura medida no alcanza ni la meta del Sprint 8, así que el umbral se queda en 9/8/11/9: subirlo dejaría el pipeline en rojo sin que ninguna prueba hubiera empeorado. Queda como incumplimiento de la regla 3 hasta que entren las pruebas que faltan.
 
 Por módulo crítico, con su medición real al lado:
 

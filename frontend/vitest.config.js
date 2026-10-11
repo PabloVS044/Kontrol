@@ -66,9 +66,13 @@ export default mergeConfig(
           lines: 9, //      base real 10.46 % (848/8104)
 
           // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-          // umbral global, contados desde esta base nueva. Próxima subida, al
-          // cierre del Sprint 8: 14/13/16/14. La política completa está en
-          // el README, sección «Cobertura de código».
+          // umbral global, contados desde esta base nueva. La subida del
+          // Sprint 8 (14/13/16/14) NO se aplica: medido el 11/10/2026,
+          // 10.61 / 10.43 / 12.72 / 10.96 (1008/9494, 644/6172, 274/2154,
+          // 922/8411), por debajo de las cuatro metas. Subirlo pondría el
+          // pipeline en rojo; el umbral se queda donde está hasta que entren
+          // las pruebas que faltan. La política completa está en el README,
+          // sección «Cobertura de código».
 
           // Umbrales por módulo crítico. Los globs se resuelven con picomatch
           // contra la ruta relativa a la raíz del workspace, y los archivos
