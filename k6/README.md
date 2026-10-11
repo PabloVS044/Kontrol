@@ -65,11 +65,40 @@ docker compose -f docker-compose.prod.yml -f docker-compose.test.yml \
 - `load-test.js` — batería de carga completa, C1 a C5 secuenciales.
 - `stress-test.js` — un escenario de estrés por corrida (`-e SCENARIO=e1..e5`),
   rampa creciente hasta la condición de parada de §8.2 o el techo de 500 VUs.
+- `ci-load-test.js` — perfil corto de C1 a C5 (5–10 VUs, ~3.5 min) para el
+  pipeline de CI. Mismos escenarios y mismos umbrales de §7.2; no mide
+  capacidad, detecta regresiones.
 
 ## Integración continua
 
-`.github/workflows/load-test.yml`, disparo manual únicamente
-(`workflow_dispatch`) — la batería de carga tarda ~40 min y ambas modifican
-el ambiente compartido con las sesiones de UX de SCRUM-25, así que correrlas
-en cada PR no tiene sentido. El resumen de cada corrida (`summary.json`,
-salida de `--summary-export`) se publica como artefacto descargable.
+Dos workflows, con propósitos distintos:
+
+- **`.github/workflows/ci.yml`, job «Carga - k6»** — automático en cada pull
+  request a `main` o `develop`. Levanta dentro del runner un PostgreSQL
+  desechable, carga `backend/kontrol.sql`, arranca el backend, corre
+  `npm run seed:test` y ejecuta `ci-load-test.js` contra `localhost`. No toca
+  el ambiente compartido ni necesita reinicio. Si se cruza un umbral, k6 sale
+  con código distinto de cero y el job queda en rojo. El resumen
+  (`k6-summary.json`) y el log del backend se publican como artefacto.
+- **`.github/workflows/load-test.yml`** — disparo manual únicamente
+  (`workflow_dispatch`). Corre la batería completa (`load-test.js`, ~40 min) o
+  un escenario de estrés contra el ambiente de pruebas de SCRUM-25, que
+  modifica y comparte con las sesiones de UX, así que correrla en cada PR no
+  tiene sentido. El resumen de cada corrida (`summary.json`) se publica como
+  artefacto descargable.
+
+Las cifras del job de CI no son comparables con las de
+`docs/pruebas-carga-estres.md`: corren en otra máquina, con menos usuarios y
+sin la latencia de red de la VM.
+
+### Correr el perfil de CI en local
+
+```bash
+docker run --rm --network host -v "$(pwd)/k6:/scripts:ro" \
+  -e BASE_URL=http://localhost:3000 -e TEST_HOST_MARKER=localhost:3000 \
+  grafana/k6:2.3.0 run /scripts/ci-load-test.js
+```
+
+`TEST_HOST_MARKER` le dice a la guardia de `lib/config.js` qué host es
+aceptable; solo se usa contra un backend local o desechable, nunca contra
+producción.
