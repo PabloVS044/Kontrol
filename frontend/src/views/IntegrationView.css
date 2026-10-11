@@ -519,10 +519,12 @@
 }
 
 .btn-disconnect {
-  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: none;
   border: none;
-  color: var(--TextFaint);
+  color: var(--TextMuted);
   font-size: 12px;
   font-family: var(--font-sans);
   cursor: pointer;
@@ -534,10 +536,38 @@
   color: #fb7185;
 }
 
+/* ── Confirmación de eliminación ── */
+.confirm-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.confirm-text,
+.confirm-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--TextSoft);
+}
+
+.confirm-hint {
+  padding: 10px 12px;
+  background: rgba(202, 168, 96, 0.06);
+  border: 1px solid rgba(202, 168, 96, 0.2);
+}
+
+.confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 .btn-confirm-disconnect {
-  margin-left: auto;
-  padding: 4px 10px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-family: var(--font-sans);
   background: rgba(251, 113, 133, 0.1);
   border: 1px solid rgba(251, 113, 133, 0.35);
@@ -556,8 +586,8 @@
 }
 
 .btn-cancel-disconnect {
-  padding: 4px 10px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-family: var(--font-sans);
   background: #111111;
   border: 1px solid #2a2a2a;

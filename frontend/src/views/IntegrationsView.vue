@@ -148,27 +148,16 @@
                 ¿Cómo conectar?
               </button>
 
-              <template v-if="integration.is_configured">
-                <template v-if="confirmingDisconnect === integration.slug">
-                  <button
-                    class="btn-confirm-disconnect"
-                    :disabled="disconnectingSlug === integration.slug"
-                    @click="handleDisconnect(integration)"
-                  >
-                    {{ disconnectingSlug === integration.slug ? 'Cerrando…' : 'Sí, cerrar' }}
-                  </button>
-                  <button class="btn-cancel-disconnect" @click="confirmingDisconnect = null">
-                    Cancelar
-                  </button>
-                </template>
-                <button
-                  v-else
-                  class="btn-disconnect"
-                  @click="confirmingDisconnect = integration.slug"
-                >
-                  Cerrar conexión
-                </button>
-              </template>
+              <button
+                v-if="integration.is_configured"
+                class="btn-disconnect"
+                @click="confirmingDisconnect = integration"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 3h8M4.5 3V2h3v1M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+                </svg>
+                Eliminar configuración
+              </button>
             </div>
 
             <!-- Feedback inline -->
@@ -186,6 +175,37 @@
       v-if="showSuccessAnimation"
       @done="showSuccessAnimation = false"
     />
+
+    <!-- Confirmación de eliminación -->
+    <BaseModal
+      :modelValue="!!confirmingDisconnect"
+      :title="`¿Eliminar la configuración de ${confirmingDisconnect?.nombre ?? ''}?`"
+      max-width="460px"
+      @update:modelValue="(v) => { if (!v && !disconnectingSlug) confirmingDisconnect = null }"
+    >
+      <div class="confirm-body" v-if="confirmingDisconnect">
+        <p class="confirm-text">
+          Se borrarán las credenciales guardadas y Kontrol dejará de enviar notificaciones a
+          {{ confirmingDisconnect.nombre }}. Para volver a usarla tendrás que configurarla de nuevo.
+        </p>
+        <p class="confirm-hint">
+          ¿Solo quieres detenerla por un tiempo? Usa el interruptor
+          <strong>Activa / Pausada</strong> de la tarjeta: conserva la configuración.
+        </p>
+        <div class="confirm-footer">
+          <button
+            class="btn-cancel-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="confirmingDisconnect = null"
+          >Cancelar</button>
+          <button
+            class="btn-confirm-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="handleDisconnect(confirmingDisconnect)"
+          >{{ disconnectingSlug ? 'Eliminando…' : 'Sí, eliminar configuración' }}</button>
+        </div>
+      </div>
+    </BaseModal>
 
     <!-- Modal tutorial -->
     <BaseModal v-model="showTutorial" :title="`Cómo conectar ${tutorialIntegration?.nombre ?? ''}`" max-width="500px">
@@ -524,12 +544,13 @@ async function handleDisconnect(integration) {
       integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    confirmingDisconnect.value = null
-    setFeedback(integration.slug, 'success', 'Conexión cerrada correctamente.')
+    setFeedback(integration.slug, 'success', 'Configuración eliminada.')
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
   } finally {
     disconnectingSlug.value = null
+    // Cierra el modal también en error para que el mensaje de la tarjeta quede visible
+    confirmingDisconnect.value = null
   }
 }
 
