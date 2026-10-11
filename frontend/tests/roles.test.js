@@ -4,6 +4,14 @@ import es from '@/locales/es.json'
 import en from '@/locales/en.json'
 import { translateRole } from '@/utils/roles.js'
 
+/** Todas las claves del diccionario, en notación de punto. */
+const planas = (obj, prefijo = '') =>
+  Object.entries(obj).flatMap(([clave, valor]) =>
+    valor !== null && typeof valor === 'object'
+      ? planas(valor, `${prefijo}${clave}.`)
+      : [`${prefijo}${clave}`],
+  )
+
 /**
  * Roles en la interfaz (pruebas 9 y 10).
  *
@@ -52,19 +60,30 @@ describe('translateRole', () => {
  * que es exactamente lo que encontraron los cinco participantes.
  */
 describe('diccionarios en y es', () => {
-  const planas = (obj, prefijo = '') =>
-    Object.entries(obj).flatMap(([clave, valor]) =>
-      valor !== null && typeof valor === 'object'
-        ? planas(valor, `${prefijo}${clave}.`)
-        : [`${prefijo}${clave}`],
-    )
-
   it('cubren exactamente las mismas claves', () => {
     const enKeys = planas(en).sort()
     const esKeys = planas(es).sort()
 
     expect(esKeys.filter((k) => !enKeys.includes(k))).toEqual([])
     expect(enKeys.filter((k) => !esKeys.includes(k))).toEqual([])
+  })
+
+  it('todos los mensajes compilan', () => {
+    // vue-i18n reserva `@`, `{` y `|` para su propia sintaxis: un texto con un
+    // correo o un usuario de Telegram sin escapar revienta al renderizarse,
+    // y solo se nota al abrir esa pantalla concreta.
+    for (const locale of ['en', 'es']) {
+      const { global } = createI18n({
+        legacy: false,
+        locale,
+        fallbackLocale: 'en',
+        messages: { es, en },
+      })
+
+      for (const clave of planas(locale === 'en' ? en : es)) {
+        expect(() => global.t(clave), `${locale}: ${clave}`).not.toThrow()
+      }
+    }
   })
 
   it('el menú no usa un término en inglés como si fuera español', () => {

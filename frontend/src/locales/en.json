@@ -1951,10 +1951,10 @@
         "Copy the generated webhook URL and paste it into the Kontrol setup form."
       ],
       "telegram": [
-        "Open Telegram and search for the @BotFather bot.",
+        "Open Telegram and search for the {'@'}BotFather bot.",
         "Send the /newbot command and follow the instructions to pick a name and username for your bot.",
         "BotFather will hand you a bot token. Copy it and keep it safe.",
-        "To get your chat ID: start a conversation with your bot and then query the API with the token, or use the @userinfobot bot.",
+        "To get your chat ID: start a conversation with your bot and then query the API with the token, or use the {'@'}userinfobot bot.",
         "Enter the bot token and the chat ID in the Kontrol setup form."
       ],
       "twilio-sms": [
@@ -1976,5 +1976,19 @@
         "Save the changes and use \"Test connection\" to check that everything works."
       ]
     }
+  },
+  "validation": {
+    "required": "Please fill out this field.",
+    "selectOption": "Please pick an option.",
+    "email": "Enter an email address, like name{'@'}company.com.",
+    "url": "Enter a full address, starting with https://.",
+    "tooShort": "Use at least {min} characters.",
+    "tooLong": "Use {max} characters at most.",
+    "min": "Enter {min} or more.",
+    "max": "Enter {max} or less.",
+    "step": "Use steps of {step}.",
+    "number": "Enter a number.",
+    "pattern": "This value does not have the expected format.",
+    "invalid": "Check this value."
   }
 }
