@@ -10,16 +10,19 @@
 
     <template v-else>
       <!-- Sort controls -->
-      <div class="sort-bar">
+      <div class="sort-bar" role="group" :aria-label="$t('admin.companies.sortBy')">
+        <span class="sort-label">{{ $t('admin.companies.sortBy') }}</span>
         <button
           v-for="opt in sortOptions"
           :key="opt.key"
+          type="button"
           class="sort-btn"
           :class="{ active: sortKey === opt.key }"
+          :aria-pressed="sortKey === opt.key"
           @click="toggleSort(opt.key)"
         >
           {{ opt.label }}
-          <span v-if="sortKey === opt.key" class="sort-arrow">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
+          <span class="sort-arrow" aria-hidden="true">{{ sortKey === opt.key ? (sortDir === 'asc' ? '↑' : '↓') : '↕' }}</span>
         </button>
         <span class="sort-count">{{ $t('admin.companies.count', { count: sorted.length }) }}</span>
       </div>
@@ -179,13 +182,21 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 
+.sort-label {
+  font-size: 12px;
+  color: var(--TextMuted);
+  font-family: var(--font-sans);
+}
+
 .sort-btn {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: #111111;
-  border: 1px solid var(--Border);
-  color: var(--TextMuted);
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: var(--TextSoft);
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
@@ -195,14 +206,18 @@ onMounted(async () => {
   transition: border-color 0.15s, color 0.15s;
 }
 
-.sort-btn:hover { border-color: var(--Background3); color: var(--Text); }
+.sort-btn:hover { border-color: #555; background: #202020; color: var(--Text); }
+
+.sort-btn:focus-visible { outline: 2px solid var(--Primary); outline-offset: 2px; }
 
 .sort-btn.active {
   border-color: var(--Secondary);
+  background: rgba(202, 168, 96, 0.1);
   color: var(--Primary);
 }
 
-.sort-arrow { font-size: 11px; }
+.sort-arrow { font-size: 11px; opacity: 0.6; }
+.sort-btn.active .sort-arrow { opacity: 1; }
 
 .sort-count {
   font-size: 12px;
