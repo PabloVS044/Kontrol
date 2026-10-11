@@ -28,6 +28,7 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Comandos útiles de Docker](#comandos-útiles-de-docker)
 - [Desarrollo sin Docker (opcional)](#desarrollo-sin-docker-opcional)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Integración continua](#integración-continua)
 - [Cobertura de código](#cobertura-de-código)
 - [Solución de problemas](#solución-de-problemas)
 - [Contribuir](#contribuir)
@@ -229,6 +230,22 @@ Kontrol/
 ├── dev.sh                 # Atajo para levantar dev en Linux
 └── package.json           # Workspaces del monorepo
 ```
+
+---
+
+## Integración continua
+
+Cada pull request a `main` o `develop` dispara `.github/workflows/ci.yml`, con tres jobs en paralelo. Ninguno se lanza a mano y ninguno lleva `continue-on-error`: si uno falla, el PR queda en rojo. El badge del encabezado muestra el estado de la última corrida de ese workflow en un pull request.
+
+| Job | Tipo de prueba | Qué corre | Bloquea el merge |
+|---|---|---|---|
+| Backend - tests unitarios | Unitarias | Vitest con cobertura v8 y los umbrales de [Cobertura de código](#cobertura-de-código) | Sí, check requerido en `main` y `develop` |
+| Frontend - tests unitarios y build | Unitarias | Vitest con cobertura v8, umbrales, y `vite build` de producción | Sí, check requerido en `main` y `develop` |
+| Carga - k6 | Carga | `k6/ci-load-test.js` contra un backend y un PostgreSQL desechables levantados en el runner, con los umbrales de `docs/plan-maestro-pruebas.md` §7.2 | Queda en rojo si falla; no es check requerido |
+
+Los reportes de cobertura (`coverage-backend`, `coverage-frontend`) y el resumen de k6 (`k6-summary`) se publican como artefactos de cada corrida durante 30 días.
+
+El job de carga es una prueba corta de regresión (5–10 usuarios virtuales, ~3.5 min), no una medición de capacidad. La batería completa contra el ambiente de pruebas de la VM está en `.github/workflows/load-test.yml`, se lanza a mano y sus resultados están en `docs/pruebas-carga-estres.md`. Detalles en [`k6/README.md`](k6/README.md).
 
 ---
 
