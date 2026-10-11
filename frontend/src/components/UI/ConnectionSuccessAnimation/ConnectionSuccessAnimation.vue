@@ -3,8 +3,8 @@
     <div ref="wrapRef" class="csa-wrap">
       <canvas ref="canvasRef" class="csa-canvas" />
       <div ref="overlayRef" class="csa-content">
-        <p class="csa-text">Conexión exitosa</p>
-        <button class="csa-btn" @click="handleAccept">Aceptar</button>
+        <p class="csa-text">{{ $t('integrations.successAnimation.title') }}</p>
+        <button class="csa-btn" @click="handleAccept">{{ $t('integrations.successAnimation.accept') }}</button>
       </div>
     </div>
   </Teleport>

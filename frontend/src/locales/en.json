@@ -1727,5 +1727,254 @@
       "generic": "The invitation could not be processed.",
       "retrieve": "Could not retrieve the invitation. Please try again."
     }
+  },
+  "agent": {
+    "sidebar": {
+      "title": "Conversations",
+      "hide": "Hide conversations",
+      "show": "Show conversations",
+      "newConversation": "New conversation",
+      "empty": "You have no conversations yet.",
+      "noHistory": "History unavailable: MongoDB is disconnected.",
+      "deleteConversation": "Delete conversation",
+      "deleteConfirm": "Delete \"{title}\"? This cannot be undone."
+    },
+    "notConfigured": "The agent is not set up yet. Define {key} in the backend. {url} is optional and defaults to ClawStitch Qwen.",
+    "greeting": "Hi, {name}",
+    "titleLine1": "What can I",
+    "titleLine2": "help with?",
+    "fallbackName": "there",
+    "placeholder": "Ask me anything…",
+    "stop": "Stop generating",
+    "hint": "Press Enter to send · Shift+Enter for a new line",
+    "message": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "edited": "edited"
+    },
+    "errors": {
+      "loadConversation": "Could not load the conversation.",
+      "deleteConversation": "Could not delete the conversation.",
+      "send": "Could not reach the agent.",
+      "update": "Could not update the message.",
+      "delete": "Could not delete the message."
+    },
+    "stopped": "_Generation stopped._",
+    "failed": "Sorry, I could not process your request right now.",
+    "quickActions": {
+      "budget": {
+        "label": "Analyze budget",
+        "desc": "Review spending and financial projections",
+        "suggestion": "Analyze my company's current budget and give me recommendations"
+      },
+      "projects": {
+        "label": "Project summary",
+        "desc": "Status and progress of your active projects",
+        "suggestion": "Give me a summary of my active projects and how they are progressing"
+      },
+      "report": {
+        "label": "Generate report",
+        "desc": "Build inventory and activity reports",
+        "suggestion": "Generate an executive report of my company's recent activity"
+      }
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "newDM": "New direct message",
+    "searchMessages": "Search messages…",
+    "directMessages": "Direct Messages",
+    "noConversationsHint": "No conversations yet. Start a new chat with the + button",
+    "noConversations": "No conversations",
+    "noMessagesYet": "No messages yet",
+    "emptyTitle": "Your messages",
+    "emptySubtitle": "Pick a conversation or start a new direct message.",
+    "directBadge": "Direct",
+    "typing": "typing…",
+    "noMessages": "No messages in this conversation.",
+    "videoCall": "Video call",
+    "openFile": "Open file",
+    "attachFile": "Attach file",
+    "attachImage": "Attach image",
+    "attachMedia": "Attach audio or video",
+    "messagePlaceholder": "Write a message…",
+    "searchUser": "Search user…",
+    "noUsersFound": "No users found",
+    "noUsersAvailable": "No users available",
+    "openFullScreen": "Open full screen",
+    "newChat": "New chat",
+    "search": "Search…",
+    "image": "Image",
+    "media": "Audio or video",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "upload": {
+      "one": "Uploading file…",
+      "many": "Uploading {count} files…"
+    },
+    "errors": {
+      "loadConversation": "Could not load the conversation.",
+      "upload": "Could not upload the files.",
+      "sendAttachments": "Could not send the message with attachments.",
+      "loadUsers": "Could not load the users.",
+      "startChat": "Could not start the chat.",
+      "startCall": "Could not start the video call."
+    },
+    "call": {
+      "incoming": "Incoming video call",
+      "invitation": "wants to start a direct video call with you.",
+      "decline": "Decline",
+      "accept": "Accept",
+      "cameraOff": "Camera off",
+      "title": "Video call",
+      "hangUp": "Hang up",
+      "meetingChat": "Meeting chat",
+      "loadingChat": "Loading chat…",
+      "noMessages": "No messages available for this conversation.",
+      "reply": "Reply…",
+      "unknownPeer": "User",
+      "muteMic": "Mute microphone",
+      "unmuteMic": "Unmute microphone",
+      "cameraOffAction": "Turn camera off",
+      "cameraOnAction": "Turn camera on",
+      "status": {
+        "ringing": "Calling…",
+        "connecting": "Connecting video…",
+        "connected": "Video call in progress",
+        "ended": "Video call ended",
+        "preparing": "Preparing video call…"
+      },
+      "newMessages": "New messages ({count})",
+      "errors": {
+        "loadChat": "Could not load the call chat.",
+        "loadMessages": "Could not load the call messages."
+      }
+    }
+  },
+  "integrations": {
+    "restricted": {
+      "title": "Restricted access",
+      "msg": "Only owners and admins can manage integrations."
+    },
+    "loadError": "Could not load the integrations",
+    "retry": "Retry",
+    "title": "Integrations",
+    "subtitle": "Connect Kontrol with your external tools",
+    "allCategories": "All",
+    "categories": {
+      "comunicacion": "Communication",
+      "email": "Email",
+      "automatizacion": "Automation",
+      "crm": "CRM",
+      "storage": "Storage"
+    },
+    "status": {
+      "notConfigured": "Not configured",
+      "error": "With an error",
+      "configured": "Configured"
+    },
+    "updatedAt": "Updated {date}",
+    "switch": {
+      "title": "Sending notifications",
+      "onHint": "Kontrol is sending alerts",
+      "offHint": "Paused: no alerts are sent",
+      "on": "Active",
+      "off": "Paused",
+      "pauseLabel": "Pause {name}",
+      "resumeLabel": "Activate {name}",
+      "pauseTitle": "Pause sending without deleting the configuration",
+      "resumeTitle": "Resume sending"
+    },
+    "actions": {
+      "edit": "Edit configuration",
+      "configure": "Set up",
+      "testing": "Testing…",
+      "test": "Test connection",
+      "how": "How do I connect it?",
+      "delete": "Delete configuration"
+    },
+    "confirm": {
+      "title": "Delete the configuration for {name}?",
+      "text": "The saved credentials will be deleted and Kontrol will stop sending notifications to {name}. To use it again you will have to set it up from scratch.",
+      "hint": "Only want to stop it for a while? Use the card’s {switch} switch: it keeps the configuration.",
+      "switchName": "Active / Paused",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "confirm": "Yes, delete the configuration"
+    },
+    "tutorial": {
+      "title": "How to connect {name}",
+      "intro": "Follow these steps to set up the integration with {name}.",
+      "goConfigure": "Go to the setup form"
+    },
+    "modal": {
+      "credentials": "Credentials",
+      "required": "Required",
+      "optional": "Optional",
+      "hide": "Hide",
+      "show": "Show",
+      "saving": "Saving…",
+      "save": "Save"
+    },
+    "feedback": {
+      "saved": "Integration saved.",
+      "deleted": "Configuration deleted.",
+      "testOk": "Connection successful",
+      "lastTestFailed": "The last connection failed. Check the credentials and use \"Test connection\" before activating."
+    },
+    "successAnimation": {
+      "title": "Connection successful",
+      "accept": "Done"
+    },
+    "tutorials": {
+      "slack": [
+        "Go to api.slack.com/apps and sign in with your Slack account.",
+        "Create a new app with \"From scratch\" and pick your workspace.",
+        "In the sidebar, open \"Incoming Webhooks\" and turn it on.",
+        "Click \"Add New Webhook to Workspace\" and choose the channel where you want the notifications.",
+        "Copy the generated webhook URL (it starts with https://hooks.slack.com/…) and paste it into the setup form."
+      ],
+      "sendgrid": [
+        "Sign in to app.sendgrid.com with your SendGrid account.",
+        "Go to Settings → API Keys and click \"Create API Key\".",
+        "Give it a descriptive name and pick \"Restricted Access\" → \"Mail Send: Full Access\".",
+        "Copy the generated API key (it is shown only once) and keep it somewhere safe.",
+        "Paste the API key, your SendGrid-verified sender address and the address that will receive the alerts."
+      ],
+      "microsoft-teams": [
+        "Open Microsoft Teams and go to the channel where you want the notifications.",
+        "Click \"...\" next to the channel name and pick \"Connectors\".",
+        "Find \"Incoming Webhook\" in the list and click \"Configure\".",
+        "Name the connector, upload an optional icon and click \"Create\".",
+        "Copy the generated webhook URL and paste it into the Kontrol setup form."
+      ],
+      "telegram": [
+        "Open Telegram and search for the @BotFather bot.",
+        "Send the /newbot command and follow the instructions to pick a name and username for your bot.",
+        "BotFather will hand you a bot token. Copy it and keep it safe.",
+        "To get your chat ID: start a conversation with your bot and then query the API with the token, or use the @userinfobot bot.",
+        "Enter the bot token and the chat ID in the Kontrol setup form."
+      ],
+      "twilio-sms": [
+        "Create an account at twilio.com, or sign in if you already have one.",
+        "The main dashboard shows your Account SID and Auth Token. Copy both.",
+        "Go to \"Phone Numbers → Manage → Buy a number\" to get the Twilio number the texts will be sent from.",
+        "Enter the Account SID, the Auth Token, the Twilio number and the destination number in the setup form."
+      ],
+      "webhook": [
+        "Get ready the external server or service that will receive the events (it has to be publicly reachable).",
+        "The endpoint has to accept POST requests with a JSON body.",
+        "Use HTTPS, so the payload does not travel in the clear.",
+        "Copy your endpoint URL and paste it into the URL field of the setup form.",
+        "Kontrol will send a POST event every time something relevant happens in your company."
+      ],
+      "fallback": [
+        "Get the credentials from the {name} platform.",
+        "Copy them into the Kontrol setup form.",
+        "Save the changes and use \"Test connection\" to check that everything works."
+      ]
+    }
   }
 }

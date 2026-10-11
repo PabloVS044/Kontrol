@@ -1727,5 +1727,254 @@
       "generic": "No se pudo procesar la invitación.",
       "retrieve": "No se pudo obtener la invitación. Inténtalo de nuevo."
     }
+  },
+  "agent": {
+    "sidebar": {
+      "title": "Conversaciones",
+      "hide": "Ocultar conversaciones",
+      "show": "Mostrar conversaciones",
+      "newConversation": "Nueva conversación",
+      "empty": "Aún no tienes conversaciones.",
+      "noHistory": "Historial no disponible: MongoDB desconectado.",
+      "deleteConversation": "Eliminar conversación",
+      "deleteConfirm": "¿Eliminar \"{title}\"? Esta acción no se puede deshacer."
+    },
+    "notConfigured": "El agente aún no está configurado. Define {key} en el backend. {url} es opcional y por defecto usa ClawStitch Qwen.",
+    "greeting": "Hola, {name}",
+    "titleLine1": "¿En qué puedo",
+    "titleLine2": "ayudarte?",
+    "fallbackName": "usuario",
+    "placeholder": "Pregúntame cualquier cosa...",
+    "stop": "Detener generación",
+    "hint": "Presiona Enter para enviar · Shift+Enter para nueva línea",
+    "message": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "edited": "editado"
+    },
+    "errors": {
+      "loadConversation": "No se pudo cargar la conversación.",
+      "deleteConversation": "No se pudo eliminar la conversación.",
+      "send": "Error al contactar al agente.",
+      "update": "No se pudo actualizar el mensaje.",
+      "delete": "No se pudo eliminar el mensaje."
+    },
+    "stopped": "_Generación detenida._",
+    "failed": "Lo siento, no pude procesar tu solicitud en este momento.",
+    "quickActions": {
+      "budget": {
+        "label": "Analizar presupuesto",
+        "desc": "Revisa gastos y proyecciones financieras",
+        "suggestion": "Analiza el estado actual del presupuesto de mi empresa y dame recomendaciones"
+      },
+      "projects": {
+        "label": "Resumen de proyectos",
+        "desc": "Estado y avance de tus proyectos activos",
+        "suggestion": "Dame un resumen del estado de mis proyectos activos y sus avances"
+      },
+      "report": {
+        "label": "Generar reporte",
+        "desc": "Crea informes de inventario y actividad",
+        "suggestion": "Genera un reporte ejecutivo de las actividades recientes de mi empresa"
+      }
+    }
+  },
+  "chat": {
+    "title": "Mensajes",
+    "newDM": "Nuevo mensaje directo",
+    "searchMessages": "Buscar mensajes...",
+    "directMessages": "Mensajes Directos",
+    "noConversationsHint": "Sin conversaciones aún. Inicia un nuevo chat con el botón +",
+    "noConversations": "Sin conversaciones",
+    "noMessagesYet": "Sin mensajes aún",
+    "emptyTitle": "Tus mensajes",
+    "emptySubtitle": "Selecciona una conversación o inicia un nuevo mensaje directo.",
+    "directBadge": "Directo",
+    "typing": "escribiendo...",
+    "noMessages": "No hay mensajes en esta conversación.",
+    "videoCall": "Videollamada",
+    "openFile": "Abrir archivo",
+    "attachFile": "Adjuntar archivo",
+    "attachImage": "Adjuntar imagen",
+    "attachMedia": "Adjuntar audio o video",
+    "messagePlaceholder": "Escribe un mensaje...",
+    "searchUser": "Buscar usuario...",
+    "noUsersFound": "Sin usuarios encontrados",
+    "noUsersAvailable": "Sin usuarios disponibles",
+    "openFullScreen": "Abrir en pantalla completa",
+    "newChat": "Nuevo chat",
+    "search": "Buscar...",
+    "image": "Imagen",
+    "media": "Audio o video",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "upload": {
+      "one": "Subiendo archivo...",
+      "many": "Subiendo {count} archivos..."
+    },
+    "errors": {
+      "loadConversation": "No se pudo cargar la conversación.",
+      "upload": "No se pudieron subir los archivos.",
+      "sendAttachments": "No se pudo enviar el mensaje con adjuntos.",
+      "loadUsers": "No se pudieron cargar los usuarios.",
+      "startChat": "No se pudo iniciar el chat.",
+      "startCall": "No se pudo iniciar la videollamada."
+    },
+    "call": {
+      "incoming": "Videollamada entrante",
+      "invitation": "Quiere iniciar una videollamada directa contigo.",
+      "decline": "Rechazar",
+      "accept": "Aceptar",
+      "cameraOff": "Cámara apagada",
+      "title": "Videollamada",
+      "hangUp": "Colgar",
+      "meetingChat": "Chat de la reunión",
+      "loadingChat": "Cargando chat...",
+      "noMessages": "No hay mensajes disponibles para esta conversación.",
+      "reply": "Responder...",
+      "unknownPeer": "Usuario",
+      "muteMic": "Silenciar micrófono",
+      "unmuteMic": "Activar micrófono",
+      "cameraOffAction": "Apagar cámara",
+      "cameraOnAction": "Encender cámara",
+      "status": {
+        "ringing": "Llamando...",
+        "connecting": "Conectando video...",
+        "connected": "Videollamada en curso",
+        "ended": "Videollamada finalizada",
+        "preparing": "Preparando videollamada..."
+      },
+      "newMessages": "Mensajes nuevos ({count})",
+      "errors": {
+        "loadChat": "No se pudo cargar el chat de la llamada.",
+        "loadMessages": "No se pudieron cargar los mensajes de la llamada."
+      }
+    }
+  },
+  "integrations": {
+    "restricted": {
+      "title": "Acceso restringido",
+      "msg": "Solo los propietarios y administradores pueden gestionar integraciones."
+    },
+    "loadError": "No se pudo cargar las integraciones",
+    "retry": "Reintentar",
+    "title": "Integraciones",
+    "subtitle": "Conecta Kontrol con tus herramientas externas",
+    "allCategories": "Todas",
+    "categories": {
+      "comunicacion": "Comunicación",
+      "email": "Correo electrónico",
+      "automatizacion": "Automatización",
+      "crm": "CRM",
+      "storage": "Almacenamiento"
+    },
+    "status": {
+      "notConfigured": "Sin configurar",
+      "error": "Con error",
+      "configured": "Configurada"
+    },
+    "updatedAt": "Actualizado {date}",
+    "switch": {
+      "title": "Envío de notificaciones",
+      "onHint": "Kontrol está enviando avisos",
+      "offHint": "Pausada: no se envían avisos",
+      "on": "Activa",
+      "off": "Pausada",
+      "pauseLabel": "Pausar {name}",
+      "resumeLabel": "Activar {name}",
+      "pauseTitle": "Pausar envíos sin borrar la configuración",
+      "resumeTitle": "Reanudar envíos"
+    },
+    "actions": {
+      "edit": "Editar configuración",
+      "configure": "Configurar",
+      "testing": "Probando…",
+      "test": "Probar conexión",
+      "how": "¿Cómo conectar?",
+      "delete": "Eliminar configuración"
+    },
+    "confirm": {
+      "title": "¿Eliminar la configuración de {name}?",
+      "text": "Se borrarán las credenciales guardadas y Kontrol dejará de enviar notificaciones a {name}. Para volver a usarla tendrás que configurarla de nuevo.",
+      "hint": "¿Solo quieres detenerla por un tiempo? Usa el interruptor {switch} de la tarjeta: conserva la configuración.",
+      "switchName": "Activa / Pausada",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Sí, eliminar configuración"
+    },
+    "tutorial": {
+      "title": "Cómo conectar {name}",
+      "intro": "Sigue estos pasos para configurar la integración con {name}.",
+      "goConfigure": "Ir a configurar"
+    },
+    "modal": {
+      "credentials": "Credenciales",
+      "required": "Requerido",
+      "optional": "Opcional",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "saving": "Guardando…",
+      "save": "Guardar"
+    },
+    "feedback": {
+      "saved": "Integración guardada correctamente.",
+      "deleted": "Configuración eliminada.",
+      "testOk": "Conexión exitosa",
+      "lastTestFailed": "La última conexión falló. Revisa las credenciales y usa \"Probar conexión\" antes de activar."
+    },
+    "successAnimation": {
+      "title": "Conexión exitosa",
+      "accept": "Aceptar"
+    },
+    "tutorials": {
+      "slack": [
+        "Ve a api.slack.com/apps e inicia sesión con tu cuenta de Slack.",
+        "Crea una nueva app seleccionando \"From scratch\" y elige tu workspace.",
+        "En el menú lateral, ve a \"Incoming Webhooks\" y actívalo.",
+        "Haz clic en \"Add New Webhook to Workspace\" y selecciona el canal donde quieres recibir notificaciones.",
+        "Copia la URL del webhook generada (comienza con https://hooks.slack.com/...) y pégala en la configuración."
+      ],
+      "sendgrid": [
+        "Inicia sesión en app.sendgrid.com con tu cuenta de SendGrid.",
+        "Ve a Settings → API Keys y haz clic en \"Create API Key\".",
+        "Ponle un nombre descriptivo y selecciona el permiso \"Restricted Access\" → \"Mail Send: Full Access\".",
+        "Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.",
+        "Pega la API Key, tu correo remitente verificado en SendGrid y el correo destinatario que recibirá las alertas."
+      ],
+      "microsoft-teams": [
+        "Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.",
+        "Haz clic en \"...\" junto al nombre del canal y selecciona \"Connectors\".",
+        "Busca \"Incoming Webhook\" en la lista y haz clic en \"Configure\".",
+        "Ponle un nombre al conector, sube un ícono opcional y haz clic en \"Create\".",
+        "Copia la URL del webhook generada y pégala en la configuración de Kontrol."
+      ],
+      "telegram": [
+        "Abre Telegram y busca el bot @BotFather.",
+        "Envía el comando /newbot y sigue las instrucciones para elegir nombre y usuario para tu bot.",
+        "BotFather te entregará un Bot Token. Cópialo y guárdalo.",
+        "Para obtener tu Chat ID: inicia una conversación con tu bot y luego consulta la API con el token o usa el bot @userinfobot.",
+        "Ingresa el Bot Token y el Chat ID en la configuración de Kontrol."
+      ],
+      "twilio-sms": [
+        "Crea una cuenta en twilio.com o inicia sesión si ya tienes una.",
+        "En el Dashboard principal verás tu Account SID y Auth Token. Cópialos.",
+        "Ve a \"Phone Numbers → Manage → Buy a number\" para adquirir un número de Twilio desde donde se enviarán los SMS.",
+        "Ingresa el Account SID, Auth Token, el número de Twilio y el número de destino en la configuración."
+      ],
+      "webhook": [
+        "Prepara el servidor o servicio externo que recibirá los eventos (debe ser accesible públicamente).",
+        "El endpoint debe aceptar peticiones POST con body en formato JSON.",
+        "Asegúrate de usar HTTPS para mayor seguridad.",
+        "Copia la URL de tu endpoint y pégala en el campo URL de la configuración.",
+        "Kontrol enviará un evento POST cada vez que ocurra una acción relevante en tu empresa."
+      ],
+      "fallback": [
+        "Obtén las credenciales desde la plataforma de {name}.",
+        "Cópialas e ingrésalas en el formulario de configuración de Kontrol.",
+        "Guarda los cambios y usa \"Probar conexión\" para verificar que todo funciona."
+      ]
+    }
   }
 }

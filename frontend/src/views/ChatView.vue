@@ -1,11 +1,13 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useChatStore } from '../stores/chat.js'
 import { useAuthStore } from '../stores/auth.js'
 import { formatFileSize } from '../utils/chat.js'
 import './ChatView.css'
 
+const { t, locale } = useI18n()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 const myId = computed(() => authStore.user?.id_usuario)
@@ -49,14 +51,16 @@ const messageGroups = computed(() => {
     const yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
 
-    let label = date.toLocaleDateString('es', {
+    // La fecha se formatea con el idioma de la interfaz: estaba fija en 'es',
+    // así que los separadores de día seguían en español con la app en inglés.
+    let label = date.toLocaleDateString(locale.value, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     })
 
-    if (date.toDateString() === today.toDateString()) label = 'Hoy'
-    else if (date.toDateString() === yesterday.toDateString()) label = 'Ayer'
+    if (date.toDateString() === today.toDateString()) label = t('chat.today')
+    else if (date.toDateString() === yesterday.toDateString()) label = t('chat.yesterday')
 
     if (!byDate[label]) byDate[label] = []
     byDate[label].push(message)
@@ -102,7 +106,7 @@ const filteredCompanyUsers = computed(() => {
 
 function fmtTime(date) {
   return date
-    ? new Date(date).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
+    ? new Date(date).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
     : ''
 }
 
@@ -119,7 +123,7 @@ async function selectChat(conversation) {
   if (!cachedMessages || cachedMessages.length === 0) {
     const response = await chatStore.loadMessages(conversation._id)
     if (!response.success) {
-      panelError.value = response.message || 'No se pudo cargar la conversación.'
+      panelError.value = response.message || t('chat.errors.loadConversation')
     }
   }
 
@@ -182,7 +186,9 @@ async function onFilesSelected(event) {
 
   panelError.value = ''
   uploadingFiles.value = true
-  uploadStatus.value = files.length === 1 ? 'Subiendo archivo...' : `Subiendo ${files.length} archivos...`
+  uploadStatus.value = files.length === 1
+    ? t('chat.upload.one')
+    : t('chat.upload.many', { count: files.length })
 
   const response = await chatStore.uploadFiles(files)
 
@@ -190,7 +196,7 @@ async function onFilesSelected(event) {
   uploadStatus.value = ''
 
   if (!response.success) {
-    panelError.value = response.message || 'No se pudieron subir los archivos.'
+    panelError.value = response.message || t('chat.errors.upload')
     return
   }
 
@@ -201,7 +207,7 @@ async function onFilesSelected(event) {
   })
 
   if (!sent) {
-    panelError.value = 'No se pudo enviar el mensaje con adjuntos.'
+    panelError.value = t('chat.errors.sendAttachments')
     return
   }
 
@@ -217,7 +223,7 @@ async function openNewDM() {
   if (!chatStore.companyUsers.length) {
     const response = await chatStore.loadCompanyUsers()
     if (!response.success) {
-      panelError.value = response.message || 'No se pudieron cargar los usuarios.'
+      panelError.value = response.message || t('chat.errors.loadUsers')
     }
   }
 }
@@ -230,7 +236,7 @@ async function startDM(user) {
       await selectChat(conversation)
     }
   } catch (error) {
-    panelError.value = error.message || 'No se pudo iniciar el chat.'
+    panelError.value = error.message || t('chat.errors.startChat')
   }
 }
 
@@ -239,7 +245,7 @@ async function startVideoCallForActiveChat() {
 
   const response = await chatStore.startVideoCall(activeChat.value)
   if (!response.success) {
-    panelError.value = response.message || 'No se pudo iniciar la videollamada.'
+    panelError.value = response.message || t('chat.errors.startCall')
   }
 }
 
@@ -273,9 +279,9 @@ onMounted(() => {
     <div class="chat-body">
       <aside class="chat-sidebar">
         <div class="sidebar-top">
-          <h2 class="sidebar-title">Mensajes</h2>
+          <h2 class="sidebar-title">{{ t('chat.title') }}</h2>
           <div class="sidebar-title-actions">
-            <button class="s-icon-btn" title="Nuevo mensaje directo" @click="openNewDM">
+            <button class="s-icon-btn" :title="t('chat.newDM')" @click="openNewDM">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
               </svg>
@@ -288,7 +294,7 @@ onMounted(() => {
             <circle cx="11" cy="11" r="8" stroke="var(--k-gray-4)" stroke-width="1.8" />
             <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-4)" stroke-width="1.8" stroke-linecap="round" />
           </svg>
-          <input v-model="searchQuery" type="text" placeholder="Buscar mensajes..." />
+          <input v-model="searchQuery" type="text" :placeholder="t('chat.searchMessages')" />
         </div>
 
         <div class="sidebar-content">
@@ -300,7 +306,7 @@ onMounted(() => {
                   <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7" />
                 </svg>
               </span>
-              <span class="section-label">Mensajes Directos</span>
+              <span class="section-label">{{ t('chat.directMessages') }}</span>
               <span class="section-count">{{ filteredConvs.length }}</span>
               <svg class="section-chevron" :class="{ open: expandedSections.dm }" width="11" height="11" viewBox="0 0 24 24" fill="none">
                 <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -310,7 +316,7 @@ onMounted(() => {
             <Transition name="sect">
               <div v-if="expandedSections.dm">
                 <div v-if="!chatStore.conversations.length && chatStore.isConnected" class="conv-empty-hint">
-                  Sin conversaciones aún. Inicia un nuevo chat con el botón +
+                  {{ t('chat.noConversationsHint') }}
                 </div>
 
                 <div
@@ -331,7 +337,7 @@ onMounted(() => {
                     </div>
 
                     <div class="conv-bottom">
-                      <span class="conv-preview">{{ conversation.lastMessage?.text || 'Sin mensajes aún' }}</span>
+                      <span class="conv-preview">{{ conversation.lastMessage?.text || t('chat.noMessagesYet') }}</span>
                       <span v-if="conversation.unread" class="conv-unread">{{ conversation.unread }}</span>
                     </div>
                   </div>
@@ -349,8 +355,8 @@ onMounted(() => {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#444" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
           </div>
-          <h3 class="empty-title">Tus mensajes</h3>
-          <p class="empty-sub">Selecciona una conversación o inicia un nuevo mensaje directo.</p>
+          <h3 class="empty-title">{{ t('chat.emptyTitle') }}</h3>
+          <p class="empty-sub">{{ t('chat.emptySubtitle') }}</p>
           <p v-if="panelError" class="chat-panel-error">{{ panelError }}</p>
         </div>
 
@@ -361,22 +367,22 @@ onMounted(() => {
               <div>
                 <div class="chat-header-name">{{ activeChat.name }}</div>
                 <div class="chat-header-meta">
-                  <span class="type-badge badge-dm">Directo</span>
-                  <span v-if="isTyping" class="chat-typing-hint">escribiendo...</span>
+                  <span class="type-badge badge-dm">{{ t('chat.directBadge') }}</span>
+                  <span v-if="isTyping" class="chat-typing-hint">{{ t('chat.typing') }}</span>
                   <span v-else-if="activeChat.email" class="chat-header-email">{{ activeChat.email }}</span>
                 </div>
               </div>
             </div>
 
             <div class="chat-header-actions">
-              <button class="ch-action-btn" title="Videollamada" @click="startVideoCallForActiveChat">
+              <button class="ch-action-btn" :title="t('chat.videoCall')" @click="startVideoCallForActiveChat">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
                   <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
                 </svg>
               </button>
 
-              <button class="ch-action-btn" title="Nuevo mensaje directo" @click="openNewDM">
+              <button class="ch-action-btn" :title="t('chat.newDM')" @click="openNewDM">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                 </svg>
@@ -386,7 +392,7 @@ onMounted(() => {
 
           <div class="messages-area" ref="messagesEl">
             <div v-if="messageGroups.length === 0" class="chat-empty-messages">
-              No hay mensajes en esta conversación.
+              {{ t('chat.noMessages') }}
             </div>
 
             <template v-else v-for="dateGroup in messageGroups" :key="dateGroup.date">
@@ -423,7 +429,7 @@ onMounted(() => {
                           <span class="attach-file-size">{{ formatFileSize(attachment.size) }}</span>
                         </div>
 
-                        <a :href="attachment.url" target="_blank" rel="noreferrer" class="attach-dl-btn" title="Abrir archivo">
+                        <a :href="attachment.url" target="_blank" rel="noreferrer" class="attach-dl-btn" :title="t('chat.openFile')">
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                           </svg>
@@ -464,13 +470,13 @@ onMounted(() => {
 
           <div class="chat-input-area">
             <div class="attach-toolbar">
-              <button class="attach-tool-btn" title="Adjuntar archivo" @click="triggerFileUpload()">
+              <button class="attach-tool-btn" :title="t('chat.attachFile')" @click="triggerFileUpload()">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </button>
 
-              <button class="attach-tool-btn" title="Adjuntar imagen" @click="triggerFileUpload('image/*')">
+              <button class="attach-tool-btn" :title="t('chat.attachImage')" @click="triggerFileUpload('image/*')">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6" />
                   <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.6" />
@@ -478,7 +484,7 @@ onMounted(() => {
                 </svg>
               </button>
 
-              <button class="attach-tool-btn" title="Adjuntar audio o video" @click="triggerFileUpload('audio/*,video/*')">
+              <button class="attach-tool-btn" :title="t('chat.attachMedia')" @click="triggerFileUpload('audio/*,video/*')">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M14 3v18l7-4V7l-7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
                   <path d="M3 8h7v8H3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
@@ -496,7 +502,7 @@ onMounted(() => {
                 ref="chatTextarea"
                 v-model="messageInput"
                 class="chat-textarea"
-                placeholder="Escribe un mensaje..."
+                :placeholder="t('chat.messagePlaceholder')"
                 rows="1"
                 @keydown.enter.exact.prevent="sendMessage"
                 @input="autoResize"
@@ -522,7 +528,7 @@ onMounted(() => {
       <div v-if="showNewDM" class="ndm-overlay" @click.self="showNewDM = false">
         <div class="ndm-modal">
           <div class="ndm-header">
-            <span class="ndm-title">Nuevo mensaje directo</span>
+            <span class="ndm-title">{{ t('chat.newDM') }}</span>
             <button class="ndm-close" @click="showNewDM = false">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -535,7 +541,7 @@ onMounted(() => {
               <circle cx="11" cy="11" r="8" stroke="var(--k-gray-4)" stroke-width="1.8" />
               <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-4)" stroke-width="1.8" stroke-linecap="round" />
             </svg>
-            <input v-model="userSearch" type="text" placeholder="Buscar usuario..." autofocus />
+            <input v-model="userSearch" type="text" :placeholder="t('chat.searchUser')" autofocus />
           </div>
 
           <div class="ndm-list">
@@ -547,7 +553,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <div v-if="!filteredCompanyUsers.length" class="ndm-empty">Sin usuarios encontrados</div>
+            <div v-if="!filteredCompanyUsers.length" class="ndm-empty">{{ t('chat.noUsersFound') }}</div>
           </div>
         </div>
       </div>
