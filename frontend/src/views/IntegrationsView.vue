@@ -118,7 +118,7 @@
             </div>
 
             <!-- Acciones primarias -->
-            <div class="card-actions">
+            <div class="card-actions" :class="{ 'single': !integration.is_configured }">
               <button
                 class="btn-configure"
                 @click="openConfigure(integration)"
@@ -131,6 +131,9 @@
                 :disabled="testingSlug === integration.slug"
                 @click="handleTest(integration)"
               >
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M7.5 1.5 3 7.5h3.5l-1 4 4.5-6H6.5l1-4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                </svg>
                 {{ testingSlug === integration.slug ? 'Probando…' : 'Probar conexión' }}
               </button>
             </div>
@@ -138,7 +141,7 @@
             <!-- Acciones secundarias -->
             <div class="card-secondary-actions">
               <button class="btn-how" @click="openTutorial(integration)">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
                   <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
                   <path d="M6.5 5.5v4M6.5 3.8v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>

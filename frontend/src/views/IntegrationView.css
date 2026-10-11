@@ -267,22 +267,36 @@
 
 /* ── Acciones ── */
 .card-actions {
-  display: flex;
+  display: grid;
+  /* Dos columnas solo si caben sin partir el texto; si no, se apilan con el mismo ancho */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 8px;
-  flex-wrap: wrap;
   margin-top: auto;
 }
 
-.btn-configure {
-  flex: 1;
-  padding: 8px 14px;
+.card-actions.single {
+  grid-template-columns: 1fr;
+}
+
+.btn-configure,
+.btn-test {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 10px;
   font-size: 13px;
+  font-weight: 600;
   font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-configure {
   background: rgba(202, 168, 96, 0.1);
   border: 1px solid rgba(202, 168, 96, 0.3);
   color: var(--Primary);
-  cursor: pointer;
-  transition: background 0.15s;
 }
 
 .btn-configure:hover {
@@ -290,19 +304,14 @@
 }
 
 .btn-test {
-  padding: 8px 14px;
-  font-size: 13px;
-  font-family: var(--font-sans);
-  background: #111111;
-  border: 1px solid #2a2a2a;
-  color: var(--TextMuted);
-  cursor: pointer;
-  transition: all 0.15s;
+  background: rgba(96, 165, 250, 0.08);
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  color: #60a5fa;
 }
 
 .btn-test:hover:not(:disabled) {
-  border-color: #444;
-  color: var(--TextSoft);
+  background: rgba(96, 165, 250, 0.16);
+  border-color: #60a5fa;
 }
 
 .btn-test:disabled {
@@ -482,8 +491,11 @@
 .card-secondary-actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #1c1c1c;
 }
 
 .btn-how {
@@ -491,17 +503,19 @@
   align-items: center;
   gap: 5px;
   background: none;
-  border: none;
-  color: var(--TextFaint);
+  border: 1px solid #2a2a2a;
+  color: var(--TextSoft);
   font-size: 12px;
+  font-weight: 600;
   font-family: var(--font-sans);
   cursor: pointer;
-  padding: 0;
-  transition: color 0.15s;
+  padding: 5px 10px;
+  transition: color 0.15s, border-color 0.15s;
 }
 
 .btn-how:hover {
-  color: var(--TextMuted);
+  color: var(--Primary);
+  border-color: rgba(202, 168, 96, 0.4);
 }
 
 .btn-disconnect {
