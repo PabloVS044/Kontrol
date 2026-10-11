@@ -1596,7 +1596,7 @@
     "ownerOnly": "Only the company owner or an admin can change how this company sells.",
     "prefs": {
       "title": "Your preferences",
-      "hint": "Saved in this browser, for your account only. They do not affect anyone else on the team.",
+      "hint": "Saved in this browser. They do not affect anyone else on the team.",
       "birdie": "Show the Birdie assistant bubble",
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",

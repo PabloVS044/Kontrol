@@ -1596,7 +1596,7 @@
     "ownerOnly": "Solo el dueño de la empresa o un administrador puede cambiar cómo vende esta empresa.",
     "prefs": {
       "title": "Tus preferencias",
-      "hint": "Se guardan en este navegador y solo para tu cuenta. No afectan a nadie más del equipo.",
+      "hint": "Se guardan en este navegador. No afectan a nadie más del equipo.",
       "birdie": "Mostrar la burbuja del asistente Birdie",
       "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
       "language": "Idioma",
