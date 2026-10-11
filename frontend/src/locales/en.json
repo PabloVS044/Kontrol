@@ -19,7 +19,12 @@
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
         "generic": "Something went wrong. Please try again.",
-        "unreachable": "Can't reach the server. Check your connection and try again."
+        "unreachable": "Can't reach the server. Check your connection and try again.",
+        "googleCancelled": "You cancelled the Google sign-in.",
+        "accountDisabled": "Your account is disabled. Contact the administrator.",
+        "roleNotFound": "Could not assign a role. Contact the administrator.",
+        "googleError": "An error occurred with Google. Please try again.",
+        "googleGeneric": "Error signing in with Google."
       }
     },
     "register": {
@@ -567,7 +572,8 @@
       "decrease": "Remove one",
       "edit": "Edit product",
       "delete": "Delete product",
-      "cannotSell": "This product cannot be sold right now."
+      "cannotSell": "This product cannot be sold right now.",
+      "noImage": "no image"
     },
     "receipt": {
       "title": "Sale #{id} recorded",
@@ -896,7 +902,9 @@
       "manual": "Manual",
       "directEntry": "Direct entry on the activity record",
       "registeredExpense": "Registered expense",
-      "noEntriesYet": "No expense entries yet for this activity."
+      "noEntriesYet": "No expense entries yet for this activity.",
+      "edit": "Edit activity",
+      "delete": "Delete activity"
     },
     "fundingHistory": {
       "title": "Funding History",

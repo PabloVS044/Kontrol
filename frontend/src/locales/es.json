@@ -19,7 +19,12 @@
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "Mínimo 6 caracteres",
         "generic": "Algo salió mal. Por favor intenta de nuevo.",
-        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+        "googleCancelled": "Cancelaste el inicio de sesión con Google.",
+        "accountDisabled": "Tu cuenta está desactivada. Habla con el administrador.",
+        "roleNotFound": "No se pudo asignar un rol. Habla con el administrador.",
+        "googleError": "Ocurrió un error con Google. Inténtalo de nuevo.",
+        "googleGeneric": "Error al iniciar sesión con Google."
       }
     },
     "register": {
@@ -567,7 +572,8 @@
       "decrease": "Quitar uno",
       "edit": "Editar producto",
       "delete": "Eliminar producto",
-      "cannotSell": "Este producto no puede venderse ahora."
+      "cannotSell": "Este producto no puede venderse ahora.",
+      "noImage": "sin imagen"
     },
     "receipt": {
       "title": "Venta #{id} registrada",
@@ -896,7 +902,9 @@
       "manual": "Manual",
       "directEntry": "Entrada directa en el registro de la actividad",
       "registeredExpense": "Gasto registrado",
-      "noEntriesYet": "Sin entradas de gastos aún para esta actividad."
+      "noEntriesYet": "Sin entradas de gastos aún para esta actividad.",
+      "edit": "Editar actividad",
+      "delete": "Eliminar actividad"
     },
     "fundingHistory": {
       "title": "Historial de Fondos",

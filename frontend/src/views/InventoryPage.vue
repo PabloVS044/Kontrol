@@ -261,7 +261,7 @@
                   <rect x="10" y="8" width="28" height="34" rx="2" stroke="var(--k-color-text)" stroke-width="1.5"/>
                   <path d="M10 18h28M18 8v10" stroke="var(--k-color-text)" stroke-width="1.5"/>
                 </svg>
-                <span>image</span>
+                <span>{{ t('inventory.card.noImage') }}</span>
               </div>
               <Pill
                 :label="stockLabel(product)"
