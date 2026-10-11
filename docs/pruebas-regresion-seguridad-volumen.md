@@ -112,7 +112,7 @@ Diferencias respecto del Sprint 8, todas a tener en cuenta al leer la comparaci�
 |---|---|---|---|
 | Esquema de la base | `main` del 07/09, sin tabla `venta` | `develop` @ `28f5580`, con `venta`: `populate.sql` genera 10 000 / 50 000 / 100 000 ventas | Base más grande (191 MB contra 167 MB en N3). Ninguna consulta medida lee `venta` |
 | Código del backend | `main` del 07/09 | `develop` @ `28f5580` (DT-15 y todo lo mergeado desde entonces) | El SQL de pgbench es fijo y no depende del código; k6 sí lo ejercita |
-| Duración de cada escenario k6 | 2 min (N1, N2), 1 min (N3) | 1 min en todos | Menos muestras y menos tráfico sostenido; elegido para reducir el consumo de la VM y el tráfico de salida de Supabase |
+| Duración de cada escenario k6 | 2 min (N1, N2), 1 min (N3) | 1 min en todos; N2 repetido también con 2 min | Menos muestras y menos tráfico sostenido; elegido para reducir el consumo de la VM y el tráfico de salida de Supabase. La repetición de N2 a 2 min muestra que la duración sí afecta a V5 (6.5) |
 | Tiempo de población | N1 4 s, N2 17 s, N3 27 s | N1 10 s, N2 101 s, N3 247 s | Inserción más lenta (más tablas y Supabase); no afecta las mediciones posteriores |
 
 **Incidencias de la corrida:**
@@ -144,7 +144,9 @@ Las diferencias van en las dos direcciones, entre −26 % y +36 %, sin un patró
 | V2 | `GET /api/projects/:id/metrics` | 500 | 153 → 154 | 199 → 173 | 370 → 263 | Cumple en todos los niveles (igual que S8) |
 | V3 | `GET /api/reports` | 500 | 185 → 171 | 267 → 246 | **543 → 499** | Al límite en N3: 0.5 ms por debajo del umbral |
 | V4 | `GET /api/reports/summary` | 500 | 79 → 80 | 98 → 95 | 211 → 197 | Cumple en todos los niveles (igual que S8) |
-| V5 | `GET /api/products?projectId=` | 800 | 265 → 277 | **1,050 → 483** | **3,691 → 2,410** | **No cumple en N3**; en N2 cumple |
+| V5 | `GET /api/products?projectId=` | 800 | 265 → 277 | **1,050 → 483** (1 min) / **789** (2 min) | **3,691 → 2,410** | **No cumple en N3**; en N2 queda al límite con escenarios de 2 min |
+
+N2 se repitió el 11/10/2026 con escenarios de 2 minutos, como en el Sprint 8, para aislar el efecto de la duración (`N2-2m/`): V1 76, V2 219, V3 267, V4 94 y **V5 789 ms**, todos con 0 % de error.
 
 Tasa de error del 0 % en todos los escenarios y niveles; ningún 429. En el Sprint 8, V2 en N3 había perdido el 17.2 % por el limitador; el espaciado que se añadió entonces a `k6/volume-test.js` lo evita. El tamaño de las respuestas no cambió: V5 sigue descargando unos 4 MB en N2 y 8.1 MB en N3, y V3 1.8 MB en N3.
 
@@ -152,7 +154,7 @@ Tasa de error del 0 % en todos los escenarios y niveles; ningún 429. En el Spri
 
 | Endpoint | Sprint 8 | Sprint 9 | Lectura |
 |---|---|---|---|
-| Búsqueda de producto del POS | N2 (1.04 s) | N3 (2.41 s); N2 en 483 ms | **No concluyente.** Ver 6.5 |
+| Búsqueda de producto del POS | N2 (1.04 s) | Al límite en N2 (789 ms con escenarios de 2 min, 11 ms bajo el umbral); N3 (2.41 s) | **Sin cambio real.** Ver 6.5 |
 | Listado de reportes | N3 (543 ms) | No se cruza por 0.5 ms (499 ms) | **No concluyente.** La diferencia está dentro del ruido; la causa (sin paginación y sin uso del índice) sigue intacta |
 | Métricas de proyecto | No se alcanzó | No se alcanzó | Sin cambio |
 | Resumen de reportes, listado de proyectos | No se alcanzó | No se alcanzó | Sin cambio |
@@ -167,7 +169,9 @@ La hipótesis decía que k6 no cambiaría de forma significativa. V5 en N2 bajó
 - **DT-15 no lo explica.** Los valores que DT-15 fijó para el pool (`max: 10`, `idleTimeoutMillis: 10000`) son los mismos que `pg` ya aplicaba por defecto; solo cambia `connectionTimeoutMillis`, que actúa cuando el pool se agota, y con 5 VUs el pool no se agota.
 - **Lo que sí cambió son las condiciones de la corrida.** El escenario duró 1 minuto en vez de 2; en el Sprint 8 el N2 descargó 2 GB sostenidos con 5 cajeros, y ahora 1.2 GB.
 
-**Conclusión:** la mejora de V5 en N2 no es atribuible a DT-15 ni a ningún cambio de código identificado. Lo más probable es que venga de la duración menor del escenario y de la variación de red y de Supabase. **No se considera que el punto de degradación del POS se haya movido**: la causa medida en el Sprint 8 (descargar y agregar el inventario completo del proyecto en cada escaneo) sigue intacta, y en N3 el endpoint sigue tres veces por encima del umbral. Para confirmarlo habría que repetir N2 con escenarios de 2 minutos.
+**Verificación:** se repitió N2 con escenarios de 2 minutos, igual que en el Sprint 8. V5 subió de 483 a **789 ms**: con carga sostenida, la cola de latencia crece y el endpoint queda 11 ms por debajo del umbral de 800 ms (Sprint 8: 1,050 ms). El resto de los escenarios apenas cambió (V3 de 246 a 267 ms, V2 de 173 a 219 ms).
+
+**Conclusión:** la mejora aparente de V5 en N2 venía sobre todo de la duración menor del escenario. Con la misma duración que en el Sprint 8, el POS sigue en el borde del umbral en N2; la diferencia restante (1,050 contra 789 ms) está dentro de lo que varían la red y Supabase entre días y no es atribuible a DT-15 ni a ningún cambio de código identificado. **El punto de degradación del POS no se movió de forma real**: la causa medida en el Sprint 8 (descargar y agregar el inventario completo del proyecto en cada escaneo) sigue intacta, y en N3 el endpoint sigue tres veces por encima del umbral.
 
 ### 6.6 Comparativa por hallazgo (volumen)
 
@@ -184,7 +188,7 @@ Hallazgos de `docs/pruebas-volumen.md` §6, más los de esta corrida.
 | 7 | La base de pruebas corre el esquema de `main` sin la cabecera de venta | Infra | **Resuelto** | Despliegue de `develop` @ `28f5580` en pruebas el 10/10/2026 | `venta` poblada en N1–N3 (`inventario.txt`) |
 | §3.2 | V2 en N3 perdió el 17.2 % por el limitador de DT-13 | Configuración de la prueba | **Resuelto** | Espaciado de `/metrics` en `k6/volume-test.js` (Sprint 8) | 0 % de error y 0 × 429 en V2 |
 
-**Contraste con la hipótesis:** se cumplió para pgbench y para cuatro de los cinco escenarios k6. No se cumplió para V5 en N2, que mejoró sin una causa en el código (6.5). Ningún hallazgo de volumen cambió de estado por DT-15.
+**Contraste con la hipótesis:** se cumplió para pgbench y para cuatro de los cinco escenarios k6. V5 en N2 pareció contradecirla con escenarios de 1 minuto; repetido con 2 minutos, quedó en 789 ms, al límite del umbral, y la diferencia con el Sprint 8 no tiene una causa en el código (6.5). Ningún hallazgo de volumen cambió de estado por DT-15.
 
 ## 7. Hallazgos abiertos y plan de mitigación
 
@@ -220,7 +224,6 @@ Los sprints de destino son una propuesta para el backlog. Los marcados como Spri
 | Los dos timeouts del pool (`connectionTimeoutMillis`, `idleTimeoutMillis`) en el ambiente desplegado | No se exponen por HTTP; solo `max` aparece en `/api/health`. Se verificaron en código y en las pruebas unitarias de DT-15 |
 | Timeout de Slack, Teams, Telegram, Twilio y SendGrid en ejecución | Apuntan a dominios fijos de terceros; solo el webhook acepta una URL arbitraria para forzar la espera. Se verificaron en código |
 | `sendWebhookEvent` (hallazgo 4) en ejecución | Igual que en el Sprint 8: exigiría dejar un webhook activo en el ambiente |
-| V5 en N2 con escenarios de 2 minutos | Se acortaron a 1 minuto para reducir el consumo de la VM; es lo que impide cerrar 6.5
 
 ## 9. Artefactos
 
@@ -232,7 +235,8 @@ Evidencia de volumen en `volume/results/sprint9/`, con la misma estructura que l
 | `N*/pgbench/*.summary.txt` | Salida cruda de pgbench por consulta y número de clientes |
 | `N*/explain.txt` | `EXPLAIN (ANALYZE, BUFFERS)` de cada consulta |
 | `N*/inventario.txt` | Filas, tamaños e índices de las tablas medidas |
-| `N1..N3/k6-summary.txt`, `N3/k6.json` | Resumen de k6 por nivel |
+| `N1..N3/k6-summary.txt`, `N3/k6.json` | Resumen de k6 por nivel (escenarios de 1 min) |
+| `N2-2m/k6-summary.txt`, `N2-2m/k6.json` | N2 repetido con escenarios de 2 min |
 | `reset.txt` | Restablecimiento final del ambiente |
 
 Los logs por transacción de pgbench no se versionan, igual que en el Sprint 8.
