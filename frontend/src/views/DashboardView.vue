@@ -16,6 +16,7 @@ const { t, te } = useI18n()
 // El rol de empresa llega en inglés desde la base de datos: es un valor del
 // esquema, no una etiqueta. Lo que se pinta sí se traduce.
 const roleLabel = (rol) => translateRole(rol, { t, te })
+const permissionLabel = (nombre) => projectPermissionLabel(nombre, { t, te })
 const authStore = useAuthStore()
 const saleConfigStore = useSaleConfigStore()
 
@@ -1078,7 +1079,7 @@ watch(() => authStore.idEmpresaActual, () => {
                               :checked="getDraftPermissions(member.id_usuario, assignment.id_proyecto).includes(permission.nombre_permiso)"
                               @change="toggleProjectPermission(member.id_usuario, assignment.id_proyecto, permission.nombre_permiso, $event.target.checked)"
                             />
-                            <span class="permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
+                            <span class="permission-name">{{ permissionLabel(permission.nombre_permiso) }}</span>
                             <small class="permission-description">{{ permission.descripcion }}</small>
                           </label>
                         </div>

@@ -508,6 +508,15 @@
         "save": "Could not save the entry.",
         "network": "Network error, please try again."
       }
+    },
+    "permissions": {
+      "ver_inventario": "View inventory",
+      "gestionar_inventario": "Manage inventory",
+      "editar_proyecto": "Edit project",
+      "gestionar_tareas": "Manage tasks",
+      "asignar_usuarios": "Assign users",
+      "gestionar_presupuesto": "Manage budget",
+      "crear_reportes": "Create reports"
     }
   },
   "inventory": {
@@ -1646,5 +1655,77 @@
     "collaborator": "Collaborator",
     "member": "Member",
     "superUser": "Super User"
+  },
+  "onboarding": {
+    "welcome": "Welcome to",
+    "tagline": "To get started, create your workspace — a company that holds your projects, inventory, and team members.",
+    "features": {
+      "projects": "Manage projects and budgets across your organization",
+      "team": "Invite team members and assign roles",
+      "inventory": "Track inventory, suppliers and expenses in one place"
+    },
+    "form": {
+      "title": "Create your workspace",
+      "subtitle": "This will be your company on Kontrol.",
+      "name": "Company name",
+      "namePlaceholder": "e.g. Acme Corp",
+      "industry": "Industry",
+      "industryPlaceholder": "e.g. Construction, Retail, Tech…",
+      "phone": "Phone",
+      "address": "Address",
+      "addressPlaceholder": "City, Country",
+      "submit": "Create workspace",
+      "submitting": "Creating…",
+      "networkError": "Network error, try again."
+    },
+    "footerNote": "Already part of a team? Ask your administrator to invite you — your account is ready.",
+    "signOut": "Sign out"
+  },
+  "invite": {
+    "eyebrow": "Workspace Invitation",
+    "loading": "Loading invitation…",
+    "notFound": "Invitation not found.",
+    "title": {
+      "checking": "Checking your invitation",
+      "unavailable": "This link is no longer available",
+      "join": "Join {name}",
+      "invited": "You have been invited to {name}"
+    },
+    "subtitle": {
+      "checking": "Validating the link shared by the owner.",
+      "unavailable": "The owner deactivated this link or the invitation no longer exists.",
+      "projectLoggedIn": "You can sign in with your current session and be linked directly to this project.",
+      "projectGuest": "You can sign in or create an account to join the company and be assigned directly to this project.",
+      "companyLoggedIn": "You can sign in with your current session and be added as a collaborator.",
+      "companyGuest": "You can sign in with an existing account or create a new one to be added as a collaborator."
+    },
+    "summary": {
+      "company": "Company",
+      "project": "Project",
+      "invitedBy": "Invited by",
+      "owner": "Owner",
+      "role": "Role on entry",
+      "permissions": "Project permissions",
+      "noPermissions": "No explicit permissions",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "joining": "Joining…",
+      "joinProject": "Join the project",
+      "joinCompany": "Join the company",
+      "haveAccount": "I already have an account",
+      "createAccount": "Create new account",
+      "withGoogle": "Continue with Google",
+      "goToDashboard": "Go to dashboard",
+      "createWorkspace": "Create my workspace"
+    },
+    "errors": {
+      "notFound": "The invitation does not exist or was removed.",
+      "inactive": "The invitation link was already deactivated by the owner.",
+      "generic": "The invitation could not be processed.",
+      "retrieve": "Could not retrieve the invitation. Please try again."
+    }
   }
 }

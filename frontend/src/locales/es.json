@@ -508,6 +508,15 @@
         "save": "No se pudo guardar la entrada.",
         "network": "Error de red, inténtalo de nuevo."
       }
+    },
+    "permissions": {
+      "ver_inventario": "Ver inventario",
+      "gestionar_inventario": "Gestionar inventario",
+      "editar_proyecto": "Editar proyecto",
+      "gestionar_tareas": "Gestionar tareas",
+      "asignar_usuarios": "Asignar usuarios",
+      "gestionar_presupuesto": "Gestionar presupuesto",
+      "crear_reportes": "Crear reportes"
     }
   },
   "inventory": {
@@ -1646,5 +1655,77 @@
     "collaborator": "Colaborador",
     "member": "Miembro",
     "superUser": "Superusuario"
+  },
+  "onboarding": {
+    "welcome": "Bienvenido a",
+    "tagline": "Para empezar, crea tu espacio de trabajo: una empresa que reúne tus proyectos, el inventario y a tu equipo.",
+    "features": {
+      "projects": "Gestiona proyectos y presupuestos de toda la organización",
+      "team": "Invita a tu equipo y asigna roles",
+      "inventory": "Controla inventario, proveedores y gastos en un solo lugar"
+    },
+    "form": {
+      "title": "Crea tu espacio de trabajo",
+      "subtitle": "Esta será tu empresa en Kontrol.",
+      "name": "Nombre de la empresa",
+      "namePlaceholder": "p. ej. Acme Corp",
+      "industry": "Industria",
+      "industryPlaceholder": "p. ej. Construcción, Comercio, Tecnología…",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "addressPlaceholder": "Ciudad, País",
+      "submit": "Crear espacio de trabajo",
+      "submitting": "Creando…",
+      "networkError": "Error de red, inténtalo de nuevo."
+    },
+    "footerNote": "¿Ya formas parte de un equipo? Pide a tu administrador que te invite: tu cuenta ya está lista.",
+    "signOut": "Cerrar sesión"
+  },
+  "invite": {
+    "eyebrow": "Invitación a un espacio de trabajo",
+    "loading": "Cargando la invitación…",
+    "notFound": "No se encontró la invitación.",
+    "title": {
+      "checking": "Comprobando tu invitación",
+      "unavailable": "Este enlace ya no está disponible",
+      "join": "Únete a {name}",
+      "invited": "Te han invitado a {name}"
+    },
+    "subtitle": {
+      "checking": "Estamos validando el enlace que compartió el propietario.",
+      "unavailable": "El propietario desactivó este enlace o la invitación ya no existe.",
+      "projectLoggedIn": "Puedes continuar con la sesión que ya tienes abierta y quedar vinculado directamente a este proyecto.",
+      "projectGuest": "Puedes iniciar sesión o crear una cuenta para entrar en la empresa y quedar asignado directamente a este proyecto.",
+      "companyLoggedIn": "Puedes continuar con la sesión que ya tienes abierta y entrar como colaborador.",
+      "companyGuest": "Puedes iniciar sesión con una cuenta existente o crear una nueva para entrar como colaborador."
+    },
+    "summary": {
+      "company": "Empresa",
+      "project": "Proyecto",
+      "invitedBy": "Te invitó",
+      "owner": "Propietario",
+      "role": "Rol al entrar",
+      "permissions": "Permisos del proyecto",
+      "noPermissions": "Sin permisos explícitos",
+      "status": "Estado",
+      "active": "Activa",
+      "inactive": "Inactiva"
+    },
+    "actions": {
+      "joining": "Entrando…",
+      "joinProject": "Unirme al proyecto",
+      "joinCompany": "Unirme a la empresa",
+      "haveAccount": "Ya tengo una cuenta",
+      "createAccount": "Crear una cuenta",
+      "withGoogle": "Continuar con Google",
+      "goToDashboard": "Ir al panel",
+      "createWorkspace": "Crear mi espacio de trabajo"
+    },
+    "errors": {
+      "notFound": "La invitación no existe o fue eliminada.",
+      "inactive": "El propietario ya desactivó este enlace de invitación.",
+      "generic": "No se pudo procesar la invitación.",
+      "retrieve": "No se pudo obtener la invitación. Inténtalo de nuevo."
+    }
   }
 }
