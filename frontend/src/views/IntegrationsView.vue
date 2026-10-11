@@ -304,7 +304,7 @@ const filteredIntegrations = computed(() => {
 function categoryLabel(cat) {
   const map = {
     comunicacion: 'Comunicación',
-    email: 'Email',
+    email: 'Correo electrónico',
     automatizacion: 'Automatización',
     crm: 'CRM',
     storage: 'Almacenamiento',

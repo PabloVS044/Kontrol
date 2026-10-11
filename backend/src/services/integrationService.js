@@ -91,7 +91,7 @@ export const INTEGRATION_CATALOG = [
   },
   {
     slug: 'sendgrid',
-    nombre: 'SendGrid',
+    nombre: 'Correo electrónico (SendGrid)',
     descripcion: 'Envía emails transaccionales para reportes, alertas y notificaciones automáticas.',
     categoria: 'email',
     campos_credenciales: [
