@@ -76,35 +76,45 @@
                 <span class="card-name">{{ integration.nombre }}</span>
                 <span class="cat-badge">{{ categoryLabel(integration.categoria) }}</span>
               </div>
-              <!-- Toggle enable/disable -->
-              <button
-                v-if="integration.is_configured"
-                class="toggle-btn"
-                :class="{ 'toggle-on': integration.status === 'active' }"
-                :disabled="togglingSlug === integration.slug"
-                :title="integration.status === 'active' ? 'Desactivar' : 'Activar'"
-                @click="handleToggle(integration)"
-              >
-                <span class="toggle-track">
-                  <span class="toggle-thumb"></span>
-                </span>
-              </button>
             </div>
 
             <!-- Descripción -->
             <p class="card-description">{{ integration.descripcion }}</p>
 
-            <!-- Estado + última actualización -->
-            <div class="card-meta-row">
-              <Pill
-                :label="statusLabel(integration.status)"
-                :btnColor="statusPillColors(integration.status).bg"
-                :circleColor="statusPillColors(integration.status).dot"
-                :textColor="statusPillColors(integration.status).text"
-              />
-              <span v-if="integration.updated_at" class="updated-at">
-                Actualizado {{ fmtDate(integration.updated_at) }}
-              </span>
+            <!-- Estado de la conexión: texto informativo, no clicable -->
+            <p class="card-status">
+              <span class="status-dot" :class="`status-${statusKey(integration)}`" aria-hidden="true"></span>
+              <span class="status-text" :class="`status-${statusKey(integration)}`">{{ statusLabel(integration) }}</span>
+              <template v-if="integration.updated_at">
+                <span class="status-sep" aria-hidden="true">·</span>
+                <span class="updated-at">Actualizado {{ fmtDate(integration.updated_at) }}</span>
+              </template>
+            </p>
+
+            <!-- Interruptor rotulado: es el único control para pausar/reanudar -->
+            <div v-if="integration.is_configured" class="card-switch-row">
+              <div class="switch-text">
+                <span class="switch-title">Envío de notificaciones</span>
+                <span class="switch-hint">
+                  {{ integration.status === 'active' ? 'Kontrol está enviando avisos' : 'Pausada: no se envían avisos' }}
+                </span>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                class="toggle-btn"
+                :class="{ 'toggle-on': integration.status === 'active' }"
+                :aria-checked="integration.status === 'active'"
+                :aria-label="`${integration.status === 'active' ? 'Pausar' : 'Activar'} ${integration.nombre}`"
+                :disabled="togglingSlug === integration.slug"
+                :title="integration.status === 'active' ? 'Pausar envíos sin borrar la configuración' : 'Reanudar envíos'"
+                @click="handleToggle(integration)"
+              >
+                <span class="toggle-label">{{ integration.status === 'active' ? 'Activa' : 'Pausada' }}</span>
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </button>
             </div>
 
             <!-- Acciones primarias -->
@@ -245,7 +255,6 @@
 import { ref, computed, onMounted } from 'vue'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ConnectionSuccessAnimation from '../components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue'
 import { useAuthStore } from '../stores/auth'
@@ -312,15 +321,16 @@ function categoryLabel(cat) {
   return map[cat] ?? cat
 }
 
-function statusLabel(status) {
-  const map = { active: 'Activo', inactive: 'Inactivo', error: 'Error' }
-  return map[status] ?? status
+// Describe la conexión; el encendido/pausa lo comunica solo el interruptor.
+function statusLabel(integration) {
+  if (!integration.is_configured) return 'Sin configurar'
+  if (integration.status === 'error') return 'Con error'
+  return 'Configurada'
 }
 
-function statusPillColors(status) {
-  if (status === 'active')  return { bg: 'rgba(52,211,153,0.1)',  dot: '#34d399', text: '#34d399' }
-  if (status === 'error')   return { bg: 'rgba(251,113,133,0.1)', dot: '#fb7185', text: '#fb7185' }
-  return                           { bg: 'rgba(255,255,255,0.05)', dot: '#444',   text: '#666'    }
+function statusKey(integration) {
+  if (!integration.is_configured) return 'none'
+  return integration.status === 'error' ? 'error' : 'ok'
 }
 
 function fmtDate(d) {
