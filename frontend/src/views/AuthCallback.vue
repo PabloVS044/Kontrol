@@ -6,26 +6,33 @@
 
 <script setup>
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 
+const { t }     = useI18n()
 const route     = useRoute()
 const router    = useRouter()
 const authStore = useAuthStore()
 
-const ERROR_MESSAGES = {
-  google_cancelado:    'You cancelled the Google sign-in.',
-  cuenta_desactivada:  'Your account is disabled. Contact the administrator.',
-  rol_no_encontrado:   'Could not assign a role. Contact the administrator.',
-  google_error:        'An error occurred with Google. Please try again.',
+/**
+ * Código que devuelve el backend → clave del diccionario. El mensaje se
+ * redactaba aquí en inglés y se pasaba hecho por la URL, así que la pantalla
+ * de login —que sí está traducida— lo mostraba en inglés.
+ */
+const ERROR_KEYS = {
+  google_cancelado:   'auth.login.errors.googleCancelled',
+  cuenta_desactivada: 'auth.login.errors.accountDisabled',
+  rol_no_encontrado:  'auth.login.errors.roleNotFound',
+  google_error:       'auth.login.errors.googleError',
 }
 
 onMounted(async () => {
   const { token, error, joinedEmpresaId, inviteToken, inviteError } = route.query
 
   if (error) {
-    const msg = ERROR_MESSAGES[error] || 'Error signing in with Google.'
+    const msg = t(ERROR_KEYS[error] || 'auth.login.errors.googleGeneric')
     router.replace({ name: 'login', query: { error: msg } })
     return
   }

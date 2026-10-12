@@ -89,7 +89,26 @@ describe('AppNavbar.vue — visibilidad por permisos', () => {
   it('muestra el nombre y rol de la empresa actual', async () => {
     const { wrapper } = await montar()
     expect(wrapper.find('.empresa-name').text()).toBe('Skiot')
-    expect(wrapper.find('.empresa-role').text()).toBe('owner')
+    // El rol llega en inglés desde la base de datos; en pantalla va traducido.
+    expect(wrapper.find('.empresa-role').text()).toBe('Propietario')
+  })
+
+  it('traduce el rol que llega en inglés de la base de datos', async () => {
+    // El perfil decía "COLLABORATOR" con la app en español: el valor es del
+    // esquema (hay permisos que dependen de esa cadena), la etiqueta no.
+    const { wrapper } = await montar({
+      empresaActual: { id_empresa: 1, nombre: 'Skiot', rol: 'collaborator' },
+    })
+    expect(wrapper.find('.empresa-role').text()).toBe('Colaborador')
+  })
+
+  it('el menú lateral nombra Proveedores en español', async () => {
+    // "Suppliers" estaba escrito en el código de navegación, no en el
+    // diccionario, así que no cambiaba de idioma nunca.
+    const { wrapper } = await montar({ capabilities: { can_view_inventory: true } })
+    const enlaces = wrapper.findAll('.appnav-link').map((l) => l.text())
+    expect(enlaces).toContain('Proveedores')
+    expect(enlaces).not.toContain('Suppliers')
   })
 
   it('oculta inventario, proyectos, equipos e integraciones sin capacidad', async () => {
@@ -246,7 +265,23 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.lang-dropdown').exists()).toBe(false)
-    expect(localStorage.getItem('locale_42')).toBe('es')
+    // Clave del navegador, no de la cuenta: la preferencia tiene que seguir ahí
+    // después de cerrar sesión, cuando ya no hay id de usuario que consultar.
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
+  })
+
+  it('cerrar sesión no devuelve la app al inglés', async () => {
+    // Antes el logout hacía `locale.value = 'en'`, así que la pantalla de login
+    // aparecía en inglés justo después de haber elegido español.
+    const { wrapper } = await montar({ user: { id_usuario: 42 }, locale: 'es' })
+
+    await wrapper.find('.lang-btn').trigger('click')
+    await wrapper.findAll('.lang-opt')[1].trigger('click') // Español
+    await wrapper.find('.appnav-avatar').trigger('click')
+    await wrapper.find('.ud-item--signout').trigger('click')
+
+    expect(wrapper.vm.$i18n.locale).toBe('es')
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
   })
 
   it('el hamburger alterna el menú y los links lo cierran', async () => {

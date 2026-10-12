@@ -58,7 +58,7 @@
                   :disabled="!canManageMembers"
                   @change="toggleInvitePermission(permission.nombre_permiso, $event.target.checked)"
                 />
-                <span class="pm-permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
+                <span class="pm-permission-name">{{ permissionLabel(permission.nombre_permiso) }}</span>
                 <small class="pm-permission-description">{{ permission.descripcion }}</small>
               </label>
             </div>
@@ -145,7 +145,7 @@
                   :disabled="!canManageMembers || !selectedMemberId"
                   @change="toggleAssignPermission(permission.nombre_permiso, $event.target.checked)"
                 />
-                <span class="pm-permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
+                <span class="pm-permission-name">{{ permissionLabel(permission.nombre_permiso) }}</span>
                 <small class="pm-permission-description">{{ permission.descripcion }}</small>
               </label>
             </div>
@@ -180,7 +180,7 @@
                   </strong>
                   <p class="pm-member-meta">
                     {{ member.email }}
-                    <span v-if="member.rol_empresa">· {{ member.rol_empresa }}</span>
+                    <span v-if="member.rol_empresa">· {{ roleLabel(member.rol_empresa) }}</span>
                     <span v-if="member.rol_proyecto">· {{ member.rol_proyecto }}</span>
                   </p>
                 </div>
@@ -211,7 +211,7 @@
                     :disabled="!canManageMembers"
                     @change="toggleMemberPermission(member.id_usuario, permission.nombre_permiso, $event.target.checked)"
                   />
-                  <span class="pm-permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
+                  <span class="pm-permission-name">{{ permissionLabel(permission.nombre_permiso) }}</span>
                   <small class="pm-permission-description">{{ permission.descripcion }}</small>
                 </label>
               </div>
@@ -240,6 +240,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { projectPermissionLabel } from '@/utils/projectAccessLabels'
+import { translateRole } from '@/utils/roles.js'
 
 const props = defineProps({
   projectId: {
@@ -250,7 +251,12 @@ const props = defineProps({
 
 const emit = defineEmits(['updated'])
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// El rol de empresa llega en inglés desde la base de datos; el de proyecto lo
+// escribe la propia empresa, así que ese se muestra tal cual.
+const roleLabel = (rol) => translateRole(rol, { t, te })
+const permissionLabel = (nombre) => projectPermissionLabel(nombre, { t, te })
 const authStore = useAuthStore()
 
 const loading = ref(true)

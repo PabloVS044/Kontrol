@@ -5,12 +5,10 @@
       <!-- Brand -->
       <div class="footer-brand">
         <div class="footer-logo">
-          <img :src="logo" alt="Kontrol logo" />
+          <img :src="logo" :alt="t('footer.logoAlt')" />
           <span>Kontrol</span>
         </div>
-        <p class="footer-tagline">
-          The all-in-one command center for ambitious businesses.
-        </p>
+        <p class="footer-tagline">{{ t('footer.tagline') }}</p>
         <div class="footer-socials">
           <a href="#" aria-label="Twitter"><Twitter :size="18" /></a>
           <a href="#" aria-label="LinkedIn"><Linkedin :size="18" /></a>
@@ -22,31 +20,31 @@
       <!-- Links -->
       <div class="footer-links">
         <div class="footer-col">
-          <h4>Product</h4>
+          <h4>{{ t('footer.product') }}</h4>
           <ul>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#solution">Command Center</a></li>
-            <li><a href="#steps">How it works</a></li>
-            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#features">{{ t('footer.features') }}</a></li>
+            <li><a href="#solution">{{ t('footer.commandCenter') }}</a></li>
+            <li><a href="#steps">{{ t('footer.howItWorks') }}</a></li>
+            <li><a href="#pricing">{{ t('footer.pricing') }}</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h4>Company</h4>
+          <h4>{{ t('footer.company') }}</h4>
           <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#careers">Careers</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#about">{{ t('footer.about') }}</a></li>
+            <li><a href="#blog">{{ t('footer.blog') }}</a></li>
+            <li><a href="#careers">{{ t('footer.careers') }}</a></li>
+            <li><a href="#contact">{{ t('footer.contact') }}</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h4>Legal</h4>
+          <h4>{{ t('footer.legal') }}</h4>
           <ul>
-            <li><a href="#privacy">Privacy Policy</a></li>
-            <li><a href="#terms">Terms of Service</a></li>
-            <li><a href="#cookies">Cookie Policy</a></li>
+            <li><a href="#privacy">{{ t('footer.privacy') }}</a></li>
+            <li><a href="#terms">{{ t('footer.terms') }}</a></li>
+            <li><a href="#cookies">{{ t('footer.cookies') }}</a></li>
           </ul>
         </div>
       </div>
@@ -55,16 +53,18 @@
 
     <!-- Bottom bar -->
     <div class="footer-bottom">
-      <span>© {{ year }} Kontrol. All rights reserved.</span>
-      <span class="footer-bottom-right">Built for the ambitious.</span>
+      <span>{{ t('footer.rights', { year }) }}</span>
+      <span class="footer-bottom-right">{{ t('footer.builtFor') }}</span>
     </div>
   </footer>
 </template>
 
 <script setup>
+import { useI18n } from "vue-i18n";
 import logo from "../assets/img/kontrol.png";
 import { Twitter, Linkedin, Instagram, Github } from "lucide-vue-next";
 
+const { t } = useI18n();
 const year = new Date().getFullYear();
 </script>
 

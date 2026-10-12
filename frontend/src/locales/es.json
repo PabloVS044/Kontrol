@@ -19,7 +19,12 @@
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "Mínimo 6 caracteres",
         "generic": "Algo salió mal. Por favor intenta de nuevo.",
-        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+        "googleCancelled": "Cancelaste el inicio de sesión con Google.",
+        "accountDisabled": "Tu cuenta está desactivada. Habla con el administrador.",
+        "roleNotFound": "No se pudo asignar un rol. Habla con el administrador.",
+        "googleError": "Ocurrió un error con Google. Inténtalo de nuevo.",
+        "googleGeneric": "Error al iniciar sesión con Google."
       }
     },
     "register": {
@@ -508,6 +513,15 @@
         "save": "No se pudo guardar la entrada.",
         "network": "Error de red, inténtalo de nuevo."
       }
+    },
+    "permissions": {
+      "ver_inventario": "Ver inventario",
+      "gestionar_inventario": "Gestionar inventario",
+      "editar_proyecto": "Editar proyecto",
+      "gestionar_tareas": "Gestionar tareas",
+      "asignar_usuarios": "Asignar usuarios",
+      "gestionar_presupuesto": "Gestionar presupuesto",
+      "crear_reportes": "Crear reportes"
     }
   },
   "inventory": {
@@ -552,14 +566,14 @@
       "exits": "Salidas",
       "net": "Neto",
       "viewDetails": "Ver detalles",
-      "edit": "Editar",
       "sell": "Vender",
       "restock": "Ingresar",
       "increase": "Agregar uno",
       "decrease": "Quitar uno",
       "edit": "Editar producto",
       "delete": "Eliminar producto",
-      "cannotSell": "Este producto no puede venderse ahora."
+      "cannotSell": "Este producto no puede venderse ahora.",
+      "noImage": "sin imagen"
     },
     "receipt": {
       "title": "Venta #{id} registrada",
@@ -730,7 +744,9 @@
       "saving": "Guardando…",
       "delete": "Eliminar proveedor",
       "deleteConfirm": "¿Eliminar a {name}?",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "loading": "Cargando proveedores…",
+      "listLabel": "Lista de proveedores"
     },
     "productDetail": {
       "supplier": "Proveedor",
@@ -740,7 +756,39 @@
       "linking": "Vinculando…",
       "supplierLinked": "Proveedor vinculado correctamente.",
       "supplierLoadError": "No se pudieron cargar los proveedores.",
-      "supplierLinkError": "No se pudo vincular el proveedor."
+      "supplierLinkError": "No se pudo vincular el proveedor.",
+      "loadingTitle": "Cargando el producto",
+      "loadingMsg": "Buscando los datos de inventario más recientes.",
+      "errorTitle": "No se pudo cargar el producto",
+      "back": "Volver al inventario",
+      "retry": "Reintentar",
+      "uncategorized": "Sin categoría",
+      "noProject": "Proyecto no disponible",
+      "overview": "Resumen",
+      "noDescription": "Este producto todavía no tiene descripción.",
+      "salePrice": "Precio de venta",
+      "costPrice": "Precio de costo",
+      "weightedCost": "Costo promedio ponderado",
+      "barcode": "Código de barras",
+      "noBarcode": "Sin código de barras asignado",
+      "scan": "Escanear",
+      "saveBarcode": "Guardar",
+      "savingBarcode": "Guardando…",
+      "stock": "Stock",
+      "unitsAvailable": "unidades disponibles",
+      "minimumStock": "Stock mínimo",
+      "status": "Estado",
+      "project": "Proyecto",
+      "suppliers": "Proveedores",
+      "quotesTitle": "Cotizaciones de proveedores vinculadas",
+      "countSingular": "{count} proveedor",
+      "countPlural": "{count} proveedores",
+      "noSuppliers": "Este producto todavía no tiene proveedores vinculados.",
+      "lastQuote": "Última cotización: {date}",
+      "barcodeInUse": "Ese código de barras ya está en uso.",
+      "barcodeForbidden": "No tienes permiso para editar este producto.",
+      "barcodeSaved": "Código de barras guardado.",
+      "networkError": "Error de red, inténtalo de nuevo."
     }
   },
   "budget": {
@@ -854,7 +902,9 @@
       "manual": "Manual",
       "directEntry": "Entrada directa en el registro de la actividad",
       "registeredExpense": "Gasto registrado",
-      "noEntriesYet": "Sin entradas de gastos aún para esta actividad."
+      "noEntriesYet": "Sin entradas de gastos aún para esta actividad.",
+      "edit": "Editar actividad",
+      "delete": "Eliminar actividad"
     },
     "fundingHistory": {
       "title": "Historial de Fondos",
@@ -1163,7 +1213,8 @@
       "sideInfoManager": "Encargado",
       "sideInfoBudget": "Presupuesto",
       "sideRiskLevel": "Nivel de Riesgo"
-    }
+    },
+    "noData": "Sin datos"
   },
   "teams": {
     "header": {
@@ -1545,9 +1596,11 @@
     "ownerOnly": "Solo el dueño de la empresa o un administrador puede cambiar cómo vende esta empresa.",
     "prefs": {
       "title": "Tus preferencias",
-      "hint": "Se guardan en este navegador y solo para tu cuenta. No afectan a nadie más del equipo.",
+      "hint": "Se guardan en este navegador. No afectan a nadie más del equipo.",
       "birdie": "Mostrar la burbuja del asistente Birdie",
-      "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí."
+      "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
+      "language": "Idioma",
+      "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión."
     },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",
@@ -1570,7 +1623,7 @@
     }
   },
   "navbar": {
-    "dashboard": "Dashboard",
+    "dashboard": "Panel",
     "inventory": "Inventario",
     "projects": "Proyectos",
     "teams": "Equipos",
@@ -1594,7 +1647,554 @@
     "admin": {
       "overview": "Resumen",
       "companies": "Empresas",
-      "users": "Usuarios"
+      "users": "Usuarios",
+      "superUser": "Superusuario"
+    },
+    "suppliers": "Proveedores"
+  },
+  "language": {
+    "label": "Idioma",
+    "change": "Cambiar de idioma"
+  },
+  "roles": {
+    "owner": "Propietario",
+    "admin": "Administrador",
+    "manager": "Gerente",
+    "collaborator": "Colaborador",
+    "member": "Miembro",
+    "superUser": "Superusuario"
+  },
+  "onboarding": {
+    "welcome": "Bienvenido a",
+    "tagline": "Para empezar, crea tu espacio de trabajo: una empresa que reúne tus proyectos, el inventario y a tu equipo.",
+    "features": {
+      "projects": "Gestiona proyectos y presupuestos de toda la organización",
+      "team": "Invita a tu equipo y asigna roles",
+      "inventory": "Controla inventario, proveedores y gastos en un solo lugar"
+    },
+    "form": {
+      "title": "Crea tu espacio de trabajo",
+      "subtitle": "Esta será tu empresa en Kontrol.",
+      "name": "Nombre de la empresa",
+      "namePlaceholder": "p. ej. Acme Corp",
+      "industry": "Industria",
+      "industryPlaceholder": "p. ej. Construcción, Comercio, Tecnología…",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "addressPlaceholder": "Ciudad, País",
+      "submit": "Crear espacio de trabajo",
+      "submitting": "Creando…",
+      "networkError": "Error de red, inténtalo de nuevo."
+    },
+    "footerNote": "¿Ya formas parte de un equipo? Pide a tu administrador que te invite: tu cuenta ya está lista.",
+    "signOut": "Cerrar sesión"
+  },
+  "invite": {
+    "eyebrow": "Invitación a un espacio de trabajo",
+    "loading": "Cargando la invitación…",
+    "notFound": "No se encontró la invitación.",
+    "title": {
+      "checking": "Comprobando tu invitación",
+      "unavailable": "Este enlace ya no está disponible",
+      "join": "Únete a {name}",
+      "invited": "Te han invitado a {name}"
+    },
+    "subtitle": {
+      "checking": "Estamos validando el enlace que compartió el propietario.",
+      "unavailable": "El propietario desactivó este enlace o la invitación ya no existe.",
+      "projectLoggedIn": "Puedes continuar con la sesión que ya tienes abierta y quedar vinculado directamente a este proyecto.",
+      "projectGuest": "Puedes iniciar sesión o crear una cuenta para entrar en la empresa y quedar asignado directamente a este proyecto.",
+      "companyLoggedIn": "Puedes continuar con la sesión que ya tienes abierta y entrar como colaborador.",
+      "companyGuest": "Puedes iniciar sesión con una cuenta existente o crear una nueva para entrar como colaborador."
+    },
+    "summary": {
+      "company": "Empresa",
+      "project": "Proyecto",
+      "invitedBy": "Te invitó",
+      "owner": "Propietario",
+      "role": "Rol al entrar",
+      "permissions": "Permisos del proyecto",
+      "noPermissions": "Sin permisos explícitos",
+      "status": "Estado",
+      "active": "Activa",
+      "inactive": "Inactiva"
+    },
+    "actions": {
+      "joining": "Entrando…",
+      "joinProject": "Unirme al proyecto",
+      "joinCompany": "Unirme a la empresa",
+      "haveAccount": "Ya tengo una cuenta",
+      "createAccount": "Crear una cuenta",
+      "withGoogle": "Continuar con Google",
+      "goToDashboard": "Ir al panel",
+      "createWorkspace": "Crear mi espacio de trabajo"
+    },
+    "errors": {
+      "notFound": "La invitación no existe o fue eliminada.",
+      "inactive": "El propietario ya desactivó este enlace de invitación.",
+      "generic": "No se pudo procesar la invitación.",
+      "retrieve": "No se pudo obtener la invitación. Inténtalo de nuevo."
     }
+  },
+  "agent": {
+    "sidebar": {
+      "title": "Conversaciones",
+      "hide": "Ocultar conversaciones",
+      "show": "Mostrar conversaciones",
+      "newConversation": "Nueva conversación",
+      "empty": "Aún no tienes conversaciones.",
+      "noHistory": "Historial no disponible: MongoDB desconectado.",
+      "deleteConversation": "Eliminar conversación",
+      "deleteConfirm": "¿Eliminar \"{title}\"? Esta acción no se puede deshacer."
+    },
+    "notConfigured": "El agente aún no está configurado. Define {key} en el backend. {url} es opcional y por defecto usa ClawStitch Qwen.",
+    "greeting": "Hola, {name}",
+    "titleLine1": "¿En qué puedo",
+    "titleLine2": "ayudarte?",
+    "fallbackName": "usuario",
+    "placeholder": "Pregúntame cualquier cosa...",
+    "stop": "Detener generación",
+    "hint": "Presiona Enter para enviar · Shift+Enter para nueva línea",
+    "message": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "edited": "editado"
+    },
+    "errors": {
+      "loadConversation": "No se pudo cargar la conversación.",
+      "deleteConversation": "No se pudo eliminar la conversación.",
+      "send": "Error al contactar al agente.",
+      "update": "No se pudo actualizar el mensaje.",
+      "delete": "No se pudo eliminar el mensaje."
+    },
+    "stopped": "_Generación detenida._",
+    "failed": "Lo siento, no pude procesar tu solicitud en este momento.",
+    "quickActions": {
+      "budget": {
+        "label": "Analizar presupuesto",
+        "desc": "Revisa gastos y proyecciones financieras",
+        "suggestion": "Analiza el estado actual del presupuesto de mi empresa y dame recomendaciones"
+      },
+      "projects": {
+        "label": "Resumen de proyectos",
+        "desc": "Estado y avance de tus proyectos activos",
+        "suggestion": "Dame un resumen del estado de mis proyectos activos y sus avances"
+      },
+      "report": {
+        "label": "Generar reporte",
+        "desc": "Crea informes de inventario y actividad",
+        "suggestion": "Genera un reporte ejecutivo de las actividades recientes de mi empresa"
+      }
+    }
+  },
+  "chat": {
+    "title": "Mensajes",
+    "newDM": "Nuevo mensaje directo",
+    "searchMessages": "Buscar mensajes...",
+    "directMessages": "Mensajes Directos",
+    "noConversationsHint": "Sin conversaciones aún. Inicia un nuevo chat con el botón +",
+    "noConversations": "Sin conversaciones",
+    "noMessagesYet": "Sin mensajes aún",
+    "emptyTitle": "Tus mensajes",
+    "emptySubtitle": "Selecciona una conversación o inicia un nuevo mensaje directo.",
+    "directBadge": "Directo",
+    "typing": "escribiendo...",
+    "noMessages": "No hay mensajes en esta conversación.",
+    "videoCall": "Videollamada",
+    "openFile": "Abrir archivo",
+    "attachFile": "Adjuntar archivo",
+    "attachImage": "Adjuntar imagen",
+    "attachMedia": "Adjuntar audio o video",
+    "messagePlaceholder": "Escribe un mensaje...",
+    "searchUser": "Buscar usuario...",
+    "noUsersFound": "Sin usuarios encontrados",
+    "noUsersAvailable": "Sin usuarios disponibles",
+    "openFullScreen": "Abrir en pantalla completa",
+    "newChat": "Nuevo chat",
+    "search": "Buscar...",
+    "image": "Imagen",
+    "media": "Audio o video",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "upload": {
+      "one": "Subiendo archivo...",
+      "many": "Subiendo {count} archivos..."
+    },
+    "errors": {
+      "loadConversation": "No se pudo cargar la conversación.",
+      "upload": "No se pudieron subir los archivos.",
+      "sendAttachments": "No se pudo enviar el mensaje con adjuntos.",
+      "loadUsers": "No se pudieron cargar los usuarios.",
+      "startChat": "No se pudo iniciar el chat.",
+      "startCall": "No se pudo iniciar la videollamada."
+    },
+    "call": {
+      "incoming": "Videollamada entrante",
+      "invitation": "Quiere iniciar una videollamada directa contigo.",
+      "decline": "Rechazar",
+      "accept": "Aceptar",
+      "cameraOff": "Cámara apagada",
+      "title": "Videollamada",
+      "hangUp": "Colgar",
+      "meetingChat": "Chat de la reunión",
+      "loadingChat": "Cargando chat...",
+      "noMessages": "No hay mensajes disponibles para esta conversación.",
+      "reply": "Responder...",
+      "unknownPeer": "Usuario",
+      "muteMic": "Silenciar micrófono",
+      "unmuteMic": "Activar micrófono",
+      "cameraOffAction": "Apagar cámara",
+      "cameraOnAction": "Encender cámara",
+      "status": {
+        "ringing": "Llamando...",
+        "connecting": "Conectando video...",
+        "connected": "Videollamada en curso",
+        "ended": "Videollamada finalizada",
+        "preparing": "Preparando videollamada..."
+      },
+      "newMessages": "Mensajes nuevos ({count})",
+      "errors": {
+        "loadChat": "No se pudo cargar el chat de la llamada.",
+        "loadMessages": "No se pudieron cargar los mensajes de la llamada."
+      }
+    }
+  },
+  "integrations": {
+    "restricted": {
+      "title": "Acceso restringido",
+      "msg": "Solo los propietarios y administradores pueden gestionar integraciones."
+    },
+    "loadError": "No se pudo cargar las integraciones",
+    "retry": "Reintentar",
+    "title": "Integraciones",
+    "subtitle": "Conecta Kontrol con tus herramientas externas",
+    "allCategories": "Todas",
+    "categories": {
+      "comunicacion": "Comunicación",
+      "email": "Correo electrónico",
+      "automatizacion": "Automatización",
+      "crm": "CRM",
+      "storage": "Almacenamiento"
+    },
+    "status": {
+      "notConfigured": "Sin configurar",
+      "error": "Con error",
+      "configured": "Configurada"
+    },
+    "updatedAt": "Actualizado {date}",
+    "switch": {
+      "title": "Envío de notificaciones",
+      "onHint": "Kontrol está enviando avisos",
+      "offHint": "Pausada: no se envían avisos",
+      "on": "Activa",
+      "off": "Pausada",
+      "pauseLabel": "Pausar {name}",
+      "resumeLabel": "Activar {name}",
+      "pauseTitle": "Pausar envíos sin borrar la configuración",
+      "resumeTitle": "Reanudar envíos"
+    },
+    "actions": {
+      "edit": "Editar configuración",
+      "configure": "Configurar",
+      "testing": "Probando…",
+      "test": "Probar conexión",
+      "how": "¿Cómo conectar?",
+      "delete": "Eliminar configuración"
+    },
+    "confirm": {
+      "title": "¿Eliminar la configuración de {name}?",
+      "text": "Se borrarán las credenciales guardadas y Kontrol dejará de enviar notificaciones a {name}. Para volver a usarla tendrás que configurarla de nuevo.",
+      "hint": "¿Solo quieres detenerla por un tiempo? Usa el interruptor {switch} de la tarjeta: conserva la configuración.",
+      "switchName": "Activa / Pausada",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Sí, eliminar configuración"
+    },
+    "tutorial": {
+      "title": "Cómo conectar {name}",
+      "intro": "Sigue estos pasos para configurar la integración con {name}.",
+      "goConfigure": "Ir a configurar"
+    },
+    "modal": {
+      "credentials": "Credenciales",
+      "required": "Requerido",
+      "optional": "Opcional",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "saving": "Guardando…",
+      "save": "Guardar"
+    },
+    "feedback": {
+      "saved": "Integración guardada correctamente.",
+      "deleted": "Configuración eliminada.",
+      "testOk": "Conexión exitosa",
+      "lastTestFailed": "La última conexión falló. Revisa las credenciales y usa \"Probar conexión\" antes de activar."
+    },
+    "successAnimation": {
+      "title": "Conexión exitosa",
+      "accept": "Aceptar"
+    },
+    "tutorials": {
+      "slack": [
+        "Ve a api.slack.com/apps e inicia sesión con tu cuenta de Slack.",
+        "Crea una nueva app seleccionando \"From scratch\" y elige tu workspace.",
+        "En el menú lateral, ve a \"Incoming Webhooks\" y actívalo.",
+        "Haz clic en \"Add New Webhook to Workspace\" y selecciona el canal donde quieres recibir notificaciones.",
+        "Copia la URL del webhook generada (comienza con https://hooks.slack.com/...) y pégala en la configuración."
+      ],
+      "sendgrid": [
+        "Inicia sesión en app.sendgrid.com con tu cuenta de SendGrid.",
+        "Ve a Settings → API Keys y haz clic en \"Create API Key\".",
+        "Ponle un nombre descriptivo y selecciona el permiso \"Restricted Access\" → \"Mail Send: Full Access\".",
+        "Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.",
+        "Pega la API Key, tu correo remitente verificado en SendGrid y el correo destinatario que recibirá las alertas."
+      ],
+      "microsoft-teams": [
+        "Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.",
+        "Haz clic en \"...\" junto al nombre del canal y selecciona \"Connectors\".",
+        "Busca \"Incoming Webhook\" en la lista y haz clic en \"Configure\".",
+        "Ponle un nombre al conector, sube un ícono opcional y haz clic en \"Create\".",
+        "Copia la URL del webhook generada y pégala en la configuración de Kontrol."
+      ],
+      "telegram": [
+        "Abre Telegram y busca el bot {'@'}BotFather.",
+        "Envía el comando /newbot y sigue las instrucciones para elegir nombre y usuario para tu bot.",
+        "BotFather te entregará un Bot Token. Cópialo y guárdalo.",
+        "Para obtener tu Chat ID: inicia una conversación con tu bot y luego consulta la API con el token o usa el bot {'@'}userinfobot.",
+        "Ingresa el Bot Token y el Chat ID en la configuración de Kontrol."
+      ],
+      "twilio-sms": [
+        "Crea una cuenta en twilio.com o inicia sesión si ya tienes una.",
+        "En el Dashboard principal verás tu Account SID y Auth Token. Cópialos.",
+        "Ve a \"Phone Numbers → Manage → Buy a number\" para adquirir un número de Twilio desde donde se enviarán los SMS.",
+        "Ingresa el Account SID, Auth Token, el número de Twilio y el número de destino en la configuración."
+      ],
+      "webhook": [
+        "Prepara el servidor o servicio externo que recibirá los eventos (debe ser accesible públicamente).",
+        "El endpoint debe aceptar peticiones POST con body en formato JSON.",
+        "Asegúrate de usar HTTPS para mayor seguridad.",
+        "Copia la URL de tu endpoint y pégala en el campo URL de la configuración.",
+        "Kontrol enviará un evento POST cada vez que ocurra una acción relevante en tu empresa."
+      ],
+      "fallback": [
+        "Obtén las credenciales desde la plataforma de {name}.",
+        "Cópialas e ingrésalas en el formulario de configuración de Kontrol.",
+        "Guarda los cambios y usa \"Probar conexión\" para verificar que todo funciona."
+      ]
+    }
+  },
+  "validation": {
+    "required": "Completa este campo.",
+    "selectOption": "Elige una opción.",
+    "email": "Escribe un correo, como nombre{'@'}empresa.com.",
+    "url": "Escribe una dirección completa, que empiece con https://.",
+    "tooShort": "Usa al menos {min} caracteres.",
+    "tooLong": "Usa como máximo {max} caracteres.",
+    "min": "Escribe {min} o más.",
+    "max": "Escribe {max} o menos.",
+    "step": "Usa múltiplos de {step}.",
+    "number": "Escribe un número.",
+    "pattern": "Este valor no tiene el formato esperado.",
+    "invalid": "Revisa este valor."
+  },
+  "landing": {
+    "nav": {
+      "home": "Inicio",
+      "features": "Funciones",
+      "steps": "Cómo funciona",
+      "companies": "Empresas",
+      "login": "Iniciar sesión",
+      "getStarted": "Crear cuenta",
+      "menu": "Menú"
+    },
+    "hero": {
+      "pill": "El futuro de los negocios",
+      "title": "Toma el control de tu negocio",
+      "copy": "Gestiona proyectos, finanzas, marketing y comunicación desde una sola plataforma. Hecha para quien tiene ambición.",
+      "start": "Empieza a gestionar tu negocio",
+      "seeHow": "Mira cómo funciona"
+    },
+    "control": {
+      "one": "Un solo centro de control.",
+      "every": "Cada parte de tu negocio.",
+      "yours": "Bajo tu control.",
+      "tags": {
+        "projects": "Proyectos",
+        "finance": "Finanzas",
+        "marketing": "Marketing",
+        "inventory": "Inventario"
+      }
+    },
+    "problem": {
+      "titleStart": "Deja de hacer malabares con herramientas para",
+      "titleMark": "llevar tu negocio",
+      "chaos": {
+        "title": "El caos",
+        "subtitle": "Sistemas sueltos que te frenan.",
+        "items": [
+          "Avances de proyecto en hilos de WhatsApp",
+          "Hojas de Excel repartidas por todos lados",
+          "Cuadernos y notas adhesivas",
+          "Facturas perdidas y pagos atrasados"
+        ]
+      },
+      "order": {
+        "title": "El orden",
+        "subtitle": "Un solo ecosistema, pensado para crecer.",
+        "items": [
+          "Mando centralizado de proyectos",
+          "Inteligencia financiera automatizada",
+          "Marketing en un solo lugar",
+          "Análisis de datos con IA"
+        ]
+      }
+    },
+    "solution": {
+      "title": "El centro de control",
+      "copy": "Toda tu operación en un panel de alta fidelidad que se adelanta a tu siguiente movimiento.",
+      "finances": {
+        "title": "Finanzas",
+        "subtitle": "Flujo de caja al día"
+      },
+      "crm": {
+        "title": "CRM de equipo",
+        "subtitle": "Colaborar sin complicaciones"
+      },
+      "marketing": {
+        "title": "Marketing",
+        "subtitle": "Campañas en todos los canales"
+      },
+      "inventory": {
+        "title": "Inventario",
+        "subtitle": "Control de stock automático"
+      }
+    },
+    "features": {
+      "title": "Funciones",
+      "copy": "Todo lo que necesita un negocio que crece, en un solo sistema en vez de cinco pegados con cinta.",
+      "cards": {
+        "analytics": {
+          "label": "Datos",
+          "title": "Analítica",
+          "description": "Sigue el comportamiento de tus usuarios"
+        },
+        "dashboard": {
+          "label": "Resumen",
+          "title": "Panel",
+          "description": "Todos los datos en una vista"
+        },
+        "collaboration": {
+          "label": "Equipo",
+          "title": "Colaboración",
+          "description": "Trabajen juntos sin fricción"
+        },
+        "automation": {
+          "label": "Eficiencia",
+          "title": "Automatización",
+          "description": "Simplifica los flujos de trabajo"
+        },
+        "integration": {
+          "label": "Conexiones",
+          "title": "Integraciones",
+          "description": "Conecta tus herramientas favoritas"
+        },
+        "security": {
+          "label": "Protección",
+          "title": "Seguridad",
+          "description": "Protección de nivel empresarial"
+        }
+      }
+    },
+    "steps": {
+      "title": "Pasos para tener el control",
+      "connect": {
+        "title": "Conecta tu ecosistema",
+        "description": "Reúne tus herramientas en un solo centro de control.",
+        "process": [
+          "Conecta ventas, finanzas y operaciones en un solo lugar",
+          "Importa tus flujos y ordena las entregas entre áreas",
+          "Activa avisos automáticos para todo el equipo"
+        ]
+      },
+      "automate": {
+        "title": "Automatiza tu flujo de trabajo",
+        "description": "Convierte las entregas manuales en procesos que avanzan solos.",
+        "process": [
+          "Define disparadores y condiciones",
+          "Manda cada tarea al equipo que le toca, al instante",
+          "Sigue cada paso sin perder de vista nada"
+        ]
+      },
+      "optimize": {
+        "title": "Mejora los resultados",
+        "description": "Usa los datos en vivo para ajustar procesos y mejorar resultados.",
+        "process": [
+          "Mide tus métricas clave en tiempo real",
+          "Detecta los cuellos de botella y resuélvelos rápido",
+          "Haz crecer el sistema al ritmo de tu equipo"
+        ]
+      }
+    },
+    "companies": {
+      "title": "Hecho para cualquier negocio de hoy",
+      "copy": "Se adapta a cualquier negocio, de una tienda pequeña a una operación grande, con las herramientas para gestionar, crecer y escalar sin esfuerzo",
+      "store": {
+        "tag": "Dueños de tienda",
+        "title": "Control total de tu negocio",
+        "copy": "Gestiona la operación, mide el desempeño y optimiza tu tienda con herramientas que simplifican el día a día.",
+        "items": [
+          "Ventas en tiempo real",
+          "Gestión de inventario",
+          "Datos de clientes y reportes"
+        ]
+      },
+      "auto": {
+        "tag": "Automotriz",
+        "title": "Hecho para operaciones exigentes",
+        "copy": "Maneja flujos complejos, servicios e inventario con la precisión que pide el sector automotriz.",
+        "items": [
+          "Control de servicios y reparaciones",
+          "Inventario de repuestos",
+          "Automatización de flujos"
+        ]
+      },
+      "food": {
+        "tag": "Negocios de comida",
+        "title": "Rápido, confiable, siempre listo",
+        "copy": "Mantén los pedidos en marcha y a los clientes contentos, también en las horas pico.",
+        "items": [
+          "Gestión de pedidos",
+          "Menú actualizado al instante",
+          "Rendimiento en horas pico"
+        ]
+      }
+    },
+    "start": {
+      "title": "Empieza a controlar tu negocio hoy.",
+      "copy": "Más de 50,000 negocios usan Kontrol para dejar atrás el caos y crecer.",
+      "cta": "Entra al centro de control"
+    }
+  },
+  "footer": {
+    "logoAlt": "Logotipo de Kontrol",
+    "tagline": "El centro de control todo en uno para negocios con ambición.",
+    "product": "Producto",
+    "features": "Funciones",
+    "commandCenter": "Centro de control",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Precios",
+    "company": "Empresa",
+    "about": "Nosotros",
+    "blog": "Blog",
+    "careers": "Empleo",
+    "contact": "Contacto",
+    "legal": "Legal",
+    "privacy": "Aviso de privacidad",
+    "terms": "Términos del servicio",
+    "cookies": "Política de cookies",
+    "rights": "© {year} Kontrol. Todos los derechos reservados.",
+    "builtFor": "Hecho para quien tiene ambición."
   }
 }

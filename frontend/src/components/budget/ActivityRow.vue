@@ -26,13 +26,13 @@
         <button
           v-if="canEdit"
           class="row-btn"
-          title="Edit activity"
+          :title="t('budget.activityRow.edit')"
           @click="$emit('edit', activity)"
         >✎</button>
         <button
           v-if="canDelete"
           class="row-btn danger"
-          title="Delete activity"
+          :title="t('budget.activityRow.delete')"
           @click="$emit('delete', activity)"
         >×</button>
       </span>

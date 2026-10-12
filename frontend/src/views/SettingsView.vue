@@ -17,6 +17,16 @@
       <h2 class="sc-title">{{ $t('settings.prefs.title') }}</h2>
       <p class="sc-hint">{{ $t('settings.prefs.hint') }}</p>
 
+      <!-- Tres de cada cinco participantes buscaron el idioma aquí antes que en
+           la barra superior, así que aquí está, con los dos nombres escritos. -->
+      <div class="sc-row">
+        <div class="sc-field">
+          <span class="sc-label">{{ $t('settings.prefs.language') }}</span>
+          <LanguageSelector variant="inline" />
+        </div>
+        <p class="sc-note">{{ $t('settings.prefs.languageNote') }}</p>
+      </div>
+
       <div class="sc-row sc-row--last">
         <label class="sc-toggle">
           <input
@@ -140,6 +150,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
+import LanguageSelector from '../components/common/LanguageSelector.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()

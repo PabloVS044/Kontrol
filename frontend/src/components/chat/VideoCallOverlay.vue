@@ -4,15 +4,15 @@
       <div class="call-card call-card--incoming">
         <div class="call-avatar">{{ incomingPeerAvatar }}</div>
         <div class="call-copy">
-          <p class="call-kicker">Videollamada entrante</p>
+          <p class="call-kicker">{{ t('chat.call.incoming') }}</p>
           <h3 class="call-name">{{ incomingPeerName }}</h3>
-          <p class="call-sub">Quiere iniciar una videollamada directa contigo.</p>
+          <p class="call-sub">{{ t('chat.call.invitation') }}</p>
           <p v-if="chatStore.callError" class="call-error">{{ chatStore.callError }}</p>
         </div>
 
         <div class="call-actions">
-          <button class="call-btn call-btn--ghost" @click="declineCall">Rechazar</button>
-          <button class="call-btn call-btn--primary" @click="acceptCall">Aceptar</button>
+          <button class="call-btn call-btn--ghost" @click="declineCall">{{ t('chat.call.decline') }}</button>
+          <button class="call-btn call-btn--primary" @click="acceptCall">{{ t('chat.call.accept') }}</button>
         </div>
       </div>
     </div>
@@ -41,13 +41,13 @@
                 muted
                 playsinline
               ></video>
-              <div v-if="!chatStore.isCameraEnabled" class="call-local-off">Camara apagada</div>
+              <div v-if="!chatStore.isCameraEnabled" class="call-local-off">{{ t('chat.call.cameraOff') }}</div>
             </div>
           </div>
         
           <div class="call-toolbar">
             <div class="call-toolbar-copy">
-              <p class="call-kicker">Videollamada</p>
+              <p class="call-kicker">{{ t('chat.call.title') }}</p>
               <h3 class="call-name">{{ activePeerName }}</h3>
               <p class="call-sub">{{ statusLabel }}</p>
               <p v-if="chatStore.callError" class="call-error">{{ chatStore.callError }}</p>
@@ -57,7 +57,7 @@
               <button
                 class="call-circle-btn"
                 :class="{ inactive: !chatStore.isMicrophoneEnabled }"
-                :title="chatStore.isMicrophoneEnabled ? 'Silenciar microfono' : 'Activar microfono'"
+                :title="chatStore.isMicrophoneEnabled ? t('chat.call.muteMic') : t('chat.call.unmuteMic')"
                 @click="chatStore.toggleCallMicrophone()"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -69,7 +69,7 @@
               <button
                 class="call-circle-btn"
                 :class="{ inactive: !chatStore.isCameraEnabled }"
-                :title="chatStore.isCameraEnabled ? 'Apagar camara' : 'Encender camara'"
+                :title="chatStore.isCameraEnabled ? t('chat.call.cameraOffAction') : t('chat.call.cameraOnAction')"
                 @click="chatStore.toggleCallCamera()"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -80,7 +80,7 @@
 
               <button 
                 class="call-circle-btn call-circle-btn--danger"
-                title="Colgar"
+                :title="t('chat.call.hangUp')"
                 @click="chatStore.endVideoCall()">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                   <path d="M4 15c1.7-1.4 4.3-2.5 8-2.5s6.3 1.1 8 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -109,7 +109,7 @@
         <!-- Panel lateral -->
         <aside v-if="showSideChat" class="call-side-chat">
           <div class="side-chat-header">
-            <span>Chat de la reunión</span>
+            <span>{{ t('chat.call.meetingChat') }}</span>
             <button @click="showSideChat = false" class="close-side-btn">
               <svg width="14" height="14" view-box="0 0 24 24" fill="none">
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -119,7 +119,7 @@
 
           <div class="side-chat-body" ref="sideMsgEl">
             <div v-if="sideChatLoading" class="side-chat-placeholder">
-              Cargando chat...
+              {{ t('chat.call.loadingChat') }}
             </div>
 
             <div v-else-if="sideChatError" class="side-chat-placeholder side-chat-placeholder--error">
@@ -127,13 +127,13 @@
             </div>
 
             <div v-else-if="!messages.length" class="side-chat-placeholder">
-              No hay mensajes disponibles para esta conversación.
+              {{ t('chat.call.noMessages') }}
             </div>
 
             <div v-else>
               <div v-for="(msg, idx) in messages" :key="msg._id">
                 <div v-if="newMessagesIndexAtOpen >= 0 && idx === newMessagesIndexAtOpen" ref="newMessagesDividerEl" class="new-messages-divider">
-                  <span>Mensajes nuevos ({{ newMessagesCountAtOpen }})</span>
+                  <span>{{ t('chat.call.newMessages', { count: newMessagesCountAtOpen }) }}</span>
                 </div>
 
                 <div class="mini-msg">
@@ -145,7 +145,7 @@
           </div>
 
           <div class="side-chat-input-area">
-            <input v-model="sideMessageInput" @keydown.enter="sendSideMessage" placeholder="Responder..." />
+            <input v-model="sideMessageInput" @keydown.enter="sendSideMessage" :placeholder="t('chat.call.reply')" />
           </div>
         </aside>
       </div>
@@ -155,9 +155,11 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useChatStore } from '../../stores/chat.js'
 import { useAuthStore } from '../../stores/auth.js'
 
+const { t } = useI18n()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 
@@ -166,9 +168,9 @@ const remoteVideoEl = ref(null)
 
 const showIncomingPrompt = computed(() => Boolean(chatStore.incomingCall) && !chatStore.activeCall)
 const hasRemoteVideo = computed(() => chatStore.activeCall?.status === 'connected')
-const incomingPeerName = computed(() => chatStore.incomingCall?.peerName || 'Usuario')
+const incomingPeerName = computed(() => chatStore.incomingCall?.peerName || t('chat.call.unknownPeer'))
 const incomingPeerAvatar = computed(() => chatStore.incomingCall?.peerAvatar || '??')
-const activePeerName = computed(() => chatStore.activeCall?.peerName || 'Usuario')
+const activePeerName = computed(() => chatStore.activeCall?.peerName || t('chat.call.unknownPeer'))
 const activePeerAvatar = computed(() => chatStore.activeCall?.peerAvatar || '??')
 
 const showSideChat = ref(false)
@@ -202,11 +204,11 @@ const messages = computed(() => {
 const statusLabel = computed(() => {
   const status = chatStore.activeCall?.status
 
-  if (status === 'ringing') return 'Llamando...'
-  if (status === 'connecting') return 'Conectando video...'
-  if (status === 'connected') return 'Videollamada en curso'
-  if (status === 'ended') return chatStore.callError || 'Videollamada finalizada'
-  return 'Preparando videollamada...'
+  if (status === 'ringing') return t('chat.call.status.ringing')
+  if (status === 'connecting') return t('chat.call.status.connecting')
+  if (status === 'connected') return t('chat.call.status.connected')
+  if (status === 'ended') return chatStore.callError || t('chat.call.status.ended')
+  return t('chat.call.status.preparing')
 })
 
 function sendSideMessage() {
@@ -282,7 +284,7 @@ watch(() => chatStore.activeCall, async (newCall) => {
   sideChatLoading.value = false
 
   if (!response.success) {
-    sideChatError.value = response.message || 'No se pudo cargar el chat de la llamada.'
+    sideChatError.value = response.message || t('chat.call.errors.loadChat')
   }
 
   newMessagesCountAtOpen.value = 0
@@ -322,7 +324,7 @@ watch(showSideChat, async (isOpen) => {
       if (!msgs.length) {
         const loadResponse = await chatStore.loadMessages(convId)
         if (!loadResponse.success) {
-          sideChatError.value = loadResponse.message || 'No se pudieron cargar los mensajes de la llamada.'
+          sideChatError.value = loadResponse.message || t('chat.call.errors.loadMessages')
         }
         msgs = (chatStore.messages[convId] || [])
       }
