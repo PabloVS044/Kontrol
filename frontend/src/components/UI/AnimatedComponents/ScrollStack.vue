@@ -21,6 +21,7 @@ const props = defineProps({
   itemDistance:      { type: Number,   default: 100 },
   itemScale:         { type: Number,   default: 0.03 },
   itemStackDistance: { type: Number,   default: 30 },
+  // A viewport percentage, a px value, or 'center' (see stackPositionFor).
   stackPosition:     { type: String,   default: '20%' },
   scaleEndPosition:  { type: String,   default: '10%' },
   baseScale:         { type: Number,   default: 0.85 },
@@ -74,9 +75,14 @@ function getScrollData() {
 // Layout offsets are measured once (before any transform is applied) and
 // cached; only a resize re-measures them, since transforms never affect them.
 let cardOffsets = [];
+let cardHeights = [];
 let endOffset   = 0;
 
 function measureOffsets() {
+  // offsetHeight (not getBoundingClientRect) so a `scale()` already applied
+  // to a card mid-animation doesn't shrink the measurement.
+  cardHeights = cards.map(card => card.offsetHeight);
+
   if (props.useWindowScroll) {
     cardOffsets = cards.map(card => card.getBoundingClientRect().top + window.scrollY);
     const endEl = document.querySelector('.scroll-stack-end');
@@ -90,6 +96,22 @@ function measureOffsets() {
   updateRunway();
 }
 
+// 'center' pins each card in the middle of the viewport instead of at a fixed
+// line, so it's read where the eye already is. The staircase offset
+// (itemStackDistance * i) is split around the middle, so the stack as a whole
+// stays centered instead of drifting lower with every card.
+function stackPositionFor(i, containerHeight) {
+  if (props.stackPosition !== 'center') {
+    return parsePercentage(props.stackPosition, containerHeight);
+  }
+  const staircase = props.itemStackDistance * (cards.length - 1);
+  return Math.max(0, (containerHeight - cardHeights[i] - staircase) / 2);
+}
+
+function pinStartFor(i, containerHeight) {
+  return cardOffsets[i] - stackPositionFor(i, containerHeight) - props.itemStackDistance * i;
+}
+
 // The last card never scrolls away on its own: once released from pinning it
 // keeps a fixed translateY roughly equal to its own height plus the stack
 // offsets (see the release branch in updateCardTransforms). The trailing
@@ -101,11 +123,9 @@ function updateRunway() {
   if (!innerRef.value || !cards.length) return;
 
   const { containerHeight } = getScrollData();
-  const stackPositionPx = parsePercentage(props.stackPosition, containerHeight);
   const lastIndex       = cards.length - 1;
-  // offsetHeight (not getBoundingClientRect) so a `scale()` already applied
-  // to the card mid-animation doesn't shrink the measurement.
-  const lastCardHeight  = cards[lastIndex].offsetHeight;
+  const stackPositionPx = stackPositionFor(lastIndex, containerHeight);
+  const lastCardHeight  = cardHeights[lastIndex];
 
   const releaseOffset = lastCardHeight - containerHeight / 2 + stackPositionPx
     + props.itemStackDistance * lastIndex;
@@ -120,19 +140,33 @@ function updateCardTransforms() {
   isUpdating = true;
 
   const { scrollTop, containerHeight } = getScrollData();
-  const stackPositionPx    = parsePercentage(props.stackPosition, containerHeight);
   const scaleEndPositionPx = parsePercentage(props.scaleEndPosition, containerHeight);
+  const centered           = props.stackPosition === 'center';
 
   const endElementTop = endOffset;
 
   cards.forEach((card, i) => {
     if (!card) return;
 
-    const cardTop      = cardOffsets[i];
-    const triggerStart = cardTop - stackPositionPx - props.itemStackDistance * i;
-    const triggerEnd   = cardTop - scaleEndPositionPx;
-    const pinStart     = cardTop - stackPositionPx - props.itemStackDistance * i;
-    const pinEnd       = endElementTop - containerHeight / 2;
+    const cardTop         = cardOffsets[i];
+    const stackPositionPx = stackPositionFor(i, containerHeight);
+    const pinStart        = pinStartFor(i, containerHeight);
+    const pinEnd          = endElementTop - containerHeight / 2;
+
+    let triggerStart = pinStart;
+    let triggerEnd   = cardTop - scaleEndPositionPx;
+    if (centered) {
+      // A centered card keeps its full size until the next one has come
+      // halfway up, then shrinks while that one slides over it, so each card
+      // gets its moment in the middle. The last card has no successor and
+      // stays at full size.
+      if (i < cards.length - 1) {
+        triggerEnd   = pinStartFor(i + 1, containerHeight);
+        triggerStart = (pinStart + triggerEnd) / 2;
+      } else {
+        triggerEnd = Infinity;
+      }
+    }
 
     const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
     const targetScale   = props.baseScale + i * props.itemScale;
@@ -143,8 +177,7 @@ function updateCardTransforms() {
     if (props.blurAmount) {
       let topCardIndex = 0;
       for (let j = 0; j < cards.length; j++) {
-        const jTriggerStart = cardOffsets[j] - stackPositionPx - props.itemStackDistance * j;
-        if (scrollTop >= jTriggerStart) topCardIndex = j;
+        if (scrollTop >= pinStartFor(j, containerHeight)) topCardIndex = j;
       }
       if (i < topCardIndex) blur = Math.max(0, (topCardIndex - i) * props.blurAmount);
     }

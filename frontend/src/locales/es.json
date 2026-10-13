@@ -2024,9 +2024,9 @@
       "menu": "Menú"
     },
     "hero": {
-      "pill": "El futuro de los negocios",
+      "pill": "Para tiendas y pequeños negocios",
       "title": "Toma el control de tu negocio",
-      "copy": "Gestiona proyectos, finanzas, marketing y comunicación desde una sola plataforma. Hecha para quien tiene ambición.",
+      "copy": "Cada venta que cobras descuenta tu inventario al momento. Y en la misma plataforma llevas tus proyectos, presupuesto y marketing.",
       "start": "Empieza a gestionar tu negocio",
       "seeHow": "Mira cómo funciona"
     },
@@ -2034,11 +2034,43 @@
       "one": "Un solo centro de control.",
       "every": "Cada parte de tu negocio.",
       "yours": "Bajo tu control.",
-      "tags": {
-        "projects": "Proyectos",
-        "finance": "Finanzas",
-        "marketing": "Marketing",
-        "inventory": "Inventario"
+      "modules": {
+        "inventory": {
+          "title": "Control de inventario",
+          "copy": "Existencias al día y alertas de stock bajo antes de que se acaben."
+        },
+        "sales": {
+          "title": "Centro de ventas",
+          "copy": "Cobra y entrega el ticket; cada venta descuenta su inventario."
+        },
+        "suppliers": {
+          "title": "Proveedores",
+          "copy": "Tu directorio de proveedores, junto a tu inventario."
+        },
+        "budget": {
+          "title": "Presupuesto y finanzas",
+          "copy": "Fondos y gastos de cada proyecto, siempre al día."
+        },
+        "reports": {
+          "title": "Reportes",
+          "copy": "Ventas y finanzas por día, semana o mes, exportables a PDF."
+        },
+        "projects": {
+          "title": "Proyectos y equipos",
+          "copy": "Tareas, avance y responsables de cada proyecto."
+        },
+        "marketing": {
+          "title": "Marketing",
+          "copy": "Planifica tus publicaciones en un mismo calendario."
+        },
+        "chat": {
+          "title": "Chat del equipo",
+          "copy": "Mensajes y videollamadas sin salir de Kontrol."
+        },
+        "assistant": {
+          "title": "Asistente con IA",
+          "copy": "Pregúntale a Birdie por tu presupuesto, proyectos o inventario."
+        }
       }
     },
     "problem": {
@@ -2123,6 +2155,7 @@
     },
     "steps": {
       "title": "Pasos para tener el control",
+      "badge": "Paso {n}",
       "connect": {
         "title": "Conecta tu ecosistema",
         "description": "Reúne tus herramientas en un solo centro de control.",
@@ -2187,7 +2220,7 @@
     },
     "start": {
       "title": "Empieza a controlar tu negocio hoy.",
-      "copy": "Más de 50,000 negocios usan Kontrol para dejar atrás el caos y crecer.",
+      "copy": "Deja atrás el caos y lleva todo tu negocio desde un solo lugar.",
       "cta": "Entra al centro de control"
     }
   },
@@ -2198,16 +2231,7 @@
     "features": "Funciones",
     "commandCenter": "Centro de control",
     "howItWorks": "Cómo funciona",
-    "pricing": "Precios",
-    "company": "Empresa",
-    "about": "Nosotros",
-    "blog": "Blog",
-    "careers": "Empleo",
-    "contact": "Contacto",
-    "legal": "Legal",
-    "privacy": "Aviso de privacidad",
-    "terms": "Términos del servicio",
-    "cookies": "Política de cookies",
+    "businesses": "Negocios",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
   },
