@@ -2024,9 +2024,9 @@
       "menu": "Menu"
     },
     "hero": {
-      "pill": "The future of Business",
+      "pill": "For shops and small businesses",
       "title": "Take control of your business",
-      "copy": "Manage projects, finances, marketing and communication from one centralized platform. Designed for the ambitious.",
+      "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
       "seeHow": "See How it works"
     },
@@ -2034,11 +2034,43 @@
       "one": "One command center.",
       "every": "Every part of your business.",
       "yours": "Under your control.",
-      "tags": {
-        "projects": "Projects",
-        "finance": "Finance",
-        "marketing": "Marketing",
-        "inventory": "Inventory"
+      "modules": {
+        "inventory": {
+          "title": "Inventory control",
+          "copy": "Stock levels at a glance, with low-stock alerts before you run out."
+        },
+        "sales": {
+          "title": "Sales center",
+          "copy": "Ring up sales and hand over the receipt; each sale deducts its stock."
+        },
+        "suppliers": {
+          "title": "Suppliers",
+          "copy": "Your supplier directory, right next to your inventory."
+        },
+        "budget": {
+          "title": "Budget & finance",
+          "copy": "Funds and spending for every project, always up to date."
+        },
+        "reports": {
+          "title": "Reports",
+          "copy": "Sales and finances by day, week or month, exportable to PDF."
+        },
+        "projects": {
+          "title": "Projects & teams",
+          "copy": "Tasks, progress and owners for every project."
+        },
+        "marketing": {
+          "title": "Marketing",
+          "copy": "Plan your posts on a single calendar."
+        },
+        "chat": {
+          "title": "Team chat",
+          "copy": "Messages and video calls without leaving Kontrol."
+        },
+        "assistant": {
+          "title": "AI assistant",
+          "copy": "Ask Birdie about your budget, projects or inventory."
+        }
       }
     },
     "problem": {
@@ -2123,6 +2155,7 @@
     },
     "steps": {
       "title": "Steps to get full control",
+      "badge": "Step {n}",
       "connect": {
         "title": "Connect your ecosystem",
         "description": "Bring your tools together with one central command center.",
@@ -2187,7 +2220,7 @@
     },
     "start": {
       "title": "Start controlling your business today.",
-      "copy": "Join 50,000+ businesses using Kontrol to eliminate chaos and drive growth.",
+      "copy": "Leave the chaos behind and run your whole business from one place.",
       "cta": "Enter the command center"
     }
   },
@@ -2198,16 +2231,7 @@
     "features": "Features",
     "commandCenter": "Command Center",
     "howItWorks": "How it works",
-    "pricing": "Pricing",
-    "company": "Company",
-    "about": "About",
-    "blog": "Blog",
-    "careers": "Careers",
-    "contact": "Contact",
-    "legal": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "cookies": "Cookie Policy",
+    "businesses": "Businesses",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   },

@@ -1,0 +1,21 @@
+# Tarea 5 — base de datos desechable para las pruebas de integración y de
+# regresión del backend (`npm run test:integration -w backend`).
+# Postgres 16 en el puerto 5433 para no chocar con un Postgres local, y con
+# los datos en tmpfs: cada `up` arranca vacío y `globalSetup` carga el esquema.
+# Usage: docker compose -f docker-compose.integration.yml up -d --wait
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: kontrol
+      POSTGRES_PASSWORD: kontrol
+      POSTGRES_DB: kontrol_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kontrol -d kontrol_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
