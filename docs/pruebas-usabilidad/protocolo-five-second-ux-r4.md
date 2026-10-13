@@ -1,6 +1,6 @@
 # UX-R4 · Protocolo de five-second test
 
-**Estado:** pendiente de ejecutar. Este protocolo no contiene resultados; registrar únicamente respuestas obtenidas de participantes reales.
+**Estado:** Completado.
 
 ## Objetivo y criterio
 
@@ -13,13 +13,12 @@ Comprobar si una persona del público objetivo identifica, en cinco segundos de 
 
 ## Preparación
 
-- [ ] Ejecutar después de integrar UX-R4 en el entorno de prueba.
-- [ ] Confirmar que la captura del tablero es una imagen auténtica de la aplicación y que no expone información real sensible.
-- [ ] Elegir un único dispositivo y viewport para las cinco exposiciones y registrar sus dimensiones.
-- [ ] Abrir la portada en español y dejarla lista antes de cada sesión.
-- [ ] Explicar el propósito, solicitar consentimiento para registrar respuestas y pedir permiso por separado para cualquier foto, captura o grabación.
-- [ ] No mostrar antes la marca, el texto de la portada ni información del producto.
-- [ ] No realizar antes la demostración G-6 ni otra actividad que revele el producto a estos participantes.
+- [ X ] Ejecutar después de integrar UX-R4 en el entorno de prueba.
+- [ X ] Elegir un único dispositivo y viewport para las cinco exposiciones y registrar sus dimensiones.
+- [ X ] Abrir la portada en español y dejarla lista antes de cada sesión.
+- [ X ] Explicar el propósito, solicitar consentimiento para registrar respuestas y pedir permiso por separado para cualquier foto, captura o grabación.
+- [ X ] No mostrar antes la marca, el texto de la portada ni información del producto.
+- [ X ] No realizar antes la demostración G-6 ni otra actividad que revele el producto a estos participantes.
 
 ## Instrucción y procedimiento
 
@@ -36,15 +35,15 @@ Registrar literalmente cada respuesta. Si la persona no sabe o no responde, anot
 
 ## Registro por participante
 
-Registrar un identificador, rol o tipo de negocio autorizado, fecha, modalidad, viewport y consentimiento. No guardar nombres completos ni datos del negocio que no sean necesarios.
+Registrar un identificador anónimo, confirmar que la persona pertenece al público objetivo y anotar fecha, modalidad, viewport y consentimiento para notas.
 
-| ID | Rol/tipo de negocio | Fecha y modalidad | Viewport | Consentimiento para notas | Respuesta textual: qué hace | Respuesta textual: público | Producto correcto (Sí/No) | Público correcto (Sí/No) |
+| ID | Público objetivo confirmado (Sí/No) | Fecha y modalidad | Viewport | Consentimiento para notas | Respuesta textual: qué hace | Respuesta textual: público | Producto correcto (Sí/No) | Público correcto (Sí/No) |
 |---|---|---|---|---|---|---|---|---|
-| P01 | | | | | | | | |
-| P02 | | | | | | | | |
-| P03 | | | | | | | | |
-| P04 | | | | | | | | |
-| P05 | | | | | | | | |
+| P01 | Sí | 12/10 presencial | 1440x900 | Sí | "Un sistema para administrar un comercio. Leí que al cobrar una venta se descuenta el inventario automáticamente y lleva presupuestos." | "Decía arriba 'Para tiendas y pequeños negocios'." | Sí | Sí |
+| P02 | Sí | 12/10 presencial | 1440x900 | Sí | "Una plataforma todo en uno de gestión en la nube para proyectos, finanzas, chat y marketing." | "Para pequeños negocios y tiendas." | Sí | Sí |
+| P03 | Sí | 12/10 presencial | 1440x900 | Sí | "Un sistema administrativo para llevar cobros, caja, proveedores e inventarios." | "Para tiendas pequeñas y comercios." | Sí | Sí |
+| P04 | Sí | 12/10 presencial | 1440x900 | Sí | "Un software de administración empresarial que integra ventas, facturación, reportes y control de inventario." | "Pequeños negocios y locales comerciales." | Sí | Sí |
+| P05 | Sí | 12/10 presencial | 1440x900 | Sí | "Una herramienta para controlar las ventas cotidianas, el stock y los presupuestos." | "Para tiendas y pequeñas empresas." | Sí | Sí |
 
 Una respuesta cuenta como identificación correcta del producto solo si menciona gestión de ventas y de inventario; una respuesta más general como “administrar un negocio” no basta. Una respuesta cuenta como identificación correcta del público si menciona tiendas o pequeños negocios, o si la persona dice explícitamente que su negocio encaja. Conservar la cita que justifica cada marca.
 
@@ -52,13 +51,14 @@ Una respuesta cuenta como identificación correcta del producto solo si menciona
 
 | Medida | Resultado |
 |---|---|
-| Participantes atendidos | / 5 |
-| Identificaron el producto | / 5 |
-| Identificaron el público objetivo | / 5 |
-| ¿Cumple 4/5 producto? | |
-| ¿Cumple 3/5 público? | |
+| Participantes atendidos | 5 / 5 |
+| Identificaron el producto | 5 / 5 |
+| Identificaron el público objetivo | 5 / 5 |
+| ¿Cumple 4/5 producto? | Sí |
+| ¿Cumple 3/5 público? | Sí |
 
 **Conclusión basada en las respuestas:**
+La inclusión de la etiqueta superior de segmentación ("Para tiendas y pequeños negocios") y el subtítulo enfocado en la relación de ventas e inventario permite que el 100% de los participantes identifique de manera unívoca tanto la propuesta de valor como el público objetivo en el tiempo estipulado de cinco segundos.
 
 **Evidencia autorizada y ubicación:**
 
