@@ -76,3 +76,93 @@ jobs:
 
       - name: Verificar build de producción
         run: npm run build -w frontend
+
+  # Pruebas de carga automáticas con k6. Corre contra un backend desechable
+  # levantado dentro del runner, nunca contra el ambiente compartido de
+  # SCRUM-25: no necesita secretos ni reinicio posterior. Perfil corto de
+  # C1-C5 con los umbrales de docs/plan-maestro-pruebas.md §7.2 sin cambios;
+  # si se cruza uno, k6 sale con código distinto de cero y el job queda en
+  # rojo. La batería completa contra la VM sigue en load-test.yml (manual).
+  load-tests:
+    name: Carga - k6
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: kontrol
+          POSTGRES_PASSWORD: kontrol
+          POSTGRES_DB: kontrol
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kontrol -d kontrol"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://kontrol:kontrol@localhost:5432/kontrol
+      # Secreto desechable: solo firma tokens dentro de este runner.
+      JWT_SECRET: ci-load-secret
+      NODE_ENV: production
+      PORT: 3000
+      # k6 manda todo desde una sola IP; el límite de DT-13 tumbaría los
+      # logins. Mismo criterio que k6/README.md para corridas de carga.
+      RATE_LIMIT_ENABLED: "false"
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias (workspaces)
+        run: npm ci
+
+      - name: Cargar esquema de la base de datos
+        run: psql "$DATABASE_URL" -q -v ON_ERROR_STOP=1 -f backend/kontrol.sql
+
+      # Sin MONGODB_URI el backend arranca igual y solo desactiva el chat,
+      # que ningún escenario usa.
+      - name: Levantar backend
+        run: |
+          nohup npm start -w backend > backend.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:3000/api/health && exit 0
+            sleep 1
+          done
+          echo "::error::El backend no respondió en /api/health en 60 s."
+          cat backend.log
+          exit 1
+
+      - name: Sembrar datos de prueba
+        run: npm run seed:test -w backend
+
+      - name: Instalar k6
+        uses: grafana/setup-k6-action@v1
+        with:
+          k6-version: "2.3.0"
+
+      - name: Ejecutar prueba de carga
+        run: k6 run --summary-export=k6-summary.json k6/ci-load-test.js
+        env:
+          BASE_URL: http://localhost:3000
+          TEST_HOST_MARKER: localhost:3000
+
+      - name: Publicar resumen de k6 y log del backend
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary
+          path: |
+            k6-summary.json
+            backend.log
+          retention-days: 30
+          if-no-files-found: error

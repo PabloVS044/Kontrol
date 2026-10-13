@@ -53,15 +53,19 @@ export default defineConfig({
         // `.nvmrc`—, y sobre 3 929 sentencias un controlador nuevo de 200
         // sentencias sin test baja `statements` 0.78 puntos por sí solo. El
         // margen absorbe esa varianza; no relaja el trinquete.
-        statements: 15, // base real 16.21 % (637/3929) — antes 33 sobre 1 719
-        branches: 9, //    base real 10.94 % (265/2421)
-        functions: 11, //  base real 12.42 % (59/475)
-        lines: 15, //      base real 16.46 % (610/3705)
-
+        //
         // Trinquete, punto 3: +5 puntos porcentuales por sprint sobre el
-        // umbral global, contados desde esta base nueva. Próxima subida, al
-        // cierre del Sprint 8: 20/14/16/20. La política completa está en
-        // el README, sección «Cobertura de código».
+        // umbral global, contados desde la base del 20/09/2026 (15/9/11/15).
+        // La subida del Sprint 8 (20/14/16/20) no se aplicó a tiempo; el
+        // 11/10/2026 se aplican juntas la del Sprint 8 y la del Sprint 9.
+        // Medido ese día: 37.79 / 24.26 / 35.72 / 38.33 (1615/4273,
+        // 642/2646, 194/543, 1532/3996). Próxima subida, al cierre del
+        // Sprint 10: 30/24/26/30. La política completa está en el README,
+        // sección «Cobertura de código».
+        statements: 25, // medido 37.79 % — base 20/09: 16.21 %
+        branches: 19, //   medido 24.26 % — base 20/09: 10.94 %
+        functions: 21, //  medido 35.72 % — base 20/09: 12.42 %
+        lines: 25, //      medido 38.33 % — base 20/09: 16.46 %
 
         // Umbrales por módulo crítico. Los globs se resuelven con picomatch
         // contra la ruta relativa a la raíz del workspace, y los archivos que
