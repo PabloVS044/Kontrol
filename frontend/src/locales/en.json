@@ -2010,9 +2010,9 @@
       "menu": "Menu"
     },
     "hero": {
-      "pill": "The future of Business",
-      "title": "Take control of your business",
-      "copy": "Manage projects, finances, marketing and communication from one centralized platform. Designed for the ambitious.",
+      "pill": "For shops and small businesses",
+      "title": "Manage your shop's sales and inventory",
+      "copy": "Record sales and keep track of stock in one dashboard, alongside your business operations.",
       "start": "Start managing your business",
       "seeHow": "See How it works"
     },
@@ -2172,8 +2172,8 @@
       }
     },
     "start": {
-      "title": "Start controlling your business today.",
-      "copy": "Join 50,000+ businesses using Kontrol to eliminate chaos and drive growth.",
+      "title": "Start managing your business today.",
+      "copy": "Record sales and manage inventory from the same Kontrol dashboard.",
       "cta": "Enter the command center"
     }
   },
@@ -2184,16 +2184,7 @@
     "features": "Features",
     "commandCenter": "Command Center",
     "howItWorks": "How it works",
-    "pricing": "Pricing",
-    "company": "Company",
-    "about": "About",
-    "blog": "Blog",
-    "careers": "Careers",
-    "contact": "Contact",
-    "legal": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "cookies": "Cookie Policy",
+    "businesses": "Businesses",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   }

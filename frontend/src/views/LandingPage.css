@@ -1,30 +1,10 @@
-/* ─── Background scroll video ────────────────────────────────────────────── */
-/* Fixed full-viewport, always behind every section (z-index: -1) — its
-   currentTime is driven entirely by scroll position in setupBackgroundVideoScrub,
-   never by native playback. The scrim sits directly above it (still behind
-   all real content) so text stays legible over a busy, high-motion clip
-   without every section needing its own overlay treatment. */
-
 html {
   scroll-behavior: smooth;
 }
 
-.bg-scroll-video {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.bg-scroll-video-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: rgba(0, 0, 0, 0.45);
-  pointer-events: none;
+main {
+  min-width: 0;
+  overflow-x: clip;
 }
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */

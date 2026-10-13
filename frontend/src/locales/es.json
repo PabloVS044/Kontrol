@@ -2010,9 +2010,9 @@
       "menu": "Menú"
     },
     "hero": {
-      "pill": "El futuro de los negocios",
-      "title": "Toma el control de tu negocio",
-      "copy": "Gestiona proyectos, finanzas, marketing y comunicación desde una sola plataforma. Hecha para quien tiene ambición.",
+      "pill": "Para tiendas y pequeños negocios",
+      "title": "Gestiona ventas e inventario de tu tienda",
+      "copy": "Registra ventas y controla existencias desde un mismo panel, junto con la operación de tu negocio.",
       "start": "Empieza a gestionar tu negocio",
       "seeHow": "Mira cómo funciona"
     },
@@ -2172,8 +2172,8 @@
       }
     },
     "start": {
-      "title": "Empieza a controlar tu negocio hoy.",
-      "copy": "Más de 50,000 negocios usan Kontrol para dejar atrás el caos y crecer.",
+      "title": "Empieza a gestionar tu negocio hoy.",
+      "copy": "Registra ventas y controla inventario desde el mismo panel de Kontrol.",
       "cta": "Entra al centro de control"
     }
   },
@@ -2184,16 +2184,7 @@
     "features": "Funciones",
     "commandCenter": "Centro de control",
     "howItWorks": "Cómo funciona",
-    "pricing": "Precios",
-    "company": "Empresa",
-    "about": "Nosotros",
-    "blog": "Blog",
-    "careers": "Empleo",
-    "contact": "Contacto",
-    "legal": "Legal",
-    "privacy": "Aviso de privacidad",
-    "terms": "Términos del servicio",
-    "cookies": "Política de cookies",
+    "businesses": "Negocios",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
   }

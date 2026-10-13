@@ -1,27 +1,5 @@
 <template>
   <main>
-    <!-- Fixed background video, scrubbed by total page scroll (see
-         setupBackgroundVideoScrub): frame 0 = fully chaotic, last frame =
-         fully ordered, so scrolling from Header to Start visually traces the
-         same "chaos becomes order" arc the copy already tells. Paused by
-         default — only ever seeked via JS, never auto-playing on its own.
-         `v-if` (not a CSS `display: none`) on mobile: it's a multi-MB file
-         and the browser starts fetching it the moment the tag exists in the
-         DOM, so it has to never be there at all rather than be hidden after
-         the fact. The app's own Waves background (App.vue) still shows
-         through underneath, same as on every other page. -->
-    <video
-      v-if="!isMobile"
-      ref="bgVideoRef"
-      class="bg-scroll-video"
-      src="/kontrol-scroll-chaos-order.mp4"
-      muted
-      playsinline
-      preload="auto"
-      aria-hidden="true"
-    ></video>
-    <div v-if="!isMobile" class="bg-scroll-video-scrim" aria-hidden="true"></div>
-
     <Navbar />
     <section id="header">
       <div class="header-container">
@@ -33,21 +11,12 @@
         />
         <AnimatedText
           style="margin-top: 0"
-          effects="split shiny"
+          :effects="reduceMotion ? '' : 'split'"
           :text="t('landing.hero.title')"
           tag="h1"
           class="hero-title"
-          color="var(--k-color-primary)"
-          shine-color="var(--k-color-text)"
-          :speed="5"
-          :delay="2.4"
-          :spread="135"
-          direction="left"
-          :yoyo="false"
-          :pause-on-hover="false"
-          :disabled="false"
-          :split-delay="50"
-          :duration="1.25"
+          :split-delay="12"
+          :duration="0.45"
           ease="power3.out"
           :from="{ opacity: 0, y: 40 }"
           :to="{ opacity: 1, y: 0 }"
@@ -81,9 +50,9 @@
       <div class="control-center-viewport" ref="controlViewportRef">
         <div class="control-k-wrapper" aria-hidden="true">
           <KontrolLogo3D
+            v-if="!reduceMotion"
             width="380px"
             height="380px"
-            :idle-spin-speed="0.04"
             :scroll-rotation-y="scrollK.rotationY"
             :scroll-scale="scrollK.scale"
           />
@@ -258,7 +227,7 @@
         click-effect
         :spotlight-radius="400"
         :particle-count="12"
-        :disable-animations="false"
+        :disable-animations="reduceMotion"
         card-background="var(--k-color-bg-2)"
         card-border="var(--k-color-border)"
         label-color="var(--k-color-primary)"
@@ -508,71 +477,12 @@ function revealOnScroll(target, fromVars, triggerVars = {}) {
   if (tween.scrollTrigger) landingScrollTriggers.push(tween.scrollTrigger);
 }
 
-// ─── Background scroll video: total page scroll (0 → 1, Header through the
-// Footer) maps to the video's own timeline (0 → duration). The source clip
-// is only ~4s of actual generated content (AI video credits are expensive);
-// it's motion-interpolated up to ~8s of smooth slow motion locally (see the
-// ffmpeg step that produced public/kontrol-scroll-chaos-order.mp4) so there's
-// more real seekable duration without paying for more generation. Spread
-// across the whole page this will still move less per scroll-pixel than the
-// earlier bounded-window version did — if that reads as sluggish again,
-// the fix is more of the same free lever (stretch the clip further), not
-// re-shrinking the window. Reduced motion leaves it paused on its first
-// (most chaotic) frame instead. ─────────────────────────────────────────────
-const bgVideoRef = ref(null);
-
-function setupBackgroundVideoScrub() {
-  const video = bgVideoRef.value;
-  if (!video) return;
-
-  video.pause();
-  if (reduceMotion.value) return;
-
-  const wireScrub = () => {
-    if (!video.duration) return;
-    // Seeking to exactly `video.duration` lands past the last decodable
-    // frame in most browsers and renders nothing (black/blank) instead of
-    // holding the final frame — which is what read as the video "ending"
-    // and leaving empty space once scroll passed this section. Capping the
-    // target just short of the real duration keeps it parked on an actual
-    // visible frame instead.
-    const seekableDuration = Math.max(0, video.duration - 0.15);
-    const st = ScrollTrigger.create({
-      trigger: "main",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: true,
-      onUpdate: (self) => {
-        // A hard `video.currentTime =` assignment on every tick can outpace
-        // what the decoder can seek to, which is what read as the video
-        // "getting stuck" — tweening it instead smooths out fast scroll
-        // bursts into a short catch-up motion rather than a forced jump.
-        gsap.to(video, {
-          currentTime: self.progress * seekableDuration,
-          duration: 0.2,
-          ease: "none",
-          overwrite: true,
-        });
-      },
-    });
-    landingScrollTriggers.push(st);
-  };
-
-  if (video.readyState >= 1) wireScrub();
-  else video.addEventListener("loadedmetadata", wireScrub, { once: true });
-}
-
-// Computed synchronously (not in onMounted, unlike reduceMotion below) because
-// it gates whether the background <video> even renders — deciding that after
-// mount would mean the browser already started fetching a multi-MB file
-// before we could pull it back. Matches the same 768px breakpoint the CSS
-// media queries use for the mobile layout. Not re-evaluated on resize/rotate,
-// same tradeoff already accepted for reduceMotion.
+// Matches the 768px breakpoint used by the landing page's mobile layout.
 const isMobile = ref(window.matchMedia("(max-width: 768px)").matches);
+const reduceMotion = ref(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 // ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
 // three "moments" cross-fading in front of it as the scroll progresses ──────
-const reduceMotion = ref(false);
 const controlViewportRef = ref(null);
 const controlMoment1Ref = ref(null);
 const controlMoment2Ref = ref(null);
@@ -724,10 +634,8 @@ function setupScrollChoreography() {
 }
 
 onMounted(() => {
-  reduceMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   handleLandingResize();
   window.addEventListener("resize", handleLandingResize);
-  setupBackgroundVideoScrub();
   setupControlCenter();
   setupProblemPin();
   setupSolutionScrub();
