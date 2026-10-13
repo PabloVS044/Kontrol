@@ -9,11 +9,20 @@ const landing = readFileSync(resolve(sourceRoot, 'views/LandingPage.vue'), 'utf8
 const footer = readFileSync(resolve(sourceRoot, 'components/Footer.vue'), 'utf8')
 
 describe('UX de la portada', () => {
+  // El titular promete el control del negocio; la bajada dice qué se controla.
   it('explica el producto y su público en español e inglés', () => {
-    expect(es.landing.hero.title).toMatch(/ventas.*inventario/i)
+    expect(es.landing.hero.copy).toMatch(/venta.*inventario/i)
     expect(es.landing.hero.pill).toMatch(/tiendas.*pequeños negocios/i)
-    expect(en.landing.hero.title).toMatch(/sales.*inventory/i)
+    expect(en.landing.hero.copy).toMatch(/sale.*inventory/i)
     expect(en.landing.hero.pill).toMatch(/shops.*small businesses/i)
+  })
+
+  it('detalla las funciones de la plataforma en ambos idiomas', () => {
+    expect(Object.keys(en.landing.control.modules)).toEqual(Object.keys(es.landing.control.modules))
+    expect(es.landing.control.modules.inventory.title).toMatch(/inventario/i)
+    expect(es.landing.control.modules.sales.title).toMatch(/ventas/i)
+    expect(en.landing.control.modules.inventory.title).toMatch(/inventory/i)
+    expect(en.landing.control.modules.sales.title).toMatch(/sales/i)
   })
 
   it('no publica cifras de adopción sin verificar', () => {

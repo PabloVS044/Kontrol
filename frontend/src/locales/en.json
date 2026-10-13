@@ -2011,8 +2011,8 @@
     },
     "hero": {
       "pill": "For shops and small businesses",
-      "title": "Take control of your shop's sales and inventory",
-      "copy": "Every sale you ring up updates your stock instantly. Your projects, budgets and marketing live in the same platform.",
+      "title": "Take control of your business",
+      "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
       "seeHow": "See How it works"
     },
@@ -2020,11 +2020,43 @@
       "one": "One command center.",
       "every": "Every part of your business.",
       "yours": "Under your control.",
-      "tags": {
-        "projects": "Projects",
-        "finance": "Finance",
-        "marketing": "Marketing",
-        "inventory": "Inventory"
+      "modules": {
+        "inventory": {
+          "title": "Inventory control",
+          "copy": "Stock levels at a glance, with low-stock alerts before you run out."
+        },
+        "sales": {
+          "title": "Sales center",
+          "copy": "Ring up sales and hand over the receipt; each sale deducts its stock."
+        },
+        "suppliers": {
+          "title": "Suppliers",
+          "copy": "Your supplier directory, right next to your inventory."
+        },
+        "budget": {
+          "title": "Budget & finance",
+          "copy": "Funds and spending for every project, always up to date."
+        },
+        "reports": {
+          "title": "Reports",
+          "copy": "Sales and finances by day, week or month, exportable to PDF."
+        },
+        "projects": {
+          "title": "Projects & teams",
+          "copy": "Tasks, progress and owners for every project."
+        },
+        "marketing": {
+          "title": "Marketing",
+          "copy": "Plan your posts on a single calendar."
+        },
+        "chat": {
+          "title": "Team chat",
+          "copy": "Messages and video calls without leaving Kontrol."
+        },
+        "assistant": {
+          "title": "AI assistant",
+          "copy": "Ask Birdie about your budget, projects or inventory."
+        }
       }
     },
     "problem": {
@@ -2109,6 +2141,7 @@
     },
     "steps": {
       "title": "Steps to get full control",
+      "badge": "Step {n}",
       "connect": {
         "title": "Connect your ecosystem",
         "description": "Bring your tools together with one central command center.",
