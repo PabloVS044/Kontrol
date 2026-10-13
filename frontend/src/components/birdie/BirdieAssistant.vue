@@ -324,7 +324,7 @@ const FAQ_CATALOG = [
     contextRoutes: ['/projects/*'],
     questionKey: 'birdie.faqs.projectProgress.q',
     answerKey:   'birdie.faqs.projectProgress.a',
-    target: '.pd-tab:nth-of-type(5)',
+    target: '[data-birdie="progress-tab"]',
   },
 
   // ── Inventory ────────────────────────────────────────────
@@ -338,9 +338,10 @@ const FAQ_CATALOG = [
   },
   {
     id: 'inventory-sell',
-    contextRoutes: ['/inventory', '/inventory/*'],
+    contextRoutes: ['/inventory', '/inventory/*', '/sales'],
     questionKey: 'birdie.faqs.inventorySell.q',
     answerKey:   'birdie.faqs.inventorySell.a',
+    route: '/inventory',
     target: '.sell-btn, [data-birdie="sell-product"], .product-card',
   },
   {

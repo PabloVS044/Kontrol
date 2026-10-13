@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <AppNavbar />
   <section class="settings">
     <header class="set-head">
       <!-- La configuración se abre desde el menú de cuenta, que no deja rastro
@@ -40,6 +42,8 @@
       </div>
     </section>
 
+    <!-- Destino de Ventas > Configuración de venta. -->
+    <section id="sale-config">
     <p v-if="!canManageCompany" class="set-state">
       {{ $t('settings.ownerOnly') }}
     </p>
@@ -140,13 +144,30 @@
         </button>
       </div>
     </form>
+    </section>
+
+    <!-- Integraciones conserva su ruta y sus permisos; aquí solo se enlaza. -->
+    <section v-if="canManageCompany" class="set-card set-card--link">
+      <h2 class="sc-title">{{ $t('settings.integrations.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.integrations.hint') }}</p>
+      <RouterLink class="sc-link" to="/integrations">{{ $t('settings.integrations.link') }} →</RouterLink>
+    </section>
+
+    <!-- El panel sigue en Inicio; la tarjeta solo lo ve quien ve ese panel. -->
+    <section v-if="authStore.canManageUsers" class="set-card set-card--link">
+      <h2 class="sc-title">{{ $t('settings.members.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.members.hint') }}</p>
+      <RouterLink class="sc-link" :to="{ path: '/dashboard', hash: '#company-members' }">{{ $t('settings.members.link') }} →</RouterLink>
+    </section>
   </section>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
@@ -263,7 +284,8 @@ onMounted(() => {
 <style scoped>
 .settings {
   max-width: 720px;
-  margin: 0 auto;
+  /* Bajo la barra fija de 56px. */
+  margin: 56px auto 0;
   padding: var(--k-space-6) var(--k-space-5) var(--k-space-7);
 }
 
@@ -289,6 +311,15 @@ onMounted(() => {
 .set-back:hover { color: var(--k-color-primary); }
 
 .set-card--prefs { margin-bottom: var(--k-space-5); }
+.set-card--link { margin-top: var(--k-space-5); }
+.set-card--link .sc-hint { margin-bottom: var(--k-space-3); }
+.sc-link {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-color-primary);
+  text-decoration: none;
+}
+.sc-link:hover { text-decoration: underline; }
 /* La última fila de una tarjeta no necesita separación inferior. */
 .sc-row--last { margin-bottom: 0; }
 

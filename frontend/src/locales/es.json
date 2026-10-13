@@ -107,8 +107,8 @@
     },
     "collaborators": {
       "eyebrow": "Acceso a la Empresa",
-      "title": "Colaboradores",
-      "subtitle": "Gestiona el acceso a la empresa, la asignación de proyectos y los permisos por capacidad para cada colaborador.",
+      "title": "Miembros de la empresa",
+      "subtitle": "Gestiona el acceso a la empresa, la asignación de proyectos y los permisos por capacidad para cada miembro.",
       "membersCount": "{count} miembros",
       "collaboratorsCount": "{count} colaboradores",
       "managementCount": "{count} roles de gestión",
@@ -237,7 +237,8 @@
         "tasks": "Tareas",
         "team": "Equipo",
         "budget": "Presupuesto",
-        "reports": "Reportes"
+        "reports": "Reportes",
+        "members": "Miembros"
       },
       "empty": {
         "title": "Sin proyectos aquí",
@@ -1220,7 +1221,7 @@
     "header": {
       "eyebrow": "Equipos de la Empresa",
       "title": "Administración de Equipos",
-      "subtitle": "Organiza colaboradores por empresa, define líderes y conecta equipos con proyectos.",
+      "subtitle": "Organiza a los miembros de la empresa en grupos, define líderes y vincula equipos con proyectos.",
       "newTeam": "Nuevo equipo"
     },
     "loading": "Cargando equipos...",
@@ -1255,7 +1256,7 @@
       "teamDeleted": "Equipo eliminado.",
       "memberAdded": "Miembro agregado.",
       "memberRemoved": "Miembro eliminado.",
-      "projectAssigned": "Proyecto asignado.",
+      "projectAssigned": "Proyecto vinculado al equipo.",
       "projectRemoved": "Proyecto eliminado del equipo."
     },
     "members": {
@@ -1268,10 +1269,11 @@
     "projectsPanel": {
       "eyebrow": "Proyectos",
       "linked": "{count} vinculados",
-      "assignProject": "Asignar proyecto",
-      "assignBtn": "Asignar",
+      "assignProject": "Vincular un proyecto",
+      "assignBtn": "Vincular",
       "removeBtn": "Eliminar",
-      "noProjects": "No hay proyectos asignados aún."
+      "noProjects": "No hay proyectos vinculados aún.",
+      "accessNote": "Vincular no da acceso al proyecto; el acceso se da en Proyecto > Miembros."
     }
   },
   "admin": {
@@ -1449,7 +1451,7 @@
     "faqs": {
       "dashboardOverview": {
         "q": "¿Qué muestra esta vista?",
-        "a": "El Dashboard es tu resumen ejecutivo: total gastado, proyectos activos, alertas de sobre-gasto y una vista global del portafolio. Úsalo como pantalla de inicio diaria para detectar qué proyectos necesitan atención."
+        "a": "Inicio es tu resumen ejecutivo: total gastado, proyectos activos, alertas de sobre-gasto y una vista global del portafolio. Úsalo como pantalla de inicio diaria para detectar qué proyectos necesitan atención."
       },
       "dashboardAi": {
         "q": "¿Qué es el bloque de Análisis IA?",
@@ -1477,7 +1479,7 @@
       },
       "projectMembers": {
         "q": "¿Cómo agrego miembros?",
-        "a": "La pestaña Miembros te permite invitar compañeros por correo y elegir su rol y permisos. Se unirán al proyecto en cuanto acepten la invitación."
+        "a": "Abre Proyectos, elige el proyecto y ve a la pestaña Miembros: ahí das acceso eligiendo a alguien de la empresa con sus permisos, o compartes un enlace de invitación del proyecto."
       },
       "projectProgress": {
         "q": "¿Para qué sirve la pestaña Progreso?",
@@ -1489,7 +1491,7 @@
       },
       "inventorySell": {
         "q": "¿Cómo realizo una venta?",
-        "a": "Cada tarjeta de producto tiene un botón Vender. Tócalo en los productos que se lleva el cliente — aparecerán en el panel Venta en curso de la derecha, donde puedes ajustar la cantidad con los botones + / − o quitar artículos con la X. Cuando tengas el carrito listo, presiona Realizar venta: el sistema descuenta el stock y registra automáticamente un movimiento SALIDA por cada producto, impactando el presupuesto del proyecto correspondiente."
+        "a": "Entra a Ventas > Cobrar, que te lleva al inventario. Cada tarjeta de producto tiene un botón Vender. Tócalo en los productos que se lleva el cliente — aparecerán en el panel Venta en curso de la derecha, donde puedes ajustar la cantidad con los botones + / − o quitar artículos con la X. Cuando tengas el carrito listo, presiona Realizar venta: el sistema descuenta el stock y registra automáticamente un movimiento SALIDA por cada producto, impactando el presupuesto del proyecto correspondiente."
       },
       "inventoryMovements": {
         "q": "¿Qué tipos de movimiento de inventario existen?",
@@ -1549,7 +1551,7 @@
       },
       "teamsCreate": {
         "q": "¿Cómo creo un equipo?",
-        "a": "Usa Nuevo Equipo para agrupar miembros por área (Desarrollo, Diseño, QA…). Los equipos luego se pueden referenciar desde proyectos y tareas para organizar el trabajo."
+        "a": "Usa Nuevo Equipo para agrupar miembros por área (Desarrollo, Diseño, QA…). Vincular un proyecto a un equipo no da acceso: el acceso se da en Proyecto > Miembros."
       },
       "integrationsList": {
         "q": "¿Qué integraciones hay disponibles?",
@@ -1557,7 +1559,7 @@
       },
       "changeLanguage": {
         "q": "¿Cómo cambio el idioma?",
-        "a": "Haz clic en este ícono de idioma en la barra superior y elige English o Español. Tu preferencia se recuerda por cuenta de usuario."
+        "a": "Haz clic en este ícono de idioma en la barra superior, o entra a Configuración > Tus preferencias, y elige English o Español. Tu preferencia se recuerda en este navegador."
       },
       "switchWorkspace": {
         "q": "¿Cómo cambio de workspace?",
@@ -1584,14 +1586,14 @@
         "a": "La sección Inventario lista todos los productos de tus proyectos. Desde aquí puedes crear productos, registrar movimientos (entradas/salidas/ajustes) o iniciar una venta con el botón Vender de cualquier tarjeta de producto."
       },
       "dashboardShortcut": {
-        "q": "¿Dónde está el dashboard ejecutivo?",
-        "a": "El Dashboard es tu pantalla de inicio diaria: muestra el total gastado, los proyectos activos, las alertas de sobre-gasto y un análisis de IA que destaca el proyecto que más necesita tu atención ahora mismo."
+        "q": "¿Dónde está el resumen ejecutivo?",
+        "a": "Está en Inicio, tu pantalla diaria: muestra el total gastado, los proyectos activos, las alertas de sobre-gasto y un análisis de IA que destaca el proyecto que más necesita tu atención ahora mismo."
       }
     }
   },
   "settings": {
-    "title": "Configuración de la empresa",
-    "subtitle": "Tus preferencias y cómo vende esta empresa.",
+    "title": "Configuración",
+    "subtitle": "Tus preferencias, cómo vende esta empresa y sus conexiones.",
     "back": "Volver",
     "ownerOnly": "Solo el dueño de la empresa o un administrador puede cambiar cómo vende esta empresa.",
     "prefs": {
@@ -1608,7 +1610,7 @@
     "saving": "Guardando…",
     "saved": "Configuración guardada.",
     "sale": {
-      "title": "Punto de venta",
+      "title": "Configuración de venta",
       "currency": "Moneda de venta",
       "currencyNote": "Se usa en el carrito, el cobro y el ticket. Los importes se ven como {sample}.",
       "hint": "El IVA y el descuento están desactivados hasta que los active aquí, para que no cambie por sí solo lo que ya cobra una empresa.",
@@ -1620,10 +1622,20 @@
       "discountEnabledNote": "Deja que el cajero aplique un porcentaje a toda la venta.",
       "discountMax": "Descuento máximo",
       "discountMaxNote": "Una venta que pida más que esto se rechaza, no se recorta. Déjalo en 0 para no permitir ninguno."
+    },
+    "integrations": {
+      "title": "Integraciones",
+      "hint": "Conecta Kontrol con pagos, mensajería y otras herramientas.",
+      "link": "Abrir integraciones"
+    },
+    "members": {
+      "title": "Miembros de la empresa",
+      "hint": "Invita personas, cambia su rol y su acceso a proyectos. El panel está en Inicio.",
+      "link": "Ir a Miembros de la empresa"
     }
   },
   "navbar": {
-    "dashboard": "Panel",
+    "dashboard": "Inicio",
     "inventory": "Inventario",
     "projects": "Proyectos",
     "teams": "Equipos",
@@ -1635,7 +1647,7 @@
     "marketing": "Marketing",
     "account": {
       "open": "Menú de cuenta",
-      "settings": "Configuración de la empresa",
+      "settings": "Configuración",
       "signOut": "Cerrar sesión"
     },
     "menu": {
@@ -1650,7 +1662,9 @@
       "users": "Usuarios",
       "superUser": "Superusuario"
     },
-    "suppliers": "Proveedores"
+    "suppliers": "Proveedores",
+    "sales": "Ventas",
+    "settings": "Configuración"
   },
   "language": {
     "label": "Idioma",
@@ -2220,5 +2234,22 @@
     "businesses": "Negocios",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
+  },
+  "sales": {
+    "eyebrow": "Ventas",
+    "title": "Ventas",
+    "subtitle": "Cobra, revisa lo vendido y ajusta cómo cobra tu empresa.",
+    "checkout": {
+      "title": "Cobrar",
+      "copy": "Registra una venta desde los productos del inventario."
+    },
+    "history": {
+      "title": "Historial de ventas",
+      "copy": "Ingresos, ganancia y ticket promedio en Reportes."
+    },
+    "config": {
+      "title": "Configuración de venta",
+      "copy": "Moneda, IVA y descuentos."
+    }
   }
 }

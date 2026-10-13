@@ -195,7 +195,9 @@ async function ensureCategoria({ idEmpresa, nombre }) {
   return categoria.id_categoria
 }
 
-async function ensureProveedor({ idEmpresa, nombre, contacto, telefono, email }) {
+// Los proveedores del inventario pasan `contacto` y los de Fase 2
+// `contactoNombre`; se aceptan los dos.
+async function ensureProveedor({ idEmpresa, nombre, contacto, contactoNombre, telefono, email }) {
   const existing = await pool.query(
     'SELECT id_proveedor FROM public.proveedor WHERE id_empresa = $1 AND nombre = $2',
     [idEmpresa, nombre]
@@ -206,7 +208,7 @@ async function ensureProveedor({ idEmpresa, nombre, contacto, telefono, email })
     `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING id_proveedor`,
-    [nombre, contacto, telefono, email, idEmpresa]
+    [nombre, contacto ?? contactoNombre, telefono, email, idEmpresa]
   )
   return proveedor.id_proveedor
 }
@@ -252,22 +254,6 @@ async function ensureReporte({ idEmpresa, idUsuario, titulo, tipo }) {
     [titulo, tipo, idEmpresa, idUsuario]
   )
   return reporte.id_reporte
-}
-
-async function ensureProveedor({ idEmpresa, nombre, contactoNombre, telefono, email }) {
-  const existing = await pool.query(
-    'SELECT id_proveedor FROM public.proveedor WHERE id_empresa = $1 AND nombre = $2',
-    [idEmpresa, nombre]
-  )
-  if (existing.rows.length) return existing.rows[0].id_proveedor
-
-  const { rows: [proveedor] } = await pool.query(
-    `INSERT INTO public.proveedor (nombre, contacto_nombre, telefono, email, id_empresa)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id_proveedor`,
-    [nombre, contactoNombre, telefono, email, idEmpresa]
-  )
-  return proveedor.id_proveedor
 }
 
 async function ensureMarketingPublication({ idEmpresa, idProyecto, idUsuario, title, caption }) {

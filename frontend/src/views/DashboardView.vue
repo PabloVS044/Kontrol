@@ -894,7 +894,7 @@ watch(() => authStore.idEmpresaActual, () => {
         </div>
       </div>
 
-      <section v-if="isOwner" class="company-collaborators">
+      <section v-if="isOwner" id="company-members" class="company-collaborators">
         <div class="team-header">
           <div>
             <p class="team-eyebrow">{{ $t('dashboard.collaborators.eyebrow') }}</p>

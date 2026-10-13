@@ -354,6 +354,7 @@ watch(() => authStore.idEmpresaActual, () => {
                 </select>
                 <button class="secondary-action" :disabled="!selectedProjectId || saving" @click="assignProject">{{ $t('teams.projectsPanel.assignBtn') }}</button>
               </div>
+              <p class="access-note">{{ $t('teams.projectsPanel.accessNote') }}</p>
 
               <div class="stack-list">
                 <div v-for="project in selectedTeam.proyectos" :key="project.id_proyecto" class="stack-row">
@@ -578,6 +579,13 @@ button:disabled {
 
 .inline-form {
   margin: 18px 0;
+}
+
+/* Texto atenuado como .muted-row, sin la caja de "lista vacía". */
+.access-note {
+  margin: -8px 0 18px;
+  color: var(--TextDim);
+  font-size: 13px;
 }
 
 .stack-list {
