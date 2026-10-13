@@ -58,8 +58,8 @@ Una respuesta cuenta como identificación correcta del producto solo si menciona
 | ¿Cumple 4/5 producto? | |
 | ¿Cumple 3/5 público? | |
 
-**Conclusión basada en las respuestas:**  
+**Conclusión basada en las respuestas:**
 
-**Evidencia autorizada y ubicación:**  
+**Evidencia autorizada y ubicación:**
 
 No declarar cumplido el criterio si falta alguna sesión, si hay menos de cinco participantes o si no se alcanzan ambos umbrales. Documentar ausencias y motivos sin inventar resultados.
