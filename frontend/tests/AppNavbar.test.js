@@ -27,6 +27,9 @@ const router = createRouter({
     { path: '/onboarding', component: Stub },
     { path: '/dashboard', name: 'dashboard', component: Stub },
     { path: '/inventory', name: 'inventory', component: Stub },
+    { path: '/sales', component: Stub },
+    { path: '/suppliers', component: Stub },
+    { path: '/settings', component: Stub },
     { path: '/projects', name: 'projects', component: Stub },
     { path: '/teams', component: Stub },
     { path: '/budget', component: Stub },
@@ -118,17 +121,45 @@ describe('AppNavbar.vue — visibilidad por permisos', () => {
     expect(links).not.toContain('/projects')
     expect(links).not.toContain('/teams')
     expect(links).not.toContain('/integrations')
+    expect(links).not.toContain('/sales')
   })
 
-  it('muestra inventario, proyectos, equipos e integraciones con capacidad completa', async () => {
+  it('muestra ventas, inventario, proyectos y equipos con capacidad completa', async () => {
     const { wrapper } = await montar({
-      capabilities: { can_view_inventory: true, can_view_projects: true },
+      capabilities: { can_view_inventory: true, can_view_projects: true, can_sell_inventory: true },
     })
     const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+    expect(links).toContain('/sales')
     expect(links).toContain('/inventory')
     expect(links).toContain('/projects')
     expect(links).toContain('/teams') // canManageTeams se resuelve por rol 'owner'
-    expect(links).toContain('/integrations') // isAdminOrOwner por rol 'owner'
+  })
+
+  it('integraciones sale del menú principal incluso para el owner', async () => {
+    // Vive como tarjeta dentro de Configuración; su ruta no cambia.
+    const { wrapper } = await montar({ capabilities: { can_view_inventory: true } })
+    const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+    expect(links).not.toContain('/integrations')
+  })
+
+  it('configuración está en el menú principal para cualquier rol', async () => {
+    for (const rol of ['collaborator', 'manager', 'admin', 'owner']) {
+      const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol } })
+      const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+      expect(links).toContain('/settings')
+    }
+  })
+
+  it('el menú usa los nombres en español del card sorting', async () => {
+    const { wrapper } = await montar({
+      capabilities: { can_view_inventory: true, can_sell_inventory: true },
+    })
+    const textos = wrapper.findAll('.appnav-link').map((l) => l.text())
+    expect(textos).toContain('Inicio')
+    expect(textos).toContain('Ventas')
+    expect(textos).toContain('Configuración')
+    expect(textos).not.toContain('Dashboard')
+    expect(textos).not.toContain('Panel')
   })
 })
 
@@ -326,13 +357,13 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   })
 
   it('todos los enlaces permitidos están en el cajón, no solo los que caben', async () => {
-    // El fallo original: la fila cortaba marketing, IA e integraciones fuera del
-    // ancho y no había forma de alcanzarlos. El cajón los contiene todos.
+    // El fallo original: la fila cortaba marketing, IA y el último enlace fuera
+    // del ancho y no había forma de alcanzarlos. El cajón los contiene todos.
     const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol: 'owner' } })
     await wrapper.find('.hamburger').trigger('click')
 
     const hrefs = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
-    for (const esperado of ['/dashboard', '/marketing', '/agent', '/integrations']) {
+    for (const esperado of ['/dashboard', '/marketing', '/agent', '/settings']) {
       expect(hrefs).toContain(esperado)
     }
   })

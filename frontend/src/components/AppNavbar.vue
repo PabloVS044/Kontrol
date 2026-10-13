@@ -49,6 +49,7 @@
 
       <div id="appnav-links" class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
+        <RouterLink v-if="authStore.canSellInventory" class="appnav-link" to="/sales" @click="closeMenu">{{ $t('navbar.sales') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">{{ $t('navbar.suppliers') }}</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
@@ -58,12 +59,8 @@
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
         <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}</RouterLink>
         <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
-        <RouterLink
-          v-if="isAdminOrOwner"
-          class="appnav-link"
-          to="/integrations"
-          @click="closeMenu"
-        >{{ $t('navbar.integrations') }}</RouterLink>
+        <!-- Idioma, preferencias, venta e integraciones viven juntos en /settings. -->
+        <RouterLink class="appnav-link" to="/settings" @click="closeMenu">{{ $t('navbar.settings') }}</RouterLink>
       </div>
 
       <div class="appnav-end">
@@ -151,11 +148,6 @@ const triggerEl     = ref(null)
 const isMenuOpen  = ref(false)
 const isUserMenuOpen = ref(false)
 const userMenuRef    = ref(null)
-
-const isAdminOrOwner = computed(() => {
-  const rol = authStore.empresaActual?.rol
-  return rol === 'owner' || rol === 'admin'
-})
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
@@ -626,8 +618,9 @@ const closeMenu = () => {
   background: rgba(var(--k-color-black-rgb), 0.5);
 }
 
-/* Compactar antes de plegar: gana sitio y retrasa el cajón. */
-@media (max-width: 1400px) {
+/* Compactar antes de plegar: gana sitio y retrasa el cajón. Sin compactar,
+   la fila completa no cabe por debajo de ~1580px. */
+@media (max-width: 1600px) {
   .appnav-inner { padding: 0 var(--k-space-5); }
   .appnav-link  { padding: 0 10px; font-size: var(--k-font-size-caption); }
   .empresa-name { max-width: 100px; }
@@ -636,16 +629,17 @@ const closeMenu = () => {
 /*
  * Cajón de navegación.
  *
- * El umbral estaba en 640px, pero la fila de enlaces necesita ~1300px para
+ * El umbral estaba en 640px, pero la fila de enlaces necesita ~1380px para
  * caber: entre 641px y ahí, `.appnav-links` seguía en fila sin `flex-wrap` ni
  * desbordamiento visible, así que los últimos enlaces —marketing, IA,
  * integraciones— quedaban cortados fuera del ancho y no había hamburguesa para
  * alcanzarlos. En una tablet o un portátil estrecho simplemente no existían.
  *
  * Ahora se plega en cuanto la fila deja de caber, que es el único momento en el
- * que el cajón hace falta.
+ * que el cajón hace falta. Con Ventas en el menú la fila creció: medido en
+ * 1360px el avatar ya quedaba fuera.
  */
-@media (max-width: 1300px) {
+@media (max-width: 1400px) {
   .hamburger { display: block; }
 
   .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
