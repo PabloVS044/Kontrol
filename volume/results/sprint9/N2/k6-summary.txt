@@ -1,0 +1,42 @@
+2026-10-11T06:58:13Z k6 N2 project=4
+    ✓ v4_reports_summary: 200
+    ✓ v5_pos_products: 200
+
+    CUSTOM
+    response_kb.........................: avg=966.778825  min=0.713867    med=22.328125   max=4048.604492 p(90)=4048.604492 p(95)=4048.604492
+      { scenario:v1_projects_list }.....: avg=8.768555    min=8.768555    med=8.768555    max=8.768555    p(90)=8.768555    p(95)=8.768555   
+      { scenario:v2_project_metrics }...: avg=0.713867    min=0.713867    med=0.713867    max=0.713867    p(90)=0.713867    p(95)=0.713867   
+      { scenario:v3_reports_list }......: avg=886.819336  min=886.819336  med=886.819336  max=886.819336  p(90)=886.819336  p(95)=886.819336 
+      { scenario:v4_reports_summary }...: avg=22.328125   min=22.328125   med=22.328125   max=22.328125   p(90)=22.328125   p(95)=22.328125  
+      { scenario:v5_pos_products }......: avg=4048.604492 min=4048.604492 med=4048.604492 max=4048.604492 p(90)=4048.604492 p(95)=4048.604492
+
+    HTTP
+    http_req_duration...................: avg=156.82ms    min=44.11ms     med=124.45ms    max=1.49s       p(90)=313.67ms    p(95)=347.59ms   
+      { expected_response:true }........: avg=156.82ms    min=44.11ms     med=124.45ms    max=1.49s       p(90)=313.67ms    p(95)=347.59ms   
+      { scenario:v1_projects_list }.....: avg=74.87ms     min=58.54ms     med=68.53ms     max=337.93ms    p(90)=71.71ms     p(95)=73.59ms    
+      { scenario:v2_project_metrics }...: avg=155.09ms    min=44.11ms     med=155.34ms    max=339.82ms    p(90)=167.89ms    p(95)=172.83ms   
+      { scenario:v3_reports_list }......: avg=152.01ms    min=109.32ms    med=136.5ms     max=642.16ms    p(90)=170.12ms    p(95)=246.14ms   
+      { scenario:v4_reports_summary }...: avg=94.27ms     min=87.03ms     med=90.56ms     max=365.45ms    p(90)=93.27ms     p(95)=95.19ms    
+      { scenario:v5_pos_products }......: avg=346.32ms    min=274.41ms    med=312.64ms    max=1.49s       p(90)=395.63ms    p(95)=483.23ms   
+    http_req_failed.....................: 0.00%  0 out of 1189
+      { scenario:v1_projects_list }.....: 0.00%  0 out of 285
+      { scenario:v2_project_metrics }...: 0.00%  0 out of 145
+      { scenario:v3_reports_list }......: 0.00%  0 out of 262
+      { scenario:v4_reports_summary }...: 0.00%  0 out of 275
+      { scenario:v5_pos_products }......: 0.00%  0 out of 222
+    http_reqs...........................: 1189   3.946434/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.28s       min=1.05s       med=1.13s       max=2.56s       p(90)=2.14s       p(95)=2.15s      
+    iterations..........................: 1179   3.913242/s
+    vus.................................: 2      min=2         max=7 
+    vus_max.............................: 10     min=10        max=10
+
+    NETWORK
+    data_received.......................: 1.2 GB 3.9 MB/s
+    data_sent...........................: 1.0 MB 3.4 kB/s
+
+
+
+time="2026-10-11T07:03:15Z" level=error msg="failed to handle the end-of-test summary" error="Could not save some summary information:\n\t- could not open 'volume/results/N2/k6.json': open volume/results/N2/k6.json: permission denied"
+2026-10-11T07:03:15Z k6 N2 exit=0
