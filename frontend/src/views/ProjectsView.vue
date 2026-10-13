@@ -228,7 +228,7 @@
                     <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
                 </button>
-                <button class="lr-btn" :title="$t('projects.list.quickActions.team')" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.members')" @click="router.push(`/projects/${project.id_proyecto}?tab=members`)">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
@@ -371,13 +371,13 @@
                   </svg>
                   <span>{{ $t('projects.list.quickActions.tasks') }}</span>
                 </button>
-                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=members`)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                     <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                   </svg>
-                  <span>{{ $t('projects.list.quickActions.team') }}</span>
+                  <span>{{ $t('projects.list.quickActions.members') }}</span>
                 </button>
                 <button class="quick-btn" @click="openBudget(project)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">

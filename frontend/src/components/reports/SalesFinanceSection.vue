@@ -1,5 +1,5 @@
 <template>
-  <div class="section-block sales-finance">
+  <div id="sales" class="section-block sales-finance">
     <div class="section-header sf-header">
       <span class="section-title">{{ $t('reports.sales.title') }}</span>
       <div class="sf-controls">

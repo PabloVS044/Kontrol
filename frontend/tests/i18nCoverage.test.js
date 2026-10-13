@@ -31,6 +31,7 @@ const ARCHIVOS = [
   'views/InviteView.vue',
   'views/OnboardingView.vue',
   'views/ProductDetailView.vue',
+  'views/SalesView.vue',
   'views/SettingsView.vue',
   'views/SuppliersView.vue',
 ]
