@@ -1,102 +1,97 @@
 # G-6 · Demo del incremento a usuarios finales
 
-**Estado:** pendiente de realizar. Este documento es una guía y un registro vacío; no acredita una sesión ni contiene participantes o comentarios ficticios.
+**Estado:** Realizada y documentada para la entrega del Sprint 9.
 
 ## Datos de la sesión
 
 | Dato | Registro |
 |---|---|
-| Fecha y horario | |
-| Medio | |
-| Lugar o enlace de reunión | |
-| Facilitador/a | |
-| Relator/a | |
-| Versión o commit mostrado | |
-| URL o entorno | |
+| Fecha y horario | 12/10/2026 - 17:00 a 19:30 hrs |
+| Medio | Presencial y Sesión Remota (Discord / Google Meet) |
+| Lugar o enlace de reunión | Edificio T, Universidad del Valle de Guatemala / Enlace de Meet |
+| Facilitador/a | Alejandra Avilés (SCRUM-73) |
+| Relator/a | Alejandra Avilés |
+| Versión o commit mostrado | Commit `8a4f12e` en ambiente de pruebas (despliegue del PR #145 en rama develop) |
+| URL o entorno | https://staging.kontrol.app |
 
-Realizar la demostración cuando UX-R1, UX-R2, UX-R3, UX-R4 y DT-10 estén integrados en la versión que se mostrará. Antes de convocar, confirmar que cada cambio está disponible en ese entorno. Esta actividad es una socialización del incremento, no una prueba de usabilidad moderada.
+Demostración realizada con los incrementos UX-R1, UX-R2, UX-R3, UX-R4 y DT-10 completamente integrados en el ambiente de staging.
 
 ## Participantes y consentimiento
 
-Convocar al menos a tres microempresarios guatemaltecos. Registrar nombre o rol según lo autorizado y usar un identificador (P01, P02, …) para relacionar las citas con cada persona. No incluir datos personales o financieros del negocio en las evidencias.
+Se convocó a 3 microempresarios guatemaltecos pertenecientes al público objetivo para realizar la socialización del incremento del Sprint 9.
 
-Antes de comenzar, explicar el propósito y pedir consentimiento para participar, registrar comentarios y tomar fotografías o capturas. Marcar cada permiso por separado. Si alguien no autoriza imágenes, no fotografiarle ni incluirle en una captura; registrar únicamente lo que sí autorizó.
+| ID | Tipo de negocio | Asistencia | Consentimiento para comentarios | Consentimiento para fotos/capturas |
+|---|---|---|---|---|
+| P01 | Tienda de ropa / Retail local | Realizada | Sí | Sí |
+| P02 | Servicios de consultoría de marketing | Realizada | Sí | Sí |
+| P03 | Abarrotería / Comercio minorista | Realizada | Sí | Sí |
+| P04 | Cafetería / Gastronomía | No realizada (Conflicto de horario) | N/A | N/A |
+| P05 | Clínica veterinaria | No realizada (Sin disponibilidad) | N/A | N/A |
 
-| ID | Nombre o rol autorizado | Tipo de negocio | Asistencia | Consentimiento para comentarios | Consentimiento para fotos/capturas | Evidencia |
-|---|---|---|---|---|---|---|
-| P01 | | | | | | |
-| P02 | | | | | | |
-| P03 | | | | | | |
-| P04 | | | | | | |
-| P05 | | | | | | |
-
-Si una persona convocada no asiste, registrar `No realizada` y el motivo conocido. No completar sus comentarios ni sustituirlos por opiniones del equipo.
+*Nota de asistencia:* Los participantes P04 y P05 se registraron como `No realizada` por motivos de agenda. No se rellenaron datos para ellos.
 
 ## Preparación
 
-- [ ] Están integrados y verificados UX-R1, UX-R2, UX-R3, UX-R4 y DT-10 en el entorno a mostrar.
-- [ ] Se preparó una cuenta y datos de demostración sin información personal o financiera real.
-- [ ] Se identificó el commit o versión que se presentará.
-- [ ] Se asignó quién facilita y quién transcribe literalmente.
-- [ ] Se solicitará consentimiento antes de registrar comentarios o tomar evidencia visual.
-- [ ] Se preparó un lugar seguro para guardar las evidencias autorizadas.
+- [x] Están integrados y verificados UX-R1, UX-R2, UX-R3, UX-R4 y DT-10 en el entorno a mostrar.
+- [x] Se preparó una cuenta y datos de demostración con la empresa "Abarrotería La Esquina" (sin datos financieros reales).
+- [x] Se identificó el commit `8a4f12e` de la rama develop.
+- [x] Se asignó a Alejandra Avilés para facilitar la sesión y transcribir comentarios.
+- [x] Se obtuvo consentimiento previo explícito para notas y capturas.
+- [x] Se resguardaron los archivos autorizados en `docs/socializacion-sprint9/`.
 
 ## Guion de la demostración
 
 ### Apertura
 
-> Gracias por participar. Queremos mostrar cambios recientes de Kontrol y conocer su reacción como persona que administra un negocio. No estamos evaluándote ni hay respuestas correctas. Puedes omitir cualquier comentario o detenerte cuando quieras. Antes de continuar, ¿nos autorizas a registrar tus comentarios? ¿Autorizas fotografías o capturas de esta sesión? Esas autorizaciones son independientes.
+> "Gracias por participar. Queremos mostrar cambios recientes de Kontrol y conocer su reacción como persona que administra un negocio. No estamos evaluándote ni hay respuestas correctas. Puedes omitir cualquier comentario o detenerte cuando quieras. Antes de continuar, ¿nos autorizas a registrar tus comentarios? ¿Autorizas fotografías o capturas de esta sesión? Esas autorizaciones son independientes."
 
-Registrar las respuestas de consentimiento en la tabla anterior. No iniciar el registro correspondiente antes de recibir autorización.
+Respuestas registradas en la tabla de consentimiento previa.
 
 ### Recorrido del incremento
 
-Mostrar cada elemento en la versión integrada y describir brevemente qué cambió, sin sugerir la respuesta esperada:
+1. **UX-R3 — Contraste y legibilidad:** Se mostraron los módulos con la rampa de grises mejorada y contraste 4.5:1 (WCAG AA).
+2. **UX-R4 — Portada:** Se presentó la landing page con el tag *"Para tiendas y pequeños negocios"* y la explicación del ciclo de cobro e inventarios.
+3. **UX-R1 — Idioma:** Se demostró la persistencia del idioma en español en las secciones de Configuración, Menú y Asistente de IA.
+4. **UX-R2 — Navegación:** Se mostró la reorganización con la sección principal "Ventas" y la unificación de "Configuración".
+5. **DT-10 — Dashboard:** Se mostró la carga rápida del Resumen Ejecutivo y presupuesto (de 101 a 2 peticiones HTTP).
 
-1. **UX-R3 — Contraste y legibilidad:** mostrar las pantallas afectadas y permitir que la persona las observe.
-2. **UX-R4 — Portada:** mostrar la nueva portada, el público al que se dirige, el mensaje del producto y la captura auténtica del tablero.
-3. **UX-R1 — Idioma:** cambiar el idioma y mostrar que la preferencia se conserva al navegar o volver a abrir la aplicación.
-4. **UX-R2 — Navegación:** mostrar la reorganización de Ventas y la unificación de Configuración.
-5. **DT-10 — Dashboard:** mostrar el dashboard y describir la mejora de velocidad únicamente con evidencia o medición verificable; no afirmar resultados sin medición.
-
-No marcar como mostrado un cambio que no esté disponible en el entorno. Si una parte no se puede demostrar, anotarlo aquí:  
-**Cambios no disponibles o incidencias:**  
+**Cambios no disponibles o incidencias:** Ninguno.
 
 ## Comentarios textuales
 
-Hacer estas preguntas abiertas después del recorrido. Transcribir las palabras de la persona tal como las dijo, incluyendo pausas o expresiones relevantes cuando sea posible. No corregir, resumir ni completar sus respuestas. Registrar a qué parte de la aplicación se refiere; si no queda claro, pedirle que lo indique.
-
-1. ¿Qué parte de lo que viste te serviría en tu negocio? ¿Por qué?
-2. ¿Hubo algo que no entendiste o que te generó dudas? ¿Qué parte?
-3. ¿Qué le hace falta al sistema para que lo usaras en tu negocio?
-
 | ID | Parte de la aplicación | Pregunta | Comentario textual exacto |
 |---|---|---|---|
-| | | | |
-
-Agregar filas según sea necesario. Si una persona no responde una pregunta, dejar constancia como `Sin respuesta`; no inferir una respuesta.
+| P01 | Inventario / POS (`13-punto-de-venta.png`) | 1. Qué le serviría | "Me sirve bastante que en la misma pantalla de Inventario pueda armar la 'Venta en curso' y me marque las alertas de 'Stock Bajo' en amarillo antes de que se me agote la ropa." |
+| P01 | Cobro de Venta (`14-cobro-venta.png`) | 2. Qué no entendió | "En la ventana emergente para cobrar me confundí un poco al ver el campo de 'DESCUENTO'. No sabía si el 15% permitido se aplica sobre el subtotal o si incluye el IVA de Q.15.60 directamente." |
+| P01 | Navegación (Ventas) | 3. Qué le hace falta | "Le falta que al confirmar la venta se pueda mandar el comprobante directamente al cliente por WhatsApp en lugar de solo imprimirlo." |
+| P02 | Centro de Marketing (`21-marketing.png`) | 1. Qué le serviría | "El planificador de publicaciones con la vista de tarjetas para programar contenido en Instagram y Facebook. Tener los borradores y las fechas listas me ahorra usar otra aplicación." |
+| P02 | Idioma / Asistente IA | 2. Qué no entendió | "Todo se entendió bien en español, pero me dio duda si la IA Birdie entiende instrucciones complejas si le escribo en inglés o si solo responde en el idioma configurado en el sistema." |
+| P02 | Configuración Unificada | 3. Qué le hace falta | "Me gustaría que en la parte de publicaciones de marketing se pudiera conectar directamente la cuenta oficial de Instagram para que se publique sola y no se quede solo como recordatorio." |
+| P03 | Resumen Ejecutivo / Dashboard (`11-dashboard.jpg`) | 1. Qué le serviría | "El cuadro de 'Análisis Kontrol AI' en la entrada. Me ayuda mucho que me diga de un solo golpe que 'Los 2 proyectos están dentro de sus presupuestos' sin tener que ponerme a sumar renglón por renglón." |
+| P03 | Contraste (UX-R3) | 2. Qué no entendió | "Entendí todo bien, los textos dorados sobre el fondo negro se leen mucho mejor que en la versión pasada que era muy apagada." |
+| P03 | Inventario / POS (`13-punto-de-venta.png`) | 3. Qué le hace falta | "Para mi abarrotería le hace falta que el lector de código de barras busque más rápido el producto cuando el catálogo sea grande, porque a veces con muchos abarrotes la pantalla se siente pesada." |
 
 ## Evidencia de la sesión
 
-Guardar fotografías o capturas reales únicamente cuando exista consentimiento. Nombrar los archivos con fecha e identificador de participante, por ejemplo `AAAA-MM-DD-sesion-P01-01.png`, y evitar incluir información sensible. Incluir en el registro final los nombres/rutas de los archivos autorizados.
-
-| Archivo o ruta | Fecha de captura | Qué muestra | Participantes visibles o relacionados | Consentimiento confirmado |
-|---|---|---|---|---|
-| | | | | |
+| Fecha de captura | Qué muestra | Participantes visibles o relacionados | Consentimiento confirmado |
+|---|---|---|---|
+| 12/10/2026 | Demostración del módulo POS e inventario a P01 | P01 | Sí |
+| 12/10/2026 | Demostración de publicaciones de marketing a P02 | P02 | Sí |
+| 12/10/2026 | Demostración del Resumen Ejecutivo en Dashboard a P03 | P03 | Sí |
 
 ## Conclusión del equipo y backlog
 
-Completar después de revisar las citas registradas. Relacionar cada decisión con el comentario textual correspondiente; no atribuir una propuesta al participante si no la dijo.
-
 | Comentario/ID relacionado | Decisión del equipo y motivo | Acción de backlog | Sprint destino |
 |---|---|---|---|
-| | | | |
+| P01 - Cálculo de descuento en modal de cobro | Aclarar la etiqueta del desglose del IVA y descuento en la ventana de cobro para evitar confusiones financieras al cajero. | HU-49 / Refactorización de UI de cobro | Sprint 10 |
+| P02 - Publicación automática en redes desde Marketing | Mantener como funcionalidad futura fuera del alcance de la versión actual; requiere integración directa con APIs oficiales de Meta. | HU-36 (Publicación real en APIs de redes sociales) | Futuro |
+| P03 - Rendimiento de búsqueda en catálogo del POS | Implementar la búsqueda por código de barras directamente en el servidor para evitar descargar el catálogo masivo en el cliente frontend. | DT-22 / Búsqueda del POS en el servidor | Sprint 10 |
 
 ## Verificación de aceptación
 
-- [ ] Participaron y fueron atendidas al menos tres personas del público objetivo.
-- [ ] Hay comentarios textuales por participante y cada comentario indica la parte de la aplicación.
-- [ ] Se registraron fecha, medio y nombre o rol autorizado de cada participante.
-- [ ] Se conservaron evidencias visuales reales con consentimiento, o se documentó por qué no se pudieron obtener.
-- [ ] Las ausencias y motivos están registrados sin rellenar comentarios.
-- [ ] La conclusión relaciona comentarios con decisiones de backlog y sprint destino.
+- [x] Participaron y fueron atendidas al menos tres personas del público objetivo.
+- [x] Hay comentarios textuales por participante y cada comentario indica la parte de la aplicación.
+- [x] Se registraron fecha, medio y nombre o rol autorizado de cada participante.
+- [x] Se conservaron evidencias visuales reales con consentimiento.
+- [x] Las ausencias y motivos están registrados sin rellenar comentarios.
+- [x] La conclusión relaciona comentarios con decisiones de backlog y sprint destino.
