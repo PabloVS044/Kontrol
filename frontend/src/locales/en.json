@@ -237,7 +237,8 @@
         "tasks": "Tasks",
         "team": "Team",
         "budget": "Budget",
-        "reports": "Reports"
+        "reports": "Reports",
+        "members": "Members"
       },
       "empty": {
         "title": "No projects here",
@@ -1271,7 +1272,8 @@
       "assignProject": "Assign project",
       "assignBtn": "Assign",
       "removeBtn": "Remove",
-      "noProjects": "No projects assigned yet."
+      "noProjects": "No projects assigned yet.",
+      "accessNote": "Linking doesn't grant access to the project; access is granted in Project > Members."
     }
   },
   "admin": {
@@ -1477,7 +1479,7 @@
       },
       "projectMembers": {
         "q": "How do I invite members?",
-        "a": "The Members tab lets you invite teammates by email and pick their role and permissions. They'll join the project as soon as they accept."
+        "a": "Open Projects, pick the project and go to the Members tab: there you grant access by choosing someone from the company with their permissions, or share a project invitation link."
       },
       "projectProgress": {
         "q": "What is the Progress tab for?",
@@ -1489,7 +1491,7 @@
       },
       "inventorySell": {
         "q": "How do I register a sale?",
-        "a": "Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+        "a": "Go to Sales > Charge, which takes you to the inventory. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
       },
       "inventoryMovements": {
         "q": "What inventory movement types exist?",
@@ -1549,7 +1551,7 @@
       },
       "teamsCreate": {
         "q": "How do I create a team?",
-        "a": "Use New Team to group members by area (Development, Design, QA…). Teams can then be referenced from projects and tasks to organize work."
+        "a": "Use New Team to group members by area (Development, Design, QA…). Linking a project to a team doesn't grant access: access is granted in Project > Members."
       },
       "integrationsList": {
         "q": "What integrations are available?",
@@ -1557,7 +1559,7 @@
       },
       "changeLanguage": {
         "q": "How do I change the language?",
-        "a": "Click this language icon in the top bar and pick English or Español. Your choice is remembered per user account."
+        "a": "Click this language icon in the top bar, or go to Settings > Your preferences, and pick English or Español. Your choice is remembered in this browser."
       },
       "switchWorkspace": {
         "q": "How do I switch workspace?",
@@ -1620,6 +1622,16 @@
       "discountEnabledNote": "Lets the cashier apply a percentage to the whole sale.",
       "discountMax": "Maximum discount",
       "discountMaxNote": "A sale asking for more than this is rejected, not trimmed down. Leave it at 0 to allow none."
+    },
+    "integrations": {
+      "title": "Integrations",
+      "hint": "Connect Kontrol with payments, messaging and other tools.",
+      "link": "Open integrations"
+    },
+    "members": {
+      "title": "Company members",
+      "hint": "Invite people, change their role and their project access. The panel is on the Dashboard.",
+      "link": "Go to company members"
     }
   },
   "navbar": {
@@ -1650,7 +1662,9 @@
       "users": "Users",
       "superUser": "Super User"
     },
-    "suppliers": "Suppliers"
+    "suppliers": "Suppliers",
+    "sales": "Sales",
+    "settings": "Settings"
   },
   "language": {
     "label": "Language",
@@ -2196,5 +2210,22 @@
     "cookies": "Cookie Policy",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
+  },
+  "sales": {
+    "eyebrow": "Sales",
+    "title": "Sales",
+    "subtitle": "Charge, review what was sold and adjust how your company charges.",
+    "checkout": {
+      "title": "Charge",
+      "copy": "Record a sale from your inventory products."
+    },
+    "history": {
+      "title": "Sales history",
+      "copy": "Income, profit and average ticket in Reports."
+    },
+    "config": {
+      "title": "Sale settings",
+      "copy": "Currency, VAT and discounts."
+    }
   }
 }
