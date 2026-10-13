@@ -2011,8 +2011,8 @@
     },
     "hero": {
       "pill": "Para tiendas y pequeños negocios",
-      "title": "Gestiona ventas e inventario de tu tienda",
-      "copy": "Registra ventas y controla existencias desde un mismo panel, junto con la operación de tu negocio.",
+      "title": "Controla las ventas y el inventario de tu tienda",
+      "copy": "Cada venta que cobras descuenta tu inventario al momento. Y en la misma plataforma llevas tus proyectos, presupuesto y marketing.",
       "start": "Empieza a gestionar tu negocio",
       "seeHow": "Mira cómo funciona"
     },
@@ -2172,8 +2172,8 @@
       }
     },
     "start": {
-      "title": "Empieza a gestionar tu negocio hoy.",
-      "copy": "Registra ventas y controla inventario desde el mismo panel de Kontrol.",
+      "title": "Empieza a controlar tu negocio hoy.",
+      "copy": "Deja atrás el caos y lleva todo tu negocio desde un solo lugar.",
       "cta": "Entra al centro de control"
     }
   },

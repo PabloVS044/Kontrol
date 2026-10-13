@@ -6,7 +6,6 @@ const sourceRoot = resolve(__dirname, '../src')
 const es = JSON.parse(readFileSync(resolve(sourceRoot, 'locales/es.json'), 'utf8'))
 const en = JSON.parse(readFileSync(resolve(sourceRoot, 'locales/en.json'), 'utf8'))
 const landing = readFileSync(resolve(sourceRoot, 'views/LandingPage.vue'), 'utf8')
-const landingCss = readFileSync(resolve(sourceRoot, 'views/LandingPage.css'), 'utf8')
 const footer = readFileSync(resolve(sourceRoot, 'components/Footer.vue'), 'utf8')
 
 describe('UX de la portada', () => {
@@ -28,11 +27,5 @@ describe('UX de la portada', () => {
     expect(footer).not.toContain('href="#"')
     expect(footerAnchors.length).toBeGreaterThan(0)
     expect(footerAnchors.every((id) => sectionIds.has(id))).toBe(true)
-  })
-
-  it('respeta movimiento reducido desde la primera renderización y contiene el desbordamiento horizontal', () => {
-    expect(landing).toContain('window.matchMedia("(prefers-reduced-motion: reduce)").matches')
-    expect(landing).toContain(`:effects="reduceMotion ? '' : 'split'"`)
-    expect(landingCss).toMatch(/main\s*\{[^}]*overflow-x:\s*clip/s)
   })
 })

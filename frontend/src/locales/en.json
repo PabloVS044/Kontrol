@@ -2011,8 +2011,8 @@
     },
     "hero": {
       "pill": "For shops and small businesses",
-      "title": "Manage your shop's sales and inventory",
-      "copy": "Record sales and keep track of stock in one dashboard, alongside your business operations.",
+      "title": "Take control of your shop's sales and inventory",
+      "copy": "Every sale you ring up updates your stock instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
       "seeHow": "See How it works"
     },
@@ -2172,8 +2172,8 @@
       }
     },
     "start": {
-      "title": "Start managing your business today.",
-      "copy": "Record sales and manage inventory from the same Kontrol dashboard.",
+      "title": "Start controlling your business today.",
+      "copy": "Leave the chaos behind and run your whole business from one place.",
       "cta": "Enter the command center"
     }
   },

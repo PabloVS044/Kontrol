@@ -1,10 +1,34 @@
+/* ─── Background scroll video ────────────────────────────────────────────── */
+/* Fixed full-viewport, always behind every section (z-index: -1) — its
+   currentTime is driven entirely by scroll position in setupBackgroundVideoScrub,
+   never by native playback. The scrim sits directly above it (still behind
+   all real content) so text stays legible over a busy, high-motion clip
+   without every section needing its own overlay treatment. */
+
 html {
   scroll-behavior: smooth;
 }
 
-main {
-  min-width: 0;
-  overflow-x: clip;
+.bg-scroll-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+  /* Dimmed behind the hero so the headline, not the tangle of cables, is
+     what gets read first; setupBackgroundVideoScrub brings it up to full as
+     the hero scrolls away. Reduced motion keeps it dimmed. */
+  opacity: 0.2;
+}
+
+.bg-scroll-video-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
 }
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
@@ -354,6 +378,10 @@ main {
 }
 
 /* ─── Companies ──────────────────────────────────────────────────────────── */
+/* The CardSwap stack fans its back cards out to the right on purpose
+   (overflow: visible), which on a phone runs past the screen edge and opens
+   a horizontal scrollbar. `clip` (not `hidden`) contains it sideways while
+   leaving the cards that fan upward visible. */
 #companies {
   width: 100%;
   min-height: 80vh;
@@ -362,6 +390,7 @@ main {
   align-items: center;
   padding: 80px 60px;
   box-sizing: border-box;
+  overflow-x: clip;
 }
 
 .companies-wrapper {
