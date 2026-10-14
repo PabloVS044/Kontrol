@@ -1,0 +1,231 @@
+{
+  "backend/src/controllers/agentController.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/controllers/authController.js": {
+    "no-console": {
+      "count": 2
+    }
+  },
+  "backend/src/controllers/chatController.js": {
+    "no-console": {
+      "count": 3
+    }
+  },
+  "backend/src/controllers/evidenciaController.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/controllers/inventoryMovementController.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/controllers/productController.js": {
+    "no-console": {
+      "count": 2
+    }
+  },
+  "backend/src/controllers/projectMetricsController.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/controllers/reportsController.js": {
+    "no-console": {
+      "count": 7
+    }
+  },
+  "backend/src/controllers/teamController.js": {
+    "no-console": {
+      "count": 6
+    }
+  },
+  "backend/src/db/bootstrap.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/db/mongo.js": {
+    "no-console": {
+      "count": 3
+    }
+  },
+  "backend/src/db/poolStats.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/index.js": {
+    "no-console": {
+      "count": 3
+    }
+  },
+  "backend/src/middleware/errorHandler.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/schemas/budgetSchema.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "backend/src/services/aiAgentService.js": {
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "preserve-caught-error": {
+      "count": 1
+    }
+  },
+  "backend/src/services/notificationService.js": {
+    "no-console": {
+      "count": 4
+    }
+  },
+  "backend/src/services/whatsappService.js": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "backend/src/socket/index.js": {
+    "no-console": {
+      "count": 9
+    }
+  },
+  "backend/tests/db/globalSetup.js": {
+    "preserve-caught-error": {
+      "count": 1
+    }
+  },
+  "backend/tests/regression/tenantIsolation.regression.test.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/AppNavbar.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/DetailProject/ProgressModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/AnimatedComponents/CardsSwap.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/AnimatedComponents/MagicBento.vue": {
+    "vue/valid-define-props": {
+      "count": 3
+    }
+  },
+  "frontend/src/components/UI/Button/Button.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/CircleRounded/CircleRounded.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/KontrolLogo3D/KontrolLogo3D.vue": {
+    "no-console": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/Pill/Pill.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/budget/FundingHistoryCard.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/chat/VideoCallOverlay.vue": {
+    "no-console": {
+      "count": 3
+    }
+  },
+  "frontend/src/components/projects/ProjectCard.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "frontend/src/components/projects/ProjectSummaryPanel.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TaskCard.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TaskModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TeamDetailModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TeamModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/stores/chat.js": {
+    "no-console": {
+      "count": 8
+    },
+    "no-empty": {
+      "count": 5
+    },
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "frontend/src/views/BudgetView.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/views/DashboardView.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/views/ReportDetailView.vue": {
+    "no-unused-vars": {
+      "count": 4
+    }
+  },
+  "frontend/tests/cssVars.test.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/tests/theme.test.js": {
+    "no-useless-escape": {
+      "count": 2
+    }
+  }
+}
