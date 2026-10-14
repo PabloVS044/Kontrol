@@ -11,6 +11,7 @@
 import { onMounted, onBeforeUnmount, ref, shallowRef } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { logger } from '../../../utils/logger.js'
 
 const props = defineProps({
   src: { type: String, default: '/kontrol-logo.glb' },
@@ -174,7 +175,7 @@ onMounted(async () => {
     ctx.value.model = pivot
     loaded.value = true
   } catch (err) {
-    console.error('[KontrolLogo3D] Failed to load model:', err)
+    logger.error('[KontrolLogo3D] Failed to load model:', err)
   }
 
   ctx.value.raf = requestAnimationFrame(tick)

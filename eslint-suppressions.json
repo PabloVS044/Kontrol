@@ -52,16 +52,6 @@
       "count": 1
     }
   },
-  "frontend/src/components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "frontend/src/components/UI/KontrolLogo3D/KontrolLogo3D.vue": {
-    "no-console": {
-      "count": 1
-    }
-  },
   "frontend/src/components/UI/Pill/Pill.vue": {
     "no-unused-vars": {
       "count": 1
@@ -70,11 +60,6 @@
   "frontend/src/components/budget/FundingHistoryCard.vue": {
     "no-unused-vars": {
       "count": 1
-    }
-  },
-  "frontend/src/components/chat/VideoCallOverlay.vue": {
-    "no-console": {
-      "count": 3
     }
   },
   "frontend/src/components/projects/ProjectCard.vue": {
@@ -108,9 +93,6 @@
     }
   },
   "frontend/src/stores/chat.js": {
-    "no-console": {
-      "count": 8
-    },
     "no-empty": {
       "count": 5
     },

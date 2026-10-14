@@ -15,6 +15,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import gsap from 'gsap'
+import { logger } from '../../../utils/logger.js'
 
 const emit = defineEmits(['done'])
 const canvasRef = ref(null)
@@ -148,7 +149,7 @@ onMounted(async () => {
     pivot.add(model)
     scene.add(pivot)
   } catch (e) {
-    console.error('[ConnectionSuccessAnimation] GLB load error:', e)
+    logger.error('[ConnectionSuccessAnimation] GLB load error:', e)
   }
 
   raf = requestAnimationFrame(tick)
