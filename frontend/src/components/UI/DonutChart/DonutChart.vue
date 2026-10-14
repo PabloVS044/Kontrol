@@ -23,7 +23,7 @@
     <text
       v-if="sublabel"
       :x="center" :y="center + labelOffsetY + sublabelOffsetY"
-      text-anchor="middle" fill="#555"
+      text-anchor="middle" fill="var(--k-gray-3)"
       :font-size="sublabelFontSize" font-family="Manrope"
     >{{ sublabel }}</text>
   </svg>

@@ -5,10 +5,20 @@ import { createRouter, createWebHistory } from 'vue-router'
 // load when their route does).
 import LandingPage from '../views/LandingPage.vue'
 
+// La pestaña "Equipo" del proyecto se ocultó: el acceso se da en "Miembros".
+export function redirectLegacyProjectTab(to) {
+  if (to.query.tab !== 'team') return true
+  return { path: to.path, query: { ...to.query, tab: 'members' }, hash: to.hash, replace: true }
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition
+    // Enlaces a una sección (/settings#sale-config); 72px por la barra fija.
+    if (to.hash && document.querySelector(to.hash)) {
+      return { el: to.hash, top: -72, behavior: 'instant' }
+    }
     return { top: 0, behavior: 'instant' }
   },
   routes: [
@@ -62,6 +72,7 @@ const router = createRouter({
       name: 'project-detail',
       component: () => import('../views/ProjectDetailView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
+      beforeEnter: redirectLegacyProjectTab,
     },
     {
       path: '/teams',
@@ -79,6 +90,12 @@ const router = createRouter({
       path: '/inventory/:id',
       name: 'inventory-detail',
       component: () => import('../views/ProductDetailView.vue'),
+      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/sales',
+      name: 'sales',
+      component: () => import('../views/SalesView.vue'),
       meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {

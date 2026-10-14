@@ -8,8 +8,10 @@
          `v-if` (not a CSS `display: none`) on mobile: it's a multi-MB file
          and the browser starts fetching it the moment the tag exists in the
          DOM, so it has to never be there at all rather than be hidden after
-         the fact. The app's own Waves background (App.vue) still shows
-         through underneath, same as on every other page. -->
+         the fact. The backdrop below it hides the app's Waves background
+         (App.vue), which otherwise showed through the dimmed video; on
+         mobile, with no video, the Waves stay as on every other page. -->
+    <div v-if="!isMobile" class="bg-scroll-video-backdrop" aria-hidden="true"></div>
     <video
       v-if="!isMobile"
       ref="bgVideoRef"
@@ -26,15 +28,15 @@
     <section id="header">
       <div class="header-container">
         <Pill
-          label="The future of Business"
+          :label="t('landing.hero.pill')"
           btnColor="var(--k-color-pill-back)"
           circleColor="var(--k-color-primary)"
           textColor="var(--k-color-primary)"
         />
         <AnimatedText
           style="margin-top: 0"
-          effects="split shiny"
-          text="Take control of your business"
+          :effects="reduceMotion ? 'shiny' : 'split shiny'"
+          :text="t('landing.hero.title')"
           tag="h1"
           class="hero-title"
           color="var(--k-color-primary)"
@@ -45,28 +47,25 @@
           direction="left"
           :yoyo="false"
           :pause-on-hover="false"
-          :disabled="false"
-          :split-delay="50"
-          :duration="1.25"
+          :disabled="reduceMotion"
+          :split-delay="12"
+          :duration="0.45"
           ease="power3.out"
           :from="{ opacity: 0, y: 40 }"
           :to="{ opacity: 1, y: 0 }"
         />
-        <p>
-          Manage projects, finances, marketing and communication from one
-          centralized platform. Designed for the ambitious.
-        </p>
+        <p>{{ t('landing.hero.copy') }}</p>
 
         <div class="goto">
           <Anchor
-            label="Start managing your business"
+            :label="t('landing.hero.start')"
             backColor="var(--k-color-primary)"
             hoverColor="var(--k-color-tertiary)"
             :icon="arrowRightIcon"
             link="/register"
           />
           <Anchor
-            label="See How it works"
+            :label="t('landing.hero.seeHow')"
             backColor="var(--k-color-tertiary)"
             hoverColor="var(--k-color-secondary)"
             :icon="arrowRightIcon"
@@ -82,32 +81,37 @@
          page; if not, it's isolated here and easy to remove. -->
     <section id="control-center" :class="{ 'no-pin': reduceMotion || isMobile }">
       <div class="control-center-viewport" ref="controlViewportRef">
-        <div class="control-k-wrapper" aria-hidden="true">
+        <div class="control-k-wrapper" aria-hidden="true" ref="controlKRef">
           <KontrolLogo3D
             width="380px"
             height="380px"
-            :idle-spin-speed="0.04"
+            :idle-spin-speed="reduceMotion ? 0 : 0.04"
             :scroll-rotation-y="scrollK.rotationY"
             :scroll-scale="scrollK.scale"
           />
         </div>
 
+        <!-- What the platform does comes first, right after the hero's
+             "take control" promise; "one command center" then sums it up. -->
         <div class="control-moment control-moment-1" ref="controlMoment1Ref">
-          <h2 class="sub-title">One command center.</h2>
-        </div>
-
-        <div class="control-moment control-moment-2" ref="controlMoment2Ref">
-          <h2 class="sub-title">Every part of your business.</h2>
-          <ul class="control-moment-tags">
-            <li>Projects</li>
-            <li>Finance</li>
-            <li>Marketing</li>
-            <li>Inventory</li>
+          <h2 class="sub-title">{{ t('landing.control.every') }}</h2>
+          <ul class="control-modules">
+            <li v-for="mod in controlModules" :key="mod.key" class="control-module">
+              <component :is="mod.icon" :size="22" class="control-module-icon" aria-hidden="true" />
+              <div>
+                <h3 class="control-module-title">{{ t(`landing.control.modules.${mod.key}.title`) }}</h3>
+                <p class="control-module-copy">{{ t(`landing.control.modules.${mod.key}.copy`) }}</p>
+              </div>
+            </li>
           </ul>
         </div>
 
+        <div class="control-moment control-moment-2" ref="controlMoment2Ref">
+          <h2 class="sub-title">{{ t('landing.control.one') }}</h2>
+        </div>
+
         <div class="control-moment control-moment-3" ref="controlMoment3Ref">
-          <h2 class="sub-title">Under your control.</h2>
+          <h2 class="sub-title">{{ t('landing.control.yours') }}</h2>
         </div>
       </div>
     </section>
@@ -118,14 +122,15 @@
     <section id="problem" :class="{ 'no-pin': reduceMotion || isMobile }">
       <div class="problem-viewport">
         <h2 class="sub-title">
-          Stop juggling tools to <span class="marked">run your business</span>
+          {{ t('landing.problem.titleStart') }}
+          <span class="marked">{{ t('landing.problem.titleMark') }}</span>
         </h2>
 
         <div class="problem-stage">
           <div class="problem-card-wrap" ref="chaosWrapRef">
             <Card
-              title="The Chaos"
-              subtitle="Disjointed systems that slow you down."
+              :title="t('landing.problem.chaos.title')"
+              :subtitle="t('landing.problem.chaos.subtitle')"
               :icon="LayoutGrid"
               :iconSize="48"
               iconColor="var(--k-color-bg-3)"
@@ -141,8 +146,8 @@
 
           <div class="problem-card-wrap" ref="orderWrapRef">
             <Card
-              title="The Order"
-              subtitle="Unified ecosystem designed for scale."
+              :title="t('landing.problem.order.title')"
+              :subtitle="t('landing.problem.order.subtitle')"
               :icon="Sparkles"
               :iconSize="48"
               iconColor="var(--k-color-primary-2)"
@@ -162,11 +167,8 @@
 
     <section id="solution">
       <div class="solution-container">
-        <h2 class="sub-title">The Command Center</h2>
-        <p class="description">
-          Every facet of your operation, unified in a high-fidelity dashboard
-          that anticipates your next move.
-        </p>
+        <h2 class="sub-title">{{ t('landing.solution.title') }}</h2>
+        <p class="description">{{ t('landing.solution.copy') }}</p>
         <div class="magic-circles-wrapper">
           <MagicCircles
             color="var(--k-color-primary-2)"
@@ -203,8 +205,8 @@
             />
             <Card
               class="sub-1"
-              title="Finances"
-              subtitle="Real-time cashflow tracking"
+              :title="t('landing.solution.finances.title')"
+              :subtitle="t('landing.solution.finances.subtitle')"
               :icon="Banknote"
               :iconSize="48"
               back="var(--k-color-tertiary)"
@@ -214,8 +216,8 @@
             />
             <Card
               class="sub-2"
-              title="Team CRM"
-              subtitle="Collaboration simplified"
+              :title="t('landing.solution.crm.title')"
+              :subtitle="t('landing.solution.crm.subtitle')"
               :icon="UsersRound"
               :iconSize="48"
               back="var(--k-color-tertiary)"
@@ -225,8 +227,8 @@
             />
             <Card
               class="sub-3"
-              title="Marketing"
-              subtitle="Omnichannel campaigns"
+              :title="t('landing.solution.marketing.title')"
+              :subtitle="t('landing.solution.marketing.subtitle')"
               :icon="Megaphone"
               :iconSize="48"
               back="var(--k-color-tertiary)"
@@ -236,8 +238,8 @@
             />
             <Card
               class="sub-4"
-              title="Inventory"
-              subtitle="Automated stock control"
+              :title="t('landing.solution.inventory.title')"
+              :subtitle="t('landing.solution.inventory.subtitle')"
               :icon="Box"
               :iconSize="48"
               back="var(--k-color-tertiary)"
@@ -251,11 +253,8 @@
     </section>
 
     <section id="features">
-      <h2 class="sub-title">Features</h2>
-      <p class="description">
-        Everything a growing business needs, built into one system instead of
-        stitched together from five.
-      </p>
+      <h2 class="sub-title">{{ t('landing.features.title') }}</h2>
+      <p class="description">{{ t('landing.features.copy') }}</p>
       <MagicBento
         :text-auto-hide="true"
         enable-stars
@@ -266,96 +265,46 @@
         click-effect
         :spotlight-radius="400"
         :particle-count="12"
-        :disable-animations="false"
+        :disable-animations="reduceMotion"
         card-background="var(--k-color-bg-2)"
         card-border="var(--k-color-border)"
         label-color="var(--k-color-primary)"
         title-color="var(--k-color-text)"
         description-color="var(--k-color-text)"
         glow-color="var(--k-color-primary)"
-        :cards="[
-          {
-            label: 'Insights',
-            title: 'Analytics',
-            description: 'Track user behavior',
-            icon: BarChart2,
-          },
-          {
-            label: 'Overview',
-            title: 'Dashboard',
-            description: 'Centralized data view',
-            icon: LayoutDashboard,
-          },
-          {
-            label: 'Teamwork',
-            title: 'Collaboration',
-            description: 'Work together seamlessly',
-            icon: Users,
-          },
-          {
-            label: 'Efficiency',
-            title: 'Automation',
-            description: 'Streamline workflows',
-            icon: Zap,
-          },
-          {
-            label: 'Connectivity',
-            title: 'Integration',
-            description: 'Connect favorite tools',
-            icon: Puzzle,
-          },
-          {
-            label: 'Protection',
-            title: 'Security',
-            description: 'Enterprise-grade protection',
-            icon: ShieldCheck,
-          },
-        ]"
+        :cards="featureCards"
       />
     </section>
 
     <section id="steps">
-      <h2 class="sub-title">Steps to get full control</h2>
+      <h2 class="sub-title">{{ t('landing.steps.title') }}</h2>
       <ScrollStack
         :use-window-scroll="true"
         :item-distance="50"
         :item-stack-distance="30"
-        stack-position="50%"
-        scale-end-position="30%"
+        stack-position="center"
         :base-scale="0.85"
       >
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="1"
-          title="Connect your ecosystem"
-          description="Bring your tools together with one central command center."
-          :process="[
-            'Link sales, finance and operations in one place',
-            'Import workflows and standardize handoffs',
-            'Enable automated alerts across teams',
-          ]"
+          :badge="t('landing.steps.badge', { n: 1 })"
+          :title="t('landing.steps.connect.title')"
+          :description="t('landing.steps.connect.description')"
+          :process="listOf('landing.steps.connect.process')"
         />
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="2"
-          title="Automate your workflow"
-          description="Turn manual handoffs into automated processes that move work forward."
-          :process="[
-            'Define automation triggers and conditions',
-            'Route tasks to the right teams instantly',
-            'Monitor every step with full visibility',
-          ]"
+          :badge="t('landing.steps.badge', { n: 2 })"
+          :title="t('landing.steps.automate.title')"
+          :description="t('landing.steps.automate.description')"
+          :process="listOf('landing.steps.automate.process')"
         />
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="3"
-          title="Optimize outcomes"
-          description="Use live performance data to refine processes and improve business results."
-          :process="[
-            'Track key metrics in real time',
-            'Identify bottlenecks and fix them fast',
-            'Scale the system as your team grows',
-          ]"
+          :badge="t('landing.steps.badge', { n: 3 })"
+          :title="t('landing.steps.optimize.title')"
+          :description="t('landing.steps.optimize.description')"
+          :process="listOf('landing.steps.optimize.process')"
         />
       </ScrollStack>
     </section>
@@ -363,12 +312,8 @@
     <section id="companies">
       <div class="companies-wrapper">
         <div class="steps-header">
-          <h2 class="sub-title">Built for every modern merchant</h2>
-          <p>
-            Designed to adapt to any business, from small shops to large-scale
-            operations, providing the tools needed to manage, grow, and scale
-            effortlessly
-          </p>
+          <h2 class="sub-title">{{ t('landing.companies.title') }}</h2>
+          <p>{{ t('landing.companies.copy') }}</p>
         </div>
         <div class="companies-swap">
         <CardSwap
@@ -390,16 +335,11 @@
             "
           >
             <div class="swap-card-content">
-              <span class="swap-card-tag">Store Owners</span>
-              <h3 class="swap-card-title">Full control of your business</h3>
-              <p class="swap-card-description">
-                Manage operations, track performance, and optimize your store
-                with tools designed to simplify daily workflows.
-              </p>
+              <span class="swap-card-tag">{{ t('landing.companies.store.tag') }}</span>
+              <h3 class="swap-card-title">{{ t('landing.companies.store.title') }}</h3>
+              <p class="swap-card-description">{{ t('landing.companies.store.copy') }}</p>
               <ul class="swap-card-list">
-                <li>Real-time sales tracking</li>
-                <li>Inventory management</li>
-                <li>Customer insights & reports</li>
+                <li v-for="item in listOf('landing.companies.store.items')" :key="item">{{ item }}</li>
               </ul>
             </div>
           </CarSwapItem>
@@ -414,16 +354,11 @@
             "
           >
             <div class="swap-card-content">
-              <span class="swap-card-tag">Automotive</span>
-              <h3 class="swap-card-title">Built for high-demand operations</h3>
-              <p class="swap-card-description">
-                Handle complex workflows, service tracking, and inventory with
-                precision tailored for automotive businesses.
-              </p>
+              <span class="swap-card-tag">{{ t('landing.companies.auto.tag') }}</span>
+              <h3 class="swap-card-title">{{ t('landing.companies.auto.title') }}</h3>
+              <p class="swap-card-description">{{ t('landing.companies.auto.copy') }}</p>
               <ul class="swap-card-list">
-                <li>Service & repair tracking</li>
-                <li>Parts inventory control</li>
-                <li>Workflow automation</li>
+                <li v-for="item in listOf('landing.companies.auto.items')" :key="item">{{ item }}</li>
               </ul>
             </div>
           </CarSwapItem>
@@ -438,16 +373,11 @@
             "
           >
             <div class="swap-card-content">
-              <span class="swap-card-tag">Food Vendors</span>
-              <h3 class="swap-card-title">Fast, reliable, always ready</h3>
-              <p class="swap-card-description">
-                Keep orders moving and customers satisfied with tools designed
-                for speed, efficiency, and peak hours.
-              </p>
+              <span class="swap-card-tag">{{ t('landing.companies.food.tag') }}</span>
+              <h3 class="swap-card-title">{{ t('landing.companies.food.title') }}</h3>
+              <p class="swap-card-description">{{ t('landing.companies.food.copy') }}</p>
               <ul class="swap-card-list">
-                <li>Order management system</li>
-                <li>Real-time menu updates</li>
-                <li>Peak-hour performance optimization</li>
+                <li v-for="item in listOf('landing.companies.food.items')" :key="item">{{ item }}</li>
               </ul>
             </div>
           </CarSwapItem>
@@ -456,13 +386,10 @@
       </div>
     </section>
     <section id="start">
-      <h2 class="sub-title">Start controlling your business today.</h2>
-      <p>
-        Join 50,000+ businesses using Kontrol to eliminate chaos and drive
-        growth.
-      </p>
+      <h2 class="sub-title">{{ t('landing.start.title') }}</h2>
+      <p>{{ t('landing.start.copy') }}</p>
       <Anchor
-        label="Enter the command center"
+        :label="t('landing.start.cta')"
         backColor="var(--k-color-primary-2)"
         hoverColor="var(--k-color-tertiary)"
         :icon="Rocket"
@@ -474,12 +401,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from "vue";
+import { computed, ref, reactive, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./LandingPage.css";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const { t, tm, rt } = useI18n();
 import MagicBento from "../components/UI/AnimatedComponents/MagicBento.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
@@ -491,6 +421,14 @@ import Card from "../components/UI/Card/Card.vue";
 import {
   LayoutGrid,
   Sparkles,
+  Boxes,
+  ShoppingCart,
+  Truck,
+  Wallet,
+  FileBarChart,
+  FolderKanban,
+  MessagesSquare,
+  Bot,
   CircleX,
   CircleCheck,
   NetworkIcon,
@@ -604,6 +542,13 @@ function setupBackgroundVideoScrub() {
   video.pause();
   if (reduceMotion.value) return;
 
+  const fadeIn = gsap.to(video, {
+    opacity: 1,
+    ease: "none",
+    scrollTrigger: { trigger: "#header", start: "top top", end: "bottom top", scrub: true },
+  });
+  landingScrollTriggers.push(fadeIn.scrollTrigger);
+
   const wireScrub = () => {
     if (!video.duration) return;
     // Seeking to exactly `video.duration` lands past the last decodable
@@ -623,11 +568,13 @@ function setupBackgroundVideoScrub() {
         // what the decoder can seek to, which is what read as the video
         // "getting stuck" — tweening it instead smooths out fast scroll
         // bursts into a short catch-up motion rather than a forced jump.
+        // "auto" (not `true`) so it only replaces the previous currentTime
+        // tween and leaves the opacity fade-in above alone.
         gsap.to(video, {
           currentTime: self.progress * seekableDuration,
           duration: 0.2,
           ease: "none",
-          overwrite: true,
+          overwrite: "auto",
         });
       },
     });
@@ -638,18 +585,20 @@ function setupBackgroundVideoScrub() {
   else video.addEventListener("loadedmetadata", wireScrub, { once: true });
 }
 
-// Computed synchronously (not in onMounted, unlike reduceMotion below) because
-// it gates whether the background <video> even renders — deciding that after
-// mount would mean the browser already started fetching a multi-MB file
-// before we could pull it back. Matches the same 768px breakpoint the CSS
-// media queries use for the mobile layout. Not re-evaluated on resize/rotate,
-// same tradeoff already accepted for reduceMotion.
+// Computed synchronously (not in onMounted) because it gates whether the
+// background <video> even renders — deciding that after mount would mean the
+// browser already started fetching a multi-MB file before we could pull it
+// back. Matches the same 768px breakpoint the CSS media queries use for the
+// mobile layout. Not re-evaluated on resize/rotate.
 const isMobile = ref(window.matchMedia("(max-width: 768px)").matches);
+// Also read up front: the hero title and the 3D K take it as props on their
+// first render, so reading it after mount would let them start animating.
+const reduceMotion = ref(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 // ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
 // three "moments" cross-fading in front of it as the scroll progresses ──────
-const reduceMotion = ref(false);
 const controlViewportRef = ref(null);
+const controlKRef = ref(null);
 const controlMoment1Ref = ref(null);
 const controlMoment2Ref = ref(null);
 const controlMoment3Ref = ref(null);
@@ -678,12 +627,20 @@ function setupControlCenter() {
     },
   });
 
+  const modules = gsap.utils.toArray(".control-module", moments[0]);
+
+  // The first moment carries the module grid, so it gets roughly half the
+  // scroll range; the two headline-only moments split the rest.
   tl.to(scrollK, { rotationY: Math.PI * 1.8, scale: 1.5, duration: 1, ease: "none" }, 0)
-    .fromTo(moments[0], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0)
-    .to(moments[0], { opacity: 0, duration: 0.12 }, 0.24)
-    .fromTo(moments[1], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.32)
-    .to(moments[1], { opacity: 0, duration: 0.12 }, 0.62)
-    .fromTo(moments[2], { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.72);
+    // The K sits behind the grid: dimmed while there's text to read over it,
+    // back to full once only a headline is left in front of it.
+    .fromTo(controlKRef.value, { opacity: 0.25 }, { opacity: 1, duration: 0.1 }, 0.46)
+    .fromTo(moments[0], { opacity: 0 }, { opacity: 1, duration: 0.08 }, 0)
+    .from(modules, { opacity: 0, y: 24, stagger: 0.02, duration: 0.1 }, 0.03)
+    .to(moments[0], { opacity: 0, duration: 0.08 }, 0.46)
+    .fromTo(moments[1], { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.56)
+    .to(moments[1], { opacity: 0, duration: 0.1 }, 0.74)
+    .fromTo(moments[2], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.84);
 
   landingScrollTriggers.push(tl.scrollTrigger);
 }
@@ -800,7 +757,6 @@ function setupScrollChoreography() {
 }
 
 onMounted(() => {
-  reduceMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   handleLandingResize();
   window.addEventListener("resize", handleLandingResize);
   setupBackgroundVideoScrub();
@@ -816,17 +772,48 @@ onUnmounted(() => {
   landingScrollTriggers.length = 0;
 });
 
-const chaosCharacteristics = [
-  { title: "WhatsApp threads for project updates" },
-  { title: "Scattered Excel spreadsheets" },
-  { title: "Physical notebooks and sticky notes" },
-  { title: "Missing invoices and late payments" },
+/**
+ * Las listas viven en el diccionario como arreglos, así que `tm` las devuelve
+ * en el idioma activo y `rt` resuelve cada mensaje compilado.
+ */
+const listOf = (key) => tm(key).map((item) => rt(item));
+
+const chaosCharacteristics = computed(() =>
+  listOf("landing.problem.chaos.items").map((title) => ({ title }))
+);
+
+const orderCharacteristics = computed(() =>
+  listOf("landing.problem.order.items").map((title) => ({ title }))
+);
+
+// The shop's daily work (stock, sales, suppliers) first, then the rest of the
+// business the same platform covers.
+const controlModules = [
+  { key: "inventory", icon: Boxes },
+  { key: "sales", icon: ShoppingCart },
+  { key: "suppliers", icon: Truck },
+  { key: "budget", icon: Wallet },
+  { key: "reports", icon: FileBarChart },
+  { key: "projects", icon: FolderKanban },
+  { key: "marketing", icon: Megaphone },
+  { key: "chat", icon: MessagesSquare },
+  { key: "assistant", icon: Bot },
 ];
 
-const orderCharacteristics = [
-  { title: "Centralized Project Command" },
-  { title: "Automated Financial Intelligence" },
-  { title: "Unified Marketing Hub" },
-  { title: "AI-Powered Data Analysis" },
-];
+const featureCards = computed(() => [
+  { ...card("analytics"), icon: BarChart2 },
+  { ...card("dashboard"), icon: LayoutDashboard },
+  { ...card("collaboration"), icon: Users },
+  { ...card("automation"), icon: Zap },
+  { ...card("integration"), icon: Puzzle },
+  { ...card("security"), icon: ShieldCheck },
+]);
+
+function card(name) {
+  return {
+    label: t(`landing.features.cards.${name}.label`),
+    title: t(`landing.features.cards.${name}.title`),
+    description: t(`landing.features.cards.${name}.description`),
+  };
+}
 </script>

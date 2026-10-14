@@ -1,0 +1,10 @@
+# timeout — https://test.34.121.51.151.nip.io — 2026-10-10T06:25:27Z
+probe company id_empresa=2 (owner: reserva@kontrol-test.dev)
+
+save: HTTP 200
+attempt 1: HTTP 400 in 10.65 s -> El servicio externo no respondió en 10000 ms.
+attempt 2: HTTP 400 in 10.74 s -> El servicio externo no respondió en 10000 ms.
+attempt 3: HTTP 400 in 10.64 s -> El servicio externo no respondió en 10000 ms.
+
+PASS = every attempt ends near 10 s with the timeout message; FAIL = the upstream answer came back.
+log: /home/pablo/Desktop/Kontrol/zap/out/verify-timeout-20261010T062527Z.txt

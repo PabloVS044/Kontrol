@@ -6,23 +6,23 @@
 
       <!-- Error de acceso -->
       <div v-if="!canManage" class="state-screen">
-        <p class="state-title">Acceso restringido</p>
-        <p class="state-msg">Solo los propietarios y administradores pueden gestionar integraciones.</p>
+        <p class="state-title">{{ t('integrations.restricted.title') }}</p>
+        <p class="state-msg">{{ t('integrations.restricted.msg') }}</p>
       </div>
 
       <!-- Error de carga -->
       <div v-else-if="fetchError" class="state-screen">
-        <p class="state-title">No se pudo cargar las integraciones</p>
+        <p class="state-title">{{ t('integrations.loadError') }}</p>
         <p class="state-msg">{{ fetchError }}</p>
-        <Button label="Reintentar" style="margin-top:16px" backColor="var(--Primary)" @click="loadIntegrations" />
+        <Button :label="t('integrations.retry')" style="margin-top:16px" backColor="var(--Primary)" @click="loadIntegrations" />
       </div>
 
       <template v-else>
         <!-- Encabezado -->
         <div class="page-header">
           <div>
-            <h1 class="page-title">Integraciones</h1>
-            <p class="page-subtitle">Conecta Kontrol con tus herramientas externas</p>
+            <h1 class="page-title">{{ t('integrations.title') }}</h1>
+            <p class="page-subtitle">{{ t('integrations.subtitle') }}</p>
           </div>
         </div>
 
@@ -31,13 +31,15 @@
           <button
             class="chip"
             :class="{ active: activeCategory === 'all' }"
+            :aria-pressed="activeCategory === 'all'"
             @click="activeCategory = 'all'"
-          >Todas</button>
+          >{{ t('integrations.allCategories') }}</button>
           <button
             v-for="cat in categories"
             :key="cat"
             class="chip"
             :class="{ active: activeCategory === cat }"
+            :aria-pressed="activeCategory === cat"
             @click="activeCategory = cat"
           >{{ categoryLabel(cat) }}</button>
         </div>
@@ -76,44 +78,60 @@
                 <span class="card-name">{{ integration.nombre }}</span>
                 <span class="cat-badge">{{ categoryLabel(integration.categoria) }}</span>
               </div>
-              <!-- Toggle enable/disable -->
+            </div>
+
+            <!-- Descripción -->
+            <p class="card-description">{{ integration.descripcion }}</p>
+
+            <!-- Estado de la conexión: texto informativo, no clicable -->
+            <p class="card-status">
+              <span class="status-dot" :class="`status-${statusKey(integration)}`" aria-hidden="true"></span>
+              <span class="status-text" :class="`status-${statusKey(integration)}`">{{ statusLabel(integration) }}</span>
+              <template v-if="integration.updated_at">
+                <span class="status-sep" aria-hidden="true">·</span>
+                <span class="updated-at">{{ t('integrations.updatedAt', { date: fmtDate(integration.updated_at) }) }}</span>
+              </template>
+            </p>
+
+            <!-- Interruptor rotulado: es el único control para pausar/reanudar -->
+            <div v-if="integration.is_configured" class="card-switch-row">
+              <div class="switch-text">
+                <span class="switch-title">{{ t('integrations.switch.title') }}</span>
+                <span class="switch-hint">
+                  {{ integration.status === 'active'
+                    ? t('integrations.switch.onHint')
+                    : t('integrations.switch.offHint') }}
+                </span>
+              </div>
               <button
-                v-if="integration.is_configured"
+                type="button"
+                role="switch"
                 class="toggle-btn"
                 :class="{ 'toggle-on': integration.status === 'active' }"
+                :aria-checked="integration.status === 'active'"
+                :aria-label="integration.status === 'active'
+                  ? t('integrations.switch.pauseLabel', { name: integration.nombre })
+                  : t('integrations.switch.resumeLabel', { name: integration.nombre })"
                 :disabled="togglingSlug === integration.slug"
-                :title="integration.status === 'active' ? 'Desactivar' : 'Activar'"
+                :title="integration.status === 'active'
+                  ? t('integrations.switch.pauseTitle')
+                  : t('integrations.switch.resumeTitle')"
                 @click="handleToggle(integration)"
               >
+                <span class="toggle-label">{{ integration.status === 'active' ? t('integrations.switch.on') : t('integrations.switch.off') }}</span>
                 <span class="toggle-track">
                   <span class="toggle-thumb"></span>
                 </span>
               </button>
             </div>
 
-            <!-- Descripción -->
-            <p class="card-description">{{ integration.descripcion }}</p>
-
-            <!-- Estado + última actualización -->
-            <div class="card-meta-row">
-              <Pill
-                :label="statusLabel(integration.status)"
-                :btnColor="statusPillColors(integration.status).bg"
-                :circleColor="statusPillColors(integration.status).dot"
-                :textColor="statusPillColors(integration.status).text"
-              />
-              <span v-if="integration.updated_at" class="updated-at">
-                Actualizado {{ fmtDate(integration.updated_at) }}
-              </span>
-            </div>
-
             <!-- Acciones primarias -->
-            <div class="card-actions">
+            <div class="card-actions" :class="{ 'single': !integration.is_configured }">
               <button
                 class="btn-configure"
                 @click="openConfigure(integration)"
               >
-                {{ integration.is_configured ? 'Editar configuración' : 'Configurar' }}
+                {{ integration.is_configured ? t('integrations.actions.edit') : t('integrations.actions.configure') }}
               </button>
               <button
                 v-if="integration.is_configured"
@@ -121,41 +139,33 @@
                 :disabled="testingSlug === integration.slug"
                 @click="handleTest(integration)"
               >
-                {{ testingSlug === integration.slug ? 'Probando…' : 'Probar conexión' }}
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M7.5 1.5 3 7.5h3.5l-1 4 4.5-6H6.5l1-4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                </svg>
+                {{ testingSlug === integration.slug ? t('integrations.actions.testing') : t('integrations.actions.test') }}
               </button>
             </div>
 
             <!-- Acciones secundarias -->
             <div class="card-secondary-actions">
               <button class="btn-how" @click="openTutorial(integration)">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
                   <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
                   <path d="M6.5 5.5v4M6.5 3.8v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
-                ¿Cómo conectar?
+                {{ t('integrations.actions.how') }}
               </button>
 
-              <template v-if="integration.is_configured">
-                <template v-if="confirmingDisconnect === integration.slug">
-                  <button
-                    class="btn-confirm-disconnect"
-                    :disabled="disconnectingSlug === integration.slug"
-                    @click="handleDisconnect(integration)"
-                  >
-                    {{ disconnectingSlug === integration.slug ? 'Cerrando…' : 'Sí, cerrar' }}
-                  </button>
-                  <button class="btn-cancel-disconnect" @click="confirmingDisconnect = null">
-                    Cancelar
-                  </button>
-                </template>
-                <button
-                  v-else
-                  class="btn-disconnect"
-                  @click="confirmingDisconnect = integration.slug"
-                >
-                  Cerrar conexión
-                </button>
-              </template>
+              <button
+                v-if="integration.is_configured"
+                class="btn-disconnect"
+                @click="confirmingDisconnect = integration"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 3h8M4.5 3V2h3v1M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+                </svg>
+                {{ t('integrations.actions.delete') }}
+              </button>
             </div>
 
             <!-- Feedback inline -->
@@ -174,10 +184,45 @@
       @done="showSuccessAnimation = false"
     />
 
+    <!-- Confirmación de eliminación -->
+    <BaseModal
+      :modelValue="!!confirmingDisconnect"
+      :title="t('integrations.confirm.title', { name: confirmingDisconnect?.nombre ?? '' })"
+      max-width="460px"
+      @update:modelValue="(v) => { if (!v && !disconnectingSlug) confirmingDisconnect = null }"
+    >
+      <div class="confirm-body" v-if="confirmingDisconnect">
+        <p class="confirm-text">
+          {{ t('integrations.confirm.text', { name: confirmingDisconnect.nombre }) }}
+        </p>
+        <p class="confirm-hint">
+          <i18n-t keypath="integrations.confirm.hint" scope="global">
+            <template #switch><strong>{{ t('integrations.confirm.switchName') }}</strong></template>
+          </i18n-t>
+        </p>
+        <div class="confirm-footer">
+          <button
+            class="btn-cancel-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="confirmingDisconnect = null"
+          >{{ t('integrations.confirm.cancel') }}</button>
+          <button
+            class="btn-confirm-disconnect"
+            :disabled="!!disconnectingSlug"
+            @click="handleDisconnect(confirmingDisconnect)"
+          >{{ disconnectingSlug ? t('integrations.confirm.deleting') : t('integrations.confirm.confirm') }}</button>
+        </div>
+      </div>
+    </BaseModal>
+
     <!-- Modal tutorial -->
-    <BaseModal v-model="showTutorial" :title="`Cómo conectar ${tutorialIntegration?.nombre ?? ''}`" max-width="500px">
+    <BaseModal
+      v-model="showTutorial"
+      :title="t('integrations.tutorial.title', { name: tutorialIntegration?.nombre ?? '' })"
+      max-width="500px"
+    >
       <div class="tutorial-body" v-if="tutorialIntegration">
-        <p class="tutorial-intro">Sigue estos pasos para configurar la integración con {{ tutorialIntegration.nombre }}.</p>
+        <p class="tutorial-intro">{{ t('integrations.tutorial.intro', { name: tutorialIntegration.nombre }) }}</p>
         <ol class="tutorial-steps">
           <li v-for="(step, i) in tutorialSteps" :key="i" class="tutorial-step">
             <span class="step-num">{{ i + 1 }}</span>
@@ -186,7 +231,7 @@
         </ol>
         <div class="tutorial-footer">
           <button class="btn-configure" style="width:100%" @click="showTutorial = false; openConfigure(tutorialIntegration)">
-            Ir a configurar
+            {{ t('integrations.tutorial.goConfigure') }}
           </button>
         </div>
       </div>
@@ -196,7 +241,7 @@
     <BaseModal v-model="showModal" :title="modalIntegration?.nombre ?? ''" max-width="520px">
       <template v-if="modalIntegration">
         <form class="modal-form" @submit.prevent="handleSave">
-          <div class="modal-section-label">Credenciales</div>
+          <div class="modal-section-label">{{ t('integrations.modal.credentials') }}</div>
           <div
             v-for="field in modalIntegration.campos_credenciales"
             :key="field.key"
@@ -210,7 +255,7 @@
               v-model="formCredentials[field.key]"
               class="form-input"
               :type="field.type === 'password' ? (showPasswords[field.key] ? 'text' : 'password') : field.type"
-              :placeholder="field.required ? 'Requerido' : 'Opcional'"
+              :placeholder="field.required ? t('integrations.modal.required') : t('integrations.modal.optional')"
               autocomplete="off"
             />
             <button
@@ -219,7 +264,7 @@
               class="toggle-pass"
               @click="showPasswords[field.key] = !showPasswords[field.key]"
             >
-              {{ showPasswords[field.key] ? 'Ocultar' : 'Mostrar' }}
+              {{ showPasswords[field.key] ? t('integrations.modal.hide') : t('integrations.modal.show') }}
             </button>
           </div>
 
@@ -228,7 +273,7 @@
 
           <div class="modal-footer">
             <Button
-              :label="modalLoading ? 'Guardando…' : 'Guardar'"
+              :label="modalLoading ? t('integrations.modal.saving') : t('integrations.modal.save')"
               type="submit"
               :disabled="modalLoading"
               backColor="var(--Primary)"
@@ -243,9 +288,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import BaseModal from '../components/UI/Modal/BaseModal.vue'
-import Pill from '../components/UI/Pill/Pill.vue'
 import Button from '../components/UI/Button/Button.vue'
 import ConnectionSuccessAnimation from '../components/UI/ConnectionSuccessAnimation/ConnectionSuccessAnimation.vue'
 import { useAuthStore } from '../stores/auth'
@@ -259,6 +304,7 @@ import {
 } from '../services/integrations.js'
 import './IntegrationView.css'
 
+const { t, tm, rt, locale } = useI18n()
 const authStore = useAuthStore()
 
 const integrations = ref([])
@@ -301,33 +347,30 @@ const filteredIntegrations = computed(() => {
   return integrations.value.filter((i) => i.categoria === activeCategory.value)
 })
 
+/** La categoría llega como slug del backend; la etiqueta es de interfaz. */
 function categoryLabel(cat) {
-  const map = {
-    comunicacion: 'Comunicación',
-    email: 'Email',
-    automatizacion: 'Automatización',
-    crm: 'CRM',
-    storage: 'Almacenamiento',
-  }
-  return map[cat] ?? cat
+  const key = `integrations.categories.${cat}`
+  const label = t(key)
+  return label === key ? cat : label
 }
 
-function statusLabel(status) {
-  const map = { active: 'Activo', inactive: 'Inactivo', error: 'Error' }
-  return map[status] ?? status
+// Describe la conexión; el encendido/pausa lo comunica solo el interruptor.
+function statusLabel(integration) {
+  if (!integration.is_configured) return t('integrations.status.notConfigured')
+  if (integration.status === 'error') return t('integrations.status.error')
+  return t('integrations.status.configured')
 }
 
-function statusPillColors(status) {
-  if (status === 'active')  return { bg: 'rgba(52,211,153,0.1)',  dot: '#34d399', text: '#34d399' }
-  if (status === 'error')   return { bg: 'rgba(251,113,133,0.1)', dot: '#fb7185', text: '#fb7185' }
-  return                           { bg: 'rgba(255,255,255,0.05)', dot: '#444',   text: '#666'    }
+function statusKey(integration) {
+  if (!integration.is_configured) return 'none'
+  return integration.status === 'error' ? 'error' : 'ok'
 }
 
 function fmtDate(d) {
   if (!d) return ''
   const dt = new Date(d)
   if (isNaN(dt)) return ''
-  return dt.toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })
+  return dt.toLocaleDateString(locale.value, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function authArgs() {
@@ -350,7 +393,7 @@ async function handleToggle(integration) {
   const nextStatus = integration.status === 'active' ? 'inactive' : 'active'
 
   if (nextStatus === 'active' && integration.status === 'error') {
-    setFeedback(integration.slug, 'error', 'La última conexión falló. Revisa las credenciales y usa "Probar conexión" antes de activar.')
+    setFeedback(integration.slug, 'error', t('integrations.feedback.lastTestFailed'))
     return
   }
 
@@ -378,7 +421,7 @@ async function handleTest(integration) {
     if (!wasActive) {
       showSuccessAnimation.value = true
     } else {
-      setFeedback(integration.slug, 'success', 'Conexión exitosa')
+      setFeedback(integration.slug, 'success', t('integrations.feedback.testOk'))
     }
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
@@ -417,7 +460,7 @@ async function handleSave() {
       credentials: formCredentials.value,
       config: {},
     })
-    modalSuccess.value = 'Integración guardada correctamente.'
+    modalSuccess.value = t('integrations.feedback.saved')
     const idx = integrations.value.findIndex((i) => i.slug === modalIntegration.value.slug)
     if (idx !== -1) {
       integrations.value[idx].is_configured = true
@@ -443,57 +486,20 @@ function clearFeedback(slug) {
 
 // ── Tutorial ───────────────────────────────────────────────────────────────────
 
-const TUTORIALS = {
-  'slack': [
-    'Ve a api.slack.com/apps e inicia sesión con tu cuenta de Slack.',
-    'Crea una nueva app seleccionando "From scratch" y elige tu workspace.',
-    'En el menú lateral, ve a "Incoming Webhooks" y actívalo.',
-    'Haz clic en "Add New Webhook to Workspace" y selecciona el canal donde quieres recibir notificaciones.',
-    'Copia la URL del webhook generada (comienza con https://hooks.slack.com/...) y pégala en la configuración.',
-  ],
-  'sendgrid': [
-    'Inicia sesión en app.sendgrid.com con tu cuenta de SendGrid.',
-    'Ve a Settings → API Keys y haz clic en "Create API Key".',
-    'Ponle un nombre descriptivo y selecciona el permiso "Restricted Access" → "Mail Send: Full Access".',
-    'Copia la API Key generada (solo se muestra una vez) y guárdala en un lugar seguro.',
-    'Pega la API Key, tu correo remitente verificado en SendGrid y el correo destinatario que recibirá las alertas.',
-  ],
-  'microsoft-teams': [
-    'Abre Microsoft Teams y ve al canal donde quieres recibir las notificaciones.',
-    'Haz clic en "..." junto al nombre del canal y selecciona "Connectors".',
-    'Busca "Incoming Webhook" en la lista y haz clic en "Configure".',
-    'Ponle un nombre al conector, sube un ícono opcional y haz clic en "Create".',
-    'Copia la URL del webhook generada y pégala en la configuración de Kontrol.',
-  ],
-  'telegram': [
-    'Abre Telegram y busca el bot @BotFather.',
-    'Envía el comando /newbot y sigue las instrucciones para elegir nombre y usuario para tu bot.',
-    'BotFather te entregará un Bot Token. Cópialo y guárdalo.',
-    'Para obtener tu Chat ID: inicia una conversación con tu bot y luego consulta la API con el token o usa el bot @userinfobot.',
-    'Ingresa el Bot Token y el Chat ID en la configuración de Kontrol.',
-  ],
-  'twilio-sms': [
-    'Crea una cuenta en twilio.com o inicia sesión si ya tienes una.',
-    'En el Dashboard principal verás tu Account SID y Auth Token. Cópialos.',
-    'Ve a "Phone Numbers → Manage → Buy a number" para adquirir un número de Twilio desde donde se enviarán los SMS.',
-    'Ingresa el Account SID, Auth Token, el número de Twilio y el número de destino en la configuración.',
-  ],
-  'webhook': [
-    'Prepara el servidor o servicio externo que recibirá los eventos (debe ser accesible públicamente).',
-    'El endpoint debe aceptar peticiones POST con body en formato JSON.',
-    'Asegúrate de usar HTTPS para mayor seguridad.',
-    'Copia la URL de tu endpoint y pégala en el campo URL de la configuración.',
-    'Kontrol enviará un evento POST cada vez que ocurra una acción relevante en tu empresa.',
-  ],
-}
-
+/**
+ * Los pasos viven en el diccionario (`integrations.tutorials.<slug>`) como
+ * arreglo, así que `tm` los devuelve en el idioma activo. Una integración sin
+ * guía propia cae en los tres pasos genéricos.
+ */
 const tutorialSteps = computed(() => {
-  if (!tutorialIntegration.value) return []
-  return TUTORIALS[tutorialIntegration.value.slug] ?? [
-    'Obtén las credenciales desde la plataforma de ' + tutorialIntegration.value.nombre + '.',
-    'Cópialas e ingrésalas en el formulario de configuración de Kontrol.',
-    'Guarda los cambios y usa "Probar conexión" para verificar que todo funciona.',
-  ]
+  const integration = tutorialIntegration.value
+  if (!integration) return []
+
+  const steps = tm(`integrations.tutorials.${integration.slug}`)
+  if (Array.isArray(steps) && steps.length) return steps.map((step) => rt(step))
+
+  return tm('integrations.tutorials.fallback')
+    .map((step) => rt(step).replace('{name}', integration.nombre))
 })
 
 function openTutorial(integration) {
@@ -511,12 +517,13 @@ async function handleDisconnect(integration) {
       integrations.value[idx].status = 'inactive'
       integrations.value[idx].updated_at = new Date().toISOString()
     }
-    confirmingDisconnect.value = null
-    setFeedback(integration.slug, 'success', 'Conexión cerrada correctamente.')
+    setFeedback(integration.slug, 'success', t('integrations.feedback.deleted'))
   } catch (err) {
     setFeedback(integration.slug, 'error', err.message)
   } finally {
     disconnectingSlug.value = null
+    // Cierra el modal también en error para que el mensaje de la tarjeta quede visible
+    confirmingDisconnect.value = null
   }
 }
 

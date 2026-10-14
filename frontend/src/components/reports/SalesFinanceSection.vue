@@ -1,5 +1,5 @@
 <template>
-  <div class="section-block sales-finance">
+  <div id="sales" class="section-block sales-finance">
     <div class="section-header sf-header">
       <span class="section-title">{{ $t('reports.sales.title') }}</span>
       <div class="sf-controls">
@@ -13,6 +13,7 @@
             :key="p.key"
             class="sf-preset"
             :class="{ active: preset === p.key }"
+            :aria-pressed="preset === p.key"
             @click="preset = p.key"
           >{{ p.label }}</button>
         </div>
@@ -266,7 +267,7 @@ function areaPath(key) {
   padding: 6px 12px; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
 }
 .sf-preset:hover { color: var(--TextSoft); }
-.sf-preset.active { color: var(--Primary); border-color: #caa860; background: #1a150f; }
+.sf-preset.active { color: var(--Primary); border-color: #caa860; background: #1a150f; box-shadow: var(--k-state-selected-indicator); }
 
 .sf-custom-range { display: flex; gap: 16px; flex-wrap: wrap; }
 .sf-custom-range label {

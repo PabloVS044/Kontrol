@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { assertPublicHttpUrl } from './ssrfGuard.js'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
 
 export async function testWebhookConnection({ url, secret }) {
   if (!url) throw new Error('url es requerido.')
@@ -17,7 +18,7 @@ export async function testWebhookConnection({ url, secret }) {
     headers['X-Kontrol-Signature'] = sign(payload, secret)
   }
 
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
@@ -44,7 +45,7 @@ export async function sendWebhookEvent({ url, secret }, { event, data }) {
     headers['X-Kontrol-Signature'] = sign(payload, secret)
   }
 
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),

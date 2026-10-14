@@ -149,7 +149,7 @@ defineProps({
 .health-sub {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #333;
+  color: var(--k-gray-1);
   display: block;
 }
 .health-good .health-dot { background: #4ade80; }

@@ -139,7 +139,8 @@
             :key="tab.id"
             class="pd-tab"
             :class="{ active: activeTab === tab.id }"
-            :data-birdie="tab.id === 'tasks' ? 'tasks-tab' : (tab.id === 'members' ? 'invite-members' : null)"
+            :aria-pressed="activeTab === tab.id"
+            :data-birdie="{ tasks: 'tasks-tab', members: 'invite-members', progress: 'progress-tab' }[tab.id] ?? null"
             @click="activeTab = tab.id"
           >
             {{ tab.label }}
@@ -601,7 +602,7 @@ const editingTeam         = ref(null)
 const tabs = computed(() => [
   { id: "overview", label: t('projects.detail.tabs.overview') },
   { id: "tasks",    label: t('projects.detail.tabs.tasks')    },
-  { id: "team",     label: t('projects.detail.tabs.team')     },
+  // "Equipo" (mock) se ocultó: dar acceso es solo desde Miembros.
   { id: "members",  label: t('projects.detail.tabs.members')  },
   { id: "progress", label: t('projects.detail.tabs.progress') },
 ]);
@@ -951,7 +952,7 @@ async function handleProjectProgressUpdated() {
   await loadMetrics()
 }
 
-const TAB_NAMES = ['overview', 'tasks', 'team', 'members', 'progress']
+const TAB_NAMES = ['overview', 'tasks', 'members', 'progress']
 
 function applyTabFromQuery() {
   const t = route.query.tab

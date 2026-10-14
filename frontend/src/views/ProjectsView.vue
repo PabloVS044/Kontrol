@@ -108,6 +108,7 @@
               :key="tab.key"
               class="tab"
               :class="{ active: activeTab === tab.key }"
+              :aria-pressed="activeTab === tab.key"
               @click="activeTab = tab.key"
             >
               {{ tab.label }} ({{ tab.count }})
@@ -137,7 +138,7 @@
                 <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">×</button>
               </div>
               <div class="view-toggle">
-                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'" :title="$t('projects.list.gridView')">
+                <button class="vt-btn" :class="{ active: viewMode === 'grid' }" :aria-pressed="viewMode === 'grid'" @click="viewMode = 'grid'" :title="$t('projects.list.gridView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                     <rect x="8" y="1" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
@@ -145,7 +146,7 @@
                     <rect x="8" y="8" width="5" height="5" stroke="currentColor" stroke-width="1.2"/>
                   </svg>
                 </button>
-                <button class="vt-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'" :title="$t('projects.list.listView')">
+                <button class="vt-btn" :class="{ active: viewMode === 'list' }" :aria-pressed="viewMode === 'list'" @click="viewMode = 'list'" :title="$t('projects.list.listView')">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
@@ -227,7 +228,7 @@
                     <path d="M1.5 3.5h10M1.5 6.5h7M1.5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/>
                   </svg>
                 </button>
-                <button class="lr-btn" :title="$t('projects.list.quickActions.team')" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                <button class="lr-btn" :title="$t('projects.list.quickActions.members')" @click="router.push(`/projects/${project.id_proyecto}?tab=members`)">
                   <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
                     <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
@@ -370,13 +371,13 @@
                   </svg>
                   <span>{{ $t('projects.list.quickActions.tasks') }}</span>
                 </button>
-                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=team`)">
+                <button class="quick-btn" @click="router.push(`/projects/${project.id_proyecto}?tab=members`)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/>
                     <path d="M1 11.5c0-1.9 1.6-3.5 3.5-3.5S8 9.6 8 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                     <path d="M9 5.5c1.1.3 2 1.3 2 2.5M11 11.5c0-1.4-.9-2.6-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
                   </svg>
-                  <span>{{ $t('projects.list.quickActions.team') }}</span>
+                  <span>{{ $t('projects.list.quickActions.members') }}</span>
                 </button>
                 <button class="quick-btn" @click="openBudget(project)">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -762,7 +763,7 @@ async function submitProject() {
   padding-bottom: 12px; border-bottom: 2px solid transparent; transition: color 0.15s;
 }
 .tab.active { color: var(--k-color-primary); border-bottom-color: var(--k-color-primary); }
-.tab:hover:not(.active) { color: var(--k-gray-5); }
+.tab:hover:not(.active) { color: var(--k-text-soft); }
 
 .section-header  { display: flex; justify-content: space-between; align-items: center; }
 .section-title   { font-family: var(--k-font-display); font-size: var(--k-font-size-heading-2); color: var(--k-color-text); }
@@ -786,7 +787,7 @@ async function submitProject() {
   background: none; border: none; color: var(--k-gray-3); cursor: pointer;
   font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
 }
-.search-clear:hover { color: var(--k-gray-5); }
+.search-clear:hover { color: var(--k-text-soft); }
 
 /* View toggle */
 .view-toggle { display: flex; border: 1px solid var(--k-shade-6); }
@@ -796,7 +797,7 @@ async function submitProject() {
   transition: color 0.15s, background 0.15s;
 }
 .vt-btn.active { color: var(--k-shade-1); background: var(--k-color-primary); }
-.vt-btn:hover:not(.active) { color: var(--k-gray-5); }
+.vt-btn:hover:not(.active) { color: var(--k-text-soft); }
 
 .project-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
@@ -896,7 +897,7 @@ async function submitProject() {
   background: var(--k-shade-2); border: 1px solid var(--k-shade-6);
   display: flex; flex-direction: column; transition: border-color 0.2s;
 }
-.project-card:hover { border-color: var(--k-gray-1); }
+.project-card:hover { border-color: var(--k-shade-8); }
 
 .card-accent { height: 3px; flex-shrink: 0; }
 

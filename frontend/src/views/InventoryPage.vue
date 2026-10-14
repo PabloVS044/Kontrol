@@ -153,6 +153,7 @@
             <button
               class="pf-tab"
               :class="{ active: !selectedProject }"
+              :aria-pressed="!selectedProject"
               @click="selectProject(null)"
             >{{ $t('inventory.projectFilter.allProjects') }}</button>
             <button
@@ -160,6 +161,7 @@
               :key="p.id_proyecto"
               class="pf-tab"
               :class="{ active: selectedProject?.id_proyecto === p.id_proyecto }"
+              :aria-pressed="selectedProject?.id_proyecto === p.id_proyecto"
               @click="selectProject(p)"
             >{{ p.nombre }}</button>
           </div>
@@ -204,6 +206,7 @@
             :key="cat"
             class="chip"
             :class="{ active: activeCategory === cat }"
+            :aria-pressed="activeCategory === cat"
             @click="activeCategory = cat"
           >{{ cat === 'All' ? $t('inventory.filter.all') : cat }}</button>
         </div>
@@ -258,7 +261,7 @@
                   <rect x="10" y="8" width="28" height="34" rx="2" stroke="var(--k-color-text)" stroke-width="1.5"/>
                   <path d="M10 18h28M18 8v10" stroke="var(--k-color-text)" stroke-width="1.5"/>
                 </svg>
-                <span>image</span>
+                <span>{{ t('inventory.card.noImage') }}</span>
               </div>
               <Pill
                 :label="stockLabel(product)"

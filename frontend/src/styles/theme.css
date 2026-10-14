@@ -44,14 +44,27 @@
   --k-color-white-rgb: 255, 255, 255;
 
   /* ── text/ ──────────────────────────────────────────────── */
+  /* Toda la rampa cumple WCAG AA (4.5:1) incluso sobre la superficie más
+     clara en uso, `--k-color-bg-3` (#282825). Valores anteriores
+     (muted #989083, dim #6e6558, faint #565045, placeholder #4a4030) bajaban
+     hasta 1.5:1 y en pruebas de usabilidad se volvían ilegibles con brillo
+     bajo o a distancia. Solo se subió la luminosidad: tono y saturación son
+     los de Figma. La jerarquía entre niveles la sostienen tamaño y peso. */
   --k-text-soft: #cfc9bf;
-  --k-text-muted: #989083;
-  --k-text-dim: #6e6558;
-  --k-text-faint: #565045;
-  --k-text-placeholder: #4a4030;
+  --k-text-muted: #a0998d; /* 6.69:1 sobre #111 · 5.23:1 sobre bg-3 */
+  --k-text-dim: #9e9485; /* 6.32:1 · 4.95:1 */
+  --k-text-faint: #988f7e; /* 5.90:1 · 4.62:1 */
+  --k-text-placeholder: #a18d6d; /* 5.89:1 · 4.61:1 — más cálido, para no confundirse con un valor escrito */
+  /* Solo para controles deshabilitados. WCAG 1.4.3 exime al texto de un
+     componente inactivo, así que puede quedar por debajo de 4.5:1 a
+     propósito: es lo que lo separa de una opción no seleccionada, que sí
+     está activa y tiene que leerse. No usar para texto informativo. */
+  --k-text-disabled: #565045;
 
   /* ── visualStates/ ──────────────────────────────────────── */
-  --k-state-error-text: #e05252;
+  /* #e05252 → #e46868: solo luminosidad. Sobre el pico del fondo animado
+     (#272727) daba 3.91:1; ahora 4.61:1 (5.83:1 sobre #111). */
+  --k-state-error-text: #e46868;
   --k-state-success-text: #48c774;
 
   /* ── forms/ ─────────────────────────────────────────────── */
@@ -103,6 +116,13 @@
   --k-state-hover-brightness: 1.15;
   --k-state-active-scale: 0.98;
   --k-state-disabled-opacity: 0.3;
+  /* Seleccionado vs no seleccionado vs deshabilitado no puede depender solo
+     del color: en pruebas, las opciones no seleccionadas se leían como
+     deshabilitadas. Seleccionado lleva una barra inferior (sin mover el
+     layout); deshabilitado, un contorno punteado. El no seleccionado no lleva
+     marca: texto en AA y su borde normal. */
+  --k-state-selected-indicator: inset 0 -2px 0 var(--k-color-primary);
+  --k-state-disabled-outline: var(--k-border-width) dashed var(--k-text-disabled);
   --k-focus-ring-width: 2px;
   --k-focus-ring-offset: 2px;
   --k-focus-ring: var(--k-focus-ring-width) solid var(--k-color-primary);
@@ -178,13 +198,19 @@
   --k-shade-5: #1e1e1e;
   --k-shade-6: #1f1f1f; /* bordes neutros */
   --k-shade-7: #2a2a2a; /* borde de control interactivo */
+  --k-shade-8: #333333; /* borde de control en hover (antes se tomaba de gray-1) */
 
   /* Texto neutro: gris frío, distinto de la rampa cálida `--k-text-*`. */
-  --k-gray-1: #333333; /* etiquetas de sección — bajo contraste, uso decorativo */
-  --k-gray-2: #444444;
-  --k-gray-3: #555555; /* texto terciario, estado inactivo */
-  --k-gray-4: #666666;
-  --k-gray-5: #888888;
+  /* gray-1..4 eran #333 / #444 / #555 / #666 (1.5–3.3:1 sobre #111) y
+     pintaban títulos secundarios, opciones inactivas y el ícono de idioma.
+     Suben a WCAG AA sobre bg-3 (#282825). Los cuatro quedan casi iguales a
+     propósito: la jerarquía la marcan tamaño y peso, no un gris ilegible.
+     Bordes y fondos que usaban gray-1 pasaron a --k-shade-8. */
+  --k-gray-1: #909090; /* 5.91:1 sobre #111 · 4.63:1 sobre bg-3 */
+  --k-gray-2: #909090; /* 5.91:1 · 4.63:1 */
+  --k-gray-3: #929292; /* 6.07:1 · 4.75:1 */
+  --k-gray-4: #939393; /* 6.15:1 · 4.81:1 */
+  --k-gray-5: #8f8f8f; /* era #888: 4.21:1 sobre el pico del fondo animado */
   --k-gray-6: #8f8f8f;
 
   /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de
@@ -236,6 +262,14 @@
   --k-z-modal-overlay: 1000;
   --k-z-modal: 1001;
   --k-z-tooltip: 2000;
+
+  /* ── fondo animado ──────────────────────────────────────── */
+  /* Color de las líneas de `Waves` (App.vue). Antes leía `--Text`, el mismo
+     token que el texto: cualquier ajuste al texto movía el fondo y, con un
+     tema claro, lo habría dejado invisible. Mismo blanco cálido de hoy para
+     conservar la identidad; App.vue le pone tope a sus picos para que no
+     compitan con las letras. Hex de 6 dígitos: es lo que parsea Waves.vue. */
+  --k-bg-wave-line: #faf8f5;
 
   /* ── superficies derivadas ──────────────────────────────── */
   /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para

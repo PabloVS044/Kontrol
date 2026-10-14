@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth.js'
 import { renderMarkdown } from '../utils/markdown.js'
@@ -13,6 +14,7 @@ import {
   deleteAgentMessage,
 } from '../services/agent.js'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const CLIENT_HISTORY_LIMIT = 10
 
@@ -72,7 +74,7 @@ async function openConversation(id) {
     }))
     errorBanner.value = ''
   } catch (err) {
-    errorBanner.value = err.message || 'No se pudo cargar la conversación.'
+    errorBanner.value = err.message || t('agent.errors.loadConversation')
     conversationId.value = null
     messages.value = []
   }
@@ -90,7 +92,7 @@ function newConversation() {
 async function removeConversation(conv, event) {
   if (event) event.stopPropagation()
   if (loading.value) return
-  if (!window.confirm(`¿Eliminar "${conv.title}"? Esta acción no se puede deshacer.`)) return
+  if (!window.confirm(t('agent.sidebar.deleteConfirm', { title: conv.title }))) return
 
   try {
     await deleteConversationApi(conv._id)
@@ -99,7 +101,7 @@ async function removeConversation(conv, event) {
       newConversation()
     }
   } catch (err) {
-    errorBanner.value = err.message || 'No se pudo eliminar la conversación.'
+    errorBanner.value = err.message || t('agent.errors.deleteConversation')
   }
 }
 
@@ -108,30 +110,33 @@ function toggleSidebar() {
 }
 
 const firstName = computed(() => {
-  const name = authStore.user?.nombre || authStore.user?.email || 'usuario'
+  const name = authStore.user?.nombre || authStore.user?.email || t('agent.fallbackName')
   return name.split(' ')[0]
 })
 
-const quickActions = [
+// Las sugerencias también van traducidas: lo que se manda al agente marca el
+// idioma en el que responde, así que una tarjeta en español no debe disparar
+// una respuesta en inglés.
+const quickActions = computed(() => [
   {
-    label: 'Analizar presupuesto',
-    desc: 'Revisa gastos y proyecciones financieras',
+    label: t('agent.quickActions.budget.label'),
+    desc: t('agent.quickActions.budget.desc'),
     icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    suggestion: 'Analiza el estado actual del presupuesto de mi empresa y dame recomendaciones',
+    suggestion: t('agent.quickActions.budget.suggestion'),
   },
   {
-    label: 'Resumen de proyectos',
-    desc: 'Estado y avance de tus proyectos activos',
+    label: t('agent.quickActions.projects.label'),
+    desc: t('agent.quickActions.projects.desc'),
     icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>`,
-    suggestion: 'Dame un resumen del estado de mis proyectos activos y sus avances',
+    suggestion: t('agent.quickActions.projects.suggestion'),
   },
   {
-    label: 'Generar reporte',
-    desc: 'Crea informes de inventario y actividad',
+    label: t('agent.quickActions.report.label'),
+    desc: t('agent.quickActions.report.desc'),
     icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><polyline points="10 9 9 9 8 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`,
-    suggestion: 'Genera un reporte ejecutivo de las actividades recientes de mi empresa',
+    suggestion: t('agent.quickActions.report.suggestion'),
   },
-]
+])
 
 function setPrompt(text) {
   prompt.value = text
@@ -204,14 +209,14 @@ async function submit() {
       // User clicked Stop. Leave the user message intact, show a placeholder.
       messages.value.push({
         role: 'assistant',
-        text: '_Generación detenida._',
+        text: t('agent.stopped'),
         isLocal: true,
       })
     } else {
-      errorBanner.value = err.message || 'Error al contactar al agente.'
+      errorBanner.value = err.message || t('agent.errors.send')
       messages.value.push({
         role: 'assistant',
-        text: 'Lo siento, no pude procesar tu solicitud en este momento.',
+        text: t('agent.failed'),
         isLocal: true,
       })
     }
@@ -266,7 +271,7 @@ async function saveEdit(msg) {
     }
     cancelEdit()
   } catch (err) {
-    errorBanner.value = err.message || 'No se pudo actualizar el mensaje.'
+    errorBanner.value = err.message || t('agent.errors.update')
   }
 }
 
@@ -283,7 +288,7 @@ async function removeMessage(msg) {
     await deleteAgentMessage(msg._id)
     messages.value = messages.value.filter((m) => m !== msg)
   } catch (err) {
-    errorBanner.value = err.message || 'No se pudo eliminar el mensaje.'
+    errorBanner.value = err.message || t('agent.errors.delete')
   }
 }
 
@@ -301,10 +306,10 @@ function autoResizeEdit(e) {
       <!-- Sidebar with conversation list -->
       <aside class="agent-sidebar" v-if="sidebarOpen">
         <div class="sidebar-header">
-          <span class="sidebar-title">Conversaciones</span>
+          <span class="sidebar-title">{{ t('agent.sidebar.title') }}</span>
           <button
             class="sidebar-icon-btn"
-            title="Ocultar"
+            :title="t('agent.sidebar.hide')"
             @click="toggleSidebar"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -321,15 +326,15 @@ function autoResizeEdit(e) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          Nueva conversación
+          {{ t('agent.sidebar.newConversation') }}
         </button>
 
         <div class="conv-list">
           <p v-if="!conversations.length && persistenceAvailable" class="conv-empty">
-            Aún no tienes conversaciones.
+            {{ t('agent.sidebar.empty') }}
           </p>
           <p v-else-if="!persistenceAvailable" class="conv-empty">
-            Historial no disponible: MongoDB desconectado.
+            {{ t('agent.sidebar.noHistory') }}
           </p>
           <button
             v-for="conv in conversations"
@@ -342,7 +347,7 @@ function autoResizeEdit(e) {
             <span class="conv-title">{{ conv.title }}</span>
             <span
               class="conv-delete"
-              title="Eliminar conversación"
+              :title="t('agent.sidebar.deleteConversation')"
               @click="removeConversation(conv, $event)"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -358,7 +363,7 @@ function autoResizeEdit(e) {
       <button
         v-if="!sidebarOpen"
         class="sidebar-reopen"
-        title="Mostrar conversaciones"
+        :title="t('agent.sidebar.show')"
         @click="toggleSidebar"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -368,7 +373,12 @@ function autoResizeEdit(e) {
 
       <main class="agent-main">
       <div v-if="!agentConfigured" class="agent-banner warn">
-        El agente aún no está configurado. Define <code>AGENT_API_KEY</code> en el backend. <code>AGENT_API_URL</code> es opcional y por defecto usa ClawStitch Qwen.
+        <!-- Los nombres de las variables de entorno no se traducen: son
+             identificadores del backend, no texto de interfaz. -->
+        <i18n-t keypath="agent.notConfigured" scope="global">
+          <template #key><code>AGENT_API_KEY</code></template>
+          <template #url><code>AGENT_API_URL</code></template>
+        </i18n-t>
       </div>
       <div v-else-if="errorBanner" class="agent-banner error">
         {{ errorBanner }}
@@ -377,8 +387,8 @@ function autoResizeEdit(e) {
       <!-- Landing state (no messages) -->
       <template v-if="!messages.length">
         <div class="agent-hero">
-          <p class="agent-greeting">Hola, {{ firstName }}</p>
-          <h1 class="agent-title">¿En qué puedo<br><span class="title-accent">ayudarte?</span></h1>
+          <p class="agent-greeting">{{ t('agent.greeting', { name: firstName }) }}</p>
+          <h1 class="agent-title">{{ t('agent.titleLine1') }}<br><span class="title-accent">{{ t('agent.titleLine2') }}</span></h1>
         </div>
 
         <div class="agent-cards">
@@ -422,8 +432,8 @@ function autoResizeEdit(e) {
                 @keydown.escape="cancelEdit"
               />
               <div class="msg-edit-actions">
-                <button class="msg-action-btn" @click="cancelEdit">Cancelar</button>
-                <button class="msg-action-btn primary" @click="saveEdit(msg)">Guardar</button>
+                <button class="msg-action-btn" @click="cancelEdit">{{ t('agent.message.cancel') }}</button>
+                <button class="msg-action-btn primary" @click="saveEdit(msg)">{{ t('agent.message.save') }}</button>
               </div>
             </div>
 
@@ -436,14 +446,14 @@ function autoResizeEdit(e) {
                   v-html="renderMarkdown(msg.text)"
                 />
                 <template v-else>{{ msg.text }}</template>
-                <span v-if="msg.edited" class="msg-edited-tag">editado</span>
+                <span v-if="msg.edited" class="msg-edited-tag">{{ t('agent.message.edited') }}</span>
               </div>
 
               <div class="msg-actions">
                 <button
                   v-if="msg.role === 'user' && msg._id"
                   class="msg-action-icon"
-                  title="Editar"
+                  :title="t('agent.message.edit')"
                   @click="startEdit(msg)"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
@@ -453,7 +463,7 @@ function autoResizeEdit(e) {
                 </button>
                 <button
                   class="msg-action-icon"
-                  title="Eliminar"
+                  :title="t('agent.message.delete')"
                   @click="removeMessage(msg)"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
@@ -491,7 +501,7 @@ function autoResizeEdit(e) {
               <textarea
                 v-model="prompt"
                 class="agent-textarea"
-                placeholder="Pregúntame cualquier cosa..."
+                :placeholder="t('agent.placeholder')"
                 rows="1"
                 @keydown.enter.exact.prevent="submit"
                 @input="autoResize"
@@ -499,7 +509,7 @@ function autoResizeEdit(e) {
               <button
                 v-if="loading"
                 class="agent-send stop"
-                title="Detener generación"
+                :title="t('agent.stop')"
                 @click="stopGeneration"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -519,7 +529,7 @@ function autoResizeEdit(e) {
             </div>
           </div>
         </div>
-        <p class="input-hint">Presiona Enter para enviar · Shift+Enter para nueva línea</p>
+        <p class="input-hint">{{ t('agent.hint') }}</p>
       </div>
     </main>
     </div>

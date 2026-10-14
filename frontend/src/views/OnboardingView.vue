@@ -5,23 +5,20 @@
       <!-- Left: branding / explanation -->
       <div class="onboarding-left">
         <img src="@/assets/img/kontrol.png" alt="Kontrol" class="ob-logo" />
-        <h1 class="ob-headline">Welcome to<br />Kontrol</h1>
-        <p class="ob-tagline">
-          To get started, create your workspace — a company that holds your
-          projects, inventory, and team members.
-        </p>
+        <h1 class="ob-headline">{{ t('onboarding.welcome') }}<br />Kontrol</h1>
+        <p class="ob-tagline">{{ t('onboarding.tagline') }}</p>
         <ul class="ob-features">
           <li>
             <span class="ob-dot"></span>
-            Manage projects and budgets across your organization
+            {{ t('onboarding.features.projects') }}
           </li>
           <li>
             <span class="ob-dot"></span>
-            Invite team members and assign roles
+            {{ t('onboarding.features.team') }}
           </li>
           <li>
             <span class="ob-dot"></span>
-            Track inventory, suppliers and expenses in one place
+            {{ t('onboarding.features.inventory') }}
           </li>
         </ul>
       </div>
@@ -29,35 +26,35 @@
       <!-- Right: create empresa form -->
       <div class="onboarding-right">
         <div class="ob-card">
-          <h2 class="ob-card-title">Create your workspace</h2>
-          <p class="ob-card-sub">This will be your company on Kontrol.</p>
+          <h2 class="ob-card-title">{{ t('onboarding.form.title') }}</h2>
+          <p class="ob-card-sub">{{ t('onboarding.form.subtitle') }}</p>
 
           <form class="ob-form" @submit.prevent="submit">
 
             <div class="ob-field">
-              <label>Company name <span class="req">*</span></label>
+              <label>{{ t('onboarding.form.name') }} <span class="req">*</span></label>
               <input
                 v-model="form.nombre"
                 type="text"
-                placeholder="e.g. Acme Corp"
+                :placeholder="t('onboarding.form.namePlaceholder')"
                 required
                 :disabled="loading"
               />
             </div>
 
             <div class="ob-field">
-              <label>Industry</label>
+              <label>{{ t('onboarding.form.industry') }}</label>
               <input
                 v-model="form.industria"
                 type="text"
-                placeholder="e.g. Construction, Retail, Tech…"
+                :placeholder="t('onboarding.form.industryPlaceholder')"
                 :disabled="loading"
               />
             </div>
 
             <div class="ob-row">
               <div class="ob-field">
-                <label>Phone</label>
+                <label>{{ t('onboarding.form.phone') }}</label>
                 <input
                   v-model="form.telefono"
                   type="tel"
@@ -66,11 +63,11 @@
                 />
               </div>
               <div class="ob-field">
-                <label>Address</label>
+                <label>{{ t('onboarding.form.address') }}</label>
                 <input
                   v-model="form.direccion"
                   type="text"
-                  placeholder="City, Country"
+                  :placeholder="t('onboarding.form.addressPlaceholder')"
                   :disabled="loading"
                 />
               </div>
@@ -80,18 +77,15 @@
 
             <button class="ob-submit" type="submit" :disabled="loading">
               <span v-if="loading" class="ob-spinner" />
-              {{ loading ? 'Creating…' : 'Create workspace' }}
+              {{ loading ? t('onboarding.form.submitting') : t('onboarding.form.submit') }}
             </button>
 
           </form>
 
-          <p class="ob-footer-note">
-            Already part of a team? Ask your administrator to invite you — your
-            account is ready.
-          </p>
+          <p class="ob-footer-note">{{ t('onboarding.footerNote') }}</p>
         </div>
 
-        <button class="ob-logout" @click="logout">Sign out</button>
+        <button class="ob-logout" @click="logout">{{ t('onboarding.signOut') }}</button>
       </div>
 
     </div>
@@ -100,9 +94,11 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+const { t }     = useI18n()
 const router    = useRouter()
 const authStore = useAuthStore()
 
@@ -145,7 +141,7 @@ async function submit() {
     await authStore.loadEmpresas()
     router.push({ name: 'dashboard' })
   } catch {
-    error.value = 'Network error, try again.'
+    error.value = t('onboarding.form.networkError')
   } finally {
     loading.value = false
   }

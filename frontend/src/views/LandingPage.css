@@ -9,6 +9,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Solid layer under the video: it's dimmed over the hero, and without this
+   the app's Waves background (App.vue, z-index 0) showed through it. Same
+   stacking slot as the video, earlier in the DOM, so it paints underneath. */
+.bg-scroll-video-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgb(var(--k-color-black-rgb));
+  pointer-events: none;
+}
+
 .bg-scroll-video {
   position: fixed;
   inset: 0;
@@ -17,6 +28,10 @@ html {
   object-fit: cover;
   z-index: -1;
   pointer-events: none;
+  /* Dimmed behind the hero so the headline, not the tangle of cables, is
+     what gets read first; setupBackgroundVideoScrub brings it up to full as
+     the hero scrolls away. Reduced motion keeps it dimmed. */
+  opacity: 0.2;
 }
 
 .bg-scroll-video-scrim {
@@ -143,7 +158,9 @@ html {
    position — see setupControlCenter() in LandingPage.vue. */
 #control-center {
   position: relative;
-  height: 260vh;
+  /* Taller than the headline-only version (was 260vh): the first moment now
+     holds the module grid and needs scroll room to be read. */
+  height: 320vh;
 }
 
 .control-center-viewport {
@@ -183,22 +200,68 @@ html {
   opacity: 0; /* GSAP scrubs this; starts hidden so there's no flash before JS runs */
 }
 
-.control-moment-tags {
-  display: flex;
+.control-modules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--k-space-3);
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
+  max-width: 980px;
   list-style: none;
   padding: 0;
   margin: 0;
+  text-align: left;
 }
 
-.control-moment-tags li {
-  padding: 0.5rem 1.25rem;
+.control-module {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-space-3);
+  padding: var(--k-space-4);
   border: var(--k-border-width) solid var(--k-color-border);
-  border-radius: var(--k-radius-pill);
+  border-radius: var(--k-radius-md);
+  /* Mostly opaque: the rotating K passes behind the grid. */
+  background: color-mix(in srgb, var(--k-color-tertiary) 88%, transparent);
+}
+
+.control-module-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--k-color-primary);
+}
+
+.control-module-title {
+  margin: 0;
+  font-size: var(--k-font-size-body-large);
+  font-weight: var(--k-font-weight-semibold);
   color: var(--k-color-text);
-  background: var(--k-color-tertiary);
+}
+
+.control-module-copy {
+  margin: var(--k-space-1) 0 0;
+  font-size: var(--k-font-size-body-small);
+  line-height: 1.45;
+  color: var(--k-text-soft);
+}
+
+@media (max-width: 1024px) {
+  .control-modules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .control-modules {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pinned, the grid has to fit the 100vh sticky viewport (overflow: hidden).
+   On short screens the one-liners give way and the module names remain:
+   three rows at full width, five at two columns. */
+@media (max-height: 560px), (max-width: 1024px) and (max-height: 760px) {
+  #control-center:not(.no-pin) .control-module-copy {
+    display: none;
+  }
 }
 
 /* Reduced motion (and the fallback if JS never wires up the timeline): no
@@ -374,6 +437,10 @@ html {
 }
 
 /* ─── Companies ──────────────────────────────────────────────────────────── */
+/* The CardSwap stack fans its back cards out to the right on purpose
+   (overflow: visible), which on a phone runs past the screen edge and opens
+   a horizontal scrollbar. `clip` (not `hidden`) contains it sideways while
+   leaving the cards that fan upward visible. */
 #companies {
   width: 100%;
   min-height: 80vh;
@@ -382,6 +449,7 @@ html {
   align-items: center;
   padding: 80px 60px;
   box-sizing: border-box;
+  overflow-x: clip;
 }
 
 .companies-wrapper {

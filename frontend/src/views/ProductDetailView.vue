@@ -4,16 +4,16 @@
 
     <main class="content">
       <div v-if="loading" class="state-screen">
-        <p class="state-title">Loading product</p>
-        <p class="state-msg">Fetching the latest inventory details.</p>
+        <p class="state-title">{{ t('inventory.productDetail.loadingTitle') }}</p>
+        <p class="state-msg">{{ t('inventory.productDetail.loadingMsg') }}</p>
       </div>
 
       <div v-else-if="error" class="state-screen">
-        <p class="state-title">Could not load product</p>
+        <p class="state-title">{{ t('inventory.productDetail.errorTitle') }}</p>
         <p class="state-msg">{{ error }}</p>
         <div class="state-actions">
-          <RouterLink class="ghost-link" :to="backTarget">Back to inventory</RouterLink>
-          <button class="btn-primary" @click="loadProduct">Retry</button>
+          <RouterLink class="ghost-link" :to="backTarget">{{ t('inventory.productDetail.back') }}</RouterLink>
+          <button class="btn-primary" @click="loadProduct">{{ t('inventory.productDetail.retry') }}</button>
         </div>
       </div>
 
@@ -21,15 +21,15 @@
         <header class="detail-header">
           <RouterLink class="ghost-link" :to="backTarget">
             <span aria-hidden="true">←</span>
-            <span>Back to inventory</span>
+            <span>{{ t('inventory.productDetail.back') }}</span>
           </RouterLink>
 
           <div class="detail-header-main">
             <div>
-              <p class="eyebrow">{{ product.categoria || 'Uncategorized' }}</p>
+              <p class="eyebrow">{{ product.categoria || t('inventory.productDetail.uncategorized') }}</p>
               <h1 class="title">{{ product.nombre }}</h1>
               <p class="subtitle">
-                {{ product.proyecto_nombre || 'Project not available' }}
+                {{ product.proyecto_nombre || t('inventory.productDetail.noProject') }}
               </p>
             </div>
 
@@ -41,31 +41,31 @@
 
         <section class="hero-grid">
           <article class="hero-card">
-            <p class="section-kicker">Overview</p>
+            <p class="section-kicker">{{ t('inventory.productDetail.overview') }}</p>
             <p class="description">
-              {{ product.descripcion || 'No description available for this product yet.' }}
+              {{ product.descripcion || t('inventory.productDetail.noDescription') }}
             </p>
 
             <div class="hero-stats">
               <div class="stat-box">
-                <span class="stat-label">Sale price</span>
+                <span class="stat-label">{{ t('inventory.productDetail.salePrice') }}</span>
                 <strong class="stat-value">${{ formatMoney(product.precio_venta) }}</strong>
               </div>
               <div class="stat-box">
-                <span class="stat-label">Cost price</span>
+                <span class="stat-label">{{ t('inventory.productDetail.costPrice') }}</span>
                 <strong class="stat-value">${{ formatMoney(product.precio_costo) }}</strong>
               </div>
               <div class="stat-box">
-                <span class="stat-label">Weighted avg. cost</span>
+                <span class="stat-label">{{ t('inventory.productDetail.weightedCost') }}</span>
                 <strong class="stat-value">${{ formatMoney(product.costo_promedio_ponderado) }}</strong>
               </div>
             </div>
 
             <div class="barcode-editor">
-              <span class="stat-label">Barcode</span>
+              <span class="stat-label">{{ t('inventory.productDetail.barcode') }}</span>
               <div class="barcode-edit-row">
-                <input v-model="barcodeInput" class="barcode-input" placeholder="No barcode assigned" />
-                <button type="button" class="barcode-scan-btn" title="Scan" @click="showScanner = true">
+                <input v-model="barcodeInput" class="barcode-input" :placeholder="t('inventory.productDetail.noBarcode')" />
+                <button type="button" class="barcode-scan-btn" :title="t('inventory.productDetail.scan')" @click="showScanner = true">
                   <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                     <path d="M2 5V3a1 1 0 0 1 1-1h2M16 5V3a1 1 0 0 0-1-1h-2M2 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                     <path d="M4.5 6v6M7 6v6M9.5 6v6M12 6v6M13.5 6v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
@@ -76,7 +76,7 @@
                   class="barcode-save-btn"
                   :disabled="savingBarcode || barcodeInput.trim() === (product.codigo_barras || '')"
                   @click="saveBarcode"
-                >{{ savingBarcode ? 'Saving…' : 'Save' }}</button>
+                >{{ savingBarcode ? t('inventory.productDetail.savingBarcode') : t('inventory.productDetail.saveBarcode') }}</button>
               </div>
               <p v-if="barcodeMsg" class="barcode-msg" :class="barcodeMsgType">{{ barcodeMsg }}</p>
             </div>
@@ -85,24 +85,24 @@
           <BarcodeScanner v-model="showScanner" @detected="onBarcodeDetected" />
 
           <article class="hero-card secondary">
-            <p class="section-kicker">Stock</p>
+            <p class="section-kicker">{{ t('inventory.productDetail.stock') }}</p>
             <div class="stock-metric">
               <span class="stock-number" :class="stockTone">{{ product.stock_actual }}</span>
-              <span class="stock-caption">units available</span>
+              <span class="stock-caption">{{ t('inventory.productDetail.unitsAvailable') }}</span>
             </div>
 
             <div class="stock-details">
               <div class="mini-stat">
-                <span class="mini-label">Minimum stock</span>
+                <span class="mini-label">{{ t('inventory.productDetail.minimumStock') }}</span>
                 <strong class="mini-value">{{ product.stock_minimo }}</strong>
               </div>
               <div class="mini-stat">
-                <span class="mini-label">Status</span>
+                <span class="mini-label">{{ t('inventory.productDetail.status') }}</span>
                 <strong class="mini-value">{{ stockLabel }}</strong>
               </div>
               <div class="mini-stat">
-                <span class="mini-label">Project</span>
-                <strong class="mini-value">{{ product.proyecto_nombre || 'N/A' }}</strong>
+                <span class="mini-label">{{ t('inventory.productDetail.project') }}</span>
+                <strong class="mini-value">{{ product.proyecto_nombre || t('inventory.productDetail.noProject') }}</strong>
               </div>
             </div>
           </article>
@@ -111,11 +111,13 @@
         <section class="suppliers-card">
           <div class="section-head">
             <div>
-              <p class="section-kicker">Suppliers</p>
-              <h2 class="section-title">Linked supplier quotes</h2>
+              <p class="section-kicker">{{ t('inventory.productDetail.suppliers') }}</p>
+              <h2 class="section-title">{{ t('inventory.productDetail.quotesTitle') }}</h2>
             </div>
             <span class="section-count">
-              {{ suppliers.length }} {{ suppliers.length === 1 ? 'supplier' : 'suppliers' }}
+              {{ suppliers.length === 1
+                ? t('inventory.productDetail.countSingular', { count: suppliers.length })
+                : t('inventory.productDetail.countPlural', { count: suppliers.length }) }}
             </span>
           </div>
 
@@ -140,7 +142,7 @@
           <p v-if="supplierMsg" class="supplier-message" :class="supplierMsgType">{{ supplierMsg }}</p>
 
           <div v-if="!suppliers.length" class="empty-box">
-            No suppliers linked to this product yet.
+            {{ t('inventory.productDetail.noSuppliers') }}
           </div>
 
           <div v-else class="supplier-list">
@@ -148,7 +150,7 @@
               <div>
                 <strong class="supplier-name">{{ supplier.nombre }}</strong>
                 <p class="supplier-date">
-                  Last quote: {{ formatDate(supplier.fecha_ultima_cotizacion) }}
+                  {{ t('inventory.productDetail.lastQuote', { date: formatDate(supplier.fecha_ultima_cotizacion) }) }}
                 </p>
               </div>
               <div class="supplier-price">
@@ -208,14 +210,14 @@ async function saveBarcode() {
       body: JSON.stringify({ codigo_barras: value || null }),
     })
     const payload = await res.json().catch(() => ({}))
-    if (res.status === 409) { barcodeMsg.value = payload.message || 'That barcode is already in use.'; barcodeMsgType.value = 'err'; return }
-    if (res.status === 403) { barcodeMsg.value = 'You do not have permission to edit this product.'; barcodeMsgType.value = 'err'; return }
+    if (res.status === 409) { barcodeMsg.value = payload.message || t('inventory.productDetail.barcodeInUse'); barcodeMsgType.value = 'err'; return }
+    if (res.status === 403) { barcodeMsg.value = t('inventory.productDetail.barcodeForbidden'); barcodeMsgType.value = 'err'; return }
     if (!res.ok) { barcodeMsg.value = payload.message || `Error ${res.status}`; barcodeMsgType.value = 'err'; return }
     product.value.codigo_barras = value || null
-    barcodeMsg.value = 'Barcode saved.'
+    barcodeMsg.value = t('inventory.productDetail.barcodeSaved')
     barcodeMsgType.value = 'ok'
   } catch {
-    barcodeMsg.value = 'Network error, try again.'
+    barcodeMsg.value = t('inventory.productDetail.networkError')
     barcodeMsgType.value = 'err'
   } finally {
     savingBarcode.value = false
@@ -243,9 +245,9 @@ const availableSuppliers = computed(() => {
 
 const stockLabel = computed(() => {
   if (!product.value) return ''
-  if (product.value.stock_actual === 0) return 'Out of stock'
-  if (product.value.stock_actual <= product.value.stock_minimo) return 'Low stock'
-  return 'In stock'
+  if (product.value.stock_actual === 0) return t('inventory.stock.outOfStock')
+  if (product.value.stock_actual <= product.value.stock_minimo) return t('inventory.stock.lowStock')
+  return t('inventory.stock.inStock')
 })
 
 const stockTone = computed(() => {

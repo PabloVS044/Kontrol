@@ -4,17 +4,17 @@
       <div v-if="isOpen" class="float-panel" :class="{ 'in-chat': activeChat }">
         <div v-if="!activeChat" class="fp-header">
           <div class="fp-header-top">
-            <span class="fp-title">Mensajes</span>
+            <span class="fp-title">{{ t('chat.title') }}</span>
             <div class="fp-header-actions">
               <span v-if="totalUnread" class="fp-total-unread">{{ totalUnread }}</span>
 
-              <button class="fp-icon-btn" title="Nuevo chat" @click="openNewChat">
+              <button class="fp-icon-btn" :title="t('chat.newChat')" @click="openNewChat">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                 </svg>
               </button>
 
-              <RouterLink to="/chat" class="fp-icon-btn" title="Ver pantalla completa" @click="isOpen = false">
+              <RouterLink to="/chat" class="fp-icon-btn" :title="t('chat.openFullScreen')" @click="isOpen = false">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                   <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
@@ -30,10 +30,10 @@
 
           <div class="fp-search">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="8" stroke="#555" stroke-width="1.8" />
-              <path d="M21 21l-4.35-4.35" stroke="#555" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="11" cy="11" r="8" stroke="var(--k-gray-3)" stroke-width="1.8" />
+              <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-3)" stroke-width="1.8" stroke-linecap="round" />
             </svg>
-            <input v-model="searchQuery" type="text" placeholder="Buscar..." />
+            <input v-model="searchQuery" type="text" :placeholder="t('chat.search')" />
           </div>
         </div>
 
@@ -49,20 +49,20 @@
             <div class="fp-chat-text">
               <span class="fp-chat-name">{{ activeChat.name }}</span>
               <span class="fp-chat-sub">
-                <span v-if="isTyping">escribiendo...</span>
+                <span v-if="isTyping">{{ t('chat.typing') }}</span>
                 <span v-else>{{ activeChat.email || 'Mensaje directo' }}</span>
               </span>
             </div>
           </div>
 
-          <button class="fp-icon-btn" title="Videollamada" @click="startVideoCallFromFloatingChat">
+          <button class="fp-icon-btn" :title="t('chat.videoCall')" @click="startVideoCallFromFloatingChat">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M15 10l5-3v10l-5-3v-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
               <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
             </svg>
           </button>
 
-          <RouterLink to="/chat" class="fp-icon-btn" title="Abrir en pantalla completa" @click="isOpen = false">
+          <RouterLink to="/chat" class="fp-icon-btn" :title="t('chat.openFullScreen')" @click="isOpen = false">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -76,7 +76,7 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#333" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
-            <span>Sin conversaciones</span>
+            <span>{{ t('chat.noConversations') }}</span>
           </div>
 
           <div
@@ -106,7 +106,7 @@
         <div v-else class="fp-mini-chat">
           <div class="fp-messages" ref="miniMsgEl">
             <div v-if="activeMiniMessages.length === 0" class="fp-chat-placeholder">
-              <span>No hay mensajes en esta conversación.</span>
+              <span>{{ t('chat.noMessages') }}</span>
             </div>
 
             <div
@@ -171,13 +171,13 @@
 
           <div class="fp-input-area">
             <div class="fp-attach-row">
-              <button class="fp-att-btn" title="Adjuntar archivo" @click="triggerMiniUpload()">
+              <button class="fp-att-btn" :title="t('chat.attachFile')" @click="triggerMiniUpload()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </button>
 
-              <button class="fp-att-btn" title="Imagen" @click="triggerMiniUpload('image/*')">
+              <button class="fp-att-btn" :title="t('chat.image')" @click="triggerMiniUpload('image/*')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6" />
                   <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.6" />
@@ -185,7 +185,7 @@
                 </svg>
               </button>
 
-              <button class="fp-att-btn" title="Audio o video" @click="triggerMiniUpload('audio/*,video/*')">
+              <button class="fp-att-btn" :title="t('chat.media')" @click="triggerMiniUpload('audio/*,video/*')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M14 3v18l7-4V7l-7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
                   <path d="M3 8h7v8H3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
@@ -199,7 +199,7 @@
               <textarea
                 ref="miniTextarea"
                 v-model="miniInput"
-                placeholder="Escribe un mensaje..."
+                :placeholder="t('chat.messagePlaceholder')"
                 rows="1"
                 @keydown.enter.exact.prevent="sendMini"
                 @input="autoResize"
@@ -227,7 +227,7 @@
     <div v-if="showNewChat" class="fp-modal-overlay" @click.self="showNewChat = false">
       <div class="fp-modal">
         <div class="fp-modal-header">
-          <span class="fp-modal-title">Nuevo mensaje directo</span>
+          <span class="fp-modal-title">{{ t('chat.newDM') }}</span>
           <button class="fp-icon-btn" @click="showNewChat = false">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -237,10 +237,10 @@
 
         <div class="fp-search fp-search--modal">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="8" stroke="#555" stroke-width="1.8" />
-            <path d="M21 21l-4.35-4.35" stroke="#555" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="11" cy="11" r="8" stroke="var(--k-gray-3)" stroke-width="1.8" />
+            <path d="M21 21l-4.35-4.35" stroke="var(--k-gray-3)" stroke-width="1.8" stroke-linecap="round" />
           </svg>
-          <input v-model="userSearch" type="text" placeholder="Buscar usuario..." autofocus />
+          <input v-model="userSearch" type="text" :placeholder="t('chat.searchUser')" autofocus />
         </div>
 
         <div class="fp-modal-list">
@@ -258,7 +258,7 @@
           </button>
 
           <div v-if="!filteredCompanyUsers.length" class="fp-empty fp-empty--modal">
-            <span>Sin usuarios disponibles</span>
+            <span>{{ t('chat.noUsersAvailable') }}</span>
           </div>
         </div>
       </div>
@@ -278,10 +278,12 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { useChatStore } from '../../stores/chat.js'
 import { useAuthStore } from '../../stores/auth.js'
 
+const { t, locale } = useI18n()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 const myId = computed(() => authStore.user?.id_usuario)
@@ -334,7 +336,7 @@ const isTyping = computed(() => {
 
 function fmtTime(date) {
   if (!date) return ''
-  return new Date(date).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
+  return new Date(date).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 function attachmentKey(messageId, attachment, index) {
@@ -355,7 +357,7 @@ async function openChat(conversation) {
   if (!cachedMessages || cachedMessages.length === 0) {
     const response = await chatStore.loadMessages(conversation._id)
     if (!response.success) {
-      panelError.value = response.message || 'No se pudo cargar la conversación.'
+      panelError.value = response.message || t('chat.errors.loadConversation')
     }
   }
 
@@ -411,7 +413,7 @@ async function openNewChat() {
   if (!chatStore.companyUsers.length) {
     const response = await chatStore.loadCompanyUsers()
     if (!response.success) {
-      panelError.value = response.message || 'No se pudieron cargar los usuarios.'
+      panelError.value = response.message || t('chat.errors.loadUsers')
     }
   }
 }
@@ -424,7 +426,7 @@ async function startDM(user) {
       await openChat(conversation)
     }
   } catch (error) {
-    panelError.value = error.message || 'No se pudo iniciar el chat.'
+    panelError.value = error.message || t('chat.errors.startChat')
   }
 }
 
@@ -433,7 +435,7 @@ async function startVideoCallFromFloatingChat() {
 
   const response = await chatStore.startVideoCall(activeChat.value)
   if (!response.success) {
-    panelError.value = response.message || 'No se pudo iniciar la videollamada.'
+    panelError.value = response.message || t('chat.errors.startCall')
   }
 }
 
@@ -450,7 +452,9 @@ async function onMiniFilesSelected(event) {
   if (!files.length || !activeChat.value) return
 
   uploadingMini.value = true
-  miniStatus.value = files.length === 1 ? 'Subiendo archivo...' : `Subiendo ${files.length} archivos...`
+  miniStatus.value = files.length === 1
+    ? t('chat.upload.one')
+    : t('chat.upload.many', { count: files.length })
   panelError.value = ''
 
   const response = await chatStore.uploadFiles(files)
@@ -470,7 +474,7 @@ async function onMiniFilesSelected(event) {
   })
 
   if (!sent) {
-    panelError.value = 'No se pudo enviar el mensaje con adjuntos.'
+    panelError.value = t('chat.errors.sendAttachments')
     return
   }
 
@@ -914,7 +918,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea::placeholder {
-    color: #333;
+    color: var(--k-text-placeholder);
   }
 
   .fp-send-btn {
@@ -1196,7 +1200,7 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-input-row textarea::placeholder {
-    color: #333;
+    color: var(--k-text-placeholder);
   }
 
   .fp-send-btn {

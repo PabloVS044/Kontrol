@@ -1,5 +1,6 @@
 import pool from '../db/pool.js'
 import { notifyCompany } from '../services/notificationService.js'
+import { invalidateCompanyBudgetCache } from '../utils/budgetSummaryCache.js'
 import {
   ensureProjectAccess,
   getAccessibleProjectIds,
@@ -272,6 +273,7 @@ export const createInventoryMovement = async (req, res) => {
     }
 
     await client.query('COMMIT')
+    invalidateCompanyBudgetCache(id_empresa)
 
     // Alert if stock dropped below minimum after a SALIDA
     if (tipo === 'SALIDA') {
@@ -472,6 +474,7 @@ export const createSale = async (req, res) => {
     }
 
     await client.query('COMMIT')
+    invalidateCompanyBudgetCache(id_empresa)
 
     // Low-stock alerts after the sale is durable.
     for (const prod of lowStock) {

@@ -1,0 +1,107 @@
+name: Integración y regresión
+
+# Tarea 5 — pruebas de integración y de regresión del backend contra un
+# PostgreSQL real. Igual que ci.yml, solo valida lo que va a integrarse a una
+# rama protegida (PRs a main o develop); workflow_dispatch permite lanzarlo a
+# mano desde la pestaña Actions sobre cualquier rama.
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    # Un job por tipo de prueba: en el PR se ve por separado si falló la
+    # integración entre componentes o se detectó una regresión.
+    name: ${{ matrix.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: integration
+            label: Pruebas de integración (API + PostgreSQL)
+          - suite: regression
+            label: Pruebas de regresión (API + PostgreSQL)
+
+    # Base de datos desechable para el job. globalSetup la vacía, carga
+    # backend/kontrol.sql y aplica ensureDatabaseSchema() antes de las pruebas.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: kontrol
+          POSTGRES_PASSWORD: kontrol
+          POSTGRES_DB: kontrol_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kontrol -d kontrol_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_DATABASE_URL: postgres://kontrol:kontrol@localhost:5432/kontrol_test
+      JWT_SECRET: ci-integration-secret
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias (workspaces)
+        run: npm ci
+
+      - name: Ejecutar pruebas de ${{ matrix.suite }}
+        run: npm run test:${{ matrix.suite }} -w backend
+
+      - name: Resumen de resultados
+        if: always()
+        working-directory: backend
+        run: |
+          node --input-type=module -e "
+            import { existsSync, readFileSync, appendFileSync } from 'node:fs'
+            const file = 'reports/${{ matrix.suite }}-results.json'
+            const out = process.env.GITHUB_STEP_SUMMARY
+            if (!existsSync(file)) {
+              appendFileSync(out, '### ${{ matrix.label }}\n\nNo se generó reporte: la ejecución falló antes de correr las pruebas.\n')
+              process.exit(0)
+            }
+            const r = JSON.parse(readFileSync(file, 'utf8'))
+            const ok = r.numFailedTests === 0 && r.success !== false
+            let md = '### ${{ matrix.label }} — ' + (ok ? '✅ aprobado' : '❌ fallido') + '\n\n'
+            md += '| Total | Aprobadas | Fallidas |\n|---|---|---|\n'
+            md += '| ' + r.numTotalTests + ' | ' + r.numPassedTests + ' | ' + r.numFailedTests + ' |\n\n'
+            md += '| Resultado | Suite | Prueba |\n|---|---|---|\n'
+            for (const s of r.testResults) {
+              const suite = s.name.split('/tests/')[1] ?? s.name
+              for (const t of s.assertionResults) {
+                md += '| ' + (t.status === 'passed' ? '✅' : '❌') + ' | ' + suite + ' | ' + t.title.replace(/\|/g, '\\\\|') + ' |\n'
+              }
+            }
+            appendFileSync(out, md)
+          "
+
+      - name: Publicar reportes como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-${{ matrix.suite }}
+          path: backend/reports/
+          retention-days: 30
+          if-no-files-found: warn

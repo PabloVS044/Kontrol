@@ -27,6 +27,9 @@ const router = createRouter({
     { path: '/onboarding', component: Stub },
     { path: '/dashboard', name: 'dashboard', component: Stub },
     { path: '/inventory', name: 'inventory', component: Stub },
+    { path: '/sales', component: Stub },
+    { path: '/suppliers', component: Stub },
+    { path: '/settings', component: Stub },
     { path: '/projects', name: 'projects', component: Stub },
     { path: '/teams', component: Stub },
     { path: '/budget', component: Stub },
@@ -89,7 +92,26 @@ describe('AppNavbar.vue — visibilidad por permisos', () => {
   it('muestra el nombre y rol de la empresa actual', async () => {
     const { wrapper } = await montar()
     expect(wrapper.find('.empresa-name').text()).toBe('Skiot')
-    expect(wrapper.find('.empresa-role').text()).toBe('owner')
+    // El rol llega en inglés desde la base de datos; en pantalla va traducido.
+    expect(wrapper.find('.empresa-role').text()).toBe('Propietario')
+  })
+
+  it('traduce el rol que llega en inglés de la base de datos', async () => {
+    // El perfil decía "COLLABORATOR" con la app en español: el valor es del
+    // esquema (hay permisos que dependen de esa cadena), la etiqueta no.
+    const { wrapper } = await montar({
+      empresaActual: { id_empresa: 1, nombre: 'Skiot', rol: 'collaborator' },
+    })
+    expect(wrapper.find('.empresa-role').text()).toBe('Colaborador')
+  })
+
+  it('el menú lateral nombra Proveedores en español', async () => {
+    // "Suppliers" estaba escrito en el código de navegación, no en el
+    // diccionario, así que no cambiaba de idioma nunca.
+    const { wrapper } = await montar({ capabilities: { can_view_inventory: true } })
+    const enlaces = wrapper.findAll('.appnav-link').map((l) => l.text())
+    expect(enlaces).toContain('Proveedores')
+    expect(enlaces).not.toContain('Suppliers')
   })
 
   it('oculta inventario, proyectos, equipos e integraciones sin capacidad', async () => {
@@ -99,17 +121,45 @@ describe('AppNavbar.vue — visibilidad por permisos', () => {
     expect(links).not.toContain('/projects')
     expect(links).not.toContain('/teams')
     expect(links).not.toContain('/integrations')
+    expect(links).not.toContain('/sales')
   })
 
-  it('muestra inventario, proyectos, equipos e integraciones con capacidad completa', async () => {
+  it('muestra ventas, inventario, proyectos y equipos con capacidad completa', async () => {
     const { wrapper } = await montar({
-      capabilities: { can_view_inventory: true, can_view_projects: true },
+      capabilities: { can_view_inventory: true, can_view_projects: true, can_sell_inventory: true },
     })
     const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+    expect(links).toContain('/sales')
     expect(links).toContain('/inventory')
     expect(links).toContain('/projects')
     expect(links).toContain('/teams') // canManageTeams se resuelve por rol 'owner'
-    expect(links).toContain('/integrations') // isAdminOrOwner por rol 'owner'
+  })
+
+  it('integraciones sale del menú principal incluso para el owner', async () => {
+    // Vive como tarjeta dentro de Configuración; su ruta no cambia.
+    const { wrapper } = await montar({ capabilities: { can_view_inventory: true } })
+    const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+    expect(links).not.toContain('/integrations')
+  })
+
+  it('configuración está en el menú principal para cualquier rol', async () => {
+    for (const rol of ['collaborator', 'manager', 'admin', 'owner']) {
+      const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol } })
+      const links = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
+      expect(links).toContain('/settings')
+    }
+  })
+
+  it('el menú usa los nombres en español del card sorting', async () => {
+    const { wrapper } = await montar({
+      capabilities: { can_view_inventory: true, can_sell_inventory: true },
+    })
+    const textos = wrapper.findAll('.appnav-link').map((l) => l.text())
+    expect(textos).toContain('Inicio')
+    expect(textos).toContain('Ventas')
+    expect(textos).toContain('Configuración')
+    expect(textos).not.toContain('Dashboard')
+    expect(textos).not.toContain('Panel')
   })
 })
 
@@ -246,7 +296,23 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.lang-dropdown').exists()).toBe(false)
-    expect(localStorage.getItem('locale_42')).toBe('es')
+    // Clave del navegador, no de la cuenta: la preferencia tiene que seguir ahí
+    // después de cerrar sesión, cuando ya no hay id de usuario que consultar.
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
+  })
+
+  it('cerrar sesión no devuelve la app al inglés', async () => {
+    // Antes el logout hacía `locale.value = 'en'`, así que la pantalla de login
+    // aparecía en inglés justo después de haber elegido español.
+    const { wrapper } = await montar({ user: { id_usuario: 42 }, locale: 'es' })
+
+    await wrapper.find('.lang-btn').trigger('click')
+    await wrapper.findAll('.lang-opt')[1].trigger('click') // Español
+    await wrapper.find('.appnav-avatar').trigger('click')
+    await wrapper.find('.ud-item--signout').trigger('click')
+
+    expect(wrapper.vm.$i18n.locale).toBe('es')
+    expect(localStorage.getItem('kontrol:locale')).toBe('es')
   })
 
   it('el hamburger alterna el menú y los links lo cierran', async () => {
@@ -291,13 +357,13 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   })
 
   it('todos los enlaces permitidos están en el cajón, no solo los que caben', async () => {
-    // El fallo original: la fila cortaba marketing, IA e integraciones fuera del
-    // ancho y no había forma de alcanzarlos. El cajón los contiene todos.
+    // El fallo original: la fila cortaba marketing, IA y el último enlace fuera
+    // del ancho y no había forma de alcanzarlos. El cajón los contiene todos.
     const { wrapper } = await montar({ empresaActual: { id_empresa: 1, nombre: 'A', rol: 'owner' } })
     await wrapper.find('.hamburger').trigger('click')
 
     const hrefs = wrapper.findAll('.appnav-link').map((l) => l.attributes('href'))
-    for (const esperado of ['/dashboard', '/marketing', '/agent', '/integrations']) {
+    for (const esperado of ['/dashboard', '/marketing', '/agent', '/settings']) {
       expect(hrefs).toContain(esperado)
     }
   })

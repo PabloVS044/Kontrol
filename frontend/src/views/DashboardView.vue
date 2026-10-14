@@ -9,8 +9,14 @@ import { useAuthStore } from '../stores/auth'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import { statusLabel } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
+import { translateRole } from '../utils/roles.js'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// El rol de empresa llega en inglés desde la base de datos: es un valor del
+// esquema, no una etiqueta. Lo que se pinta sí se traduce.
+const roleLabel = (rol) => translateRole(rol, { t, te })
+const permissionLabel = (nombre) => projectPermissionLabel(nombre, { t, te })
 const authStore = useAuthStore()
 const saleConfigStore = useSaleConfigStore()
 
@@ -298,16 +304,14 @@ async function loadOverview() {
     if (!pr.ok) throw new Error(prPayload.message || `HTTP ${pr.status}`)
     projects.value = prPayload.data || []
 
-    const results = await Promise.allSettled(
-      projects.value.map(p =>
-        fetch(`/api/budgets/project/${p.id_proyecto}/summary`, { headers })
-          .then(r => r.json().then(j => [p.id_proyecto, j]))
-      )
-    )
+    // TODO DT-07: migrar a services/http.js
+    const ids = projects.value.map(p => p.id_proyecto)
     const map = {}
-    for (const r of results) {
-      if (r.status === 'fulfilled' && r.value[1]?.success) {
-        map[r.value[0]] = r.value[1].data
+    if (ids.length) {
+      const sr = await fetch(`/api/budgets/summary?projectIds=${ids.join(',')}`, { headers }).catch(() => null)
+      const sp = sr ? await sr.json().catch(() => null) : null
+      if (sr?.ok && sp?.success) {
+        for (const row of sp.data) map[row.id_proyecto] = row
       }
     }
     budgetByProj.value = map
@@ -890,7 +894,7 @@ watch(() => authStore.idEmpresaActual, () => {
         </div>
       </div>
 
-      <section v-if="isOwner" class="company-collaborators">
+      <section v-if="isOwner" id="company-members" class="company-collaborators">
         <div class="team-header">
           <div>
             <p class="team-eyebrow">{{ $t('dashboard.collaborators.eyebrow') }}</p>
@@ -982,7 +986,7 @@ watch(() => authStore.idEmpresaActual, () => {
                   </div>
 
                   <div class="member-meta">
-                    <span class="role-chip" :class="member.rol_empresa">{{ member.rol_empresa }}</span>
+                    <span class="role-chip" :class="member.rol_empresa">{{ roleLabel(member.rol_empresa) }}</span>
 
                     <template v-if="isOwner && member.rol_empresa !== 'owner'">
                       <select
@@ -996,7 +1000,7 @@ watch(() => authStore.idEmpresaActual, () => {
                           :key="role.nombre"
                           :value="role.nombre"
                         >
-                          {{ role.nombre }}
+                          {{ roleLabel(role.nombre) }}
                         </option>
                       </select>
 
@@ -1075,7 +1079,7 @@ watch(() => authStore.idEmpresaActual, () => {
                               :checked="getDraftPermissions(member.id_usuario, assignment.id_proyecto).includes(permission.nombre_permiso)"
                               @change="toggleProjectPermission(member.id_usuario, assignment.id_proyecto, permission.nombre_permiso, $event.target.checked)"
                             />
-                            <span class="permission-name">{{ projectPermissionLabel(permission.nombre_permiso) }}</span>
+                            <span class="permission-name">{{ permissionLabel(permission.nombre_permiso) }}</span>
                             <small class="permission-description">{{ permission.descripcion }}</small>
                           </label>
                         </div>

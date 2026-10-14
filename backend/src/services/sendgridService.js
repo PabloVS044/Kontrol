@@ -1,7 +1,9 @@
+import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
+
 export async function testSendGridConnection({ api_key }) {
   if (!api_key) throw new Error('api_key es requerido.')
 
-  const res = await fetch('https://api.sendgrid.com/v3/user/account', {
+  const res = await fetchWithTimeout('https://api.sendgrid.com/v3/user/account', {
     headers: { Authorization: `Bearer ${api_key}` },
   })
 
@@ -12,7 +14,7 @@ export async function testSendGridConnection({ api_key }) {
 export async function sendEmail({ api_key, from_email, from_name }, { to, subject, text, html }) {
   if (!api_key) throw new Error('api_key es requerido.')
 
-  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+  const res = await fetchWithTimeout('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${api_key}`,

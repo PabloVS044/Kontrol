@@ -19,7 +19,12 @@
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
         "generic": "Something went wrong. Please try again.",
-        "unreachable": "Can't reach the server. Check your connection and try again."
+        "unreachable": "Can't reach the server. Check your connection and try again.",
+        "googleCancelled": "You cancelled the Google sign-in.",
+        "accountDisabled": "Your account is disabled. Contact the administrator.",
+        "roleNotFound": "Could not assign a role. Contact the administrator.",
+        "googleError": "An error occurred with Google. Please try again.",
+        "googleGeneric": "Error signing in with Google."
       }
     },
     "register": {
@@ -232,7 +237,8 @@
         "tasks": "Tasks",
         "team": "Team",
         "budget": "Budget",
-        "reports": "Reports"
+        "reports": "Reports",
+        "members": "Members"
       },
       "empty": {
         "title": "No projects here",
@@ -508,6 +514,15 @@
         "save": "Could not save the entry.",
         "network": "Network error, please try again."
       }
+    },
+    "permissions": {
+      "ver_inventario": "View inventory",
+      "gestionar_inventario": "Manage inventory",
+      "editar_proyecto": "Edit project",
+      "gestionar_tareas": "Manage tasks",
+      "asignar_usuarios": "Assign users",
+      "gestionar_presupuesto": "Manage budget",
+      "crear_reportes": "Create reports"
     }
   },
   "inventory": {
@@ -552,14 +567,14 @@
       "exits": "Exits",
       "net": "Net",
       "viewDetails": "View details",
-      "edit": "Edit",
       "sell": "Sell",
       "restock": "Add stock",
       "increase": "Add one",
       "decrease": "Remove one",
       "edit": "Edit product",
       "delete": "Delete product",
-      "cannotSell": "This product cannot be sold right now."
+      "cannotSell": "This product cannot be sold right now.",
+      "noImage": "no image"
     },
     "receipt": {
       "title": "Sale #{id} recorded",
@@ -730,7 +745,9 @@
       "saving": "Saving…",
       "delete": "Delete supplier",
       "deleteConfirm": "Delete {name}?",
-      "close": "Close"
+      "close": "Close",
+      "loading": "Loading suppliers…",
+      "listLabel": "Supplier list"
     },
     "productDetail": {
       "supplier": "Supplier",
@@ -740,7 +757,39 @@
       "linking": "Linking…",
       "supplierLinked": "Supplier linked successfully.",
       "supplierLoadError": "Could not load suppliers.",
-      "supplierLinkError": "Could not link the supplier."
+      "supplierLinkError": "Could not link the supplier.",
+      "loadingTitle": "Loading product",
+      "loadingMsg": "Fetching the latest inventory details.",
+      "errorTitle": "Could not load product",
+      "back": "Back to inventory",
+      "retry": "Retry",
+      "uncategorized": "Uncategorized",
+      "noProject": "Project not available",
+      "overview": "Overview",
+      "noDescription": "No description available for this product yet.",
+      "salePrice": "Sale price",
+      "costPrice": "Cost price",
+      "weightedCost": "Weighted avg. cost",
+      "barcode": "Barcode",
+      "noBarcode": "No barcode assigned",
+      "scan": "Scan",
+      "saveBarcode": "Save",
+      "savingBarcode": "Saving…",
+      "stock": "Stock",
+      "unitsAvailable": "units available",
+      "minimumStock": "Minimum stock",
+      "status": "Status",
+      "project": "Project",
+      "suppliers": "Suppliers",
+      "quotesTitle": "Linked supplier quotes",
+      "countSingular": "{count} supplier",
+      "countPlural": "{count} suppliers",
+      "noSuppliers": "No suppliers linked to this product yet.",
+      "lastQuote": "Last quote: {date}",
+      "barcodeInUse": "That barcode is already in use.",
+      "barcodeForbidden": "You do not have permission to edit this product.",
+      "barcodeSaved": "Barcode saved.",
+      "networkError": "Network error, try again."
     }
   },
   "budget": {
@@ -854,7 +903,9 @@
       "manual": "Manual",
       "directEntry": "Direct entry on the activity record",
       "registeredExpense": "Registered expense",
-      "noEntriesYet": "No expense entries yet for this activity."
+      "noEntriesYet": "No expense entries yet for this activity.",
+      "edit": "Edit activity",
+      "delete": "Delete activity"
     },
     "fundingHistory": {
       "title": "Funding History",
@@ -1163,7 +1214,8 @@
       "sideInfoManager": "Manager",
       "sideInfoBudget": "Budget",
       "sideRiskLevel": "Risk Level"
-    }
+    },
+    "noData": "No data"
   },
   "teams": {
     "header": {
@@ -1220,7 +1272,8 @@
       "assignProject": "Assign project",
       "assignBtn": "Assign",
       "removeBtn": "Remove",
-      "noProjects": "No projects assigned yet."
+      "noProjects": "No projects assigned yet.",
+      "accessNote": "Linking doesn't grant access to the project; access is granted in Project > Members."
     }
   },
   "admin": {
@@ -1254,6 +1307,7 @@
     "companies": {
       "title": "Companies",
       "subtitle": "All registered companies on the platform",
+      "sortBy": "Sort by:",
       "sortName": "Name",
       "sortProjects": "Projects",
       "sortId": "ID",
@@ -1425,7 +1479,7 @@
       },
       "projectMembers": {
         "q": "How do I invite members?",
-        "a": "The Members tab lets you invite teammates by email and pick their role and permissions. They'll join the project as soon as they accept."
+        "a": "Open Projects, pick the project and go to the Members tab: there you grant access by choosing someone from the company with their permissions, or share a project invitation link."
       },
       "projectProgress": {
         "q": "What is the Progress tab for?",
@@ -1437,7 +1491,7 @@
       },
       "inventorySell": {
         "q": "How do I register a sale?",
-        "a": "Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+        "a": "Go to Sales > Charge, which takes you to the inventory. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
       },
       "inventoryMovements": {
         "q": "What inventory movement types exist?",
@@ -1497,7 +1551,7 @@
       },
       "teamsCreate": {
         "q": "How do I create a team?",
-        "a": "Use New Team to group members by area (Development, Design, QA…). Teams can then be referenced from projects and tasks to organize work."
+        "a": "Use New Team to group members by area (Development, Design, QA…). Linking a project to a team doesn't grant access: access is granted in Project > Members."
       },
       "integrationsList": {
         "q": "What integrations are available?",
@@ -1505,7 +1559,7 @@
       },
       "changeLanguage": {
         "q": "How do I change the language?",
-        "a": "Click this language icon in the top bar and pick English or Español. Your choice is remembered per user account."
+        "a": "Click this language icon in the top bar, or go to Settings > Your preferences, and pick English or Español. Your choice is remembered in this browser."
       },
       "switchWorkspace": {
         "q": "How do I switch workspace?",
@@ -1544,9 +1598,11 @@
     "ownerOnly": "Only the company owner or an admin can change how this company sells.",
     "prefs": {
       "title": "Your preferences",
-      "hint": "Saved in this browser, for your account only. They do not affect anyone else on the team.",
+      "hint": "Saved in this browser. They do not affect anyone else on the team.",
       "birdie": "Show the Birdie assistant bubble",
-      "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here."
+      "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
+      "language": "Language",
+      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out."
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
@@ -1566,6 +1622,16 @@
       "discountEnabledNote": "Lets the cashier apply a percentage to the whole sale.",
       "discountMax": "Maximum discount",
       "discountMaxNote": "A sale asking for more than this is rejected, not trimmed down. Leave it at 0 to allow none."
+    },
+    "integrations": {
+      "title": "Integrations",
+      "hint": "Connect Kontrol with payments, messaging and other tools.",
+      "link": "Open integrations"
+    },
+    "members": {
+      "title": "Company members",
+      "hint": "Invite people, change their role and their project access. The panel is on the Dashboard.",
+      "link": "Go to company members"
     }
   },
   "navbar": {
@@ -1593,7 +1659,597 @@
     "admin": {
       "overview": "Overview",
       "companies": "Companies",
-      "users": "Users"
+      "users": "Users",
+      "superUser": "Super User"
+    },
+    "suppliers": "Suppliers",
+    "sales": "Sales",
+    "settings": "Settings"
+  },
+  "language": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "manager": "Manager",
+    "collaborator": "Collaborator",
+    "member": "Member",
+    "superUser": "Super User"
+  },
+  "onboarding": {
+    "welcome": "Welcome to",
+    "tagline": "To get started, create your workspace — a company that holds your projects, inventory, and team members.",
+    "features": {
+      "projects": "Manage projects and budgets across your organization",
+      "team": "Invite team members and assign roles",
+      "inventory": "Track inventory, suppliers and expenses in one place"
+    },
+    "form": {
+      "title": "Create your workspace",
+      "subtitle": "This will be your company on Kontrol.",
+      "name": "Company name",
+      "namePlaceholder": "e.g. Acme Corp",
+      "industry": "Industry",
+      "industryPlaceholder": "e.g. Construction, Retail, Tech…",
+      "phone": "Phone",
+      "address": "Address",
+      "addressPlaceholder": "City, Country",
+      "submit": "Create workspace",
+      "submitting": "Creating…",
+      "networkError": "Network error, try again."
+    },
+    "footerNote": "Already part of a team? Ask your administrator to invite you — your account is ready.",
+    "signOut": "Sign out"
+  },
+  "invite": {
+    "eyebrow": "Workspace Invitation",
+    "loading": "Loading invitation…",
+    "notFound": "Invitation not found.",
+    "title": {
+      "checking": "Checking your invitation",
+      "unavailable": "This link is no longer available",
+      "join": "Join {name}",
+      "invited": "You have been invited to {name}"
+    },
+    "subtitle": {
+      "checking": "Validating the link shared by the owner.",
+      "unavailable": "The owner deactivated this link or the invitation no longer exists.",
+      "projectLoggedIn": "You can sign in with your current session and be linked directly to this project.",
+      "projectGuest": "You can sign in or create an account to join the company and be assigned directly to this project.",
+      "companyLoggedIn": "You can sign in with your current session and be added as a collaborator.",
+      "companyGuest": "You can sign in with an existing account or create a new one to be added as a collaborator."
+    },
+    "summary": {
+      "company": "Company",
+      "project": "Project",
+      "invitedBy": "Invited by",
+      "owner": "Owner",
+      "role": "Role on entry",
+      "permissions": "Project permissions",
+      "noPermissions": "No explicit permissions",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "joining": "Joining…",
+      "joinProject": "Join the project",
+      "joinCompany": "Join the company",
+      "haveAccount": "I already have an account",
+      "createAccount": "Create new account",
+      "withGoogle": "Continue with Google",
+      "goToDashboard": "Go to dashboard",
+      "createWorkspace": "Create my workspace"
+    },
+    "errors": {
+      "notFound": "The invitation does not exist or was removed.",
+      "inactive": "The invitation link was already deactivated by the owner.",
+      "generic": "The invitation could not be processed.",
+      "retrieve": "Could not retrieve the invitation. Please try again."
+    }
+  },
+  "agent": {
+    "sidebar": {
+      "title": "Conversations",
+      "hide": "Hide conversations",
+      "show": "Show conversations",
+      "newConversation": "New conversation",
+      "empty": "You have no conversations yet.",
+      "noHistory": "History unavailable: MongoDB is disconnected.",
+      "deleteConversation": "Delete conversation",
+      "deleteConfirm": "Delete \"{title}\"? This cannot be undone."
+    },
+    "notConfigured": "The agent is not set up yet. Define {key} in the backend. {url} is optional and defaults to ClawStitch Qwen.",
+    "greeting": "Hi, {name}",
+    "titleLine1": "What can I",
+    "titleLine2": "help with?",
+    "fallbackName": "there",
+    "placeholder": "Ask me anything…",
+    "stop": "Stop generating",
+    "hint": "Press Enter to send · Shift+Enter for a new line",
+    "message": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "edited": "edited"
+    },
+    "errors": {
+      "loadConversation": "Could not load the conversation.",
+      "deleteConversation": "Could not delete the conversation.",
+      "send": "Could not reach the agent.",
+      "update": "Could not update the message.",
+      "delete": "Could not delete the message."
+    },
+    "stopped": "_Generation stopped._",
+    "failed": "Sorry, I could not process your request right now.",
+    "quickActions": {
+      "budget": {
+        "label": "Analyze budget",
+        "desc": "Review spending and financial projections",
+        "suggestion": "Analyze my company's current budget and give me recommendations"
+      },
+      "projects": {
+        "label": "Project summary",
+        "desc": "Status and progress of your active projects",
+        "suggestion": "Give me a summary of my active projects and how they are progressing"
+      },
+      "report": {
+        "label": "Generate report",
+        "desc": "Build inventory and activity reports",
+        "suggestion": "Generate an executive report of my company's recent activity"
+      }
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "newDM": "New direct message",
+    "searchMessages": "Search messages…",
+    "directMessages": "Direct Messages",
+    "noConversationsHint": "No conversations yet. Start a new chat with the + button",
+    "noConversations": "No conversations",
+    "noMessagesYet": "No messages yet",
+    "emptyTitle": "Your messages",
+    "emptySubtitle": "Pick a conversation or start a new direct message.",
+    "directBadge": "Direct",
+    "typing": "typing…",
+    "noMessages": "No messages in this conversation.",
+    "videoCall": "Video call",
+    "openFile": "Open file",
+    "attachFile": "Attach file",
+    "attachImage": "Attach image",
+    "attachMedia": "Attach audio or video",
+    "messagePlaceholder": "Write a message…",
+    "searchUser": "Search user…",
+    "noUsersFound": "No users found",
+    "noUsersAvailable": "No users available",
+    "openFullScreen": "Open full screen",
+    "newChat": "New chat",
+    "search": "Search…",
+    "image": "Image",
+    "media": "Audio or video",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "upload": {
+      "one": "Uploading file…",
+      "many": "Uploading {count} files…"
+    },
+    "errors": {
+      "loadConversation": "Could not load the conversation.",
+      "upload": "Could not upload the files.",
+      "sendAttachments": "Could not send the message with attachments.",
+      "loadUsers": "Could not load the users.",
+      "startChat": "Could not start the chat.",
+      "startCall": "Could not start the video call."
+    },
+    "call": {
+      "incoming": "Incoming video call",
+      "invitation": "wants to start a direct video call with you.",
+      "decline": "Decline",
+      "accept": "Accept",
+      "cameraOff": "Camera off",
+      "title": "Video call",
+      "hangUp": "Hang up",
+      "meetingChat": "Meeting chat",
+      "loadingChat": "Loading chat…",
+      "noMessages": "No messages available for this conversation.",
+      "reply": "Reply…",
+      "unknownPeer": "User",
+      "muteMic": "Mute microphone",
+      "unmuteMic": "Unmute microphone",
+      "cameraOffAction": "Turn camera off",
+      "cameraOnAction": "Turn camera on",
+      "status": {
+        "ringing": "Calling…",
+        "connecting": "Connecting video…",
+        "connected": "Video call in progress",
+        "ended": "Video call ended",
+        "preparing": "Preparing video call…"
+      },
+      "newMessages": "New messages ({count})",
+      "errors": {
+        "loadChat": "Could not load the call chat.",
+        "loadMessages": "Could not load the call messages."
+      }
+    }
+  },
+  "integrations": {
+    "restricted": {
+      "title": "Restricted access",
+      "msg": "Only owners and admins can manage integrations."
+    },
+    "loadError": "Could not load the integrations",
+    "retry": "Retry",
+    "title": "Integrations",
+    "subtitle": "Connect Kontrol with your external tools",
+    "allCategories": "All",
+    "categories": {
+      "comunicacion": "Communication",
+      "email": "Email",
+      "automatizacion": "Automation",
+      "crm": "CRM",
+      "storage": "Storage"
+    },
+    "status": {
+      "notConfigured": "Not configured",
+      "error": "With an error",
+      "configured": "Configured"
+    },
+    "updatedAt": "Updated {date}",
+    "switch": {
+      "title": "Sending notifications",
+      "onHint": "Kontrol is sending alerts",
+      "offHint": "Paused: no alerts are sent",
+      "on": "Active",
+      "off": "Paused",
+      "pauseLabel": "Pause {name}",
+      "resumeLabel": "Activate {name}",
+      "pauseTitle": "Pause sending without deleting the configuration",
+      "resumeTitle": "Resume sending"
+    },
+    "actions": {
+      "edit": "Edit configuration",
+      "configure": "Set up",
+      "testing": "Testing…",
+      "test": "Test connection",
+      "how": "How do I connect it?",
+      "delete": "Delete configuration"
+    },
+    "confirm": {
+      "title": "Delete the configuration for {name}?",
+      "text": "The saved credentials will be deleted and Kontrol will stop sending notifications to {name}. To use it again you will have to set it up from scratch.",
+      "hint": "Only want to stop it for a while? Use the card’s {switch} switch: it keeps the configuration.",
+      "switchName": "Active / Paused",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "confirm": "Yes, delete the configuration"
+    },
+    "tutorial": {
+      "title": "How to connect {name}",
+      "intro": "Follow these steps to set up the integration with {name}.",
+      "goConfigure": "Go to the setup form"
+    },
+    "modal": {
+      "credentials": "Credentials",
+      "required": "Required",
+      "optional": "Optional",
+      "hide": "Hide",
+      "show": "Show",
+      "saving": "Saving…",
+      "save": "Save"
+    },
+    "feedback": {
+      "saved": "Integration saved.",
+      "deleted": "Configuration deleted.",
+      "testOk": "Connection successful",
+      "lastTestFailed": "The last connection failed. Check the credentials and use \"Test connection\" before activating."
+    },
+    "successAnimation": {
+      "title": "Connection successful",
+      "accept": "Done"
+    },
+    "tutorials": {
+      "slack": [
+        "Go to api.slack.com/apps and sign in with your Slack account.",
+        "Create a new app with \"From scratch\" and pick your workspace.",
+        "In the sidebar, open \"Incoming Webhooks\" and turn it on.",
+        "Click \"Add New Webhook to Workspace\" and choose the channel where you want the notifications.",
+        "Copy the generated webhook URL (it starts with https://hooks.slack.com/…) and paste it into the setup form."
+      ],
+      "sendgrid": [
+        "Sign in to app.sendgrid.com with your SendGrid account.",
+        "Go to Settings → API Keys and click \"Create API Key\".",
+        "Give it a descriptive name and pick \"Restricted Access\" → \"Mail Send: Full Access\".",
+        "Copy the generated API key (it is shown only once) and keep it somewhere safe.",
+        "Paste the API key, your SendGrid-verified sender address and the address that will receive the alerts."
+      ],
+      "microsoft-teams": [
+        "Open Microsoft Teams and go to the channel where you want the notifications.",
+        "Click \"...\" next to the channel name and pick \"Connectors\".",
+        "Find \"Incoming Webhook\" in the list and click \"Configure\".",
+        "Name the connector, upload an optional icon and click \"Create\".",
+        "Copy the generated webhook URL and paste it into the Kontrol setup form."
+      ],
+      "telegram": [
+        "Open Telegram and search for the {'@'}BotFather bot.",
+        "Send the /newbot command and follow the instructions to pick a name and username for your bot.",
+        "BotFather will hand you a bot token. Copy it and keep it safe.",
+        "To get your chat ID: start a conversation with your bot and then query the API with the token, or use the {'@'}userinfobot bot.",
+        "Enter the bot token and the chat ID in the Kontrol setup form."
+      ],
+      "twilio-sms": [
+        "Create an account at twilio.com, or sign in if you already have one.",
+        "The main dashboard shows your Account SID and Auth Token. Copy both.",
+        "Go to \"Phone Numbers → Manage → Buy a number\" to get the Twilio number the texts will be sent from.",
+        "Enter the Account SID, the Auth Token, the Twilio number and the destination number in the setup form."
+      ],
+      "webhook": [
+        "Get ready the external server or service that will receive the events (it has to be publicly reachable).",
+        "The endpoint has to accept POST requests with a JSON body.",
+        "Use HTTPS, so the payload does not travel in the clear.",
+        "Copy your endpoint URL and paste it into the URL field of the setup form.",
+        "Kontrol will send a POST event every time something relevant happens in your company."
+      ],
+      "fallback": [
+        "Get the credentials from the {name} platform.",
+        "Copy them into the Kontrol setup form.",
+        "Save the changes and use \"Test connection\" to check that everything works."
+      ]
+    }
+  },
+  "validation": {
+    "required": "Please fill out this field.",
+    "selectOption": "Please pick an option.",
+    "email": "Enter an email address, like name{'@'}company.com.",
+    "url": "Enter a full address, starting with https://.",
+    "tooShort": "Use at least {min} characters.",
+    "tooLong": "Use {max} characters at most.",
+    "min": "Enter {min} or more.",
+    "max": "Enter {max} or less.",
+    "step": "Use steps of {step}.",
+    "number": "Enter a number.",
+    "pattern": "This value does not have the expected format.",
+    "invalid": "Check this value."
+  },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "features": "Features",
+      "steps": "How it works",
+      "companies": "Companies",
+      "login": "Login",
+      "getStarted": "Get Started",
+      "menu": "Menu"
+    },
+    "hero": {
+      "pill": "For shops and small businesses",
+      "title": "Take control of your business",
+      "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
+      "start": "Start managing your business",
+      "seeHow": "See How it works"
+    },
+    "control": {
+      "one": "One command center.",
+      "every": "Every part of your business.",
+      "yours": "Under your control.",
+      "modules": {
+        "inventory": {
+          "title": "Inventory control",
+          "copy": "Stock levels at a glance, with low-stock alerts before you run out."
+        },
+        "sales": {
+          "title": "Sales center",
+          "copy": "Ring up sales and hand over the receipt; each sale deducts its stock."
+        },
+        "suppliers": {
+          "title": "Suppliers",
+          "copy": "Your supplier directory, right next to your inventory."
+        },
+        "budget": {
+          "title": "Budget & finance",
+          "copy": "Funds and spending for every project, always up to date."
+        },
+        "reports": {
+          "title": "Reports",
+          "copy": "Sales and finances by day, week or month, exportable to PDF."
+        },
+        "projects": {
+          "title": "Projects & teams",
+          "copy": "Tasks, progress and owners for every project."
+        },
+        "marketing": {
+          "title": "Marketing",
+          "copy": "Plan your posts on a single calendar."
+        },
+        "chat": {
+          "title": "Team chat",
+          "copy": "Messages and video calls without leaving Kontrol."
+        },
+        "assistant": {
+          "title": "AI assistant",
+          "copy": "Ask Birdie about your budget, projects or inventory."
+        }
+      }
+    },
+    "problem": {
+      "titleStart": "Stop juggling tools to",
+      "titleMark": "run your business",
+      "chaos": {
+        "title": "The Chaos",
+        "subtitle": "Disjointed systems that slow you down.",
+        "items": [
+          "WhatsApp threads for project updates",
+          "Scattered Excel spreadsheets",
+          "Physical notebooks and sticky notes",
+          "Missing invoices and late payments"
+        ]
+      },
+      "order": {
+        "title": "The Order",
+        "subtitle": "Unified ecosystem designed for scale.",
+        "items": [
+          "Centralized Project Command",
+          "Automated Financial Intelligence",
+          "Unified Marketing Hub",
+          "AI-Powered Data Analysis"
+        ]
+      }
+    },
+    "solution": {
+      "title": "The Command Center",
+      "copy": "Every facet of your operation, unified in a high-fidelity dashboard that anticipates your next move.",
+      "finances": {
+        "title": "Finances",
+        "subtitle": "Real-time cashflow tracking"
+      },
+      "crm": {
+        "title": "Team CRM",
+        "subtitle": "Collaboration simplified"
+      },
+      "marketing": {
+        "title": "Marketing",
+        "subtitle": "Omnichannel campaigns"
+      },
+      "inventory": {
+        "title": "Inventory",
+        "subtitle": "Automated stock control"
+      }
+    },
+    "features": {
+      "title": "Features",
+      "copy": "Everything a growing business needs, built into one system instead of stitched together from five.",
+      "cards": {
+        "analytics": {
+          "label": "Insights",
+          "title": "Analytics",
+          "description": "Track user behavior"
+        },
+        "dashboard": {
+          "label": "Overview",
+          "title": "Dashboard",
+          "description": "Centralized data view"
+        },
+        "collaboration": {
+          "label": "Teamwork",
+          "title": "Collaboration",
+          "description": "Work together seamlessly"
+        },
+        "automation": {
+          "label": "Efficiency",
+          "title": "Automation",
+          "description": "Streamline workflows"
+        },
+        "integration": {
+          "label": "Connectivity",
+          "title": "Integration",
+          "description": "Connect favorite tools"
+        },
+        "security": {
+          "label": "Protection",
+          "title": "Security",
+          "description": "Enterprise-grade protection"
+        }
+      }
+    },
+    "steps": {
+      "title": "Steps to get full control",
+      "badge": "Step {n}",
+      "connect": {
+        "title": "Connect your ecosystem",
+        "description": "Bring your tools together with one central command center.",
+        "process": [
+          "Link sales, finance and operations in one place",
+          "Import workflows and standardize handoffs",
+          "Enable automated alerts across teams"
+        ]
+      },
+      "automate": {
+        "title": "Automate your workflow",
+        "description": "Turn manual handoffs into automated processes that move work forward.",
+        "process": [
+          "Define automation triggers and conditions",
+          "Route tasks to the right teams instantly",
+          "Monitor every step with full visibility"
+        ]
+      },
+      "optimize": {
+        "title": "Optimize outcomes",
+        "description": "Use live performance data to refine processes and improve business results.",
+        "process": [
+          "Track key metrics in real time",
+          "Identify bottlenecks and fix them fast",
+          "Scale the system as your team grows"
+        ]
+      }
+    },
+    "companies": {
+      "title": "Built for every modern merchant",
+      "copy": "Designed to adapt to any business, from small shops to large-scale operations, providing the tools needed to manage, grow, and scale effortlessly",
+      "store": {
+        "tag": "Store Owners",
+        "title": "Full control of your business",
+        "copy": "Manage operations, track performance, and optimize your store with tools designed to simplify daily workflows.",
+        "items": [
+          "Real-time sales tracking",
+          "Inventory management",
+          "Customer insights & reports"
+        ]
+      },
+      "auto": {
+        "tag": "Automotive",
+        "title": "Built for high-demand operations",
+        "copy": "Handle complex workflows, service tracking, and inventory with precision tailored for automotive businesses.",
+        "items": [
+          "Service & repair tracking",
+          "Parts inventory control",
+          "Workflow automation"
+        ]
+      },
+      "food": {
+        "tag": "Food Vendors",
+        "title": "Fast, reliable, always ready",
+        "copy": "Keep orders moving and customers satisfied with tools designed for speed, efficiency, and peak hours.",
+        "items": [
+          "Order management system",
+          "Real-time menu updates",
+          "Peak-hour performance optimization"
+        ]
+      }
+    },
+    "start": {
+      "title": "Start controlling your business today.",
+      "copy": "Leave the chaos behind and run your whole business from one place.",
+      "cta": "Enter the command center"
+    }
+  },
+  "footer": {
+    "logoAlt": "Kontrol logo",
+    "tagline": "The all-in-one command center for ambitious businesses.",
+    "product": "Product",
+    "features": "Features",
+    "commandCenter": "Command Center",
+    "howItWorks": "How it works",
+    "businesses": "Businesses",
+    "rights": "© {year} Kontrol. All rights reserved.",
+    "builtFor": "Built for the ambitious."
+  },
+  "sales": {
+    "eyebrow": "Sales",
+    "title": "Sales",
+    "subtitle": "Charge, review what was sold and adjust how your company charges.",
+    "checkout": {
+      "title": "Charge",
+      "copy": "Record a sale from your inventory products."
+    },
+    "history": {
+      "title": "Sales history",
+      "copy": "Income, profit and average ticket in Reports."
+    },
+    "config": {
+      "title": "Sale settings",
+      "copy": "Currency, VAT and discounts."
     }
   }
 }

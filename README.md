@@ -28,7 +28,9 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Comandos útiles de Docker](#comandos-útiles-de-docker)
 - [Desarrollo sin Docker (opcional)](#desarrollo-sin-docker-opcional)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Integración continua](#integración-continua)
 - [Cobertura de código](#cobertura-de-código)
+- [Pruebas de integración y regresión](#pruebas-de-integración-y-regresión)
 - [Solución de problemas](#solución-de-problemas)
 - [Contribuir](#contribuir)
 
@@ -232,6 +234,22 @@ Kontrol/
 
 ---
 
+## Integración continua
+
+Cada pull request a `main` o `develop` dispara `.github/workflows/ci.yml`, con tres jobs en paralelo. Ninguno se lanza a mano y ninguno lleva `continue-on-error`: si uno falla, el PR queda en rojo. El badge del encabezado muestra el estado de la última corrida de ese workflow en un pull request.
+
+| Job | Tipo de prueba | Qué corre | Bloquea el merge |
+|---|---|---|---|
+| Backend - tests unitarios | Unitarias | Vitest con cobertura v8 y los umbrales de [Cobertura de código](#cobertura-de-código) | Sí, check requerido en `main` y `develop` |
+| Frontend - tests unitarios y build | Unitarias | Vitest con cobertura v8, umbrales, y `vite build` de producción | Sí, check requerido en `main` y `develop` |
+| Carga - k6 | Carga | `k6/ci-load-test.js` contra un backend y un PostgreSQL desechables levantados en el runner, con los umbrales de `docs/plan-maestro-pruebas.md` §7.2 | Queda en rojo si falla; no es check requerido |
+
+Los reportes de cobertura (`coverage-backend`, `coverage-frontend`) y el resumen de k6 (`k6-summary`) se publican como artefactos de cada corrida durante 30 días.
+
+El job de carga es una prueba corta de regresión (5–10 usuarios virtuales, ~3.5 min), no una medición de capacidad. La batería completa contra el ambiente de pruebas de la VM está en `.github/workflows/load-test.yml`, se lanza a mano y sus resultados están en `docs/pruebas-carga-estres.md`. Detalles en [`k6/README.md`](k6/README.md).
+
+---
+
 ## Cobertura de código
 
 La cobertura no es solo informativa: es un **control automático que bloquea el merge**. Vitest sale con código distinto de cero si un umbral no se cumple, y el workflow de CI propaga ese fallo, así que un PR que baje la cobertura queda en rojo.
@@ -273,14 +291,19 @@ La caída del 20/09/2026 es una corrección de medición, no una regresión. No 
 
 ### Umbrales vigentes
 
-Línea base medida el 20/09/2026.
+Línea base medida el 20/09/2026. Remedido el 11/10/2026.
 
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
-| Backend — actual | 15 | 9 | 11 | 15 |
-| Backend — cierre Sprint 8 | 20 | 14 | 16 | 20 |
-| Frontend — actual | 9 | 8 | 11 | 9 |
-| Frontend — cierre Sprint 8 | 14 | 13 | 16 | 14 |
+| Backend — medido 11/10/2026 | 37.79 | 24.26 | 35.72 | 38.33 |
+| Backend — actual (Sprint 8 + Sprint 9) | 25 | 19 | 21 | 25 |
+| Backend — cierre Sprint 10 | 30 | 24 | 26 | 30 |
+| Frontend — medido 11/10/2026, antes de las pruebas nuevas | 10.61 | 10.43 | 12.72 | 10.96 |
+| Frontend — medido 11/10/2026, con las pruebas nuevas | 16.24 | 16.49 | 18.47 | 16.65 |
+| Frontend — actual (Sprint 8) | 14 | 13 | 16 | 14 |
+| Frontend — meta Sprint 9, no alcanzada | 19 | 18 | 21 | 19 |
+
+La subida del Sprint 8 no se aplicó a tiempo en ningún workspace. En backend se aplican juntas la del Sprint 8 y la del Sprint 9 (+10 sobre la base), y la cobertura medida las supera con al menos 5 puntos de margen. En frontend la cobertura no alcanzaba ni la meta del Sprint 8; se añadieron pruebas de utilidades (`utils/chat.js`, `boxPricing.js`, `authFlow.js`, `markdown.js`, `taskIndicatorColors.js`), servicios (`agent`, `integrations`, `marketing`), stores (`chat`, `saleConfig`, `birdie`) y `composables/useTheme.js`, y con ellas se aplica la del Sprint 8 con al menos 2.2 puntos de margen. La del Sprint 9 en frontend (19/18/21/19) queda pendiente: exige unos 260 statements más, que ya pasan por probar vistas.
 
 Por módulo crítico, con su medición real al lado:
 
@@ -344,6 +367,32 @@ El 14.52 % de inventario del frontend se concentra en los tres componentes de ve
 Queda fuera el arranque del proceso, la configuración de SDK externos, las conexiones y scripts de base de datos, los esquemas declarativos de Mongoose, la tabla de rutas, los diccionarios de i18n, los recursos estáticos y los fondos WebGL. `src/socket/index.js` sí entra: son 450 líneas de lógica de chat, no infraestructura. Las extensiones explícitas del `include` del frontend dejan fuera los `.css`, `.png` y `.json` que antes figuraban como archivos medidos.
 
 Consecuencia a tener presente: un glob de umbral que no case con ningún archivo del reporte **pasa en vacío, sin avisar**. No es hipotético — es lo que ocurrió con los tres umbrales de reportes del frontend durante un mes. Por eso cada umbral por módulo lleva su medición real en un comentario al lado en el config: un glob sin número es un glob que nadie ha comprobado.
+
+---
+
+## Pruebas de integración y regresión
+
+Además de las pruebas unitarias (`npm test`, con el pool de Postgres simulado), el backend tiene dos suites que corren contra un **PostgreSQL real**: la app de `src/index.js` recibe peticiones HTTP de Supertest y sus consultas llegan a una base desechable con el esquema de `backend/kontrol.sql` más las migraciones de `ensureDatabaseSchema()`.
+
+```bash
+npm run db:test:up -w backend          # Postgres 16 en localhost:5433 (docker-compose.integration.yml)
+npm run test:integration -w backend    # tests/integration/
+npm run test:regression -w backend     # tests/regression/
+npm run db:test:down -w backend
+```
+
+| Suite | Archivo | Qué verifica |
+|---|---|---|
+| I1 | `tests/integration/auth.int.test.js` | Registro → login → `/me` a través de Postgres, bcrypt y JWT |
+| I2 | `tests/integration/posSale.int.test.js` | Venta POS atómica: `venta`, `movimiento_inventario` y stock coherentes; ROLLBACK si falla |
+| I3 | `tests/integration/productBarcode.int.test.js` | Unicidad del código de barras por proyecto impuesta por el índice único de la base |
+| RG1 | `tests/regression/saleTotals.regression.test.js` | El IVA se calcula sobre la base con descuento (Q100 − 10 % + IVA = Q100.80) |
+| RG2 | `tests/regression/salePriceAuthority.regression.test.js` | El precio lo dicta la base; un precio del cliente distinto da 409 `PRICE_MISMATCH` |
+| RG3 | `tests/regression/tenantIsolation.regression.test.js` | Un usuario no ve ni vende datos de otra empresa |
+
+`globalSetup` **borra el esquema `public`** antes de cada ejecución, así que `tests/db/testDatabase.js` se niega a correr si `TEST_DATABASE_URL` no apunta a un host local con una base cuyo nombre contenga `test`. El `.env` de desarrollo (Supabase) nunca se usa.
+
+En CI las corre `.github/workflows/integration-regression.yml` en cada PR a `main` o `develop` (y a mano con *Run workflow*): un job por suite, con Postgres como *service container*, resumen por prueba en la página del run y los reportes JUnit/JSON como artefactos `reporte-integration` y `reporte-regression`.
 
 ---
 

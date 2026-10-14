@@ -3,12 +3,14 @@ import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import { expensiveLimiter } from '../middleware/rateLimit.js'
 import {
   expenseSchema,
   fundingSchema,
   getActivitiesQuerySchema,
   activityIdParamSchema,
   projectIdParamSchema,
+  projectIdsQuerySchema,
   createActivitySchema,
   updateActivitySchema,
 } from '../schemas/budgetSchema.js'
@@ -19,6 +21,7 @@ import {
   updateActivity,
   deleteActivity,
   getProjectBudgetSummary,
+  getBudgetsOverview,
   getProjectBudgetTrend,
   getProductsFinancials,
   registerExpense,
@@ -30,6 +33,14 @@ import {
 const router = createRouter()
 
 router.use(requireAuth, requireCompany)
+
+// Summary for several projects. Must stay above '/:id' or it parses as an id.
+router.get(
+  '/summary',
+  expensiveLimiter,
+  validate(projectIdsQuerySchema, 'query'),
+  getBudgetsOverview
+)
 
 // Consolidated project budget summary with alerts.
 router.get(

@@ -42,7 +42,7 @@
           </div>
           <span class="cell-email">{{ u.email }}</span>
           <div class="role-col">
-            <span class="role-pill" :class="u.nombre_rol">{{ u.nombre_rol }}</span>
+            <span class="role-pill" :class="u.nombre_rol">{{ roleLabel(u.nombre_rol) }}</span>
           </div>
           <span class="list-cell-num">{{ u.total_empresas }}</span>
           <div class="action-col">
@@ -67,8 +67,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { translateRole } from '@/utils/roles.js'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// El rol llega en inglés desde la base de datos: es un valor del esquema.
+const roleLabel = (rol) => translateRole(rol, { t, te })
 
 const authStore = useAuthStore()
 const users     = ref([])

@@ -867,7 +867,7 @@ async function registerExport(dataset, format) {
 .phase-name.done    { color: #d4b06a; }
 .phase-name.current { color: var(--Text); }
 .phase-name.future  { color: var(--TextFaint); }
-.phase-name.skip    { color: #2e2e2e; }
+.phase-name.skip    { color: var(--TextFaint); text-decoration: line-through; } /* omitida: tachada, no apagada */
 .phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
 .phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); line-height: 1.5; }
 
@@ -1005,7 +1005,7 @@ async function registerExport(dataset, format) {
 .health-sub {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #333;
+  color: var(--k-gray-1);
   display: block;
 }
 .health-good .health-dot { background: #4ade80; }

@@ -103,6 +103,20 @@ svg {
   max-width: 100%;
 }
 
+/* Controles nativos oscuros: listas de <select>, calendarios de fecha y
+   autocompletado se abrían en blanco heredando el texto claro de la app
+   (gris claro sobre blanco). Se acota a los controles y no a :root a
+   propósito: en :root también oscurece el lienzo del navegador, que se ve a
+   través de --k-color-bg (92 % opaco), y el fondo de toda la app pasaba de
+   #141414 a casi negro. */
+input,
+select,
+textarea,
+option,
+optgroup {
+  color-scheme: dark;
+}
+
 /* Foco visible por teclado (no en click) — accesibilidad + acabado pro. */
 :focus-visible {
   outline: 2px solid var(--k-color-primary);

@@ -11,7 +11,7 @@
       <div v-if="authStore.hasEmpresa" class="empresa-selector" @click.stop="toggleDropdown">
         <div class="empresa-current">
           <span class="empresa-name">{{ authStore.empresaActual?.nombre ?? '—' }}</span>
-          <span class="empresa-role">{{ authStore.empresaActual?.rol ?? '' }}</span>
+          <span class="empresa-role">{{ roleLabel(authStore.empresaActual?.rol) }}</span>
           <svg class="chevron" :class="{ open: dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M2 4l4 4 4-4" stroke="var(--k-gray-3)" stroke-width="1.4" stroke-linecap="square"/>
           </svg>
@@ -33,7 +33,7 @@
               @click="selectEmpresa(empresa)"
             >
               <span class="dd-item-name">{{ empresa.nombre }}</span>
-              <span class="dd-item-role">{{ empresa.rol }}</span>
+              <span class="dd-item-role">{{ roleLabel(empresa.rol) }}</span>
             </button>
             <div class="dd-divider" />
             <RouterLink class="dd-new" to="/onboarding" @click="closeDropdown">
@@ -49,8 +49,9 @@
 
       <div id="appnav-links" class="appnav-links" :class="{ 'is-open': isMenuOpen }">
         <RouterLink class="appnav-link" to="/dashboard" @click="closeMenu">{{ $t('navbar.dashboard') }}</RouterLink>
+        <RouterLink v-if="authStore.canSellInventory" class="appnav-link" to="/sales" @click="closeMenu">{{ $t('navbar.sales') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
-        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">Suppliers</RouterLink>
+        <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">{{ $t('navbar.suppliers') }}</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
         <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
@@ -58,24 +59,12 @@
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
         <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}</RouterLink>
         <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
-        <RouterLink
-          v-if="isAdminOrOwner"
-          class="appnav-link"
-          to="/integrations"
-          @click="closeMenu"
-        >{{ $t('navbar.integrations') }}</RouterLink>
+        <!-- Idioma, preferencias, venta e integraciones viven juntos en /settings. -->
+        <RouterLink class="appnav-link" to="/settings" @click="closeMenu">{{ $t('navbar.settings') }}</RouterLink>
       </div>
 
       <div class="appnav-end">
-        <div ref="langBtnRef" class="lang-picker">
-          <button class="lang-btn" @click.stop="isLangOpen = !isLangOpen" :class="{ active: isLangOpen }">
-            <Languages :size="16" />
-          </button>
-          <div v-if="isLangOpen" class="lang-dropdown">
-            <button class="lang-opt" :class="{ selected: locale === 'en' }" @click="setLocale('en')">English</button>
-            <button class="lang-opt" :class="{ selected: locale === 'es' }" @click="setLocale('es')">Español</button>
-          </div>
-        </div>
+        <LanguageSelector />
         <!-- El avatar abre un menú en vez de cerrar sesión de golpe: una inicial
              suelta se lee como "ver mi perfil", y el clic destruía la sesión sin
              decir que eso iba a pasar. Aquí el cierre de sesión está escrito. -->
@@ -137,29 +126,28 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Languages, LogOut, Settings } from 'lucide-vue-next'
+import { LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { translateRole } from '../utils/roles.js'
+import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
-const { locale, t } = useI18n()
+const { t, te } = useI18n()
+
+// El rol llega en inglés desde la base de datos: es un valor del esquema, no
+// una etiqueta. Lo que se pinta sí se traduce.
+const roleLabel = (rol) => translateRole(rol, { t, te })
 
 const dropdownOpen  = ref(false)
 const dropdownStyle = ref({})
 const triggerEl     = ref(null)
 const isMenuOpen  = ref(false)
-const isLangOpen  = ref(false)
-const langBtnRef  = ref(null)
 const isUserMenuOpen = ref(false)
 const userMenuRef    = ref(null)
-
-const isAdminOrOwner = computed(() => {
-  const rol = authStore.empresaActual?.rol
-  return rol === 'owner' || rol === 'admin'
-})
 
 const userInitial = computed(() => {
   const name = authStore.user?.nombre || authStore.user?.email || 'U'
@@ -209,24 +197,15 @@ async function selectEmpresa(empresa) {
   }
 }
 
+// El idioma NO se reinicia al cerrar sesión: es una preferencia del navegador,
+// no de la cuenta. Volver al inglés en la pantalla de login era justo lo que
+// hacía parecer que la app no recuerda nada.
 function logout() {
   authStore.logout()
-  locale.value = 'en'
   router.push({ name: 'login' })
 }
 
-function localeKey() { return `locale_${authStore.idUsuario}` }
-
-function setLocale(lang) {
-  locale.value = lang
-  localStorage.setItem(localeKey(), lang)
-  isLangOpen.value = false
-}
-
 function handleClickOutside(e) {
-  if (langBtnRef.value && !langBtnRef.value.contains(e.target)) {
-    isLangOpen.value = false
-  }
   if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
     isUserMenuOpen.value = false
   }
@@ -239,7 +218,6 @@ function onKeydown(e) {
   closeDropdown()
   closeUserMenu()
   closeMenu()
-  isLangOpen.value = false
 }
 
 // Navegar cierra el cajón. Los links ya llaman a closeMenu, pero un cambio de
@@ -250,8 +228,6 @@ watch(() => route.fullPath, () => {
 })
 
 onMounted(() => {
-  const saved = localStorage.getItem(localeKey())
-  if (saved) locale.value = saved
   window.addEventListener('keydown', onKeydown)
   document.addEventListener('click', handleClickOutside)
 })
@@ -486,13 +462,14 @@ const closeMenu = () => {
   transform: scaleX(1);
 }
 
+/* --Secondary (#886911) daba 3.82:1 sobre la barra: no llega a AA. Se usa el
+   dorado de marca; la ruta activa sigue marcada por el subrayado. */
 .appnav-link--agent {
-  color: var(--Secondary);
+  color: var(--Primary);
 }
 
-.appnav-link--agent:hover,
-.appnav-link--agent.router-link-active {
-  color: var(--Primary);
+.appnav-link--agent:hover {
+  color: var(--Text);
 }
 
 /* ── End ── */
@@ -503,57 +480,6 @@ const closeMenu = () => {
   align-items: center;
   gap: var(--k-space-4);
 }
-
-.lang-picker {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.lang-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--k-gray-2);
-  transition: color 0.15s;
-  border-radius: var(--k-radius-sm);
-}
-
-.lang-btn:hover,
-.lang-btn.active { color: var(--Primary); }
-
-.lang-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: var(--k-shade-2);
-  border: var(--k-border-width) solid var(--k-shade-6);
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 110px;
-  z-index: 200;
-}
-
-.lang-opt {
-  background: transparent;
-  border: none;
-  text-align: left;
-  padding: 7px 10px;
-  font-family: var(--k-font-sans);
-  font-size: var(--k-font-size-caption-lg);
-  color: var(--k-gray-3);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-
-.lang-opt:hover { color: var(--Text); background: rgba(255,255,255,0.04); }
-.lang-opt.selected { color: var(--Primary); }
 
 /* ── Menú de cuenta ── */
 .user-menu { position: relative; }
@@ -692,8 +618,9 @@ const closeMenu = () => {
   background: rgba(var(--k-color-black-rgb), 0.5);
 }
 
-/* Compactar antes de plegar: gana sitio y retrasa el cajón. */
-@media (max-width: 1400px) {
+/* Compactar antes de plegar: gana sitio y retrasa el cajón. Sin compactar,
+   la fila completa no cabe por debajo de ~1580px. */
+@media (max-width: 1600px) {
   .appnav-inner { padding: 0 var(--k-space-5); }
   .appnav-link  { padding: 0 10px; font-size: var(--k-font-size-caption); }
   .empresa-name { max-width: 100px; }
@@ -702,16 +629,17 @@ const closeMenu = () => {
 /*
  * Cajón de navegación.
  *
- * El umbral estaba en 640px, pero la fila de enlaces necesita ~1300px para
+ * El umbral estaba en 640px, pero la fila de enlaces necesita ~1380px para
  * caber: entre 641px y ahí, `.appnav-links` seguía en fila sin `flex-wrap` ni
  * desbordamiento visible, así que los últimos enlaces —marketing, IA,
  * integraciones— quedaban cortados fuera del ancho y no había hamburguesa para
  * alcanzarlos. En una tablet o un portátil estrecho simplemente no existían.
  *
  * Ahora se plega en cuanto la fila deja de caber, que es el único momento en el
- * que el cajón hace falta.
+ * que el cajón hace falta. Con Ventas en el menú la fila creció: medido en
+ * 1360px el avatar ya quedaba fuera.
  */
-@media (max-width: 1300px) {
+@media (max-width: 1400px) {
   .hamburger { display: block; }
 
   .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }

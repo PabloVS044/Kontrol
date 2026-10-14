@@ -42,6 +42,7 @@ export default {
         dim: 'var(--k-text-dim)', //              text/TextDim
         faint: 'var(--k-text-faint)', //          text/TextFaint
         placeholder: 'var(--k-text-placeholder)', // text/TextPlaceholder
+        disabled: 'var(--k-text-disabled)', //    implementación: solo controles deshabilitados
         success: 'var(--k-color-success)', //     color/Success
         'success-fg': 'var(--k-state-success-text)', // visualStates/SuccessText
         error: 'var(--k-color-error)', //         color/Error

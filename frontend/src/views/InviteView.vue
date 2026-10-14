@@ -4,40 +4,42 @@
       <div class="invite-card">
         <img src="@/assets/img/kontrol.png" alt="Kontrol" class="invite-logo" />
 
-        <p class="invite-eyebrow">Workspace Invitation</p>
+        <p class="invite-eyebrow">{{ t('invite.eyebrow') }}</p>
         <h1 class="invite-title">{{ title }}</h1>
         <p class="invite-subtitle">{{ subtitle }}</p>
 
-        <div v-if="loading" class="invite-state">Loading invitation...</div>
+        <div v-if="loading" class="invite-state">{{ t('invite.loading') }}</div>
 
         <div v-else-if="inviteData" class="invite-body">
           <div class="invite-summary">
             <div class="summary-row">
-              <span class="summary-label">Company</span>
+              <span class="summary-label">{{ t('invite.summary.company') }}</span>
               <span class="summary-value">{{ inviteData.empresa.nombre }}</span>
             </div>
             <div v-if="isProjectInvite" class="summary-row">
-              <span class="summary-label">Project</span>
+              <span class="summary-label">{{ t('invite.summary.project') }}</span>
               <span class="summary-value">{{ inviteData.proyecto.nombre }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">{{ isProjectInvite ? 'Invited by' : 'Owner' }}</span>
-              <span class="summary-value">{{ inviteData.empresa.owner_nombre || 'Owner' }}</span>
+              <span class="summary-label">{{ isProjectInvite ? t('invite.summary.invitedBy') : t('invite.summary.owner') }}</span>
+              <span class="summary-value">{{ inviteData.empresa.owner_nombre || t('invite.summary.owner') }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Role on entry</span>
-              <span class="summary-value">{{ inviteData.rol_asignado }}</span>
+              <span class="summary-label">{{ t('invite.summary.role') }}</span>
+              <span class="summary-value">{{ roleLabel(inviteData.rol_asignado) }}</span>
             </div>
             <div v-if="isProjectInvite" class="summary-row">
-              <span class="summary-label">Project permissions</span>
+              <span class="summary-label">{{ t('invite.summary.permissions') }}</span>
               <span class="summary-value">
-                {{ inviteData.permisos_proyecto?.length ? projectPermissionListLabel(inviteData.permisos_proyecto) : 'No explicit permissions' }}
+                {{ inviteData.permisos_proyecto?.length
+                  ? permissionList(inviteData.permisos_proyecto)
+                  : t('invite.summary.noPermissions') }}
               </span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Status</span>
+              <span class="summary-label">{{ t('invite.summary.status') }}</span>
               <span class="summary-pill" :class="{ inactive: !inviteData.invitation.activa }">
-                {{ inviteData.invitation.activa ? 'Active' : 'Inactive' }}
+                {{ inviteData.invitation.activa ? t('invite.summary.active') : t('invite.summary.inactive') }}
               </span>
             </div>
           </div>
@@ -51,18 +53,20 @@
               :disabled="accepting"
               @click="acceptInvite"
             >
-              {{ accepting ? 'Joining...' : isProjectInvite ? 'Join the project' : 'Join the company' }}
+              {{ accepting
+                ? t('invite.actions.joining')
+                : isProjectInvite ? t('invite.actions.joinProject') : t('invite.actions.joinCompany') }}
             </button>
 
             <template v-else-if="!authStore.isLoggedIn && inviteData.invitation.activa">
               <RouterLink class="primary-btn link-btn" :to="loginLink">
-                I already have an account
+                {{ t('invite.actions.haveAccount') }}
               </RouterLink>
               <RouterLink class="secondary-btn link-btn" :to="registerLink">
-                Create new account
+                {{ t('invite.actions.createAccount') }}
               </RouterLink>
               <button class="ghost-btn" @click="continueWithGoogle">
-                Continue with Google
+                {{ t('invite.actions.withGoogle') }}
               </button>
             </template>
 
@@ -71,7 +75,7 @@
               class="secondary-btn link-btn"
               :to="{ name: 'dashboard' }"
             >
-              Go to dashboard
+              {{ t('invite.actions.goToDashboard') }}
             </RouterLink>
 
             <RouterLink
@@ -79,12 +83,12 @@
               class="secondary-btn link-btn"
               :to="{ name: 'onboarding' }"
             >
-              Create my workspace
+              {{ t('invite.actions.createWorkspace') }}
             </RouterLink>
           </div>
         </div>
 
-        <div v-else class="invite-state">{{ feedbackMessage || 'Invitation not found.' }}</div>
+        <div v-else class="invite-state">{{ feedbackMessage || t('invite.notFound') }}</div>
       </div>
     </div>
   </div>
@@ -92,16 +96,25 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { loginWithGoogle } from '@/services/auth'
 import { getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 import { getInviteErrorMessage } from '@/utils/invitation'
 import { projectPermissionListLabel } from '@/utils/projectAccessLabels'
+import { translateRole } from '@/utils/roles.js'
 
+const { t, te } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+
+// El rol y los permisos llegan en inglés desde la base de datos: son valores
+// del esquema. Lo que se pinta sí se traduce.
+const roleLabel = (rol) => translateRole(rol, { t, te })
+const permissionList = (nombres) => projectPermissionListLabel(nombres, { t, te })
+const inviteError = (code) => getInviteErrorMessage(code, { t })
 
 const loading = ref(true)
 const accepting = ref(false)
@@ -111,32 +124,30 @@ const feedbackMessage = ref('')
 const token = computed(() => String(route.params.token || ''))
 const isProjectInvite = computed(() => inviteData.value?.scope === 'project')
 
+/** Nombre de lo que se está invitando a unirse: el proyecto o la empresa. */
+const inviteTarget = computed(() => (isProjectInvite.value
+  ? inviteData.value?.proyecto?.nombre
+  : inviteData.value?.empresa?.nombre) ?? '')
+
 const title = computed(() => {
-  if (loading.value) return 'Checking your invitation'
-  if (!inviteData.value?.invitation?.activa) return 'This link is no longer available'
-  if (authStore.isLoggedIn) {
-    return isProjectInvite.value
-      ? `Join ${inviteData.value.proyecto.nombre}`
-      : `Join ${inviteData.value.empresa.nombre}`
-  }
-  return isProjectInvite.value
-    ? `You've been invited to ${inviteData.value.proyecto.nombre}`
-    : `You've been invited to ${inviteData.value.empresa.nombre}`
+  if (loading.value) return t('invite.title.checking')
+  if (!inviteData.value?.invitation?.activa) return t('invite.title.unavailable')
+  return authStore.isLoggedIn
+    ? t('invite.title.join', { name: inviteTarget.value })
+    : t('invite.title.invited', { name: inviteTarget.value })
 })
 
 const subtitle = computed(() => {
-  if (loading.value) return 'Validating the link shared by the owner.'
-  if (!inviteData.value?.invitation?.activa) {
-    return 'The owner deactivated this link or the invitation no longer exists.'
-  }
+  if (loading.value) return t('invite.subtitle.checking')
+  if (!inviteData.value?.invitation?.activa) return t('invite.subtitle.unavailable')
   if (isProjectInvite.value) {
     return authStore.isLoggedIn
-      ? 'You can sign in with your current session and be linked directly to this project.'
-      : 'You can sign in or create an account to join the company and be assigned directly to this project.'
+      ? t('invite.subtitle.projectLoggedIn')
+      : t('invite.subtitle.projectGuest')
   }
   return authStore.isLoggedIn
-    ? 'You can sign in with your current session and be added as a collaborator.'
-    : 'You can sign in with an existing account or create a new one to be added as a collaborator.'
+    ? t('invite.subtitle.companyLoggedIn')
+    : t('invite.subtitle.companyGuest')
 })
 
 const loginLink = computed(() => ({ name: 'login', query: { invite: token.value } }))
@@ -150,7 +161,7 @@ async function fetchInvitation(url) {
 
 async function loadInvitation() {
   loading.value = true
-  feedbackMessage.value = getInviteErrorMessage(route.query.error)
+  feedbackMessage.value = inviteError(route.query.error)
 
   try {
     const candidates = [
@@ -167,19 +178,19 @@ async function loadInvitation() {
       if (payload.data) {
         loadedInvitation = payload.data
         loadedError = !res.ok
-          ? payload.message || getInviteErrorMessage(payload.code)
+          ? payload.message || inviteError(payload.code)
           : ''
         break
       }
 
       if (!loadedError) {
-        loadedError = payload.message || getInviteErrorMessage(payload.code)
+        loadedError = payload.message || inviteError(payload.code)
       }
     }
 
     if (!loadedInvitation) {
       inviteData.value = null
-      feedbackMessage.value = feedbackMessage.value || loadedError || 'Invitation not found.'
+      feedbackMessage.value = feedbackMessage.value || loadedError || t('invite.notFound')
       return
     }
 
@@ -189,7 +200,7 @@ async function loadInvitation() {
     }
   } catch {
     inviteData.value = null
-    feedbackMessage.value = 'Could not retrieve the invitation. Please try again.'
+    feedbackMessage.value = t('invite.errors.retrieve')
   } finally {
     loading.value = false
   }
@@ -213,7 +224,7 @@ async function acceptInvite() {
 
     const payload = await res.json()
     if (!res.ok) {
-      feedbackMessage.value = payload.message || getInviteErrorMessage(payload.code)
+      feedbackMessage.value = payload.message || inviteError(payload.code)
       await loadInvitation()
       return
     }
@@ -325,7 +336,7 @@ watch(() => route.params.token, loadInvitation)
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #7f7a72;
+  color: var(--k-text-muted);
 }
 
 .summary-value {

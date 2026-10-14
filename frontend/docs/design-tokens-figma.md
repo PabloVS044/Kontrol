@@ -37,10 +37,14 @@ Todos los tokens siguen la estructura `category/token-name` en Figma Tokens.
 
 Escala descendente de claridad para texto secundario:
 - `text/soft`: #cfc9bf (Secundario alto - Labels principales)
-- `text/muted`: #8a8070 (Secundario - Labels deshabilitadas) **Neutral, no cálido**
-- `text/dim`: #6e6558 (Terciario - Metadata)
-- `text/faint`: #565045 (Muy tenue - Deshabilitado)
-- `text/placeholder`: #4a4030 (Placeholders en inputs)
+- `text/muted`: #a0998d (Secundario - opciones no seleccionadas)
+- `text/dim`: #9e9485 (Terciario - Metadata)
+- `text/faint`: #988f7e (Muy tenue, pero legible - ayudas y pies)
+- `text/placeholder`: #a18d6d (Placeholders en inputs, más cálido que un valor escrito)
+
+Toda la rampa cumple WCAG AA (≥ 4.5:1) sobre `color/bg-3` (#282825), la superficie más clara en uso. Antes era muted #989083, dim #6e6558, faint #565045 y placeholder #4a4030 (hasta 1.5:1). Solo se subió la luminosidad: el tono y la saturación son los mismos. **Pendiente:** actualizar estos valores en el archivo de Figma.
+
+Para controles deshabilitados existe un token de implementación aparte, `--k-text-disabled` (#565045), que no se usa para texto informativo.
 
 ---
 
@@ -48,7 +52,7 @@ Escala descendente de claridad para texto secundario:
 
 Estados semánticos:
 - `visualStates/success-text`: #48c774 (Verde éxito)
-- `visualStates/error-text`: #e05252 (Rojo error)
+- `visualStates/error-text`: #e46868 (Rojo error; antes #e05252, aclarado para mantener 4.5:1 sobre el fondo animado)
 
 **Nota:** Success y Error backgrounds se usan en tags/badges:
 - `color/success`: rgb(15, 77, 15)

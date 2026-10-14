@@ -10,7 +10,7 @@
           <slot name="header-actions" />
           <button class="modal-close" @click="close">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 3l10 10M13 3L3 13" stroke="#666" stroke-width="1.4" stroke-linecap="square"/>
+              <path d="M3 3l10 10M13 3L3 13" stroke="var(--k-gray-4)" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
           </button>
         </div>

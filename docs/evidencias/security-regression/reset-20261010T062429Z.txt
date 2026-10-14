@@ -1,0 +1,17 @@
+  6 cuentas listas (participante1 es owner, el resto manager).
+  3 proyectos listos, con los 6 participantes como miembros.
+  2 proveedores listos para vincular en F2.
+  1 publicación de marketing lista para filtrar en F5.
+  Tareas sembradas en los 3 proyectos.
+⚠️ [uploadthing][deprecated] `file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.
+⚠️ [uploadthing][deprecated] `file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.
+  Avances sembrados, incluido uno con evidencia adjunta.
+  Gastos sembrados (proyecto 3 queda cerca del límite de presupuesto).
+  Inventario sembrado: 13 productos en los 3 proyectos, 2 proveedores.
+    · 3 artículos bajo el mínimo y 1 agotado, para las alertas de stock.
+    · 2 códigos de barras repetidos entre proyectos, para probar el escáner.
+  Reporte de ejemplo listo.
+==> Seed completado.
+==> Reset completado.
+exit=0 duration: 7 s
+0
