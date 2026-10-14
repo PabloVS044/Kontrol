@@ -10,6 +10,7 @@ import {
   getProjectInvitationByToken,
 } from '../services/projectInvitationService.js'
 import { getFrontendBaseUrl } from '../utils/frontendUrl.js'
+import { logger } from '../utils/logger.js'
 
 // Configurable so the test environment can trade hash strength for CPU
 // headroom under load — see docs/pruebas-carga-estres.md. Production never
@@ -261,7 +262,7 @@ export const googleCallback = async (req, res) => {
 
     const tokens = await tokenRes.json()
     if (!tokenRes.ok || !tokens.id_token) {
-      console.error('[Google OAuth] token exchange failed:', tokens)
+      logger.error('[Google OAuth] token exchange failed:', tokens)
       return res.redirect(`${frontendUrl}/login?error=google_error`)
     }
 
@@ -339,7 +340,7 @@ export const googleCallback = async (req, res) => {
       client.release()
     }
   } catch (err) {
-    console.error('[Google OAuth]', err)
+    logger.error('[Google OAuth]', err)
     return res.redirect(`${frontendUrl}/login?error=google_error`)
   }
 }

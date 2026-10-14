@@ -10,6 +10,7 @@ import {
   sanitizeAttachments,
   serializeMessage,
 } from '../utils/chat.js'
+import { logger } from '../utils/logger.js'
 
 const CHAT_UNAVAILABLE_MESSAGE = 'Chat is unavailable because MongoDB is not connected.'
 const CHAT_AVAILABLE_MESSAGE = 'Chat is available again.'
@@ -99,7 +100,7 @@ async function joinConversationRooms(socket, userId) {
     const convs = await Conversation.find({ participants: userId }, '_id').lean()
     convs.forEach((conv) => socket.join(`conv:${conv._id}`))
   } catch (err) {
-    console.error('socket join rooms error:', err)
+    logger.error('socket join rooms error:', err)
   }
 }
 
@@ -209,7 +210,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
 
         emitConversationEvent(io, 'chat:conversation_ready', conv, [userId, targetUserId])
       } catch (err) {
-        console.error('chat:start_dm error:', err)
+        logger.error('chat:start_dm error:', err)
         socket.emit('chat:error', { message: 'Could not start conversation' })
       }
     })
@@ -249,7 +250,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           targetUserId,
         })
       } catch (err) {
-        console.error('call:invite error:', err)
+        logger.error('call:invite error:', err)
         socket.emit('call:error', { conversationId, message: CALL_START_ERROR_MESSAGE })
       }
     })
@@ -273,7 +274,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           byName: buildDisplayName(me),
         }, userId)
       } catch (err) {
-        console.error('call:answer error:', err)
+        logger.error('call:answer error:', err)
         socket.emit('call:error', { conversationId, message: CALL_START_ERROR_MESSAGE })
       }
     })
@@ -290,7 +291,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           reason: reason === 'busy' ? 'busy' : 'declined',
         }, userId)
       } catch (err) {
-        console.error('call:decline error:', err)
+        logger.error('call:decline error:', err)
       }
     })
 
@@ -305,7 +306,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           byUserId: userId,
         }, userId)
       } catch (err) {
-        console.error('call:end error:', err)
+        logger.error('call:end error:', err)
       }
     })
 
@@ -330,7 +331,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           candidate: candidate ?? null,
         }, userId)
       } catch (err) {
-        console.error('call:signal error:', err)
+        logger.error('call:signal error:', err)
         socket.emit('call:error', { conversationId, message: CALL_SIGNAL_ERROR_MESSAGE })
       }
     })
@@ -395,7 +396,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
         }
       } catch (err) {
-        console.error('chat:send error:', err)
+        logger.error('chat:send error:', err)
         socket.emit('chat:error', { message: 'Could not send message' })
       }
     })
@@ -442,7 +443,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
         }
       } catch (err) {
-        console.error('chat:mark_read error:', err)
+        logger.error('chat:mark_read error:', err)
       }
     })
   })

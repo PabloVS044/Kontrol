@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger.js'
+
 const GRAPH_BASE = 'https://graph.facebook.com/v25.0'
 
 export async function testWhatsAppConnection({ access_token, phone_number_id, to_number }) {
@@ -62,7 +64,7 @@ export async function sendWhatsAppMessage({ access_token, phone_number_id, to_nu
 
   const data = await res.json()
 
-  console.log('[WhatsApp API response]', JSON.stringify(data, null, 2))
+  logger.debug('[WhatsApp API response]', JSON.stringify(data, null, 2))
 
   if (!res.ok) {
     throw new Error(data?.error?.message ?? `WhatsApp API error: ${res.status}`)

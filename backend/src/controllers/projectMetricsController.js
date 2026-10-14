@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { logger } from '../utils/logger.js'
 
 export const getProjectMetrics = async (req, res) => {
   try {
@@ -101,7 +102,7 @@ export const getProjectMetrics = async (req, res) => {
       },
     })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }

@@ -12,6 +12,7 @@ import {
   resolveSaleOptions,
   round2,
 } from '../services/saleCalculation.js'
+import { logger } from '../utils/logger.js'
 
 const MOVIMIENTO_SELECT = `
   m.id_movimiento,
@@ -313,7 +314,7 @@ export const createInventoryMovement = async (req, res) => {
     return res.status(201).json({ success: true, data: result.rows[0] })
   } catch (err) {
     await client.query('ROLLBACK')
-    console.error('Could not create inventory movement:', err)
+    logger.error('Could not create inventory movement:', err)
     return res.status(500).json({ success: false, message: 'Could not create inventory movement.' })
   } finally {
     client.release()

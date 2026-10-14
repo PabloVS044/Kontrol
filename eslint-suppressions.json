@@ -1,74 +1,4 @@
 {
-  "backend/src/controllers/agentController.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/controllers/authController.js": {
-    "no-console": {
-      "count": 2
-    }
-  },
-  "backend/src/controllers/chatController.js": {
-    "no-console": {
-      "count": 3
-    }
-  },
-  "backend/src/controllers/evidenciaController.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/controllers/inventoryMovementController.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/controllers/productController.js": {
-    "no-console": {
-      "count": 2
-    }
-  },
-  "backend/src/controllers/projectMetricsController.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/controllers/reportsController.js": {
-    "no-console": {
-      "count": 7
-    }
-  },
-  "backend/src/controllers/teamController.js": {
-    "no-console": {
-      "count": 6
-    }
-  },
-  "backend/src/db/bootstrap.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/db/mongo.js": {
-    "no-console": {
-      "count": 3
-    }
-  },
-  "backend/src/db/poolStats.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/index.js": {
-    "no-console": {
-      "count": 3
-    }
-  },
-  "backend/src/middleware/errorHandler.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
   "backend/src/schemas/budgetSchema.js": {
     "no-unused-vars": {
       "count": 1
@@ -80,21 +10,6 @@
     },
     "preserve-caught-error": {
       "count": 1
-    }
-  },
-  "backend/src/services/notificationService.js": {
-    "no-console": {
-      "count": 4
-    }
-  },
-  "backend/src/services/whatsappService.js": {
-    "no-console": {
-      "count": 1
-    }
-  },
-  "backend/src/socket/index.js": {
-    "no-console": {
-      "count": 9
     }
   },
   "backend/tests/db/globalSetup.js": {
