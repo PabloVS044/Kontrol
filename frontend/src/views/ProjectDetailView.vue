@@ -351,7 +351,7 @@
           </div>
         </section>
 
-        <!-- ── TEAM (TODO: reemplazar mock con endpoint real cuando exista tabla equipos en BD) ── -->
+        <!-- ── TEAM (TODO SCRUM-105: pestaña oculta; eliminar esta sección y su mock) ── -->
         <section v-if="activeTab === 'team'" class="tab-panel">
           <div class="tasks-toolbar">
             <div class="tasks-filters">

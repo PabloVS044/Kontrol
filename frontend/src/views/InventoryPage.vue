@@ -1243,7 +1243,7 @@ async function confirmDelete() {
 }
 
 function exportInventory() {
-  // TODO: exportar CSV
+  // TODO SCRUM-104: exportar CSV
 }
 
 /* ── restock (ENTRADA) ── */
