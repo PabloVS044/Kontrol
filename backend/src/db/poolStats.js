@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger.js'
+
 /**
  * DT-15 — instrumentación del pool de Postgres, pendiente desde SCRUM-28.
  *
@@ -37,7 +39,7 @@ export function resolveStatsIntervalMs(env = process.env) {
  * latencia medida. Con 0 no hace nada. El temporizador va con `unref()` para
  * no retener el proceso al apagarlo.
  */
-export function startPoolStatsLogger(pool, intervalMs, log = console.log) {
+export function startPoolStatsLogger(pool, intervalMs, log = logger.info) {
   if (!intervalMs) return () => {}
 
   const timer = setInterval(() => {

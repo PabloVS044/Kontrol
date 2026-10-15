@@ -304,7 +304,7 @@ async function loadOverview() {
     if (!pr.ok) throw new Error(prPayload.message || `HTTP ${pr.status}`)
     projects.value = prPayload.data || []
 
-    // TODO DT-07: migrar a services/http.js
+    // TODO SCRUM-75: migrar a services/http.js
     const ids = projects.value.map(p => p.id_proyecto)
     const map = {}
     if (ids.length) {

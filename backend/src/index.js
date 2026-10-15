@@ -11,6 +11,7 @@ import { securityMiddleware } from './middleware/security.middleware.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
+import { logger } from './utils/logger.js'
 
 const app        = express()
 const httpServer = createServer(app)
@@ -64,18 +65,18 @@ if (process.env.NODE_ENV !== 'test') {
   try {
     await ensureDatabaseSchema()
   } catch (error) {
-    console.error('Could not initialize the backend:', error)
+    logger.error('Could not initialize the backend:', error)
     process.exit(1)
   }
 
   try {
     await connectMongo()
   } catch (error) {
-    console.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
+    logger.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
   }
 
   httpServer.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`)
+    logger.info(`Backend running at http://localhost:${PORT}`)
   })
 
   // DT-15 — apagado por defecto; se enciende con DB_POOL_STATS_INTERVAL_MS.

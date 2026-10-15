@@ -3,6 +3,7 @@ import AgentConversation from '../models/AgentConversation.js'
 import AgentMessage from '../models/AgentMessage.js'
 import { isMongoReady } from '../db/mongo.js'
 import { isAgentConfigured, runAgentTurn } from '../services/aiAgentService.js'
+import { logger } from '../utils/logger.js'
 
 /* ────────────────────────────────────────────────────────────────────────── */
 
@@ -195,7 +196,7 @@ export const chat = async (req, res) => {
     }
     // Upstream errors embed the inference server's response body; keep that
     // in the logs, not in the client payload.
-    console.error('agentController.chat:', err)
+    logger.error('agentController.chat:', err)
     return res.status(500).json({
       success: false,
       message: 'AI agent failed to respond. Please try again.',

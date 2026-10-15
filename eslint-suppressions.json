@@ -1,0 +1,128 @@
+{
+  "backend/src/schemas/budgetSchema.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "backend/src/services/aiAgentService.js": {
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "preserve-caught-error": {
+      "count": 1
+    }
+  },
+  "backend/tests/db/globalSetup.js": {
+    "preserve-caught-error": {
+      "count": 1
+    }
+  },
+  "backend/tests/regression/tenantIsolation.regression.test.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/AppNavbar.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/DetailProject/ProgressModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/AnimatedComponents/CardsSwap.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/AnimatedComponents/MagicBento.vue": {
+    "vue/valid-define-props": {
+      "count": 3
+    }
+  },
+  "frontend/src/components/UI/Button/Button.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/CircleRounded/CircleRounded.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/UI/Pill/Pill.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/budget/FundingHistoryCard.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/ProjectCard.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "frontend/src/components/projects/ProjectSummaryPanel.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TaskCard.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TaskModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TeamDetailModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/components/projects/TeamModal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/stores/chat.js": {
+    "no-empty": {
+      "count": 5
+    },
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "frontend/src/views/BudgetView.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/views/DashboardView.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/src/views/ReportDetailView.vue": {
+    "no-unused-vars": {
+      "count": 4
+    }
+  },
+  "frontend/tests/cssVars.test.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "frontend/tests/theme.test.js": {
+    "no-useless-escape": {
+      "count": 2
+    }
+  }
+}
