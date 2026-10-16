@@ -28,6 +28,11 @@ const router = createRouter({
       component: LandingPage,
     },
     {
+      path: '/legal',
+      name: 'legal',
+      component: () => import('../views/LegalView.vue'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

@@ -2227,5 +2227,48 @@
       "title": "Configuración de venta",
       "copy": "Moneda, IVA y descuentos."
     }
+  },
+  "legal": {
+    "badge": "Marco legal y regulatorio",
+    "title": "Términos, Privacidad y Cumplimiento",
+    "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
+    "status": {
+      "label": "Estado del documento:",
+      "value": "Borrador interno v0.1 — Para Guatemala"
+    },
+    "nav": {
+      "ariaLabel": "Navegación de secciones legales",
+      "privacy": "Aviso de Privacidad",
+      "terms": "Términos del Servicio",
+      "cookies": "Cookies y Almacenamiento"
+    },
+    "terms": {
+      "badge": "Condiciones de contratación",
+      "title": "Términos y Condiciones del Servicio",
+      "lastUpdate": "Elaborado: 16 de octubre de 2026 · Guatemala",
+      "p1": "Kontrol es una plataforma privada e independiente para el registro y gestión operativa de negocios en Guatemala (proyectos, inventario, ventas y presupuestos). No está vinculada, avalada ni actúa como plataforma de reporte de la SAT ni de ninguna autoridad tributaria o financiera.",
+      "p2": "El módulo de punto de venta (POS) y el cálculo de IVA configurado son de uso interno de tu empresa: no emiten facturas electrónicas (FEL) certificadas ni sustituyen tus declaraciones o deberes tributarios.",
+      "p3": "La integración de pagos con Stripe se encuentra contemplada exclusivamente en modo de demostración (TEST), sin cobros reales, cargos automáticos a tarjetas ni planes comerciales de suscripción activados.",
+      "p4": "Conservas la titularidad de los datos de tu empresa. La plataforma no vende tu información ni cuenta con autorización para utilizar los datos de tu negocio en el entrenamiento de modelos de inteligencia artificial.",
+      "p5": "El titular o administrador responde por las cuentas e invitaciones que emita, y cada usuario por su conducta dentro del sistema. Kontrol no excluye su propia responsabilidad por negligencia o dolo de conformidad con las leyes de Guatemala."
+    },
+    "privacy": {
+      "badge": "Protección de datos",
+      "title": "Aviso de Privacidad",
+      "lastUpdate": "Elaborado: 16 de octubre de 2026 · Basado en inventario técnico de datos",
+      "p1": "Tratamos únicamente la información necesaria para brindarte acceso al sistema y habilitar la colaboración en tu empresa: credenciales de acceso, datos del negocio, registros de inventario, ventas y registros técnicos de sesión.",
+      "p2": "El asistente inteligente de Kontrol (Qwen/vLLM) opera en infraestructura propia declarada en Guatemala (servidor ClawStitch). Al realizar consultas, el asistente recibe únicamente el contexto pertinente (usuario, empresa, muestras limitadas de datos y tu pregunta) para generar la respuesta solicitada.",
+      "p3": "Los archivos adjuntos y evidencias se procesan mediante servicios de almacenamiento en la nube, y las alertas opcionales (Slack, Teams, Telegram, SMS) operan bajo la configuración voluntaria que decida cada empresa.",
+      "p4": "No se realiza cesión ni venta comercial de datos personales a terceros. Tu empresa puede consultar, editar y gestionar sus registros desde los paneles de la plataforma."
+    },
+    "cookies": {
+      "badge": "Almacenamiento local",
+      "title": "Política de Cookies y Almacenamiento",
+      "lastUpdate": "Sesión y preferencias en el navegador",
+      "p1": "Kontrol no utiliza cookies publicitarias ni herramientas invasivas de rastreo entre sitios web.",
+      "p2": "Utilizamos el almacenamiento local del navegador (localStorage) exclusivamente para mantener activa tu sesión de forma segura y recordar tus preferencias personales de interfaz, tales como el idioma seleccionado (español o inglés) y el tema visual.",
+      "p3": "Al cerrar tu sesión desde el menú de usuario, los tokens y datos de autenticación son eliminados inmediatamente de tu navegador."
+    },
+    "backToHome": "Volver al inicio"
   }
 }

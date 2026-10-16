@@ -2227,5 +2227,48 @@
       "title": "Sale settings",
       "copy": "Currency, VAT and discounts."
     }
+  },
+  "legal": {
+    "badge": "Legal & Regulatory Framework",
+    "title": "Terms, Privacy & Compliance",
+    "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
+    "status": {
+      "label": "Document Status:",
+      "value": "Internal Draft v0.1 — For Guatemala"
+    },
+    "nav": {
+      "ariaLabel": "Legal sections navigation",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookies & Storage"
+    },
+    "terms": {
+      "badge": "Contract terms",
+      "title": "Terms & Conditions of Service",
+      "lastUpdate": "Drafted: October 16, 2026 · Guatemala",
+      "p1": "Kontrol is a private, independent platform for operational business registration and management in Guatemala (projects, inventory, sales, and budgets). It is not affiliated with, endorsed by, nor does it act as a reporting platform for the SAT or any tax or financial authority.",
+      "p2": "The point of sale (POS) module and configured VAT calculations are strictly for internal company management: they do not issue certified electronic invoices (FEL) nor replace your tax filings or obligations.",
+      "p3": "Stripe payment integration is only planned in test demonstration mode (TEST), without real charges, automatic credit card billing, or active commercial subscription plans.",
+      "p4": "You retain full ownership of your company's data. The platform does not sell your information and has no authorization to use your business data for training artificial intelligence models.",
+      "p5": "The account owner or manager is responsible for invitations and permissions granted, and each user is responsible for their actions within the system. Kontrol does not disclaim its own legal liability for negligence or misconduct under Guatemalan law."
+    },
+    "privacy": {
+      "badge": "Data Protection",
+      "title": "Privacy Notice",
+      "lastUpdate": "Drafted: October 16, 2026 · Based on verifiable technical data inventory",
+      "p1": "We process only the information necessary to provide access to the platform and enable company collaboration: login credentials, company data, inventory records, sales, and session technical logs.",
+      "p2": "Kontrol's AI assistant (Qwen/vLLM) runs on team-operated infrastructure declared in Guatemala (ClawStitch server). When making queries, the assistant only receives relevant context (user, company, limited data samples, and your question) to generate the response.",
+      "p3": "Uploaded files and evidence are handled through cloud storage services, and optional integrations (Slack, Teams, Telegram, SMS) operate strictly under each company's voluntary configuration.",
+      "p4": "No commercial sale or transfer of personal data to third parties is performed. Your company can review, edit, and manage its records directly from the platform."
+    },
+    "cookies": {
+      "badge": "Local Storage",
+      "title": "Cookie and Local Storage Policy",
+      "lastUpdate": "Browser session and preferences",
+      "p1": "Kontrol does not use advertising cookies or invasive cross-site tracking tools.",
+      "p2": "We use browser local storage (localStorage) exclusively to maintain your session securely and remember your interface preferences, such as selected language (Spanish or English) and visual theme.",
+      "p3": "When logging out from the user menu, session authentication tokens and data are cleared immediately from your browser."
+    },
+    "backToHome": "Back to Home"
   }
 }
