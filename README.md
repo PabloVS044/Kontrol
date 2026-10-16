@@ -31,6 +31,7 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Integración continua](#integración-continua)
 - [Cobertura de código](#cobertura-de-código)
 - [Solución de problemas](#solución-de-problemas)
+- [Documentación legal](#documentación-legal)
 - [Contribuir](#contribuir)
 
 ---
@@ -380,6 +381,14 @@ Consecuencia a tener presente: un glob de umbral que no case con ningún archivo
 | Login con Google falla | Faltan `GOOGLE_CLIENT_ID/SECRET` o la *redirect URI* no coincide con `GOOGLE_CALLBACK_URL`. |
 | En Windows: `git clone` por SSH falla | Usa la URL HTTPS: `git clone https://github.com/PabloVS044/Kontrol.git` |
 | `npm install` falla por versión de Node | Usa Node 20–22 (`.nvmrc` = `22`). |
+
+---
+
+## Documentación legal
+
+El [expediente legal de Kontrol](docs/legal/README.md) reúne el marco para Guatemala, los borradores de Términos y Condiciones y Política de Privacidad, el inventario verificable de datos y la revisión de proveedores. Incluye el alcance de Stripe exclusivamente en modo test, sin cobros reales.
+
+Consulta en el expediente las reservas de investigación y los pendientes antes de publicar los documentos o usar el producto comercialmente. Los textos requieren revisión profesional en Guatemala.
 
 ---
 
