@@ -39,5 +39,8 @@
     "tailwindcss": "^3.4.19",
     "vite": "^6.0.0",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "effect": "^3.22.3"
   }
 }
