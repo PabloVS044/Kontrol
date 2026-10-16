@@ -22,29 +22,29 @@
         <div class="footer-col">
           <h4>{{ t('footer.product') }}</h4>
           <ul>
-            <li><a href="#features">{{ t('footer.features') }}</a></li>
-            <li><a href="#solution">{{ t('footer.commandCenter') }}</a></li>
-            <li><a href="#steps">{{ t('footer.howItWorks') }}</a></li>
-            <li><a href="#pricing">{{ t('footer.pricing') }}</a></li>
+            <li><RouterLink to="/#features">{{ t('footer.features') }}</RouterLink></li>
+            <li><RouterLink to="/#solution">{{ t('footer.commandCenter') }}</RouterLink></li>
+            <li><RouterLink to="/#steps">{{ t('footer.howItWorks') }}</RouterLink></li>
+            <li><RouterLink to="/#pricing">{{ t('footer.pricing') }}</RouterLink></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>{{ t('footer.company') }}</h4>
           <ul>
-            <li><a href="#about">{{ t('footer.about') }}</a></li>
-            <li><a href="#blog">{{ t('footer.blog') }}</a></li>
-            <li><a href="#careers">{{ t('footer.careers') }}</a></li>
-            <li><a href="#contact">{{ t('footer.contact') }}</a></li>
+            <li><RouterLink to="/#about">{{ t('footer.about') }}</RouterLink></li>
+            <li><RouterLink to="/#blog">{{ t('footer.blog') }}</RouterLink></li>
+            <li><RouterLink to="/#careers">{{ t('footer.careers') }}</RouterLink></li>
+            <li><RouterLink to="/#contact">{{ t('footer.contact') }}</RouterLink></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>{{ t('footer.legal') }}</h4>
           <ul>
-            <li><a href="#privacy">{{ t('footer.privacy') }}</a></li>
-            <li><a href="#terms">{{ t('footer.terms') }}</a></li>
-            <li><a href="#cookies">{{ t('footer.cookies') }}</a></li>
+            <li><RouterLink to="/legal#privacy">{{ t('footer.privacy') }}</RouterLink></li>
+            <li><RouterLink to="/legal#terms">{{ t('footer.terms') }}</RouterLink></li>
+            <li><RouterLink to="/legal#cookies">{{ t('footer.cookies') }}</RouterLink></li>
           </ul>
         </div>
       </div>
@@ -61,6 +61,7 @@
 
 <script setup>
 import { useI18n } from "vue-i18n";
+import { RouterLink } from "vue-router";
 import logo from "../assets/img/kontrol.png";
 import { Twitter, Linkedin, Instagram, Github } from "lucide-vue-next";
 
