@@ -2,7 +2,6 @@
 
 .mkt-root {
   min-height: 100vh;
-  background: var(--k-color-bg);
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
   margin-top: 56px; /* altura de AppNavbar (position: fixed) */

@@ -122,6 +122,7 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint',
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
+      '--k-surface-scrim',
     ],
     rampaNeutra: [
       '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',

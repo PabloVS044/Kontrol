@@ -575,7 +575,6 @@ async function submitCreate(payload) {
   padding: 32px 32px 48px;
   border-right: 1px solid #1e1e1e;
   overflow-y: auto;
-  background: rgba(10, 10, 10, 0.92);
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */

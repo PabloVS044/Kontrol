@@ -229,7 +229,6 @@ onMounted(() => {
 
 <style scoped>
 .suppliers-root { position: relative; isolation: isolate; min-height: 100vh; background: transparent; color: var(--k-color-text); font-family: var(--k-font-sans); }
-.suppliers-root::before { content: ''; position: fixed; inset: 0; z-index: -1; background: rgba(var(--k-color-black-rgb), .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none; }
 .suppliers-content { max-width: 1240px; margin: 56px auto 0; padding: 80px var(--k-space-6) var(--k-space-7); }
 .page-header, .toolbar, .card-heading, .modal-heading, .modal-actions { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--k-space-4); }
 .page-header { margin-bottom: var(--k-space-6); padding-bottom: var(--k-space-5); border-bottom: var(--k-border-width) solid var(--k-color-border); }
