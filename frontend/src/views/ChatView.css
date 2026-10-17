@@ -263,7 +263,6 @@
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
-  background: #080808;
 }
 
 .chat-empty-messages {
