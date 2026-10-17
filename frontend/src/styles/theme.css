@@ -277,6 +277,11 @@
   --k-surface-primary-tint: rgba(var(--k-color-primary-rgb), 0.1);
   --k-surface-primary-tint-2: rgba(var(--k-color-primary-rgb), 0.05);
   --k-surface-hover-subtle: rgba(var(--k-color-white-rgb), 0.02);
+  /* Velo de <AppSurface> sobre el fondo animado en las vistas internas.
+     Más ligero que --k-color-bg (0.92) para que las ondas se noten. El
+     contraste no depende de él: el texto ya supera 4.5:1 sobre el pico de
+     las ondas sin velo (WAVE_PEAK en tests/theme.test.js). */
+  --k-surface-scrim: rgba(var(--k-color-black-rgb), 0.65);
 }
 
 /**

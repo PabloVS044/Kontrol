@@ -19,12 +19,12 @@ describe('AppSurface', () => {
     expect(inactiva.find('p').exists()).toBe(true)
   })
 
-  it('usa el token de fondo de página', () => {
+  it('usa el token del velo', () => {
     const sfc = readFileSync(
       resolve(__dirname, '../src/components/UI/AppSurface/AppSurface.vue'),
       'utf8',
     )
-    expect(sfc).toMatch(/background:\s*var\(--k-color-bg\)/)
+    expect(sfc).toMatch(/background:\s*var\(--k-surface-scrim\)/)
   })
 })
 

@@ -10,7 +10,7 @@
  * Superficie de las vistas internas (DT-09 / T-18).
  *
  * Pone una sola capa de contraste entre el fondo animado de App.vue y el
- * contenido, con el token de fondo de página (`--k-color-bg`). Antes cada
+ * contenido, con el token `--k-surface-scrim`. Antes cada
  * vista lo resolvía por su cuenta: unas dejaban las ondas a la vista, otras
  * pintaban su propio velo del 92 % y el chat un negro opaco. Las vistas ya no
  * declaran fondo de página; solo sus tarjetas y paneles.
@@ -31,7 +31,7 @@ defineProps({
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: var(--k-color-bg);
+  background: var(--k-surface-scrim);
   pointer-events: none;
 }
 </style>
