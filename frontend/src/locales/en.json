@@ -2251,5 +2251,11 @@
       "title": "Sale settings",
       "copy": "Currency, VAT and discounts."
     }
+  },
+  "notFound": {
+    "title": "This page doesn't exist",
+    "description": "The address may be mistyped, or the page was moved or is no longer available.",
+    "home": "Go to home",
+    "back": "Go back"
   }
 }

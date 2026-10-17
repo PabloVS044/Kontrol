@@ -164,6 +164,13 @@ const router = createRouter({
         { path: 'users',     name: 'admin-users',     component: () => import('../views/admin/AdminUsersView.vue') },
       ],
     },
+    // Cualquier ruta que no exista. Va al final y sin meta: es pública, sin
+    // AppSurface, y los guards no la redirigen a login.
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
+    },
   ],
 })
 
