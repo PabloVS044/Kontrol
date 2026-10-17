@@ -12,19 +12,6 @@
   overflow: hidden;
 }
 
-/* El blur vive en una capa aparte: backdrop-filter en el root crearia un
-   containing block que rompe el position: fixed del AppNavbar. */
-.chat-page::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: rgba(6, 6, 6, 0.50);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  pointer-events: none;
-}
-
 .chat-body {
   display: flex;
   flex: 1;

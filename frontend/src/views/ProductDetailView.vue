@@ -381,17 +381,6 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   font-family: var(--k-font-sans);
 }
 
-.product-detail-root::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: rgba(var(--k-color-black-rgb), 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  pointer-events: none;
-}
-
 .content {
   max-width: 1180px;
   margin: 0 auto;
