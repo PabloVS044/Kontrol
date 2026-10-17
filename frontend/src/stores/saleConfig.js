@@ -1,3 +1,4 @@
+import { apiFetch as requestApi } from '@/services/api.js'
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
@@ -48,7 +49,7 @@ export const useSaleConfigStore = defineStore('saleConfig', {
       try {
         const headers = { 'X-Company-ID': id }
         if (auth.token) headers.Authorization = `Bearer ${auth.token}`
-        const res = await fetch('/api/companies/sale-config', { headers })
+        const res = await requestApi('/api/companies/sale-config', { headers })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const body = await res.json()
         this.config = { ...this.config, ...body.data }

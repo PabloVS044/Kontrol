@@ -475,6 +475,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -611,14 +612,6 @@ const tabs = computed(() => [
 
 const projectId = computed(() => route.params.id);
 
-function authHeader() {
-  const token = localStorage.getItem("token");
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  if (authStore.idEmpresaActual)
-    headers["X-Company-ID"] = authStore.idEmpresaActual;
-  return headers;
-}
-
 function movColor(tipo) {
   return (
     {
@@ -750,8 +743,8 @@ const filteredTasks = computed(() =>
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 async function loadProject() {
-  const res = await fetch(`/api/projects/${projectId.value}`, {
-    headers: authHeader(),
+  const res = await requestApi(`/api/projects/${projectId.value}`, {
+    headers: authHeaders(),
   });
   if (res.status === 404) throw new Error("Project not found.");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -760,8 +753,8 @@ async function loadProject() {
 }
 
 async function loadMetrics() {
-  const res = await fetch(`/api/projects/${projectId.value}/metrics`, {
-    headers: authHeader(),
+  const res = await requestApi(`/api/projects/${projectId.value}/metrics`, {
+    headers: authHeaders(),
   });
   if (!res.ok) return;
   const data = await res.json();
@@ -769,8 +762,8 @@ async function loadMetrics() {
 }
 
 async function loadBudgetSummary() {
-  const res = await fetch(`/api/budgets/project/${projectId.value}/summary`, {
-    headers: authHeader(),
+  const res = await requestApi(`/api/budgets/project/${projectId.value}/summary`, {
+    headers: authHeaders(),
   })
   if (!res.ok) {
     budgetSummary.value = null
@@ -783,8 +776,8 @@ async function loadBudgetSummary() {
 async function loadTasks() {
   tasksLoading.value = true;
   try {
-    const res = await fetch(`/api/projects/${projectId.value}/tasks`, {
-      headers: authHeader(),
+    const res = await requestApi(`/api/projects/${projectId.value}/tasks`, {
+      headers: authHeaders(),
     });
     if (!res.ok) return;
     const data = await res.json();
@@ -795,7 +788,7 @@ async function loadTasks() {
 }
 
 async function loadMembers() {
-  const res = await fetch(`/api/projects/${projectId.value}/members`, { headers: authHeader() })
+  const res = await requestApi(`/api/projects/${projectId.value}/members`, { headers: authHeaders() })
   if (!res.ok) return
   const data = await res.json()
   projectMembers.value = data.data ?? []
@@ -833,7 +826,7 @@ async function openTaskDetail(task) {
   showDetailModal.value = true
   detailLoading.value   = true
   detailTask.value      = null
-  const res  = await fetch(`/api/projects/${projectId.value}/tasks/${task.id_tarea}`, { headers: authHeader() })
+  const res  = await requestApi(`/api/projects/${projectId.value}/tasks/${task.id_tarea}`, { headers: authHeaders() })
   const data = await res.json()
   detailTask.value    = data.data
   detailLoading.value = false
@@ -856,9 +849,9 @@ async function submitTask(formData) {
       : `/api/projects/${projectId.value}/tasks`;
     const method = editingTask.value ? "PUT" : "POST";
 
-    const res = await fetch(url, {
+    const res = await requestApi(url, {
       method,
-      headers: { ...authHeader(), "Content-Type": "application/json" },
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     const data = await res.json();
@@ -879,9 +872,9 @@ async function submitTask(formData) {
 async function closeTask(task) {
   closingTaskId.value = task.id_tarea;
   try {
-    const res = await fetch(
+    const res = await requestApi(
       `/api/projects/${projectId.value}/tasks/${task.id_tarea}/close`,
-      { method: "PATCH", headers: authHeader() },
+      { method: "PATCH", headers: authHeaders() },
     );
     if (res.ok) await Promise.all([loadTasks(), loadMetrics()]);
   } finally {

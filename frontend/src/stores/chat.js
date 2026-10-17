@@ -1,3 +1,4 @@
+import { apiFetch as requestApi, authHeaders, getApiBaseUrl } from '@/services/api.js'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { io } from 'socket.io-client'
@@ -11,17 +12,11 @@ import {
 } from '../utils/chat.js'
 import { logger } from '../utils/logger.js'
 
-const API = import.meta.env.VITE_API_URL || window.location.origin
+const API = getApiBaseUrl()
 
 function resolveSocketUrl() {
   const explicit = import.meta.env.VITE_SOCKET_URL
-  if (explicit) return explicit
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL
-  if (import.meta.env.DEV && typeof window !== 'undefined') {
-    const port = import.meta.env.VITE_BACKEND_PORT || '3000'
-    return `${window.location.protocol}//${window.location.hostname}:${port}`
-  }
-  return typeof window !== 'undefined' ? window.location.origin : ''
+  return explicit || getApiBaseUrl()
 }
 
 const SOCKET_URL = resolveSocketUrl()
@@ -118,10 +113,6 @@ export const useChatStore = defineStore('chat', () => {
 
   function clearCallError() {
     callError.value = ''
-  }
-
-  function authHeaders() {
-    return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
   }
 
   function currentChatUnavailableMessage() {
@@ -544,7 +535,7 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   async function apiFetch(path, opts = {}) {
-    const response = await fetch(`${API}/api/chat${path}`, {
+    const response = await requestApi(`/api/chat${path}`, {
       ...opts,
       headers: {
         ...authHeaders(),

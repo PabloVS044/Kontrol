@@ -1,29 +1,22 @@
-function headers(token, companyId) {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-    'X-Company-ID': companyId,
-  }
-}
-
-export async function listIntegrations(token, companyId) {
-  const res = await fetch('/api/integrations', { headers: headers(token, companyId) })
+import { apiFetch as requestApi, authHeaders } from './api.js'
+export async function listIntegrations(_token, companyId) {
+  const res = await requestApi('/api/integrations', { headers: authHeaders({ 'X-Company-ID': companyId }) })
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
   return data.data
 }
 
-export async function getIntegrationConfig(token, companyId, slug) {
-  const res = await fetch(`/api/integrations/${slug}`, { headers: headers(token, companyId) })
+export async function getIntegrationConfig(_token, companyId, slug) {
+  const res = await requestApi(`/api/integrations/${slug}`, { headers: authHeaders({ 'X-Company-ID': companyId }) })
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
   return data.data
 }
 
-export async function saveIntegrationConfig(token, companyId, slug, { credentials, config }) {
-  const res = await fetch(`/api/integrations/${slug}`, {
+export async function saveIntegrationConfig(_token, companyId, slug, { credentials, config }) {
+  const res = await requestApi(`/api/integrations/${slug}`, {
     method: 'PUT',
-    headers: headers(token, companyId),
+    headers: authHeaders({ 'X-Company-ID': companyId }),
     body: JSON.stringify({ credentials, config }),
   })
   const data = await res.json()
@@ -31,10 +24,10 @@ export async function saveIntegrationConfig(token, companyId, slug, { credential
   return data
 }
 
-export async function toggleIntegration(token, companyId, slug, status) {
-  const res = await fetch(`/api/integrations/${slug}/toggle`, {
+export async function toggleIntegration(_token, companyId, slug, status) {
+  const res = await requestApi(`/api/integrations/${slug}/toggle`, {
     method: 'PATCH',
-    headers: headers(token, companyId),
+    headers: authHeaders({ 'X-Company-ID': companyId }),
     body: JSON.stringify({ status }),
   })
   const data = await res.json()
@@ -42,20 +35,20 @@ export async function toggleIntegration(token, companyId, slug, status) {
   return data.data
 }
 
-export async function testIntegration(token, companyId, slug) {
-  const res = await fetch(`/api/integrations/${slug}/test`, {
+export async function testIntegration(_token, companyId, slug) {
+  const res = await requestApi(`/api/integrations/${slug}/test`, {
     method: 'POST',
-    headers: headers(token, companyId),
+    headers: authHeaders({ 'X-Company-ID': companyId }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
   return data
 }
 
-export async function deleteIntegrationConfig(token, companyId, slug) {
-  const res = await fetch(`/api/integrations/${slug}`, {
+export async function deleteIntegrationConfig(_token, companyId, slug) {
+  const res = await requestApi(`/api/integrations/${slug}`, {
     method: 'DELETE',
-    headers: headers(token, companyId),
+    headers: authHeaders({ 'X-Company-ID': companyId }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

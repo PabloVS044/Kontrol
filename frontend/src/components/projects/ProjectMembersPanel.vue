@@ -236,6 +236,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
@@ -283,14 +284,6 @@ const invitation = computed(() => panel.value?.invitation ?? null)
 const canManageMembers = computed(() => panel.value?.can_manage_members === true)
 const assigningMember = computed(() => assigningMemberId.value !== null)
 
-function authHeaders(extraHeaders = {}) {
-  return {
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': authStore.idEmpresaActual,
-    ...extraHeaders,
-  }
-}
-
 function syncDrafts(data) {
   invitePermissionDrafts.value = data?.invitation?.permisos ? [...data.invitation.permisos] : []
 
@@ -310,7 +303,7 @@ async function loadPanel() {
   errorMessage.value = ''
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/members-panel`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/members-panel`, {
       headers: authHeaders(),
     })
     const payload = await res.json()
@@ -366,7 +359,7 @@ async function generateInvite() {
   generatingInvite.value = true
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/invitation`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/invitation`, {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ permisos: invitePermissionDrafts.value }),
@@ -396,7 +389,7 @@ async function deactivateInvite() {
   deactivatingInvite.value = true
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/invitation`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/invitation`, {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -441,7 +434,7 @@ async function assignMember() {
   assigningMemberId.value = Number(selectedMemberId.value)
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/members/${selectedMemberId.value}`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/members/${selectedMemberId.value}`, {
       method: 'PUT',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ permisos: assignPermissionDrafts.value }),
@@ -471,7 +464,7 @@ async function saveMemberPermissions(member) {
   savingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/members/${member.id_usuario}`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/members/${member.id_usuario}`, {
       method: 'PUT',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ permisos: getMemberDraftPermissions(member.id_usuario) }),
@@ -499,7 +492,7 @@ async function removeMember(member) {
   removingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/members/${member.id_usuario}`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/members/${member.id_usuario}`, {
       method: 'DELETE',
       headers: authHeaders(),
     })

@@ -89,16 +89,9 @@
 
     <div class="inventory-layout">
 
-    <!-- Estado: no autenticado -->
-    <ErrorState
-      v-if="authError"
-      :title="$t('inventory.authError.title')"
-      :message="$t('inventory.authError.message')"
-    />
-
     <!-- Estado: error genérico -->
     <ErrorState
-      v-else-if="fetchError"
+      v-if="fetchError"
       :title="$t('inventory.fetchError.title')"
       :message="fetchError"
     >
@@ -483,6 +476,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -510,7 +504,6 @@ const router = useRouter()
 const products       = ref([])
 const stockAlerts    = ref([])
 const loading        = ref(true)
-const authError      = ref(false)
 const fetchError     = ref(null)
 const searchQuery    = ref('')
 const activeCategory = ref('All')
@@ -542,14 +535,6 @@ function canRestock(product) {
  * `id_proyecto` explícito en vez de tomarlo del filtro: el alta de producto lo
  * elige en su propio modal y puede no coincidir con lo que se está mirando.
  */
-function authHeader(id_proyecto = null) {
-  const token   = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  if (id_proyecto) headers['X-Project-ID'] = id_proyecto
-  return headers
-}
-
 function requestProjectId() {
   return selectedProject.value?.id_proyecto
     ?? projects.value[0]?.id_proyecto
@@ -558,12 +543,9 @@ function requestProjectId() {
 }
 
 async function apiFetch(path) {
-  const res = await fetch(path, {
-    headers: authHeader(requestProjectId()),
+  const res = await requestApi(path, {
+    headers: authHeaders(requestProjectId()),
   })
-  if (res.status === 401) {
-    throw Object.assign(new Error('unauthenticated'), { status: 401 })
-  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
@@ -599,7 +581,6 @@ async function loadProjects() {
 
 async function loadData() {
   loading.value    = true
-  authError.value  = false
   fetchError.value = null
   try {
     const params = new URLSearchParams()
@@ -615,8 +596,7 @@ async function loadData() {
     products.value    = productosRes.data
     stockAlerts.value = alertasRes.data
   } catch (err) {
-    if (err.status === 401) authError.value = true
-    else fetchError.value = err.message
+    fetchError.value = err.message
   } finally {
     loading.value = false
   }
@@ -1065,9 +1045,9 @@ async function submitSale() {
     })
 
     // Single atomic request: the whole sale commits or nothing does.
-    const res = await fetch('/api/inventory-movements/sale', {
+    const res = await requestApi('/api/inventory-movements/sale', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({
         items,
         motivo: t('inventory.sale.movementReason'),
@@ -1131,9 +1111,9 @@ async function submitProduct(formData) {
   modalLoading.value = true
   modalError.value   = null
   try {
-    const res = await fetch('/api/products', {
+    const res = await requestApi('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader(formData.id_proyecto) },
+      headers: { 'Content-Type': 'application/json', ...authHeaders(formData.id_proyecto) },
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
@@ -1180,9 +1160,9 @@ async function submitEdit(payload) {
   try {
     // El proyecto sale del producto, no del filtro: editar desde la vista de
     // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
-    const res = await fetch(`/api/products/${product.id_producto}`, {
+    const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader(product.id_proyecto) },
+      headers: { 'Content-Type': 'application/json', ...authHeaders(product.id_proyecto) },
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1218,9 +1198,9 @@ async function confirmDelete() {
   deleteLoading.value = true
   deleteError.value   = null
   try {
-    const res = await fetch(`/api/products/${product.id_producto}`, {
+    const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeader(product.id_proyecto),
+      headers: authHeaders(product.id_proyecto),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
@@ -1265,9 +1245,9 @@ async function submitRestock(payload) {
   restockLoading.value = true
   restockError.value   = null
   try {
-    const res = await fetch('/api/inventory-movements', {
+    const res = await requestApi('/api/inventory-movements', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({
         tipo: 'ENTRADA',
         cantidad: payload.cantidad,

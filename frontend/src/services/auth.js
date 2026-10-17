@@ -1,3 +1,4 @@
+import { apiFetch as requestApi, resolveApiUrl } from './api.js'
 /**
  * Lee el cuerpo de una respuesta sin dar por hecho que es JSON.
  *
@@ -43,7 +44,8 @@ async function unwrap(response) {
 // ── Login ─────────────────────────────────────────────────────────────────────
 
 export async function loginUser(email, password, inviteToken) {
-  const response = await fetch('/api/auth/login', {
+  const response = await requestApi('/api/auth/login', {
+    auth: false,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -61,7 +63,8 @@ export async function loginUser(email, password, inviteToken) {
 export async function registerUser(firstName, lastName, email, password, options = {}) {
   const { inviteToken } = options
 
-  const response = await fetch('/api/auth/register', {
+  const response = await requestApi('/api/auth/register', {
+    auth: false,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -88,5 +91,5 @@ export function loginWithGoogle(inviteToken) {
   if (inviteToken) params.set('invite', inviteToken)
 
   const suffix = params.toString() ? `?${params}` : ''
-  window.location.href = `/api/auth/google${suffix}`
+  window.location.href = resolveApiUrl(`/api/auth/google${suffix}`)
 }

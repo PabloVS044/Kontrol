@@ -263,6 +263,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -309,18 +310,11 @@ const filters = computed(() => [
 ])
 
 // ── API ────────────────────────────────────────────────────────────────────
-function authHeaders() {
-  return {
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': String(authStore.idEmpresa),
-  }
-}
-
 async function loadSummary() {
   loading.value = true
   fetchError.value = null
   try {
-    const res = await fetch('/api/reports/summary', { headers: authHeaders() })
+    const res = await requestApi('/api/reports/summary', { headers: authHeaders() })
     if (!res.ok) throw new Error(`Error ${res.status}`)
     const json = await res.json()
     summary.value = json.data ?? { totales: null, proyectos: [] }
@@ -334,7 +328,7 @@ async function loadSummary() {
 async function loadReports() {
   loadingReports.value = true
   try {
-    const res = await fetch('/api/reports', { headers: authHeaders() })
+    const res = await requestApi('/api/reports', { headers: authHeaders() })
     if (!res.ok) throw new Error()
     reports.value = (await res.json()).data ?? []
   } catch {
@@ -517,7 +511,7 @@ async function runExport(format) {
  */
 async function registerExport(dataset, format) {
   try {
-    const res = await fetch('/api/reports/exports', {
+    const res = await requestApi('/api/reports/exports', {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(buildExportRegistration(dataset, format, { t })),
@@ -533,7 +527,7 @@ async function submitCreate(payload) {
   creating.value = true
   createError.value = null
   try {
-    const res = await fetch('/api/reports', {
+    const res = await requestApi('/api/reports', {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

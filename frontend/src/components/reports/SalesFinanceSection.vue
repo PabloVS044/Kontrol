@@ -106,6 +106,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
@@ -172,13 +173,6 @@ const range = computed(() => {
   return { desde: fmt(start), hasta: fmt(now), bucket: 'day' }
 })
 
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  return headers
-}
-
 async function load() {
   const r = range.value
   if (!r) return
@@ -196,7 +190,7 @@ async function load() {
       tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     })
     if (selectedProjectId.value) params.set('projectId', selectedProjectId.value)
-    const res = await fetch(`/api/inventory-movements/stats?${params}`, { headers: authHeaders() })
+    const res = await requestApi(`/api/inventory-movements/stats?${params}`, { headers: authHeaders() })
     if (!res.ok) throw new Error(`Error ${res.status}`)
     const json = await res.json()
     resumen.value = json.data.resumen

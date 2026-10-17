@@ -71,6 +71,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
@@ -88,10 +89,9 @@ const toggling  = ref(null)
 async function toggleStatus(company) {
   toggling.value = company.id_empresa
   try {
-    const res = await fetch(`/api/global/companies/${company.id_empresa}/status`, {
+    const res = await requestApi(`/api/global/companies/${company.id_empresa}/status`, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${authStore.token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ activo: !company.activo }),
@@ -134,8 +134,7 @@ const sorted = computed(() => {
 
 onMounted(async () => {
   try {
-    const res  = await fetch('/api/admin/companies', {
-      headers: { Authorization: `Bearer ${authStore.token}` },
+    const res  = await requestApi('/api/admin/companies', {
     })
     const json = await res.json()
     if (!res.ok) throw new Error(json.message ?? 'Error')
