@@ -108,6 +108,11 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
   font-size: var(--nf-digit-size);
   line-height: 1;
   color: var(--k-color-primary);
+  /* Las cifras de Playfair se dibujan en la parte baja de la caja de línea:
+     el centro del «4» queda 0.22em por debajo del centro de la caja (medido
+     con measureText), y el modelo 3D sí está centrado en la suya. Subirlas
+     alinea los tres centros. */
+  transform: translateY(-0.22em);
 }
 
 /* Glitch: dos copias del dígito, una en el rojo de error y otra en el dorado
