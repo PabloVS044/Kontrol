@@ -1,11 +1,28 @@
 <template>
   <main class="nf-root">
     <section class="nf-card" aria-labelledby="nf-title">
-      <img src="@/assets/img/kontrol.png" alt="Kontrol" class="nf-logo" />
-      <p class="nf-code" aria-hidden="true">404</p>
+      <!-- «4 K 4»: el logo 3D del login ocupa el lugar del cero. -->
+      <div class="nf-code" role="img" :aria-label="t('notFound.codeLabel')">
+        <span class="nf-digit" data-text="4" aria-hidden="true">4</span>
+        <KontrolLogo3D
+          class="nf-logo3d"
+          width="var(--nf-logo-size)"
+          height="var(--nf-logo-size)"
+          :intensity="0.6"
+          aria-hidden="true"
+        />
+        <span class="nf-digit nf-digit--late" data-text="4" aria-hidden="true">4</span>
+      </div>
+
       <h1 id="nf-title" class="nf-title">{{ t('notFound.title') }}</h1>
       <p class="nf-text">{{ t('notFound.description') }}</p>
-      <p class="nf-path">{{ route.fullPath }}</p>
+
+      <p class="nf-path">
+        <XCircleIcon class="nf-path-icon" :size="14" aria-hidden="true" />
+        <span class="visually-hidden">{{ t('notFound.missingPath') }}</span>
+        <s class="nf-path-url">{{ route.fullPath }}</s>
+      </p>
+
       <div class="nf-actions">
         <RouterLink :to="home" class="nf-btn nf-btn--primary">{{ t('notFound.home') }}</RouterLink>
         <button v-if="canGoBack" type="button" class="nf-btn nf-btn--ghost" @click="router.back()">
@@ -20,6 +37,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { XCircleIcon } from 'lucide-vue-next'
+import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
@@ -42,6 +61,9 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
 
 <style scoped>
 .nf-root {
+  --nf-digit-size: clamp(96px, 16vw, 176px);
+  --nf-logo-size: clamp(140px, 22vw, 250px);
+
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -56,31 +78,119 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
   flex-direction: column;
   align-items: center;
   gap: var(--k-space-3);
-  max-width: 480px;
+  max-width: 560px;
   text-align: center;
 }
 
 /* Sin preflight de Tailwind: <h1> y <p> traen el margen por defecto del
-   navegador (1em, y en el código son 160px). El espaciado lo da el gap. */
+   navegador. El espaciado lo da el gap. */
 .nf-card > * {
   margin: 0;
 }
 
-.nf-logo {
-  width: 40px;
-  height: 40px;
-  margin-bottom: var(--k-space-5);
+/* ── 4 K 4 ─────────────────────────────────────────────── */
+.nf-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--k-space-3);
 }
 
-.nf-code {
+/* El modelo ocupa ~70 % de su lienzo; el margen negativo junta los 4 con la K. */
+.nf-logo3d {
+  flex: none;
+  margin: 0 calc(var(--nf-logo-size) * -0.12);
+}
+
+.nf-digit {
+  position: relative;
   font-family: var(--k-font-display);
-  font-size: clamp(96px, 18vw, 160px);
+  font-size: var(--nf-digit-size);
   line-height: 1;
   color: var(--k-color-primary);
-  letter-spacing: var(--k-tracking-tight);
-  margin-bottom: var(--k-space-5);
 }
 
+/* Glitch: dos copias del dígito, una en el rojo de error y otra en el dorado
+   oscuro, que se desplazan y recortan en ráfagas cortas. Casi todo el ciclo
+   el número se ve limpio; el fallo aparece y se va. */
+.nf-digit::before,
+.nf-digit::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nf-digit::before {
+  color: var(--k-state-error-text);
+  animation: nf-glitch-a 4.2s steps(1) infinite;
+}
+
+.nf-digit::after {
+  color: var(--k-color-primary-2);
+  animation: nf-glitch-b 4.2s steps(1) infinite;
+}
+
+/* El segundo 4 falla en otro momento que el primero. */
+.nf-digit--late::before,
+.nf-digit--late::after {
+  animation-delay: -1.7s;
+}
+
+@keyframes nf-glitch-a {
+  0%,
+  84%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  86% {
+    opacity: 0.95;
+    transform: translate(-10px, 3px);
+    clip-path: inset(12% 0 58% 0);
+  }
+  89% {
+    opacity: 0.95;
+    transform: translate(9px, -3px);
+    clip-path: inset(62% 0 8% 0);
+  }
+  92% {
+    opacity: 0.85;
+    transform: translate(-7px, 0);
+    clip-path: inset(36% 0 40% 0);
+  }
+}
+
+@keyframes nf-glitch-b {
+  0%,
+  85%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  87% {
+    opacity: 0.9;
+    transform: translate(10px, -2px);
+    clip-path: inset(48% 0 22% 0);
+  }
+  90% {
+    opacity: 0.9;
+    transform: translate(-9px, 3px);
+    clip-path: inset(6% 0 70% 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-digit::before,
+  .nf-digit::after {
+    display: none;
+  }
+}
+
+/* ── Texto ─────────────────────────────────────────────── */
 .nf-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-display-2);
@@ -89,22 +199,46 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
 }
 
 .nf-text {
+  max-width: 440px;
   font-size: var(--k-font-size-body-large);
   line-height: 1.6;
   color: var(--k-text-muted);
 }
 
+/* La ruta pedida, tachada y marcada en rojo: es la que no existe. */
 .nf-path {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-space-2);
   max-width: 100%;
   padding: var(--k-space-1) var(--k-space-3);
-  border: var(--k-border-width) solid var(--k-color-border);
+  border: var(--k-border-width) solid var(--k-state-error-text);
   border-radius: var(--k-radius-sm);
   font-family: var(--k-font-mono);
   font-size: var(--k-font-size-caption-lg);
+  color: var(--k-state-error-text);
+}
+
+.nf-path-icon {
+  flex: none;
+}
+
+.nf-path-url {
   color: var(--k-text-dim);
+  text-decoration-color: var(--k-state-error-text);
   overflow-wrap: anywhere;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Acciones ──────────────────────────────────────────── */
 .nf-actions {
   display: flex;
   flex-wrap: wrap;

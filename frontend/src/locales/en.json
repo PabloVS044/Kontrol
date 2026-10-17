@@ -2256,6 +2256,8 @@
     "title": "This page doesn't exist",
     "description": "The address may be mistyped, or the page was moved or is no longer available.",
     "home": "Go to home",
-    "back": "Go back"
+    "back": "Go back",
+    "codeLabel": "Error 404",
+    "missingPath": "Path that does not exist:"
   }
 }

@@ -48,6 +48,8 @@ async function montar({ user, token, historyState = {} } = {}) {
   const wrapper = mount(NotFoundView, {
     attachTo: document.body,
     global: {
+      // three.js necesita WebGL, que happy-dom no tiene.
+      stubs: { KontrolLogo3D: true },
       plugins: [
         router,
         createI18n({ legacy: false, locale: 'es', fallbackLocale: 'en', messages: { es, en } }),
@@ -70,11 +72,19 @@ afterEach(() => {
 })
 
 describe('NotFoundView', () => {
-  it('muestra el código, el texto traducido y la ruta pedida', async () => {
+  it('muestra «4 K 4» con el logo 3D en lugar del cero', async () => {
     const w = await montar()
-    expect(w.text()).toContain('404')
+    const codigo = w.find('.nf-code')
+    expect(codigo.attributes('aria-label')).toBe(es.notFound.codeLabel)
+    expect(codigo.findAll('.nf-digit').map((d) => d.text())).toEqual(['4', '4'])
+    expect(codigo.findComponent({ name: 'KontrolLogo3D' }).exists()).toBe(true)
+  })
+
+  it('muestra el texto traducido y la ruta pedida tachada', async () => {
+    const w = await montar()
     expect(w.find('h1').text()).toBe(es.notFound.title)
-    expect(w.find('.nf-path').text()).toBe('/no/existe?x=1')
+    expect(w.find('.nf-path s').text()).toBe('/no/existe?x=1')
+    expect(w.find('.nf-path .visually-hidden').text()).toBe(es.notFound.missingPath)
   })
 
   it('sin sesión, «Ir al inicio» lleva a la landing', async () => {
