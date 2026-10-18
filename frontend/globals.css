@@ -1,7 +1,15 @@
+/* Tailwind 4 (DT-08). Se importan las piezas por separado en lugar del
+   paquete completo (`tailwindcss`) para mantener lo que hacía la config de v3:
+   - Sin `preflight.css`: equivale al `preflight: false` anterior.
+   - `utilities.css` sin `layer(...)`: en v3 las utilidades no iban en una
+     capa CSS; meterlas en `@layer utilities` las haría perder contra
+     cualquier selector sin capa (p. ej. `p { ... }` de este archivo).
+   - `source(none)`: solo se escanean los `content` de tailwind.config.mjs,
+     no todo el proyecto (detección automática de v4). */
 @import './src/styles/theme.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' source(none);
+@config './tailwind.config.mjs';
 
 :root {
   --Primary: var(--k-color-primary);

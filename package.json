@@ -14,8 +14,9 @@
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run dev -w backend",
     "build": "npm run build -w frontend",
-    "lint": "eslint frontend backend",
-    "lint:fix": "eslint frontend backend --fix",
+    "lint": "eslint frontend backend scripts",
+    "lint:fix": "eslint frontend backend scripts --fix",
+    "audit:ci": "node scripts/audit-check.mjs",
     "format": "prettier --write",
     "install:all": "npm install"
   },
@@ -33,5 +34,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.63.4"
+  },
+  "overrides": {
+    "effect": "^3.22.3"
   }
 }

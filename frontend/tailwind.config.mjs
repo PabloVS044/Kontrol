@@ -6,16 +6,17 @@
  * misma fuente de verdad y no pueden divergir. Para cambiar un color se edita
  * el token, nunca este archivo.
  *
- * `preflight: false` es deliberado: el reset global de Tailwind alteraría
+ * Sin preflight, deliberadamente: el reset global de Tailwind alteraría
  * márgenes y tipografía en las 19 hojas CSS que todavía no se han migrado
- * (SCRUM-14..17). Reactivarlo solo cuando no quede CSS legacy.
+ * (SCRUM-14..17). Con Tailwind 4 `corePlugins` ya no existe; el preflight
+ * se excluye al no importar `tailwindcss/preflight.css` en `globals.css`.
+ * Reactivarlo solo cuando no quede CSS legacy.
+ *
+ * Tailwind 4 carga este archivo por la directiva `@config` de `globals.css`.
  *
  * @type {import('tailwindcss').Config}
  */
 export default {
-  corePlugins: {
-    preflight: false,
-  },
   content: ['./index.html', './src/**/*.{vue,js}'],
   theme: {
     extend: {

@@ -11,7 +11,7 @@
  *  - Consumir siempre `var(--k-*)`. Las variables sin prefijo (`--Primary`,
  *    `--Text`, …) son alias legacy definidos en `globals.css` y están congelados:
  *    existen para que las pantallas aún no migradas sigan funcionando.
- *  - Tailwind lee estos mismos tokens (ver `tailwind.config.js`), así que las
+ *  - Tailwind lee estos mismos tokens (ver `tailwind.config.mjs`), así que las
  *    clases utilitarias y el CSS plano no pueden divergir.
  */
 
