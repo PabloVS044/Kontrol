@@ -415,6 +415,8 @@ En CI las corre `.github/workflows/integration-regression.yml` en cada PR a `mai
 
 El [expediente legal de Kontrol](docs/legal/README.md) reúne el marco para Guatemala, los borradores de Términos y Condiciones y Política de Privacidad, el inventario verificable de datos y la revisión de proveedores. Incluye el alcance de Stripe exclusivamente en modo test, sin cobros reales.
 
+La versión pública resumida está en la vista `/legal`, enlazada desde el pie de página, con el contacto `support@kontrol.it.com`. Al entrar por primera vez, cada usuario debe aceptar los Términos en un aviso bloqueante; la aceptación se guarda en el navegador y se vuelve a pedir al subir `LEGAL_VERSION` en `frontend/src/utils/legal.js`.
+
 Consulta en el expediente las reservas de investigación y los pendientes antes de publicar los documentos o usar el producto comercialmente. Los textos requieren revisión profesional en Guatemala.
 
 ---

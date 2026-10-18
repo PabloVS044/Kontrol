@@ -4,6 +4,16 @@
 
 **CERRADA la investigación y decisión del marco legal, con reservas documentales. Los Términos y Condiciones y la Política de Privacidad son borradores internos versión 0.1: NO VIGENTES, pendientes de aprobación y publicación.** Este expediente no certifica cumplimiento integral, no verifica de forma exhaustiva la vigencia legislativa y no autoriza lanzamiento. Requiere revisión profesional en Guatemala antes de uso comercial.
 
+## Actualización del 17 de octubre de 2026: publicación y aceptación
+
+El equipo decidió publicar en la vista `/legal` una **versión 1.0 resumida** de los Términos y Condiciones, el Aviso de Privacidad y la política de cookies y almacenamiento. Los textos viven en `frontend/src/locales` (`legal.*`) y siguen los borradores 0.1 de esta carpeta, que se conservan como expediente interno.
+
+| Bloqueo | Qué cambia | Qué sigue pendiente |
+| --- | --- | --- |
+| O01 · Contacto | Canal legal, de privacidad y reclamos: `support@kontrol.it.com`, publicado en `/legal#contact`. | El buzón debe configurarse y probarse antes de desplegar. Integrantes, NIT y domicilio siguen PENDIENTES. |
+| O04 · Aceptación | Aviso bloqueante (`LegalConsentModal.vue`) la primera vez que un usuario entra con sesión: casilla con enlace a los Términos y botón Aceptar. Sin aceptar no se usa la plataforma. | **Decisión del equipo: la aceptación se guarda solo en el navegador** (versión y usuarios en `localStorage`), sin registro en el servidor. No hay prueba recuperable de quién aceptó ni cuándo; borrar los datos del navegador o cambiar de equipo vuelve a pedirla. |
+| O13 · Cambios | Subir `LEGAL_VERSION` en `frontend/src/utils/legal.js` vuelve a pedir la aceptación a todos los usuarios. | Revisión profesional y resto de bloqueos de la matriz. |
+
 ## Índice y estado de los entregables
 
 | Entregable | Documento local | Estado y límite |
