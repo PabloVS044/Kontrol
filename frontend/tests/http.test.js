@@ -23,10 +23,10 @@ describe('shared HTTP client', () => {
 
     const headers = authHeaders({ 'X-Trace-ID': 'trace-1' }, 19)
 
-    expect(headers.get('Authorization')).toBe('Bearer session-token')
-    expect(headers.get('X-Company-ID')).toBe('42')
-    expect(headers.get('X-Project-ID')).toBe('19')
-    expect(headers.get('X-Trace-ID')).toBe('trace-1')
+    expect(headers.Authorization).toBe('Bearer session-token')
+    expect(headers['X-Company-ID']).toBe('42')
+    expect(headers['X-Project-ID']).toBe('19')
+    expect(headers['X-Trace-ID']).toBe('trace-1')
   })
 
   it('retries a transient GET response once', async () => {
