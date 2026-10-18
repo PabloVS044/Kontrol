@@ -67,7 +67,6 @@
 import { apiFetch as requestApi } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '@/stores/auth'
 import { translateRole } from '@/utils/roles.js'
 
 const { t, te } = useI18n()
@@ -75,7 +74,6 @@ const { t, te } = useI18n()
 // El rol llega en inglés desde la base de datos: es un valor del esquema.
 const roleLabel = (rol) => translateRole(rol, { t, te })
 
-const authStore = useAuthStore()
 const users     = ref([])
 const loading   = ref(true)
 const error     = ref(null)

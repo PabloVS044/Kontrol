@@ -488,7 +488,6 @@ import TaskModal       from '../components/projects/TaskModal.vue'
 import TaskDetailModal from '../components/projects/TaskDetailModal.vue'
 import TeamModal       from '../components/projects/TeamModal.vue'
 import TeamDetailModal from '../components/projects/TeamDetailModal.vue'
-import { useAuthStore } from '../stores/auth'
 import {
   statusStyle, statusLabel,
   formatDate, formatMoney,
@@ -498,7 +497,6 @@ import './ProjectDetailsView.css'
 const { t } = useI18n()
 const route  = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 

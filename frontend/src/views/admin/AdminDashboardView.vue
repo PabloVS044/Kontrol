@@ -135,9 +135,7 @@
 <script setup>
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 
-const authStore = useAuthStore()
 const stats     = ref({})
 const companies = ref([])
 const users     = ref([])

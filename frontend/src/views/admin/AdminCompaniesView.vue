@@ -74,11 +74,9 @@
 import { apiFetch as requestApi } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
 
-const authStore = useAuthStore()
 const companies = ref([])
 const loading   = ref(true)
 const error     = ref(null)

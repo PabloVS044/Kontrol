@@ -109,11 +109,9 @@
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '../../stores/auth'
 import { useSaleConfigStore } from '../../stores/saleConfig'
 
 const { t } = useI18n()
-const authStore = useAuthStore()
 const saleConfigStore = useSaleConfigStore()
 
 defineProps({
