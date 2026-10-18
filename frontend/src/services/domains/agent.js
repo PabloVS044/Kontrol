@@ -1,3 +1,3 @@
 import { createDomainService } from './createDomainService.js'
 
-export const requestAgent = createDomainService('agent')
+export const requestAgent = createDomainService('agent', { json: true })

@@ -87,7 +87,7 @@ export const useAuthStore = defineStore('auth', {
     async loadEmpresas() {
       if (!this.token) return
       try {
-        const res = await requestApi('/api/companies/my-companies')
+        const res = await requestApi('/api/companies/my-companies', { token: this.token })
         if (!res.ok) return
         const { data } = await res.json()
         this.setEmpresas(data)
@@ -116,9 +116,8 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         const res = await requestApi('/api/companies/access-context', {
-          headers: {
-            'X-Company-ID': this.empresaActual.id_empresa,
-          },
+          token: this.token,
+          companyId: this.empresaActual.id_empresa,
         })
 
         if (!res.ok) {
@@ -136,7 +135,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchMe() {
       if (!this.token) return
       try {
-        const res = await requestApi('/api/auth/me')
+        const res = await requestApi('/api/auth/me', { token: this.token })
         if (!res.ok) return
         const { data } = await res.json()
         this.setUser(data)

@@ -50,7 +50,9 @@ export function apiFetch(path, options) {
 
   const pathname = path.startsWith('http') ? new URL(path).pathname : path
   const domain = pathname.match(/^\/?api\/([^/?]+)/)?.[1]
-  const request = Object.hasOwn(domainServices, domain) ? domainServices[domain] : null
+  const request = Object.prototype.hasOwnProperty.call(domainServices, domain)
+    ? domainServices[domain]
+    : null
   if (!request) {
     throw new TypeError(`No API service is registered for ${domain || path}`)
   }

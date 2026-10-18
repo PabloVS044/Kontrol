@@ -36,26 +36,43 @@ function getStoredCompanyId() {
   }
 }
 
-export function authHeaders(extraHeaders = {}, projectId = null) {
-  const headers = new Headers()
-  const token = getStoredToken()
-  const companyId = getStoredCompanyId()
-  const scopedProjectId = typeof extraHeaders === 'number' || typeof extraHeaders === 'string'
-    ? extraHeaders
-    : projectId
+function appendHeader(headers, name, value) {
+  const existingName = Object.keys(headers).find((key) => key.toLowerCase() === name.toLowerCase())
+  headers[existingName || name] = value
+}
 
-  if (token) headers.set('Authorization', `Bearer ${token}`)
-  if (companyId) headers.set('X-Company-ID', String(companyId))
-  if (scopedProjectId) headers.set('X-Project-ID', String(scopedProjectId))
-  if (extraHeaders && typeof extraHeaders === 'object') {
-    new Headers(extraHeaders).forEach((value, key) => headers.set(key, value))
+function toHeaderObject(input = {}) {
+  if (input instanceof Headers) {
+    return Object.fromEntries(input.entries())
+  }
+  return { ...input }
+}
+
+export function authHeaders(extraHeaders = {}, context = {}) {
+  const options = context && typeof context === 'object' ? context : {}
+  const projectId = typeof context === 'number' || typeof context === 'string'
+    ? context
+    : options.projectId
+  const token = options.token !== undefined
+    ? options.token
+    : getStoredToken()
+  const companyId = options.companyId !== undefined
+    ? options.companyId
+    : getStoredCompanyId()
+  const headers = {}
+
+  if (token) appendHeader(headers, 'Authorization', `Bearer ${token}`)
+  if (companyId) appendHeader(headers, 'X-Company-ID', String(companyId))
+  if (projectId) appendHeader(headers, 'X-Project-ID', String(projectId))
+  for (const [name, value] of Object.entries(toHeaderObject(extraHeaders))) {
+    appendHeader(headers, name, value)
   }
 
   return headers
 }
 
-function handleUnauthorized(url) {
-  if (!getStoredToken()) return
+function handleUnauthorized(url, token) {
+  if (!token) return
   clearStoredToken()
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('api:unauthorized', { detail: { url } }))
@@ -65,14 +82,21 @@ function handleUnauthorized(url) {
 export async function apiFetch(path, options = {}) {
   const {
     auth = true,
+    token,
+    companyId,
+    projectId,
+    json = false,
     ...fetchOptions
   } = options
   const headers = auth
-    ? authHeaders(fetchOptions.headers)
-    : new Headers(fetchOptions.headers)
+    ? authHeaders(fetchOptions.headers, { token, companyId, projectId })
+    : toHeaderObject(fetchOptions.headers)
 
-  if (fetchOptions.body != null && typeof fetchOptions.body === 'string' && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json')
+  if (
+    (json || (typeof fetchOptions.body === 'string' && fetchOptions.body !== '')) &&
+    !Object.keys(headers).some((name) => name.toLowerCase() === 'content-type')
+  ) {
+    appendHeader(headers, 'Content-Type', 'application/json')
   }
 
   const url = resolveApiUrl(path)
@@ -97,6 +121,6 @@ export async function apiFetch(path, options = {}) {
     break
   }
 
-  if (response.status === 401) handleUnauthorized(url)
+  if (response.status === 401) handleUnauthorized(url, token ?? getStoredToken())
   return response
 }

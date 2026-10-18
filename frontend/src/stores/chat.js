@@ -537,11 +537,8 @@ export const useChatStore = defineStore('chat', () => {
   async function apiFetch(path, opts = {}) {
     const response = await requestApi(`/api/chat${path}`, {
       ...opts,
-      headers: {
-        ...authHeaders(),
-        ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
-        ...opts.headers,
-      },
+      token: authStore.token,
+      headers: opts.headers,
     })
 
     const payload = await response.json().catch(() => ({
@@ -918,7 +915,7 @@ export const useChatStore = defineStore('chat', () => {
     try {
       const uploaded = await uploadthing.uploadFiles('chatAttachment', {
         files,
-        headers: () => authHeaders(),
+        headers: () => authHeaders({}, { token: authStore.token }),
       })
 
       const attachments = uploaded

@@ -1,3 +1,3 @@
 import { createDomainService } from './createDomainService.js'
 
-export const requestIntegrations = createDomainService('integrations')
+export const requestIntegrations = createDomainService('integrations', { json: true })

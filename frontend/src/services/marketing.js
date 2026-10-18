@@ -1,4 +1,4 @@
-import { apiFetch as requestApi, authHeaders } from './api.js'
+import { apiFetch as requestApi } from './api.js'
 // HU-28 · Administración interna de publicaciones de marketing.
 
 async function readJson(res) {
@@ -12,7 +12,7 @@ async function readJson(res) {
  * @param {{ status?: string, platform?: string, projectId?: number|string }} filters
  * @returns {Promise<{ data: object[], capabilities: { canManageMarketing: boolean } }>}
  */
-export async function listPublications(_token, companyId, filters = {}) {
+export async function listPublications(token, companyId, filters = {}) {
   const query = new URLSearchParams()
   // Un filtro vacío se omite para no mandar `status=` y que el backend lo rechace.
   for (const [key, value] of Object.entries(filters)) {
@@ -21,7 +21,9 @@ export async function listPublications(_token, companyId, filters = {}) {
 
   const suffix = query.toString() ? `?${query}` : ''
   const res = await requestApi(`/api/marketing/publications${suffix}`, {
-    headers: authHeaders({ 'X-Company-ID': companyId }),
+    token,
+    companyId,
+    json: true,
   })
   const body = await readJson(res)
 
@@ -31,38 +33,44 @@ export async function listPublications(_token, companyId, filters = {}) {
   }
 }
 
-export async function createPublication(_token, companyId, publication) {
+export async function createPublication(token, companyId, publication) {
   const res = await requestApi('/api/marketing/publications', {
     method: 'POST',
-    headers: authHeaders({ 'X-Company-ID': companyId }),
+    token,
+    companyId,
+    json: true,
     body: JSON.stringify(publication),
   })
 
   return (await readJson(res)).data
 }
 
-export async function updatePublication(_token, companyId, publicationId, changes) {
+export async function updatePublication(token, companyId, publicationId, changes) {
   const res = await requestApi(`/api/marketing/publications/${publicationId}`, {
     method: 'PUT',
-    headers: authHeaders({ 'X-Company-ID': companyId }),
+    token,
+    companyId,
+    json: true,
     body: JSON.stringify(changes),
   })
 
   return (await readJson(res)).data
 }
 
-export async function deletePublication(_token, companyId, publicationId) {
+export async function deletePublication(token, companyId, publicationId) {
   const res = await requestApi(`/api/marketing/publications/${publicationId}`, {
     method: 'DELETE',
-    headers: authHeaders({ 'X-Company-ID': companyId }),
+    token,
+    companyId,
+    json: true,
   })
 
   await readJson(res)
 }
 
 /** Proyectos de la empresa, para poder vincular la publicación. */
-export async function listProjectsForPublications(_token, companyId) {
-  const res = await requestApi('/api/projects', { headers: authHeaders({ 'X-Company-ID': companyId }) })
+export async function listProjectsForPublications(token, companyId) {
+  const res = await requestApi('/api/projects', { token, companyId, json: true })
 
   return (await readJson(res)).data ?? []
 }

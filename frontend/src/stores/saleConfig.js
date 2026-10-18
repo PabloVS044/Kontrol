@@ -47,9 +47,10 @@ export const useSaleConfigStore = defineStore('saleConfig', {
 
       this.loading = true
       try {
-        const headers = { 'X-Company-ID': id }
-        if (auth.token) headers.Authorization = `Bearer ${auth.token}`
-        const res = await requestApi('/api/companies/sale-config', { headers })
+        const res = await requestApi('/api/companies/sale-config', {
+          token: auth.token,
+          companyId: id,
+        })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const body = await res.json()
         this.config = { ...this.config, ...body.data }

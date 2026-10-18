@@ -1,3 +1,3 @@
 import { createDomainService } from './createDomainService.js'
 
-export const requestMarketing = createDomainService('marketing')
+export const requestMarketing = createDomainService('marketing', { json: true })

@@ -1,6 +1,6 @@
 import { apiFetch as request } from '../http.js'
 
-export function createDomainService(domain) {
+export function createDomainService(domain, defaults = {}) {
   const prefix = `/api/${domain}`
 
   return (path, options) => {
@@ -15,6 +15,6 @@ export function createDomainService(domain) {
       throw new TypeError(`The ${domain} service cannot request ${pathname}`)
     }
 
-    return request(path, options)
+    return request(path, { ...defaults, ...options })
   }
 }
