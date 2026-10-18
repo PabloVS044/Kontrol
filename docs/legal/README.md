@@ -23,6 +23,8 @@ El equipo decidió publicar en la vista `/legal` una **versión 1.0 resumida** d
 | Política de Privacidad | [Borrador de privacidad](politica-privacidad.md) | 0.1 BORRADOR. Entrada en vigencia PENDIENTE DE APROBACIÓN Y PUBLICACIÓN. |
 | Anexo técnico de datos | [Inventario de datos](inventario-datos.md) | Cierre estático: nueve secciones, 38 tablas/278 columnas PostgreSQL, cuatro modelos/56 rutas de campo Mongo. No auditoría de producción. |
 | Anexo de terceros | [Proveedores y destinatarios](anexo-proveedores.md) | Revisión documental, con cuentas/contratos/regiones pendientes. No todos los DPA fueron accesibles ni se verificaron las aceptaciones. |
+| Licencia propia | [Decisión de licencia](licencia.md) | 17-10-2026. Software propietario, todos los derechos reservados por los integrantes del equipo (no la UVG). Pendientes: nombres de los titulares y acuerdo entre integrantes. |
+| Licencias de terceros | [Auditoría](licencias/README.md) e [inventario](licencias/inventario.md) | 17-10-2026, generado con CycloneDX sobre el lockfile posterior a DT-08. Sin copyleft fuerte; atribuciones en `frontend/public/THIRD-PARTY-NOTICES.txt`. |
 | Informe ejecutivo | [Resumen del expediente](../../reports/Marco%20legal%20de%20Kontrol.md) | Remite a los entregables; no duplica el marco legal ni la investigación. |
 | Cookies y acuerdo de tratamiento | Cookies/almacenamiento y acuerdo de tratamiento por instrucciones | PENDIENTES. Sin enlace a archivos inexistentes; el acuerdo de tratamiento no se considera un DPA concluido. |
 | Avisos específicos | Avisos específicos del asistente IA y del alcance fiscal del POS | PENDIENTES como entregables separados; Términos y Condiciones y Política de Privacidad describen sus limitaciones actuales. |
