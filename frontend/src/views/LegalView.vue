@@ -11,11 +11,6 @@
         <h1 class="legal-title">{{ t('legal.title') }}</h1>
         <p class="legal-subtitle">{{ t('legal.subtitle') }}</p>
 
-        <div class="legal-status-bar">
-          <span class="legal-status-label">{{ t('legal.status.label') }}</span>
-          <span class="legal-status-tag">{{ t('legal.status.value') }}</span>
-        </div>
-
         <nav class="legal-quick-nav" :aria-label="t('legal.nav.ariaLabel')">
           <a href="#terms" class="legal-nav-pill">
             <FileText :size="16" />

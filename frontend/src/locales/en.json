@@ -2260,10 +2260,6 @@
     "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
-    "status": {
-      "label": "Document Status:",
-      "value": "Internal Draft v0.1 — For Guatemala"
-    },
     "nav": {
       "ariaLabel": "Legal sections navigation",
       "privacy": "Privacy Policy",

@@ -2260,10 +2260,6 @@
     "badge": "Marco legal y regulatorio",
     "title": "Términos, Privacidad y Cumplimiento",
     "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
-    "status": {
-      "label": "Estado del documento:",
-      "value": "Borrador interno v0.1 — Para Guatemala"
-    },
     "nav": {
       "ariaLabel": "Navegación de secciones legales",
       "privacy": "Aviso de Privacidad",

@@ -40,7 +40,7 @@ afterEach(() => {
 })
 
 describe('LegalView — Vista legal de Kontrol', () => {
-  it('renderiza el encabezado, título y estado del documento', async () => {
+  it('renderiza el encabezado y el título', async () => {
     const router = await createTestRouter()
     const wrapper = mount(LegalView, {
       global: {
@@ -52,7 +52,6 @@ describe('LegalView — Vista legal de Kontrol', () => {
 
     expect(wrapper.find('.legal-title').text()).toBe(es.legal.title)
     expect(wrapper.find('.legal-subtitle').text()).toBe(es.legal.subtitle)
-    expect(wrapper.find('.legal-status-tag').text()).toBe(es.legal.status.value)
   })
 
   it('incluye los tres accesos directos (#terms, #privacy, #cookies)', async () => {

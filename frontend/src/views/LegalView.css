@@ -69,26 +69,6 @@
   margin: 0;
 }
 
-.legal-status-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--k-space-2);
-  padding: 6px 12px;
-  background: rgba(var(--k-color-primary-rgb), 0.08);
-  border: 1px dashed var(--k-color-border);
-  border-radius: var(--k-radius-md);
-  font-size: var(--k-font-size-caption);
-}
-
-.legal-status-label {
-  color: var(--k-text-dim);
-}
-
-.legal-status-tag {
-  color: var(--k-color-primary);
-  font-weight: var(--k-font-weight-semibold);
-}
-
 /* ─── Quick Nav Pills ────────────────────────────────────────────────────── */
 .legal-quick-nav {
   display: flex;
