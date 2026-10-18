@@ -173,7 +173,7 @@
 .legal-section-body {
   display: flex;
   flex-direction: column;
-  gap: var(--k-space-3);
+  gap: var(--k-space-4);
   font-size: var(--k-font-size-body-main);
   color: var(--k-text-soft);
   line-height: 1.7;
@@ -181,6 +181,34 @@
 
 .legal-section-body p {
   margin: 0;
+}
+
+.legal-clause {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-1);
+}
+
+.legal-clause-title {
+  margin: 0;
+  font-size: var(--k-font-size-body-large);
+  font-weight: var(--k-font-weight-semibold);
+  color: var(--k-color-text);
+}
+
+.legal-contact-email {
+  align-self: flex-start;
+  font-size: var(--k-font-size-body-large);
+  font-weight: var(--k-font-weight-semibold);
+  color: var(--k-color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.legal-contact-email:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */

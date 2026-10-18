@@ -2260,39 +2260,152 @@
     "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
+    "updated": "Version {version} · Updated October 17, 2026",
     "nav": {
       "ariaLabel": "Legal sections navigation",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
-      "cookies": "Cookies & Storage"
+      "cookies": "Cookies & Storage",
+      "contact": "Contact"
     },
     "terms": {
       "badge": "Contract terms",
       "title": "Terms & Conditions of Service",
-      "lastUpdate": "Drafted: October 16, 2026 · Guatemala",
-      "p1": "Kontrol is a private, independent platform for operational business registration and management in Guatemala (projects, inventory, sales, and budgets). It is not affiliated with, endorsed by, nor does it act as a reporting platform for the SAT or any tax or financial authority.",
-      "p2": "The point of sale (POS) module and configured VAT calculations are strictly for internal company management: they do not issue certified electronic invoices (FEL) nor replace your tax filings or obligations.",
-      "p3": "Stripe payment integration is only planned in test demonstration mode (TEST), without real charges, automatic credit card billing, or active commercial subscription plans.",
-      "p4": "You retain full ownership of your company's data. The platform does not sell your information and has no authorization to use your business data for training artificial intelligence models.",
-      "p5": "The account owner or manager is responsible for invitations and permissions granted, and each user is responsible for their actions within the system. Kontrol does not disclaim its own legal liability for negligence or misconduct under Guatemalan law."
+      "clauses": [
+        {
+          "title": "1. Who provides the service",
+          "body": "Kontrol is a platform developed and operated by an independent team in Guatemala that is not yet incorporated as a company. For legal or privacy questions and complaints, write to {email}."
+        },
+        {
+          "title": "2. Acceptance",
+          "body": "To use Kontrol you must read and accept these Terms and the Privacy Notice; the platform will ask you to do so the first time you sign in. If you do not agree, do not use the service. You must be 18 or older and, if you act on behalf of a business or another person, have sufficient authority to do so."
+        },
+        {
+          "title": "3. What Kontrol is",
+          "body": "Kontrol is a private, independent platform for recording and managing business operations in Guatemala: projects, inventory, sales and budgets. It is not linked to, endorsed by, nor does it act as a reporting platform for SAT or any tax or financial authority."
+        },
+        {
+          "title": "4. Point of sale and taxes",
+          "body": "The point of sale (POS) and the configured VAT calculation are for your company's internal use: they do not issue certified electronic invoices (FEL) or replace your tax filings. You are responsible for issuing the required tax documents and for filing and paying your business's taxes."
+        },
+        {
+          "title": "5. Payments",
+          "body": "Kontrol does not charge anything today. The Stripe payment integration is planned only in demonstration mode (TEST): there are no real charges, card charges or subscription plans. Do not enter real cards or data in the demonstration. Your current access will not automatically become a paid service: before any charge we will inform you of the terms and you will have to accept them expressly."
+        },
+        {
+          "title": "6. Account, credentials and invitations",
+          "body": "Provide truthful information and protect your credentials; do not share your password or leave your session open on shared devices. The owner or administrator is responsible for the accounts, invitations and permissions they grant, and each user is responsible for their own conduct within the system."
+        },
+        {
+          "title": "7. Permitted use and third-party data",
+          "body": "Use Kontrol only for lawful activities. Do not access other people's accounts or projects, bypass permissions or upload harmful software. If you record data about customers, employees or suppliers, you must have their authorization or another legal basis to do so. Do not upload passwords, cards or identity documents that are not necessary."
+        },
+        {
+          "title": "8. Artificial intelligence assistant",
+          "body": "The assistant's answers may contain errors or omissions. Review them before making decisions: they do not replace accounting, tax, legal or other professional advice."
+        },
+        {
+          "title": "9. Your data and license of use",
+          "body": "You keep ownership of your company's data. You only grant us the permission needed to host, process and display it to the people and services you authorize within the platform. We do not sell your information or use it to train artificial intelligence models. Access to Kontrol does not transfer ownership of the software to you."
+        },
+        {
+          "title": "10. Availability and backups",
+          "body": "Kontrol may have errors, outages or maintenance. For now we do not offer a guaranteed service level or guaranteed data recovery, so keep your own copies of anything important, for example with the PDF or CSV reports."
+        },
+        {
+          "title": "11. Liability",
+          "body": "Each party is responsible for its own acts. Kontrol does not exclude its liability for its own fraud or negligence under the laws of Guatemala, nor does it limit any non-waivable rights the law grants you."
+        },
+        {
+          "title": "12. Suspension and termination",
+          "body": "We may suspend or close access for unlawful or abusive use, unauthorized access, security risks or an order from a competent authority. Whenever possible, we will tell you the reason and you will be able to clarify it. Deactivating an account does not automatically delete its data."
+        },
+        {
+          "title": "13. Changes to these Terms",
+          "body": "If we change these Terms or the Privacy Notice, we will publish the new version here and ask you to accept it before you continue using the platform."
+        },
+        {
+          "title": "14. Governing law and complaints",
+          "body": "These Terms are governed by the laws of the Republic of Guatemala. Disputes will be resolved before the competent courts as provided by law, without prejudice to the rights granted to you by the Consumer and User Protection Law. You can submit complaints to {email}."
+        }
+      ]
     },
     "privacy": {
       "badge": "Data Protection",
       "title": "Privacy Notice",
-      "lastUpdate": "Drafted: October 16, 2026 · Based on verifiable technical data inventory",
-      "p1": "We process only the information necessary to provide access to the platform and enable company collaboration: login credentials, company data, inventory records, sales, and session technical logs.",
-      "p2": "Kontrol's AI assistant (Qwen/vLLM) runs on team-operated infrastructure declared in Guatemala (ClawStitch server). When making queries, the assistant only receives relevant context (user, company, limited data samples, and your question) to generate the response.",
-      "p3": "Uploaded files and evidence are handled through cloud storage services, and optional integrations (Slack, Teams, Telegram, SMS) operate strictly under each company's voluntary configuration.",
-      "p4": "No commercial sale or transfer of personal data to third parties is performed. Your company can review, edit, and manage its records directly from the platform."
+      "clauses": [
+        {
+          "title": "1. Controller and contact",
+          "body": "The Kontrol team decides on account data and on the operation of the platform. The data your business records about customers, employees or suppliers is processed following your business's instructions, and your business must be authorized to record it. Privacy contact: {email}."
+        },
+        {
+          "title": "2. What data we process",
+          "body": "Account data (name, email, phone number if you provide it, and password stored as a hash), your business data, inventory, suppliers, projects, tasks, budgets and sales, chat messages, attachments, assistant queries and technical session and security logs, such as your IP address. If you sign in with Google, we receive your name, email and Google identifier."
+        },
+        {
+          "title": "3. What we use it for",
+          "body": "To give you access, operate the features you use, enable collaboration within your company, send the alerts you configure and protect the security of the service. We do not sell or commercially transfer personal data and we do not use it to train artificial intelligence models."
+        },
+        {
+          "title": "4. Artificial intelligence assistant",
+          "body": "Kontrol's assistant (Qwen/vLLM) runs on the team's own server located in Guatemala (ClawStitch). To answer, it receives your question and the necessary context: your email and role, the company, up to ten recent messages and limited samples of the queried data. The conversation history is stored so it can be shown to you, and you can delete it from the assistant."
+        },
+        {
+          "title": "5. Who we share information with",
+          "body": "With members of your company according to their permissions, and with providers that help us operate: database and hosting services, UploadThing for attachments, and Google if you choose to sign in with Google. If your business connects Slack, Microsoft Teams, Telegram, SMS, email or webhooks, alerts are sent to those destinations according to your configuration. Some of these providers may process data outside Guatemala."
+        },
+        {
+          "title": "6. How long we keep it",
+          "body": "We keep information while your account or company is active. We have not yet defined deletion periods per type of data, and deactivating an account does not erase its records: if you want us to delete your data, request it at {email}."
+        },
+        {
+          "title": "7. Your rights",
+          "body": "You can view and correct much of your information from the platform and download PDF or CSV reports. To request access, correction, a copy or the deletion of your personal data, write to {email} from the email address linked to your account. Some data may be retained when there is a legal obligation or a justified reason."
+        },
+        {
+          "title": "8. Security",
+          "body": "We store passwords as hashes (bcrypt) and encrypt integration credentials. No system is infallible: if you detect a security problem or improper access, let us know immediately at {email}."
+        },
+        {
+          "title": "9. Changes to this Notice",
+          "body": "We will publish any change to this Privacy Notice on this page and, when relevant, ask you to accept it again."
+        }
+      ]
     },
     "cookies": {
       "badge": "Local Storage",
       "title": "Cookie and Local Storage Policy",
-      "lastUpdate": "Browser session and preferences",
-      "p1": "Kontrol does not use advertising cookies or invasive cross-site tracking tools.",
-      "p2": "We use browser local storage (localStorage) exclusively to maintain your session securely and remember your interface preferences, such as selected language (Spanish or English) and visual theme.",
-      "p3": "When logging out from the user menu, session authentication tokens and data are cleared immediately from your browser."
+      "clauses": [
+        {
+          "title": "No advertising cookies",
+          "body": "Kontrol does not use advertising cookies or cross-site tracking tools."
+        },
+        {
+          "title": "Local storage",
+          "body": "We use the browser's local storage (localStorage) to keep your session, remember your interface preferences, such as language and visual theme, and remember which users accepted these terms in this browser."
+        },
+        {
+          "title": "External services",
+          "body": "To display the interface, your browser downloads fonts from Google Fonts and icons from Icons8. Those services receive your IP address and technical request data."
+        },
+        {
+          "title": "When you log out",
+          "body": "When you log out, the authentication tokens and data are removed from your browser. Language and theme preferences and the record of your acceptance of the terms are kept."
+        }
+      ]
+    },
+    "contact": {
+      "badge": "Support & Complaints",
+      "title": "Contact",
+      "copy": "For legal questions, requests about your personal data, security reports or complaints, write to us at:",
+      "note": "Write from the email address linked to your account so we can verify your identity before handling a request about your data."
     },
     "backToHome": "Back to Home"
+  },
+  "legalConsent": {
+    "ariaLabel": "Acceptance of the Terms and Conditions",
+    "checkbox": "I have read and accept the {terms}.",
+    "termsLink": "Terms and Conditions of Service",
+    "accept": "Accept"
   }
 }

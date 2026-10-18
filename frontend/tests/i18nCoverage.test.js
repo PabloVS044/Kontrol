@@ -19,6 +19,7 @@ const RAIZ = resolve(__dirname, '..', 'src')
 const ARCHIVOS = [
   'components/AppNavbar.vue',
   'components/Footer.vue',
+  'components/LegalConsentModal.vue',
   'components/Navbar.vue',
   'components/admin/AdminNavbar.vue',
   'components/common/LanguageSelector.vue',

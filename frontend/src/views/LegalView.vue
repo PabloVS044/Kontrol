@@ -24,58 +24,48 @@
             <Cookie :size="16" />
             <span>{{ t('legal.nav.cookies') }}</span>
           </a>
+          <a href="#contact" class="legal-nav-pill">
+            <Mail :size="16" />
+            <span>{{ t('legal.nav.contact') }}</span>
+          </a>
         </nav>
       </header>
 
       <div class="legal-content">
-        <!-- Términos del Servicio -->
-        <section id="terms" class="legal-section">
+        <!-- Términos del Servicio, Aviso de Privacidad y Cookies -->
+        <section
+          v-for="section in sections"
+          :id="section.id"
+          :key="section.id"
+          class="legal-section"
+        >
           <div class="legal-section-header">
             <div class="legal-section-meta">
-              <span class="legal-section-badge">{{ t('legal.terms.badge') }}</span>
-              <span class="legal-section-date">{{ t('legal.terms.lastUpdate') }}</span>
+              <span class="legal-section-badge">{{ t(`legal.${section.id}.badge`) }}</span>
+              <span class="legal-section-date">{{ t('legal.updated', { version: LEGAL_VERSION }) }}</span>
             </div>
-            <h2 class="legal-section-title">{{ t('legal.terms.title') }}</h2>
+            <h2 class="legal-section-title">{{ t(`legal.${section.id}.title`) }}</h2>
           </div>
           <div class="legal-section-body">
-            <p>{{ t('legal.terms.p1') }}</p>
-            <p>{{ t('legal.terms.p2') }}</p>
-            <p>{{ t('legal.terms.p3') }}</p>
-            <p>{{ t('legal.terms.p4') }}</p>
-            <p>{{ t('legal.terms.p5') }}</p>
+            <article v-for="(clause, index) in section.clauses" :key="index" class="legal-clause">
+              <h3 class="legal-clause-title">{{ clause.title }}</h3>
+              <p>{{ clause.body }}</p>
+            </article>
           </div>
         </section>
 
-        <!-- Aviso de Privacidad -->
-        <section id="privacy" class="legal-section">
+        <!-- Contacto -->
+        <section id="contact" class="legal-section">
           <div class="legal-section-header">
             <div class="legal-section-meta">
-              <span class="legal-section-badge">{{ t('legal.privacy.badge') }}</span>
-              <span class="legal-section-date">{{ t('legal.privacy.lastUpdate') }}</span>
+              <span class="legal-section-badge">{{ t('legal.contact.badge') }}</span>
             </div>
-            <h2 class="legal-section-title">{{ t('legal.privacy.title') }}</h2>
+            <h2 class="legal-section-title">{{ t('legal.contact.title') }}</h2>
           </div>
           <div class="legal-section-body">
-            <p>{{ t('legal.privacy.p1') }}</p>
-            <p>{{ t('legal.privacy.p2') }}</p>
-            <p>{{ t('legal.privacy.p3') }}</p>
-            <p>{{ t('legal.privacy.p4') }}</p>
-          </div>
-        </section>
-
-        <!-- Política de Cookies y Almacenamiento -->
-        <section id="cookies" class="legal-section">
-          <div class="legal-section-header">
-            <div class="legal-section-meta">
-              <span class="legal-section-badge">{{ t('legal.cookies.badge') }}</span>
-              <span class="legal-section-date">{{ t('legal.cookies.lastUpdate') }}</span>
-            </div>
-            <h2 class="legal-section-title">{{ t('legal.cookies.title') }}</h2>
-          </div>
-          <div class="legal-section-body">
-            <p>{{ t('legal.cookies.p1') }}</p>
-            <p>{{ t('legal.cookies.p2') }}</p>
-            <p>{{ t('legal.cookies.p3') }}</p>
+            <p>{{ t('legal.contact.copy') }}</p>
+            <a class="legal-contact-email" :href="`mailto:${SUPPORT_EMAIL}`">{{ SUPPORT_EMAIL }}</a>
+            <p>{{ t('legal.contact.note') }}</p>
           </div>
         </section>
       </div>
@@ -86,11 +76,25 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FileText, ShieldCheck, Cookie } from 'lucide-vue-next'
+import { FileText, ShieldCheck, Cookie, Mail } from 'lucide-vue-next'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
+import { LEGAL_VERSION, SUPPORT_EMAIL } from '../utils/legal.js'
 import './LegalView.css'
 
-const { t } = useI18n()
+const { t, tm, rt } = useI18n()
+
+// Las cláusulas viven en el diccionario como arreglo; el correo se interpola
+// aquí porque la `@` no puede ir dentro de un mensaje de vue-i18n.
+const sections = computed(() =>
+  ['terms', 'privacy', 'cookies'].map((id) => ({
+    id,
+    clauses: tm(`legal.${id}.clauses`).map((clause) => ({
+      title: rt(clause.title),
+      body: rt(clause.body, { email: SUPPORT_EMAIL }),
+    })),
+  })),
+)
 </script>

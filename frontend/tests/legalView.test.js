@@ -7,6 +7,7 @@ import es from '@/locales/es.json'
 import en from '@/locales/en.json'
 import LegalView from '@/views/LegalView.vue'
 import Footer from '@/components/Footer.vue'
+import { LEGAL_VERSION, SUPPORT_EMAIL } from '@/utils/legal.js'
 
 const Stub = { template: '<div />' }
 
@@ -54,7 +55,7 @@ describe('LegalView — Vista legal de Kontrol', () => {
     expect(wrapper.find('.legal-subtitle').text()).toBe(es.legal.subtitle)
   })
 
-  it('incluye los tres accesos directos (#terms, #privacy, #cookies)', async () => {
+  it('incluye los accesos directos (#terms, #privacy, #cookies, #contact)', async () => {
     const router = await createTestRouter()
     const wrapper = mount(LegalView, {
       global: {
@@ -65,11 +66,37 @@ describe('LegalView — Vista legal de Kontrol', () => {
     await flushPromises()
 
     const pills = wrapper.findAll('.legal-nav-pill')
-    expect(pills.length).toBe(3)
+    expect(pills.length).toBe(4)
     const hrefs = pills.map((p) => p.attributes('href'))
     expect(hrefs).toContain('#terms')
     expect(hrefs).toContain('#privacy')
     expect(hrefs).toContain('#cookies')
+    expect(hrefs).toContain('#contact')
+  })
+
+  it('muestra todas las cláusulas, la versión y el correo de contacto', async () => {
+    const router = await createTestRouter()
+    const wrapper = mount(LegalView, {
+      global: {
+        plugins: [router, createTestI18n('es')],
+        stubs: { Navbar: true, Footer: true },
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.findAll('#terms .legal-clause').length).toBe(es.legal.terms.clauses.length)
+    expect(wrapper.findAll('#privacy .legal-clause').length).toBe(es.legal.privacy.clauses.length)
+    expect(wrapper.findAll('#cookies .legal-clause').length).toBe(es.legal.cookies.clauses.length)
+    expect(wrapper.find('#terms .legal-clause-title').text()).toBe(es.legal.terms.clauses[0].title)
+
+    // El correo se interpola en las cláusulas: no puede quedar «{email}» suelto.
+    expect(wrapper.find('#terms').text()).toContain(SUPPORT_EMAIL)
+    expect(wrapper.text()).not.toContain('{email}')
+    expect(wrapper.find('#terms .legal-section-date').text()).toContain(LEGAL_VERSION)
+
+    const email = wrapper.find('#contact .legal-contact-email')
+    expect(email.attributes('href')).toBe(`mailto:${SUPPORT_EMAIL}`)
+    expect(email.text()).toBe(SUPPORT_EMAIL)
   })
 
   it('renderiza las tres secciones con sus respectivos identificadores para anclaje', async () => {
