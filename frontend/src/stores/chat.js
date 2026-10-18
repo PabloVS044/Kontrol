@@ -9,6 +9,7 @@ import {
   normalizeConversation,
   normalizeMessage,
 } from '../utils/chat.js'
+import { logger } from '../utils/logger.js'
 
 const API = import.meta.env.VITE_API_URL || window.location.origin
 
@@ -45,7 +46,7 @@ function resolveRtcConfiguration() {
         : fallbackIceServers,
     }
   } catch (error) {
-    console.warn('Invalid VITE_WEBRTC_ICE_SERVERS configuration. Falling back to STUN only.', error)
+    logger.warn('Invalid VITE_WEBRTC_ICE_SERVERS configuration. Falling back to STUN only.', error)
     return { iceServers: fallbackIceServers }
   }
 }
@@ -305,7 +306,7 @@ export const useChatStore = defineStore('chat', () => {
       try {
         await peerConnection.addIceCandidate(candidate ? new RTCIceCandidate(candidate) : null)
       } catch (error) {
-        console.error('Failed to add queued ICE candidate:', error)
+        logger.error('Failed to add queued ICE candidate:', error)
       }
     }
   }
@@ -321,7 +322,7 @@ export const useChatStore = defineStore('chat', () => {
     try {
       await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
     } catch (error) {
-      console.error('Failed to add ICE candidate:', error)
+      logger.error('Failed to add ICE candidate:', error)
     }
   }
 
@@ -424,7 +425,7 @@ export const useChatStore = defineStore('chat', () => {
         await addRemoteIceCandidate(candidate)
       }
     } catch (error) {
-      console.error('WebRTC signaling error:', error)
+      logger.error('WebRTC signaling error:', error)
       scheduleCallCleanup('No se pudo establecer la videollamada.')
     }
   }
@@ -472,7 +473,7 @@ export const useChatStore = defineStore('chat', () => {
           : connection.localDescription,
       })
     } catch (error) {
-      console.error('Failed to create WebRTC offer:', error)
+      logger.error('Failed to create WebRTC offer:', error)
       scheduleCallCleanup('No se pudo iniciar la videollamada.')
     }
   }
@@ -697,7 +698,7 @@ export const useChatStore = defineStore('chat', () => {
 
     socket.value.on('chat:error', ({ message }) => {
       lastError.value = message || 'Chat socket error.'
-      console.error('Socket chat error:', message)
+      logger.error('Socket chat error:', message)
     })
 
     socket.value.on('chat:unavailable', ({ message }) => {
@@ -907,7 +908,7 @@ export const useChatStore = defineStore('chat', () => {
         }
       }
     } catch (err) {
-      console.warn('Failed to locally mark messages read:', err)
+      logger.warn('Failed to locally mark messages read:', err)
     }
   }
 
@@ -940,7 +941,7 @@ export const useChatStore = defineStore('chat', () => {
       lastError.value = ''
       return { success: true, data: attachments }
     } catch (error) {
-      console.error('UploadThing upload error:', error)
+      logger.error('UploadThing upload error:', error)
       const message = error?.message || 'Upload failed.'
       lastError.value = message
       return { success: false, message }

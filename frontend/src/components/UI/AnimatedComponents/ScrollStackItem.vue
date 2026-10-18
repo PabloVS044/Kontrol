@@ -1,7 +1,7 @@
 <template>
   <div :class="['scroll-stack-card', itemClassName]">
     <div class="scroll-stack-card-header">
-      <span v-if="step !== null" class="step-badge">Step {{ step }}</span>
+      <span v-if="badge" class="step-badge">{{ badge }}</span>
       <h3 class="scroll-stack-card-title">{{ title }}</h3>
     </div>
     <p class="scroll-stack-card-description" v-if="description">{{ description }}</p>
@@ -18,7 +18,8 @@
 <script setup>
 defineProps({
   itemClassName: { type: String, default: '' },
-  step:          { type: Number, default: null },
+  // Already translated by the caller, e.g. "Paso 1" / "Step 1".
+  badge:         { type: String, default: '' },
   title:         { type: String, default: '' },
   description:   { type: String, default: '' },
   process:       { type: Array,  default: () => [] },

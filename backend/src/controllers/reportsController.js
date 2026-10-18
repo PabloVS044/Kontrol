@@ -1,4 +1,5 @@
 import pool from "../db/pool.js";
+import { logger } from "../utils/logger.js";
 
 // A report belongs to a company either directly (exports, which span every
 // project) or through its project (manually created reports, whose id_empresa
@@ -21,7 +22,7 @@ export const getReports = async (req, res) => {
 
     return res.status(200).json({ success: true, data: result.rows })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -46,7 +47,7 @@ export const getReportById = async (req, res) => {
 
     return res.status(200).json({ success: true, data: result.rows[0] })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -76,7 +77,7 @@ export const createReport = async (req, res) => {
 
     return res.status(201).json({ success: true, data: result.rows[0] })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -113,7 +114,7 @@ export const registerReportExport = async (req, res) => {
 
     return res.status(201).json({ success: true, data: result.rows[0] })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -143,7 +144,7 @@ export const updateReport = async (req, res) => {
 
     return res.status(200).json({ success: true, data: result.rows[0] })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -171,7 +172,7 @@ export const deleteReport = async (req, res) => {
 
     return res.status(200).json({ success: true, message: 'Report deleted.' })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }
@@ -249,7 +250,7 @@ export const getCompanySummary = async (req, res) => {
 
     return res.status(200).json({ success: true, data: { totales, proyectos } })
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     return res.status(500).json({ success: false, message: 'Server error.' })
   }
 }

@@ -5,6 +5,7 @@ import {
   hasEmpresaManagementAccess,
   INVENTORY_VIEW_PERMISSION_NAMES,
 } from '../services/projectAccessService.js'
+import { logger } from '../utils/logger.js'
 
 // Producto joined with its project (for empresa-level access checks)
 const PRODUCTO_SELECT = `
@@ -235,7 +236,7 @@ export const createProduct = async (req, res) => {
   try {
     categoryId = id_categoria ?? await resolveCategoryId(pool, { categoryName: categoria_nombre, idEmpresa: req.empresa.id_empresa })
   } catch (err) {
-    console.error('Could not resolve product category:', err)
+    logger.error('Could not resolve product category:', err)
     return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
   }
 
@@ -298,7 +299,7 @@ export const updateProduct = async (req, res) => {
       ? await resolveCategoryId(pool, { categoryName: req.body.categoria_nombre, idEmpresa: req.empresa.id_empresa })
       : req.body.id_categoria
   } catch (err) {
-    console.error('Could not resolve product category:', err)
+    logger.error('Could not resolve product category:', err)
     return res.status(500).json({ success: false, message: 'Could not resolve the product category.' })
   }
   const ALLOWED = ['nombre', 'descripcion', 'precio_venta', 'precio_costo', 'stock_minimo', 'codigo_barras']

@@ -9,15 +9,8 @@
           <span>Kontrol</span>
         </div>
         <p class="footer-tagline">{{ t('footer.tagline') }}</p>
-        <div class="footer-socials">
-          <a href="#" aria-label="Twitter"><Twitter :size="18" /></a>
-          <a href="#" aria-label="LinkedIn"><Linkedin :size="18" /></a>
-          <a href="#" aria-label="Instagram"><Instagram :size="18" /></a>
-          <a href="#" aria-label="GitHub"><Github :size="18" /></a>
-        </div>
       </div>
 
-      <!-- Links -->
       <div class="footer-links">
         <div class="footer-col">
           <h4>{{ t('footer.product') }}</h4>
@@ -25,17 +18,7 @@
             <li><RouterLink to="/#features">{{ t('footer.features') }}</RouterLink></li>
             <li><RouterLink to="/#solution">{{ t('footer.commandCenter') }}</RouterLink></li>
             <li><RouterLink to="/#steps">{{ t('footer.howItWorks') }}</RouterLink></li>
-            <li><RouterLink to="/#pricing">{{ t('footer.pricing') }}</RouterLink></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>{{ t('footer.company') }}</h4>
-          <ul>
-            <li><RouterLink to="/#about">{{ t('footer.about') }}</RouterLink></li>
-            <li><RouterLink to="/#blog">{{ t('footer.blog') }}</RouterLink></li>
-            <li><RouterLink to="/#careers">{{ t('footer.careers') }}</RouterLink></li>
-            <li><RouterLink to="/#contact">{{ t('footer.contact') }}</RouterLink></li>
+            <li><RouterLink to="/#companies">{{ t('footer.businesses') }}</RouterLink></li>
           </ul>
         </div>
 
@@ -63,7 +46,6 @@
 import { useI18n } from "vue-i18n";
 import { RouterLink } from "vue-router";
 import logo from "../assets/img/kontrol.png";
-import { Twitter, Linkedin, Instagram, Github } from "lucide-vue-next";
 
 const { t } = useI18n();
 const year = new Date().getFullYear();
@@ -120,36 +102,6 @@ const year = new Date().getFullYear();
   color: var(--k-text-muted);
   line-height: 1.6;
   margin: 0;
-}
-
-.footer-socials {
-  display: flex;
-  gap: var(--k-space-3);
-}
-
-.footer-socials a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--k-target-min-size);
-  height: var(--k-target-min-size);
-  border-radius: var(--k-radius-md);
-  background: rgba(var(--k-color-white-rgb), 0.08);
-  border: 1px solid var(--k-color-border);
-  color: var(--k-text-soft);
-  transition: background 0.2s, color 0.2s;
-  text-decoration: none;
-}
-
-.footer-socials a:hover {
-  background: var(--k-color-primary);
-  color: var(--k-form-btn-text);
-  border-color: var(--k-color-primary);
-}
-
-.footer-socials a:focus-visible {
-  outline: var(--k-focus-ring);
-  outline-offset: var(--k-focus-ring-offset);
 }
 
 /* ─── Links columns ──────────────────────────────────────────────────────── */

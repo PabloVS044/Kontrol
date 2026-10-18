@@ -8,8 +8,10 @@
          `v-if` (not a CSS `display: none`) on mobile: it's a multi-MB file
          and the browser starts fetching it the moment the tag exists in the
          DOM, so it has to never be there at all rather than be hidden after
-         the fact. The app's own Waves background (App.vue) still shows
-         through underneath, same as on every other page. -->
+         the fact. The backdrop below it hides the app's Waves background
+         (App.vue), which otherwise showed through the dimmed video; on
+         mobile, with no video, the Waves stay as on every other page. -->
+    <div v-if="!isMobile" class="bg-scroll-video-backdrop" aria-hidden="true"></div>
     <video
       v-if="!isMobile"
       ref="bgVideoRef"
@@ -33,7 +35,7 @@
         />
         <AnimatedText
           style="margin-top: 0"
-          effects="split shiny"
+          :effects="reduceMotion ? 'shiny' : 'split shiny'"
           :text="t('landing.hero.title')"
           tag="h1"
           class="hero-title"
@@ -45,9 +47,9 @@
           direction="left"
           :yoyo="false"
           :pause-on-hover="false"
-          :disabled="false"
-          :split-delay="50"
-          :duration="1.25"
+          :disabled="reduceMotion"
+          :split-delay="12"
+          :duration="0.45"
           ease="power3.out"
           :from="{ opacity: 0, y: 40 }"
           :to="{ opacity: 1, y: 0 }"
@@ -79,28 +81,33 @@
          page; if not, it's isolated here and easy to remove. -->
     <section id="control-center" :class="{ 'no-pin': reduceMotion || isMobile }">
       <div class="control-center-viewport" ref="controlViewportRef">
-        <div class="control-k-wrapper" aria-hidden="true">
+        <div class="control-k-wrapper" aria-hidden="true" ref="controlKRef">
           <KontrolLogo3D
             width="380px"
             height="380px"
-            :idle-spin-speed="0.04"
+            :idle-spin-speed="reduceMotion ? 0 : 0.04"
             :scroll-rotation-y="scrollK.rotationY"
             :scroll-scale="scrollK.scale"
           />
         </div>
 
+        <!-- What the platform does comes first, right after the hero's
+             "take control" promise; "one command center" then sums it up. -->
         <div class="control-moment control-moment-1" ref="controlMoment1Ref">
-          <h2 class="sub-title">{{ t('landing.control.one') }}</h2>
+          <h2 class="sub-title">{{ t('landing.control.every') }}</h2>
+          <ul class="control-modules">
+            <li v-for="mod in controlModules" :key="mod.key" class="control-module">
+              <component :is="mod.icon" :size="22" class="control-module-icon" aria-hidden="true" />
+              <div>
+                <h3 class="control-module-title">{{ t(`landing.control.modules.${mod.key}.title`) }}</h3>
+                <p class="control-module-copy">{{ t(`landing.control.modules.${mod.key}.copy`) }}</p>
+              </div>
+            </li>
+          </ul>
         </div>
 
         <div class="control-moment control-moment-2" ref="controlMoment2Ref">
-          <h2 class="sub-title">{{ t('landing.control.every') }}</h2>
-          <ul class="control-moment-tags">
-            <li>{{ t('landing.control.tags.projects') }}</li>
-            <li>{{ t('landing.control.tags.finance') }}</li>
-            <li>{{ t('landing.control.tags.marketing') }}</li>
-            <li>{{ t('landing.control.tags.inventory') }}</li>
-          </ul>
+          <h2 class="sub-title">{{ t('landing.control.one') }}</h2>
         </div>
 
         <div class="control-moment control-moment-3" ref="controlMoment3Ref">
@@ -258,7 +265,7 @@
         click-effect
         :spotlight-radius="400"
         :particle-count="12"
-        :disable-animations="false"
+        :disable-animations="reduceMotion"
         card-background="var(--k-color-bg-2)"
         card-border="var(--k-color-border)"
         label-color="var(--k-color-primary)"
@@ -275,27 +282,26 @@
         :use-window-scroll="true"
         :item-distance="50"
         :item-stack-distance="30"
-        stack-position="50%"
-        scale-end-position="30%"
+        stack-position="center"
         :base-scale="0.85"
       >
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="1"
+          :badge="t('landing.steps.badge', { n: 1 })"
           :title="t('landing.steps.connect.title')"
           :description="t('landing.steps.connect.description')"
           :process="listOf('landing.steps.connect.process')"
         />
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="2"
+          :badge="t('landing.steps.badge', { n: 2 })"
           :title="t('landing.steps.automate.title')"
           :description="t('landing.steps.automate.description')"
           :process="listOf('landing.steps.automate.process')"
         />
         <ScrollStackItem
           style="background: var(--k-color-bg-2)"
-          :step="3"
+          :badge="t('landing.steps.badge', { n: 3 })"
           :title="t('landing.steps.optimize.title')"
           :description="t('landing.steps.optimize.description')"
           :process="listOf('landing.steps.optimize.process')"
@@ -415,6 +421,14 @@ import Card from "../components/UI/Card/Card.vue";
 import {
   LayoutGrid,
   Sparkles,
+  Boxes,
+  ShoppingCart,
+  Truck,
+  Wallet,
+  FileBarChart,
+  FolderKanban,
+  MessagesSquare,
+  Bot,
   CircleX,
   CircleCheck,
   NetworkIcon,
@@ -528,6 +542,13 @@ function setupBackgroundVideoScrub() {
   video.pause();
   if (reduceMotion.value) return;
 
+  const fadeIn = gsap.to(video, {
+    opacity: 1,
+    ease: "none",
+    scrollTrigger: { trigger: "#header", start: "top top", end: "bottom top", scrub: true },
+  });
+  landingScrollTriggers.push(fadeIn.scrollTrigger);
+
   const wireScrub = () => {
     if (!video.duration) return;
     // Seeking to exactly `video.duration` lands past the last decodable
@@ -547,11 +568,13 @@ function setupBackgroundVideoScrub() {
         // what the decoder can seek to, which is what read as the video
         // "getting stuck" — tweening it instead smooths out fast scroll
         // bursts into a short catch-up motion rather than a forced jump.
+        // "auto" (not `true`) so it only replaces the previous currentTime
+        // tween and leaves the opacity fade-in above alone.
         gsap.to(video, {
           currentTime: self.progress * seekableDuration,
           duration: 0.2,
           ease: "none",
-          overwrite: true,
+          overwrite: "auto",
         });
       },
     });
@@ -562,18 +585,20 @@ function setupBackgroundVideoScrub() {
   else video.addEventListener("loadedmetadata", wireScrub, { once: true });
 }
 
-// Computed synchronously (not in onMounted, unlike reduceMotion below) because
-// it gates whether the background <video> even renders — deciding that after
-// mount would mean the browser already started fetching a multi-MB file
-// before we could pull it back. Matches the same 768px breakpoint the CSS
-// media queries use for the mobile layout. Not re-evaluated on resize/rotate,
-// same tradeoff already accepted for reduceMotion.
+// Computed synchronously (not in onMounted) because it gates whether the
+// background <video> even renders — deciding that after mount would mean the
+// browser already started fetching a multi-MB file before we could pull it
+// back. Matches the same 768px breakpoint the CSS media queries use for the
+// mobile layout. Not re-evaluated on resize/rotate.
 const isMobile = ref(window.matchMedia("(max-width: 768px)").matches);
+// Also read up front: the hero title and the 3D K take it as props on their
+// first render, so reading it after mount would let them start animating.
+const reduceMotion = ref(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 // ─── Control Center pilot: a fixed viewport, the K anchored and rotating,
 // three "moments" cross-fading in front of it as the scroll progresses ──────
-const reduceMotion = ref(false);
 const controlViewportRef = ref(null);
+const controlKRef = ref(null);
 const controlMoment1Ref = ref(null);
 const controlMoment2Ref = ref(null);
 const controlMoment3Ref = ref(null);
@@ -602,12 +627,20 @@ function setupControlCenter() {
     },
   });
 
+  const modules = gsap.utils.toArray(".control-module", moments[0]);
+
+  // The first moment carries the module grid, so it gets roughly half the
+  // scroll range; the two headline-only moments split the rest.
   tl.to(scrollK, { rotationY: Math.PI * 1.8, scale: 1.5, duration: 1, ease: "none" }, 0)
-    .fromTo(moments[0], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0)
-    .to(moments[0], { opacity: 0, duration: 0.12 }, 0.24)
-    .fromTo(moments[1], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.32)
-    .to(moments[1], { opacity: 0, duration: 0.12 }, 0.62)
-    .fromTo(moments[2], { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.72);
+    // The K sits behind the grid: dimmed while there's text to read over it,
+    // back to full once only a headline is left in front of it.
+    .fromTo(controlKRef.value, { opacity: 0.25 }, { opacity: 1, duration: 0.1 }, 0.46)
+    .fromTo(moments[0], { opacity: 0 }, { opacity: 1, duration: 0.08 }, 0)
+    .from(modules, { opacity: 0, y: 24, stagger: 0.02, duration: 0.1 }, 0.03)
+    .to(moments[0], { opacity: 0, duration: 0.08 }, 0.46)
+    .fromTo(moments[1], { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.56)
+    .to(moments[1], { opacity: 0, duration: 0.1 }, 0.74)
+    .fromTo(moments[2], { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.84);
 
   landingScrollTriggers.push(tl.scrollTrigger);
 }
@@ -724,7 +757,6 @@ function setupScrollChoreography() {
 }
 
 onMounted(() => {
-  reduceMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   handleLandingResize();
   window.addEventListener("resize", handleLandingResize);
   setupBackgroundVideoScrub();
@@ -753,6 +785,20 @@ const chaosCharacteristics = computed(() =>
 const orderCharacteristics = computed(() =>
   listOf("landing.problem.order.items").map((title) => ({ title }))
 );
+
+// The shop's daily work (stock, sales, suppliers) first, then the rest of the
+// business the same platform covers.
+const controlModules = [
+  { key: "inventory", icon: Boxes },
+  { key: "sales", icon: ShoppingCart },
+  { key: "suppliers", icon: Truck },
+  { key: "budget", icon: Wallet },
+  { key: "reports", icon: FileBarChart },
+  { key: "projects", icon: FolderKanban },
+  { key: "marketing", icon: Megaphone },
+  { key: "chat", icon: MessagesSquare },
+  { key: "assistant", icon: Bot },
+];
 
 const featureCards = computed(() => [
   { ...card("analytics"), icon: BarChart2 },

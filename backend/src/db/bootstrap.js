@@ -1,5 +1,6 @@
 import pool from './pool.js'
 import { AGENT_DB_ROLE } from '../services/agentSql.js'
+import { logger } from '../utils/logger.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
@@ -831,6 +832,6 @@ async function ensureAgentRole() {
     // postgres) needs membership. Ignore failure on servers that refuse it.
     await pool.query(`GRANT ${AGENT_DB_ROLE} TO CURRENT_USER`).catch(() => {})
   } catch (err) {
-    console.warn(`Could not ensure DB role ${AGENT_DB_ROLE}; the AI agent will not run queries:`, err.message)
+    logger.warn(`Could not ensure DB role ${AGENT_DB_ROLE}; the AI agent will not run queries:`, err.message)
   }
 }

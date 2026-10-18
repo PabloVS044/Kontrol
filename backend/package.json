@@ -12,6 +12,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "cross-env TEST_SUITE=integration vitest run -c vitest.integration.config.js tests/integration",
+    "test:regression": "cross-env TEST_SUITE=regression vitest run -c vitest.integration.config.js tests/regression",
+    "db:test:up": "docker compose -f ../docker-compose.integration.yml up -d --wait",
+    "db:test:down": "docker compose -f ../docker-compose.integration.yml down",
     "seed:test": "node src/db/seed.js",
     "reset:test": "node src/db/reset.js",
     "verify:ux-phase2": "node src/db/verifyUxPhase2.js"

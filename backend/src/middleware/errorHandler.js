@@ -8,6 +8,8 @@
  * al log del servidor.
  */
 
+import { logger } from '../utils/logger.js'
+
 // Errores de Postgres que llegan sin que el controlador los maneje. Son
 // conflictos de datos provocados por la petición, no fallos del servidor.
 const PG_ERRORS = {
@@ -32,6 +34,6 @@ export function errorHandler(err, req, res, next) {
     return res.status(status).json({ success: false, message: err.message })
   }
 
-  console.error(`[error] ${req.method} ${req.originalUrl}`, err)
+  logger.error(`[error] ${req.method} ${req.originalUrl}`, err)
   return res.status(500).json({ success: false, message: 'Internal server error.' })
 }
