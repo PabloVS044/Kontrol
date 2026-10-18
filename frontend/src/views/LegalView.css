@@ -70,7 +70,12 @@
 }
 
 /* ─── Quick Nav Pills ────────────────────────────────────────────────────── */
+/* navbar.css estiliza el elemento `nav` sin clase: en móvil le fija 68px de
+   alto y padding, y las pastillas se salían de la caja encima del texto. */
 .legal-quick-nav {
+  height: auto;
+  padding: 0;
+  border-radius: 0;
   display: flex;
   justify-content: center;
   gap: var(--k-space-3);
