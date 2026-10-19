@@ -15,10 +15,19 @@
         <div class="footer-col">
           <h4>{{ t('footer.product') }}</h4>
           <ul>
-            <li><a href="#features">{{ t('footer.features') }}</a></li>
-            <li><a href="#solution">{{ t('footer.commandCenter') }}</a></li>
-            <li><a href="#steps">{{ t('footer.howItWorks') }}</a></li>
-            <li><a href="#companies">{{ t('footer.businesses') }}</a></li>
+            <li><RouterLink to="/#features">{{ t('footer.features') }}</RouterLink></li>
+            <li><RouterLink to="/#solution">{{ t('footer.commandCenter') }}</RouterLink></li>
+            <li><RouterLink to="/#steps">{{ t('footer.howItWorks') }}</RouterLink></li>
+            <li><RouterLink to="/#companies">{{ t('footer.businesses') }}</RouterLink></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>{{ t('footer.legal') }}</h4>
+          <ul>
+            <li><RouterLink to="/legal#privacy">{{ t('footer.privacy') }}</RouterLink></li>
+            <li><RouterLink to="/legal#terms">{{ t('footer.terms') }}</RouterLink></li>
+            <li><RouterLink to="/legal#cookies">{{ t('footer.cookies') }}</RouterLink></li>
           </ul>
         </div>
       </div>
@@ -35,6 +44,7 @@
 
 <script setup>
 import { useI18n } from "vue-i18n";
+import { RouterLink } from "vue-router";
 import logo from "../assets/img/kontrol.png";
 
 const { t } = useI18n();

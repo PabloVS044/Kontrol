@@ -2232,6 +2232,10 @@
     "commandCenter": "Centro de control",
     "howItWorks": "Cómo funciona",
     "businesses": "Negocios",
+    "legal": "Legal",
+    "privacy": "Aviso de privacidad",
+    "terms": "Términos del servicio",
+    "cookies": "Política de cookies",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
   },
@@ -2251,6 +2255,158 @@
       "title": "Configuración de venta",
       "copy": "Moneda, IVA y descuentos."
     }
+  },
+  "legal": {
+    "badge": "Marco legal y regulatorio",
+    "title": "Términos, Privacidad y Cumplimiento",
+    "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
+    "updated": "Versión {version} · Actualizado el 17 de octubre de 2026",
+    "nav": {
+      "ariaLabel": "Navegación de secciones legales",
+      "privacy": "Aviso de Privacidad",
+      "terms": "Términos del Servicio",
+      "cookies": "Cookies y Almacenamiento",
+      "contact": "Contacto"
+    },
+    "terms": {
+      "badge": "Condiciones de contratación",
+      "title": "Términos y Condiciones del Servicio",
+      "clauses": [
+        {
+          "title": "1. Quién presta el servicio",
+          "body": "Kontrol es una plataforma desarrollada y operada por un equipo independiente en Guatemala que todavía no está constituido como sociedad. Para consultas legales, de privacidad o reclamos, escríbenos a {email}."
+        },
+        {
+          "title": "2. Aceptación",
+          "body": "Para usar Kontrol debes leer y aceptar estos Términos y el Aviso de Privacidad; la plataforma te lo pedirá la primera vez que ingreses. Si no estás de acuerdo, no utilices el servicio. Debes tener 18 años o más y, si actúas en nombre de un negocio o de otra persona, contar con facultades suficientes para hacerlo."
+        },
+        {
+          "title": "3. Qué es Kontrol",
+          "body": "Kontrol es una plataforma privada e independiente para el registro y la gestión operativa de negocios en Guatemala: proyectos, inventario, ventas y presupuestos. No está vinculada, avalada ni actúa como plataforma de reporte de la SAT ni de ninguna autoridad tributaria o financiera."
+        },
+        {
+          "title": "4. Punto de venta e impuestos",
+          "body": "El punto de venta (POS) y el cálculo de IVA configurado son de uso interno de tu empresa: no emiten facturas electrónicas (FEL) certificadas ni sustituyen tus declaraciones. Te corresponde emitir los documentos tributarios que procedan y declarar y pagar los impuestos de tu negocio."
+        },
+        {
+          "title": "5. Pagos",
+          "body": "Hoy Kontrol no realiza cobros. La integración de pagos con Stripe está contemplada solo en modo de demostración (TEST): no hay cobros reales, cargos a tarjetas ni planes de suscripción. No ingreses tarjetas ni datos reales en la demostración. El acceso actual no se convertirá automáticamente en un servicio de pago: antes de cualquier cobro te informaremos las condiciones y tendrás que aceptarlas expresamente."
+        },
+        {
+          "title": "6. Cuenta, credenciales e invitaciones",
+          "body": "Proporciona información veraz y protege tus credenciales; no compartas tu contraseña ni dejes la sesión abierta en equipos compartidos. El titular o administrador responde por las cuentas, invitaciones y permisos que otorgue, y cada usuario responde por su conducta dentro del sistema."
+        },
+        {
+          "title": "7. Uso permitido y datos de terceros",
+          "body": "Usa Kontrol solo para actividades lícitas. No accedas a cuentas o proyectos ajenos, no eludas permisos ni cargues software dañino. Si registras datos de clientes, trabajadores o proveedores, debes contar con su autorización o con otro fundamento legal para hacerlo. No cargues contraseñas, tarjetas ni documentos de identidad que no sean necesarios."
+        },
+        {
+          "title": "8. Asistente de inteligencia artificial",
+          "body": "Las respuestas del asistente pueden contener errores u omisiones. Revísalas antes de tomar decisiones: no sustituyen asesoría contable, tributaria, legal ni profesional."
+        },
+        {
+          "title": "9. Tus datos y licencia de uso",
+          "body": "Conservas la titularidad de los datos de tu empresa. Solo nos concedes el permiso necesario para alojarlos, procesarlos y mostrarlos a las personas y servicios que autorices dentro de la plataforma. No vendemos tu información ni la usamos para entrenar modelos de inteligencia artificial. El acceso a Kontrol no te transfiere la propiedad del software."
+        },
+        {
+          "title": "10. Disponibilidad y respaldos",
+          "body": "Kontrol puede presentar errores, interrupciones o mantenimientos. Por ahora no ofrecemos un nivel de servicio garantizado ni la recuperación garantizada de información, así que conserva tus propias copias de lo importante, por ejemplo con los reportes en PDF o CSV."
+        },
+        {
+          "title": "11. Responsabilidad",
+          "body": "Cada parte responde por sus propios actos. Kontrol no excluye su responsabilidad por dolo o culpa propia de conformidad con las leyes de Guatemala, ni limita los derechos irrenunciables que te reconozca la ley."
+        },
+        {
+          "title": "12. Suspensión y cierre",
+          "body": "Podemos suspender o cerrar un acceso por uso ilícito o abusivo, acceso no autorizado, riesgo para la seguridad u orden de autoridad competente. Cuando sea posible, te informaremos la causa y podrás aclararla. Desactivar una cuenta no elimina automáticamente sus datos."
+        },
+        {
+          "title": "13. Cambios a estos Términos",
+          "body": "Si modificamos estos Términos o el Aviso de Privacidad, publicaremos aquí la nueva versión y te pediremos aceptarla antes de seguir usando la plataforma."
+        },
+        {
+          "title": "14. Ley aplicable y reclamos",
+          "body": "Estos Términos se rigen por las leyes de la República de Guatemala. Las controversias se resolverán ante los tribunales competentes conforme a la ley, sin perjuicio de los derechos que te reconozca la Ley de Protección al Consumidor y Usuario. Puedes presentar reclamos a {email}."
+        }
+      ]
+    },
+    "privacy": {
+      "badge": "Protección de datos",
+      "title": "Aviso de Privacidad",
+      "clauses": [
+        {
+          "title": "1. Responsable y contacto",
+          "body": "El equipo de Kontrol decide sobre los datos de las cuentas y de la operación de la plataforma. Los datos que tu negocio registra sobre clientes, trabajadores o proveedores se tratan siguiendo las instrucciones de tu negocio, que debe contar con autorización para registrarlos. Contacto de privacidad: {email}."
+        },
+        {
+          "title": "2. Qué datos tratamos",
+          "body": "Datos de cuenta (nombre, correo, teléfono si lo aportas y contraseña guardada como hash), datos de tu negocio, inventario, proveedores, proyectos, tareas, presupuestos y ventas, mensajes del chat, archivos adjuntos, consultas al asistente y registros técnicos de sesión y seguridad, como la dirección IP. Si inicias sesión con Google, recibimos tu nombre, correo e identificador de Google."
+        },
+        {
+          "title": "3. Para qué los usamos",
+          "body": "Para darte acceso, operar las funciones que utilizas, permitir la colaboración dentro de tu empresa, enviar las alertas que configures y proteger la seguridad del servicio. No vendemos ni cedemos comercialmente datos personales y no los usamos para entrenar modelos de inteligencia artificial."
+        },
+        {
+          "title": "4. Asistente de inteligencia artificial",
+          "body": "El asistente de Kontrol (Qwen/vLLM) funciona en un servidor propio del equipo ubicado en Guatemala (ClawStitch). Para responder recibe tu pregunta y el contexto necesario: tu correo y rol, la empresa, hasta diez mensajes recientes y muestras limitadas de los datos consultados. El historial de conversaciones se guarda para mostrártelo y puedes borrarlo desde el asistente."
+        },
+        {
+          "title": "5. Con quién compartimos información",
+          "body": "Con los miembros de tu empresa según sus permisos y con proveedores que nos ayudan a operar: servicios de base de datos y alojamiento, UploadThing para archivos adjuntos y Google si eliges iniciar sesión con Google. Si tu negocio conecta Slack, Microsoft Teams, Telegram, SMS, correo o webhooks, las alertas se envían a esos destinos según tu configuración. Algunos de estos proveedores pueden tratar los datos fuera de Guatemala."
+        },
+        {
+          "title": "6. Cuánto tiempo los conservamos",
+          "body": "Conservamos la información mientras tu cuenta o tu empresa estén activas. Todavía no hemos definido plazos de eliminación por tipo de dato y desactivar una cuenta no borra sus registros: si quieres que eliminemos tus datos, solicítalo a {email}."
+        },
+        {
+          "title": "7. Tus derechos",
+          "body": "Puedes consultar y corregir gran parte de tu información desde la plataforma y descargar reportes en PDF o CSV. Para solicitar acceso, corrección, una copia o la eliminación de tus datos personales, escribe a {email} desde el correo asociado a tu cuenta. Algunos datos pueden conservarse cuando exista una obligación legal o un motivo justificado."
+        },
+        {
+          "title": "8. Seguridad",
+          "body": "Guardamos las contraseñas con hash (bcrypt) y ciframos las credenciales de las integraciones. Ningún sistema es infalible: si detectas un problema de seguridad o un acceso indebido, avísanos de inmediato a {email}."
+        },
+        {
+          "title": "9. Cambios a este Aviso",
+          "body": "Publicaremos en esta página cualquier cambio a este Aviso de Privacidad y, cuando sea relevante, te pediremos aceptarlo de nuevo."
+        }
+      ]
+    },
+    "cookies": {
+      "badge": "Almacenamiento local",
+      "title": "Política de Cookies y Almacenamiento",
+      "clauses": [
+        {
+          "title": "Sin cookies publicitarias",
+          "body": "Kontrol no utiliza cookies publicitarias ni herramientas de rastreo entre sitios web."
+        },
+        {
+          "title": "Almacenamiento local",
+          "body": "Usamos el almacenamiento local del navegador (localStorage) para mantener tu sesión, recordar tus preferencias de interfaz, como el idioma y el tema visual, y recordar qué usuarios aceptaron estos términos en este navegador."
+        },
+        {
+          "title": "Servicios externos",
+          "body": "Para mostrar la interfaz, tu navegador descarga tipografías de Google Fonts e íconos de Icons8. Esos servicios reciben tu dirección IP y datos técnicos de la solicitud."
+        },
+        {
+          "title": "Al cerrar sesión",
+          "body": "Al cerrar sesión se eliminan de tu navegador los tokens y datos de autenticación. Se conservan las preferencias de idioma y tema y el registro de aceptación de los términos."
+        }
+      ]
+    },
+    "contact": {
+      "badge": "Atención y reclamos",
+      "title": "Contacto",
+      "copy": "Para consultas legales, solicitudes sobre tus datos personales, avisos de seguridad o reclamos, escríbenos a:",
+      "note": "Escríbenos desde el correo asociado a tu cuenta para que podamos verificar tu identidad antes de atender una solicitud sobre tus datos."
+    },
+    "backToHome": "Volver al inicio"
+  },
+  "legalConsent": {
+    "ariaLabel": "Aceptación de los Términos y Condiciones",
+    "checkbox": "He leído y acepto los {terms}.",
+    "termsLink": "Términos y Condiciones del Servicio",
+    "accept": "Aceptar"
   },
   "notFound": {
     "title": "Esta página no existe",

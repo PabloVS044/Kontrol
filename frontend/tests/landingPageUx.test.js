@@ -29,11 +29,13 @@ describe('UX de la portada', () => {
     expect(`${es.landing.start.copy} ${en.landing.start.copy}`).not.toMatch(/\b50,?000\b/i)
   })
 
+  // El pie también se muestra en /legal, por eso enlaza a la landing con to="/#id".
   it('limita el pie a anclas existentes en la landing', () => {
     const sectionIds = new Set([...landing.matchAll(/<section id="([^"]+)"/g)].map(([, id]) => id))
-    const footerAnchors = [...footer.matchAll(/href="#([^"]+)"/g)].map(([, id]) => id)
+    const footerAnchors = [...footer.matchAll(/(?:href="#|to="\/#)([^"]+)"/g)].map(([, id]) => id)
 
     expect(footer).not.toContain('href="#"')
+    expect(footer).not.toContain('to="/#"')
     expect(footerAnchors.length).toBeGreaterThan(0)
     expect(footerAnchors.every((id) => sectionIds.has(id))).toBe(true)
   })

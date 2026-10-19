@@ -36,3 +36,6 @@ volume/results/*/explain.sql
 
 # Reportes de las suites de integración y regresión (artefactos del CI)
 backend/reports/
+
+# Local tooling & MCP artifacts
+.playwright-mcp/
