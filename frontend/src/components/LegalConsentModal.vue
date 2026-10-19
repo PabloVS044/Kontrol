@@ -19,9 +19,14 @@
           </i18n-t>
         </label>
 
-        <button type="button" class="consent-btn" :disabled="!checked" @click="acceptTerms">
-          {{ t('legalConsent.accept') }}
-        </button>
+        <Button
+          class="consent-btn"
+          :label="t('legalConsent.accept')"
+          :disabled="!checked"
+          back-color="var(--k-color-primary)"
+          hover-back="var(--k-color-primary-2)"
+          @click="acceptTerms"
+        />
       </div>
     </div>
   </Teleport>
@@ -33,6 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useLegalConsent } from '../composables/useLegalConsent.js'
+import Button from './UI/Button/Button.vue'
 
 /**
  * Aviso de aceptación de los Términos y Condiciones. Aparece la primera vez
@@ -158,34 +164,20 @@ function acceptTerms() {
   text-underline-offset: 3px;
 }
 
-.consent-btn {
+/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
+.btn.consent-btn {
   align-self: flex-end;
-  min-height: var(--k-target-min-size, 44px);
   padding: 0 var(--k-space-6);
-  border: 1px solid var(--k-color-primary);
-  border-radius: var(--k-radius-md);
-  background: var(--k-color-primary);
-  color: var(--k-form-btn-text);
-  font-size: var(--k-font-size-body-main);
-  font-weight: var(--k-font-weight-semibold);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.consent-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
 }
 
 .consent-check a:focus-visible,
-.consent-btn:focus-visible,
 .consent-checkbox:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
 }
 
 @media (max-width: 480px) {
-  .consent-btn {
+  .btn.consent-btn {
     align-self: stretch;
   }
 }

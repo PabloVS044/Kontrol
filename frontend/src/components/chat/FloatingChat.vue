@@ -74,7 +74,7 @@
 
           <div v-if="filteredConvs.length === 0" class="fp-empty">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#333" stroke-width="1.5" stroke-linejoin="round" />
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="var(--k-shade-8)" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
             <span>{{ t('chat.noConversations') }}</span>
           </div>
