@@ -63,13 +63,19 @@ Tomados de los bloques ya migrados: D (inventario, productos, proveedores), E1 (
 | Integraciones | `IntegrationsView.vue`, `IntegrationView.css` | v1 | Estilos propios; `ConnectionSuccessAnimation` | Media | v1 (fuera de alcance) |
 | Agente IA | `AgentView.vue` | v1 | Estilos propios | Media | v1 (fuera de alcance) |
 | Admin | `AdminLayout`, `AdminNavbar`, `AdminDashboardView`, `AdminCompaniesView`, `AdminUsersView` | v1 | Todo | Baja | v1 (fuera de alcance) |
+| Legal (`/legal`) ¹ | `LegalView.vue` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Página 404 ¹ | `NotFoundView.vue` | Mixta | Botón "Volver" nativo en lugar de `Button` (el logo 3D es DT-17 y no se toca) | Baja | v2 completa |
 | — | `HomeView.vue` | Sin ruta | No se renderiza | — | — |
+
+¹ Pantallas incorporadas desde `develop` (PR #153 a #155) después del corte "antes"; se clasifican con los mismos criterios.
 
 ### Componentes globales (montados en `App.vue` en toda pantalla autenticada con empresa)
 
 | Componente | Estado antes | Efecto sobre las pantallas | Exposición | Estado después |
 | :--- | :--- | :--- | :--- | :--- |
 | `AppNavbar` | v2 | — | Alta | v2 (sin cambios) |
+| `LegalConsentModal` ¹ | Mixta | Botón "Aceptar" nativo en lugar de `Button` | Alta (una vez por usuario) | v2 completa |
+| `UI/AppSurface` ¹ | v2 | — (capa de contraste sobre el fondo animado) | Alta | v2 (sin cambios) |
 | `chat/FloatingChat` | v1 | Vuelve mixtas todas las pantallas v2, salvo `/chat` | Alta | v2 completa |
 | `birdie/BirdieFloatingButton` | v1 | Vuelve mixtas todas las pantallas v2 mientras está visible | Alta | v2 completa |
 | `birdie/BirdieAssistant` | v1 | Vuelve mixta la pantalla mientras está abierto | Media | v1 (fuera de alcance) |
@@ -174,10 +180,11 @@ Estos componentes no se importan en ningún archivo. **18 de los 22 usan alias l
 | Chat flotante | `FloatingChat.vue` | Tokens `--k-*`; los botones de icono quedan nativos, como en `SaleCartPanel` | `floatingChat.test.js` | Panel cerrado, lista y conversación en desktop, sobre dashboard, ventas e inventario |
 | Botón de Birdie | `BirdieFloatingButton.vue` | Tokens `--k-*` | — | Visible y arrastrable en desktop |
 | Equipos | `TeamsView.vue` | `FormField`, `Button` | `teamsView.test.js` | Crear y editar equipo en desktop |
+| Restos (grupo 7) | `FloatingChat.vue` (ícono de lista vacía: `stroke="#333"` → `var(--k-shade-8)`), `LegalConsentModal.vue`, `NotFoundView.vue` | `Button` | — (`legalConsent.test.js` y `notFoundView.test.js` existentes) | Pendiente |
 
 Ninguna migración cambia lógica, rutas, stores ni llamadas a API. La geometría de `FloatingChat` (posición, tamaño y `z-index`) no cambia.
 
-**Verificación automática al cierre:** 43 archivos de prueba y 527 pruebas en verde, `vite build` correcto y lint de CI sin errores.
+**Verificación automática al cierre:** 48 archivos de prueba y 566 pruebas en verde, `vite build` correcto y lint de CI sin errores.
 
 **Escaneo del POS:** `InventoryPage`, `BarcodeScanner`, `SaleCartPanel` y `SaleCheckoutModal` no se modificaron. Las pruebas `barcodeScanner`, `posCheckout`, `sales`, `salesView`, `saleConfigStore` y `boxPricing` pasan. La prueba con cámara de los casos de escaneo queda pendiente.
 
@@ -192,7 +199,6 @@ HU-32b queda declarada **fuera de alcance** en lo que falta: Reportes, detalle d
 
 ### Otros hallazgos para backlog
 
-- `src/components/navbar.css` declara una regla global `ul { justify-content: center; align-items: center; }` que alcanza a listas fuera de la navbar. En Onboarding se corrigió de forma local.
 - Los mensajes de error del backend en el panel de miembros de la empresa (`companyController.js`, `projectController.js`) llegan en inglés y se muestran tal cual. Los de éxito ya se muestran traducidos.
 
 ## 6. Red de regresión
