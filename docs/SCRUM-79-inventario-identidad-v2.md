@@ -2,7 +2,7 @@
 
 Cierre de la Fase 2 de la identidad visual v2. Inventario de pantallas y componentes del frontend con su estado antes de la migración.
 
-**Corte "antes":** 18/10/2026
+**Corte "antes":** 18/10/2026 · **Corte "después":** 18/10/2026
 
 ## 1. Criterios de clasificación
 
@@ -38,42 +38,42 @@ Tomados de los bloques ya migrados: D (inventario, productos, proveedores), E1 (
 
 ### Vistas
 
-| Pantalla | Archivos | Estado | Qué falta | Exposición |
-| :--- | :--- | :--- | :--- | :--- |
-| Landing | `LandingPage.vue/.css` | v2 completa | — | Alta |
-| Login | `LoginView.vue/.css` | v2 completa | — | Alta |
-| Registro | `RegisterView.vue/.css` | v2 completa | — | Alta |
-| Callback OAuth | `AuthCallback.vue` | v1 | Fondo `#0a0a0a` y spinner en blanco literal | Alta |
-| Onboarding | `OnboardingView.vue` | v1 | Tarjeta, inputs, `.ob-submit` y `.ob-logout` propios | Alta |
-| Invitación | `InviteView.vue` | v1 | Tarjeta y botones propios (`.primary-btn`, `.secondary-btn`, `.ghost-btn`) | Alta |
-| Dashboard | `DashboardView.vue` | v2 completa | — | Alta |
-| Proyectos | `ProjectsView.vue` | v2 completa | — | Alta |
-| Detalle de proyecto | `ProjectDetailView.vue`, `ProjectDetailsView.css` | Mixta | `TaskModal` (v1: inputs y botones propios) y `TeamDetailModal` (`.task-action-btn` con literales) | Alta |
-| Equipos | `TeamsView.vue` | v1 | Botones (`.primary-action`, `.secondary-action`, `.danger-action`, `.ghost-danger`), inputs y tarjetas propios | Media |
-| Presupuesto | `BudgetView.vue`, `components/budget/*` | v2 completa | — | Media |
-| Inventario / POS | `InventoryPage.vue/.css` y modales | v2 completa | — | Alta |
-| Detalle de producto | `ProductDetailView.vue` | v2 completa | — | Media |
-| Ventas | `SalesView.vue` | v2 completa | — | Media |
-| Proveedores | `SuppliersView.vue` | v2 completa | — | Media |
-| Centro de marketing | `MarketingPublicationsView.vue`, `MarketingCalendar` | v2 completa | — | Media |
-| Configuración / perfil | `SettingsView.vue` | v2 completa | — | Media |
-| Reportes | `ReportsView.vue` | v1 | Vista y subcomponentes `SalesFinanceSection`, `ReportsAiPanel`, `ReportCreateModal`, `ReportDetailModal`, `ReportExportMenu` | Media |
-| Detalle de reporte | `ReportDetailView.vue` | v1 | Estilos propios; `ReportExportMenu` | Media |
-| Chat | `ChatView.vue/.css` | v1 | Layout y estilos propios | Media |
-| Integraciones | `IntegrationsView.vue`, `IntegrationView.css` | v1 | Estilos propios; `ConnectionSuccessAnimation` | Media |
-| Agente IA | `AgentView.vue` | v1 | Estilos propios | Media |
-| Admin | `AdminLayout`, `AdminNavbar`, `AdminDashboardView`, `AdminCompaniesView`, `AdminUsersView` | v1 | Todo | Baja |
-| — | `HomeView.vue` | Sin ruta | No se renderiza | — |
+| Pantalla | Archivos | Estado antes | Qué faltaba | Exposición | Estado después |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Landing | `LandingPage.vue/.css` | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Login | `LoginView.vue/.css` | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Registro | `RegisterView.vue/.css` | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Callback OAuth | `AuthCallback.vue` | v1 | Fondo `#0a0a0a` y spinner en blanco literal | Alta | v2 completa |
+| Onboarding | `OnboardingView.vue` | v1 | Tarjeta, inputs, `.ob-submit` y `.ob-logout` propios | Alta | v2 completa |
+| Invitación | `InviteView.vue` | v1 | Tarjeta y botones propios (`.primary-btn`, `.secondary-btn`, `.ghost-btn`) | Alta | v2 completa |
+| Dashboard | `DashboardView.vue` | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Proyectos | `ProjectsView.vue` | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Detalle de proyecto | `ProjectDetailView.vue`, `ProjectDetailsView.css` | Mixta | `TaskModal` (v1: inputs y botones propios) y `TeamDetailModal` (`.task-action-btn` con literales) | Alta | v2 completa |
+| Equipos | `TeamsView.vue` | v1 | Botones (`.primary-action`, `.secondary-action`, `.danger-action`, `.ghost-danger`), inputs y tarjetas propios | Media | v2 completa |
+| Presupuesto | `BudgetView.vue`, `components/budget/*` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Inventario / POS | `InventoryPage.vue/.css` y modales | v2 completa | — | Alta | v2 completa (sin cambios) |
+| Detalle de producto | `ProductDetailView.vue` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Ventas | `SalesView.vue` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Proveedores | `SuppliersView.vue` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Centro de marketing | `MarketingPublicationsView.vue`, `MarketingCalendar` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Configuración / perfil | `SettingsView.vue` | v2 completa | — | Media | v2 completa (sin cambios) |
+| Reportes | `ReportsView.vue` | v1 | Vista y subcomponentes `SalesFinanceSection`, `ReportsAiPanel`, `ReportCreateModal`, `ReportDetailModal`, `ReportExportMenu` | Media | v1 (fuera de alcance) |
+| Detalle de reporte | `ReportDetailView.vue` | v1 | Estilos propios; `ReportExportMenu` | Media | v1 (fuera de alcance) |
+| Chat | `ChatView.vue/.css` | v1 | Layout y estilos propios | Media | v1 (fuera de alcance) |
+| Integraciones | `IntegrationsView.vue`, `IntegrationView.css` | v1 | Estilos propios; `ConnectionSuccessAnimation` | Media | v1 (fuera de alcance) |
+| Agente IA | `AgentView.vue` | v1 | Estilos propios | Media | v1 (fuera de alcance) |
+| Admin | `AdminLayout`, `AdminNavbar`, `AdminDashboardView`, `AdminCompaniesView`, `AdminUsersView` | v1 | Todo | Baja | v1 (fuera de alcance) |
+| — | `HomeView.vue` | Sin ruta | No se renderiza | — | — |
 
 ### Componentes globales (montados en `App.vue` en toda pantalla autenticada con empresa)
 
-| Componente | Estado | Efecto sobre las pantallas | Exposición |
-| :--- | :--- | :--- | :--- |
-| `AppNavbar` | v2 | — | Alta |
-| `chat/FloatingChat` | v1 | Vuelve mixtas todas las pantallas v2, salvo `/chat` | Alta |
-| `birdie/BirdieFloatingButton` | v1 | Vuelve mixtas todas las pantallas v2 mientras está visible | Alta |
-| `birdie/BirdieAssistant` | v1 | Vuelve mixta la pantalla mientras está abierto | Media |
-| `chat/VideoCallOverlay` | v1 | Vuelve mixta la pantalla durante una videollamada | Media |
+| Componente | Estado antes | Efecto sobre las pantallas | Exposición | Estado después |
+| :--- | :--- | :--- | :--- | :--- |
+| `AppNavbar` | v2 | — | Alta | v2 (sin cambios) |
+| `chat/FloatingChat` | v1 | Vuelve mixtas todas las pantallas v2, salvo `/chat` | Alta | v2 completa |
+| `birdie/BirdieFloatingButton` | v1 | Vuelve mixtas todas las pantallas v2 mientras está visible | Alta | v2 completa |
+| `birdie/BirdieAssistant` | v1 | Vuelve mixta la pantalla mientras está abierto | Media | v1 (fuera de alcance) |
+| `chat/VideoCallOverlay` | v1 | Vuelve mixta la pantalla durante una videollamada | Media | v1 (fuera de alcance) |
 
 ### Componentes base
 
@@ -163,7 +163,39 @@ Estos componentes no se importan en ningún archivo. **18 de los 22 usan alias l
 | `UI/TextEffects/Split` | 0 |
 | `UI/Backgrounds/GridWave` | 0 |
 
-## 5. Red de regresión
+## 5. Resultado de la migración
+
+| Pantalla / componente | Archivos | Componentes v2 reutilizados | Prueba nueva | Verificación manual |
+| :--- | :--- | :--- | :--- | :--- |
+| Detalle de proyecto | `TaskModal.vue`, `TeamDetailModal.vue` | `FormField`, `Button`, `BaseModal` | `taskModal.test.js` | Crear, editar y cancelar tarea en desktop. `TeamDetailModal` pertenece a la pestaña Equipo del proyecto, que está oculta (redirige a Miembros); la gestión de equipos se hace en `/teams`. Cubierto por build y pruebas |
+| Onboarding | `OnboardingView.vue` | `FormField`, `Button` | `onboardingView.test.js` | Formulario y creación de empresa en desktop |
+| Invitación | `InviteView.vue` | `Button`, `Pill` | — (`invitation.test.js` existente) | Vista sin sesión con invitación activa en desktop |
+| Callback OAuth | `AuthCallback.vue` | — | — | No verificada a mano; cubierta por build |
+| Chat flotante | `FloatingChat.vue` | Tokens `--k-*`; los botones de icono quedan nativos, como en `SaleCartPanel` | `floatingChat.test.js` | Panel cerrado, lista y conversación en desktop, sobre dashboard, ventas e inventario |
+| Botón de Birdie | `BirdieFloatingButton.vue` | Tokens `--k-*` | — | Visible y arrastrable en desktop |
+| Equipos | `TeamsView.vue` | `FormField`, `Button` | `teamsView.test.js` | Crear y editar equipo en desktop |
+
+Ninguna migración cambia lógica, rutas, stores ni llamadas a API. La geometría de `FloatingChat` (posición, tamaño y `z-index`) no cambia.
+
+**Verificación automática al cierre:** 43 archivos de prueba y 527 pruebas en verde, `vite build` correcto y lint de CI sin errores.
+
+**Escaneo del POS:** `InventoryPage`, `BarcodeScanner`, `SaleCartPanel` y `SaleCheckoutModal` no se modificaron. Las pruebas `barcodeScanner`, `posCheckout`, `sales`, `salesView`, `saleConfigStore` y `boxPricing` pasan. La prueba con cámara de los casos de escaneo queda pendiente.
+
+### Cumplimiento del criterio "ninguna pantalla mixta"
+
+- **Se cumple** para todas las vistas migradas y para los dos componentes globales visibles en reposo (`FloatingChat` y `BirdieFloatingButton`).
+- **No se cumple** mientras `BirdieAssistant` o `VideoCallOverlay` están abiertos: ambos siguen en v1.
+
+### Estado de HU-32b
+
+HU-32b queda declarada **fuera de alcance** en lo que falta: Reportes, detalle de reporte, `ChatView`, `VideoCallOverlay`, `BirdieAssistant`, Integraciones, Agente IA, Admin y los 22 componentes huérfanos (sección 4).
+
+### Otros hallazgos para backlog
+
+- `src/components/navbar.css` declara una regla global `ul { justify-content: center; align-items: center; }` que alcanza a listas fuera de la navbar. En Onboarding se corrigió de forma local.
+- Los mensajes de error del backend en el panel de miembros de la empresa (`companyController.js`, `projectController.js`) llegan en inglés y se muestran tal cual. Los de éxito ya se muestran traducidos.
+
+## 6. Red de regresión
 
 | Área | Pruebas | Cobertura |
 | :--- | :--- | :--- |
