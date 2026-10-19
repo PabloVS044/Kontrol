@@ -31,8 +31,7 @@
 
           <form class="ob-form" @submit.prevent="submit">
 
-            <div class="ob-field">
-              <label>{{ t('onboarding.form.name') }} <span class="req">*</span></label>
+            <FormField :label="t('onboarding.form.name')" :required="true">
               <input
                 v-model="form.nombre"
                 type="text"
@@ -40,52 +39,61 @@
                 required
                 :disabled="loading"
               />
-            </div>
+            </FormField>
 
-            <div class="ob-field">
-              <label>{{ t('onboarding.form.industry') }}</label>
+            <FormField :label="t('onboarding.form.industry')">
               <input
                 v-model="form.industria"
                 type="text"
                 :placeholder="t('onboarding.form.industryPlaceholder')"
                 :disabled="loading"
               />
-            </div>
+            </FormField>
 
             <div class="ob-row">
-              <div class="ob-field">
-                <label>{{ t('onboarding.form.phone') }}</label>
+              <FormField :label="t('onboarding.form.phone')">
                 <input
                   v-model="form.telefono"
                   type="tel"
                   placeholder="+1 555 000 0000"
                   :disabled="loading"
                 />
-              </div>
-              <div class="ob-field">
-                <label>{{ t('onboarding.form.address') }}</label>
+              </FormField>
+              <FormField :label="t('onboarding.form.address')">
                 <input
                   v-model="form.direccion"
                   type="text"
                   :placeholder="t('onboarding.form.addressPlaceholder')"
                   :disabled="loading"
                 />
-              </div>
+              </FormField>
             </div>
 
             <p v-if="error" class="ob-error">{{ error }}</p>
 
-            <button class="ob-submit" type="submit" :disabled="loading">
+            <Button
+              class="ob-submit"
+              type="submit"
+              :disabled="loading"
+              back-color="var(--k-color-primary)"
+              hover-back="var(--k-color-primary-2)"
+            >
               <span v-if="loading" class="ob-spinner" />
               {{ loading ? t('onboarding.form.submitting') : t('onboarding.form.submit') }}
-            </button>
+            </Button>
 
           </form>
 
           <p class="ob-footer-note">{{ t('onboarding.footerNote') }}</p>
         </div>
 
-        <button class="ob-logout" @click="logout">{{ t('onboarding.signOut') }}</button>
+        <Button
+          class="ob-logout"
+          :label="t('onboarding.signOut')"
+          back-color="transparent"
+          hover-back="transparent"
+          @click="logout"
+        />
       </div>
 
     </div>
@@ -97,6 +105,8 @@ import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import Button from '@/components/UI/Button/Button.vue'
+import FormField from '@/components/common/FormField.vue'
 
 const { t }     = useI18n()
 const router    = useRouter()
@@ -163,8 +173,8 @@ function logout() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Manrope', sans-serif;
-  color: var(--Text);
+  font-family: var(--k-font-sans);
+  color: var(--k-color-text);
   padding: 40px 24px;
 }
 
@@ -190,16 +200,16 @@ function logout() {
 }
 
 .ob-headline {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--k-font-display);
   font-size: 52px;
   font-weight: 400;
   line-height: 1.1;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 .ob-tagline {
-  font-size: 14px;
-  color: var(--TextMuted);
+  font-size: var(--k-font-size-body-main);
+  color: var(--k-text-muted);
   line-height: 1.7;
   max-width: 380px;
 }
@@ -215,14 +225,14 @@ function logout() {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 13px;
-  color: var(--TextDim);
+  font-size: var(--k-font-size-body-small);
+  color: var(--k-text-dim);
 }
 
 .ob-dot {
   width: 6px;
   height: 6px;
-  background: #caa860;
+  background: var(--k-color-primary);
   flex-shrink: 0;
 }
 
@@ -236,8 +246,8 @@ function logout() {
 }
 
 .ob-card {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
   padding: 36px;
   display: flex;
   flex-direction: column;
@@ -245,15 +255,15 @@ function logout() {
 }
 
 .ob-card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 24px;
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-heading-1);
   font-weight: 400;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 .ob-card-sub {
-  font-size: 13px;
-  color: var(--TextDim);
+  font-size: var(--k-font-size-body-small);
+  color: var(--k-text-dim);
   margin-top: -12px;
 }
 
@@ -263,35 +273,26 @@ function logout() {
   gap: 16px;
 }
 
-.ob-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.ob-field label {
-  font-size: 11px;
-  color: var(--TextMuted);
-  letter-spacing: 0.05em;
-}
-
-.ob-field input {
-  background: #0a0a0a;
-  border: 1px solid #1f1f1f;
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+.ob-form input {
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
   padding: 10px 12px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: var(--k-transition-ui);
 }
 
-.ob-field input:focus {
-  border-color: #caa860;
+.ob-form input:focus {
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
 }
 
-.ob-field input:disabled {
-  opacity: 0.5;
+.ob-form input::placeholder { color: var(--k-text-placeholder); }
+
+.ob-form input:disabled {
+  opacity: var(--k-state-disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -301,40 +302,28 @@ function logout() {
   gap: 12px;
 }
 
-.req { color: var(--Primary); }
-
 .ob-error {
-  font-size: 12px;
-  color: #fb7185;
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-state-error-text);
 }
 
-.ob-submit {
-  background: #caa860;
-  border: none;
-  color: var(--BtnText);
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
+/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
+.btn.ob-submit {
+  border-radius: 0;
+  color: var(--k-form-btn-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  font-weight: var(--k-font-weight-semibold);
   padding: 12px 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
-  transition: opacity 0.2s;
-}
-
-.ob-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .ob-spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(10,10,10,0.3);
-  border-top-color: #0a0a0a;
+  border: 2px solid rgba(var(--k-color-black-rgb), 0.3);
+  border-top-color: var(--k-form-btn-text);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -342,27 +331,24 @@ function logout() {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .ob-footer-note {
-  font-size: 11px;
-  color: var(--TextFaint);
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-faint);
   line-height: 1.6;
   padding-top: 8px;
-  border-top: 1px solid #1a1a1a;
+  border-top: var(--k-border-width) solid var(--k-shade-4);
 }
 
-.ob-logout {
-  background: none;
-  border: none;
-  color: var(--TextFaint);
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
+.btn.ob-logout {
+  color: var(--k-text-faint);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-regular);
   padding: 4px;
-  transition: color 0.15s;
 }
 
-.ob-logout:hover {
-  color: var(--TextMuted);
+.btn.ob-logout:hover:not(:disabled) {
+  color: var(--k-text-muted);
+  box-shadow: none;
 }
 
 /* ── Responsive ── */
