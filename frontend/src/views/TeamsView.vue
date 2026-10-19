@@ -2,6 +2,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
+import Button from '../components/UI/Button/Button.vue'
+import FormField from '../components/common/FormField.vue'
 import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
@@ -232,7 +234,13 @@ watch(() => authStore.idEmpresaActual, () => {
           <h1>{{ $t('teams.header.title') }}</h1>
           <p>{{ $t('teams.header.subtitle') }}</p>
         </div>
-        <button class="primary-action" @click="resetForm">{{ $t('teams.header.newTeam') }}</button>
+        <Button
+          class="primary-action"
+          :label="$t('teams.header.newTeam')"
+          back-color="var(--k-color-primary)"
+          hover-back="var(--k-color-primary-2)"
+          @click="resetForm"
+        />
       </header>
 
       <div v-if="error" class="state state-error">{{ error }}</div>
@@ -268,36 +276,44 @@ watch(() => authStore.idEmpresaActual, () => {
                 <p class="eyebrow">{{ isEditing ? $t('teams.editor.editTitle') : $t('teams.editor.createTitle') }}</p>
                 <h2>{{ isEditing ? form.nombre : $t('teams.editor.newTeamName') }}</h2>
               </div>
-              <button v-if="isEditing" type="button" class="danger-action" :disabled="saving" @click="deleteTeam">
-                {{ $t('teams.editor.delete') }}
-              </button>
+              <Button
+                v-if="isEditing"
+                class="danger-action"
+                :label="$t('teams.editor.delete')"
+                :disabled="saving"
+                back-color="var(--k-alert-critical-bg)"
+                hover-back="var(--k-alert-critical-bg)"
+                @click="deleteTeam"
+              />
             </div>
 
             <div class="form-grid">
-              <label>
-                <span>{{ $t('teams.form.name') }}</span>
+              <FormField :label="$t('teams.form.name')">
                 <input v-model="form.nombre" type="text" required minlength="3" :placeholder="$t('teams.form.namePlaceholder')" />
-              </label>
-              <label>
-                <span>{{ $t('teams.form.leader') }}</span>
+              </FormField>
+              <FormField :label="$t('teams.form.leader')">
                 <select v-model="form.id_lider" required>
                   <option value="">{{ $t('teams.form.selectLeader') }}</option>
                   <option v-for="member in members" :key="member.id_usuario" :value="member.id_usuario">
                     {{ userName(member) }}
                   </option>
                 </select>
-              </label>
+              </FormField>
             </div>
 
-            <label>
-              <span>{{ $t('teams.form.description') }}</span>
+            <FormField :label="$t('teams.form.description')">
               <textarea v-model="form.descripcion" rows="3" :placeholder="$t('teams.form.descriptionPlaceholder')"></textarea>
-            </label>
+            </FormField>
 
             <div class="form-actions">
-              <button type="submit" class="primary-action" :disabled="saving">
-                {{ saving ? $t('teams.actions.saving') : isEditing ? $t('teams.actions.saveChanges') : $t('teams.actions.createTeam') }}
-              </button>
+              <Button
+                class="primary-action"
+                type="submit"
+                :disabled="saving"
+                :label="saving ? $t('teams.actions.saving') : isEditing ? $t('teams.actions.saveChanges') : $t('teams.actions.createTeam')"
+                back-color="var(--k-color-primary)"
+                hover-back="var(--k-color-primary-2)"
+              />
             </div>
           </form>
 
@@ -317,7 +333,14 @@ watch(() => authStore.idEmpresaActual, () => {
                     {{ userName(member) }}
                   </option>
                 </select>
-                <button class="secondary-action" :disabled="!selectedMemberId || saving" @click="addMember">{{ $t('teams.members.addBtn') }}</button>
+                <Button
+                  class="secondary-action"
+                  :label="$t('teams.members.addBtn')"
+                  :disabled="!selectedMemberId || saving"
+                  back-color="var(--k-color-primary)"
+                  hover-back="var(--k-color-primary-2)"
+                  @click="addMember"
+                />
               </div>
 
               <div class="stack-list">
@@ -326,13 +349,14 @@ watch(() => authStore.idEmpresaActual, () => {
                     <strong>{{ userName(member) }}</strong>
                     <span>{{ member.email }}</span>
                   </div>
-                  <button
+                  <Button
                     class="ghost-danger"
+                    :label="$t('teams.members.removeBtn')"
                     :disabled="member.id_usuario === selectedTeam.id_lider || saving"
+                    back-color="var(--k-shade-3)"
+                    hover-back="var(--k-alert-critical-bg)"
                     @click="removeMember(member)"
-                  >
-                    {{ $t('teams.members.removeBtn') }}
-                  </button>
+                  />
                 </div>
               </div>
             </section>
@@ -352,7 +376,14 @@ watch(() => authStore.idEmpresaActual, () => {
                     {{ project.nombre }}
                   </option>
                 </select>
-                <button class="secondary-action" :disabled="!selectedProjectId || saving" @click="assignProject">{{ $t('teams.projectsPanel.assignBtn') }}</button>
+                <Button
+                  class="secondary-action"
+                  :label="$t('teams.projectsPanel.assignBtn')"
+                  :disabled="!selectedProjectId || saving"
+                  back-color="var(--k-color-primary)"
+                  hover-back="var(--k-color-primary-2)"
+                  @click="assignProject"
+                />
               </div>
               <p class="access-note">{{ $t('teams.projectsPanel.accessNote') }}</p>
 
@@ -362,7 +393,14 @@ watch(() => authStore.idEmpresaActual, () => {
                     <strong>{{ project.nombre }}</strong>
                     <span>{{ project.estado }}</span>
                   </div>
-                  <button class="ghost-danger" :disabled="saving" @click="removeProject(project)">{{ $t('teams.projectsPanel.removeBtn') }}</button>
+                  <Button
+                    class="ghost-danger"
+                    :label="$t('teams.projectsPanel.removeBtn')"
+                    :disabled="saving"
+                    back-color="var(--k-shade-3)"
+                    hover-back="var(--k-alert-critical-bg)"
+                    @click="removeProject(project)"
+                  />
                 </div>
                 <div v-if="!selectedTeam.proyectos.length" class="muted-row">{{ $t('teams.projectsPanel.noProjects') }}</div>
               </div>
@@ -378,8 +416,8 @@ watch(() => authStore.idEmpresaActual, () => {
 .teams-root {
   min-height: 100vh;
   background: transparent;
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
 }
 
 .teams-shell {
@@ -405,8 +443,8 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .eyebrow {
-  color: var(--Primary);
-  font-size: 11px;
+  color: var(--k-color-primary);
+  font-size: var(--k-font-size-caption);
   font-weight: 700;
   letter-spacing: 0.14em;
   margin: 0 0 8px;
@@ -414,22 +452,22 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 h1, h2, h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--k-font-display);
   font-weight: 700;
   margin: 0;
 }
 
 h1 { font-size: clamp(32px, 5vw, 48px); }
 h2 { font-size: 28px; }
-h3 { font-size: 20px; }
+h3 { font-size: var(--k-font-size-heading-2); }
 
 .teams-header p:not(.eyebrow),
 .team-list-item span,
 .team-list-item small,
 .stack-row span,
 .muted-row {
-  color: var(--TextDim);
-  font-size: 13px;
+  color: var(--k-text-dim);
+  font-size: var(--k-font-size-body-small);
 }
 
 .teams-layout {
@@ -441,8 +479,8 @@ h3 { font-size: 20px; }
 .teams-list,
 .team-editor,
 .panel-card {
-  background: rgba(12, 12, 12, 0.94);
-  border: 1px solid #1f1f1f;
+  background: rgba(var(--k-color-black-rgb), 0.94);
+  border: var(--k-border-width) solid var(--k-shade-6);
 }
 
 .teams-list {
@@ -453,14 +491,14 @@ h3 { font-size: 20px; }
 .team-list-item {
   cursor: pointer;
   padding: 14px;
-  border: 1px solid transparent;
+  border: var(--k-border-width) solid transparent;
   transition: border-color .15s, background .15s;
 }
 
 .team-list-item:hover,
 .team-list-item.active {
-  background: #111111;
-  border-color: rgba(202,168,96,0.3);
+  background: var(--k-shade-3);
+  border-color: var(--k-alert-watching-border);
 }
 
 .team-list-item div {
@@ -472,8 +510,8 @@ h3 { font-size: 20px; }
 
 .team-list-item strong,
 .stack-row strong {
-  color: var(--Text);
-  font-size: 14px;
+  color: var(--k-color-text);
+  font-size: var(--k-font-size-body-main);
 }
 
 .team-editor {
@@ -485,7 +523,7 @@ h3 { font-size: 20px; }
   flex-direction: column;
   gap: 18px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #1f1f1f;
+  border-bottom: var(--k-border-width) solid var(--k-shade-6);
 }
 
 .form-grid,
@@ -495,27 +533,14 @@ h3 { font-size: 20px; }
   gap: 18px;
 }
 
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-label span {
-  color: var(--TextMuted);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 input,
 select,
 textarea {
   width: 100%;
-  background: #0a0a0a;
-  border: 1px solid #252525;
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
   box-sizing: border-box;
-  color: var(--Text);
+  color: var(--k-color-text);
   font: inherit;
   outline: none;
   padding: 11px 12px;
@@ -525,48 +550,40 @@ textarea { resize: vertical; }
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #caa860;
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
 }
+input::placeholder,
+textarea::placeholder { color: var(--k-text-placeholder); }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
 }
 
-.primary-action,
-.secondary-action,
-.danger-action,
-.ghost-danger {
-  border: 1px solid transparent;
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 700;
+/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
+.btn.primary-action,
+.btn.secondary-action,
+.btn.danger-action,
+.btn.ghost-danger {
+  border: var(--k-border-width) solid transparent;
+  border-radius: 0;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-bold);
   padding: 10px 16px;
-  transition: opacity .15s, border-color .15s, color .15s;
   white-space: nowrap;
 }
 
-.primary-action,
-.secondary-action {
-  background: #caa860;
-  color: var(--BtnText);
-}
+.btn.primary-action,
+.btn.secondary-action { color: var(--k-form-btn-text); }
 
-.secondary-action {
-  padding-inline: 14px;
-}
+.btn.secondary-action { padding-inline: 14px; }
 
-.danger-action,
-.ghost-danger {
-  background: #111111;
-  border-color: rgba(251,113,133,0.4);
-  color: #fb7185;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: .45;
+.btn.danger-action,
+.btn.ghost-danger {
+  border-color: var(--k-alert-critical-border);
+  color: var(--k-alert-critical-text);
 }
 
 .management-grid {
@@ -584,8 +601,8 @@ button:disabled {
 /* Texto atenuado como .muted-row, sin la caja de "lista vacía". */
 .access-note {
   margin: -8px 0 18px;
-  color: var(--TextDim);
-  font-size: 13px;
+  color: var(--k-text-dim);
+  font-size: var(--k-font-size-body-small);
 }
 
 .stack-list {
@@ -595,8 +612,8 @@ button:disabled {
 }
 
 .stack-row {
-  background: #111111;
-  border: 1px solid #1d1d1d;
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-shade-6);
   padding: 12px;
 }
 
@@ -610,21 +627,23 @@ button:disabled {
 .state,
 .empty-card,
 .muted-row {
-  background: #0c0c0c;
-  border: 1px solid #1f1f1f;
-  color: var(--TextMuted);
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-text-muted);
   margin-bottom: 16px;
   padding: 16px;
 }
 
 .state-error {
-  border-color: rgba(251,113,133,0.45);
-  color: #fecdd3;
+  background: var(--k-alert-critical-bg);
+  border-color: var(--k-alert-critical-border);
+  color: var(--k-alert-critical-text);
 }
 
 .state-ok {
-  border-color: rgba(52,211,153,0.35);
-  color: #86efac;
+  background: var(--k-alert-ok-bg);
+  border-color: var(--k-alert-ok-border);
+  color: var(--k-alert-ok-text);
 }
 
 @media (max-width: 1000px) {
