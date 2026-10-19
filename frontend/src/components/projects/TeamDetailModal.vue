@@ -7,8 +7,20 @@
       <span class="modal-title">{{ team?.nombre }}</span>
     </template>
     <template #header-actions>
-      <button class="task-action-btn" @click="$emit('edit', team)">{{ $t('projects.team.detail.edit') }}</button>
-      <button class="task-action-btn task-action-btn--close" @click="$emit('delete', team)">{{ $t('projects.team.detail.delete') }}</button>
+      <Button
+        class="task-action-btn"
+        :label="$t('projects.team.detail.edit')"
+        back-color="var(--k-shade-3)"
+        hover-back="var(--k-shade-4)"
+        @click="$emit('edit', team)"
+      />
+      <Button
+        class="task-action-btn task-action-btn--delete"
+        :label="$t('projects.team.detail.delete')"
+        back-color="var(--k-alert-critical-bg)"
+        hover-back="var(--k-alert-critical-bg)"
+        @click="$emit('delete', team)"
+      />
     </template>
 
     <div v-if="team" class="modal-form">
@@ -56,6 +68,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+import Button from '@/components/UI/Button/Button.vue'
 import TaskCard from '@/components/projects/TaskCard.vue'
 
 const { t } = useI18n()
@@ -121,13 +134,17 @@ function areaLabel(area) {
 .empty-hint  { color: var(--k-gray-3); font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans); }
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
-.task-action-btn {
-  background: #111111; border: 1px solid #1f1f1f; color: var(--TextMuted);
-  font-family: 'Manrope', sans-serif; font-size: 11px;
-  padding: 6px 12px; cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
+.btn.task-action-btn {
+  border-radius: 0;
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-text-muted);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
+  font-weight: var(--k-font-weight-semibold);
+  padding: 6px 12px;
 }
-.task-action-btn:hover { border-color: #333; color: var(--Text); }
-.task-action-btn--close { border-color: rgba(52,211,153,0.2); color: #34d399; }
-.task-action-btn--close:hover { border-color: rgba(52,211,153,0.4); }
+.btn.task-action-btn:hover:not(:disabled) { border-color: var(--k-shade-8); color: var(--k-color-text); }
+.btn.task-action-btn--delete { border-color: var(--k-alert-critical-border); color: var(--k-alert-critical-text); }
+.btn.task-action-btn--delete:hover:not(:disabled) { border-color: var(--k-alert-critical-border); color: var(--k-alert-critical-text); }
 </style>
