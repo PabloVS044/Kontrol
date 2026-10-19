@@ -214,10 +214,12 @@ function logout() {
   max-width: 380px;
 }
 
+/* `navbar.css` centra todo `ul` de forma global; aquí la lista va alineada. */
 .ob-features {
   list-style: none;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 12px;
 }
 
@@ -282,6 +284,8 @@ function logout() {
   padding: 10px 12px;
   outline: none;
   transition: var(--k-transition-ui);
+  width: 100%;
+  min-width: 0;
 }
 
 .ob-form input:focus {
@@ -298,7 +302,7 @@ function logout() {
 
 .ob-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
 }
 
