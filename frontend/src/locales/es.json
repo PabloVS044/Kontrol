@@ -2407,5 +2407,13 @@
     "checkbox": "He leído y acepto los {terms}.",
     "termsLink": "Términos y Condiciones del Servicio",
     "accept": "Aceptar"
+  },
+  "notFound": {
+    "title": "Esta página no existe",
+    "description": "La dirección puede estar mal escrita, o la página se movió o ya no está disponible.",
+    "home": "Ir al inicio",
+    "back": "Volver",
+    "codeLabel": "Error 404",
+    "missingPath": "Ruta que no existe:"
   }
 }

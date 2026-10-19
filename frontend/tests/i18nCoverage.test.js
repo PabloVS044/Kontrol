@@ -29,6 +29,7 @@ const ARCHIVOS = [
   'views/ChatView.vue',
   'views/LandingPage.vue',
   'views/LegalView.vue',
+  'views/NotFoundView.vue',
   'views/IntegrationsView.vue',
   'views/InviteView.vue',
   'views/OnboardingView.vue',

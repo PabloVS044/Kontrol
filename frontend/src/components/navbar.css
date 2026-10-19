@@ -27,7 +27,11 @@ body {
   box-sizing: border-box;
 }
 
-ul {
+/* Acotado a la navbar: como `ul` a secas se cargaba con la landing y desde
+   ahí alcanzaba a todas las listas de la app (onboarding, modal de tarea…).
+   `:where()` deja la especificidad de `ul`, así .navigation y .mobile-nav
+   siguen sobrescribiéndolo igual que antes. */
+:where(.nav-container) ul {
   list-style: none;
   display: flex;
   justify-content: center;

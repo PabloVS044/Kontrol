@@ -21,6 +21,8 @@ const router = createRouter({
     }
     return { top: 0, behavior: 'instant' }
   },
+  // `meta.surface`: la vista va sobre <AppSurface> (velo de contraste sobre el
+  // fondo animado, DT-09 / T-18). Las vistas internas no pintan fondo de página.
   routes: [
     {
       path: '/',
@@ -64,108 +66,115 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/projects',
       name: 'projects',
       component: () => import('../views/ProjectsView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
     },
     {
       path: '/projects/:id',
       name: 'project-detail',
       component: () => import('../views/ProjectDetailView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresProjectsAccess: true },
       beforeEnter: redirectLegacyProjectTab,
     },
     {
       path: '/teams',
       name: 'teams',
       component: () => import('../views/TeamsView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
     },
     {
       path: '/inventory',
       name: 'inventory',
       component: () => import('../views/InventoryPage.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/inventory/:id',
       name: 'inventory-detail',
       component: () => import('../views/ProductDetailView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/sales',
       name: 'sales',
       component: () => import('../views/SalesView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/suppliers',
       name: 'suppliers',
       component: () => import('../views/SuppliersView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
       path: '/reports',
       name: 'reports',
       component: () => import('../views/ReportsView.vue'),
-      meta: { requiresAuth: true }
+      meta: { surface: true, requiresAuth: true }
     },
     {
       path: '/reports/:id',
       name: 'report-detail',
       component: () => import('../views/ReportDetailView.vue'),
-      meta: { requiresAuth: true }
+      meta: { surface: true, requiresAuth: true }
     },
     {
       path: '/budget',
       name: 'budget',
       component: () => import('../views/BudgetView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/chat',
       name: 'chat',
       component: () => import('../views/ChatView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/agent',
       name: 'agent',
       component: () => import('../views/AgentView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/integrations',
       name: 'integrations',
       component: () => import('../views/IntegrationsView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/marketing',
       name: 'marketing',
       component: () => import('../views/MarketingPublicationsView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/settings',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),
-      meta: { requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
       path: '/admin',
       component: () => import('../views/admin/AdminLayout.vue'),
-      meta: { requiresAuth: true, requiresSuperUser: true },
+      meta: { surface: true, requiresAuth: true, requiresSuperUser: true },
       children: [
         { path: '',        name: 'admin-dashboard', component: () => import('../views/admin/AdminDashboardView.vue') },
         { path: 'companies', name: 'admin-companies', component: () => import('../views/admin/AdminCompaniesView.vue') },
         { path: 'users',     name: 'admin-users',     component: () => import('../views/admin/AdminUsersView.vue') },
       ],
+    },
+    // Cualquier ruta que no exista. Va al final y sin meta: es pública, sin
+    // AppSurface, y los guards no la redirigen a login.
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
     },
   ],
 })

@@ -211,6 +211,10 @@ Otros scripts del `package.json` raíz:
 Kontrol/
 ├── frontend/              # Vue 3 + Vite + Pinia + Vue Router          -> :5173
 │   ├── src/
+│   │   └── services/
+│   │       ├── http.js    # Cliente HTTP: URL, auth, reintentos y 401
+│   │       ├── api.js     # Enruta cada petición al servicio de dominio
+│   │       └── domains/   # Adaptadores por dominio sobre el cliente HTTP
 │   ├── vite.config.js
 │   └── Dockerfile.dev
 ├── backend/               # Node.js + Express + Socket.IO              -> :3000
@@ -233,6 +237,11 @@ Kontrol/
 ├── dev.sh                 # Atajo para levantar dev en Linux
 └── package.json           # Workspaces del monorepo
 ```
+
+Las llamadas del frontend deben pasar por `src/services/api.js`; los adaptadores
+de dominio delegan en `src/services/http.js`, que resuelve la URL base e inyecta
+la autenticación y la empresa activa. Los 401 invalidan la sesión en el cliente
+común y la app redirige a login desde un único listener.
 
 ---
 

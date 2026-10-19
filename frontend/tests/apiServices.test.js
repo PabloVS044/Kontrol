@@ -116,7 +116,7 @@ describe('services/agent', () => {
 })
 
 describe('services/integrations', () => {
-  const expectedHeaders = { 'Content-Type': 'application/json', Authorization: 'Bearer t', 'X-Company-ID': 2 }
+  const expectedHeaders = { 'Content-Type': 'application/json', Authorization: 'Bearer t', 'X-Company-ID': '2' }
 
   it('cada operación usa su ruta, método y cabeceras', async () => {
     mockFetch(
@@ -202,7 +202,7 @@ describe('services/marketing', () => {
     expect(fetchMock.mock.calls[0][1].headers).toEqual({
       'Content-Type': 'application/json',
       Authorization: 'Bearer t',
-      'X-Company-ID': 1,
+      'X-Company-ID': '1',
     })
   })
 

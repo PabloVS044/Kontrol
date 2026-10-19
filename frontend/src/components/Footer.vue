@@ -135,6 +135,8 @@ const year = new Date().getFullYear();
   margin: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
 }
 

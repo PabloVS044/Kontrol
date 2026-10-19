@@ -112,9 +112,8 @@ La evidencia original del Sprint 7, que motivó el elemento:
 - Los umbrales de `frontend/vitest.config.js` (83/83/78/85) están calibrados sobre una base de 168 sentencias en 6 archivos; hoy el reporte mide 929 sentencias en 23 archivos y da 91.92 %. El trinquete quedó desfasado hacia abajo.
 
 ### DT-07 — Sin capa de acceso a API
-- 14 definiciones locales de `authHeader`/`authHeaders`, entre ellas `DashboardView.vue:315`, `InventoryPage.vue:506`, `ProjectsView.vue:545`, `ReportsView.vue:311`, `ReportDetailView.vue:315`, `BudgetView.vue:42`, `ProjectDetailView.vue:613`, `ProductDetailView.vue:225`.
-- `fetch` crudo en 24 archivos; los que más concentran: `DashboardView.vue` (11), `ProjectDetailView.vue` (8), `InventoryPage.vue` (6), `ProjectMembersPanel.vue` (6).
-- Dos resoluciones distintas de la URL base: `stores/chat.js:13` y `TaskDetailModal.vue:86` usan `import.meta.env.VITE_API_URL || window.location.origin`; el resto asume rutas relativas `/api/...`.
+
+**Estado: resuelto el 17/10/2026.** `frontend/src/services/http.js` centraliza la URL base, las cabeceras de autenticación/empresa, un reintento seguro para lecturas y la invalidación ante 401. `frontend/src/services/api.js` enruta cada petición por un adaptador de dominio en `frontend/src/services/domains/`. Las llamadas del frontend usan esta fachada; el único `fetch` y las lecturas/escrituras del token quedan dentro del cliente HTTP. La app cierra la sesión y redirige a login al recibir el evento central de 401. `frontend/tests/http.test.js` cubre URL, cabeceras, reintentos, enrutamiento y 401.
 
 ### DT-08 — Verificación del 17/10/2026
 **Estado: resuelto el 17/10/2026** en la rama `chore/dependency-audit-ci`. Punto de partida: el reporte de SCRUM-52 (`docs/pruebas-seguridad-zap.md` §5) había dejado 3 altas (cadena `uploadthing` → `effect`), pero al retomar la tarea `npm audit` volvía a dar **13 (2 críticas, 9 altas, 2 moderadas)** por advisories publicados después. `dompurify`, `mongoose`, `ws`, `vite`, `nanoid`, `qs`, `engine.io` y `socket.io-parser` ya estaban limpios. Un commit por lote, con las dos suites, el build y el lint en verde en Node 22 después de cada uno:
@@ -152,6 +151,7 @@ Hallazgo lateral, fuera del alcance de DT-08: borrar una evidencia desde la inte
 - **DT-03, parcial.** T-05 y T-06 se hicieron en el PR #126: el escaneo ambiguo pregunta de qué proyecto vender. T-07 sigue sin decisión registrada; la prueba de integración I3 fija hoy la unicidad por proyecto. La resolución del escaneo en el servidor pasa a DT-22.
 - **DT-04, resuelto el 22/09/2026** con el PR #120 (`docs/plan-refactorizacion.md` §2).
 - **DT-09, parcial desde el 08/10/2026** (SCRUM-63, PR #138). El fondo animado usa su propio token (`--k-bg-wave-line`) y un tope de intensidad que baja su pico de #ffffff a #272727; la rampa de texto supera 4.5:1 sobre todas las superficies, fijado en `frontend/tests/theme.test.js`. Queda el tema claro vacío, a la espera de la paleta de Diseño, y los `!important`: 2 SP.
+- **DT-09, T-18 hecha el 17/10/2026** (rama `fix/onboarding-layout`). `frontend/src/components/UI/AppSurface/AppSurface.vue` pone un único velo (`--k-surface-scrim`, negro al 60 %) entre el fondo animado y el contenido; `App.vue` lo activa con `meta.surface`, presente en toda ruta con sesión salvo onboarding. Antes cada vista lo resolvía por su cuenta: siete dejaban las ondas sin velo, cuatro pintaban uno propio del 92 %, el detalle de proyecto apilaba dos, y Suppliers, Chat y el detalle de producto escondían otro en un `::before` con desenfoque. Se quitaron todos. El contraste no depende del velo: `theme.test.js` ya exige 4.5:1 sobre el pico de las ondas sin velo. Pruebas en `frontend/tests/appSurface.test.js`. DT-09 sigue parcial por el tema claro y los `!important`.
 
 ---
 
@@ -257,7 +257,7 @@ Dos reglas de orden que atraviesan toda la lista:
 | T-15 · **hecha** | Actualizar el lote de parches y versiones menores | DT-08 | Actualización de dependencias | `ws`, `vite`, `nanoid`, `brace-expansion`, `socket.io-parser`, `dompurify`, `mongoose`, `qs` y `concurrently` al parche disponible | 2 | P2 | — |
 | T-16 · **hecha** | Resolver `uploadthing` con su cambio semver-major | DT-08 | Actualización de dependencias | Versión con parche instalada y subida de archivos verificada a mano | 2 | P2 | T-15 |
 | T-17 | Definir la escala de `z-index` en `theme.css` | DT-09 | Unificación de tokens | Tokens por capa (fondo, contenido, cabecera, modal, overlay) sustituyendo los 27 valores sueltos | 3 | P2 | — |
-| T-18 | Extraer `<AppSurface>` con capa de contraste | DT-09 | Extracción de componente | Componente con scrim aplicado a las vistas que van sobre el fondo animado, con contraste AA verificado | 3 | P2 | T-17 |
+| T-18 · **hecha** | Extraer `<AppSurface>` con capa de contraste | DT-09 | Extracción de componente | Componente con scrim aplicado a las vistas que van sobre el fondo animado, con contraste AA verificado | 3 | P2 | T-17 |
 | T-19 | Endpoint agregado de resúmenes de presupuesto | DT-10 | Extracción a endpoint agregado | `GET /api/budgets/summary?projectIds=` con caché corta, y el dashboard haciendo 2 peticiones en lugar de 1+N | 3 | P2 | — |
 | T-20 | Configurar ESLint y Prettier para Vue 3 | DT-11 | Actualización de herramientas | Configuración en la raíz del monorepo y código existente conforme | 2 | P3 | — |
 | T-21 · **auditoría hecha en DT-08** | Añadir lint y auditoría de dependencias al pipeline | DT-11 | Actualización de herramientas | Steps `lint` y `npm audit --audit-level=high` en `ci.yml` | 1 | P3 | T-20, T-15 |

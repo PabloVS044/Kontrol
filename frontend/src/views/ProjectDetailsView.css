@@ -3,9 +3,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .pd-root {
-  background: var(--k-color-bg);
   min-height: 100vh;
-  backdrop-filter: blur(10px);
 }
 
 .pd-layout {
@@ -13,7 +11,6 @@
   color: var(--k-color-text);
   min-height: calc(100vh - 56px);
   margin-top: 56px;
-  background: var(--k-color-bg);
   display: flex;
   flex-direction: column;
 }
