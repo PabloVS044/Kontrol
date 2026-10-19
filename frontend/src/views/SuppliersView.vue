@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
@@ -115,32 +116,13 @@ const filteredSuppliers = computed(() => {
   return suppliers.value.filter((supplier) => [supplier.nombre, supplier.contacto_nombre, supplier.email, supplier.telefono].some((value) => value?.toLowerCase().includes(query)))
 })
 
-function headers() {
-  const token = localStorage.getItem('token')
-  const result = token ? { Authorization: `Bearer ${token}` } : {}
-
-  if (authStore.idEmpresaActual) {
-    result['X-Company-ID'] = authStore.idEmpresaActual
-  }
-
-  const projectId = authStore.accessContext?.inventory_project_ids?.[0]
-  if (projectId) {
-    result['X-Project-ID'] = projectId
-  }
-
-  return {
-    ...result,
-    'Content-Type': 'application/json',
-  }
-}
-
 async function loadSuppliers() {
   loading.value = true
   error.value = ''
   try {
     if (!authStore.user) await authStore.fetchMe()
     if (!authStore.accessContext) await authStore.loadAccessContext()
-    const response = await fetch('/api/suppliers', { headers: headers() })
+    const response = await requestApi('/api/suppliers', { headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }) })
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(payload.message || `Unable to load suppliers (${response.status})`)
     suppliers.value = payload.data ?? []
@@ -190,9 +172,9 @@ async function saveSupplier() {
     return
   }
   try {
-    const response = await fetch(id ? `/api/suppliers/${id}` : '/api/suppliers', {
+    const response = await requestApi(id ? `/api/suppliers/${id}` : '/api/suppliers', {
       method: id ? 'PUT' : 'POST',
-      headers: headers(),
+      headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }),
       body: JSON.stringify(form),
     })
     const payload = await response.json().catch(() => ({}))
@@ -209,7 +191,7 @@ async function saveSupplier() {
 async function removeSupplier(supplier) {
   if (!window.confirm(t('inventory.suppliers.deleteConfirm', { name: supplier.nombre }))) return
   try {
-    const response = await fetch(`/api/suppliers/${supplier.id_proveedor}`, { method: 'DELETE', headers: headers() })
+    const response = await requestApi(`/api/suppliers/${supplier.id_proveedor}`, { method: 'DELETE', headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }) })
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(payload.message || 'Unable to delete supplier.')
     detailsSupplier.value = null

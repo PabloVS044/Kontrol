@@ -1,25 +1,10 @@
+import { apiFetch as requestApi, authHeaders } from './api.js'
 /**
  * Frontend client for the Kontrol AI agent.
  *
  * All endpoints scoped under /api/agent — separate from the human chat
  * endpoints at /api/chat.
  */
-
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  const empresaRaw = localStorage.getItem('empresaActual')
-  const headers = { 'Content-Type': 'application/json' }
-  if (token) headers.Authorization = `Bearer ${token}`
-  if (empresaRaw) {
-    try {
-      const empresa = JSON.parse(empresaRaw)
-      if (empresa?.id_empresa) headers['X-Company-ID'] = String(empresa.id_empresa)
-    } catch {
-      // ignore — backend will respond with 400 if header is missing
-    }
-  }
-  return headers
-}
 
 async function jsonOrThrow(response) {
   const data = await response.json().catch(() => ({}))
@@ -33,7 +18,7 @@ async function jsonOrThrow(response) {
 
 export async function fetchAgentStatus() {
   try {
-    const response = await fetch('/api/agent/status', { headers: authHeaders() })
+    const response = await requestApi('/api/agent/status', { headers: authHeaders() })
     if (!response.ok) return { configured: false, persistence: false }
     const { data } = await response.json()
     return data ?? { configured: false, persistence: false }
@@ -60,7 +45,7 @@ export async function fetchAgentStatus() {
  * }>}
  */
 export async function sendAgentMessage(messages, opts = {}) {
-  const response = await fetch('/api/agent/chat', {
+  const response = await requestApi('/api/agent/chat', {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify({
@@ -76,13 +61,13 @@ export async function sendAgentMessage(messages, opts = {}) {
 /* ── Conversations ───────────────────────────────────────────────────────── */
 
 export async function listConversations() {
-  const response = await fetch('/api/agent/conversations', { headers: authHeaders() })
+  const response = await requestApi('/api/agent/conversations', { headers: authHeaders() })
   const data = await jsonOrThrow(response)
   return data.data
 }
 
 export async function loadConversation(conversationId) {
-  const response = await fetch(
+  const response = await requestApi(
     `/api/agent/conversations/${encodeURIComponent(conversationId)}/messages`,
     { headers: authHeaders() }
   )
@@ -91,7 +76,7 @@ export async function loadConversation(conversationId) {
 }
 
 export async function deleteConversation(conversationId) {
-  const response = await fetch(
+  const response = await requestApi(
     `/api/agent/conversations/${encodeURIComponent(conversationId)}`,
     { method: 'DELETE', headers: authHeaders() }
   )
@@ -101,7 +86,7 @@ export async function deleteConversation(conversationId) {
 /* ── Single message edit / remove ────────────────────────────────────────── */
 
 export async function editAgentMessage(messageId, content) {
-  const response = await fetch(
+  const response = await requestApi(
     `/api/agent/messages/${encodeURIComponent(messageId)}`,
     {
       method: 'PATCH',
@@ -114,7 +99,7 @@ export async function editAgentMessage(messageId, content) {
 }
 
 export async function deleteAgentMessage(messageId) {
-  const response = await fetch(
+  const response = await requestApi(
     `/api/agent/messages/${encodeURIComponent(messageId)}`,
     { method: 'DELETE', headers: authHeaders() }
   )

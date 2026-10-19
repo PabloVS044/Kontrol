@@ -42,6 +42,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Clock } from 'lucide-vue-next'
@@ -71,14 +72,6 @@ const showModal = ref(false)
 const submitting = ref(false)
 const modalError = ref('')
 
-function authHeaders(extra = {}) {
-  return {
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': authStore.idEmpresaActual,
-    ...extra,
-  }
-}
-
 async function loadProgress() {
   if (!props.projectId || !authStore.token || !authStore.idEmpresaActual) {
     loading.value = false
@@ -89,7 +82,7 @@ async function loadProgress() {
   errorMessage.value = ''
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/progress`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/progress`, {
       headers: authHeaders(),
     })
     const payload = await res.json()
@@ -118,7 +111,7 @@ async function handleSubmit(formData) {
   submitting.value = true
 
   try {
-    const res = await fetch(`/api/projects/${props.projectId}/progress`, {
+    const res = await requestApi(`/api/projects/${props.projectId}/progress`, {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({

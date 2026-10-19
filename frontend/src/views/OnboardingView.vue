@@ -93,6 +93,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi } from '@/services/api.js'
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -117,11 +118,10 @@ async function submit() {
   loading.value = true
 
   try {
-    const res = await fetch('/api/companies', {
+    const res = await requestApi('/api/companies', {
       method:  'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.token}`,
       },
       body: JSON.stringify({
         nombre:    form.nombre.trim(),

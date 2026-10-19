@@ -1,4 +1,5 @@
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSaleConfigStore } from '@/stores/saleConfig'
@@ -41,16 +42,9 @@ const editingActivity   = ref(null)
 
 // ── HTTP helpers ──────────────────────────────────────────────────────────────
 
-function authHeader() {
-  const token   = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  return headers
-}
-
 async function apiFetch(path, options = {}) {
-  const res = await fetch(path, {
-    headers: { 'Content-Type': 'application/json', ...authHeader(), ...(options.headers || {}) },
+  const res = await requestApi(path, {
+    headers: { 'Content-Type': 'application/json', ...authHeaders(), ...(options.headers || {}) },
     ...options,
   })
   const data = await res.json().catch(() => ({}))

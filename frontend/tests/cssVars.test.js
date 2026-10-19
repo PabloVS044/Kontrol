@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { execFileSync } from 'node:child_process'
+import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve, relative } from 'node:path'
 
@@ -56,14 +55,15 @@ const bindings = (s) => [...s.matchAll(/['"](--[\w-]+)['"]\s*:/g)].map((m) => m[
 const hardReferences = (s) =>
   [...s.matchAll(/var\(\s*(-{2,}[\w-]+)\s*([,)])/g)].filter((m) => m[2] === ')').map((m) => m[1])
 
-const sourceFiles = execFileSync(
-  'find',
-  ['src', '-type', 'f', '(', '-name', '*.css', '-o', '-name', '*.vue', ')'],
-  { cwd: root, encoding: 'utf8' },
-)
-  .trim()
-  .split('\n')
-  .sort()
+function listSourceFiles(directory) {
+  return readdirSync(resolve(root, directory), { withFileTypes: true }).flatMap((entry) => {
+    const file = `${directory}/${entry.name}`
+    if (entry.isDirectory()) return listSourceFiles(file)
+    return /\.(css|vue)$/.test(entry.name) ? [file] : []
+  })
+}
+
+const sourceFiles = listSourceFiles('src').sort()
 
 const globalScope = new Set([...declarations(read('src/styles/theme.css')), ...declarations(read('globals.css'))])
 

@@ -112,9 +112,8 @@ La evidencia original del Sprint 7, que motivó el elemento:
 - Los umbrales de `frontend/vitest.config.js` (83/83/78/85) están calibrados sobre una base de 168 sentencias en 6 archivos; hoy el reporte mide 929 sentencias en 23 archivos y da 91.92 %. El trinquete quedó desfasado hacia abajo.
 
 ### DT-07 — Sin capa de acceso a API
-- 14 definiciones locales de `authHeader`/`authHeaders`, entre ellas `DashboardView.vue:315`, `InventoryPage.vue:506`, `ProjectsView.vue:545`, `ReportsView.vue:311`, `ReportDetailView.vue:315`, `BudgetView.vue:42`, `ProjectDetailView.vue:613`, `ProductDetailView.vue:225`.
-- `fetch` crudo en 24 archivos; los que más concentran: `DashboardView.vue` (11), `ProjectDetailView.vue` (8), `InventoryPage.vue` (6), `ProjectMembersPanel.vue` (6).
-- Dos resoluciones distintas de la URL base: `stores/chat.js:13` y `TaskDetailModal.vue:86` usan `import.meta.env.VITE_API_URL || window.location.origin`; el resto asume rutas relativas `/api/...`.
+
+**Estado: resuelto el 17/10/2026.** `frontend/src/services/http.js` centraliza la URL base, las cabeceras de autenticación/empresa, un reintento seguro para lecturas y la invalidación ante 401. `frontend/src/services/api.js` enruta cada petición por un adaptador de dominio en `frontend/src/services/domains/`. Las llamadas del frontend usan esta fachada; el único `fetch` y las lecturas/escrituras del token quedan dentro del cliente HTTP. La app cierra la sesión y redirige a login al recibir el evento central de 401. `frontend/tests/http.test.js` cubre URL, cabeceras, reintentos, enrutamiento y 401.
 
 ### DT-08 — Verificación del 17/10/2026
 **Estado: resuelto el 17/10/2026** en la rama `chore/dependency-audit-ci`. Punto de partida: el reporte de SCRUM-52 (`docs/pruebas-seguridad-zap.md` §5) había dejado 3 altas (cadena `uploadthing` → `effect`), pero al retomar la tarea `npm audit` volvía a dar **13 (2 críticas, 9 altas, 2 moderadas)** por advisories publicados después. `dompurify`, `mongoose`, `ws`, `vite`, `nanoid`, `qs`, `engine.io` y `socket.io-parser` ya estaban limpios. Un commit por lote, con las dos suites, el build y el lint en verde en Node 22 después de cada uno:
