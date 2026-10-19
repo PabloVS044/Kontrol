@@ -164,7 +164,6 @@ function acceptTerms() {
   text-underline-offset: 3px;
 }
 
-/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
 .btn.consent-btn {
   align-self: flex-end;
   padding: 0 var(--k-space-6);

@@ -145,7 +145,6 @@ function handleSubmit() {
 .modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
-/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
 .modal-actions .btn {
   border-radius: 0;
   font-family: var(--k-font-sans);

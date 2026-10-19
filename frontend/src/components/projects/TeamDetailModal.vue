@@ -134,7 +134,6 @@ function areaLabel(area) {
 .empty-hint  { color: var(--k-gray-3); font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans); }
 .tasks-list  { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 
-/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
 .btn.task-action-btn {
   border-radius: 0;
   border: var(--k-border-width) solid var(--k-shade-6);

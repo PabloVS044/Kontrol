@@ -554,7 +554,6 @@ textarea::placeholder { color: var(--k-text-placeholder); }
   justify-content: flex-end;
 }
 
-/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
 .btn.primary-action,
 .btn.secondary-action,
 .btn.danger-action,

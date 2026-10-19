@@ -8,7 +8,6 @@ import en from '@/locales/en.json'
 const push = vi.fn()
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }))
 
-// Node 25 expone un localStorage propio que tapa el de happy-dom.
 const almacen = new Map()
 globalThis.localStorage = {
   getItem: (clave) => almacen.get(clave) ?? null,

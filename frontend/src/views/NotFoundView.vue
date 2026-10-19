@@ -290,7 +290,6 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
   border-color: var(--k-color-primary);
   color: var(--k-color-primary);
 }
-/* `Button` aporta el estado base; aquí se conserva el aspecto de contorno. */
 .btn.nf-btn--ghost {
   min-height: 0;
   padding: var(--k-space-3) var(--k-space-5);

@@ -375,8 +375,6 @@ watch(() => route.params.token, loadInvitation)
   gap: 12px;
 }
 
-/* `Button` recibe el color por props; los `RouterLink` (destino con query)
-   se quedan como enlaces y replican su aspecto con los mismos tokens. */
 .primary-btn,
 .secondary-btn,
 .ghost-btn {

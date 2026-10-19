@@ -214,7 +214,6 @@ function logout() {
   max-width: 380px;
 }
 
-/* `navbar.css` centra todo `ul` de forma global; aquí la lista va alineada. */
 .ob-features {
   list-style: none;
   display: flex;
@@ -313,7 +312,6 @@ function logout() {
   color: var(--k-state-error-text);
 }
 
-/* El color va por props (`back-color`/`hover-back`); aquí solo la geometría. */
 .btn.ob-submit {
   border-radius: 0;
   color: var(--k-form-btn-text);
