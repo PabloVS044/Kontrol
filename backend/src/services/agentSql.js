@@ -5,8 +5,10 @@ import pool from '../db/pool.js'
  *
  * The agent is restricted to read-only access. Defense in depth:
  *   1. Static parser-style validation (this file).
- *   2. Postgres "READ ONLY" transaction + statement_timeout at execution time.
- *   3. Agent queries run as AGENT_DB_ROLE, a NOLOGIN role with no table
+ *   2. A strict statement_timeout at execution time. Unscoped queries also use
+ *      a Postgres READ ONLY transaction; scoped queries need a regular
+ *      transaction to create and remove their temporary views.
+ *   3. Scoped queries run as AGENT_DB_ROLE, a NOLOGIN role with no table
  *      privileges. It can read only the scoped temp views (which execute
  *      with their owner's privileges), so any reference that escapes the
  *      views — e.g. `public . usuario` or another schema — is denied by
@@ -14,6 +16,33 @@ import pool from '../db/pool.js'
  */
 
 export const AGENT_DB_ROLE = 'kontrol_agent'
+
+const AGENT_TEMP_VIEW_NAMES = [
+  'rol',
+  'permiso_empresa',
+  'permiso_proyecto',
+  'rol_empresa',
+  'empresa',
+  'empresa_usuario',
+  'categoria',
+  'proyecto',
+  'rol_proyecto',
+  'rol_proyecto_permiso',
+  'proyecto_usuario',
+  'proyecto_usuario_permiso',
+  'usuario',
+  'producto',
+  'producto_proveedor',
+  'proveedor',
+  'movimiento_inventario',
+  'tarea',
+  'asignacion',
+  'evidencia',
+  'presupuesto_actividad',
+  'presupuesto_ajuste',
+  'reporte',
+  'project_progress_entry',
+]
 
 const FORBIDDEN_KEYWORDS = [
   'INSERT', 'UPDATE', 'DELETE', 'DROP', 'TRUNCATE', 'ALTER', 'CREATE',
@@ -288,6 +317,27 @@ async function setupAgentScope(client, scope) {
   )
 }
 
+async function withAgentScope(client, scope, query) {
+  await client.query('BEGIN')
+  try {
+    await setupAgentScope(client, scope)
+    await client.query('SET LOCAL search_path = pg_temp')
+    await client.query(`SET LOCAL ROLE ${AGENT_DB_ROLE}`)
+    await client.query(`SET LOCAL statement_timeout = ${STATEMENT_TIMEOUT_MS}`)
+
+    const result = await query()
+
+    await client.query('RESET ROLE')
+    const views = AGENT_TEMP_VIEW_NAMES.map((name) => `pg_temp.${name}`).join(', ')
+    await client.query(`DROP VIEW IF EXISTS ${views}`)
+    await client.query('COMMIT')
+    return result
+  } catch (err) {
+    try { await client.query('ROLLBACK') } catch { /* ignore */ }
+    throw err
+  }
+}
+
 function stripComments(sql) {
   return sql
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
@@ -370,33 +420,37 @@ export function enforceLimit(sql, maxRows = MAX_ROWS) {
 }
 
 /**
- * Executes a SQL query inside a READ ONLY transaction with a strict timeout.
- * Postgres itself enforces the read-only guarantee — any write attempt fails.
+ * Executes a query with a strict timeout. Scoped queries create and remove
+ * their temporary views in one transaction; unscoped queries use READ ONLY.
  */
 export async function executeReadOnly(sql, params, scope = null) {
   const client = await pool.connect()
   try {
     const finalSql = scope ? rewriteAgentSql(sql) : sql
     const finalParams = alignSqlParams(finalSql, params)
+    let result
     if (scope) {
-      await setupAgentScope(client, scope)
+      result = await withAgentScope(
+        client,
+        scope,
+        () => client.query(finalSql, finalParams)
+      )
+    } else {
+      await client.query('BEGIN TRANSACTION READ ONLY')
+      try {
+        await client.query(`SET LOCAL statement_timeout = ${STATEMENT_TIMEOUT_MS}`)
+        result = await client.query(finalSql, finalParams)
+        await client.query('COMMIT')
+      } catch (err) {
+        try { await client.query('ROLLBACK') } catch { /* ignore */ }
+        throw err
+      }
     }
-    await client.query('BEGIN TRANSACTION READ ONLY')
-    if (scope) {
-      await client.query('SET LOCAL search_path = pg_temp')
-      await client.query(`SET LOCAL ROLE ${AGENT_DB_ROLE}`)
-    }
-    await client.query(`SET LOCAL statement_timeout = ${STATEMENT_TIMEOUT_MS}`)
-    const result = await client.query(finalSql, finalParams)
-    await client.query('COMMIT')
     return {
       rowCount: result.rowCount,
       rows: result.rows,
       fields: result.fields?.map((f) => f.name) ?? [],
     }
-  } catch (err) {
-    try { await client.query('ROLLBACK') } catch { /* ignore */ }
-    throw err
   } finally {
     client.release()
   }
