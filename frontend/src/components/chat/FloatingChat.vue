@@ -518,13 +518,13 @@ watch(() => chatStore.lastError, (message) => {
   height: 52px;
   border: none;
   border-radius: 50%;
-  background: #caa860;
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(202, 168, 96, 0.3);
+  box-shadow: 0 4px 20px rgba(var(--k-color-primary-rgb), 0.3);
   transition: transform 0.15s, filter 0.15s;
 }
 
@@ -534,9 +534,9 @@ watch(() => chatStore.lastError, (message) => {
 }
 
 .chat-fab.active {
-  background: #1a1a1a;
-  color: var(--TextMuted);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  background: var(--k-shade-4);
+  color: var(--k-text-muted);
+  box-shadow: 0 4px 20px rgba(var(--k-color-black-rgb), 0.4);
 }
 
 .fab-badge {
@@ -546,15 +546,15 @@ watch(() => chatStore.lastError, (message) => {
   min-width: 18px;
   height: 18px;
   border-radius: 9px;
-  background: #fb7185;
-  color: var(--Text);
+  background: var(--k-state-error-text);
+  color: var(--k-form-btn-text);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  border: 2px solid #0a0a0a;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  border: 2px solid var(--k-shade-1);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   font-weight: 700;
 }
 
@@ -565,12 +565,12 @@ watch(() => chatStore.lastError, (message) => {
   z-index: 499;
   width: 340px;
   height: 500px;
-  background: #0d0d0d;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--k-shadow-modal);
 }
 
 .float-panel.in-chat {
@@ -580,7 +580,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-header,
 .fp-chat-header {
   flex-shrink: 0;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: var(--k-border-width) solid var(--k-shade-4);
 }
 
 .fp-header-top,
@@ -597,9 +597,9 @@ watch(() => chatStore.lastError, (message) => {
 
 .fp-title,
 .fp-modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  color: var(--Text);
+  font-family: var(--k-font-display);
+  font-size: var(--k-font-size-body-large);
+  color: var(--k-color-text);
 }
 
 .fp-header-actions {
@@ -609,12 +609,12 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-total-unread {
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
     font-weight: 700;
-    background: #232017;
-    color: var(--Primary);
-    border: 1px solid #3e3926;
+    background: var(--k-surface-primary-tint);
+    color: var(--k-color-primary);
+    border: var(--k-border-width) solid var(--k-alert-watching-border);
     padding: 1px 7px;
     border-radius: 10px;
   }
@@ -626,8 +626,8 @@ watch(() => chatStore.lastError, (message) => {
     height: 28px;
     border: none;
     border-radius: 4px;
-    background: #121212;
-    color: var(--TextDim);
+    background: var(--k-shade-3);
+    color: var(--k-text-dim);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -639,8 +639,8 @@ watch(() => chatStore.lastError, (message) => {
   .fp-icon-btn:hover,
   .fp-back-btn:hover,
   .fp-att-btn:hover {
-    background: #161616;
-    color: var(--TextSoft);
+    background: var(--k-shade-4);
+    color: var(--k-text-soft);
   }
 
   .fp-search {
@@ -649,23 +649,23 @@ watch(() => chatStore.lastError, (message) => {
     gap: 8px;
     margin: 0 12px 12px;
     padding: 0 10px;
-    background: #121212;
-    border: 1px solid #1a1a1a;
+    background: var(--k-shade-3);
+    border: var(--k-border-width) solid var(--k-shade-4);
   }
 
   .fp-search input {
     flex: 1;
-    background: #121212;
+    background: var(--k-shade-3);
     border: none;
     outline: none;
-    color: var(--Text);
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    color: var(--k-color-text);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption-lg);
     padding: 8px 0;
   }
 
   .fp-search input::placeholder {
-    color: var(--TextFaint);
+    color: var(--k-text-faint);
   }
 
   .fp-chat-info {
@@ -684,8 +684,8 @@ watch(() => chatStore.lastError, (message) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
     font-weight: 700;
   }
 
@@ -699,9 +699,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-conv-name,
   .fp-modal-user-name {
     display: block;
-    color: var(--Text);
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    color: var(--k-color-text);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption-lg);
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -712,9 +712,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-conv-preview,
   .fp-modal-user-email {
     display: block;
-    color: var(--TextDim);
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    color: var(--k-text-dim);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -733,17 +733,17 @@ watch(() => chatStore.lastError, (message) => {
     justify-content: center;
     padding: 14px 12px;
     min-height: 120px;
-    color: var(--TextSoft);
-    font-family: 'Manrope', sans-serif;
-    font-size: 13px;
+    color: var(--k-text-soft);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-body-small);
     text-align: center;
-    background: #111111;
+    background: var(--k-shade-3);
     border-radius: 8px;
   }
 
   .fp-modal-list::-webkit-scrollbar-thumb,
   .fp-messages::-webkit-scrollbar-thumb {
-    background: #1f1f1f;
+    background: var(--k-shade-6);
   }
 
   .fp-conv-item,
@@ -753,7 +753,7 @@ watch(() => chatStore.lastError, (message) => {
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    background: #0d0d0d;
+    background: var(--k-shade-2);
     border: none;
     text-align: left;
     cursor: pointer;
@@ -762,7 +762,7 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-conv-item:hover,
   .fp-modal-user:hover {
-    background: #131313;
+    background: var(--k-shade-3);
   }
 
   .fp-conv-top,
@@ -775,9 +775,9 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-conv-time {
     flex-shrink: 0;
-    color: var(--TextFaint);
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    color: var(--k-text-faint);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
   }
 
   .fp-msg-av {
@@ -785,10 +785,10 @@ watch(() => chatStore.lastError, (message) => {
     height: 24px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: #2d281a;
-    border: 1px solid #3d351f;
-    color: var(--Primary);
-    font-family: 'Manrope', sans-serif;
+    background: rgba(var(--k-color-primary-rgb), 0.18);
+    border: var(--k-border-width) solid var(--k-alert-watching-border);
+    color: var(--k-color-primary);
+    font-family: var(--k-font-sans);
     font-size: 8px;
     font-weight: 700;
     display: flex;
@@ -810,19 +810,19 @@ watch(() => chatStore.lastError, (message) => {
   .fp-msg-bubble {
     padding: 7px 10px;
     border-radius: 2px 10px 10px 10px;
-    background: #161616;
-    border: 1px solid #222222;
-    color: #e0dcd5;
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    background: var(--k-shade-4);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    color: var(--k-text-soft);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption-lg);
     line-height: 1.45;
     word-break: break-word;
   }
 
   .fp-msg.own .fp-msg-bubble {
-    background: #2f2914;
-    border-color: #3f361e;
-    color: var(--Text);
+    background: rgba(var(--k-color-primary-rgb), 0.18);
+    border-color: var(--k-alert-watching-border);
+    color: var(--k-color-text);
     border-radius: 10px 2px 10px 10px;
   }
 
@@ -831,9 +831,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-attach-audio,
   .fp-attach-video {
     max-width: 200px;
-    border: 1px solid #232323;
-    background: #141414;
-    color: var(--TextMuted);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    background: var(--k-shade-3);
+    color: var(--k-text-muted);
     text-decoration: none;
   }
 
@@ -842,8 +842,8 @@ watch(() => chatStore.lastError, (message) => {
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
   }
 
   .fp-attach-file span {
@@ -872,16 +872,16 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-msg-time,
   .fp-status {
-    color: var(--TextFaint);
-    font-family: 'Manrope', sans-serif;
-    font-size: 11px;
+    color: var(--k-text-faint);
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption);
   }
 
   .fp-input-area {
     flex-shrink: 0;
-    border-top: 1px solid #1a1a1a;
+    border-top: var(--k-border-width) solid var(--k-shade-4);
     padding: 8px 10px;
-    background: #0d0d0d;
+    background: var(--k-shade-2);
   }
 
   .fp-attach-row {
@@ -903,18 +903,18 @@ watch(() => chatStore.lastError, (message) => {
     max-height: 96px;
     resize: none;
     outline: none;
-    border: 1px solid #1f1f1f;
-    background: #141414;
-    color: var(--Text);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    background: var(--k-shade-3);
+    color: var(--k-color-text);
     padding: 7px 10px;
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption-lg);
     line-height: 1.4;
     transition: border-color 0.15s;
   }
 
   .fp-input-row textarea:focus {
-    border-color: #caa860;
+    border-color: var(--k-color-primary);
   }
 
   .fp-input-row textarea::placeholder {
@@ -924,9 +924,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-send-btn {
     width: 32px;
     height: 32px;
-    border: 1px solid #1f1f1f;
-    background: #121212;
-    color: var(--TextFaint);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    background: var(--k-shade-3);
+    color: var(--k-text-faint);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -935,9 +935,9 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #caa860;
-    border-color: #caa860;
-    color: var(--BtnText);
+    background: var(--k-color-primary);
+    border-color: var(--k-color-primary);
+    color: var(--k-form-btn-text);
   }
 
   .fp-send-btn:disabled {
@@ -955,7 +955,7 @@ watch(() => chatStore.lastError, (message) => {
     position: fixed;
     inset: 0;
     z-index: 700;
-    background: #000;
+    background: rgb(var(--k-color-black-rgb));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -964,8 +964,8 @@ watch(() => chatStore.lastError, (message) => {
   .fp-modal {
     width: 320px;
     max-height: 420px;
-    background: #0d0d0d;
-    border: 1px solid #1f1f1f;
+    background: var(--k-shade-2);
+    border: var(--k-border-width) solid var(--k-shade-6);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -976,7 +976,7 @@ watch(() => chatStore.lastError, (message) => {
     align-items: center;
     justify-content: space-between;
     padding: 12px 14px;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: var(--k-border-width) solid var(--k-shade-4);
   }
 
   .fp-search--modal {
@@ -984,23 +984,23 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .at-dm {
-    background: #2d2618;
-    border: 1px solid #3f351f;
-    color: var(--Primary);
+    background: rgba(var(--k-color-primary-rgb), 0.18);
+    border: var(--k-border-width) solid var(--k-alert-watching-border);
+    color: var(--k-color-primary);
   }
 .fp-unread {
   flex-shrink: 0;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: #caa860;
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
   font-weight: 700;
 }
 
@@ -1008,13 +1008,13 @@ watch(() => chatStore.lastError, (message) => {
 .fp-error {
   padding: 18px 14px;
   text-align: center;
-  color: var(--TextFaint);
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  color: var(--k-text-faint);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
 }
 
 .fp-error {
-  color: #fb7185;
+  color: var(--k-state-error-text);
 }
 
 .fp-empty--modal {
@@ -1050,10 +1050,10 @@ watch(() => chatStore.lastError, (message) => {
   height: 24px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #2d281a;
-  border: 1px solid #3d351f;
-  color: var(--Primary);
-  font-family: 'Manrope', sans-serif;
+  background: rgba(var(--k-color-primary-rgb), 0.18);
+  border: var(--k-border-width) solid var(--k-alert-watching-border);
+  color: var(--k-color-primary);
+  font-family: var(--k-font-sans);
   font-size: 8px;
   font-weight: 700;
   display: flex;
@@ -1075,19 +1075,19 @@ watch(() => chatStore.lastError, (message) => {
 .fp-msg-bubble {
   padding: 7px 10px;
   border-radius: 2px 10px 10px 10px;
-  background: #161616;
-  border: 1px solid #222222;
-  color: #e0dcd5;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  background: var(--k-shade-4);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-text-soft);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
   line-height: 1.45;
   word-break: break-word;
 }
 
 .fp-msg.own .fp-msg-bubble {
-  background: #2f2914;
-  border-color: #3f361e;
-  color: var(--Text);
+  background: rgba(var(--k-color-primary-rgb), 0.18);
+  border-color: var(--k-alert-watching-border);
+  color: var(--k-color-text);
   border-radius: 10px 2px 10px 10px;
 }
 
@@ -1096,9 +1096,9 @@ watch(() => chatStore.lastError, (message) => {
 .fp-attach-audio,
 .fp-attach-video {
   max-width: 200px;
-  border: 1px solid #232323;
-  background: #141414;
-  color: var(--TextMuted);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  background: var(--k-shade-3);
+  color: var(--k-text-muted);
   text-decoration: none;
 }
 
@@ -1107,8 +1107,8 @@ watch(() => chatStore.lastError, (message) => {
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
 }
 
 .fp-attach-file span {
@@ -1137,9 +1137,9 @@ watch(() => chatStore.lastError, (message) => {
 
 .fp-msg-time,
 .fp-status {
-  color: var(--TextFaint);
-  font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  color: var(--k-text-faint);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption);
 }
 
 .fp-typing {
@@ -1152,7 +1152,7 @@ watch(() => chatStore.lastError, (message) => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #444;
+  background: var(--k-shade-8);
   animation: blink 1.2s infinite;
 }
 
@@ -1161,9 +1161,9 @@ watch(() => chatStore.lastError, (message) => {
 
 .fp-input-area {
   flex-shrink: 0;
-  border-top: 1px solid #1a1a1a;
+  border-top: var(--k-border-width) solid var(--k-shade-4);
   padding: 8px 10px;
-  background: #0d0d0d;
+  background: var(--k-shade-2);
 }
 
 .fp-attach-row {
@@ -1185,18 +1185,18 @@ watch(() => chatStore.lastError, (message) => {
     max-height: 96px;
     resize: none;
     outline: none;
-    border: 1px solid #1f1f1f;
-    background: #141414;
-    color: var(--Text);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    background: var(--k-shade-3);
+    color: var(--k-color-text);
     padding: 7px 10px;
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    font-family: var(--k-font-sans);
+    font-size: var(--k-font-size-caption-lg);
     line-height: 1.4;
     transition: border-color 0.15s;
   }
 
   .fp-input-row textarea:focus {
-    border-color: #caa860;
+    border-color: var(--k-color-primary);
   }
 
   .fp-input-row textarea::placeholder {
@@ -1206,9 +1206,9 @@ watch(() => chatStore.lastError, (message) => {
   .fp-send-btn {
     width: 32px;
     height: 32px;
-    border: 1px solid #1f1f1f;
-    background: #121212;
-    color: var(--TextFaint);
+    border: var(--k-border-width) solid var(--k-shade-6);
+    background: var(--k-shade-3);
+    color: var(--k-text-faint);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1217,9 +1217,9 @@ watch(() => chatStore.lastError, (message) => {
   }
 
   .fp-send-btn.active {
-    background: #caa860;
-    border-color: #caa860;
-    color: var(--BtnText);
+    background: var(--k-color-primary);
+    border-color: var(--k-color-primary);
+    color: var(--k-form-btn-text);
   }
 
   .fp-send-btn:disabled {
@@ -1236,7 +1236,7 @@ watch(() => chatStore.lastError, (message) => {
   position: fixed;
   inset: 0;
   z-index: 700;
-  background: #000;
+  background: rgb(var(--k-color-black-rgb));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1245,8 +1245,8 @@ watch(() => chatStore.lastError, (message) => {
 .fp-modal {
   width: 320px;
   max-height: 420px;
-  background: #0d0d0d;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: var(--k-border-width) solid var(--k-shade-6);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1257,7 +1257,7 @@ watch(() => chatStore.lastError, (message) => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: var(--k-border-width) solid var(--k-shade-4);
 }
 
 .fp-search--modal {
@@ -1265,8 +1265,8 @@ watch(() => chatStore.lastError, (message) => {
 }
 
 .at-dm {
-    background: #2d2618;
-    border: 1px solid #3f351f;
+    background: rgba(var(--k-color-primary-rgb), 0.18);
+    border: var(--k-border-width) solid var(--k-alert-watching-border);
 }
 
 .float-enter-active,
