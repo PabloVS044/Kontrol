@@ -2251,5 +2251,13 @@
       "title": "Configuración de venta",
       "copy": "Moneda, IVA y descuentos."
     }
+  },
+  "notFound": {
+    "title": "Esta página no existe",
+    "description": "La dirección puede estar mal escrita, o la página se movió o ya no está disponible.",
+    "home": "Ir al inicio",
+    "back": "Volver",
+    "codeLabel": "Error 404",
+    "missingPath": "Ruta que no existe:"
   }
 }
