@@ -67,15 +67,15 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #0a0a0a;
+  background: var(--k-shade-1);
 }
 
 .auth-callback__spinner {
   display: inline-block;
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.15);
-  border-top-color: #fff;
+  border: 3px solid rgba(var(--k-color-primary-rgb), 0.15);
+  border-top-color: var(--k-color-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

@@ -449,7 +449,7 @@ async function deactivateInvite() {
     if (panel.value) {
       panel.value.invitation = null
     }
-    actionMessage.value = payload.message || t('dashboard.collaborators.actions.inviteDeactivated')
+    actionMessage.value = t('dashboard.collaborators.actions.inviteDeactivated')
   } catch {
     actionError.value = t('dashboard.collaborators.errors.deactivateInvite')
   } finally {
@@ -529,7 +529,7 @@ async function removeMember(member) {
         ({ id_usuario }) => id_usuario !== member.id_usuario
       )
     }
-    actionMessage.value = payload.message || t('dashboard.collaborators.actions.userRemoved')
+    actionMessage.value = t('dashboard.collaborators.actions.userRemoved')
   } catch {
     actionError.value = t('dashboard.collaborators.errors.removeUser')
   } finally {

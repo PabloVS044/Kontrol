@@ -193,18 +193,18 @@ onBeforeUnmount(() => {
   width: 60px;
   height: 60px;
   padding: 0;
-  border: 1.5px solid var(--Primary, #caa860);
+  border: 1.5px solid var(--k-color-primary);
   border-radius: 50%;
   background: radial-gradient(
     circle at 30% 30%,
-    var(--Background3, #282825),
-    var(--Background2, #120f07) 75%
+    var(--k-color-bg-3),
+    var(--k-color-bg-2) 75%
   );
   cursor: grab;
   overflow: hidden;
   box-shadow:
-    0 6px 22px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(202, 168, 96, 0.15) inset;
+    0 6px 22px rgba(var(--k-color-black-rgb), 0.55),
+    0 0 0 1px rgba(var(--k-color-primary-rgb), 0.15) inset;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   user-select: none;
   touch-action: none;
@@ -212,10 +212,10 @@ onBeforeUnmount(() => {
 
 .birdie-fab:hover {
   transform: scale(1.06);
-  border-color: var(--Primary2, #b27f2a);
+  border-color: var(--k-color-primary-2);
   box-shadow:
-    0 8px 26px rgba(202, 168, 96, 0.35),
-    0 0 0 1px rgba(202, 168, 96, 0.3) inset;
+    0 8px 26px rgba(var(--k-color-primary-rgb), 0.35),
+    0 0 0 1px rgba(var(--k-color-primary-rgb), 0.3) inset;
 }
 
 .birdie-fab.dragging {
@@ -223,8 +223,8 @@ onBeforeUnmount(() => {
   transform: scale(1.08);
   transition: none;
   box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.65),
-    0 0 0 1px rgba(202, 168, 96, 0.4) inset;
+    0 12px 32px rgba(var(--k-color-black-rgb), 0.65),
+    0 0 0 1px rgba(var(--k-color-primary-rgb), 0.4) inset;
 }
 
 .birdie-fab img {
