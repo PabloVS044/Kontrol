@@ -717,7 +717,7 @@ async function submitProject() {
 
 .main-panel {
   flex: 1; display: flex; flex-direction: column; gap: 32px;
-  padding: 32px 56px 48px; background: var(--k-color-bg);
+  padding: 32px 56px 48px;
 }
 
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }

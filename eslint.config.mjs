@@ -29,7 +29,7 @@ export default [
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['*.{js,mjs}', 'frontend/*.{js,mjs}', 'backend/**/*.{js,mjs}'],
+    files: ['*.{js,mjs}', 'frontend/*.{js,mjs}', 'backend/**/*.{js,mjs}', 'scripts/**/*.{js,mjs}'],
     languageOptions: { globals: globals.node },
   },
   {
@@ -57,6 +57,7 @@ export default [
     files: [
       'backend/src/db/{seed,reset,verifyUxPhase2}.js',
       'backend/scripts/**',
+      'scripts/**',
       '**/tests/**',
       '**/utils/logger.js',
     ],

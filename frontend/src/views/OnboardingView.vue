@@ -267,6 +267,7 @@ function logout() {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .ob-field label {
@@ -276,6 +277,7 @@ function logout() {
 }
 
 .ob-field input {
+  width: 100%;
   background: #0a0a0a;
   border: 1px solid #1f1f1f;
   color: var(--Text);
@@ -295,9 +297,11 @@ function logout() {
   cursor: not-allowed;
 }
 
+/* minmax(0, 1fr): con `1fr` a secas la columna no baja del ancho mínimo
+   del <input> (size=20) y Address se salía de la tarjeta. */
 .ob-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
