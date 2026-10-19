@@ -173,20 +173,20 @@ Estos componentes no se importan en ningún archivo. **18 de los 22 usan alias l
 
 | Pantalla / componente | Archivos | Componentes v2 reutilizados | Prueba nueva | Verificación manual |
 | :--- | :--- | :--- | :--- | :--- |
-| Detalle de proyecto | `TaskModal.vue`, `TeamDetailModal.vue` | `FormField`, `Button`, `BaseModal` | `taskModal.test.js` | Crear, editar y cancelar tarea en desktop. `TeamDetailModal` pertenece a la pestaña Equipo del proyecto, que está oculta (redirige a Miembros); la gestión de equipos se hace en `/teams`. Cubierto por build y pruebas |
+| Detalle de proyecto | `TaskModal.vue`, `TeamDetailModal.vue` | `FormField`, `Button`, `BaseModal` | `taskModal.test.js` | Crear, editar y cancelar tarea en desktop. `TeamDetailModal` se migró, pero no se puede abrir desde la interfaz desde `bef2d69` (anterior a esta rama): la pestaña Equipo del proyecto está oculta y redirige a Miembros. Sin verificación manual; cubierto por build y pruebas |
 | Onboarding | `OnboardingView.vue` | `FormField`, `Button` | `onboardingView.test.js` | Formulario y creación de empresa en desktop |
 | Invitación | `InviteView.vue` | `Button`, `Pill` | — (`invitation.test.js` existente) | Vista sin sesión con invitación activa en desktop |
 | Callback OAuth | `AuthCallback.vue` | — | — | No verificada a mano; cubierta por build |
 | Chat flotante | `FloatingChat.vue` | Tokens `--k-*`; los botones de icono quedan nativos, como en `SaleCartPanel` | `floatingChat.test.js` | Panel cerrado, lista y conversación en desktop, sobre dashboard, ventas e inventario |
 | Botón de Birdie | `BirdieFloatingButton.vue` | Tokens `--k-*` | — | Visible y arrastrable en desktop |
-| Equipos | `TeamsView.vue` | `FormField`, `Button` | `teamsView.test.js` | Crear y editar equipo en desktop |
+| Equipos | `TeamsView.vue` | `FormField`, `Button` | `teamsView.test.js` | Crear equipo en desktop. Pendientes: editar, eliminar, miembros y proyectos |
 | Restos (grupo 7) | `FloatingChat.vue` (ícono de lista vacía: `stroke="#333"` → `var(--k-shade-8)`), `LegalConsentModal.vue`, `NotFoundView.vue` | `Button` | — (`legalConsent.test.js` y `notFoundView.test.js` existentes) | Pendiente |
 
 Ninguna migración cambia lógica, rutas, stores ni llamadas a API. La geometría de `FloatingChat` (posición, tamaño y `z-index`) no cambia.
 
 **Verificación automática al cierre:** 48 archivos de prueba y 566 pruebas en verde, `vite build` correcto y lint de CI sin errores.
 
-**Escaneo del POS:** `InventoryPage`, `BarcodeScanner`, `SaleCartPanel` y `SaleCheckoutModal` no se modificaron. Las pruebas `barcodeScanner`, `posCheckout`, `sales`, `salesView`, `saleConfigStore` y `boxPricing` pasan. La prueba con cámara de los casos de escaneo queda pendiente.
+**Escaneo del POS:** `InventoryPage`, `BarcodeScanner`, `SaleCartPanel` y `SaleCheckoutModal` no se modificaron. Las pruebas `barcodeScanner`, `posCheckout`, `sales`, `salesView`, `saleConfigStore` y `boxPricing` pasan. Verificado con cámara: producto con stock (tarjeta de confirmación y carrito), código inexistente y cobro de la venta completa.
 
 ### Cumplimiento del criterio "ninguna pantalla mixta"
 
