@@ -164,6 +164,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRouter } from 'vue-router'
@@ -218,18 +219,11 @@ const vatPercent = computed({
   },
 })
 
-function authHeader() {
-  const token = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  return headers
-}
-
 async function load() {
   loading.value = true
   loadError.value = null
   try {
-    const res = await fetch('/api/companies/sale-config', { headers: authHeader() })
+    const res = await requestApi('/api/companies/sale-config', { headers: authHeaders() })
     const body = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(body.message || `HTTP ${res.status}`)
     form.value = { ...form.value, ...body.data }
@@ -245,9 +239,9 @@ async function save() {
   formError.value = null
   saved.value = false
   try {
-    const res = await fetch('/api/companies/sale-config', {
+    const res = await requestApi('/api/companies/sale-config', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({
         iva_activo: form.value.iva_activo,
         iva_tasa: Number(form.value.iva_tasa),

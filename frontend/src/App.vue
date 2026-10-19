@@ -25,12 +25,15 @@
     </div>
 
     <div class="content">
-      <RouterView />
+      <AppSurface :active="Boolean(route.meta.surface)">
+        <RouterView />
+      </AppSurface>
     </div>
     <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat'" />
     <BirdieFloatingButton v-if="authStore.isLoggedIn && authStore.hasEmpresa && prefsStore.birdieVisible" />
     <BirdieAssistant v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
+    <LegalConsentModal />
   </div>
 </template>
 
@@ -38,10 +41,12 @@
 import { onMounted, watch } from 'vue'
 import { RouterView, useRoute } from "vue-router";
 import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
+import AppSurface from "./components/UI/AppSurface/AppSurface.vue";
 import FloatingChat from "./components/chat/FloatingChat.vue";
 import BirdieFloatingButton from "./components/birdie/BirdieFloatingButton.vue";
 import BirdieAssistant from "./components/birdie/BirdieAssistant.vue";
 import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
+import LegalConsentModal from "./components/LegalConsentModal.vue";
 import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'

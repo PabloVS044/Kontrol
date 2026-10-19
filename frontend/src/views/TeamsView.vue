@@ -1,4 +1,5 @@
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
@@ -46,18 +47,10 @@ const availableProjects = computed(() =>
 
 const isEditing = computed(() => Boolean(form.value.id_equipo))
 
-function headers() {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': authStore.idEmpresaActual,
-  }
-}
-
 async function apiFetch(path, options = {}) {
-  const res = await fetch(path, {
+  const res = await requestApi(path, {
     ...options,
-    headers: { ...headers(), ...(options.headers || {}) },
+    headers: { ...authHeaders(), ...(options.headers || {}) },
   })
   const payload = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error(payload.message || `HTTP ${res.status}`)

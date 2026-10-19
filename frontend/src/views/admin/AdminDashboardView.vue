@@ -133,10 +133,9 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 
-const authStore = useAuthStore()
 const stats     = ref({})
 const companies = ref([])
 const users     = ref([])
@@ -186,11 +185,11 @@ function truncate(str, n) {
 
 onMounted(async () => {
   try {
-    const headers = { Authorization: `Bearer ${authStore.token}` }
+    const headers = authHeaders()
     const [sRes, cRes, uRes] = await Promise.all([
-      fetch('/api/admin/stats',     { headers }),
-      fetch('/api/admin/companies', { headers }),
-      fetch('/api/admin/users',     { headers }),
+      requestApi('/api/admin/stats',     { headers }),
+      requestApi('/api/admin/companies', { headers }),
+      requestApi('/api/admin/users',     { headers }),
     ])
     if (!sRes.ok || !cRes.ok || !uRes.ok) throw new Error('Failed to load data')
     const [s, c, u] = await Promise.all([sRes.json(), cRes.json(), uRes.json()])

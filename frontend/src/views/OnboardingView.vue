@@ -101,6 +101,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi } from '@/services/api.js'
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -127,11 +128,10 @@ async function submit() {
   loading.value = true
 
   try {
-    const res = await fetch('/api/companies', {
+    const res = await requestApi('/api/companies', {
       method:  'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.token}`,
       },
       body: JSON.stringify({
         nombre:    form.nombre.trim(),
@@ -300,9 +300,11 @@ function logout() {
   cursor: not-allowed;
 }
 
+/* minmax(0, 1fr): con `1fr` a secas la columna no baja del ancho mínimo
+   del <input> (size=20) y Address se salía de la tarjeta. */
 .ob-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 

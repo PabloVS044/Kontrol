@@ -54,14 +54,8 @@
 
     <div class="projects-layout">
 
-      <!-- Auth error -->
-      <div v-if="authError" class="state-screen">
-        <p class="state-title">{{ $t('projects.list.authError.title') }}</p>
-        <p class="state-msg">{{ $t('projects.list.authError.message') }}</p>
-      </div>
-
       <!-- Fetch error -->
-      <div v-else-if="fetchError" class="state-screen">
+      <div v-if="fetchError" class="state-screen">
         <p class="state-title">{{ $t('projects.list.fetchError.title') }}</p>
         <p class="state-msg">{{ fetchError }}</p>
         <button class="btn-primary" style="margin-top:16px" @click="loadData">
@@ -463,6 +457,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -485,7 +480,6 @@ const viewMode     = ref(localStorage.getItem('projects-view-mode') || 'grid')
 watch(viewMode, (v) => localStorage.setItem('projects-view-mode', v))
 const budgetByProj = ref({}) // id_proyecto -> summary
 const loading      = ref(true)
-const authError  = ref(false)
 const fetchError = ref(null)
 const activeTab  = ref('all')
 const lastSync   = ref('—')
@@ -546,23 +540,14 @@ function openBudget(p) {
 }
 // ── API ───────────────────────────────────────────────────────────────────────
 
-function authHeader() {
-  const token   = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  return headers
-}
-
 async function apiFetch(path, options = {}) {
-  const res = await fetch(path, { headers: { ...authHeader(), ...options.headers }, ...options })
-  if (res.status === 401) throw Object.assign(new Error('unauthenticated'), { status: 401 })
+  const res = await requestApi(path, { headers: { ...authHeaders(), ...options.headers }, ...options })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
 
 async function loadData() {
   loading.value    = true
-  authError.value  = false
   fetchError.value = null
   try {
     if (!authStore.user) await authStore.fetchMe()
@@ -584,8 +569,7 @@ async function loadData() {
     }
     budgetByProj.value = map
   } catch (err) {
-    if (err.status === 401) authError.value = true
-    else fetchError.value = err.message
+    fetchError.value = err.message
   } finally {
     loading.value = false
   }
@@ -658,9 +642,9 @@ async function updateProjectStatus(project, newEstado) {
   const previous = project.estado
   project.estado = newEstado // optimistic
   try {
-    const res = await fetch(`/api/projects/${project.id_proyecto}`, {
+    const res = await requestApi(`/api/projects/${project.id_proyecto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ estado: newEstado }),
     })
     const data = await res.json()
@@ -690,9 +674,9 @@ async function submitProject() {
       body.fecha_fin_planificada = form.value.fecha_fin_planificada
     }
 
-    const res = await fetch('/api/projects', {
+    const res = await requestApi('/api/projects', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body:    JSON.stringify(body),
     })
     const data = await res.json()
@@ -733,7 +717,7 @@ async function submitProject() {
 
 .main-panel {
   flex: 1; display: flex; flex-direction: column; gap: 32px;
-  padding: 32px 56px 48px; background: var(--k-color-bg);
+  padding: 32px 56px 48px;
 }
 
 .proj-header        { display: flex; align-items: flex-start; justify-content: space-between; }

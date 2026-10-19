@@ -1,6 +1,8 @@
-import { describe, it, expect, afterEach } from 'vitest'
-import router, { redirectLegacyProjectTab } from '@/router/index.js'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 
+vi.mock('@/views/LandingPage.vue', () => ({ default: { template: '<main />' } }))
+
+const { default: router, redirectLegacyProjectTab } = await import('@/router/index.js')
 const scrollBehavior = router.options.scrollBehavior
 
 afterEach(() => {

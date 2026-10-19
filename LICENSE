@@ -1,0 +1,45 @@
+Kontrol
+Copyright (c) 2026 Los integrantes del equipo de desarrollo de Kontrol.
+Todos los derechos reservados.
+
+Este repositorio, incluidos su código fuente, documentación, diseños y demás
+material, salvo los componentes de terceros indicados al final, es propiedad
+exclusiva de los integrantes del equipo de desarrollo de Kontrol. No es
+propiedad de la Universidad del Valle de Guatemala ni de ninguna otra
+institución.
+
+No se concede ninguna licencia. Salvo autorización previa y por escrito de los
+titulares, queda prohibido copiar, reproducir, modificar, adaptar, traducir,
+distribuir, sublicenciar, vender, publicar o explotar comercialmente este
+software, en todo o en parte, así como crear obras derivadas de él. Tener
+acceso a este repositorio no otorga ningún derecho sobre su contenido.
+
+Componentes de terceros: Kontrol utiliza bibliotecas de terceros que se rigen
+por sus propias licencias. Sus avisos están en
+frontend/public/THIRD-PARTY-NOTICES.txt y el inventario completo en
+docs/legal/licencias/inventario.md.
+
+Solicitudes de autorización: support@kontrol.it.com
+
+------------------------------------------------------------------------------
+
+Kontrol
+Copyright (c) 2026 The members of the Kontrol development team.
+All rights reserved.
+
+This repository, including its source code, documentation, designs and other
+material, except for the third-party components listed below, is the
+exclusive property of the members of the Kontrol development team. It is not
+the property of Universidad del Valle de Guatemala or any other institution.
+
+No license is granted. Without prior written permission from the copyright
+holders, you may not copy, reproduce, modify, adapt, translate, distribute,
+sublicense, sell, publish or commercially exploit this software, in whole or
+in part, or create derivative works from it. Access to this repository does
+not grant any rights to its contents.
+
+Third-party components: Kontrol uses third-party libraries governed by their
+own licenses. Their notices are in frontend/public/THIRD-PARTY-NOTICES.txt and
+the full inventory is in docs/legal/licencias/inventario.md.
+
+Permission requests: support@kontrol.it.com

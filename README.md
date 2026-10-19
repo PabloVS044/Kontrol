@@ -32,6 +32,8 @@ Monorepo: **Vue 3 + Vite** en el frontend · **Node.js + Express** en el backend
 - [Cobertura de código](#cobertura-de-código)
 - [Pruebas de integración y regresión](#pruebas-de-integración-y-regresión)
 - [Solución de problemas](#solución-de-problemas)
+- [Documentación legal](#documentación-legal)
+- [Licencia](#licencia)
 - [Contribuir](#contribuir)
 
 ---
@@ -209,6 +211,10 @@ Otros scripts del `package.json` raíz:
 Kontrol/
 ├── frontend/              # Vue 3 + Vite + Pinia + Vue Router          -> :5173
 │   ├── src/
+│   │   └── services/
+│   │       ├── http.js    # Cliente HTTP: URL, auth, reintentos y 401
+│   │       ├── api.js     # Enruta cada petición al servicio de dominio
+│   │       └── domains/   # Adaptadores por dominio sobre el cliente HTTP
 │   ├── vite.config.js
 │   └── Dockerfile.dev
 ├── backend/               # Node.js + Express + Socket.IO              -> :3000
@@ -231,6 +237,11 @@ Kontrol/
 ├── dev.sh                 # Atajo para levantar dev en Linux
 └── package.json           # Workspaces del monorepo
 ```
+
+Las llamadas del frontend deben pasar por `src/services/api.js`; los adaptadores
+de dominio delegan en `src/services/http.js`, que resuelve la URL base e inyecta
+la autenticación y la empresa activa. Los 401 invalidan la sesión en el cliente
+común y la app redirige a login desde un único listener.
 
 ---
 
@@ -407,6 +418,24 @@ En CI las corre `.github/workflows/integration-regression.yml` en cada PR a `mai
 | Login con Google falla | Faltan `GOOGLE_CLIENT_ID/SECRET` o la *redirect URI* no coincide con `GOOGLE_CALLBACK_URL`. |
 | En Windows: `git clone` por SSH falla | Usa la URL HTTPS: `git clone https://github.com/PabloVS044/Kontrol.git` |
 | `npm install` falla por versión de Node | Usa Node 20–22 (`.nvmrc` = `22`). |
+
+---
+
+## Documentación legal
+
+El [expediente legal de Kontrol](docs/legal/README.md) reúne el marco para Guatemala, los borradores de Términos y Condiciones y Política de Privacidad, el inventario verificable de datos y la revisión de proveedores. Incluye el alcance de Stripe exclusivamente en modo test, sin cobros reales.
+
+La versión pública resumida está en la vista `/legal`, enlazada desde el pie de página, con el contacto `support@kontrol.it.com`. Al entrar por primera vez, cada usuario debe aceptar los Términos en un aviso bloqueante; la aceptación se guarda en el navegador y se vuelve a pedir al subir `LEGAL_VERSION` en `frontend/src/utils/legal.js`.
+
+Consulta en el expediente las reservas de investigación y los pendientes antes de publicar los documentos o usar el producto comercialmente. Los textos requieren revisión profesional en Guatemala.
+
+---
+
+## Licencia
+
+Copyright (c) 2026 los integrantes del equipo de desarrollo de Kontrol. **Todos los derechos reservados.** Kontrol es software propietario de sus integrantes, no de la Universidad del Valle de Guatemala; no se concede ninguna licencia de uso, copia ni distribución sin autorización por escrito. Texto completo en [`LICENSE`](LICENSE) y la decisión, con su justificación, en [`docs/legal/licencia.md`](docs/legal/licencia.md).
+
+Las bibliotecas de terceros conservan sus licencias. La [auditoría de licencias](docs/legal/licencias/README.md) no encontró dependencias copyleft fuertes, y los avisos de producción se publican con la aplicación en [`THIRD-PARTY-NOTICES.txt`](frontend/public/THIRD-PARTY-NOTICES.txt). Después de cambiar dependencias, `npm run licenses` regenera el inventario y las atribuciones.
 
 ---
 

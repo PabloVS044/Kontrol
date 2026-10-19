@@ -122,6 +122,7 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint',
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
+      '--k-surface-scrim',
     ],
     rampaNeutra: [
       '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
@@ -352,11 +353,17 @@ describe('globals.css — capa de compatibilidad legacy', () => {
     expect(rootBlock).not.toMatch(/\brgba?\(/i)
   })
 
-  it('importa theme.css antes que las directivas de Tailwind', () => {
+  it('importa theme.css antes que los imports de Tailwind', () => {
     const importIdx = globalsCss.indexOf("@import './src/styles/theme.css'")
-    const tailwindIdx = globalsCss.indexOf('@tailwind')
+    const tailwindIdx = globalsCss.indexOf("@import 'tailwindcss/")
     expect(importIdx).toBeGreaterThanOrEqual(0)
     expect(tailwindIdx).toBeGreaterThan(importIdx)
+  })
+
+  it('no importa el preflight de Tailwind y deja las utilidades sin capa', () => {
+    expect(globalsCss).not.toMatch(/@import\s+['"]tailwindcss['"]/)
+    expect(globalsCss).not.toContain('tailwindcss/preflight.css')
+    expect(globalsCss).toMatch(/@import 'tailwindcss\/utilities\.css'(?! layer\()/)
   })
 })
 

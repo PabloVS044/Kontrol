@@ -105,6 +105,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi } from '@/services/api.js'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
@@ -166,7 +167,7 @@ const loginLink = computed(() => ({ name: 'login', query: { invite: token.value 
 const registerLink = computed(() => ({ name: 'register', query: { invite: token.value } }))
 
 async function fetchInvitation(url) {
-  const res = await fetch(url)
+  const res = await requestApi(url)
   const payload = await res.json()
   return { res, payload }
 }
@@ -227,10 +228,9 @@ async function acceptInvite() {
       ? `/api/projects/invitations/${encodeURIComponent(token.value)}/accept`
       : `/api/companies/invitations/${encodeURIComponent(token.value)}/accept`
 
-    const res = await fetch(acceptPath, {
+    const res = await requestApi(acceptPath, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${authStore.token}`,
       },
     })
 

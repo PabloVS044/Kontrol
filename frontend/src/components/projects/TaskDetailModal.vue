@@ -60,6 +60,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders, getApiBaseUrl } from '@/services/api.js'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { genUploader } from 'uploadthing/client'
@@ -83,13 +84,8 @@ const show = computed({
   set: (v) => emit('update:modelValue', v),
 })
 
-const API = import.meta.env.VITE_API_URL || window.location.origin
+const API = getApiBaseUrl()
 const uploadthing = genUploader({ url: `${API}/api/uploadthing` })
-
-function authHeader() {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
 
 const evidence = ref([])
 const uploading = ref(false)
@@ -100,9 +96,9 @@ async function loadEvidence() {
     evidence.value = []
     return
   }
-  const res = await fetch(
+  const res = await requestApi(
     `/api/projects/${props.projectId}/tasks/${props.task.id_tarea}/evidence`,
-    { headers: authHeader() }
+    { headers: authHeaders() }
   )
   if (!res.ok) {
     evidence.value = []
@@ -129,7 +125,7 @@ async function handleFileSelected(event) {
     await uploadthing.uploadFiles('taskEvidence', {
       files: [file],
       input: { taskId: props.task.id_tarea },
-      headers: () => authHeader(),
+      headers: () => authHeaders(),
     })
     await loadEvidence()
   } catch (error) {
@@ -141,9 +137,9 @@ async function handleFileSelected(event) {
 
 async function removeEvidence(id) {
   if (!props.projectId || !props.task?.id_tarea) return
-  await fetch(
+  await requestApi(
     `/api/projects/${props.projectId}/tasks/${props.task.id_tarea}/evidence/${id}`,
-    { method: 'DELETE', headers: authHeader() }
+    { method: 'DELETE', headers: authHeaders() }
   )
   await loadEvidence()
 }
