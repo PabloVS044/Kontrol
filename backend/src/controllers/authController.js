@@ -70,8 +70,7 @@ const maybeResolveInvite = async ({ client, inviteToken, id_usuario, req }) => {
   }
 }
 
-const getAuthRedirectForGoogle = async ({ client, user, req, inviteToken }) => {
-  const frontendUrl = getFrontendBaseUrl(req)
+const getAuthRedirectForGoogle = async ({ client, user, req, inviteToken, frontendUrl }) => {
   const token = signToken(user)
   const inviteResult = await maybeResolveInvite({
     client,
@@ -217,6 +216,9 @@ export const getMe = async (req, res) => {
  */
 export const googleAuth = (req, res) => {
   const inviteToken = typeof req.query.invite === 'string' ? req.query.invite : null
+  // Con varios frontends en FRONTEND_URL, el callback de Google no trae Origin:
+  // el frontend que inició el login viaja en el state y se revalida al volver.
+  const frontend = getFrontendBaseUrl(req, req.query.return_to)
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
@@ -225,11 +227,8 @@ export const googleAuth = (req, res) => {
     scope: 'openid email profile',
     access_type: 'offline',
     prompt: 'select_account',
+    state: encodeOAuthState(inviteToken ? { inviteToken, frontend } : { frontend }),
   })
-
-  if (inviteToken) {
-    params.set('state', encodeOAuthState({ inviteToken }))
-  }
 
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 }
@@ -239,9 +238,9 @@ export const googleAuth = (req, res) => {
  * Google redirects here after the user grants (or denies) access.
  */
 export const googleCallback = async (req, res) => {
-  const frontendUrl = getFrontendBaseUrl(req)
   const { code, error, state } = req.query
-  const { inviteToken } = decodeOAuthState(state)
+  const { inviteToken, frontend } = decodeOAuthState(state)
+  const frontendUrl = getFrontendBaseUrl(req, frontend)
 
   if (error) {
     return res.redirect(`${frontendUrl}/login?error=google_cancelado`)
@@ -333,6 +332,7 @@ export const googleCallback = async (req, res) => {
         user,
         req,
         inviteToken,
+        frontendUrl,
       })
 
       return res.redirect(redirectUrl)
