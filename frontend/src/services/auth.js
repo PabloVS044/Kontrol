@@ -89,6 +89,8 @@ export async function registerUser(firstName, lastName, email, password, options
 export function loginWithGoogle(inviteToken) {
   const params = new URLSearchParams()
   if (inviteToken) params.set('invite', inviteToken)
+  // El backend puede servir a varios frontends; así sabe a cuál volver.
+  if (window.location.origin) params.set('return_to', window.location.origin)
 
   const suffix = params.toString() ? `?${params}` : ''
   window.location.href = resolveApiUrl(`/api/auth/google${suffix}`)
