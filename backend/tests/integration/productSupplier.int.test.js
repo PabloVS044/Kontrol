@@ -178,4 +178,16 @@ describe('I4 — aislamiento entre empresas en producto ↔ proveedor', () => {
     expect(res.status).toBe(404)
     expect(await linksOf(productoA.id_producto)).toHaveLength(1)
   })
+
+  // Misma causa que los tres anteriores: el producto se buscaba solo por id.
+  it('B tampoco puede editar ni borrar el producto de A', async () => {
+    const put = await asOwnerB('put', `/api/products/${productoA.id_producto}`).send({ precio_venta: 0, precio_costo: 0 })
+    expect(put.status).toBe(404)
+
+    const del = await asOwnerB('delete', `/api/products/${productoA.id_producto}`)
+    expect(del.status).toBe(404)
+
+    const { rows } = await query('SELECT precio_venta FROM public.producto WHERE id_producto = $1', [productoA.id_producto])
+    expect(Number(rows[0].precio_venta)).toBe(50)
+  })
 })
