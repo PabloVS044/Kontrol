@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+backend/reports/
+frontend/.visual-parity/
+frontend/public/
+k6/
+volume/
+zap/
+docs/
+presentacion-kontrol/
+package-lock.json
+eslint-suppressions.json
+*.md

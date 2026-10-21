@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { useAuthStore } from './stores/auth.js'
 import App from './App.vue'
 import router from './router'
 import { i18n } from './locales/index.js'
@@ -23,7 +24,16 @@ installLocalizedValidation(i18n.global.t)
 
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia()
+const authStore = useAuthStore(pinia)
+window.addEventListener('api:unauthorized', () => {
+  authStore.logout()
+  if (router.currentRoute.value.meta.requiresAuth) {
+    void router.replace({ name: 'login' })
+  }
+})
+
+app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.mount('#app')

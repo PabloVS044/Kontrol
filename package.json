@@ -2,6 +2,7 @@
   "name": "control",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "engines": {
     "node": ">=20 <23"
   },
@@ -14,15 +15,31 @@
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run dev -w backend",
     "build": "npm run build -w frontend",
+    "lint": "eslint frontend backend scripts",
+    "lint:fix": "eslint frontend backend scripts --fix",
+    "audit:ci": "node scripts/audit-check.mjs",
+    "licenses": "npm run licenses:sbom && node scripts/licenses-report.mjs",
+    "licenses:sbom": "npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --ignore-npm-errors --package-lock-only --flatten-components --output-reproducible --output-file docs/legal/licencias/sbom.cdx.json && npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --ignore-npm-errors --package-lock-only --flatten-components --output-reproducible --omit dev --output-file docs/legal/licencias/sbom-produccion.cdx.json",
+    "format": "prettier --write",
     "install:all": "npm install"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^9.0.0",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.11.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
   },
   "dependencies": {
     "gsap": "^3.14.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.63.4"
+  },
+  "overrides": {
+    "effect": "^3.22.3",
+    "vite": "^6.4.4"
   }
 }

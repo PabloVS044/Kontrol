@@ -6,6 +6,7 @@ import { sendTelegramMessage } from './telegramService.js'
 import { sendSms } from './twilioSmsService.js'
 import { sendEmail } from './sendgridService.js'
 import { sendWebhookEvent } from './webhookService.js'
+import { logger } from '../utils/logger.js'
 
 /**
  * Dispatches a notification to every active integration of a company.
@@ -22,7 +23,7 @@ export async function notifyCompany(id_empresa, { title, text, event = 'alert', 
     )
     rows = result.rows
   } catch (err) {
-    console.error('[notify] DB error:', err.message)
+    logger.error('[notify] DB error:', err.message)
     return
   }
 
@@ -44,7 +45,7 @@ export async function notifyCompany(id_empresa, { title, text, event = 'alert', 
       const error_msg = result.status === 'rejected' ? (result.reason?.message ?? String(result.reason)) : null
 
       if (status === 'error') {
-        console.error(`[notify] dispatch failed for ${slug}:`, error_msg)
+        logger.error(`[notify] dispatch failed for ${slug}:`, error_msg)
         try {
           await pool.query(
             `UPDATE public.integracion SET status = 'error', updated_at = NOW()
@@ -52,7 +53,7 @@ export async function notifyCompany(id_empresa, { title, text, event = 'alert', 
             [id_empresa, slug],
           )
         } catch (dbErr) {
-          console.error(`[notify] failed to update status for ${slug}:`, dbErr.message)
+          logger.error(`[notify] failed to update status for ${slug}:`, dbErr.message)
         }
       }
 
@@ -63,7 +64,7 @@ export async function notifyCompany(id_empresa, { title, text, event = 'alert', 
           [id_empresa, slug, event, status, error_msg],
         )
       } catch (logErr) {
-        console.error(`[notify] failed to write log for ${slug}:`, logErr.message)
+        logger.error(`[notify] failed to write log for ${slug}:`, logErr.message)
       }
     }),
   )

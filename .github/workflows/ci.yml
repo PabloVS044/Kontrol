@@ -16,6 +16,51 @@ permissions:
   contents: read
 
 jobs:
+  # Bloqueante. Los errores previos a la configuración del lint están
+  # congelados en eslint-suppressions.json, así que solo falla por errores
+  # nuevos; los warnings se reportan sin bloquear.
+  # --pass-on-unpruned-suppressions: quien arregla un error congelado no
+  # queda en rojo por no haber podado el archivo de supresiones.
+  lint:
+    name: Lint - ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias (workspaces)
+        run: npm ci
+
+      - name: Ejecutar ESLint
+        run: npm run lint -- --pass-on-unpruned-suppressions
+
+  # Bloqueante (DT-08). Equivale a `npm audit --audit-level=high`: falla con
+  # cualquier vulnerabilidad alta o crítica, salvo las que tengan una
+  # excepción justificada y vigente en audit-allowlist.json. npm audit lee
+  # el lockfile, así que no hace falta instalar dependencias.
+  audit:
+    name: Dependencias - npm audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Auditar dependencias
+        run: npm run audit:ci
+
   backend-tests:
     name: Backend - tests unitarios
     runs-on: ubuntu-latest

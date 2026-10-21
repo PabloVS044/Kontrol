@@ -4,6 +4,7 @@ import pool from '../db/pool.js'
 import { isMongoReady } from '../db/mongo.js'
 import { formatConv } from '../socket/index.js'
 import { serializeMessage } from '../utils/chat.js'
+import { logger } from '../utils/logger.js'
 
 function ensureChatAvailable(res) {
   if (isMongoReady()) return true
@@ -28,7 +29,7 @@ export async function getConversations(req, res) {
 
     res.json({ success: true, data: convs.map(c => formatConv(c, userId)) })
   } catch (err) {
-    console.error('getConversations:', err)
+    logger.error('getConversations:', err)
     res.status(500).json({ success: false, message: 'Server error' })
   }
 }
@@ -59,7 +60,7 @@ export async function getMessages(req, res) {
 
     res.json({ success: true, data: messages.reverse().map(serializeMessage) })
   } catch (err) {
-    console.error('getMessages:', err)
+    logger.error('getMessages:', err)
     res.status(500).json({ success: false, message: 'Server error' })
   }
 }
@@ -93,7 +94,7 @@ export async function getCompanyUsers(req, res) {
 
     res.json({ success: true, data: users })
   } catch (err) {
-    console.error('getCompanyUsers:', err)
+    logger.error('getCompanyUsers:', err)
     res.status(500).json({ success: false, message: 'Server error' })
   }
 }

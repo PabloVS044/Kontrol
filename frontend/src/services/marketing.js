@@ -1,12 +1,5 @@
+import { apiFetch as requestApi } from './api.js'
 // HU-28 · Administración interna de publicaciones de marketing.
-
-function headers(token, companyId) {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-    'X-Company-ID': companyId,
-  }
-}
 
 async function readJson(res) {
   const data = await res.json()
@@ -27,8 +20,10 @@ export async function listPublications(token, companyId, filters = {}) {
   }
 
   const suffix = query.toString() ? `?${query}` : ''
-  const res = await fetch(`/api/marketing/publications${suffix}`, {
-    headers: headers(token, companyId),
+  const res = await requestApi(`/api/marketing/publications${suffix}`, {
+    token,
+    companyId,
+    json: true,
   })
   const body = await readJson(res)
 
@@ -39,9 +34,11 @@ export async function listPublications(token, companyId, filters = {}) {
 }
 
 export async function createPublication(token, companyId, publication) {
-  const res = await fetch('/api/marketing/publications', {
+  const res = await requestApi('/api/marketing/publications', {
     method: 'POST',
-    headers: headers(token, companyId),
+    token,
+    companyId,
+    json: true,
     body: JSON.stringify(publication),
   })
 
@@ -49,9 +46,11 @@ export async function createPublication(token, companyId, publication) {
 }
 
 export async function updatePublication(token, companyId, publicationId, changes) {
-  const res = await fetch(`/api/marketing/publications/${publicationId}`, {
+  const res = await requestApi(`/api/marketing/publications/${publicationId}`, {
     method: 'PUT',
-    headers: headers(token, companyId),
+    token,
+    companyId,
+    json: true,
     body: JSON.stringify(changes),
   })
 
@@ -59,9 +58,11 @@ export async function updatePublication(token, companyId, publicationId, changes
 }
 
 export async function deletePublication(token, companyId, publicationId) {
-  const res = await fetch(`/api/marketing/publications/${publicationId}`, {
+  const res = await requestApi(`/api/marketing/publications/${publicationId}`, {
     method: 'DELETE',
-    headers: headers(token, companyId),
+    token,
+    companyId,
+    json: true,
   })
 
   await readJson(res)
@@ -69,7 +70,7 @@ export async function deletePublication(token, companyId, publicationId) {
 
 /** Proyectos de la empresa, para poder vincular la publicación. */
 export async function listProjectsForPublications(token, companyId) {
-  const res = await fetch('/api/projects', { headers: headers(token, companyId) })
+  const res = await requestApi('/api/projects', { token, companyId, json: true })
 
   return (await readJson(res)).data ?? []
 }

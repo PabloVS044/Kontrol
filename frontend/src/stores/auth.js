@@ -1,8 +1,14 @@
+import {
+  apiFetch as requestApi,
+  clearStoredToken,
+  getStoredToken,
+  setStoredToken,
+} from '@/services/api.js'
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token:         localStorage.getItem('token') || null,
+    token:         getStoredToken(),
     user:          JSON.parse(localStorage.getItem('user') || 'null'),
     empresas:      JSON.parse(localStorage.getItem('empresas') || '[]'),
     empresaActual: JSON.parse(localStorage.getItem('empresaActual') || 'null'),
@@ -33,7 +39,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     setToken(token) {
       this.token = token
-      localStorage.setItem('token', token)
+      setStoredToken(token)
     },
 
     setUser(user) {
@@ -81,9 +87,7 @@ export const useAuthStore = defineStore('auth', {
     async loadEmpresas() {
       if (!this.token) return
       try {
-        const res = await fetch('/api/companies/my-companies', {
-          headers: { Authorization: `Bearer ${this.token}` },
-        })
+        const res = await requestApi('/api/companies/my-companies', { token: this.token })
         if (!res.ok) return
         const { data } = await res.json()
         this.setEmpresas(data)
@@ -111,11 +115,9 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        const res = await fetch('/api/companies/access-context', {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-            'X-Company-ID': this.empresaActual.id_empresa,
-          },
+        const res = await requestApi('/api/companies/access-context', {
+          token: this.token,
+          companyId: this.empresaActual.id_empresa,
         })
 
         if (!res.ok) {
@@ -133,9 +135,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchMe() {
       if (!this.token) return
       try {
-        const res = await fetch('/api/auth/me', {
-          headers: { Authorization: `Bearer ${this.token}` },
-        })
+        const res = await requestApi('/api/auth/me', { token: this.token })
         if (!res.ok) return
         const { data } = await res.json()
         this.setUser(data)
@@ -150,7 +150,7 @@ export const useAuthStore = defineStore('auth', {
       this.empresas      = []
       this.empresaActual = null
       this.accessContext = null
-      localStorage.removeItem('token')
+      clearStoredToken()
       localStorage.removeItem('user')
       localStorage.removeItem('empresas')
       localStorage.removeItem('empresaActual')

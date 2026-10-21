@@ -269,7 +269,9 @@ describe('chat store — carga por API', () => {
     await store.loadCompanyUsers()
     expect(store.companyUsers).toEqual([])
 
-    fetchMock.mockResolvedValueOnce(respond({ message: 'caído' }, 503))
+    fetchMock
+      .mockResolvedValueOnce(respond({ message: 'caído' }, 503))
+      .mockResolvedValueOnce(respond({ message: 'caído' }, 503))
     expect(await store.loadCompanyUsers()).toEqual({ success: false, message: 'caído' })
   })
 })

@@ -1,4 +1,5 @@
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
@@ -155,7 +156,7 @@ async function loadTrend() {
   trendLoading.value = true
   trendError.value = null
   try {
-    const res = await fetch(`/api/budgets/project/${trendProjectId.value}/trend`, { headers: authHeaders() })
+    const res = await requestApi(`/api/budgets/project/${trendProjectId.value}/trend`, { headers: authHeaders() })
     const payload = await res.json()
     if (!res.ok) throw new Error(payload.message || `HTTP ${res.status}`)
     trend.value = payload.data
@@ -299,16 +300,16 @@ async function loadOverview() {
   overviewError.value = null
   try {
     const headers = authHeaders()
-    const pr = await fetch('/api/projects?limit=100', { headers })
+    const pr = await requestApi('/api/projects?limit=100', { headers })
     const prPayload = await pr.json()
     if (!pr.ok) throw new Error(prPayload.message || `HTTP ${pr.status}`)
     projects.value = prPayload.data || []
 
-    // TODO DT-07: migrar a services/http.js
+    // Both project and budget requests use the shared API client.
     const ids = projects.value.map(p => p.id_proyecto)
     const map = {}
     if (ids.length) {
-      const sr = await fetch(`/api/budgets/summary?projectIds=${ids.join(',')}`, { headers }).catch(() => null)
+      const sr = await requestApi(`/api/budgets/summary?projectIds=${ids.join(',')}`, { headers }).catch(() => null)
       const sp = sr ? await sr.json().catch(() => null) : null
       if (sr?.ok && sp?.success) {
         for (const row of sp.data) map[row.id_proyecto] = row
@@ -358,13 +359,6 @@ const adminLikeCount = computed(() =>
   members.value.filter((member) => ['owner', 'admin', 'manager'].includes(member.rol_empresa)).length
 )
 
-function authHeaders() {
-  return {
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': authStore.idEmpresaActual,
-  }
-}
-
 async function loadPanel() {
   if (!authStore.idEmpresaActual || !authStore.token) return
 
@@ -386,7 +380,7 @@ async function loadPanel() {
       return
     }
 
-    const res = await fetch('/api/companies/members-panel', {
+    const res = await requestApi('/api/companies/members-panel', {
       headers: authHeaders(),
     })
     const payload = await res.json()
@@ -413,7 +407,7 @@ async function generateInvite() {
   generatingInvite.value = true
 
   try {
-    const res = await fetch('/api/companies/invitation', {
+    const res = await requestApi('/api/companies/invitation', {
       method: 'POST',
       headers: authHeaders(),
     })
@@ -441,7 +435,7 @@ async function deactivateInvite() {
   deactivatingInvite.value = true
 
   try {
-    const res = await fetch('/api/companies/invitation', {
+    const res = await requestApi('/api/companies/invitation', {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -455,7 +449,7 @@ async function deactivateInvite() {
     if (panel.value) {
       panel.value.invitation = null
     }
-    actionMessage.value = payload.message || t('dashboard.collaborators.actions.inviteDeactivated')
+    actionMessage.value = t('dashboard.collaborators.actions.inviteDeactivated')
   } catch {
     actionError.value = t('dashboard.collaborators.errors.deactivateInvite')
   } finally {
@@ -485,7 +479,7 @@ async function updateMemberRole(member, newRole) {
   updatingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/companies/members/${member.id_usuario}/role`, {
+    const res = await requestApi(`/api/companies/members/${member.id_usuario}/role`, {
       method: 'PATCH',
       headers: {
         ...authHeaders(),
@@ -519,7 +513,7 @@ async function removeMember(member) {
   removingMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/companies/members/${member.id_usuario}`, {
+    const res = await requestApi(`/api/companies/members/${member.id_usuario}`, {
       method: 'DELETE',
       headers: authHeaders(),
     })
@@ -535,7 +529,7 @@ async function removeMember(member) {
         ({ id_usuario }) => id_usuario !== member.id_usuario
       )
     }
-    actionMessage.value = payload.message || t('dashboard.collaborators.actions.userRemoved')
+    actionMessage.value = t('dashboard.collaborators.actions.userRemoved')
   } catch {
     actionError.value = t('dashboard.collaborators.errors.removeUser')
   } finally {
@@ -596,7 +590,7 @@ async function assignProjectToMember(member) {
   assigningProjectMemberId.value = member.id_usuario
 
   try {
-    const res = await fetch(`/api/companies/members/${member.id_usuario}/projects/${idProyecto}`, {
+    const res = await requestApi(`/api/companies/members/${member.id_usuario}/projects/${idProyecto}`, {
       method: 'PUT',
       headers: {
         ...authHeaders(),
@@ -632,7 +626,7 @@ async function saveProjectPermissions(member, assignment) {
   savingProjectAccessKey.value = key
 
   try {
-    const res = await fetch(
+    const res = await requestApi(
       `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'PUT',
@@ -667,7 +661,7 @@ async function removeProjectAccess(member, assignment) {
   removingProjectAccessKey.value = key
 
   try {
-    const res = await fetch(
+    const res = await requestApi(
       `/api/companies/members/${member.id_usuario}/projects/${assignment.id_proyecto}`,
       {
         method: 'DELETE',

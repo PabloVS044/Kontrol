@@ -1,5 +1,6 @@
 import pool from '../db/pool.js'
 import { UTApi } from 'uploadthing/server'
+import { logger } from '../utils/logger.js'
 
 const utapi = new UTApi()
 
@@ -45,7 +46,7 @@ export const deleteTaskEvidence = async (req, res) => {
     try {
       await utapi.deleteFiles(publicId)
     } catch (error) {
-      console.error('Could not delete evidence file from UploadThing:', error)
+      logger.error('Could not delete evidence file from UploadThing:', error)
     }
   }
 

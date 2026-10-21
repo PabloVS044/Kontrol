@@ -2,6 +2,7 @@
   "name": "@control/backend",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "node": ">=20 <23"
@@ -41,5 +42,8 @@
     "socket.io-client": "^4.8.3",
     "uploadthing": "^7.7.4",
     "zod": "^4.3.6"
+  },
+  "overrides": {
+    "effect": "^3.22.3"
   }
 }

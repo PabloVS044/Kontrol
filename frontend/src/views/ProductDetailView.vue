@@ -165,6 +165,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -204,9 +205,9 @@ async function saveBarcode() {
   barcodeMsg.value = ''
   try {
     const value = barcodeInput.value.trim()
-    const res = await fetch(`/api/products/${productId.value}`, {
+    const res = await requestApi(`/api/products/${productId.value}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ codigo_barras: value || null }),
     })
     const payload = await res.json().catch(() => ({}))
@@ -257,18 +258,10 @@ const stockTone = computed(() => {
   return 'healthy'
 })
 
-function authHeader(projectId = projectQuery.value ?? product.value?.id_proyecto) {
-  const token = localStorage.getItem('token')
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
-  if (authStore.idEmpresaActual) headers['X-Company-ID'] = authStore.idEmpresaActual
-  if (projectId) headers['X-Project-ID'] = projectId
-  return headers
-}
-
 async function loadSupplierCatalog() {
   if (!canLinkSuppliers.value || !product.value?.id_proyecto) return
   try {
-    const res = await fetch('/api/suppliers', { headers: authHeader(product.value.id_proyecto) })
+    const res = await requestApi('/api/suppliers', { headers: authHeaders(product.value.id_proyecto) })
     const payload = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(payload.message || t('inventory.productDetail.supplierLoadError'))
     supplierCatalog.value = payload.data ?? []
@@ -284,9 +277,9 @@ async function linkSupplier() {
   linkingSupplier.value = true
   supplierMsg.value = ''
   try {
-    const res = await fetch(`/api/products/${productId.value}/suppliers`, {
+    const res = await requestApi(`/api/products/${productId.value}/suppliers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader(product.value.id_proyecto) },
+      headers: { 'Content-Type': 'application/json', ...authHeaders(product.value.id_proyecto) },
       body: JSON.stringify({
         id_proveedor: selectedSupplierId.value,
         precio_unitario: supplierPrice.value,
@@ -319,14 +312,11 @@ async function loadProduct() {
       await authStore.loadAccessContext()
     }
 
-    const res = await fetch(`/api/products/${productId.value}`, {
-      headers: authHeader(),
+    const res = await requestApi(`/api/products/${productId.value}`, {
+      headers: authHeaders(),
     })
     const payload = await res.json().catch(() => ({}))
 
-    if (res.status === 401) {
-      throw new Error('Session required.')
-    }
     if (res.status === 403) {
       throw new Error(payload.message || 'You do not have access to this product.')
     }
@@ -379,17 +369,6 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   min-height: 100vh;
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
-}
-
-.product-detail-root::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: rgba(var(--k-color-black-rgb), 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  pointer-events: none;
 }
 
 .content {

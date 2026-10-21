@@ -284,6 +284,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -312,20 +313,13 @@ const loading = ref(true)
 const exportingFormat = ref(null)
 const exportError     = ref(null)
 
-function authHeaders() {
-  return {
-    Authorization: `Bearer ${authStore.token}`,
-    'X-Company-ID': String(authStore.idEmpresa),
-  }
-}
-
 async function loadAll() {
   loading.value = true
   try {
     const headers = authHeaders()
     const [projRes, metRes] = await Promise.all([
-      fetch(`/api/projects/${route.params.id}`, { headers }),
-      fetch(`/api/projects/${route.params.id}/metrics`, { headers }),
+      requestApi(`/api/projects/${route.params.id}`, { headers }),
+      requestApi(`/api/projects/${route.params.id}/metrics`, { headers }),
     ])
     if (!projRes.ok) throw new Error()
     project.value = (await projRes.json()).data
@@ -492,7 +486,7 @@ async function runExport(format) {
 
 async function registerExport(dataset, format) {
   try {
-    const res = await fetch('/api/reports/exports', {
+    const res = await requestApi('/api/reports/exports', {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(

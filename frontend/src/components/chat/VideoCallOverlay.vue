@@ -158,6 +158,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useChatStore } from '../../stores/chat.js'
 import { useAuthStore } from '../../stores/auth.js'
+import { logger } from '../../utils/logger.js'
 
 const { t } = useI18n()
 const chatStore = useChatStore()
@@ -340,7 +341,7 @@ watch(showSideChat, async (isOpen) => {
       newMessagesCountAtOpen.value = firstUnreadIndex >= 0 ? (msgs.length - firstUnreadIndex) : 0
 
       // Limpiamos en el store (marcar todo como leído)
-      try { chatStore.markRead(convId) } catch (err) { console.warn('markRead failed', err) }
+      try { chatStore.markRead(convId) } catch (err) { logger.warn('markRead failed', err) }
 
       await nextTick()
       sideChatLoading.value = false
@@ -352,7 +353,7 @@ watch(showSideChat, async (isOpen) => {
             dividerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
           }
           scrollSideChatToBottom()
-        } catch (err) { console.warn('scroll error', err) }
+        } catch (err) { logger.warn('scroll error', err) }
       }, 100)
     } else {
       // Al cerrar, reseteamos la referencia de la línea roja
@@ -360,7 +361,7 @@ watch(showSideChat, async (isOpen) => {
       newMessagesIndexAtOpen.value = -1
     }
   } catch (err) {
-    console.warn('Error handling showSideChat change:', err)
+    logger.warn('Error handling showSideChat change:', err)
     // Aseguramos que abrir/cerrar no rompa la UI
     newMessagesCountAtOpen.value = 0
     newMessagesIndexAtOpen.value = -1

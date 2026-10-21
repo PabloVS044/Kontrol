@@ -51,7 +51,7 @@ describe('saleConfig store', () => {
 
     expect(fetchMock).toHaveBeenCalledOnce()
     expect(fetchMock).toHaveBeenCalledWith('/api/companies/sale-config', {
-      headers: { 'X-Company-ID': 3, Authorization: 'Bearer jwt' },
+      headers: { 'X-Company-ID': '3', Authorization: 'Bearer jwt' },
     })
     expect(store.moneda).toBe('GTQ')
     expect(store.config).toMatchObject({ iva_activo: true, iva_tasa: 12, descuento_activo: false })
@@ -64,7 +64,7 @@ describe('saleConfig store', () => {
     const fetchMock = vi.fn(() => Promise.resolve(okResponse({})))
     vi.stubGlobal('fetch', fetchMock)
     await useSaleConfigStore().load()
-    expect(fetchMock.mock.calls[0][1].headers).toEqual({ 'X-Company-ID': 1 })
+    expect(fetchMock.mock.calls[0][1].headers).toEqual({ 'X-Company-ID': '1' })
   })
 
   it('force recarga aunque ya esté cargada, y cambiar de empresa invalida la caché', async () => {

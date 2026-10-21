@@ -1,4 +1,5 @@
 import pool from '../db/pool.js'
+import { logger } from '../utils/logger.js'
 
 const normalizeTeam = (row) => ({
   id_equipo: row.id_equipo,
@@ -183,7 +184,7 @@ export const createTeam = async (req, res) => {
     return res.status(201).json({ success: true, data: newTeam })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:createTeam]', error)
+    logger.error('[teams:createTeam]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()
@@ -220,7 +221,7 @@ export const updateTeam = async (req, res) => {
     return res.json({ success: true, data: result.rows[0] })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:updateTeam]', error)
+    logger.error('[teams:updateTeam]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()
@@ -253,7 +254,7 @@ export const deleteTeam = async (req, res) => {
     return res.json({ success: true })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:deleteTeam]', error)
+    logger.error('[teams:deleteTeam]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()
@@ -281,7 +282,7 @@ export const addTeamMember = async (req, res) => {
     return res.status(201).json({ success: true })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:addTeamMember]', error)
+    logger.error('[teams:addTeamMember]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()
@@ -313,7 +314,7 @@ export const removeTeamMember = async (req, res) => {
     return res.json({ success: true })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:removeTeamMember]', error)
+    logger.error('[teams:removeTeamMember]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()
@@ -341,7 +342,7 @@ export const assignTeamProject = async (req, res) => {
     return res.json({ success: true })
   } catch (error) {
     await rollbackQuietly(client)
-    console.error('[teams:assignTeamProject]', error)
+    logger.error('[teams:assignTeamProject]', error)
     return res.status(error.status ?? 400).json({ success: false, message: error.message })
   } finally {
     client.release()

@@ -61,16 +61,7 @@ if [ -z "${AGENT_API_KEY:-}" ]; then
   echo "Aviso: AGENT_API_KEY no está en .env.deploy; el agente de IA quedará deshabilitado."
 fi
 
-# Ambiente de pruebas (SCRUM-25) — opcional. Si no se define TEST_DATABASE_URL
-# en .env.deploy, este deploy se comporta exactamente como antes: solo prod.
 COMPOSE_FILES="-f docker-compose.prod.yml"
-if [ -n "${TEST_DATABASE_URL:-}" ]; then
-  : "${TEST_JWT_SECRET:?Falta TEST_JWT_SECRET en .env.deploy}"
-  : "${TEST_FRONTEND_URL:?Falta TEST_FRONTEND_URL en .env.deploy}"
-  : "${TEST_PUBLIC_HOST:?Falta TEST_PUBLIC_HOST en .env.deploy}"
-  COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.test.yml"
-  echo "==> Ambiente de pruebas incluido en este deploy (TEST_DATABASE_URL definido)."
-fi
 
 SSH="ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -i $SSH_KEY $VM_USER@$VM_IP"
 
@@ -96,12 +87,6 @@ ENV_B64=$(printf '%s\n' \
   "VITE_API_URL=${VITE_API_URL-}" \
   "VITE_SOCKET_URL=${VITE_SOCKET_URL-}" \
   "VITE_WEBRTC_ICE_SERVERS=${VITE_WEBRTC_ICE_SERVERS-}" \
-  "TEST_DATABASE_URL=${TEST_DATABASE_URL-}" \
-  "TEST_DATABASE_SSL=${TEST_DATABASE_SSL-true}" \
-  "TEST_DATABASE_SSL_CA=${TEST_DATABASE_SSL_CA-}" \
-  "TEST_JWT_SECRET=${TEST_JWT_SECRET-}" \
-  "TEST_FRONTEND_URL=${TEST_FRONTEND_URL-}" \
-  "TEST_PUBLIC_HOST=${TEST_PUBLIC_HOST-}" \
   | base64 -w0)
 
 echo "==> [1/3] Actualizando código en $VM_USER@$VM_IP ..."
@@ -124,10 +109,6 @@ $SSH "
   cd /app/Kontrol
   docker compose $COMPOSE_FILES build backend
   docker compose $COMPOSE_FILES build frontend
-  if [ -n '${TEST_DATABASE_URL-}' ]; then
-    docker compose $COMPOSE_FILES build backend-test
-    docker compose $COMPOSE_FILES build frontend-test
-  fi
   # --force-recreate: compose's change-detection hashes the image *name*,
   # not its digest, for locally-built (non-registry) images — a rebuild
   # that keeps the same tag is invisible to it, so 'up -d' alone leaves the
@@ -145,7 +126,7 @@ $SSH "
   for i in \$(seq 1 30); do
     if curl -fsS http://localhost:3000/api/health >/dev/null 2>&1; then
       echo 'Backend healthy'
-      break
+      exit 0
     fi
     sleep 2
     if [ \"\$i\" = 30 ]; then
@@ -156,25 +137,9 @@ $SSH "
       exit 1
     fi
   done
-
-  if [ -n '${TEST_DATABASE_URL-}' ]; then
-    for i in \$(seq 1 30); do
-      if curl -fsS http://localhost:3001/api/health >/dev/null 2>&1; then
-        echo 'Backend-test healthy'
-        exit 0
-      fi
-      sleep 2
-    done
-    echo 'Backend-test did not become healthy in time.'
-    docker compose $COMPOSE_FILES logs --tail=120 backend-test || true
-    exit 1
-  fi
 "
 
 echo ""
 echo "==> Despliegue completado."
 echo "    App: $FRONTEND_URL"
 echo "    Health: $FRONTEND_URL/api/health"
-if [ -n "${TEST_DATABASE_URL-}" ]; then
-  echo "    Ambiente de pruebas: $TEST_FRONTEND_URL"
-fi

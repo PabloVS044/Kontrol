@@ -1,3 +1,4 @@
+import { apiFetch as requestApi, authHeaders, getApiBaseUrl } from '@/services/api.js'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { io } from 'socket.io-client'
@@ -9,18 +10,13 @@ import {
   normalizeConversation,
   normalizeMessage,
 } from '../utils/chat.js'
+import { logger } from '../utils/logger.js'
 
-const API = import.meta.env.VITE_API_URL || window.location.origin
+const API = getApiBaseUrl()
 
 function resolveSocketUrl() {
   const explicit = import.meta.env.VITE_SOCKET_URL
-  if (explicit) return explicit
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL
-  if (import.meta.env.DEV && typeof window !== 'undefined') {
-    const port = import.meta.env.VITE_BACKEND_PORT || '3000'
-    return `${window.location.protocol}//${window.location.hostname}:${port}`
-  }
-  return typeof window !== 'undefined' ? window.location.origin : ''
+  return explicit || getApiBaseUrl()
 }
 
 const SOCKET_URL = resolveSocketUrl()
@@ -45,7 +41,7 @@ function resolveRtcConfiguration() {
         : fallbackIceServers,
     }
   } catch (error) {
-    console.warn('Invalid VITE_WEBRTC_ICE_SERVERS configuration. Falling back to STUN only.', error)
+    logger.warn('Invalid VITE_WEBRTC_ICE_SERVERS configuration. Falling back to STUN only.', error)
     return { iceServers: fallbackIceServers }
   }
 }
@@ -117,10 +113,6 @@ export const useChatStore = defineStore('chat', () => {
 
   function clearCallError() {
     callError.value = ''
-  }
-
-  function authHeaders() {
-    return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
   }
 
   function currentChatUnavailableMessage() {
@@ -305,7 +297,7 @@ export const useChatStore = defineStore('chat', () => {
       try {
         await peerConnection.addIceCandidate(candidate ? new RTCIceCandidate(candidate) : null)
       } catch (error) {
-        console.error('Failed to add queued ICE candidate:', error)
+        logger.error('Failed to add queued ICE candidate:', error)
       }
     }
   }
@@ -321,7 +313,7 @@ export const useChatStore = defineStore('chat', () => {
     try {
       await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
     } catch (error) {
-      console.error('Failed to add ICE candidate:', error)
+      logger.error('Failed to add ICE candidate:', error)
     }
   }
 
@@ -424,7 +416,7 @@ export const useChatStore = defineStore('chat', () => {
         await addRemoteIceCandidate(candidate)
       }
     } catch (error) {
-      console.error('WebRTC signaling error:', error)
+      logger.error('WebRTC signaling error:', error)
       scheduleCallCleanup('No se pudo establecer la videollamada.')
     }
   }
@@ -472,7 +464,7 @@ export const useChatStore = defineStore('chat', () => {
           : connection.localDescription,
       })
     } catch (error) {
-      console.error('Failed to create WebRTC offer:', error)
+      logger.error('Failed to create WebRTC offer:', error)
       scheduleCallCleanup('No se pudo iniciar la videollamada.')
     }
   }
@@ -543,13 +535,10 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   async function apiFetch(path, opts = {}) {
-    const response = await fetch(`${API}/api/chat${path}`, {
+    const response = await requestApi(`/api/chat${path}`, {
       ...opts,
-      headers: {
-        ...authHeaders(),
-        ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
-        ...opts.headers,
-      },
+      token: authStore.token,
+      headers: opts.headers,
     })
 
     const payload = await response.json().catch(() => ({
@@ -697,7 +686,7 @@ export const useChatStore = defineStore('chat', () => {
 
     socket.value.on('chat:error', ({ message }) => {
       lastError.value = message || 'Chat socket error.'
-      console.error('Socket chat error:', message)
+      logger.error('Socket chat error:', message)
     })
 
     socket.value.on('chat:unavailable', ({ message }) => {
@@ -907,7 +896,7 @@ export const useChatStore = defineStore('chat', () => {
         }
       }
     } catch (err) {
-      console.warn('Failed to locally mark messages read:', err)
+      logger.warn('Failed to locally mark messages read:', err)
     }
   }
 
@@ -926,7 +915,7 @@ export const useChatStore = defineStore('chat', () => {
     try {
       const uploaded = await uploadthing.uploadFiles('chatAttachment', {
         files,
-        headers: () => authHeaders(),
+        headers: () => authHeaders({}, { token: authStore.token }),
       })
 
       const attachments = uploaded
@@ -940,7 +929,7 @@ export const useChatStore = defineStore('chat', () => {
       lastError.value = ''
       return { success: true, data: attachments }
     } catch (error) {
-      console.error('UploadThing upload error:', error)
+      logger.error('UploadThing upload error:', error)
       const message = error?.message || 'Upload failed.'
       lastError.value = message
       return { success: false, message }

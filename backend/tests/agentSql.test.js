@@ -51,19 +51,36 @@ describe('executeReadOnly con scope del agente', () => {
   it('reescribe nombres calificados con espacios o comillas hacia las vistas', async () => {
     await executeReadOnly('SELECT * FROM public . usuario JOIN "public" .proyecto ON true', [], scope)
 
-    const finalSql = sentSql().at(-2)
+    const finalSql = sentSql().find((statement) => statement.startsWith('SELECT * FROM usuario JOIN proyecto'))
     expect(finalSql).toBe('SELECT * FROM usuario JOIN proyecto ON true')
   })
 
-  it('ejecuta la consulta con el rol sin privilegios, dentro de la transacción', async () => {
+  it('crea las vistas dentro de la transacción antes de usar el rol sin privilegios', async () => {
     await executeReadOnly('SELECT 1', [], scope)
 
     const sql = sentSql()
-    const begin = sql.indexOf('BEGIN TRANSACTION READ ONLY')
+    const begin = sql.indexOf('BEGIN')
+    const createView = sql.findIndex((statement) => statement.startsWith('CREATE OR REPLACE TEMP VIEW'))
     const setRole = sql.indexOf(`SET LOCAL ROLE ${AGENT_DB_ROLE}`)
     expect(begin).toBeGreaterThan(-1)
-    expect(setRole).toBeGreaterThan(begin)
+    expect(createView).toBeGreaterThan(begin)
+    expect(setRole).toBeGreaterThan(createView)
     expect(setRole).toBeLessThan(sql.indexOf('SELECT 1'))
+  })
+
+  it('elimina todas las vistas antes de confirmar la transacción', async () => {
+    await executeReadOnly('SELECT 1', [], scope)
+
+    const sql = sentSql()
+    const queryIndex = sql.indexOf('SELECT 1')
+    const resetRole = sql.indexOf('RESET ROLE')
+    const dropViews = sql.findIndex((statement) => statement.startsWith('DROP VIEW IF EXISTS pg_temp.'))
+    const commit = sql.indexOf('COMMIT')
+
+    expect(resetRole).toBeGreaterThan(queryIndex)
+    expect(dropViews).toBeGreaterThan(resetRole)
+    expect(commit).toBeGreaterThan(dropViews)
+    expect(sql[dropViews]).toContain('pg_temp.project_progress_entry')
   })
 
   it('concede SELECT al rol sobre cada vista temporal que crea', async () => {
@@ -91,7 +108,21 @@ describe('executeReadOnly con scope del agente', () => {
     await executeReadOnly('SELECT 1', [])
 
     const sql = sentSql()
+    expect(sql).toContain('BEGIN TRANSACTION READ ONLY')
     expect(sql.some((s) => s.startsWith('SET LOCAL ROLE'))).toBe(false)
     expect(sql.some((s) => s.startsWith('CREATE OR REPLACE TEMP VIEW'))).toBe(false)
+  })
+
+  it('revierte la creación de vistas si falla la consulta', async () => {
+    client.query.mockImplementation(async (sql) => {
+      if (sql === 'SELECT 1') throw new Error('query failed')
+      return { rowCount: 0, rows: [], fields: [] }
+    })
+
+    await expect(executeReadOnly('SELECT 1', [], scope)).rejects.toThrow('query failed')
+
+    const sql = sentSql()
+    expect(sql.at(-1)).toBe('ROLLBACK')
+    expect(sql).not.toContain('COMMIT')
   })
 })

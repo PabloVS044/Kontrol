@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
@@ -115,32 +116,13 @@ const filteredSuppliers = computed(() => {
   return suppliers.value.filter((supplier) => [supplier.nombre, supplier.contacto_nombre, supplier.email, supplier.telefono].some((value) => value?.toLowerCase().includes(query)))
 })
 
-function headers() {
-  const token = localStorage.getItem('token')
-  const result = token ? { Authorization: `Bearer ${token}` } : {}
-
-  if (authStore.idEmpresaActual) {
-    result['X-Company-ID'] = authStore.idEmpresaActual
-  }
-
-  const projectId = authStore.accessContext?.inventory_project_ids?.[0]
-  if (projectId) {
-    result['X-Project-ID'] = projectId
-  }
-
-  return {
-    ...result,
-    'Content-Type': 'application/json',
-  }
-}
-
 async function loadSuppliers() {
   loading.value = true
   error.value = ''
   try {
     if (!authStore.user) await authStore.fetchMe()
     if (!authStore.accessContext) await authStore.loadAccessContext()
-    const response = await fetch('/api/suppliers', { headers: headers() })
+    const response = await requestApi('/api/suppliers', { headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }) })
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(payload.message || `Unable to load suppliers (${response.status})`)
     suppliers.value = payload.data ?? []
@@ -190,9 +172,9 @@ async function saveSupplier() {
     return
   }
   try {
-    const response = await fetch(id ? `/api/suppliers/${id}` : '/api/suppliers', {
+    const response = await requestApi(id ? `/api/suppliers/${id}` : '/api/suppliers', {
       method: id ? 'PUT' : 'POST',
-      headers: headers(),
+      headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }),
       body: JSON.stringify(form),
     })
     const payload = await response.json().catch(() => ({}))
@@ -209,7 +191,7 @@ async function saveSupplier() {
 async function removeSupplier(supplier) {
   if (!window.confirm(t('inventory.suppliers.deleteConfirm', { name: supplier.nombre }))) return
   try {
-    const response = await fetch(`/api/suppliers/${supplier.id_proveedor}`, { method: 'DELETE', headers: headers() })
+    const response = await requestApi(`/api/suppliers/${supplier.id_proveedor}`, { method: 'DELETE', headers: authHeaders({ 'X-Project-ID': authStore.accessContext?.inventory_project_ids?.[0] }) })
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(payload.message || 'Unable to delete supplier.')
     detailsSupplier.value = null
@@ -229,7 +211,6 @@ onMounted(() => {
 
 <style scoped>
 .suppliers-root { position: relative; isolation: isolate; min-height: 100vh; background: transparent; color: var(--k-color-text); font-family: var(--k-font-sans); }
-.suppliers-root::before { content: ''; position: fixed; inset: 0; z-index: -1; background: rgba(var(--k-color-black-rgb), .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none; }
 .suppliers-content { max-width: 1240px; margin: 56px auto 0; padding: 80px var(--k-space-6) var(--k-space-7); }
 .page-header, .toolbar, .card-heading, .modal-heading, .modal-actions { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--k-space-4); }
 .page-header { margin-bottom: var(--k-space-6); padding-bottom: var(--k-space-5); border-bottom: var(--k-border-width) solid var(--k-color-border); }

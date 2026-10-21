@@ -119,9 +119,9 @@ describe('registerUser', () => {
 
 describe('loginWithGoogle', () => {
   /** `window.location` no es asignable en happy-dom; se sustituye por un doble. */
-  function captureRedirect() {
+  function captureRedirect(origin = '') {
     const original = Object.getOwnPropertyDescriptor(window, 'location')
-    const spot = { href: '' }
+    const spot = { href: '', origin }
     Object.defineProperty(window, 'location', {
       value: spot,
       writable: true,
@@ -156,6 +156,16 @@ describe('loginWithGoogle', () => {
     const nav = captureRedirect()
     loginWithGoogle('a&b=c')
     expect(nav.href).toBe('/api/auth/google?invite=a%26b%3Dc')
+    nav.restore()
+  })
+
+  it('envía el origen actual como return_to para volver al mismo frontend', () => {
+    // El backend sirve a varios frontends (dominio propio y *.vercel.app).
+    const nav = captureRedirect('https://kontrol.example')
+    loginWithGoogle('inv-123')
+    expect(nav.href).toBe(
+      '/api/auth/google?invite=inv-123&return_to=https%3A%2F%2Fkontrol.example'
+    )
     nav.restore()
   })
 })
