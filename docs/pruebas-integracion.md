@@ -86,7 +86,7 @@ La mayor parte del tiempo de la suite no está en los casos sino en importar la 
 ## 6. Reporte de resultados
 
 - **En cada corrida de CI:** `backend/scripts/integration-report.js` genera un Markdown con totales y el detalle caso por caso (archivo, grupo, prueba, duración y, si hay, el primer renglón de cada fallo). Va al resumen del job y a `backend/reports/<suite>-report.md`, que junto al JUnit XML y al JSON de Vitest se publica como artefacto `reporte-integration` / `reporte-regression` con 30 días de retención.
-- **Versionado en el repositorio:** `docs/evidencias/pruebas-integracion/`. La corrida local que valida esta entrega está en `resultados-local-2026-10-21.md`. Para el informe se recomienda agregar ahí el reporte del artefacto de la primera corrida en `develop`.
+- **Versionado en el repositorio:** `docs/evidencias/pruebas-integracion/`. La corrida local que valida esta entrega está en `resultados-local-2026-10-21.md`. La corrida de CI del PR #161 ([39727616024](https://github.com/PabloVS044/Kontrol/actions/runs/39727616024)) está en `resultados-ci-2026-10-22-integration.md` (48/48) y `resultados-ci-2026-10-22-regression.md` (11/11), copiados tal cual de sus artefactos. La corrida de un PR prueba la rama ya mezclada con `develop`, así que regresión incluye un caso que llegó por `develop` (`agentScope.regression.test.js`) además de los 10 de esta entrega.
 - **En local:** `npm run test:integration -w backend && npm run test:regression -w backend && npm run test:integration:report -w backend`.
 
 ## 7. Coordinación
