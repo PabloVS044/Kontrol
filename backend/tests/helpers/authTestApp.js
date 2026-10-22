@@ -10,6 +10,7 @@ import productRoutes from '../../src/routes/productRoutes.js'
 import { errorHandler } from '../../src/middleware/errorHandler.js'
 import integrationRoutes from '../../src/routes/integrationRoutes.js'
 import inventoryMovementRoutes from '../../src/routes/inventoryMovementRoutes.js'
+import authRoutes from '../../src/routes/authRoutes.js'
 
 export const JWT_SECRET = 'secreto-de-pruebas-hu31'
 process.env.JWT_SECRET = JWT_SECRET
@@ -51,6 +52,7 @@ export function buildTestApp() {
   app.use('/api/products', productRoutes)
   app.use('/api/integrations', integrationRoutes)
   app.use('/api/inventory-movements', inventoryMovementRoutes)
+  app.use('/api/auth', authRoutes)
 
   app.use(errorHandler)
 

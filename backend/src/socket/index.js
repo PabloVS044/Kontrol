@@ -18,6 +18,7 @@ const CALL_DM_ONLY_MESSAGE = 'Only direct video calls are supported.'
 const CALL_TARGET_OFFLINE_MESSAGE = 'The other user is not connected to the chat.'
 const CALL_START_ERROR_MESSAGE = 'Could not start video call.'
 const CALL_SIGNAL_ERROR_MESSAGE = 'Could not deliver call signaling data.'
+let socketServer = null
 
 // ── helpers ──────────────────────────────────────────────────
 
@@ -120,6 +121,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
     pingInterval: 25000,
     pingTimeout: 20000,
   })
+  socketServer = io
 
   mongoose.connection.on('connected', () => {
     io.emit('chat:available', { message: CHAT_AVAILABLE_MESSAGE })
@@ -138,14 +140,25 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
   })
 
   // Auth middleware: validate JWT on handshake
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth?.token
     if (!token) return next(new Error('Authentication required'))
     try {
-      socket.user = jwt.verify(token, process.env.JWT_SECRET)
+      const payload = jwt.verify(token, process.env.JWT_SECRET)
+      const account = await pool.query(
+        'SELECT activo, token_version FROM public.usuario WHERE id_usuario = $1',
+        [payload.id_usuario]
+      )
+      const row = account.rows[0]
+      if (!row?.activo || (payload.token_version !== undefined && row.token_version !== payload.token_version)) {
+        return next(new Error('Account is unavailable'))
+      }
+      socket.user = payload
       next()
-    } catch {
-      next(new Error('Invalid or expired token'))
+    } catch (error) {
+      next(error instanceof jwt.JsonWebTokenError
+        ? new Error('Invalid or expired token')
+        : error)
     }
   })
 
@@ -449,6 +462,10 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
   })
 
   return io
+}
+
+export function disconnectUserSockets(userId) {
+  socketServer?.in(`user:${userId}`).disconnectSockets(true)
 }
 
 // ── format conversation for a specific user ─────────────────
