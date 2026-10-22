@@ -34,6 +34,22 @@ import {
   createUser,
   query,
 } from '../db/fixtures.js'
+import {
+  buildCompanyTableScopes,
+  renderCompanyTableScope,
+} from '../../src/services/companyDataExport.js'
+
+const sensitiveField = /password|secret|token|credential|api.?key|private.?key/i
+
+function redactSensitiveFields(value) {
+  if (Array.isArray(value)) return value.map(redactSensitiveFields)
+  if (!value || typeof value !== 'object') return value
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => !sensitiveField.test(key))
+      .map(([key, nested]) => [key, redactSensitiveFields(nested)])
+  )
+}
 describe('P1 — exportación JSON contra PostgreSQL real', () => {
   let context
   let project
@@ -76,10 +92,54 @@ describe('P1 — exportación JSON contra PostgreSQL real', () => {
        WHERE pr.id_empresa = $1 AND p.id_producto = $2`,
       [context.company.id_empresa, product.id_producto]
     )
+    const tableMetadata = await query(
+      `SELECT c.relname AS name, array_agg(a.attname::text ORDER BY a.attnum) AS columns
+       FROM pg_class c
+       JOIN pg_namespace n ON n.oid = c.relnamespace
+       JOIN pg_attribute a ON a.attrelid = c.oid
+       WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+         AND a.attnum > 0 AND NOT a.attisdropped
+       GROUP BY c.relname`
+    )
+    const foreignKeys = await query(
+      `SELECT child.relname AS child, parent.relname AS parent,
+              array_agg(child_column.attname::text ORDER BY key_pair.ordinality) AS "childColumns",
+              array_agg(parent_column.attname::text ORDER BY key_pair.ordinality) AS "parentColumns"
+       FROM pg_constraint constraint_row
+       JOIN pg_class child ON child.oid = constraint_row.conrelid
+       JOIN pg_namespace child_schema ON child_schema.oid = child.relnamespace
+       JOIN pg_class parent ON parent.oid = constraint_row.confrelid
+       JOIN pg_namespace parent_schema ON parent_schema.oid = parent.relnamespace
+       CROSS JOIN LATERAL unnest(constraint_row.conkey, constraint_row.confkey)
+         WITH ORDINALITY AS key_pair(child_attnum, parent_attnum, ordinality)
+       JOIN pg_attribute child_column
+         ON child_column.attrelid = child.oid AND child_column.attnum = key_pair.child_attnum
+       JOIN pg_attribute parent_column
+         ON parent_column.attrelid = parent.oid AND parent_column.attnum = key_pair.parent_attnum
+       WHERE constraint_row.contype = 'f'
+         AND child_schema.nspname = 'public' AND parent_schema.nspname = 'public'
+       GROUP BY child.relname, parent.relname`
+    )
+    const scopes = buildCompanyTableScopes(tableMetadata.rows, foreignKeys.rows)
+
     expect(exported.tables.proyecto).toContainEqual(expectedProject.rows[0].row)
     expect(exported.tables.producto).toContainEqual(expectedProduct.rows[0].row)
     expect(exported.profile.id_usuario).toBe(context.owner.id_usuario)
     expect(exported.tables.usuario).toBeUndefined()
+
+    for (const [tableName, exportedRows] of Object.entries(exported.tables)) {
+      const predicate = renderCompanyTableScope(tableName, 't', scopes)
+      const expectedRows = await query(
+        `SELECT to_jsonb(t) AS row
+         FROM public."${tableName}" t
+         WHERE ${predicate}
+         ORDER BY t.ctid`,
+        [context.company.id_empresa]
+      )
+      expect(exportedRows, `Export mismatch for public.${tableName}`).toEqual(
+        expectedRows.rows.map(({ row }) => redactSensitiveFields(row))
+      )
+    }
   })
 
   it('anonimiza la cuenta real, transfiere su empresa y revoca la sesión', async () => {
