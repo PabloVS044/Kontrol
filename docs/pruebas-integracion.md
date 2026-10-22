@@ -75,9 +75,13 @@ El workflow está separado de `ci.yml` y sus jobs corren **en paralelo** a lint,
 |---|---|---|---|
 | Ejecución de los casos (sin arranque) | 0.89 s | 0.24 s | Reporte de Vitest, local |
 | Corrida completa de la suite (import de la app + esquema + casos + teardown) | 17 s | 9-10 s | `npm run test:<suite>` cronometrado, local, Windows, Postgres 18 |
-| Job completo en GitHub Actions (checkout, `npm ci`, contenedor, suite, reporte) | *pendiente* | *pendiente* | Pestaña Actions → duración del job, primera corrida sobre `develop` |
+| Paso «Ejecutar pruebas» en GitHub Actions | 10 s | 6 s | Corrida [39726900662](https://github.com/PabloVS044/Kontrol/actions/runs/39726900662), PR, commit `6385e6a`, 22/10/2026 |
+| Job completo en GitHub Actions (contenedor 11-14 s, `npm ci` 10 s, suite, reporte, artefacto) | 44 s | 37 s | Misma corrida |
+| Workflow completo (los dos jobs en paralelo) | 47 s | | Misma corrida |
 
-La mayor parte del tiempo de la suite no está en los casos sino en importar la app y cargar el esquema, un costo fijo que no crece con el número de casos. Cuando corra la primera vez en `develop`, hay que anotar aquí la duración de cada job tal como la muestra GitHub Actions. No se escribe una cifra de CI antes de medirla.
+La mayor parte del tiempo de la suite no está en los casos sino en importar la app y cargar el esquema, un costo fijo que no crece con el número de casos. En CI pesan más el arranque del contenedor de Postgres y `npm ci` que las pruebas mismas.
+
+**Impacto en el pipeline: cero minutos en el camino crítico.** El workflow corre en paralelo a `ci.yml`, y en esa misma corrida el job más lento de `ci.yml` fue *Carga - k6*, con 223 s (3 min 43 s), contra los 47 s de este workflow. El PR quedaba listo para merge al mismo tiempo con o sin estas suites. Lo que sí agregan son unos 81 s de tiempo de runner por corrida (44 s + 37 s). Si en algún momento la suite pasara a ser el job más lento, se puede partir en más jobs de la matriz en lugar de recortar casos.
 
 ## 6. Reporte de resultados
 
