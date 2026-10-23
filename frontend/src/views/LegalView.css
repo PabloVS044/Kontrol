@@ -189,6 +189,16 @@
   gap: var(--k-space-1);
 }
 
+/* Control para cambiar la decisión del aviso de almacenamiento (L-3). */
+.legal-storage-choice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-3);
+  padding: var(--k-space-4);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-md);
+}
+
 .legal-clause-title {
   margin: 0;
   font-size: var(--k-font-size-body-large);

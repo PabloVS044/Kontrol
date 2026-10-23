@@ -1598,11 +1598,14 @@
     "ownerOnly": "Only the company owner or an admin can change how this company sells.",
     "prefs": {
       "title": "Your preferences",
-      "hint": "Saved in this browser. They do not affect anyone else on the team.",
+      "hint": "They are yours and do not affect anyone else on the team. They are saved in this browser only if you accept remembering your preferences.",
       "birdie": "Show the Birdie assistant bubble",
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",
-      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out."
+      "languageNote": "Applies to the whole app. If you accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "storage": "Remember preferences in this browser",
+      "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
+      "storagePolicy": "See the cookie and storage policy"
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
@@ -2258,6 +2261,7 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
+    "cookieSettings": "Cookie preferences",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   },
@@ -2429,6 +2433,22 @@
     "checkbox": "I have read and accept the {terms}.",
     "termsLink": "Terms and Conditions of Service",
     "accept": "Accept"
+  },
+  "storageConsent": {
+    "ariaLabel": "Browser storage notice",
+    "title": "What Kontrol saves in your browser",
+    "essential": "To work, Kontrol saves your session, the company you are working in and your acceptance of the Terms. This is essential and cannot be turned off.",
+    "preferences": "If you allow it, it also remembers preferences such as the language, the projects view and where you left the assistant. If you reject them, Kontrol works the same but forgets them when you reload. We do not use advertising or tracking cookies.",
+    "accept": "Accept preferences",
+    "reject": "Reject preferences",
+    "status": {
+      "pending": "You have not decided yet: no preferences are saved.",
+      "accepted": "Now: your preferences are saved in this browser.",
+      "rejected": "Now: your preferences are not saved in this browser."
+    },
+    "policyLink": "Cookie and storage policy",
+    "close": "Close",
+    "manageTitle": "Your choice in this browser"
   },
   "notFound": {
     "title": "This page doesn't exist",
