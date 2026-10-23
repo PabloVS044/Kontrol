@@ -2403,20 +2403,28 @@
       "title": "Política de Cookies y Almacenamiento",
       "clauses": [
         {
-          "title": "Sin cookies publicitarias",
-          "body": "Kontrol no utiliza cookies publicitarias ni herramientas de rastreo entre sitios web."
+          "title": "1. Sin cookies propias ni rastreo",
+          "body": "Kontrol no instala cookies propias, publicitarias ni de rastreo entre sitios. Lo que necesita lo guarda en el almacenamiento local de tu navegador (localStorage), que solo lee la propia aplicación."
         },
         {
-          "title": "Almacenamiento local",
-          "body": "Usamos el almacenamiento local del navegador (localStorage) para mantener tu sesión, recordar tus preferencias de interfaz, como el idioma y el tema visual, y recordar qué usuarios aceptaron estos términos en este navegador."
+          "title": "2. Lo imprescindible",
+          "body": "Tu sesión, tu perfil, tus empresas y permisos, tu aceptación de los Términos y tu respuesta al aviso de almacenamiento. Sin estos datos no se puede iniciar sesión, así que no se pueden rechazar si usas la plataforma. Al cerrar sesión se borran la sesión, el perfil y las empresas; la aceptación de los Términos y tu respuesta al aviso se conservan para no volver a pedírtelas."
         },
         {
-          "title": "Servicios externos",
-          "body": "Para mostrar la interfaz, tu navegador descarga tipografías de Google Fonts e íconos de Icons8. Esos servicios reciben tu dirección IP y datos técnicos de la solicitud."
+          "title": "3. Riesgo de la sesión",
+          "body": "Tu sesión se guarda en localStorage, y cualquier código que llegue a ejecutarse en la página de Kontrol puede leerla. Si alguien lograra inyectar código en la aplicación, podría copiar tu sesión y usarla desde otro equipo, como si fueras tú, hasta que caduque a las 8 horas. Cerrar sesión borra la copia de tu navegador, pero no invalida una copia ya robada. Cierra sesión al terminar en equipos compartidos."
         },
         {
-          "title": "Al cerrar sesión",
-          "body": "Al cerrar sesión se eliminan de tu navegador los tokens y datos de autenticación. Se conservan las preferencias de idioma y tema y el registro de aceptación de los términos."
+          "title": "4. Tus preferencias, solo si las aceptas",
+          "body": "El idioma, el tema, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
+        },
+        {
+          "title": "5. Servicios externos",
+          "body": "Para mostrar la interfaz, tu navegador descarga tipografías de Google Fonts y el logo de Google desde Icons8. Si inicias sesión con Google o adjuntas archivos, se conecta también con Google o con UploadThing. Esos servicios reciben tu dirección IP y datos técnicos de la petición; Kontrol no guarda nada en tu navegador en su nombre."
+        },
+        {
+          "title": "6. Cómo cambiar tu decisión o borrarlo todo",
+          "body": "Puedes cambiar tu decisión aquí abajo, desde Preferencias de cookies en el pie de página o en Configuración. Para borrarlo todo, incluida la aceptación de los Términos, borra los datos de este sitio en la configuración de tu navegador. Eso no elimina la información de tu cuenta en los servidores de Kontrol."
         }
       ]
     },

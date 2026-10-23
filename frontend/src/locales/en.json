@@ -2403,20 +2403,28 @@
       "title": "Cookie and Local Storage Policy",
       "clauses": [
         {
-          "title": "No advertising cookies",
-          "body": "Kontrol does not use advertising cookies or cross-site tracking tools."
+          "title": "1. No own cookies and no tracking",
+          "body": "Kontrol does not set its own cookies, advertising cookies or cross-site tracking. What it needs is kept in your browser's local storage (localStorage), which only the application itself reads."
         },
         {
-          "title": "Local storage",
-          "body": "We use the browser's local storage (localStorage) to keep your session, remember your interface preferences, such as language and visual theme, and remember which users accepted these terms in this browser."
+          "title": "2. What is essential",
+          "body": "Your session, your profile, your companies and permissions, your acceptance of the Terms and your answer to the storage notice. Without this data you cannot sign in, so it cannot be rejected if you use the platform. Signing out removes the session, the profile and the companies; your acceptance of the Terms and your answer to the notice are kept so you are not asked again."
         },
         {
-          "title": "External services",
-          "body": "To display the interface, your browser downloads fonts from Google Fonts and icons from Icons8. Those services receive your IP address and technical request data."
+          "title": "3. Session risk",
+          "body": "Your session is kept in localStorage, and any code that manages to run on the Kontrol page can read it. If someone managed to inject code into the application, they could copy your session and use it from another device, as if they were you, until it expires after 8 hours. Signing out removes the copy in your browser, but does not invalidate a copy that was already stolen. Sign out when you finish on shared computers."
         },
         {
-          "title": "When you log out",
-          "body": "When you log out, the authentication tokens and data are removed from your browser. Language and theme preferences and the record of your acceptance of the terms are kept."
+          "title": "4. Your preferences, only if you accept them",
+          "body": "The language, the theme, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
+        },
+        {
+          "title": "5. External services",
+          "body": "To display the interface, your browser downloads fonts from Google Fonts and the Google logo from Icons8. If you sign in with Google or attach files, it also connects to Google or UploadThing. Those services receive your IP address and technical request data; Kontrol does not store anything in your browser on their behalf."
+        },
+        {
+          "title": "6. How to change your choice or delete everything",
+          "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, including your acceptance of the Terms, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
         }
       ]
     },
