@@ -20,7 +20,7 @@ Resultado:
 
 | Mecanismo | Uso encontrado |
 | --- | --- |
-| `localStorage` | 11 claves fijas y 2 familias de claves con prefijo (tabla siguiente). |
+| `localStorage` | 12 claves fijas y 2 familias de claves con prefijo (tablas siguientes). Once existían antes de L-3; L-3 añade `kontrol:storage-consent`. |
 | `sessionStorage` | Ninguno. |
 | IndexedDB | Ninguno. |
 | Cookies propias | Ninguna. El frontend no escribe `document.cookie` y el backend no envía `Set-Cookie`: no usa `res.cookie`, `express-session` ni `cookie-parser`, y Socket.IO trabaja con su opción `cookie` por defecto (desactivada). |
@@ -41,10 +41,11 @@ Duración: `localStorage` no caduca. Todas las claves duran hasta que el código
 | `empresaActual` | La empresa seleccionada (mismo objeto). | Enviar `X-Company-ID` en las llamadas a la API. | Se reemplaza al cambiar de empresa y se borra al cerrar sesión. | `frontend/src/stores/auth.js` (`setEmpresaActual`, `logout`) |
 | `accessContext` | Rol en la empresa, proyectos asignados y capacidades (`can_manage_users`, `can_view_inventory`…). | Mostrar u ocultar navegación. No sustituye la autorización del backend. | Se reemplaza al cambiar de empresa y se borra al cerrar sesión. | `frontend/src/stores/auth.js` (`setAccessContext`, `logout`) |
 | `kontrol:legal-consent` | `{ version, users: [id_usuario…] }`: qué usuarios aceptaron los Términos en este navegador. | No volver a pedir la aceptación en cada carga. Sin esta clave el aviso bloqueante aparece siempre. | No se borra al cerrar sesión. Subir `LEGAL_VERSION` la invalida. | `frontend/src/composables/useLegalConsent.js` (`accept`) |
+| `kontrol:storage-consent` | `{ version, preferences: true \| false, decidedAt }`: si el usuario aceptó o rechazó las preferencias, y cuándo. | Respetar la decisión y no volver a mostrar el aviso en cada carga. Se escribe solo cuando el usuario responde. | No se borra al cerrar sesión. Subir `CONSENT_VERSION` la invalida y el aviso vuelve a salir. | `frontend/src/composables/useStorageConsent.js` (`storeDecision`) |
 
 ### No imprescindibles: preferencias y comodidad
 
-Sin ellas Kontrol funciona igual; solo olvida la preferencia al recargar.
+Sin ellas Kontrol funciona igual; solo olvida la preferencia al recargar. **Desde L-3 se escriben solo si `kontrol:storage-consent` dice `preferences: true`**, a través de `setPreferenceItem` en `frontend/src/composables/useStorageConsent.js`. Mientras el usuario no decide, o si rechaza, la preferencia se aplica en la pestaña pero no se guarda. Rechazar borra las que ya hubiera.
 
 | Clave | Qué guarda | Para qué | Cuánto dura | Dónde se escribe |
 | --- | --- | --- | --- | --- |
@@ -56,7 +57,9 @@ Sin ellas Kontrol funciona igual; solo olvida la preferencia al recargar.
 | `birdie-fab-position` | `{ x, y }` en píxeles. | Recordar dónde dejó el usuario el botón flotante del asistente. | No se borra al cerrar sesión. | `frontend/src/components/birdie/BirdieFloatingButton.vue` (`savePosition`) |
 | `birdie-assistant-home` | `{ x, y }` en píxeles. | Recordar la posición del asistente. | No se borra al cerrar sesión. | `frontend/src/components/birdie/BirdieAssistant.vue` (`saveHomePosition`) |
 
-Antes de esta tarea, todas las claves de esta tabla se escribían sin preguntar.
+Antes de L-3 todas estas claves se escribían sin preguntar. Las que ya estén en navegadores de usuarios existentes se siguen leyendo hasta que el usuario decida; si rechaza, se borran.
+
+`frontend/tests/storageConsent.test.js` falla si un archivo de `frontend/src` distinto de `services/http.js`, `stores/auth.js`, `composables/useLegalConsent.js` o `composables/useStorageConsent.js` escribe directamente en `localStorage`, `sessionStorage`, IndexedDB o `document.cookie`. Una preferencia nueva tiene que pasar por `setPreferenceItem`, entrar en `PREFERENCE_KEYS` y añadirse a este inventario y a la política.
 
 ## El token de sesión en `localStorage` (DT-14)
 
