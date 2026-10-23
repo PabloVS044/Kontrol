@@ -50,7 +50,17 @@ describe('useTheme', () => {
     expect(theme.value).toBe('dark')
   })
 
+  it('sin consentimiento para preferencias, setTheme aplica pero no guarda', async () => {
+    const { setTheme, theme } = await freshUseTheme()
+
+    setTheme('light')
+
+    expect(theme.value).toBe('light')
+    expect(localStorage.getItem('kontrol:theme')).toBeNull()
+  })
+
   it('setTheme aplica y persiste; toggleTheme alterna', async () => {
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const { setTheme, toggleTheme, theme, availableThemes } = await freshUseTheme()
     expect(availableThemes).toEqual(['dark', 'light'])
 

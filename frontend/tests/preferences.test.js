@@ -14,6 +14,20 @@ describe('preferences — visibilidad del asistente', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     localStorage.clear()
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
+  })
+
+  it('sin consentimiento para preferencias, ocultarla dura solo la sesión', () => {
+    localStorage.removeItem('kontrol:storage-consent')
+    const auth = useAuthStore()
+    auth.user = { id_usuario: 7 }
+
+    const prefs = usePreferencesStore()
+    prefs.load()
+    prefs.setBirdieVisible(false)
+
+    expect(prefs.birdieVisible).toBe(false)
+    expect(localStorage.getItem('prefs_7')).toBeNull()
   })
 
   it('por defecto la burbuja se ve: quien no toca nada espera la app como estaba', () => {

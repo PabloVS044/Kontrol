@@ -56,6 +56,8 @@ describe('LanguageSelector', () => {
   })
 
   it('elegir un idioma lo aplica, lo persiste y cierra el menú', async () => {
+    // Persistir el idioma requiere haber aceptado las preferencias (L-3).
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const wrapper = montar()
     await wrapper.find('.lang-btn').trigger('click')
     await wrapper.findAll('.lang-opt')[1].trigger('click')
