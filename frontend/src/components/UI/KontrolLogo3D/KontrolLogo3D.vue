@@ -11,8 +11,9 @@
 // El motor 3D (three + el .glb) se descarga solo cuando el logo es visible y
 // el sistema no pide reducir movimiento (DT-17, UX-R4). Hasta entonces, y si
 // falla la carga, queda el marcador estático en el mismo espacio.
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { logger } from '../../../utils/logger.js'
+import { useVisibleOnce } from '../../../composables/useVisibleOnce.js'
 import { sceneProps } from './kontrolLogo3DProps.js'
 
 const KontrolLogo3DScene = defineAsyncComponent(() =>
@@ -36,31 +37,8 @@ const sceneBindings = computed(() => {
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
 const containerRef = ref(null)
-const visible = ref(false)
 const loaded = ref(false)
-const showScene = computed(() => !reduceMotion && visible.value)
-
-let observer = null
-
-onMounted(() => {
-  if (reduceMotion) return
-  if (typeof IntersectionObserver === 'undefined') {
-    visible.value = true
-    return
-  }
-  observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry?.isIntersecting) return
-      visible.value = true
-      observer.disconnect()
-      observer = null
-    },
-    { rootMargin: '200px' }
-  )
-  observer.observe(containerRef.value)
-})
-
-onBeforeUnmount(() => observer?.disconnect())
+const showScene = useVisibleOnce(containerRef, { enabled: !reduceMotion })
 </script>
 
 <style scoped>
