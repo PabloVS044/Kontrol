@@ -117,3 +117,15 @@ export const agentChatLimiter = createRateLimiter({
   keyGenerator: byUserOrIp,
   message: 'Too many messages to the AI agent. Please wait a moment and try again.',
 })
+
+/**
+ * PAY-1 — Operaciones de pago que llaman a la pasarela (checkout, cambio de
+ * plan, portal). Cada una consume la cuota de la API del proveedor; por
+ * usuario, igual que expensiveLimiter.
+ */
+export const billingLimiter = createRateLimiter({
+  windowMs: MINUTE,
+  limit: envInt('RATE_LIMIT_BILLING_MAX', 10),
+  keyGenerator: byUserOrIp,
+  message: 'Too many billing requests. Please wait a moment and try again.',
+})

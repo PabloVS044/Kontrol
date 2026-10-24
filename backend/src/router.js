@@ -17,6 +17,7 @@ import integrationRoutes from './routes/integrationRoutes.js'
 import marketingRoutes from './routes/marketingRoutes.js'
 import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
+import billingRoutes from './routes/billingRoutes.js'
 import { authLimiter } from './middleware/rateLimit.js'
 import pool from './db/pool.js'
 import { createHealthHandler } from './db/poolStats.js'
@@ -44,6 +45,7 @@ router.use('/teams', teamRoutes)
 router.use('/agent', agentRoutes)
 router.use('/integrations', integrationRoutes)
 router.use('/marketing', marketingRoutes)
+router.use('/billing', billingRoutes)
 router.use('/uploadthing', uploadthingRouter)
 
 export default router
