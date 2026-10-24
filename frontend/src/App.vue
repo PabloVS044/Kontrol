@@ -38,9 +38,8 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { defineAsyncComponent, onMounted, watch } from 'vue'
 import { RouterView, useRoute } from "vue-router";
-import LineWaves from "./components/UI/Backgrounds/Waves/Waves.vue";
 import AppSurface from "./components/UI/AppSurface/AppSurface.vue";
 import FloatingChat from "./components/chat/FloatingChat.vue";
 import BirdieFloatingButton from "./components/birdie/BirdieFloatingButton.vue";
@@ -51,6 +50,8 @@ import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'
 import { usePreferencesStore } from './stores/preferences'
+
+const LineWaves = defineAsyncComponent(() => import("./components/UI/Backgrounds/Waves/Waves.vue"));
 
 const authStore = useAuthStore()
 const chatStore = useChatStore()

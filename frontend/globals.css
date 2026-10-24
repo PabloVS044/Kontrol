@@ -160,6 +160,7 @@ table {
 
 /* Base: todo hereda Manrope salvo override explícito en componentes. */
 body {
+  background-color: var(--k-color-bg);
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-main);
   line-height: 1.5;
