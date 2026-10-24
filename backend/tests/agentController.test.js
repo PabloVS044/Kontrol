@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
+// PAY-1 — Estas pruebas no son del control por plan (billingPlanAccess.test.js):
+// la empresa tiene el plan Business para que el módulo esté disponible.
+vi.mock('../src/services/billingService.js', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCompanyPlan: vi.fn(async () => 'business'),
+}))
+
 vi.mock('../src/db/pool.js', () => ({
   default: { query: vi.fn() },
 }))

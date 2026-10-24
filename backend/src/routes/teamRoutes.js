@@ -14,6 +14,8 @@ import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import requirePlanFeature from '../middleware/requirePlanFeature.js'
+import { FEATURES } from '../billing/plans.js'
 import {
   teamMemberParamSchema,
   teamParamSchema,
@@ -24,7 +26,7 @@ import {
 const router = createRouter()
 const canManageTeams = requireCompanyRole('owner', 'admin', 'manager')
 
-router.use(requireAuth, requireCompany, canManageTeams)
+router.use(requireAuth, requireCompany, canManageTeams, requirePlanFeature(FEATURES.TEAMS))
 
 router.get('/context', getTeamsContext)
 router.get('/', listTeams)

@@ -3,6 +3,8 @@ import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import requirePlanFeature from '../middleware/requirePlanFeature.js'
+import { FEATURES } from '../billing/plans.js'
 import {
   createMarketingCampaign,
   createMarketingItem,
@@ -43,7 +45,7 @@ import {
 
 const router = createRouter()
 
-router.use(requireAuth, requireCompany)
+router.use(requireAuth, requireCompany, requirePlanFeature(FEATURES.MARKETING))
 
 router.get('/campaigns', validate(getMarketingCampaignsQuerySchema, 'query'), getMarketingCampaigns)
 router.post('/campaigns', requireCompanyRole('owner', 'admin', 'manager'), validate(createMarketingCampaignSchema), createMarketingCampaign)
@@ -67,6 +69,6 @@ router.post('/publications/:publicationId/metrics', requireCompanyRole('owner', 
 router.put('/publications/:publicationId/metrics/:snapshotId', requireCompanyRole('owner', 'admin', 'manager'), validate(marketingMetricSnapshotParamsSchema, 'params'), validate(updateMarketingMetricSnapshotSchema), updateMarketingMetricSnapshot)
 router.delete('/publications/:publicationId/metrics/:snapshotId', requireCompanyRole('owner', 'admin'), validate(marketingMetricSnapshotParamsSchema, 'params'), deleteMarketingMetricSnapshot)
 
-router.post('/generate', requireCompanyRole('owner', 'admin', 'manager'), validate(generateMarketingDraftsSchema), generateMarketingDrafts)
+router.post('/generate', requirePlanFeature(FEATURES.MARKETING_AI), requireCompanyRole('owner', 'admin', 'manager'), validate(generateMarketingDraftsSchema), generateMarketingDrafts)
 
 export default router
