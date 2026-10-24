@@ -8,8 +8,9 @@ import { vi } from 'vitest'
 
 const clone = (value) => structuredClone(value)
 
-export const createFakeBillingDb = ({ usage = {} } = {}) => {
-  const state = { events: new Set(), subscriptions: new Map() }
+export const createFakeBillingDb = ({ usage = {}, role = 'owner' } = {}) => {
+  // `role` es el rol del usuario en la empresa para requireCompany; null = no es miembro.
+  const state = { events: new Set(), subscriptions: new Map(), role }
   const counts = { members: 1, projects: 0, products: 0, ...usage }
   let snapshot = null
 
@@ -28,6 +29,15 @@ export const createFakeBillingDb = ({ usage = {} } = {}) => {
       if (snapshot) Object.assign(state, snapshot)
       snapshot = null
       return { rows: [], rowCount: 0 }
+    }
+
+    if (sql.includes('FROM public.empresa_usuario eu JOIN public.rol_empresa re')) {
+      if (!state.role) return { rows: [], rowCount: 0 }
+      return { rows: [{ id_rol_empresa: 1, rol_empresa: state.role, activo: true, nombre: 'Empresa' }], rowCount: 1 }
+    }
+
+    if (sql.startsWith('SELECT id_empresa, nombre FROM public.empresa WHERE id_empresa = $1')) {
+      return { rows: [{ id_empresa: Number(params[0]), nombre: 'Empresa' }], rowCount: 1 }
     }
 
     if (sql.startsWith('INSERT INTO public.evento_pago_procesado')) {
