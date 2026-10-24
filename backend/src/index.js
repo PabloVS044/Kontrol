@@ -9,6 +9,8 @@ import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
 import { securityMiddleware } from './middleware/security.middleware.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { mountBillingWebhook } from './billing/webhook.js'
+import { getBillingProvider } from './billing/provider.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
 import { logger } from './utils/logger.js'
@@ -51,6 +53,9 @@ app.use(
 );
 app.locals.corsOriginFn = corsOriginFn
 app.locals.allowedOrigins = allowedOrigins
+// PAY-1 — Antes de express.json(): la firma del webhook se verifica sobre el
+// cuerpo crudo.
+mountBillingWebhook(app)
 app.use(express.json())
 app.use('/api', router)
 // DT-01 — último de la cadena: recibe todo lo que llegue a next(err).
@@ -63,6 +68,8 @@ setupSocket(httpServer, {
 // Se conecta a DB y levanta el puerto cuando no está en entorno de prueba
 if (process.env.NODE_ENV !== 'test') {
   try {
+    // PAY-1 — Falla al arrancar si STRIPE_SECRET_KEY no es de modo de prueba.
+    getBillingProvider()
     await ensureDatabaseSchema()
   } catch (error) {
     logger.error('Could not initialize the backend:', error)
