@@ -1598,11 +1598,14 @@
     "ownerOnly": "Solo el dueño de la empresa o un administrador puede cambiar cómo vende esta empresa.",
     "prefs": {
       "title": "Tus preferencias",
-      "hint": "Se guardan en este navegador. No afectan a nadie más del equipo.",
+      "hint": "Son tuyas y no afectan a nadie más del equipo. Se guardan en este navegador solo si aceptas recordar tus preferencias.",
       "birdie": "Mostrar la burbuja del asistente Birdie",
       "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
       "language": "Idioma",
-      "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión."
+      "languageNote": "Se aplica a toda la aplicación. Si aceptas recordar tus preferencias, se mantiene en este navegador, también después de cerrar sesión.",
+      "storage": "Recordar preferencias en este navegador",
+      "storageNote": "Rechazarlo borra las preferencias ya guardadas. Tu sesión no se ve afectada.",
+      "storagePolicy": "Ver la política de cookies y almacenamiento"
     },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",
@@ -1632,6 +1635,28 @@
       "title": "Miembros de la empresa",
       "hint": "Invita personas, cambia su rol y su acceso a proyectos. El panel está en Inicio.",
       "link": "Ir a Miembros de la empresa"
+    },
+    "privacy": {
+      "title": "Tus datos y tu cuenta",
+      "hint": "Descarga los datos de esta empresa o elimina tu acceso personal.",
+      "export": "Descargar datos de la empresa (JSON)",
+      "exporting": "Preparando descarga…",
+      "exportSuccess": "La descarga de datos comenzó.",
+      "exportOwnerOnly": "La exportación completa solo está disponible para propietarios y administradores de la empresa.",
+      "deleteTitle": "Eliminar mi cuenta",
+      "deleteWhat": "La eliminación es inmediata y no tiene período de gracia. Se desactiva tu cuenta, se borran tus credenciales y contacto de inicio de sesión, se eliminan tus conversaciones personales del asistente y tus mensajes de chat. Se conservan referencias técnicas anonimizadas que necesitan los registros del negocio; los registros de bitácora pueden conservar datos identificables.",
+      "deleteRetained": "Las ventas, gastos, proyectos y demás registros compartidos de la empresa no se borran. Si eres titular, la titularidad pasa al administrador o miembro activo disponible; si no queda nadie, la empresa se desactiva y sus datos quedan archivados. Las otras cuentas no se eliminan.",
+      "deleteDuration": "La política vigente no define un plazo de conservación para esos registros empresariales. Por ello no hay una fecha de borrado que podamos prometer: permanecen hasta que se apruebe y aplique un plazo de retención. Esto no afirma que una ley exija conservarlos.",
+      "deleteExternal": "Esta operación no borra datos ya enviados a Google, proveedores de correo/SMS, al servicio de IA, UploadThing ni otras integraciones. No existe un flujo que invoque una baja por cuenta en esos proveedores; pueden conservar sus propias copias y plazos, hoy no verificados. Los archivos usados por la empresa tampoco se eliminan automáticamente.",
+      "password": "Contraseña actual (si la cuenta usa contraseña)",
+      "googleReauth": "Volver a autenticar con Google",
+      "reauthenticating": "Conectando con Google…",
+      "googleReauthSuccess": "Google confirmó tu identidad. Confirma el borrado para continuar.",
+      "googleReauthError": "No se pudo verificar la cuenta de Google. Inténtalo de nuevo.",
+      "deleteConfirm": "Eliminar mi cuenta ahora",
+      "deleting": "Eliminando cuenta…",
+      "finalConfirm": "Esta acción es irreversible. Se borrará el acceso personal y se conservarán los registros empresariales descritos. ¿Quieres continuar?",
+      "error": "No se pudo completar la operación."
     }
   },
   "navbar": {
@@ -2024,7 +2049,6 @@
       "menu": "Menú"
     },
     "hero": {
-      "pill": "Para tiendas y pequeños negocios",
       "title": "Toma el control de tu negocio",
       "copy": "Cada venta que cobras descuenta tu inventario al momento. Y en la misma plataforma llevas tus proyectos, presupuesto y marketing.",
       "start": "Empieza a gestionar tu negocio",
@@ -2236,6 +2260,7 @@
     "privacy": "Aviso de privacidad",
     "terms": "Términos del servicio",
     "cookies": "Política de cookies",
+    "cookieSettings": "Preferencias de cookies",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
   },
@@ -2257,7 +2282,6 @@
     }
   },
   "legal": {
-    "badge": "Marco legal y regulatorio",
     "title": "Términos, Privacidad y Cumplimiento",
     "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
     "updated": "Versión {version} · Actualizado el 17 de octubre de 2026",
@@ -2356,11 +2380,11 @@
         },
         {
           "title": "6. Cuánto tiempo los conservamos",
-          "body": "Conservamos la información mientras tu cuenta o tu empresa estén activas. Todavía no hemos definido plazos de eliminación por tipo de dato y desactivar una cuenta no borra sus registros: si quieres que eliminemos tus datos, solicítalo a {email}."
+          "body": "Los plazos de conservación por tipo de dato todavía no están definidos. Desde Configuración puedes solicitar la baja de tu cuenta: se desactiva y anonimiza tu perfil, se eliminan tus credenciales y membresías, tu historial personal del asistente y tus mensajes enviados en chats humanos. La conversación puede conservarse para los demás participantes. Los registros compartidos del negocio, archivos y bitácoras pueden conservarse; no hay un plazo definido para eliminarlos ni se borran las copias de proveedores externos."
         },
         {
           "title": "7. Tus derechos",
-          "body": "Puedes consultar y corregir gran parte de tu información desde la plataforma y descargar reportes en PDF o CSV. Para solicitar acceso, corrección, una copia o la eliminación de tus datos personales, escribe a {email} desde el correo asociado a tu cuenta. Algunos datos pueden conservarse cuando exista una obligación legal o un motivo justificado."
+          "body": "Desde Configuración, el owner o administrador de una empresa puede descargar en JSON los datos empresariales accesibles a esa cuenta; la descarga es autenticada y no usa un enlace público. También incluye metadatos mínimos de chats humanos donde participa quien exporta y sus propios mensajes, no mensajes ni perfiles de otros participantes. Puedes solicitar la baja de tu cuenta en esa misma sección con tu contraseña o reautenticándote con Google. La baja no elimina los registros compartidos del negocio, los logs ni las copias de proveedores externos, y sus plazos de conservación aún no están definidos. El mecanismo no limita los derechos que te reconozca la ley aplicable."
         },
         {
           "title": "8. Seguridad",
@@ -2377,20 +2401,28 @@
       "title": "Política de Cookies y Almacenamiento",
       "clauses": [
         {
-          "title": "Sin cookies publicitarias",
-          "body": "Kontrol no utiliza cookies publicitarias ni herramientas de rastreo entre sitios web."
+          "title": "1. Sin cookies propias ni rastreo",
+          "body": "Kontrol no instala cookies propias, publicitarias ni de rastreo entre sitios. Lo que necesita lo guarda en el almacenamiento local de tu navegador (localStorage), que solo lee la propia aplicación."
         },
         {
-          "title": "Almacenamiento local",
-          "body": "Usamos el almacenamiento local del navegador (localStorage) para mantener tu sesión, recordar tus preferencias de interfaz, como el idioma y el tema visual, y recordar qué usuarios aceptaron estos términos en este navegador."
+          "title": "2. Lo imprescindible",
+          "body": "Tu sesión, tu perfil, tus empresas y permisos, tu aceptación de los Términos y tu respuesta al aviso de almacenamiento. Sin estos datos no se puede iniciar sesión, así que no se pueden rechazar si usas la plataforma. Al cerrar sesión se borran la sesión, el perfil y las empresas; la aceptación de los Términos y tu respuesta al aviso se conservan para no volver a pedírtelas."
         },
         {
-          "title": "Servicios externos",
-          "body": "Para mostrar la interfaz, tu navegador descarga tipografías de Google Fonts e íconos de Icons8. Esos servicios reciben tu dirección IP y datos técnicos de la solicitud."
+          "title": "3. Riesgo de la sesión",
+          "body": "Tu sesión se guarda en localStorage, y cualquier código que llegue a ejecutarse en la página de Kontrol puede leerla. Si alguien lograra inyectar código en la aplicación, podría copiar tu sesión y usarla desde otro equipo, como si fueras tú, hasta que caduque a las 8 horas. Cerrar sesión borra la copia de tu navegador, pero no invalida una copia ya robada. Cierra sesión al terminar en equipos compartidos."
         },
         {
-          "title": "Al cerrar sesión",
-          "body": "Al cerrar sesión se eliminan de tu navegador los tokens y datos de autenticación. Se conservan las preferencias de idioma y tema y el registro de aceptación de los términos."
+          "title": "4. Tus preferencias, solo si las aceptas",
+          "body": "El idioma, el tema, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
+        },
+        {
+          "title": "5. Servicios externos",
+          "body": "Para mostrar la interfaz, tu navegador descarga tipografías de Google Fonts y el logo de Google desde Icons8. Si inicias sesión con Google o adjuntas archivos, se conecta también con Google o con UploadThing. Esos servicios reciben tu dirección IP y datos técnicos de la petición; Kontrol no guarda nada en tu navegador en su nombre."
+        },
+        {
+          "title": "6. Cómo cambiar tu decisión o borrarlo todo",
+          "body": "Puedes cambiar tu decisión aquí abajo, desde Preferencias de cookies en el pie de página o en Configuración. Para borrarlo todo, incluida la aceptación de los Términos, borra los datos de este sitio en la configuración de tu navegador. Eso no elimina la información de tu cuenta en los servidores de Kontrol."
         }
       ]
     },
@@ -2407,6 +2439,22 @@
     "checkbox": "He leído y acepto los {terms}.",
     "termsLink": "Términos y Condiciones del Servicio",
     "accept": "Aceptar"
+  },
+  "storageConsent": {
+    "ariaLabel": "Aviso de almacenamiento en el navegador",
+    "title": "Qué guarda Kontrol en tu navegador",
+    "essential": "Para funcionar, Kontrol guarda tu sesión, la empresa con la que trabajas y tu aceptación de los Términos. Eso es imprescindible y no se puede desactivar.",
+    "preferences": "Si lo permites, también recuerda preferencias como el idioma, la vista de proyectos y dónde dejaste el asistente. Si las rechazas, Kontrol funciona igual, pero las olvida al recargar. No usamos cookies publicitarias ni de rastreo.",
+    "accept": "Aceptar preferencias",
+    "reject": "Rechazar preferencias",
+    "status": {
+      "pending": "Todavía no has decidido: no se guarda ninguna preferencia.",
+      "accepted": "Ahora: tus preferencias se guardan en este navegador.",
+      "rejected": "Ahora: tus preferencias no se guardan en este navegador."
+    },
+    "policyLink": "Política de cookies y almacenamiento",
+    "close": "Cerrar",
+    "manageTitle": "Tu decisión en este navegador"
   },
   "notFound": {
     "title": "Esta página no existe",

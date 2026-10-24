@@ -6,7 +6,7 @@
 //
 // Uso: npm run audit:ci                  (corre npm audit sobre el lockfile)
 //      node scripts/audit-check.mjs <archivo.json>   (reporte ya guardado)
-import { execFileSync } from 'node:child_process'
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -18,7 +18,7 @@ const BLOCKING = new Set(['high', 'critical'])
 function readReport(file) {
   if (file) return JSON.parse(readFileSync(file, 'utf8'))
   try {
-    return JSON.parse(execFileSync('npm', ['audit', '--json'], { cwd: ROOT, encoding: 'utf8' }))
+    return JSON.parse(execSync('npm audit --json', { cwd: ROOT, encoding: 'utf8' }))
   } catch (err) {
     // npm audit sale con código distinto de cero cuando hay hallazgos;
     // el JSON sigue en stdout.

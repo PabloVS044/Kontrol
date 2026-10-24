@@ -14,6 +14,7 @@ vi.mock('../src/controllers/authController.js', () => {
     getMe: ok,
     googleAuth: ok,
     googleCallback: ok,
+    googleDeletionReauthentication: ok,
   }
 })
 

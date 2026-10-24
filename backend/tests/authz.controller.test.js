@@ -83,7 +83,8 @@ describe('Autenticación y permisos a nivel de controller (HU-31)', () => {
 
   describe('Acceso denegado por rol', () => {
     it('caso 5 · Colaborador en endpoint de administrador → 403', async () => {
-      pool.query.mockResolvedValueOnce(companyMembership('collaborator'))
+      pool.query
+        .mockResolvedValueOnce(companyMembership('collaborator'))
 
       const res = await request(app)
         .post('/api/reports')
@@ -96,7 +97,8 @@ describe('Autenticación y permisos a nivel de controller (HU-31)', () => {
 
     // DELETE /api/reports/:id es solo owner/admin (NO manager).
     it('caso 6 · Encargado (manager) en endpoint solo-admin → 403', async () => {
-      pool.query.mockResolvedValueOnce(companyMembership('manager'))
+      pool.query
+        .mockResolvedValueOnce(companyMembership('manager'))
 
       const res = await request(app)
         .delete('/api/reports/1')
@@ -109,7 +111,8 @@ describe('Autenticación y permisos a nivel de controller (HU-31)', () => {
 
   describe('Aislamiento entre empresas', () => {
     it('caso 7 · usuario de empresa A pide recurso de empresa B → 403', async () => {
-      pool.query.mockResolvedValueOnce(noMembership())
+      pool.query
+        .mockResolvedValueOnce(noMembership())
 
       const res = await request(app)
         .get('/api/reports')
@@ -128,7 +131,8 @@ describe('Autenticación y permisos a nivel de controller (HU-31)', () => {
         { id_tarea: 1, asignado_id: 7 },
         { id_tarea: 2, asignado_id: 99 },
       ]
-      pool.query.mockResolvedValueOnce(dbRows(tareas))
+      pool.query
+        .mockResolvedValueOnce(dbRows(tareas))
 
       const res = await request(app)
         .get('/api/projects/5/tasks')

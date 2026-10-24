@@ -133,6 +133,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useBirdieStore } from '../../stores/birdie'
+import { getPreferenceItem, setPreferenceItem } from '../../composables/useStorageConsent.js'
 import talkSheet from '../../assets/img/birdie/talk-sheet.png'
 import flySheet from '../../assets/img/birdie/fly1-sheet.png'
 
@@ -605,7 +606,7 @@ function defaultHomePosition() {
 
 function loadHomePosition() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = getPreferenceItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
       if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -617,9 +618,7 @@ function loadHomePosition() {
 }
 
 function saveHomePosition() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(position.value))
-  } catch (_) { /* ignore */ }
+  setPreferenceItem(STORAGE_KEY, JSON.stringify(position.value))
 }
 
 function clampToViewport(x, y) {
