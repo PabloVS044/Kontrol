@@ -61,7 +61,6 @@ export const createPortal = async (req, res) => {
 
 // El errorHandler central oculta todo 5xx. "Pagos no configurados" (503) es
 // un estado esperado del servidor, no un fallo, y la interfaz lo muestra.
-// eslint-disable-next-line no-unused-vars
 export const billingErrorHandler = (err, req, res, next) => {
   if (err?.status === 503) return res.status(503).json({ success: false, message: err.message })
   return next(err)
