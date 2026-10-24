@@ -186,6 +186,9 @@ Cambios aplicados:
   cambia (UX-R3).
 - `manualChunks` en `vite.config.js` separa `three`, `ogl`, `gsap` y `lenis` en
   chunks propios.
+- El fondo de la página (`body { background-color: var(--k-color-bg) }`) pasa de
+  `navbar.css`, que ahora llega con la Landing, a `globals.css`, de modo que todas
+  las rutas lo tienen desde el primer render.
 
 ### 6.1 Build
 
