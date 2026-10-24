@@ -2,6 +2,7 @@ import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
+import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
 import {
   acceptCompanyInvitation,
@@ -19,6 +20,7 @@ import {
   updateCompanyMemberRole,
   updateCompanySaleConfig,
 } from '../controllers/companyController.js'
+import { exportCompanyData } from '../controllers/privacyController.js'
 import {
   createCompanySchema,
   companyInvitationTokenParamSchema,
@@ -44,6 +46,13 @@ router.post(
 )
 
 router.get('/my-companies', requireAuth, getMyCompanies)
+router.get(
+  '/export',
+  requireAuth,
+  requireCompany,
+  requireCompanyRole('owner', 'admin'),
+  exportCompanyData
+)
 router.post('/', requireAuth, validate(createCompanySchema), createCompany)
 router.get('/access-context', requireAuth, requireCompany, getCompanyAccessContext)
 router.get('/members-panel', requireAuth, requireCompany, requireCompanyOwner, getCompanyUsersPanel)

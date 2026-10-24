@@ -4,6 +4,11 @@ import { logger } from '../utils/logger.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
+    ALTER TABLE public.usuario
+      ADD COLUMN IF NOT EXISTS token_version integer NOT NULL DEFAULT 1
+  `)
+
+  await pool.query(`
     ALTER TABLE public.empresa
       ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
   `)
