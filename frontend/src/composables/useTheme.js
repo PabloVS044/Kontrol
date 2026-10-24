@@ -6,10 +6,7 @@ import { readonly, ref } from 'vue'
  * Escribe `data-theme` en `<html>`, que es lo que leen los tokens de
  * `src/styles/theme.css`. Preferencia persistida en localStorage.
  *
- * Estado actual: SCRUM-12 definió únicamente la identidad "Luxury Dark".
- * El tema claro está declarado pero sin overrides, así que seleccionarlo
- * hereda el oscuro. El mecanismo es funcional; faltan los valores de marca.
- * Ver el TODO(SCRUM-12) en `theme.css`.
+ * El tema claro es una propuesta pendiente de validación de Diseño.
  */
 
 const STORAGE_KEY = 'kontrol:theme'
