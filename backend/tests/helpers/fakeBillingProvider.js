@@ -6,6 +6,7 @@ import { InvalidBillingEventError } from '../../src/billing/errors.js'
 // viven en memoria y los eventos se "firman" con VALID_SIGNATURE.
 
 export const VALID_SIGNATURE = 'fake-valid-signature'
+export const SIGNATURE_HEADER = 'x-fake-signature'
 
 export const createFakeBillingProvider = () => {
   const subscriptions = new Map()
@@ -14,6 +15,7 @@ export const createFakeBillingProvider = () => {
   const provider = {
     name: 'fake',
     configured: true,
+    signatureHeader: SIGNATURE_HEADER,
     subscriptions,
 
     // Deja una suscripción en el "proveedor" para que el servicio la relea.

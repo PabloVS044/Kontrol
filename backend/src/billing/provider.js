@@ -10,6 +10,7 @@ export { BillingNotConfiguredError, InvalidBillingEventError } from './errors.js
 //
 // Operaciones del adaptador:
 //   name                                    nombre guardado en empresa_suscripcion.proveedor
+//   signatureHeader                         cabecera HTTP con la firma de los eventos
 //   ensureCustomer({ companyId })           -> customerId
 //   createCheckoutSession({ customerId, companyId, plan, interval, successUrl, cancelUrl })
 //                                           -> { id, url }   (página de pago hospedada)

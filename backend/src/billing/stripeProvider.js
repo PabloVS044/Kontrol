@@ -93,6 +93,7 @@ export const createStripeProvider = ({ secretKey, webhookSecret, client } = {}) 
   return {
     name: 'stripe',
     configured: true,
+    signatureHeader: 'stripe-signature',
 
     // Al proveedor no se le manda nombre ni correo de la empresa: solo su id
     // interno. Los datos de la demostración son sintéticos (anexo de
