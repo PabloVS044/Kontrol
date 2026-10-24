@@ -2,26 +2,26 @@
 
 **Corte documental: 23/10/2026**  
 **Conclusión principal:** el estudio instrumentado del Neurolab no se realizó. Los
-resultados que siguen son de sesiones moderadas manuales y de un five-second test;
-no son una comparación entre observación y datos instrumentados.
+resultados que siguen provienen de sesiones moderadas, de la batería de diez pruebas
+UX y de un five-second test posterior; no son una comparación entre observación y
+datos instrumentados.
 
 ## 1. Alcance y fuentes
 
-Este informe distingue cuatro clases de evidencia:
+Este informe distingue tres clases de evidencia:
 
 1. **Sesiones moderadas observadas:** las cinco tareas de la Fase 1, el 06/09/2026,
    y las cinco tareas de la Fase 2, el 27/09/2026. En ambas rondas participaron tres
    personas; se registraron resultado, tiempo manual, pensamiento en voz alta y notas.
-2. **Five-second test de UX-R4:** cinco respuestas individuales recogidas el
-   12/10/2026, con exposición de cinco segundos en un viewport de 1440 × 900.
-3. **Batería de diez pruebas UX:** el PDF *Tarea de mejora al proceso 3. Pruebas UX*,
-   fechado el 06/10/2026 y compartido para esta consolidación, registra diez métodos
-   ejecutados con cinco participantes por prueba (25 en total). Los resultados por
-   persona se resumen en §4 y se citan por página. El PDF no está incorporado al
-   repositorio; no se transcriben nombres ni datos personales de sus autores o
+2. **Batería de diez pruebas UX:** el informe
+   [Tarea de mejora al proceso 3. User Experience](<./Tarea de mejora al proceso 3. User Experience.pdf>),
+   fechado el 06/10/2026, registra diez métodos ejecutados con cinco participantes
+   por prueba (25 en total). Los resultados por persona se resumen en §4 y se citan
+   por página. No se transcriben nombres ni datos personales de sus autores o
    participantes.
-4. **Prueba posterior de UX-R4:** cinco respuestas del 12/10/2026, en español y con
-   viewport de 1440 × 900. Es distinta de la Prueba 10 del PDF, realizada el 02/10
+3. **Five-second test posterior de UX-R4:** cinco respuestas individuales recogidas
+   el 12/10/2026, en español y con viewport de 1440 × 900. Es distinta de la
+   Prueba 10 del PDF, realizada el 02/10
    en inglés y en dispositivos variados; sus cifras no son una comparación controlada.
 
 Fuentes primarias:
@@ -32,9 +32,9 @@ Fuentes primarias:
   [registro XLSX de las sesiones](./Registro_sesiones_usabilidad_Fase_2.xlsx) y
   [análisis de hallazgos de la Fase 2](./analisis-hallazgos-fase2.md).
 - [Protocolo y respuestas del five-second test](./protocolo-five-second-ux-r4.md).
-- PDF *Tarea de mejora al proceso 3. Pruebas UX* (06/10/2026), pp. 1–68,
-  aportado para esta consolidación. La batería y el registro por participante están
-  en las pp. 2–3 y 9–53; los hallazgos consolidados, en las pp. 54–62.
+- [Tarea de mejora al proceso 3. User Experience](<./Tarea de mejora al proceso 3. User Experience.pdf>)
+  (06/10/2026), pp. 1–68. La batería y el registro por participante están en las
+  pp. 2–3 y 9–53; los hallazgos consolidados, en las pp. 54–62.
 - Los cambios posteriores UX-R1 a UX-R5 se contrastan con los criterios y PR
   enlazados en §5. Las pruebas automatizadas citadas allí no sustituyen los resultados
   de participantes ni acreditan un re-test cuando este no está documentado.
@@ -283,11 +283,10 @@ convertir una muestra pequeña en una conclusión sobre toda la población.
 - Las reglas de éxito en el límite de tiempo difieren entre Fase 1 y Fase 2.
 - No se hizo el estudio instrumentado: no hay datos de mirada, fijación, permanencia,
   revisitas, ratón ni carga cognitiva.
-- El PDF de las diez pruebas fue aportado para esta consolidación, pero aún no está
-  guardado en el repositorio. La fecha de las pruebas 9–10 y las fechas individuales
-  de 3–4 tienen discrepancias internas; además, P13/T2 del tree test figura como
-  correcto aunque la ruta anotada no llega al objetivo. Se señalan estas reservas en
-  vez de corregirlas por inferencia.
+- El informe PDF se incluye en el repositorio como fuente auditable. La fecha de las
+  pruebas 9–10 y las fechas individuales de 3–4 tienen discrepancias internas.
+  Además, P13/T2 del tree test figura como correcto aunque la ruta anotada no llega
+  al objetivo. Se señalan estas reservas en vez de corregirlas por inferencia.
 - No se encontró el re-test de first-click de UX-R5 con participantes. El Test 7 del
   PDF es evidencia previa a la implementación.
 - Las respuestas de P02 y P03 del five-second test no identifican ventas e inventario
