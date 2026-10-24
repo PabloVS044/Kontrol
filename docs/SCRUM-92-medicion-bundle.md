@@ -167,7 +167,7 @@ pintar el formulario. Activar `gzip` (o servir los `.gz` precomprimidos) en
 | Pasar `MagicCircles` a `ogl` | Usa `three` solo para un *shader* de pantalla completa, lo mismo que `Waves` hace con `ogl`; `three` quedaría solo para los modelos GLTF | La Landing deja de necesitar `three` para su fondo |
 | Reducir `kontrol-logo.glb` | 1.35 MB que `/login` descarga para el logo; comprimir la geometría (Draco o Meshopt) y las texturas. Tras DT-17 es lo que más pesa en el LCP de `/login` (§6.3) | Mayor que todo el JS de entrada |
 | Diccionarios e i18n en el arranque | `es.json` y `en.json` se cargan juntos (153.46 kB), y `vue-i18n` incluye el compilador de mensajes (137.71 kB con `@intlify`) | Cargar solo el idioma activo y precompilar los mensajes |
-| Separar del arranque los módulos de sesión | `socket.io-client`, el store del chat, `FloatingChat`, `BirdieAssistant`, `VideoCallOverlay` y `uploadthing`/`effect` se importan de forma estática en `App.vue` aunque solo se montan con sesión iniciada | Con los diccionarios, la mayor parte de los 483.38 kB que quedan en la entrada (§6.1) |
+| Separar del arranque los módulos de sesión | `FloatingChat`, `BirdieAssistant` y `VideoCallOverlay` se importan de forma estática en `App.vue` aunque solo se montan con sesión iniciada; con ellos llegan el store del chat, `socket.io-client` y, a través del chat y de `services/api.js`, `uploadthing`/`effect` | Con los diccionarios, la mayor parte de los 483.38 kB que quedan en la entrada (§6.1) |
 | Retirar `GridWave.vue` y `Split.vue` | Importan `gsap` pero ningún componente los usa | No cambia el bundle; reduce código a mantener |
 
 ## 6. Después
