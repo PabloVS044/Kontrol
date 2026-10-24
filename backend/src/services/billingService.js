@@ -52,6 +52,31 @@ export const isWithinLimit = (planCode, resource, current, incoming = 1) => {
   return limit === null || limit === undefined || current + incoming <= limit
 }
 
+/**
+ * ¿Cabe uno más de `resource` en el plan de la empresa? Si el plan no tiene
+ * tope no cuenta nada. Tras bajar de plan la empresa puede quedar por encima
+ * del tope: no se borra nada, solo se impide crear más.
+ */
+export const checkPlanCapacity = async (companyId, resource, db = pool) => {
+  const plan = await getCompanyPlan(companyId, db)
+  const limit = getPlan(plan).limits[resource]
+  if (limit === null || limit === undefined) return { allowed: true, plan, limit: null, current: null }
+
+  const usage = await getUsage(companyId, db)
+  return { allowed: isWithinLimit(plan, resource, usage[resource]), plan, limit, current: usage[resource] }
+}
+
+// Respuesta común cuando un tope del plan impide la operación.
+export const planLimitBody = (resource, { plan, limit, current }) => ({
+  success: false,
+  code: 'PLAN_LIMIT_REACHED',
+  message: `Your plan allows up to ${limit} ${resource}. Upgrade the plan to add more.`,
+  resource,
+  currentPlan: plan,
+  limit,
+  current,
+})
+
 // PAY-1 — Eventos de la pasarela que mueven la suscripción. El resto se acusa
 // recibido y se ignora.
 export const HANDLED_EVENTS = new Set([
