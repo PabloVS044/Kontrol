@@ -1,6 +1,6 @@
 # UX-N · Resultados de UX y reflexión sobre el Neurolab
 
-**Corte documental: 23/10/2026**  
+**Corte documental: 23/10/2026**
 **Conclusión principal:** el estudio instrumentado del Neurolab no se realizó. Los
 resultados que siguen provienen de sesiones moderadas, de la batería de diez pruebas
 UX y de un five-second test posterior; no son una comparación entre observación y
