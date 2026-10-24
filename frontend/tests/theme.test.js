@@ -31,6 +31,49 @@ function aliasPairs(css) {
 
 const themeVars = declaredVars(themeCss)
 
+// Tokens por tema: el claro es el oscuro más sus overrides.
+const themeCode = themeCss.replace(/\/\*[\s\S]*?\*\//g, '')
+const declMap = (body) => new Map([...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]))
+const darkTokens = declMap(themeCode.match(/:root,\s*\[data-theme='dark'\]\s*\{([\s\S]*?)\n\}/)[1])
+const lightOverrides = declMap(themeCode.match(/\n\[data-theme='light'\]\s*\{([\s\S]*?)\n\}/)[1])
+const mediaOverrides = declMap(themeCode.match(/:root:not\(\[data-theme\]\)\s*\{([\s\S]*?)\n {2}\}/)[1])
+const tokensOf = (theme) => (theme === 'light' ? new Map([...darkTokens, ...lightOverrides]) : darkTokens)
+
+const resolveIn = (tokens, v) => {
+  let s = v.trim()
+  while (s.startsWith('var(')) s = tokens.get(s.match(/var\((--[\w-]+)\)/)[1]).trim()
+  return s
+}
+const hexRgb = (h) => {
+  const x = h.replace('#', '')
+  const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
+  return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
+}
+const luminance = (c) =>
+  c
+    .slice(0, 3)
+    .map((v) => {
+      const x = v / 255
+      return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+    })
+    .reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
+const contrast = (a, b) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+// El último valor es el pico del fondo animado (en claro, su espejo).
+const THEMES = {
+  dark: {
+    surfaces: ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#272727'],
+    ground: '#111111',
+  },
+  light: {
+    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#d8d8d8'],
+    ground: '--k-shade-3',
+  },
+}
+
 describe('theme.css — catálogo de tokens', () => {
   // Cada grupo corresponde a una lámina de Figma (docs/design-tokens-figma.md).
   const expected = {
@@ -125,11 +168,18 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-scrim',
     ],
     rampaNeutra: [
-      '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-4',
-      '--k-shade-5', '--k-shade-6', '--k-shade-7', '--k-shade-8',
+      '--k-shade-0', '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-3b',
+      '--k-shade-4', '--k-shade-5', '--k-shade-6', '--k-shade-6b',
+      '--k-shade-7', '--k-shade-8',
       '--k-gray-1', '--k-gray-2', '--k-gray-3',
       '--k-gray-4', '--k-gray-5', '--k-gray-6',
     ],
+    tinta: ['--k-ink-rgb', '--k-canvas-rgb'],
+    tonalidades: ['rose', 'blue', 'emerald', 'green', 'violet', 'orange', 'amber'].flatMap((h) => [
+      `--k-hue-${h}`,
+      `--k-hue-${h}-rgb`,
+    ]),
+    controlesNativos: ['--k-color-scheme'],
     tipografiaIntermedia: [
       '--k-font-size-heading-2',
       '--k-font-size-body-small',
@@ -138,7 +188,7 @@ describe('theme.css — catálogo de tokens', () => {
     ],
     radiosExtra: ['--k-radius-xs', '--k-radius-field'],
     estados: ['--k-text-disabled', '--k-state-selected-indicator', '--k-state-disabled-outline'],
-    fondoAnimado: ['--k-bg-wave-line'],
+    fondoAnimado: ['--k-bg-wave-line', '--k-bg-wave-filter'],
     alertas: [
       '--k-alert-watching-bg',
       '--k-alert-watching-border',
@@ -183,7 +233,7 @@ describe('theme.css — catálogo de tokens', () => {
   })
 
   it('mantiene la rampa neutra realmente neutra (R=G=B)', () => {
-    for (const [, name, hex] of themeCss.matchAll(/(--k-(?:shade|gray)-\d):\s*(#[0-9a-f]{6});/gi)) {
+    for (const [, name, hex] of themeCss.matchAll(/(--k-(?:shade|gray)-\d+b?):\s*(#[0-9a-f]{6});/gi)) {
       const [r, g, b] = [1, 3, 5].map((i) => hex.slice(i, i + 2))
       expect(r === g && g === b, `${name} = ${hex} no es un gris neutro`).toBe(true)
     }
@@ -208,41 +258,28 @@ describe('theme.css — catálogo de tokens', () => {
    * del 4.5:1 que WCAG AA pide para texto normal —y estas píldoras van a 9-12px.
    * Se compone el tinte sobre el fondo de tarjeta y se mide.
    */
-  it('cada nivel de alerta supera 4.5:1 de contraste', () => {
-    const hex = (h) => {
-      const x = h.replace('#', '')
-      const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
-      return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
-    }
-    const resolve = (v) => {
-      let s = v.trim()
-      while (s.startsWith('var(')) s = themeCss.match(new RegExp(`${s.match(/var\((--[\w-]+)\)/)[1]}:\s*([^;]+);`))[1].trim()
-      return s
-    }
-    const rgba = (v) => {
-      const s = resolve(v)
-      if (s.startsWith('#')) return [...hex(s), 1]
-      const m = s.match(/rgba?\(\s*var\((--[\w-]+)\)\s*,\s*([\d.]+)\)/)
-      if (m) return [...themeCss.match(new RegExp(`${m[1]}:\s*([^;]+);`))[1].split(',').map(Number), Number(m[2])]
-      const p = s.match(/rgba?\(([^)]+)\)/)[1].split(',').map(Number)
-      return [p[0], p[1], p[2], p[3] ?? 1]
-    }
-    const lum = (c) =>
-      c.slice(0, 3).map((v) => {
-        const x = v / 255
-        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
-      }).reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
-
-    const GROUND = [17, 17, 17] // #111111, el fondo de tarjeta más claro en uso
-    for (const nivel of ['watching', 'warning', 'critical', 'ok']) {
-      const t = rgba(`var(--k-alert-${nivel}-text)`)
-      const b = rgba(`var(--k-alert-${nivel}-bg)`)
-      const comp = [0, 1, 2].map((i) => Math.round(b[i] * b[3] + GROUND[i] * (1 - b[3])))
-      const [hi, lo] = [lum(t), lum(comp)].sort((a, z) => z - a)
-      const ratio = (hi + 0.05) / (lo + 0.05)
-      expect(ratio, `alerta ${nivel}: ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
-    }
-  })
+  for (const theme of Object.keys(THEMES)) {
+    it(`cada nivel de alerta supera 4.5:1 de contraste (tema ${theme})`, () => {
+      const tokens = tokensOf(theme)
+      const rgba = (v) => {
+        const s = resolveIn(tokens, v)
+        if (s.startsWith('#')) return [...hexRgb(s), 1]
+        const m = s.match(/rgba?\(\s*var\((--[\w-]+)\)\s*,\s*([\d.]+)\)/)
+        if (m) return [...tokens.get(m[1]).split(',').map(Number), Number(m[2])]
+        const p = s.match(/rgba?\(([^)]+)\)/)[1].split(',').map(Number)
+        return [p[0], p[1], p[2], p[3] ?? 1]
+      }
+      const g = THEMES[theme].ground
+      const GROUND = hexRgb(g.startsWith('#') ? g : resolveIn(tokens, `var(${g})`))
+      for (const nivel of ['watching', 'warning', 'critical', 'ok']) {
+        const t = rgba(`var(--k-alert-${nivel}-text)`)
+        const b = rgba(`var(--k-alert-${nivel}-bg)`)
+        const comp = [0, 1, 2].map((i) => Math.round(b[i] * b[3] + GROUND[i] * (1 - b[3])))
+        const ratio = contrast(t, comp)
+        expect(ratio, `alerta ${nivel}: ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
 
   it('nunca pinta la cabecera de una alerta del mismo color que su fondo', () => {
     // watching usaba el mismo amarillo para fondo y cabecera: texto invisible.
@@ -257,7 +294,8 @@ describe('theme.css — catálogo de tokens', () => {
     // Si alguien mete un hex aquí, es un color de marca sin aprobar.
     expect(themeCss).toMatch(/--k-surface-primary-tint:\s*rgba\(var\(--k-color-primary-rgb\)/)
     expect(themeCss).toMatch(/--k-surface-primary-tint-2:\s*rgba\(var\(--k-color-primary-rgb\)/)
-    expect(themeCss).toMatch(/--k-surface-hover-subtle:\s*rgba\(var\(--k-color-white-rgb\)/)
+    expect(themeCss).toMatch(/--k-surface-hover-subtle:\s*rgba\(var\(--k-ink-rgb\)/)
+    expect(themeCss).toMatch(/--k-surface-scrim:\s*rgba\(var\(--k-canvas-rgb\)/)
   })
 
   it('respeta la rejilla de 8pt de Figma (space-7 = 48px)', () => {
@@ -292,6 +330,67 @@ describe('theme.css — mecanismo de temas', () => {
   it('respeta prefers-color-scheme cuando no hay preferencia explícita', () => {
     expect(themeCss).toMatch(/@media \(prefers-color-scheme: light\)/)
     expect(themeCss).toMatch(/:root:not\(\[data-theme\]\)/)
+  })
+
+  it('[data-theme="light"] y el bloque @media declaran exactamente lo mismo', () => {
+    const sorted = (m) => [...m].sort(([a], [b]) => a.localeCompare(b))
+    expect(lightOverrides.size).toBeGreaterThan(0)
+    expect(sorted(mediaOverrides)).toEqual(sorted(lightOverrides))
+  })
+
+  it('el tema claro no inventa tokens que el oscuro no tenga', () => {
+    const extra = [...lightOverrides.keys()].filter((t) => !darkTokens.has(t))
+    expect(extra).toEqual([])
+  })
+
+  it('todo token con color literal en oscuro tiene valor claro', () => {
+    const exentos = ['--k-color-black-rgb', '--k-color-white-rgb', '--k-bg-wave-line']
+    const literal = /#[0-9a-f]{3,8}\b|rgba?\(\s*\d|^\d+,\s*\d+,\s*\d+$/i
+    const missing = [...darkTokens]
+      .filter(([t, v]) => literal.test(v) && !exentos.includes(t) && !lightOverrides.has(t))
+      .map(([t]) => t)
+    expect(missing).toEqual([])
+  })
+
+  it('el tema claro es claro: superficies claras, texto oscuro', () => {
+    const light = tokensOf('light')
+    const lum = (t) => luminance(hexRgb(resolveIn(light, `var(${t})`)))
+    for (const t of ['--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-color-bg-3']) {
+      expect(lum(t), t).toBeGreaterThan(0.6)
+    }
+    expect(lum('--k-color-text')).toBeLessThan(0.05)
+    expect(lightOverrides.get('--k-color-scheme')).toBe('light')
+    expect(lightOverrides.get('--k-bg-wave-filter')).toBe('invert(1)')
+  })
+
+  it('los tokens nuevos conservan en oscuro el literal que sustituyen', () => {
+    const pinned = {
+      '--k-ink-rgb': '255, 255, 255',
+      '--k-canvas-rgb': '0, 0, 0',
+      '--k-shade-0': '#050505',
+      '--k-shade-3b': '#151515',
+      '--k-shade-6b': '#252525',
+      '--k-hue-rose': '#fb7185',
+      '--k-hue-blue': '#60a5fa',
+      '--k-hue-emerald': '#34d399',
+      '--k-hue-green': '#4ade80',
+      '--k-hue-violet': '#a78bfa',
+      '--k-hue-orange': '#fb923c',
+      '--k-hue-amber': '#f59e0b',
+      '--k-color-scheme': 'dark',
+      '--k-bg-wave-filter': 'none',
+    }
+    for (const [t, v] of Object.entries(pinned)) expect(darkTokens.get(t), t).toBe(v)
+  })
+
+  it('cada tonalidad declara su triplet RGB con el mismo color, en ambos temas', () => {
+    for (const theme of Object.keys(THEMES)) {
+      const tokens = tokensOf(theme)
+      for (const [t, v] of tokens) {
+        if (!/^--k-hue-[a-z]+$/.test(t)) continue
+        expect(tokens.get(`${t}-rgb`).split(',').map(Number), `${t} (${theme})`).toEqual(hexRgb(v))
+      }
+    }
   })
 })
 
@@ -376,38 +475,14 @@ describe('globals.css — capa de compatibilidad legacy', () => {
  * WCAG 2.1, para que un ajuste de paleta no lo vuelva a bajar sin que nadie
  * se entere.
  */
-describe('theme.css — contraste del texto (WCAG AA)', () => {
-  const value = (name) => {
-    // Anclado a inicio de línea: los comentarios de theme.css citan tokens.
-    let v = themeCss.match(new RegExp(`^\\s*${name}:\\s*([^;]+);`, 'm'))[1].trim()
-    while (v.startsWith('var(')) v = value(v.match(/var\((--[\w-]+)\)/)[1])
-    return v
-  }
-  const rgb = (hex) => {
-    const x = hex.replace('#', '')
-    const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x
-    return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16))
-  }
-  const lum = (c) =>
-    c
-      .map((v) => {
-        const x = v / 255
-        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
-      })
-      .reduce((a, v, i) => a + [0.2126, 0.7152, 0.0722][i] * v, 0)
-  const ratio = (a, b) => {
-    const [hi, lo] = [lum(rgb(a)), lum(rgb(b))].sort((x, y) => y - x)
-    return (hi + 0.05) / (lo + 0.05)
-  }
-
-  // Superficies sobre las que hay texto: página, barras, tarjetas, filas en
-  // hover, y el pico del fondo animado medido en pantalla con el tope de
-  // App.vue (#272727). bg-3 (#282825) es la más clara y solo se usa para la
-  // rampa.
-  const WAVE_PEAK = '#272727'
-  const TEXT_SURFACES = ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', WAVE_PEAK]
-  const LIGHTEST = '--k-color-bg-3'
+describe.each(Object.keys(THEMES))('theme.css — contraste del texto (WCAG AA), tema %s', (theme) => {
+  const tokens = tokensOf(theme)
+  const value = (name) => resolveIn(tokens, `var(${name})`)
+  const ratio = (a, b) => contrast(hexRgb(a), hexRgb(b))
   const hexOf = (s) => (s.startsWith('#') ? s : value(s))
+
+  const TEXT_SURFACES = THEMES[theme].surfaces
+  const EXTREME = '--k-color-bg-3'
 
   const RAMP = [
     '--k-text-soft',
@@ -427,11 +502,12 @@ describe('theme.css — contraste del texto (WCAG AA)', () => {
     '--k-gray-6',
     '--k-state-error-text',
     '--k-state-success-text',
+    ...['rose', 'blue', 'emerald', 'green', 'violet', 'orange', 'amber'].map((h) => `--k-hue-${h}`),
   ]
 
   for (const token of RAMP) {
     it(`${token} supera 4.5:1 incluso sobre bg-3`, () => {
-      for (const s of [...TEXT_SURFACES, LIGHTEST]) {
+      for (const s of [...TEXT_SURFACES, EXTREME]) {
         const r = ratio(value(token), hexOf(s))
         expect(r, `${token} sobre ${s}: ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
       }
@@ -458,9 +534,10 @@ describe('theme.css — contraste del texto (WCAG AA)', () => {
     // Una opción no seleccionada usa la rampa (AA); la deshabilitada queda
     // por debajo a propósito (WCAG 1.4.3 la exime). Si se igualan, vuelve el
     // problema de que lo inactivo parezca deshabilitado.
+    const ground = hexOf(THEMES[theme].ground)
     const disabled = value('--k-text-disabled')
     for (const token of ['--k-text-muted', '--k-text-faint']) {
-      expect(ratio(value(token), '#111111')).toBeGreaterThan(ratio(disabled, '#111111') + 2)
+      expect(ratio(value(token), ground)).toBeGreaterThan(ratio(disabled, ground) + 2)
     }
   })
 })

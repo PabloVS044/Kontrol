@@ -42,6 +42,9 @@
   --k-color-warning-rgb: 120, 80, 10;
   --k-color-black-rgb: 0, 0, 0;
   --k-color-white-rgb: 255, 255, 255;
+  /* Se invierten con el tema: ink = tinte de texto, canvas = tinte de fondo. */
+  --k-ink-rgb: 255, 255, 255;
+  --k-canvas-rgb: 0, 0, 0;
 
   /* ── text/ ──────────────────────────────────────────────── */
   /* Toda la rampa cumple WCAG AA (4.5:1) incluso sobre la superficie más
@@ -68,8 +71,8 @@
   --k-state-success-text: #48c774;
 
   /* ── forms/ ─────────────────────────────────────────────── */
-  --k-form-input-bg: rgba(255, 255, 255, 0.04);
-  --k-form-input-focus-bg: rgba(202, 168, 96, 0.05);
+  --k-form-input-bg: rgba(var(--k-ink-rgb), 0.04);
+  --k-form-input-focus-bg: rgba(var(--k-color-primary-rgb), 0.05);
   --k-form-btn-text: #0e0c08;
 
   /* ── font/ ──────────────────────────────────────────────── */
@@ -109,7 +112,7 @@
 
   /* ── shadow/ — pensadas para fondo oscuro ───────────────── */
   --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
-  --k-shadow-glow: 0 0 15px 5px rgba(202, 168, 96, 0.5);
+  --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.5);
   --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
 
   /* ── estados de interacción ─────────────────────────────── */
@@ -213,6 +216,26 @@
   --k-gray-5: #8f8f8f; /* era #888: 4.21:1 sobre el pico del fondo animado */
   --k-gray-6: #8f8f8f;
 
+  --k-shade-0: #050505;
+  --k-shade-3b: #151515;
+  --k-shade-6b: #252525;
+
+  /* ── tonalidades de estado ──────────────────────────────── */
+  --k-hue-rose: #fb7185;
+  --k-hue-blue: #60a5fa;
+  --k-hue-emerald: #34d399;
+  --k-hue-green: #4ade80;
+  --k-hue-violet: #a78bfa;
+  --k-hue-orange: #fb923c;
+  --k-hue-amber: #f59e0b;
+  --k-hue-rose-rgb: 251, 113, 133;
+  --k-hue-blue-rgb: 96, 165, 250;
+  --k-hue-emerald-rgb: 52, 211, 153;
+  --k-hue-green-rgb: 74, 222, 128;
+  --k-hue-violet-rgb: 167, 139, 250;
+  --k-hue-orange-rgb: 251, 146, 60;
+  --k-hue-amber-rgb: 245, 158, 11;
+
   /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de
      Figma es #caa860 (29 usos). Difieren en uno o dos puntos por canal —por
      debajo del umbral de percepción— pero la divergencia es sistémica y
@@ -270,37 +293,173 @@
      conservar la identidad; App.vue le pone tope a sus picos para que no
      compitan con las letras. Hex de 6 dígitos: es lo que parsea Waves.vue. */
   --k-bg-wave-line: #faf8f5;
+  --k-bg-wave-filter: none;
+
+  --k-color-scheme: dark;
 
   /* ── superficies derivadas ──────────────────────────────── */
   /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para
      que el mismo tinte no se reescriba con literales distintos en cada hoja. */
   --k-surface-primary-tint: rgba(var(--k-color-primary-rgb), 0.1);
   --k-surface-primary-tint-2: rgba(var(--k-color-primary-rgb), 0.05);
-  --k-surface-hover-subtle: rgba(var(--k-color-white-rgb), 0.02);
+  --k-surface-hover-subtle: rgba(var(--k-ink-rgb), 0.02);
   /* Velo de <AppSurface> sobre el fondo animado en las vistas internas.
      Más ligero que --k-color-bg (0.92) para que las ondas se noten. El
      contraste no depende de él: el texto ya supera 4.5:1 sobre el pico de
      las ondas sin velo (WAVE_PEAK en tests/theme.test.js). */
-  --k-surface-scrim: rgba(var(--k-color-black-rgb), 0.6);
+  --k-surface-scrim: rgba(var(--k-canvas-rgb), 0.6);
 }
 
-/**
- * TODO(SCRUM-12): paleta clara pendiente de Diseño.
- *
- * SCRUM-12 definió únicamente la identidad "Luxury Dark"; no existe paleta
- * clara aprobada. El mecanismo de theming queda operativo (`[data-theme]` y
- * `prefers-color-scheme`), pero sin overrides: el tema claro hereda el oscuro
- * a propósito, para no inventar colores de marca sin aprobación.
- *
- * Cuando Diseño entregue la paleta, basta redeclarar aquí los tokens que
- * cambien. Ningún consumidor necesita tocarse.
- */
+/* Tema claro: propuesta derivada del oscuro, pendiente de validación de
+   Diseño. Ambos bloques deben declarar lo mismo. */
 [data-theme='light'] {
-  /* overrides del tema claro van aquí */
+  --k-color-primary: #715926;
+  --k-color-primary-2: #936923;
+  --k-color-secondary: #8a6a12;
+  --k-color-tertiary: #f1f1ed;
+  --k-color-border: #d6c6a2;
+  --k-color-pill-back: #f8f5ed;
+  --k-color-bg: rgba(234, 232, 228, 0.92);
+  --k-color-bg-2: #f8f5ed;
+  --k-color-bg-3: #dadad7;
+  --k-color-text: #1a1712;
+  --k-color-text-muted: #625b50;
+  --k-color-success: #206a3a;
+  --k-color-error: #b42020;
+  --k-color-warning: #805305;
+
+  --k-color-primary-rgb: 113, 89, 38;
+  --k-color-error-rgb: 180, 32, 32;
+  --k-color-success-rgb: 32, 106, 58;
+  --k-color-warning-rgb: 224, 190, 120;
+  --k-ink-rgb: 0, 0, 0;
+  --k-canvas-rgb: 255, 255, 255;
+
+  --k-text-soft: #403a30;
+  --k-text-muted: #615b51;
+  --k-text-dim: #655c50;
+  --k-text-faint: #635c4f;
+  --k-text-placeholder: #6a5b44;
+  --k-text-disabled: #bab4a9;
+
+  --k-state-error-text: #b42020;
+  --k-state-success-text: #206a3a;
+  --k-form-btn-text: #faf8f5;
+
+  --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
+  --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+
+  --k-shade-0: #fafafa;
+  --k-shade-1: #f5f5f5;
+  --k-shade-2: #f0f0f0;
+  --k-shade-3: #eeeeee;
+  --k-shade-3b: #eaeaea;
+  --k-shade-4: #e5e5e5;
+  --k-shade-5: #e1e1e1;
+  --k-shade-6: #e0e0e0;
+  --k-shade-6b: #dadada;
+  --k-shade-7: #d5d5d5;
+  --k-shade-8: #cccccc;
+  --k-gray-1: #5d5d5d;
+  --k-gray-2: #5d5d5d;
+  --k-gray-3: #5c5c5c;
+  --k-gray-4: #5d5d5d;
+  --k-gray-5: #5d5d5d;
+  --k-gray-6: #5d5d5d;
+
+  --k-hue-rose: #bc0520;
+  --k-hue-blue: #0659c0;
+  --k-hue-emerald: #17694b;
+  --k-hue-green: #136a33;
+  --k-hue-violet: #5f2cf6;
+  --k-hue-orange: #964503;
+  --k-hue-amber: #805305;
+  --k-hue-rose-rgb: 188, 5, 32;
+  --k-hue-blue-rgb: 6, 89, 192;
+  --k-hue-emerald-rgb: 23, 105, 75;
+  --k-hue-green-rgb: 19, 106, 51;
+  --k-hue-violet-rgb: 95, 44, 246;
+  --k-hue-orange-rgb: 150, 69, 3;
+  --k-hue-amber-rgb: 128, 83, 5;
+
+  --k-bg-wave-filter: invert(1);
+  --k-color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    /* idem: sin overrides hasta que exista paleta clara aprobada */
+    --k-color-primary: #715926;
+    --k-color-primary-2: #936923;
+    --k-color-secondary: #8a6a12;
+    --k-color-tertiary: #f1f1ed;
+    --k-color-border: #d6c6a2;
+    --k-color-pill-back: #f8f5ed;
+    --k-color-bg: rgba(234, 232, 228, 0.92);
+    --k-color-bg-2: #f8f5ed;
+    --k-color-bg-3: #dadad7;
+    --k-color-text: #1a1712;
+    --k-color-text-muted: #625b50;
+    --k-color-success: #206a3a;
+    --k-color-error: #b42020;
+    --k-color-warning: #805305;
+
+    --k-color-primary-rgb: 113, 89, 38;
+    --k-color-error-rgb: 180, 32, 32;
+    --k-color-success-rgb: 32, 106, 58;
+    --k-color-warning-rgb: 224, 190, 120;
+    --k-ink-rgb: 0, 0, 0;
+    --k-canvas-rgb: 255, 255, 255;
+
+    --k-text-soft: #403a30;
+    --k-text-muted: #615b51;
+    --k-text-dim: #655c50;
+    --k-text-faint: #635c4f;
+    --k-text-placeholder: #6a5b44;
+    --k-text-disabled: #bab4a9;
+
+    --k-state-error-text: #b42020;
+    --k-state-success-text: #206a3a;
+    --k-form-btn-text: #faf8f5;
+
+    --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+    --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
+    --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+
+    --k-shade-0: #fafafa;
+    --k-shade-1: #f5f5f5;
+    --k-shade-2: #f0f0f0;
+    --k-shade-3: #eeeeee;
+    --k-shade-3b: #eaeaea;
+    --k-shade-4: #e5e5e5;
+    --k-shade-5: #e1e1e1;
+    --k-shade-6: #e0e0e0;
+    --k-shade-6b: #dadada;
+    --k-shade-7: #d5d5d5;
+    --k-shade-8: #cccccc;
+    --k-gray-1: #5d5d5d;
+    --k-gray-2: #5d5d5d;
+    --k-gray-3: #5c5c5c;
+    --k-gray-4: #5d5d5d;
+    --k-gray-5: #5d5d5d;
+    --k-gray-6: #5d5d5d;
+
+    --k-hue-rose: #bc0520;
+    --k-hue-blue: #0659c0;
+    --k-hue-emerald: #17694b;
+    --k-hue-green: #136a33;
+    --k-hue-violet: #5f2cf6;
+    --k-hue-orange: #964503;
+    --k-hue-amber: #805305;
+    --k-hue-rose-rgb: 188, 5, 32;
+    --k-hue-blue-rgb: 6, 89, 192;
+    --k-hue-emerald-rgb: 23, 105, 75;
+    --k-hue-green-rgb: 19, 106, 51;
+    --k-hue-violet-rgb: 95, 44, 246;
+    --k-hue-orange-rgb: 150, 69, 3;
+    --k-hue-amber-rgb: 128, 83, 5;
+
+    --k-bg-wave-filter: invert(1);
+    --k-color-scheme: light;
   }
 }
