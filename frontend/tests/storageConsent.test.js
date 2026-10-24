@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join, resolve } from 'node:path'
 
 /**
  * Consentimiento para el almacenamiento no imprescindible (L-3).
@@ -153,7 +152,7 @@ describe('useStorageConsent', () => {
       'composables/useLegalConsent.js',
       'composables/useStorageConsent.js',
     ])
-    const raiz = fileURLToPath(new URL('../src/', import.meta.url))
+    const raiz = resolve(__dirname, '../src')
     const escritura = /localStorage\.setItem|sessionStorage|indexedDB|document\.cookie/
 
     const infractores = readdirSync(raiz, { recursive: true })
