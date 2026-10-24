@@ -103,6 +103,7 @@ watch(() => authStore.idUsuario, () => prefsStore.load())
   position: fixed;
   inset: 0;
   z-index: 0;
+  filter: var(--k-bg-wave-filter);
 }
 
 .content {
