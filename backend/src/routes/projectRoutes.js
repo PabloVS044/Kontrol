@@ -5,6 +5,7 @@ import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
 import {
   createProjectSchema,
   getProjectsQuerySchema,
@@ -49,7 +50,7 @@ router.get('/invitations/:token', validate(projectInvitationTokenParamSchema, 'p
 router.post('/invitations/:token/accept', requireAuth, validate(projectInvitationTokenParamSchema, 'params'), acceptProjectInvitation)
 router.get('/', requireAuth, requireCompany, validate(getProjectsQuerySchema, 'query'), getProjects)
 router.get('/:id', requireAuth, requireCompany, validate(projectIdParamSchema, 'params'), getProjectById)
-router.post('/', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(createProjectSchema), createProject)
+router.post('/', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), requirePlanLimit('projects'), validate(createProjectSchema), createProject)
 router.put('/:id', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), validate(updateProjectSchema), updateProject)
 router.delete('/:id', requireAuth, requireCompany, requireCompanyRole('owner', 'admin', 'manager'), validate(projectIdParamSchema, 'params'), deleteProject)
 router.get('/:id/metrics', requireAuth, expensiveLimiter, requireCompany, validate(projectIdParamSchema, 'params'), requireProjectPermission(), getProjectMetrics)

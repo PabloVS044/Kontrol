@@ -3,6 +3,7 @@ import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
 import {
   acceptCompanyInvitation,
   createCompany,
@@ -47,7 +48,7 @@ router.get('/my-companies', requireAuth, getMyCompanies)
 router.post('/', requireAuth, validate(createCompanySchema), createCompany)
 router.get('/access-context', requireAuth, requireCompany, getCompanyAccessContext)
 router.get('/members-panel', requireAuth, requireCompany, requireCompanyOwner, getCompanyUsersPanel)
-router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, createOrGetCompanyInvitation)
+router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, requirePlanLimit('members'), createOrGetCompanyInvitation)
 router.delete('/invitation', requireAuth, requireCompany, requireCompanyOwner, deactivateCompanyInvitation)
 router.patch(
   '/members/:userId/role',

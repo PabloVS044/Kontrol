@@ -15,6 +15,7 @@ import {
   getProjectPermissionsCatalog,
 } from '../services/projectAccessService.js'
 import { normalizeSaleConfig } from '../services/saleCalculation.js'
+import { getBillingSummary } from '../services/billingService.js'
 
 const MEMBER_SELECT = `
   SELECT
@@ -132,12 +133,15 @@ export const getMyCompanies = async (req, res) => {
  * Summary of the current user's effective access inside the selected company.
  */
 export const getCompanyAccessContext = async (req, res) => {
-  const data = await buildCompanyAccessContext({
-    client: pool,
-    id_empresa: req.empresa.id_empresa,
-    id_usuario: req.user.id_usuario,
-    rol_empresa: req.empresa.rol_empresa,
-  })
+  const [data, billing] = await Promise.all([
+    buildCompanyAccessContext({
+      client: pool,
+      id_empresa: req.empresa.id_empresa,
+      id_usuario: req.user.id_usuario,
+      rol_empresa: req.empresa.rol_empresa,
+    }),
+    getBillingSummary(req.empresa.id_empresa),
+  ])
 
   return res.json({
     success: true,
@@ -147,6 +151,15 @@ export const getCompanyAccessContext = async (req, res) => {
         rol_empresa: req.empresa.rol_empresa,
       },
       ...data,
+      // PAY-1 — Plan efectivo para que la interfaz oculte o bloquee módulos.
+      // La autorización real la hacen requirePlanFeature y requirePlanLimit.
+      plan: {
+        code: billing.plan,
+        status: billing.status,
+        features: billing.features,
+        limits: billing.limits,
+        usage: billing.usage,
+      },
     },
   })
 }
@@ -305,7 +318,8 @@ export const acceptCompanyInvitation = async (req, res) => {
   })
 
   if (!result.success) {
-    return res.status(result.code === 'invite_inactive' ? 410 : 404).json(result)
+    const status = { invite_inactive: 410, plan_limit_reached: 403 }[result.code] ?? 404
+    return res.status(status).json(result)
   }
 
   return res.json(result)
