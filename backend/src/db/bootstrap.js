@@ -301,6 +301,34 @@ export const ensureDatabaseSchema = async () => {
     END $$
   `)
 
+  // PAY-1 — Suscripción por empresa y eventos de la pasarela ya procesados. Sin
+  // fila en empresa_suscripcion la empresa está en el plan gratuito, así que las
+  // empresas existentes no necesitan backfill. Detalle en kontrol.sql.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.empresa_suscripcion (
+      id_empresa integer PRIMARY KEY,
+      proveedor character varying NOT NULL,
+      id_cliente_proveedor character varying UNIQUE,
+      id_suscripcion_proveedor character varying UNIQUE,
+      plan character varying NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'business')),
+      intervalo character varying CHECK (intervalo IN ('month', 'year')),
+      estado character varying NOT NULL DEFAULT 'none',
+      fin_periodo_actual timestamp with time zone,
+      cancelar_al_final boolean NOT NULL DEFAULT false,
+      actualizado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT empresa_suscripcion_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+    )
+  `)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.evento_pago_procesado (
+      id_evento character varying PRIMARY KEY,
+      proveedor character varying NOT NULL,
+      tipo character varying NOT NULL,
+      procesado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Sale header. Discount and VAT belong to the sale, not to a line, and until
   // now there was nowhere to keep them: the ticket total lived only in the
   // browser. Amounts are stored resolved, not just as percentages — recomputing
