@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// Landing is the public entry point → keep it eager for instant first paint.
-// Every other view is lazy-loaded (() => import) so each route ships its own
-// chunk and the initial bundle stays small (heavy deps like three/zxing only
-// load when their route does).
-import LandingPage from '../views/LandingPage.vue'
+// Every view is lazy-loaded (() => import) so each route ships its own chunk
+// and the initial bundle stays small (heavy deps like three/zxing only load
+// when their route does). The landing used to be eager, but that put gsap,
+// lenis and the landing itself in the entry bundle for every route, /login
+// included (DT-17).
 
 // La pestaña "Equipo" del proyecto se ocultó: el acceso se da en "Miembros".
 export function redirectLegacyProjectTab(to) {
@@ -27,7 +27,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'landing',
-      component: LandingPage,
+      component: () => import('../views/LandingPage.vue'),
     },
     {
       path: '/legal',
