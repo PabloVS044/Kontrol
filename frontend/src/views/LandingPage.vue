@@ -445,7 +445,7 @@ import {
   Rocket,
 } from "lucide-vue-next";
 
-import MagicCircles from "../components/UI/Backgrounds/MagicCircles/MagicCircles.vue";
+import MagicCircles from "../components/UI/Backgrounds/MagicCircles/LazyMagicCircles.vue";
 import CircleRounded from "../components/UI/CircleRounded/CircleRounded.vue";
 import ScrollStack from "../components/UI/AnimatedComponents/ScrollStack.vue";
 import ScrollStackItem from "../components/UI/AnimatedComponents/ScrollStackItem.vue";
