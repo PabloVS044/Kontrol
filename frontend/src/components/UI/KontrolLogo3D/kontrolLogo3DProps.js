@@ -1,5 +1,3 @@
-// Props del motor 3D. KontrolLogo3D.vue las acepta y se las pasa a
-// KontrolLogo3DScene.vue; viven aquí para no duplicarlas.
 export const sceneProps = {
   src: { type: String, default: '/kontrol-logo.glb' },
   intensity: { type: Number, default: 0.45 },     // max rad rotation from mouse

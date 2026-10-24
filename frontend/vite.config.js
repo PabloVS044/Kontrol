@@ -4,15 +4,11 @@ import { fileURLToPath, URL } from 'node:url'
 
 const proxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000'
 
-// Las librerías de animación van cada una en su chunk, fuera del bundle de
-// entrada, y three queda compartido entre todas las vistas que lo usan (DT-17).
-// three se parte en sus dos módulos (`three.core` y el resto) porque en uno
-// solo pasa de los 500 kB del aviso de Vite; los dos se descargan siempre
-// juntos.
 const VENDOR_CHUNKS = ['ogl', 'gsap', 'lenis']
 
 export function manualChunks(id) {
   if (!id.includes('/node_modules/')) return undefined
+  // En un solo chunk, three pasa de los 500 kB del aviso de Vite.
   if (id.includes('/node_modules/three/build/three.core')) return 'vendor-three-core'
   if (id.includes('/node_modules/three/')) return 'vendor-three'
   const lib = VENDOR_CHUNKS.find((name) => id.includes(`/node_modules/${name}/`))

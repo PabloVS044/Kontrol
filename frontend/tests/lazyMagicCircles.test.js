@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { h } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 
-// MagicCircles real necesita WebGL, que happy-dom no tiene.
 vi.mock('@/components/UI/Backgrounds/MagicCircles/MagicCircles.vue', () => ({
   __esModule: true,
   default: {
@@ -59,8 +58,6 @@ describe('LazyMagicCircles — carga diferida (DT-17)', () => {
     expect(circulos(wrapper).exists()).toBe(true)
     expect(circulos(wrapper).props('background')).toBe(fondo)
     expect(circulos(wrapper).props('ringCount')).toBe(6)
-    // El fondo lo pinta ahora MagicCircles: dos capas semitransparentes
-    // oscurecerían el degradado.
     expect(wrapper.attributes('style')).toBeUndefined()
   })
 })

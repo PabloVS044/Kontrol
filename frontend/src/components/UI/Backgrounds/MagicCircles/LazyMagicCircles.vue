@@ -5,10 +5,6 @@
 </template>
 
 <script setup>
-// MagicCircles importa three entero: se descarga solo cuando la sección es
-// visible (DT-17). Recibe las mismas props, que pasan tal cual. Mientras
-// tanto ocupa su lugar y pinta su mismo fondo, para que no cambie la
-// maquetación ni el color.
 import { shallowRef, watch, ref } from 'vue'
 import { logger } from '../../../../utils/logger.js'
 import { useVisibleOnce } from '../../../../composables/useVisibleOnce.js'

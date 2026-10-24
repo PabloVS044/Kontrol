@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { h } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 
-// La escena real necesita WebGL, que happy-dom no tiene. `__esModule` hace que
-// defineAsyncComponent tome el `default`, como con el módulo real.
 vi.mock('@/components/UI/KontrolLogo3D/KontrolLogo3DScene.vue', () => ({
   __esModule: true,
   default: {

@@ -1,6 +1,4 @@
 // @vitest-environment node
-// vite.config.js resuelve el alias con `import.meta.url`, que bajo happy-dom
-// no es una URL `file:`.
 import { describe, it, expect } from 'vitest'
 import { manualChunks } from '../vite.config.js'
 

@@ -8,9 +8,6 @@
 </template>
 
 <script setup>
-// El motor 3D (three + el .glb) se descarga solo cuando el logo es visible y
-// el sistema no pide reducir movimiento (DT-17, UX-R4). Hasta entonces, y si
-// falla la carga, queda el marcador estático en el mismo espacio.
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { logger } from '../../../utils/logger.js'
 import { useVisibleOnce } from '../../../composables/useVisibleOnce.js'

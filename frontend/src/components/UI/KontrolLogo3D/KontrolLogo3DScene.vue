@@ -5,8 +5,6 @@
 </template>
 
 <script setup>
-// Motor 3D del logo. Solo lo carga KontrolLogo3D.vue, en diferido, para que
-// three quede fuera del bundle de entrada (DT-17).
 import { onMounted, onBeforeUnmount, ref, shallowRef } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'

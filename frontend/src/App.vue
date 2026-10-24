@@ -51,7 +51,6 @@ import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'
 import { usePreferencesStore } from './stores/preferences'
 
-// En diferido para que ogl no entre en el bundle de entrada (DT-17).
 const LineWaves = defineAsyncComponent(() => import("./components/UI/Backgrounds/Waves/Waves.vue"));
 
 const authStore = useAuthStore()

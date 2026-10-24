@@ -1,7 +1,3 @@
-body {
-  background-color: var(--k-color-bg);
-}
-
 .nav-container {
   position: fixed;
   top: 20px; /* --k-space-5 son 24px: no equivale */
