@@ -4,10 +4,6 @@
 
     <main class="legal-main">
       <header class="legal-header">
-        <div class="legal-badge">
-          <span class="legal-badge-dot"></span>
-          <span>{{ t('legal.badge') }}</span>
-        </div>
         <h1 class="legal-title">{{ t('legal.title') }}</h1>
         <p class="legal-subtitle">{{ t('legal.subtitle') }}</p>
 

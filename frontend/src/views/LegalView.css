@@ -33,26 +33,6 @@
   border-bottom: 1px solid var(--k-color-border);
 }
 
-.legal-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--k-space-2);
-  padding: 6px 14px;
-  background: var(--k-color-pill-back);
-  border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-pill);
-  font-size: var(--k-font-size-caption);
-  color: var(--k-color-primary);
-  font-weight: var(--k-font-weight-medium);
-}
-
-.legal-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--k-color-primary);
-}
-
 .legal-title {
   font-size: var(--k-font-size-display-2);
   font-weight: var(--k-font-weight-bold);

@@ -27,12 +27,6 @@
     <Navbar />
     <section id="header">
       <div class="header-container">
-        <Pill
-          :label="t('landing.hero.pill')"
-          btnColor="var(--k-color-pill-back)"
-          circleColor="var(--k-color-primary)"
-          textColor="var(--k-color-primary)"
-        />
         <AnimatedText
           style="margin-top: 0"
           :effects="reduceMotion ? 'shiny' : 'split shiny'"
@@ -414,7 +408,6 @@ import MagicBento from "../components/UI/AnimatedComponents/MagicBento.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import AnimatedText from "../components/UI/TextEffects/AnimatedText.vue";
-import Pill from "../components/UI/Pill/Pill.vue";
 import Anchor from "../components/UI/Button/Anchor.vue";
 import arrowRightIcon from "../assets/img/arrow-right.png";
 import Card from "../components/UI/Card/Card.vue";

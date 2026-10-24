@@ -2049,7 +2049,6 @@
       "menu": "Menu"
     },
     "hero": {
-      "pill": "For shops and small businesses",
       "title": "Take control of your business",
       "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
@@ -2283,7 +2282,6 @@
     }
   },
   "legal": {
-    "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
     "updated": "Version {version} · Updated October 17, 2026",

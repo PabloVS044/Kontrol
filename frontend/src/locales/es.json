@@ -2049,7 +2049,6 @@
       "menu": "Menú"
     },
     "hero": {
-      "pill": "Para tiendas y pequeños negocios",
       "title": "Toma el control de tu negocio",
       "copy": "Cada venta que cobras descuenta tu inventario al momento. Y en la misma plataforma llevas tus proyectos, presupuesto y marketing.",
       "start": "Empieza a gestionar tu negocio",
@@ -2283,7 +2282,6 @@
     }
   },
   "legal": {
-    "badge": "Marco legal y regulatorio",
     "title": "Términos, Privacidad y Cumplimiento",
     "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
     "updated": "Versión {version} · Actualizado el 17 de octubre de 2026",
