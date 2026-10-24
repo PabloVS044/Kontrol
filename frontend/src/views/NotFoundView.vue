@@ -25,9 +25,14 @@
 
       <div class="nf-actions">
         <RouterLink :to="home" class="nf-btn nf-btn--primary">{{ t('notFound.home') }}</RouterLink>
-        <button v-if="canGoBack" type="button" class="nf-btn nf-btn--ghost" @click="router.back()">
-          {{ t('notFound.back') }}
-        </button>
+        <Button
+          v-if="canGoBack"
+          class="nf-btn nf-btn--ghost"
+          :label="t('notFound.back')"
+          back-color="transparent"
+          hover-back="transparent"
+          @click="router.back()"
+        />
       </div>
     </section>
   </main>
@@ -40,6 +45,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { XCircleIcon } from 'lucide-vue-next'
 import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
 import { useAuthStore } from '@/stores/auth'
+import Button from '@/components/UI/Button/Button.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -283,6 +289,19 @@ const canGoBack = computed(() => Boolean(window.history.state?.back))
 .nf-btn--ghost:hover {
   border-color: var(--k-color-primary);
   color: var(--k-color-primary);
+}
+.btn.nf-btn--ghost {
+  min-height: 0;
+  padding: var(--k-space-3) var(--k-space-5);
+  border: var(--k-border-width) solid var(--k-color-border);
+  border-radius: var(--k-radius-sm);
+  color: var(--k-color-text);
+  font-weight: var(--k-font-weight-semibold);
+}
+.btn.nf-btn--ghost:hover:not(:disabled) {
+  border-color: var(--k-color-primary);
+  color: var(--k-color-primary);
+  box-shadow: none;
 }
 
 @media (max-width: 480px) {

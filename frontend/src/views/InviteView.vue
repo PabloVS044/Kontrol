@@ -38,25 +38,31 @@
             </div>
             <div class="summary-row">
               <span class="summary-label">{{ t('invite.summary.status') }}</span>
-              <span class="summary-pill" :class="{ inactive: !inviteData.invitation.activa }">
-                {{ inviteData.invitation.activa ? t('invite.summary.active') : t('invite.summary.inactive') }}
-              </span>
+              <Pill
+                class="summary-pill"
+                :label="inviteData.invitation.activa ? t('invite.summary.active') : t('invite.summary.inactive')"
+                :btn-color="inviteData.invitation.activa ? 'var(--k-alert-ok-bg)' : 'var(--k-alert-critical-bg)'"
+                :circle-color="inviteData.invitation.activa ? 'var(--k-alert-ok-text)' : 'var(--k-alert-critical-text)'"
+                :text-color="inviteData.invitation.activa ? 'var(--k-alert-ok-text)' : 'var(--k-alert-critical-text)'"
+              />
             </div>
           </div>
 
           <p v-if="feedbackMessage" class="invite-feedback">{{ feedbackMessage }}</p>
 
           <div class="invite-actions">
-            <button
+            <Button
               v-if="authStore.isLoggedIn && inviteData.invitation.activa"
               class="primary-btn"
               :disabled="accepting"
+              back-color="var(--k-color-primary)"
+              hover-back="var(--k-color-primary-2)"
               @click="acceptInvite"
             >
               {{ accepting
                 ? t('invite.actions.joining')
                 : isProjectInvite ? t('invite.actions.joinProject') : t('invite.actions.joinCompany') }}
-            </button>
+            </Button>
 
             <template v-else-if="!authStore.isLoggedIn && inviteData.invitation.activa">
               <RouterLink class="primary-btn link-btn" :to="loginLink">
@@ -65,9 +71,13 @@
               <RouterLink class="secondary-btn link-btn" :to="registerLink">
                 {{ t('invite.actions.createAccount') }}
               </RouterLink>
-              <button class="ghost-btn" @click="continueWithGoogle">
-                {{ t('invite.actions.withGoogle') }}
-              </button>
+              <Button
+                class="ghost-btn"
+                :label="t('invite.actions.withGoogle')"
+                back-color="var(--k-shade-3)"
+                hover-back="var(--k-shade-4)"
+                @click="continueWithGoogle"
+              />
             </template>
 
             <RouterLink
@@ -100,6 +110,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import Button from '@/components/UI/Button/Button.vue'
+import Pill from '@/components/UI/Pill/Pill.vue'
 import { loginWithGoogle } from '@/services/auth'
 import { getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 import { getInviteErrorMessage } from '@/utils/invitation'
@@ -265,10 +277,10 @@ watch(() => route.params.token, loadInvitation)
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at top, rgba(202, 168, 96, 0.18), transparent 28%),
-    linear-gradient(180deg, #070707 0%, #111 100%);
-  color: var(--Text);
-  font-family: 'Manrope', sans-serif;
+    radial-gradient(circle at top, rgba(var(--k-color-primary-rgb), 0.18), transparent 28%),
+    linear-gradient(180deg, var(--k-shade-1) 0%, var(--k-shade-3) 100%);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
 }
 
 .invite-shell {
@@ -277,9 +289,9 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .invite-card {
-  background: #0c0c0c;
-  border: 1px solid rgba(202, 168, 96, 0.18);
-  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+  background: var(--k-shade-1);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.18);
+  box-shadow: var(--k-shadow-card);
   padding: 44px;
   display: flex;
   flex-direction: column;
@@ -292,21 +304,21 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .invite-eyebrow {
-  font-size: 12px;
+  font-size: var(--k-font-size-caption-lg);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .invite-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--k-font-display);
   font-size: 48px;
   line-height: 1;
   letter-spacing: -0.03em;
 }
 
 .invite-subtitle {
-  color: #b2aca2;
+  color: var(--k-text-muted);
   line-height: 1.7;
   max-width: 640px;
 }
@@ -324,8 +336,8 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .summary-row {
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-shade-6);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -333,7 +345,7 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .summary-label {
-  font-size: 11px;
+  font-size: var(--k-font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--k-text-muted);
@@ -341,33 +353,19 @@ watch(() => route.params.token, loadInvitation)
 
 .summary-value {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: var(--k-font-weight-semibold);
 }
 
 .summary-pill {
-  display: inline-flex;
   width: fit-content;
-  padding: 6px 10px;
-  border: 1px solid rgba(52, 211, 153, 0.24);
-  background: rgba(52, 211, 153, 0.1);
-  color: #34d399;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 11px;
-}
-
-.summary-pill.inactive {
-  border-color: rgba(251, 113, 133, 0.24);
-  background: rgba(251, 113, 133, 0.1);
-  color: #fb7185;
 }
 
 .invite-feedback,
 .invite-state {
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--k-shade-3);
+  border: var(--k-border-width) solid var(--k-shade-6);
   padding: 16px 18px;
-  color: #ded7cc;
+  color: var(--k-text-soft);
   line-height: 1.6;
 }
 
@@ -382,45 +380,55 @@ watch(() => route.params.token, loadInvitation)
 .ghost-btn {
   appearance: none;
   border: none;
+  border-radius: 0;
   text-decoration: none;
   cursor: pointer;
   padding: 14px 18px;
-  font: inherit;
-  transition: transform 0.16s ease, opacity 0.16s ease, border-color 0.16s ease;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-main);
+  transition: var(--k-transition-ui);
 }
 
 .primary-btn {
-  background: #caa860;
-  color: #101010;
-  font-weight: 700;
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
+  font-weight: var(--k-font-weight-bold);
 }
 
-.secondary-btn {
-  background: #111111;
-  color: var(--Text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
+.secondary-btn,
 .ghost-btn {
-  background: #111111;
-  color: var(--Text);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--k-shade-3);
+  color: var(--k-color-text);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  font-weight: var(--k-font-weight-semibold);
 }
 
-.primary-btn:hover,
-.secondary-btn:hover,
-.ghost-btn:hover {
+.btn.primary-btn,
+.btn.ghost-btn {
+  border-radius: 0;
+  padding: 14px 18px;
+  font-size: var(--k-font-size-body-main);
+}
+
+.btn.ghost-btn {
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+}
+
+.link-btn:hover {
+  filter: brightness(var(--k-state-hover-brightness));
   transform: translateY(-1px);
 }
 
-.primary-btn:disabled {
-  cursor: wait;
-  opacity: 0.7;
+.link-btn:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
 }
 
 .link-btn {
   display: inline-flex;
   align-items: center;
+  min-height: var(--k-target-min-size);
 }
 
 @media (max-width: 720px) {

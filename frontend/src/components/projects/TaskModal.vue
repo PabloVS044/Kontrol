@@ -1,59 +1,64 @@
 <template>
   <BaseModal v-model="show" :title="editingTask ? $t('projects.tasks.modal.editTitle') : $t('projects.tasks.modal.newTitle')">
     <form class="modal-form" @submit.prevent="handleSubmit">
-      <div class="form-field">
-        <label>{{ $t('projects.tasks.modal.name') }} <span class="req">*</span></label>
+      <FormField :label="$t('projects.tasks.modal.name')" :required="true">
         <input v-model="form.nombre" type="text" :placeholder="$t('projects.tasks.modal.namePlaceholder')" required />
-      </div>
+      </FormField>
 
-      <div class="form-field">
-        <label>{{ $t('projects.tasks.modal.description') }}</label>
+      <FormField :label="$t('projects.tasks.modal.description')">
         <textarea v-model="form.descripcion" :placeholder="$t('projects.tasks.modal.descriptionPlaceholder')" rows="2"></textarea>
-      </div>
+      </FormField>
 
       <div class="form-row">
-        <div class="form-field">
-          <label>{{ $t('projects.tasks.modal.priority') }}</label>
+        <FormField :label="$t('projects.tasks.modal.priority')">
           <select v-model="form.prioridad">
             <option value="BAJA">{{ $t('projects.priorities.low') }}</option>
             <option value="MEDIA">{{ $t('projects.priorities.medium') }}</option>
             <option value="ALTA">{{ $t('projects.priorities.high') }}</option>
             <option value="CRITICA">{{ $t('projects.priorities.critical') }}</option>
           </select>
-        </div>
-        <div class="form-field">
-          <label>{{ editingTask ? $t('projects.tasks.modal.status') : $t('projects.tasks.modal.initialStatus') }}</label>
+        </FormField>
+        <FormField :label="editingTask ? $t('projects.tasks.modal.status') : $t('projects.tasks.modal.initialStatus')">
           <select v-model="form.estado">
             <option value="PENDIENTE">{{ $t('projects.taskStatuses.pending') }}</option>
             <option value="EN_PROGRESO">{{ $t('projects.taskStatuses.inProgress') }}</option>
             <option value="COMPLETADA">{{ $t('projects.taskStatuses.completed') }}</option>
             <option value="CANCELADA">{{ $t('projects.taskStatuses.cancelled') }}</option>
           </select>
-        </div>
+        </FormField>
       </div>
 
-      <div class="form-field">
-        <label>{{ $t('projects.tasks.modal.assignTo') }}</label>
+      <FormField :label="$t('projects.tasks.modal.assignTo')">
         <select v-model="form.id_asignado">
           <option value="">{{ $t('projects.tasks.modal.unassigned') }}</option>
           <option v-for="m in members" :key="m.id_usuario" :value="m.id_usuario">
             {{ m.nombre }} {{ m.apellido }}
           </option>
         </select>
-      </div>
+      </FormField>
 
-      <div class="form-field">
-        <label>{{ $t('projects.tasks.modal.dueDate') }}</label>
+      <FormField :label="$t('projects.tasks.modal.dueDate')">
         <input v-model="form.fecha_vencimiento" type="date" />
-      </div>
+      </FormField>
 
       <p v-if="error" class="modal-error">{{ error }}</p>
 
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" @click="show = false">{{ $t('projects.tasks.modal.cancel') }}</button>
-        <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? $t('projects.tasks.modal.saving') : editingTask ? $t('projects.tasks.modal.update') : $t('projects.tasks.modal.create') }}
-        </button>
+        <Button
+          class="btn-cancel"
+          :label="$t('projects.tasks.modal.cancel')"
+          back-color="var(--k-shade-3)"
+          hover-back="var(--k-shade-4)"
+          @click="show = false"
+        />
+        <Button
+          class="btn-save"
+          type="submit"
+          :disabled="submitting"
+          :label="submitting ? $t('projects.tasks.modal.saving') : editingTask ? $t('projects.tasks.modal.update') : $t('projects.tasks.modal.create')"
+          back-color="var(--k-color-primary)"
+          hover-back="var(--k-color-primary-2)"
+        />
       </div>
     </form>
   </BaseModal>
@@ -63,6 +68,8 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/UI/Modal/BaseModal.vue'
+import Button from '@/components/UI/Button/Button.vue'
+import FormField from '@/components/common/FormField.vue'
 
 const { t } = useI18n()
 
@@ -109,38 +116,45 @@ function handleSubmit() {
 </script>
 
 <style scoped>
-.modal-form  { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.form-field  { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 11px; color: var(--TextMuted); letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; }
-.form-field input,
-.form-field textarea,
-.form-field select {
-  background: #0a0a0a; border: 1px solid #1f1f1f;
-  color: var(--Text); font-family: 'Manrope', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none; resize: none;
-  transition: border-color 0.15s;
-}
-.form-field input:focus,
-.form-field textarea:focus,
-.form-field select:focus { border-color: #caa860; }
-.form-field select option { background: #0f0f0f; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.req { color: var(--Primary); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-.modal-error   { font-size: 12px; color: #fb7185; font-family: 'Manrope', sans-serif; }
+.modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: #caa860; border: none; padding: 10px 18px; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
-  color: var(--BtnText); transition: filter 0.15s;
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+  background: var(--k-shade-1);
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-body-small);
+  padding: 10px 12px;
+  outline: none;
+  resize: none;
+  transition: var(--k-transition-ui);
 }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-secondary {
-  background: #111111; border: 1px solid #1f1f1f; color: var(--Text);
-  font-family: 'Manrope', sans-serif; font-size: 12px; padding: 10px 18px;
-  cursor: pointer; transition: border-color 0.15s;
+.modal-form input:focus,
+.modal-form textarea:focus,
+.modal-form select:focus {
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
 }
-.btn-secondary:hover { border-color: #333; }
+.modal-form input::placeholder,
+.modal-form textarea::placeholder { color: var(--k-text-placeholder); }
+.modal-form select option { background: var(--k-shade-2); }
+
+.modal-error   { font-size: var(--k-font-size-caption-lg); color: var(--k-state-error-text); font-family: var(--k-font-sans); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+
+.modal-actions .btn {
+  border-radius: 0;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  font-weight: var(--k-font-weight-semibold);
+  padding: 10px 18px;
+}
+.modal-actions .btn-cancel {
+  border: var(--k-border-width) solid var(--k-shade-6);
+  color: var(--k-color-text);
+}
+.modal-actions .btn-save { color: var(--k-form-btn-text); }
 </style>
