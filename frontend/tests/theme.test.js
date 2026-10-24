@@ -62,14 +62,14 @@ const contrast = (a, b) => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-// El último valor es el pico del fondo animado (en claro, su espejo).
+// El último valor es el pico del fondo animado (en claro, estimado).
 const THEMES = {
   dark: {
     surfaces: ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#272727'],
     ground: '#111111',
   },
   light: {
-    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#d8d8d8'],
+    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#c9c9c9'],
     ground: '--k-shade-3',
   },
 }
