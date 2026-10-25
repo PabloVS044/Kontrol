@@ -308,6 +308,8 @@
      contraste no depende de él: el texto ya supera 4.5:1 sobre el pico de
      las ondas sin velo (WAVE_PEAK en tests/theme.test.js). */
   --k-surface-scrim: rgba(var(--k-canvas-rgb), 0.6);
+  --k-surface-panel: rgba(var(--k-canvas-rgb), 0.6);
+  --k-surface-panel-border: transparent;
 }
 
 /* Tema claro: propuesta derivada del oscuro, pendiente de validación de
@@ -350,17 +352,19 @@
   --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
   --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
 
-  --k-shade-0: #ececec;
-  --k-shade-1: #e8e8e8;
-  --k-shade-2: #e5e5e5;
-  --k-shade-3: #e3e3e3;
-  --k-shade-3b: #e0e0e0;
-  --k-shade-4: #dcdcdc;
-  --k-shade-5: #d9d9d9;
-  --k-shade-6: #d8d8d8;
-  --k-shade-6b: #d2d2d2;
-  --k-shade-7: #cccccc;
-  --k-shade-8: #c2c2c2;
+  --k-shade-0: #ededed;
+  --k-shade-1: #eaeaea;
+  --k-shade-2: #e7e7e7;
+  --k-shade-3: #e4e4e4;
+  --k-shade-3b: #dfdfdf;
+  --k-shade-4: #d6d6d6;
+  --k-shade-5: #d0d0d0;
+  --k-shade-6: #c2c2c2;
+  --k-shade-6b: #bcbcbc;
+  --k-shade-7: #b5b5b5;
+  --k-shade-8: #a8a8a8;
+  --k-surface-panel: #d2cec6;
+  --k-surface-panel-border: #b5ae9f;
   --k-gray-1: #535353;
   --k-gray-2: #535353;
   --k-gray-3: #535353;
@@ -426,17 +430,19 @@
     --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
     --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
 
-    --k-shade-0: #ececec;
-    --k-shade-1: #e8e8e8;
-    --k-shade-2: #e5e5e5;
-    --k-shade-3: #e3e3e3;
-    --k-shade-3b: #e0e0e0;
-    --k-shade-4: #dcdcdc;
-    --k-shade-5: #d9d9d9;
-    --k-shade-6: #d8d8d8;
-    --k-shade-6b: #d2d2d2;
-    --k-shade-7: #cccccc;
-    --k-shade-8: #c2c2c2;
+    --k-shade-0: #ededed;
+    --k-shade-1: #eaeaea;
+    --k-shade-2: #e7e7e7;
+    --k-shade-3: #e4e4e4;
+    --k-shade-3b: #dfdfdf;
+    --k-shade-4: #d6d6d6;
+    --k-shade-5: #d0d0d0;
+    --k-shade-6: #c2c2c2;
+    --k-shade-6b: #bcbcbc;
+    --k-shade-7: #b5b5b5;
+    --k-shade-8: #a8a8a8;
+    --k-surface-panel: #d2cec6;
+    --k-surface-panel-border: #b5ae9f;
     --k-gray-1: #535353;
     --k-gray-2: #535353;
     --k-gray-3: #535353;

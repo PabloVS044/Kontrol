@@ -69,7 +69,7 @@ const THEMES = {
     ground: '#111111',
   },
   light: {
-    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#c9c9c9'],
+    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-panel', '#c9c9c9'],
     ground: '--k-shade-3',
   },
 }
@@ -166,6 +166,8 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-primary-tint-2',
       '--k-surface-hover-subtle',
       '--k-surface-scrim',
+      '--k-surface-panel',
+      '--k-surface-panel-border',
     ],
     rampaNeutra: [
       '--k-shade-0', '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-3b',
