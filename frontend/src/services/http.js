@@ -79,6 +79,21 @@ function handleUnauthorized(url, token) {
   }
 }
 
+// PAY-1 — Un 403 por plan (PLAN_FEATURE_REQUIRED / PLAN_LIMIT_REACHED) avisa a
+// toda la app para mostrar "Mejora tu plan" sin que cada vista lo maneje. Se
+// lee una copia: el cuerpo original queda intacto para quien hizo la petición.
+function notifyPlanRequired(url, response) {
+  if (typeof window === 'undefined' || typeof response.clone !== 'function') return
+  response
+    .clone()
+    .json()
+    .then((body) => {
+      if (!String(body?.code ?? '').startsWith('PLAN_')) return
+      window.dispatchEvent(new CustomEvent('api:plan-required', { detail: { url, ...body } }))
+    })
+    .catch(() => {})
+}
+
 export async function apiFetch(path, options = {}) {
   const {
     auth = true,
@@ -122,5 +137,6 @@ export async function apiFetch(path, options = {}) {
   }
 
   if (response.status === 401) handleUnauthorized(url, token ?? getStoredToken())
+  if (response.status === 403) notifyPlanRequired(url, response)
   return response
 }
