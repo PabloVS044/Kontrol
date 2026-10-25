@@ -18,6 +18,8 @@ const RAIZ = resolve(__dirname, '..', 'src')
 /** Pantallas y componentes que las pruebas señalaron, ya conectados. */
 const ARCHIVOS = [
   'components/AppNavbar.vue',
+  'components/billing/PlanRequiredNotice.vue',
+  'components/billing/TestModeBanner.vue',
   'components/Footer.vue',
   'components/LegalConsentModal.vue',
   'components/Navbar.vue',
@@ -26,6 +28,7 @@ const ARCHIVOS = [
   'components/chat/FloatingChat.vue',
   'components/chat/VideoCallOverlay.vue',
   'views/AgentView.vue',
+  'views/BillingView.vue',
   'views/ChatView.vue',
   'views/LandingPage.vue',
   'views/LegalView.vue',
