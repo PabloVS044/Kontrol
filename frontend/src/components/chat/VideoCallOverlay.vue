@@ -374,7 +374,7 @@ watch(showSideChat, async (isOpen) => {
 .call-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1400;
+  z-index: var(--k-z-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -528,7 +528,7 @@ watch(showSideChat, async (isOpen) => {
   flex-direction: column;
   animation: 100%;
   height: 100%;
-  z-index: 250;
+  z-index: var(--k-z-raised);
 }
 
 .side-chat-header {
@@ -609,7 +609,7 @@ watch(showSideChat, async (isOpen) => {
   justify-content: center;
   border: 2px solid #0a0a0a;
   font-weight: bold;
-  z-index: 300;
+  z-index: var(--k-z-top);
 }
 
 .call-circle-btn.has-unread {
@@ -758,7 +758,7 @@ watch(showSideChat, async (isOpen) => {
   padding: 18px 22px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   background: #090909;
-  z-index: 200;
+  z-index: var(--k-z-base);
   position: relative;
   /* Keep controls visible when scrolling messages or resizing */
   position: sticky;
