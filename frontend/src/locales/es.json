@@ -1436,6 +1436,112 @@
       "undated": "Publicaciones sin fecha ({count}): no se muestran en el calendario."
     }
   },
+  "billing": {
+    "title": "Plan y suscripción",
+    "subtitle": "Elige qué desbloquea tu empresa. El plan es de la empresa: todos sus miembros lo comparten.",
+    "loading": "Cargando planes…",
+    "loadError": "No se pudieron cargar los planes.",
+    "notConfigured": "La pasarela de pago no está configurada en este servidor. Todas las empresas están en el plan Gratis.",
+    "ownerOnly": "Solo el dueño de la empresa puede contratar, cambiar o cancelar el plan.",
+    "changed": "Cambio solicitado. El plan se actualiza en cuanto la pasarela confirma el cambio.",
+    "testMode": {
+      "title": "Modo de prueba — sin cobros reales",
+      "body": "Los pagos usan Stripe en modo de prueba porque Stripe no opera en Guatemala. No se cobra nada. Para probar usa la tarjeta 4242 4242 4242 4242 con cualquier fecha futura y CVC; no ingreses una tarjeta ni datos reales."
+    },
+    "checkout": {
+      "success": "Pago de prueba recibido. El plan se activa en cuanto la pasarela confirma el pago; puede tardar unos segundos.",
+      "cancel": "Cancelaste el pago de prueba. No se hizo ningún cargo."
+    },
+    "current": {
+      "title": "Tu plan actual",
+      "free": "Plan gratuito, sin fecha de vencimiento.",
+      "renews": "Se renueva el {date} (cobro {interval} simulado).",
+      "endsOn": "Cancelado: el plan sigue activo hasta el {date} y después la empresa vuelve al plan Gratis.",
+      "pastDue": "No se pudo cobrar la última renovación (simulada). Mientras la pasarela reintenta conservas el plan; actualiza el método de pago desde «Gestionar pago o cancelar»."
+    },
+    "interval": {
+      "label": "Periodicidad del cobro",
+      "month": "Mensual",
+      "year": "Anual",
+      "yearlyNote": "El plan anual cuesta lo mismo que 10 meses.",
+      "per": {
+        "month": "/ mes",
+        "year": "/ año"
+      }
+    },
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "tagline": "Para empezar a ordenar un negocio pequeño."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "Para equipos que ya trabajan con varios proyectos."
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Sin topes y con el asistente de IA."
+      }
+    },
+    "resources": {
+      "members": "Miembros",
+      "projects": "Proyectos",
+      "products": "Productos"
+    },
+    "usage": {
+      "of": "{used} de {limit}",
+      "unlimited": "{used} · sin tope"
+    },
+    "limits": {
+      "members": "Hasta {count} miembros",
+      "projects": "Hasta {count} proyectos",
+      "products": "Hasta {count} productos",
+      "unlimited": {
+        "members": "Miembros ilimitados",
+        "projects": "Proyectos ilimitados",
+        "products": "Productos ilimitados"
+      }
+    },
+    "features": {
+      "base": "Proyectos, tareas, inventario, punto de venta, proveedores, presupuesto, chat y reportes en pantalla",
+      "everythingIn": "Todo lo del plan {plan}, más:"
+    },
+    "modules": {
+      "report_export": "Exportar reportes",
+      "teams": "Equipos",
+      "integrations": "Integraciones (Slack, Teams, Telegram y más)",
+      "marketing": "Centro de marketing",
+      "ai_agent": "Birdie, el asistente de IA",
+      "marketing_ai": "Generación de publicaciones con IA"
+    },
+    "actions": {
+      "subscribe": "Suscribirse a {plan}",
+      "change": "Cambiar a {plan}",
+      "current": "Es tu plan actual.",
+      "downgradeHint": "Para volver a Gratis, cancela la suscripción en «Gestionar pago o cancelar».",
+      "manage": "Gestionar pago o cancelar",
+      "redirecting": "Redirigiendo…",
+      "processing": "Procesando…"
+    },
+    "gate": {
+      "featureTitle": "Este módulo no está en tu plan",
+      "feature": "{module} está incluido desde el plan {plan}.",
+      "limitTitle": "Llegaste al tope de tu plan",
+      "limit": {
+        "members": "Tu plan permite hasta {limit} miembros. Mejora el plan para sumar más.",
+        "projects": "Tu plan permite hasta {limit} proyectos. Mejora el plan para crear más.",
+        "products": "Tu plan permite hasta {limit} productos. Mejora el plan para agregar más."
+      },
+      "limitGeneric": "Tu plan no permite agregar más. Mejora el plan para continuar.",
+      "exportLocked": "Exportar reportes está incluido desde el plan Pro.",
+      "locked": "Requiere un plan superior",
+      "cta": "Ver planes",
+      "dismiss": "Cerrar"
+    },
+    "errors": {
+      "generic": "No se pudo completar la operación."
+    }
+  },
   "birdie": {
     "tooltip": "Doble clic para ocultarme · arrástrame para moverme",
     "askQuestion": "Haz una pregunta",
@@ -1632,6 +1738,11 @@
       "title": "Miembros de la empresa",
       "hint": "Invita personas, cambia su rol y su acceso a proyectos. El panel está en Inicio.",
       "link": "Ir a Miembros de la empresa"
+    },
+    "billing": {
+      "title": "Plan y suscripción",
+      "hint": "Plan actual: {plan}. Los pagos están en modo de prueba: no hay cobros reales.",
+      "link": "Ver planes"
     }
   },
   "navbar": {
