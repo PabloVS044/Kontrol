@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 40;
+  z-index: var(--k-z-popover);
   width: 268px;
   display: flex;
   flex-direction: column;
@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 30;
+  z-index: calc(var(--k-z-popover) - 1);
   margin: 0;
   padding: 6px 10px;
   max-width: 268px;

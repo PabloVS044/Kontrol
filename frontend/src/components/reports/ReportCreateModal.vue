@@ -75,7 +75,7 @@ function submit() {
 <style scoped>
 .modal-overlay {
   position: fixed; inset: 0; background: #000;
-  display: flex; align-items: center; justify-content: center; z-index: 999;
+  display: flex; align-items: center; justify-content: center; z-index: var(--k-z-modal-overlay);
 }
 .modal-box { background: #111; border: 1px solid #2a2a2a; width: 100%; max-width: 440px; padding: 24px; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }

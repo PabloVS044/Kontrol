@@ -515,7 +515,7 @@ async function registerExport(dataset, format) {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: rgba(17, 17, 17, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);

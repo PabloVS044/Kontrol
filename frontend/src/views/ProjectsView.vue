@@ -795,7 +795,7 @@ async function submitProject() {
   grid-template-columns: 3px 1fr 150px 190px 100px 140px 80px;
   background: var(--k-shade-1);
   border-bottom: 1px solid var(--k-shade-6);
-  position: sticky; top: 56px; z-index: 1;
+  position: sticky; top: 56px; z-index: var(--k-z-base);
 }
 .lh-spacer { }
 .lh-col {

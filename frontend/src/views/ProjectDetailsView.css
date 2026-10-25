@@ -553,7 +553,7 @@
 
 /* ── Modal ── */
 .modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
+  position: fixed; inset: 0; z-index: var(--k-z-modal-overlay);
   background: rgb(var(--k-color-black-rgb));
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;

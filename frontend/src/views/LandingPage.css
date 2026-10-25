@@ -20,7 +20,7 @@ main[data-theme='dark'] {
 .bg-scroll-video-backdrop {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: rgb(var(--k-color-black-rgb));
   pointer-events: none;
 }
@@ -31,7 +31,7 @@ main[data-theme='dark'] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   pointer-events: none;
   /* Dimmed behind the hero so the headline, not the tangle of cables, is
      what gets read first; setupBackgroundVideoScrub brings it up to full as
@@ -42,7 +42,7 @@ main[data-theme='dark'] {
 .bg-scroll-video-scrim {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: rgba(0, 0, 0, 0.45);
   pointer-events: none;
 }
@@ -74,7 +74,7 @@ main[data-theme='dark'] {
   align-items: center;
   gap: 20px;
   width: 100%;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   margin-top: 20px;
 }
 
@@ -183,7 +183,7 @@ main[data-theme='dark'] {
 .control-k-wrapper {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: var(--k-z-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,7 +196,7 @@ main[data-theme='dark'] {
 .control-moment {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: var(--k-z-raised);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -380,7 +380,7 @@ main[data-theme='dark'] {
 /* ─── Solution ───────────────────────────────────────────────────────────── */
 #solution {
   width: 100%;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
 }
 
 .solution-container {
@@ -389,7 +389,7 @@ main[data-theme='dark'] {
      through here too, instead of this being the one section that blocks it. */
   background-color: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -415,7 +415,7 @@ main[data-theme='dark'] {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: var(--k-z-base);
 }
 
 .graph {
@@ -476,7 +476,7 @@ main[data-theme='dark'] {
 .steps-header {
   flex: 2;
   text-align: left;
-  z-index: 2;
+  z-index: var(--k-z-raised);
 }
 
 .companies-swap {
@@ -522,7 +522,7 @@ main[data-theme='dark'] {
   padding: 140px 20px;
   box-sizing: border-box;
   position: relative;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   overflow: hidden;
 }
 
@@ -541,7 +541,7 @@ main[data-theme='dark'] {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: radial-gradient(
     ellipse 55% 60% at 50% 45%,
     rgba(var(--k-color-primary-rgb), 0.16),

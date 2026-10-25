@@ -527,7 +527,7 @@
 
   /* Búsqueda y filtros pegados arriba al hacer scroll del catálogo. */
   .search-bar {
-    position: sticky; top: 56px; z-index: 40;
+    position: sticky; top: 56px; z-index: var(--k-z-popover);
     background: var(--k-shade-3);
   }
 }
@@ -566,7 +566,7 @@
   position: fixed;
   right: var(--k-space-5);
   bottom: var(--k-space-5);
-  z-index: 60;
+  z-index: calc(var(--k-z-popover) + 1);
   width: min(300px, calc(100vw - var(--k-space-6)));
   display: flex;
   flex-direction: column;

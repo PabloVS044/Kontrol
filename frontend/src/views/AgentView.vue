@@ -740,7 +740,7 @@ function autoResizeEdit(e) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 11;
+  z-index: calc(var(--k-z-sticky) + 1);
   transition: background 0.15s;
 }
 .sidebar-reopen:hover {
@@ -859,7 +859,7 @@ function autoResizeEdit(e) {
   gap: 10px;
   padding: 16px 24px 20px;
   background: linear-gradient(to top, #0a0a0a 70%, transparent);
-  z-index: 10;
+  z-index: var(--k-z-sticky);
   transition: left 0.2s;
 }
 
@@ -1300,7 +1300,7 @@ function autoResizeEdit(e) {
     top: 56px;
     left: 0;
     width: 240px;
-    z-index: 20;
+    z-index: var(--k-z-elevated);
     box-shadow: 6px 0 24px rgba(0, 0, 0, 0.5);
   }
   .input-section {

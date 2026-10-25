@@ -656,7 +656,7 @@ onMounted(() => {
 .ndm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: var(--k-z-overlay-top);
   background: #050505;
   backdrop-filter: blur(4px);
   display: flex;
