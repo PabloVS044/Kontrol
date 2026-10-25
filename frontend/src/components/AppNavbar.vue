@@ -53,12 +53,12 @@
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">{{ $t('navbar.suppliers') }}</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
-        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
+        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}<Lock v-if="isLocked('teams')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">{{ $t('navbar.reports') }}</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
-        <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}</RouterLink>
-        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}<Lock v-if="isLocked('marketing')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
+        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}<Lock v-if="isLocked('ai_agent')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
         <!-- Idioma, preferencias, venta e integraciones viven juntos en /settings. -->
         <RouterLink class="appnav-link" to="/settings" @click="closeMenu">{{ $t('navbar.settings') }}</RouterLink>
       </div>
@@ -126,7 +126,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LogOut, Settings } from 'lucide-vue-next'
+import { Lock, LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { translateRole } from '../utils/roles.js'
@@ -134,6 +134,9 @@ import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
+// PAY-1 — Módulo fuera del plan de la empresa: el enlace sigue visible con un
+// candado y el router lleva a /billing. El servidor aplica la misma regla.
+const isLocked = (feature) => !authStore.isSuperUser && !authStore.hasFeature(feature)
 const router    = useRouter()
 const route     = useRoute()
 const { t, te } = useI18n()
@@ -701,5 +704,10 @@ const closeMenu = () => {
 @media (max-width: 640px) {
   .empresa-role { display: none; }
   .appnav-link { font-size: var(--k-font-size-body-large); }
+}
+.appnav-lock {
+  margin-left: var(--k-space-1);
+  vertical-align: -1px;
+  color: var(--k-text-muted);
 }
 </style>
