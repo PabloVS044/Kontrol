@@ -2371,7 +2371,7 @@
     "badge": "Marco legal y regulatorio",
     "title": "Términos, Privacidad y Cumplimiento",
     "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
-    "updated": "Versión {version} · Actualizado el 17 de octubre de 2026",
+    "updated": "Versión {version} · Actualizado el 24 de octubre de 2026",
     "nav": {
       "ariaLabel": "Navegación de secciones legales",
       "privacy": "Aviso de Privacidad",
@@ -2400,8 +2400,8 @@
           "body": "El punto de venta (POS) y el cálculo de IVA configurado son de uso interno de tu empresa: no emiten facturas electrónicas (FEL) certificadas ni sustituyen tus declaraciones. Te corresponde emitir los documentos tributarios que procedan y declarar y pagar los impuestos de tu negocio."
         },
         {
-          "title": "5. Pagos",
-          "body": "Hoy Kontrol no realiza cobros. La integración de pagos con Stripe está contemplada solo en modo de demostración (TEST): no hay cobros reales, cargos a tarjetas ni planes de suscripción. No ingreses tarjetas ni datos reales en la demostración. El acceso actual no se convertirá automáticamente en un servicio de pago: antes de cualquier cobro te informaremos las condiciones y tendrás que aceptarlas expresamente."
+          "title": "5. Pagos y planes (modo de prueba)",
+          "body": "Kontrol no realiza cobros reales. Los planes Gratis, Pro y Business y sus precios en USD existen solo como demostración: el cobro usa Stripe en modo de prueba (TEST), que no mueve dinero. Stripe no opera en Guatemala, así que esta pasarela no puede usarse para cobrar de verdad; una operación comercial exigirá sustituirla por un proveedor autorizado en el país. El pago se hace únicamente en la página hospedada de Stripe: Kontrol no recibe ni guarda datos de tarjeta. Usa solo las tarjetas de prueba de Stripe y datos ficticios; no ingreses tarjetas ni datos reales. La suscripción es de la empresa y solo su dueño puede contratarla, cambiarla o cancelarla; al cancelar, el plan sigue hasta el fin del período y después la empresa vuelve al plan Gratis sin perder sus datos. El acceso actual no se convertirá automáticamente en un servicio de pago: antes de cualquier cobro real te informaremos las condiciones y tendrás que aceptarlas expresamente."
         },
         {
           "title": "6. Cuenta, credenciales e invitaciones",

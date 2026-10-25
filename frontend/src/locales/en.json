@@ -2371,7 +2371,7 @@
     "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
-    "updated": "Version {version} · Updated October 17, 2026",
+    "updated": "Version {version} · Updated October 24, 2026",
     "nav": {
       "ariaLabel": "Legal sections navigation",
       "privacy": "Privacy Policy",
@@ -2400,8 +2400,8 @@
           "body": "The point of sale (POS) and the configured VAT calculation are for your company's internal use: they do not issue certified electronic invoices (FEL) or replace your tax filings. You are responsible for issuing the required tax documents and for filing and paying your business's taxes."
         },
         {
-          "title": "5. Payments",
-          "body": "Kontrol does not charge anything today. The Stripe payment integration is planned only in demonstration mode (TEST): there are no real charges, card charges or subscription plans. Do not enter real cards or data in the demonstration. Your current access will not automatically become a paid service: before any charge we will inform you of the terms and you will have to accept them expressly."
+          "title": "5. Payments and plans (test mode)",
+          "body": "Kontrol does not charge anything for real. The Free, Pro and Business plans and their USD prices exist only as a demonstration: billing uses Stripe in test mode (TEST), which moves no money. Stripe does not operate in Guatemala, so this gateway cannot be used to charge for real; commercial operation will require replacing it with a provider authorized in the country. Payment happens only on Stripe's hosted page: Kontrol never receives or stores card data. Use only Stripe test cards and fictitious data; do not enter real cards or data. The subscription belongs to the company and only its owner can subscribe, change or cancel it; after cancelling, the plan lasts until the end of the period and the company then returns to the Free plan without losing its data. Your current access will not automatically become a paid service: before any real charge we will inform you of the terms and you will have to accept them expressly."
         },
         {
           "title": "6. Account, credentials and invitations",

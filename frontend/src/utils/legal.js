@@ -5,7 +5,8 @@
  * LEGAL_VERSION y la fecha de `legal.updated` en los diccionarios: el aviso
  * vuelve a aparecer y todos tienen que aceptar la versión nueva.
  */
-export const LEGAL_VERSION = '1.0'
+// 1.1 (PAY-1): cláusula 5, planes y pagos en modo de prueba con Stripe.
+export const LEGAL_VERSION = '1.1'
 
 // Va fuera del diccionario: vue-i18n interpreta la `@` como mensaje enlazado.
 export const SUPPORT_EMAIL = 'support@kontrol.it.com'
