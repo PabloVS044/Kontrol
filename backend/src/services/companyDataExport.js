@@ -197,31 +197,26 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
   if (!scopes.has('empresa')) throw new Error('Company table is missing from the export schema.')
 
   return Readable.from((async function* () {
-    try {
-      yield `{"format":"Kontrol company data export","version":1,"generated_at":${JSON.stringify(new Date().toISOString())},"profile":${JSON.stringify(profileResult.rows[0])},"company_id":${JSON.stringify(companyId)},"tables":{`
-      let firstTable = true
-      for (const table of tables) {
-        const scope = scopes.get(table.name)
-        if (!scope) continue
-        if (!firstTable) yield ','
-        firstTable = false
-        yield `${JSON.stringify(table.name)}:[`
-        let firstRow = true
-        for await (const row of exportRows(client, table, { companyId }, scopes)) {
-          if (!firstRow) yield ','
-          firstRow = false
-          yield JSON.stringify(row)
-        }
-        yield ']'
+    yield `{"format":"Kontrol company data export","version":1,"generated_at":${JSON.stringify(new Date().toISOString())},"profile":${JSON.stringify(profileResult.rows[0])},"company_id":${JSON.stringify(companyId)},"tables":{`
+    let firstTable = true
+    for (const table of tables) {
+      const scope = scopes.get(table.name)
+      if (!scope) continue
+      if (!firstTable) yield ','
+      firstTable = false
+      yield `${JSON.stringify(table.name)}:[`
+      let firstRow = true
+      for await (const row of exportRows(client, table, { companyId }, scopes)) {
+        if (!firstRow) yield ','
+        firstRow = false
+        yield JSON.stringify(row)
       }
-      yield '},"conversations":{'
-      yield* exportAssistantData(companyId)
-      yield ','
-      yield* exportHumanConversations(userId)
-      yield '}}'
-    } finally {
-      await client.query('ROLLBACK')
-      client.release()
+      yield ']'
     }
+    yield '},"conversations":{'
+    yield* exportAssistantData(companyId)
+    yield ','
+    yield* exportHumanConversations(userId)
+    yield '}}'
   })())
 }

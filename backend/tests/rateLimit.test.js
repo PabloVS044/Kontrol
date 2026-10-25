@@ -24,6 +24,8 @@ const ENV_KEYS = [
   'RATE_LIMIT_LOGIN_IP_MAX',
   'RATE_LIMIT_LOGIN_ACCOUNT_MAX',
   'RATE_LIMIT_EXPENSIVE_MAX',
+  'RATE_LIMIT_ACCOUNT_DELETE_IP_MAX',
+  'RATE_LIMIT_ACCOUNT_DELETE_USER_MAX',
 ]
 
 // Los umbrales se leen al importar el módulo, así que cada prueba fija el
@@ -163,5 +165,94 @@ describe('DT-13 · Límite en endpoints costosos (SCRUM-28)', () => {
 
     expect((await request(app).get('/costoso')).status).toBe(200)
     expect((await request(app).get('/costoso')).status).toBe(429)
+  })
+})
+
+describe('P-1 · Protección de fuerza bruta para borrado de cuenta', () => {
+  async function buildDeletionApp(env) {
+    Object.assign(process.env, env)
+    vi.resetModules()
+    const {
+      accountDeletionIpLimiter,
+      accountDeletionUserLimiter,
+    } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    app.use((req, res, next) => {
+      req.user = { id_usuario: Number(req.get('x-test-user')) }
+      next()
+    })
+    app.delete(
+      '/account',
+      accountDeletionIpLimiter,
+      accountDeletionUserLimiter,
+      (req, res) => res.status(401).json({ success: false })
+    )
+    return app
+  }
+
+  it('limita los intentos fallidos por cuenta sin bloquear otras cuentas', async () => {
+    const app = await buildDeletionApp({
+      RATE_LIMIT_ACCOUNT_DELETE_IP_MAX: '20',
+      RATE_LIMIT_ACCOUNT_DELETE_USER_MAX: '2',
+    })
+    const as = (id) => request(app).delete('/account').set('x-test-user', String(id))
+
+    expect((await as(7)).status).toBe(401)
+    expect((await as(7)).status).toBe(401)
+    expect((await as(7)).status).toBe(429)
+    expect((await as(8)).status).toBe(401)
+  })
+
+  it('limita los intentos fallidos por IP aunque se usen distintas cuentas', async () => {
+    const app = await buildDeletionApp({
+      RATE_LIMIT_ACCOUNT_DELETE_IP_MAX: '2',
+      RATE_LIMIT_ACCOUNT_DELETE_USER_MAX: '20',
+    })
+    const as = (id) => request(app).delete('/account').set('x-test-user', String(id))
+
+    expect((await as(7)).status).toBe(401)
+    expect((await as(8)).status).toBe(401)
+    expect((await as(9)).status).toBe(429)
+  })
+})
+
+describe('P-1 · Concurrencia de exportaciones de empresa', () => {
+  it('rechaza una segunda exportación de la misma empresa hasta que termina la primera', async () => {
+    vi.resetModules()
+    const { companyExportConcurrencyLimiter } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    let releaseFirst
+    let markFirstStarted
+    const firstStarted = new Promise((resolve) => {
+      markFirstStarted = resolve
+    })
+    app.use((req, res, next) => {
+      req.company = { id_empresa: Number(req.get('x-test-company')) }
+      next()
+    })
+    app.get('/export', companyExportConcurrencyLimiter, (req, res) => {
+      if (req.get('x-hold') === 'true') {
+        releaseFirst = () => res.status(200).end()
+        markFirstStarted()
+        return
+      }
+      return res.status(200).end()
+    })
+
+    const firstRequest = request(app).get('/export')
+      .set('x-test-company', '31')
+      .set('x-hold', 'true')
+    const firstResponse = new Promise((resolve, reject) => {
+      firstRequest.end((error, response) => error ? reject(error) : resolve(response))
+    })
+    await firstStarted
+
+    const blocked = await request(app).get('/export').set('x-test-company', '31')
+    expect(blocked.status).toBe(429)
+    expect(blocked.headers).toHaveProperty('retry-after')
+
+    releaseFirst()
+    expect((await firstResponse).status).toBe(200)
+    expect((await request(app).get('/export').set('x-test-company', '31')).status).toBe(200)
   })
 })

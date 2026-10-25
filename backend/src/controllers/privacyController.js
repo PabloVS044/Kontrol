@@ -1,13 +1,11 @@
 import bcrypt from 'bcrypt'
 import { randomUUID } from 'node:crypto'
+import { pipeline } from 'node:stream/promises'
 import jwt from 'jsonwebtoken'
 import pool from '../db/pool.js'
 import { isMongoReady } from '../db/mongo.js'
-import Conversation from '../models/Conversation.js'
-import Message from '../models/Message.js'
-import AgentConversation from '../models/AgentConversation.js'
-import AgentMessage from '../models/AgentMessage.js'
 import { prepareCompanyDataExport } from '../services/companyDataExport.js'
+import { processMongoAccountDeletion } from '../services/accountDeletionOutbox.js'
 import { disconnectUserSockets } from '../socket/index.js'
 import { logger } from '../utils/logger.js'
 
@@ -24,44 +22,6 @@ const verifyGoogleReauthentication = (token, userId) => {
   }
 }
 
-async function removeMongoAccountData(userId) {
-  await AgentMessage.deleteMany({ userId })
-  await AgentConversation.deleteMany({ userId })
-
-  for await (const conversation of Conversation.find({ participants: userId }).cursor()) {
-    const participants = conversation.participants.filter((participant) => participant !== userId)
-    const participantInfo = conversation.participantInfo.filter((participant) => participant.id !== userId)
-    const conversationId = conversation._id
-
-    await Message.deleteMany({ conversationId, senderId: userId })
-    await Message.updateMany({ conversationId }, { $pull: { readBy: userId } })
-
-    if (participants.length === 0) {
-      await Message.deleteMany({ conversationId })
-      await Conversation.deleteOne({ _id: conversationId })
-      continue
-    }
-
-    const lastMessage = await Message.findOne({ conversationId }).sort({ createdAt: -1 }).lean()
-    const update = {
-      $set: {
-        participants,
-        participantInfo,
-        lastMessage: lastMessage
-          ? {
-              text: lastMessage.text,
-              senderId: lastMessage.senderId,
-              type: lastMessage.type,
-              createdAt: lastMessage.createdAt,
-            }
-          : null,
-      },
-      $unset: { [`unreadCounts.${userId}`]: '' },
-    }
-    await Conversation.updateOne({ _id: conversationId }, update)
-  }
-}
-
 export const exportCompanyData = async (req, res, next) => {
   if (!isMongoReady()) {
     return res.status(503).json({
@@ -71,12 +31,52 @@ export const exportCompanyData = async (req, res, next) => {
   }
 
   const client = await pool.connect()
+  let transactionStarted = false
+  let stream
+  let interrupted = false
+  let released = false
+  const abortController = new AbortController()
+  const releaseClient = async () => {
+    if (released) return
+    released = true
+    if (transactionStarted) {
+      try {
+        await client.query('ROLLBACK')
+      } catch (error) {
+        logger.error('Could not roll back the company data export transaction:', error)
+      }
+    }
+    client.release()
+  }
+  const abortExport = () => {
+    if (res.writableEnded) return
+    interrupted = true
+    abortController.abort()
+    stream?.destroy(new Error('Export download was interrupted.'))
+  }
+  const handleClose = () => {
+    if (!res.writableEnded) abortExport()
+  }
+  req.once('aborted', abortExport)
+  res.once('close', handleClose)
+  const timeout = setTimeout(abortExport, 15 * 60 * 1000)
+  timeout.unref?.()
+
   try {
     await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY')
-    const stream = await prepareCompanyDataExport(client, {
+    transactionStarted = true
+    await client.query("SET LOCAL statement_timeout = '10s'")
+    await client.query("SET LOCAL idle_in_transaction_session_timeout = '30s'")
+    if (interrupted) return
+
+    stream = await prepareCompanyDataExport(client, {
       companyId: req.company.id_empresa,
       userId: req.user.id_usuario,
     })
+    if (interrupted) {
+      stream.destroy()
+      return
+    }
 
     res
       .status(200)
@@ -89,33 +89,24 @@ export const exportCompanyData = async (req, res, next) => {
         Vary: 'Authorization',
       })
 
-    stream.on('error', (error) => {
-      logger.error('Company data export stream failed:', error)
+    await pipeline(stream, res, { signal: abortController.signal })
+  } catch (error) {
+    if (interrupted || abortController.signal.aborted) {
+      logger.info('Company data export was interrupted by the client or its timeout.')
+    } else {
+      logger.error('Company data export failed:', error)
       if (res.headersSent) res.destroy(error)
       else next(error)
-    })
-    res.on('close', () => {
-      if (!res.writableEnded) stream.destroy(new Error('Export download was interrupted.'))
-    })
-    stream.pipe(res)
-  } catch (error) {
-    try {
-      await client.query('ROLLBACK')
-    } finally {
-      client.release()
     }
-    next(error)
+  } finally {
+    clearTimeout(timeout)
+    req.removeListener('aborted', abortExport)
+    res.removeListener('close', handleClose)
+    await releaseClient()
   }
 }
 
 export const deleteOwnAccount = async (req, res) => {
-  if (!isMongoReady()) {
-    return res.status(503).json({
-      success: false,
-      message: 'Account deletion is temporarily unavailable because conversation storage is offline.',
-    })
-  }
-
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
@@ -140,8 +131,6 @@ export const deleteOwnAccount = async (req, res) => {
       await client.query('ROLLBACK')
       return invalidCredentials(res)
     }
-
-    await removeMongoAccountData(user.id_usuario)
 
     const memberships = await client.query(
       `SELECT eu.id_empresa, re.nombre AS rol_empresa
@@ -221,8 +210,20 @@ export const deleteOwnAccount = async (req, res) => {
       [`deleted-${user.id_usuario}-${randomUUID()}@account.invalid`, user.id_usuario]
     )
 
+    await client.query(
+      `INSERT INTO public.account_mongo_deletion_outbox (id_usuario)
+       VALUES ($1)
+       ON CONFLICT (id_usuario) DO NOTHING`,
+      [user.id_usuario]
+    )
     await client.query('COMMIT')
     disconnectUserSockets(user.id_usuario)
+    let mongoCleanup = 'pending_retry'
+    try {
+      if (await processMongoAccountDeletion(user.id_usuario)) mongoCleanup = 'completed'
+    } catch (error) {
+      logger.error('MongoDB account data cleanup was queued for retry:', error)
+    }
     return res.json({
       success: true,
       data: {
@@ -230,6 +231,7 @@ export const deleteOwnAccount = async (req, res) => {
         companyRecords: 'retained_for_business_continuity',
         retentionPeriod: 'not_defined_in_the_current_policy',
         externalProviders: 'not_deleted_by_this_operation',
+        mongoConversationData: mongoCleanup,
         ownerCompanies: memberships.rows
           .filter(({ rol_empresa }) => rol_empresa === 'owner')
           .map(({ id_empresa }) => id_empresa),

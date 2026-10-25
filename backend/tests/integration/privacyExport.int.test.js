@@ -167,6 +167,7 @@ describe('P1 — exportación JSON contra PostgreSQL real', () => {
 
     expect(response.status).toBe(200)
     expect(response.body.data.account).toBe('disabled_and_anonymized')
+    expect(response.body.data.mongoConversationData).toBe('completed')
 
     const account = await query(
       `SELECT nombre, apellido, email, password_hash, telefono, google_id, activo
@@ -201,6 +202,11 @@ describe('P1 — exportación JSON contra PostgreSQL real', () => {
     expect(membership.rows).toHaveLength(0)
     expect(newOwner.rows[0].role).toBe('owner')
     expect(retainedProject.rows).toHaveLength(1)
+    const pendingMongoCleanup = await query(
+      'SELECT id_usuario FROM public.account_mongo_deletion_outbox WHERE id_usuario = $1',
+      [ownerContext.owner.id_usuario]
+    )
+    expect(pendingMongoCleanup.rows).toHaveLength(0)
 
     const revoked = await api()
       .get('/api/auth/me')

@@ -5,6 +5,10 @@ import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
 import {
+  companyExportConcurrencyLimiter,
+  companyExportRateLimiter,
+} from '../middleware/rateLimit.js'
+import {
   acceptCompanyInvitation,
   createCompany,
   createOrGetCompanyInvitation,
@@ -51,6 +55,8 @@ router.get(
   requireAuth,
   requireCompany,
   requireCompanyRole('owner', 'admin'),
+  companyExportRateLimiter,
+  companyExportConcurrencyLimiter,
   exportCompanyData
 )
 router.post('/', requireAuth, validate(createCompanySchema), createCompany)

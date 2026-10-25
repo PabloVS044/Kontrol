@@ -49,7 +49,7 @@ describe('company data export scopes', () => {
     expect(scopes.has('global_audit')).toBe(false)
   })
 
-  it('streams valid JSON for tenant rows and releases its snapshot on completion', async () => {
+  it('streams valid JSON scoped to the company without exposing sensitive fields', async () => {
     conversationFind.mockReturnValue({
       lean: () => ({
         cursor: async function* () {
@@ -135,7 +135,6 @@ describe('company data export scopes', () => {
           }
           return { rows: [] }
         }
-        if (sql === 'ROLLBACK') return { rows: [] }
         throw new Error(`Unexpected query: ${sql}`)
       }),
       release: vi.fn(),
@@ -166,8 +165,8 @@ describe('company data export scopes', () => {
     })
     expect(output).not.toContain('other@example.test')
     expect(output).not.toContain('message from another user')
-    expect(client.release).toHaveBeenCalledOnce()
-    expect(client.query).toHaveBeenCalledWith('ROLLBACK')
+    expect(client.release).not.toHaveBeenCalled()
+    expect(client.query).not.toHaveBeenCalledWith('ROLLBACK')
     const evidenceQuery = client.query.mock.calls.find(([sql]) =>
       sql.includes('FROM public."evidencia" t')
     )[0]

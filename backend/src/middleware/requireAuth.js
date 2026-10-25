@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import pool from '../db/pool.js'
+import { isSessionTokenPayload } from '../auth/sessionToken.js'
 
 /**
  * Verifies the Bearer JWT in the Authorization header and attaches
@@ -23,9 +24,8 @@ const requireAuth = async (req, res, next) => {
     return res.status(401).json({ success: false, message: 'Invalid or expired token.' })
   }
 
-  if (payload.token_version === undefined) {
-    req.user = payload
-    return next()
+  if (!isSessionTokenPayload(payload)) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired token.' })
   }
 
   try {
@@ -34,7 +34,7 @@ const requireAuth = async (req, res, next) => {
       [payload.id_usuario]
     )
     const row = account.rows[0]
-    if (!row?.activo || (payload.token_version !== undefined && row.token_version !== payload.token_version)) {
+    if (!row?.activo || row.token_version !== payload.token_version) {
       return res.status(401).json({ success: false, message: 'Account is unavailable.' })
     }
     req.user = payload

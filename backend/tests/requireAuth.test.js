@@ -25,17 +25,48 @@ beforeEach(() => {
 })
 
 describe('requireAuth middleware (JWT)', () => {
-  it('acepta un token válido, adjunta el payload en req.user y llama next()', () => {
-    const payload = { id_usuario: 7, email: 'ana@kontrol.gt', nombre_rol: 'admin' }
+  it('acepta un token de sesión válido, adjunta el payload en req.user y llama next()', async () => {
+    pool.query.mockResolvedValue({ rows: [{ activo: true, token_version: 1 }] })
+    const payload = { id_usuario: 7, email: 'ana@kontrol.gt', nombre_rol: 'admin', token_version: 1 }
     const token = jwt.sign(payload, SECRET)
     const req = { headers: { authorization: `Bearer ${token}` } }
     const res = buildRes()
     const next = vi.fn()
 
-    requireAuth(req, res, next)
+    await requireAuth(req, res, next)
 
     expect(next).toHaveBeenCalledOnce()
     expect(req.user).toMatchObject(payload)
+  })
+
+  it('rechaza tokens legados que no incluyen token_version', async () => {
+    const token = jwt.sign({ id_usuario: 7, email: 'ana@kontrol.gt' }, SECRET)
+    const req = { headers: { authorization: `Bearer ${token}` } }
+    const res = buildRes()
+    const next = vi.fn()
+
+    await requireAuth(req, res, next)
+
+    expect(res.status).toHaveBeenCalledWith(401)
+    expect(pool.query).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
+  })
+
+  it('rechaza tokens con un propósito distinto de sesión', async () => {
+    const token = jwt.sign({
+      id_usuario: 7,
+      token_version: 1,
+      purpose: 'account-deletion',
+    }, SECRET)
+    const req = { headers: { authorization: `Bearer ${token}` } }
+    const res = buildRes()
+    const next = vi.fn()
+
+    await requireAuth(req, res, next)
+
+    expect(res.status).toHaveBeenCalledWith(401)
+    expect(pool.query).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
   })
 
   it('responde 401 cuando no hay header Authorization', () => {

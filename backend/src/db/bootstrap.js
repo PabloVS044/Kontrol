@@ -9,6 +9,22 @@ export const ensureDatabaseSchema = async () => {
   `)
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.account_mongo_deletion_outbox (
+      id_usuario integer PRIMARY KEY
+        REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+      attempts integer NOT NULL DEFAULT 0,
+      available_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      locked_until timestamp with time zone,
+      created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS account_mongo_deletion_outbox_available_idx
+      ON public.account_mongo_deletion_outbox (available_at, locked_until)
+  `)
+
+  await pool.query(`
     ALTER TABLE public.empresa
       ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
   `)

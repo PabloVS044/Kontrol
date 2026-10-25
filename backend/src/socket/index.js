@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import Conversation from '../models/Conversation.js'
 import Message from '../models/Message.js'
 import pool from '../db/pool.js'
+import { isSessionTokenPayload } from '../auth/sessionToken.js'
 import {
   buildMessagePreview,
   formatConversation,
@@ -145,12 +146,13 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
     if (!token) return next(new Error('Authentication required'))
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET)
+      if (!isSessionTokenPayload(payload)) return next(new Error('Invalid or expired token'))
       const account = await pool.query(
         'SELECT activo, token_version FROM public.usuario WHERE id_usuario = $1',
         [payload.id_usuario]
       )
       const row = account.rows[0]
-      if (!row?.activo || (payload.token_version !== undefined && row.token_version !== payload.token_version)) {
+      if (!row?.activo || row.token_version !== payload.token_version) {
         return next(new Error('Account is unavailable'))
       }
       socket.user = payload

@@ -28,7 +28,7 @@ vi.mock('../src/models/AgentMessage.js', () => ({
 import request from 'supertest'
 import { buildTestApp, companyMembership, noMembership, signToken } from './helpers/authTestApp.js'
 
-const app = buildTestApp()
+const app = buildTestApp({ mockSessionAccount: false })
 
 async function* emptyCursor() {}
 
@@ -44,6 +44,18 @@ beforeEach(() => {
   mocks.agentConversationDeleteMany.mockResolvedValue({})
   mocks.agentMessageDeleteMany.mockResolvedValue({})
 })
+
+function mockDeletionWorker(userId = 7) {
+  mocks.query.mockImplementation(async (sql) => {
+    if (sql.includes('SELECT activo, token_version')) {
+      return { rows: [{ activo: true, token_version: 1 }] }
+    }
+    if (sql.includes('SET locked_until')) {
+      return { rows: [{ id_usuario: userId, attempts: 1 }] }
+    }
+    return { rows: [] }
+  })
+}
 
 describe('privacy endpoints authorization', () => {
   it('blocks an account from exporting a company it does not belong to', async () => {
@@ -88,7 +100,7 @@ describe('privacy endpoints authorization', () => {
 
   it('deletes only the authenticated account, even if a different user ID is submitted', async () => {
     mocks.isMongoReady.mockReturnValue(true)
-    mocks.query.mockResolvedValueOnce({ rows: [{ activo: true, token_version: 1 }] })
+    mockDeletionWorker()
     mocks.bcryptCompare.mockResolvedValue(true)
 
     const client = {
@@ -111,18 +123,57 @@ describe('privacy endpoints authorization', () => {
 
     expect(response.status).toBe(200)
     expect(response.body.data.account).toBe('disabled_and_anonymized')
+    expect(response.body.data.mongoConversationData).toBe('completed')
     expect(client.query).toHaveBeenCalledWith(
       expect.stringContaining('WHERE id_usuario = $1'),
       [7]
     )
-    expect(client.query.mock.calls.at(-2)[1][1]).toBe(7)
+    const anonymizeCall = client.query.mock.calls.find(([sql]) =>
+      sql.includes("SET nombre = 'Cuenta eliminada'")
+    )
+    expect(anonymizeCall[1][1]).toBe(7)
+    expect(client.query.mock.calls.findIndex(([sql]) =>
+      sql.includes('INSERT INTO public.account_mongo_deletion_outbox')
+    )).toBeLessThan(client.query.mock.calls.findIndex(([sql]) => sql === 'COMMIT'))
     expect(mocks.agentMessageDeleteMany).toHaveBeenCalledWith({ userId: 7 })
     expect(mocks.agentConversationDeleteMany).toHaveBeenCalledWith({ userId: 7 })
   })
 
+  it('commits account deletion and leaves Mongo cleanup queued when MongoDB is offline', async () => {
+    mocks.query.mockImplementation(async (sql) => {
+      if (sql.includes('SELECT activo, token_version')) {
+        return { rows: [{ activo: true, token_version: 1 }] }
+      }
+      return { rows: [] }
+    })
+    mocks.isMongoReady.mockReturnValue(false)
+    mocks.bcryptCompare.mockResolvedValue(true)
+    const client = {
+      query: vi.fn(async (sql) => {
+        if (sql.includes('SELECT id_usuario, password_hash')) {
+          return { rows: [{ id_usuario: 7, password_hash: 'hash', google_id: null, activo: true }] }
+        }
+        if (sql.includes("WHERE nombre = 'owner'")) return { rows: [{ id_rol_empresa: 1 }] }
+        return { rows: [] }
+      }),
+      release: vi.fn(),
+    }
+    mocks.connect.mockResolvedValue(client)
+
+    const response = await request(app)
+      .delete('/api/auth/account')
+      .set('Authorization', `Bearer ${signToken()}`)
+      .send({ password: 'correct-password' })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data.mongoConversationData).toBe('pending_retry')
+    expect(client.query).toHaveBeenCalledWith('COMMIT')
+    expect(mocks.agentMessageDeleteMany).not.toHaveBeenCalled()
+  })
+
   it('transfers an owner company to an active member before removing the old owner', async () => {
     mocks.isMongoReady.mockReturnValue(true)
-    mocks.query.mockResolvedValueOnce({ rows: [{ activo: true, token_version: 1 }] })
+    mockDeletionWorker()
     mocks.bcryptCompare.mockResolvedValue(true)
     const client = {
       query: vi.fn(async (sql) => {
@@ -158,7 +209,7 @@ describe('privacy endpoints authorization', () => {
 
   it('deactivates an owner company when there is no active successor', async () => {
     mocks.isMongoReady.mockReturnValue(true)
-    mocks.query.mockResolvedValueOnce({ rows: [{ activo: true, token_version: 1 }] })
+    mockDeletionWorker()
     mocks.bcryptCompare.mockResolvedValue(true)
     const client = {
       query: vi.fn(async (sql) => {
