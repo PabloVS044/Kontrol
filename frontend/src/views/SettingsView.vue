@@ -146,6 +146,14 @@
     </form>
     </section>
 
+    <!-- PAY-1 — El plan es de la empresa: todos lo ven; solo el owner lo cambia
+         desde /billing. -->
+    <section id="plan" class="set-card set-card--link">
+      <h2 class="sc-title">{{ $t('settings.billing.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.billing.hint', { plan: $t(`billing.plans.${authStore.planCode}.name`) }) }}</p>
+      <RouterLink class="sc-link" to="/billing">{{ $t('settings.billing.link') }} →</RouterLink>
+    </section>
+
     <!-- Integraciones conserva su ruta y sus permisos; aquí solo se enlaza. -->
     <section v-if="canManageCompany" class="set-card set-card--link">
       <h2 class="sc-title">{{ $t('settings.integrations.title') }}</h2>
