@@ -126,6 +126,8 @@ Todas viven en `backend/.env` (copiado desde `backend/.env.example`). **Nunca** 
 | `AGENT_API_URL` | — | Override opcional de la base OpenAI-compatible del agente. Default: `https://model.clawstitch.com/v1`. |
 | `AGENT_MODEL` | — | Modelo del agente (default `Qwen/Qwen3.6-27B-FP8`). |
 | `AGENT_TEMPERATURE` / `AGENT_MAX_TOKENS` / `AGENT_MAX_STEPS` | — | Parámetros de inferencia del agente. |
+| `BILLING_PROVIDER` | — | Pasarela de pago (default `stripe`). Ver [pagos y suscripciones](docs/pagos-suscripciones.md). |
+| `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` | para pagos | **Solo claves de modo de prueba** (`sk_test_…`): el backend no arranca con otra. Vacías = todas las empresas en el plan Gratis. |
 
 > Para producción/despliegue en VM existe `.env.deploy.example` + `scripts/deploy.sh`. Eso es otro flujo, no necesario para desarrollo local.
 
@@ -423,7 +425,7 @@ En CI las corre `.github/workflows/integration-regression.yml` en cada PR a `mai
 
 ## Documentación legal
 
-El [expediente legal de Kontrol](docs/legal/README.md) reúne el marco para Guatemala, los borradores de Términos y Condiciones y Política de Privacidad, el inventario verificable de datos y la revisión de proveedores. Incluye el alcance de Stripe exclusivamente en modo test, sin cobros reales.
+El [expediente legal de Kontrol](docs/legal/README.md) reúne el marco para Guatemala, los borradores de Términos y Condiciones y Política de Privacidad, el inventario verificable de datos y la revisión de proveedores. Incluye el alcance de Stripe exclusivamente en modo test, sin cobros reales; el diseño del módulo de suscripciones y la limitación del proveedor en Guatemala están en [docs/pagos-suscripciones.md](docs/pagos-suscripciones.md).
 
 La versión pública resumida está en la vista `/legal`, enlazada desde el pie de página, con el contacto `support@kontrol.it.com`. Al entrar por primera vez, cada usuario debe aceptar los Términos en un aviso bloqueante; la aceptación se guarda en el navegador y se vuelve a pedir al subir `LEGAL_VERSION` en `frontend/src/utils/legal.js`.
 
