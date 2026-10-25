@@ -177,7 +177,7 @@ onBeforeUnmount(() => {
 .csa-wrap {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: calc(var(--k-z-system) - 1);
   background: #111111;
   pointer-events: all;
 }

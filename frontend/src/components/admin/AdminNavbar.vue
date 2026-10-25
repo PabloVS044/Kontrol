@@ -65,7 +65,7 @@ function closeMenu()   { isMenuOpen.value = false }
   border-bottom: 1px solid #1f1f1f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 100;
+  z-index: var(--k-z-nav);
   display: flex;
   align-items: stretch;
 }
@@ -185,7 +185,7 @@ function closeMenu()   { isMenuOpen.value = false }
   width: 24px;
   height: 20px;
   position: relative;
-  z-index: 101;
+  z-index: var(--k-z-top);
 }
 
 .hamburger .line {

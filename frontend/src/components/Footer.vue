@@ -59,7 +59,7 @@ const year = new Date().getFullYear();
   padding: 60px 0 0;
   box-sizing: border-box;
   position: relative;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
 }
 
 .footer-inner {

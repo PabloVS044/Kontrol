@@ -14,7 +14,7 @@
   width: auto;
   height: 40px;
   position: relative;
-  z-index: 2;
+  z-index: var(--k-z-raised);
   flex-wrap: nowrap;
 }
 

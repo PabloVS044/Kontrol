@@ -32,7 +32,7 @@ defineProps({
 .app-surface__scrim {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: var(--k-surface-scrim);
   pointer-events: none;
 }

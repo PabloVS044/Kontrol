@@ -50,7 +50,7 @@ const showScene = useVisibleOnce(containerRef, { enabled: !reduceMotion })
   border-radius: 50%;
   background: radial-gradient(circle, rgba(202, 168, 96, 0.55) 0%, rgba(202, 168, 96, 0.18) 40%, transparent 70%);
   filter: blur(40px);
-  z-index: -1;
+  z-index: var(--k-z-negative);
   pointer-events: none;
 }
 .kontrol-logo-3d__fallback {
