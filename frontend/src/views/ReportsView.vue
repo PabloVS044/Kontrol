@@ -470,6 +470,14 @@ const activeFilterLabel = computed(
  * the full list — so the download always matches the filter on screen.
  */
 async function runExport(format) {
+  // PAY-1 — Exportar es del plan Pro. El archivo se arma en el navegador con
+  // datos que el usuario ya ve, así que el corte va antes de generarlo; el
+  // backend rechaza además el registro de la exportación.
+  if (!authStore.hasFeature('report_export')) {
+    exportError.value = t('billing.gate.exportLocked')
+    return
+  }
+
   exportingFormat.value = format
   exportError.value = null
 
