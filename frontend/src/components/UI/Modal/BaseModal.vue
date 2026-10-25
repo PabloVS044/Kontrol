@@ -39,7 +39,7 @@ function close() {
   position: fixed;
   inset: 0;
   z-index: var(--k-z-modal-overlay);
-  background: rgba(var(--k-color-black-rgb), 0.78);
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;

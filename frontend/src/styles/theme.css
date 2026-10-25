@@ -114,6 +114,8 @@
   --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
   --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.5);
   --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+  --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.78);
 
   /* ── estados de interacción ─────────────────────────────── */
   --k-state-hover-brightness: 1.15;
@@ -278,13 +280,23 @@
   /* Escalera con hueco entre niveles para poder insertar capas sin renumerar.
      `modal` va justo encima de `modal-overlay` a propósito: son la misma capa
      visual, el overlay solo tiene que quedar por debajo de su propio diálogo. */
+  /* Entre dos capas vecinas: calc(var(--k-z-x) ± n), con n ≤ 2. */
   --k-z-negative: -1;
+  --k-z-background: 0;
   --k-z-base: 1;
+  --k-z-raised: 2;
+  --k-z-top: 3;
+  --k-z-sticky: 10;
+  --k-z-elevated: 20;
+  --k-z-popover: 40;
   --k-z-nav: 100;
   --k-z-dropdown: 200;
+  --k-z-floating: 500;
   --k-z-modal-overlay: 1000;
   --k-z-modal: 1001;
-  --k-z-tooltip: 2000;
+  --k-z-overlay: 1400;
+  --k-z-overlay-top: 2000;
+  --k-z-system: 10000;
 
   /* ── fondo animado ──────────────────────────────────────── */
   /* Color de las líneas de `Waves` (App.vue). Antes leía `--Text`, el mismo
@@ -310,6 +322,11 @@
   --k-surface-scrim: rgba(var(--k-canvas-rgb), 0.6);
   --k-surface-panel: rgba(var(--k-canvas-rgb), 0.6);
   --k-surface-panel-border: transparent;
+  --k-surface-warm: #161310;
+  --k-surface-warm-2: #1f1a13;
+  --k-surface-floating: #0f0f0f;
+  --k-surface-floating-2: #111111;
+  --k-surface-floating-3: #1a1a1a;
 }
 
 /* Tema claro: propuesta derivada del oscuro, pendiente de validación de
@@ -351,6 +368,8 @@
   --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
   --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
   --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+  --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.4);
 
   --k-shade-0: #ededed;
   --k-shade-1: #eaeaea;
@@ -365,6 +384,11 @@
   --k-shade-8: #a8a8a8;
   --k-surface-panel: #d2cec6;
   --k-surface-panel-border: #b5ae9f;
+  --k-surface-warm: #efebe3;
+  --k-surface-warm-2: #e7e1d6;
+  --k-surface-floating: #e2ddd3;
+  --k-surface-floating-2: #d9d3c7;
+  --k-surface-floating-3: #d0c9bc;
   --k-gray-1: #535353;
   --k-gray-2: #535353;
   --k-gray-3: #535353;
@@ -429,6 +453,8 @@
     --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
     --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
     --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+    --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.15);
+    --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.4);
 
     --k-shade-0: #ededed;
     --k-shade-1: #eaeaea;
@@ -443,6 +469,11 @@
     --k-shade-8: #a8a8a8;
     --k-surface-panel: #d2cec6;
     --k-surface-panel-border: #b5ae9f;
+    --k-surface-warm: #efebe3;
+    --k-surface-warm-2: #e7e1d6;
+    --k-surface-floating: #e2ddd3;
+    --k-surface-floating-2: #d9d3c7;
+    --k-surface-floating-3: #d0c9bc;
     --k-gray-1: #535353;
     --k-gray-2: #535353;
     --k-gray-3: #535353;

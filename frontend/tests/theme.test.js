@@ -65,11 +65,11 @@ const contrast = (a, b) => {
 // El último valor es el pico del fondo animado (en claro, estimado).
 const THEMES = {
   dark: {
-    surfaces: ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '#272727'],
+    surfaces: ['#000000', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-warm', '--k-surface-warm-2', '--k-surface-floating-3', '#272727'],
     ground: '#111111',
   },
   light: {
-    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-panel', '#c9c9c9'],
+    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-warm', '--k-surface-warm-2', '--k-surface-floating-3', '--k-surface-panel', '#c9c9c9'],
     ground: '--k-shade-3',
   },
 }
@@ -154,12 +154,21 @@ describe('theme.css — catálogo de tokens', () => {
     transicion: ['--k-transition-ui'],
     capas: [
       '--k-z-negative',
+      '--k-z-background',
       '--k-z-base',
+      '--k-z-raised',
+      '--k-z-top',
+      '--k-z-sticky',
+      '--k-z-elevated',
+      '--k-z-popover',
       '--k-z-nav',
       '--k-z-dropdown',
+      '--k-z-floating',
       '--k-z-modal-overlay',
       '--k-z-modal',
-      '--k-z-tooltip',
+      '--k-z-overlay',
+      '--k-z-overlay-top',
+      '--k-z-system',
     ],
     superficies: [
       '--k-surface-primary-tint',
@@ -167,7 +176,13 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-hover-subtle',
       '--k-surface-scrim',
       '--k-surface-panel',
+      '--k-overlay-backdrop',
       '--k-surface-panel-border',
+      '--k-surface-warm',
+      '--k-surface-warm-2',
+      '--k-surface-floating',
+      '--k-surface-floating-2',
+      '--k-surface-floating-3',
     ],
     rampaNeutra: [
       '--k-shade-0', '--k-shade-1', '--k-shade-2', '--k-shade-3', '--k-shade-3b',
@@ -222,7 +237,7 @@ describe('theme.css — catálogo de tokens', () => {
   }
 
   it('mantiene la escalera de capas ordenada y con hueco entre niveles', () => {
-    const orden = ['base', 'nav', 'dropdown', 'modal-overlay', 'modal', 'tooltip']
+    const orden = ['negative', 'background', 'base', 'raised', 'top', 'sticky', 'elevated', 'popover', 'nav', 'dropdown', 'floating', 'modal-overlay', 'modal', 'overlay', 'overlay-top', 'system']
     const valores = orden.map((n) => {
       const m = themeCss.match(new RegExp(`--k-z-${n}:\\s*(-?\\d+);`))
       expect(m, `falta --k-z-${n}`).not.toBeNull()
@@ -231,7 +246,7 @@ describe('theme.css — catálogo de tokens', () => {
     // Estrictamente creciente: una capa nunca debe empatar con la de al lado.
     for (let i = 1; i < valores.length; i++) expect(valores[i]).toBeGreaterThan(valores[i - 1])
     // El overlay del modal queda por debajo de su propio diálogo.
-    expect(valores[4]).toBeGreaterThan(valores[3])
+    expect(valores[orden.indexOf('modal')]).toBeGreaterThan(valores[orden.indexOf('modal-overlay')])
   })
 
   it('mantiene la rampa neutra realmente neutra (R=G=B)', () => {
