@@ -32,6 +32,16 @@ export const useAuthStore = defineStore('auth', {
       return ['owner', 'admin', 'manager'].includes(role)
     },
     isSuperUser:     (state) => state.user?.nombre_rol === 'super_user',
+    // PAY-1 — Plan de la empresa activa, tal como lo resolvió el backend. Solo
+    // decide qué se muestra: la autorización real la hace el servidor.
+    planCode:        (state) => state.accessContext?.plan?.code ?? 'free',
+    hasFeature:      (state) => (feature) => (state.accessContext?.plan?.features ?? []).includes(feature),
+    isAtLimit:       (state) => (resource) => {
+      const plan = state.accessContext?.plan
+      const limit = plan?.limits?.[resource]
+      if (limit === null || limit === undefined) return false
+      return (plan?.usage?.[resource] ?? 0) >= limit
+    },
     // Legacy alias kept for any remaining references
     idEmpresa:       (state) => state.empresaActual?.id_empresa ?? null,
   },
