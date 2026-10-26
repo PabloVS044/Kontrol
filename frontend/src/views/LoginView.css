@@ -29,6 +29,7 @@
 /* ── Layout ── */
 .login-page {
   position: relative;
+  color: var(--k-color-text);
   min-height: 100vh;
   display: flex;
   /* TOKEN PENDIENTE: la identidad v2 define Manrope (--k-font-sans), pero el

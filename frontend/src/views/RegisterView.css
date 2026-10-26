@@ -1,6 +1,7 @@
 /* ── Layout ── */
 .register-page {
   position: relative;
+  color: var(--k-color-text);
   min-height: 100vh;
   display: flex;
   font-family: var(--k-font-sans);
