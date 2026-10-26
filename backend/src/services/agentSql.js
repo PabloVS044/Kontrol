@@ -209,12 +209,14 @@ async function setupAgentScope(client, scope) {
         )`
   )
 
+  // Inventory views follow inventory_project_ids, the same list the inventory
+  // pages check, so a project the user cannot open there stays hidden here.
   await createTempView(
     client,
     'producto',
     `SELECT pr.*
      FROM public.producto pr
-     WHERE pr.id_proyecto = ANY(${projectIdsSql})`
+     WHERE pr.id_proyecto = ANY(${inventoryProjectIdsSql})`
   )
 
   await createTempView(
@@ -223,7 +225,7 @@ async function setupAgentScope(client, scope) {
     `SELECT pp.*
      FROM public.producto_proveedor pp
      JOIN public.producto pr ON pr.id_producto = pp.id_producto
-     WHERE pr.id_proyecto = ANY(${projectIdsSql})`
+     WHERE pr.id_proyecto = ANY(${inventoryProjectIdsSql})`
   )
 
   await createTempView(
@@ -236,7 +238,7 @@ async function setupAgentScope(client, scope) {
        FROM public.producto_proveedor pp
        JOIN public.producto pr ON pr.id_producto = pp.id_producto
        WHERE pp.id_proveedor = pv.id_proveedor
-         AND pr.id_proyecto = ANY(${projectIdsSql})
+         AND pr.id_proyecto = ANY(${inventoryProjectIdsSql})
      )
         OR EXISTS (
           SELECT 1
@@ -252,7 +254,7 @@ async function setupAgentScope(client, scope) {
     `SELECT mi.*
      FROM public.movimiento_inventario mi
      WHERE mi.id_empresa = ${idEmpresa}
-       AND mi.id_proyecto = ANY(${projectIdsSql})`
+       AND mi.id_proyecto = ANY(${inventoryProjectIdsSql})`
   )
 
   await createTempView(
