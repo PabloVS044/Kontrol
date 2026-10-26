@@ -1642,9 +1642,9 @@
       "exportOwnerOnly": "The complete export is available only to company owners and administrators.",
       "deleteTitle": "Delete my account",
       "deleteWhat": "Deletion is immediate and has no grace period. Your account is disabled, login credentials and contact details are removed, your personal AI conversations and chat messages are deleted. Anonymized technical references needed by business records remain; operational logs may still contain identifiable data.",
-      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is deactivated and its data archived. Other accounts are not deleted.",
-      "deleteDuration": "The current policy does not set a retention period for these business records. We therefore cannot promise a deletion date: they remain until a retention period is approved and implemented. This does not claim that a law requires their retention.",
-      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are not automatically deleted either.",
+      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is closed: its data can be downloaded for 30 days and is deleted within 60. Other accounts are not deleted.",
+      "deleteDuration": "For a company that is still in use, the current policy does not set a retention period for these records, so we cannot promise a deletion date while it stays active. To delete them, the owner can close the company. This does not claim that a law requires their retention.",
+      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are deleted only when the company is closed.",
       "password": "Current password (for password-based accounts)",
       "googleReauth": "Reauthenticate with Google",
       "reauthenticating": "Connecting to Google…",
@@ -1653,7 +1653,27 @@
       "deleteConfirm": "Delete my account now",
       "deleting": "Deleting account…",
       "finalConfirm": "This action is irreversible. Personal access will be deleted and the described business records will be retained. Do you want to continue?",
-      "error": "The operation could not be completed."
+      "error": "The operation could not be completed.",
+      "closure": {
+        "title": "Close the company",
+        "what": "Closing the company blocks its use, disables its invitations and integrations and opens a 30-day period to download its data. Afterwards all its records (projects, inventory, suppliers, sales, reports, evidence files and assistant history) are deleted no later than 60 days after the request, and backups no later than 90.",
+        "kept": "Member accounts, person-to-person chats, anything already sent to Slack, Teams, email, SMS or other integrations, and downloads someone already made are not deleted. You can cancel the closure while the download period is open.",
+        "confirmName": "Type the company name to confirm",
+        "skipWindow": "Delete without waiting 30 days (it can no longer be cancelled)",
+        "submit": "Close the company",
+        "submitting": "Closing the company…",
+        "finalConfirm": "You are about to close “{name}” and its data will be deleted. Do you want to continue?",
+        "googleReauthSuccess": "Google verified your identity. Confirm the company closure to continue.",
+        "inProgress": "This company is being closed. You can download its data until {exportUntil}. It will be deleted no later than {deleteBy}, and backups no later than {backupsBy}.",
+        "deleting": "This company is being deleted.",
+        "cancel": "Cancel the closure",
+        "cancelling": "Cancelling the closure…",
+        "cancelled": "The closure was cancelled. Invitations and integrations remain disabled: turn back on the ones you need.",
+        "certificatesTitle": "Closure certificates",
+        "certificatePending": "{name}: being closed, to be deleted no later than {deleteBy}.",
+        "certificateDeleted": "{name}: data deleted on {deletedAt}.",
+        "download": "Download certificate"
+      }
     }
   },
   "navbar": {
@@ -2378,7 +2398,7 @@
         },
         {
           "title": "6. How long we keep it",
-          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain; there is no defined period for deleting them, and copies held by external providers are not removed."
+          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain while the company is in use, and copies held by external providers are not removed. If you own a company, you can close it from Settings: you will have 30 days to download its data, and then its records, evidence files and assistant history are deleted no later than 60 days after the request, and backups no later than 90."
         },
         {
           "title": "7. Your rights",

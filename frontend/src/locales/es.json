@@ -1642,9 +1642,9 @@
       "exportOwnerOnly": "La exportación completa solo está disponible para propietarios y administradores de la empresa.",
       "deleteTitle": "Eliminar mi cuenta",
       "deleteWhat": "La eliminación es inmediata y no tiene período de gracia. Se desactiva tu cuenta, se borran tus credenciales y contacto de inicio de sesión, se eliminan tus conversaciones personales del asistente y tus mensajes de chat. Se conservan referencias técnicas anonimizadas que necesitan los registros del negocio; los registros de bitácora pueden conservar datos identificables.",
-      "deleteRetained": "Las ventas, gastos, proyectos y demás registros compartidos de la empresa no se borran. Si eres titular, la titularidad pasa al administrador o miembro activo disponible; si no queda nadie, la empresa se desactiva y sus datos quedan archivados. Las otras cuentas no se eliminan.",
-      "deleteDuration": "La política vigente no define un plazo de conservación para esos registros empresariales. Por ello no hay una fecha de borrado que podamos prometer: permanecen hasta que se apruebe y aplique un plazo de retención. Esto no afirma que una ley exija conservarlos.",
-      "deleteExternal": "Esta operación no borra datos ya enviados a Google, proveedores de correo/SMS, al servicio de IA, UploadThing ni otras integraciones. No existe un flujo que invoque una baja por cuenta en esos proveedores; pueden conservar sus propias copias y plazos, hoy no verificados. Los archivos usados por la empresa tampoco se eliminan automáticamente.",
+      "deleteRetained": "Las ventas, gastos, proyectos y demás registros compartidos de la empresa no se borran. Si eres titular, la titularidad pasa al administrador o miembro activo disponible; si no queda nadie, la empresa se cierra: hay 30 días para descargar sus datos y se eliminan a más tardar a los 60. Las otras cuentas no se eliminan.",
+      "deleteDuration": "Para una empresa que sigue en uso, la política vigente no define un plazo de conservación de esos registros, así que no hay una fecha de borrado que podamos prometer mientras siga activa. Para eliminarlos, el titular puede cerrar la empresa. Esto no afirma que una ley exija conservarlos.",
+      "deleteExternal": "Esta operación no borra datos ya enviados a Google, proveedores de correo/SMS, al servicio de IA, UploadThing ni otras integraciones. No existe un flujo que invoque una baja por cuenta en esos proveedores; pueden conservar sus propias copias y plazos, hoy no verificados. Los archivos de la empresa solo se eliminan al cerrarla.",
       "password": "Contraseña actual (si la cuenta usa contraseña)",
       "googleReauth": "Volver a autenticar con Google",
       "reauthenticating": "Conectando con Google…",
@@ -1653,7 +1653,27 @@
       "deleteConfirm": "Eliminar mi cuenta ahora",
       "deleting": "Eliminando cuenta…",
       "finalConfirm": "Esta acción es irreversible. Se borrará el acceso personal y se conservarán los registros empresariales descritos. ¿Quieres continuar?",
-      "error": "No se pudo completar la operación."
+      "error": "No se pudo completar la operación.",
+      "closure": {
+        "title": "Cerrar la empresa",
+        "what": "Al cerrar la empresa se bloquea su uso, se desactivan sus invitaciones e integraciones y se abre un plazo de 30 días para descargar sus datos. Después se eliminan todos sus registros (proyectos, inventario, proveedores, ventas, reportes, archivos de evidencias e historial del asistente) a más tardar a los 60 días de la solicitud, y las copias de respaldo a más tardar a los 90.",
+        "kept": "No se eliminan las cuentas de los miembros, los chats entre personas, lo ya enviado a Slack, Teams, correo, SMS u otras integraciones, ni las descargas que alguien haya hecho. Puedes anular el cierre mientras siga abierto el plazo de descarga.",
+        "confirmName": "Escribe el nombre de la empresa para confirmar",
+        "skipWindow": "Eliminar sin esperar los 30 días (ya no se podrá anular)",
+        "submit": "Cerrar la empresa",
+        "submitting": "Cerrando la empresa…",
+        "finalConfirm": "Vas a cerrar «{name}» y sus datos se eliminarán. ¿Quieres continuar?",
+        "googleReauthSuccess": "Google confirmó tu identidad. Confirma el cierre de la empresa para continuar.",
+        "inProgress": "Esta empresa está en cierre. Puedes descargar sus datos hasta el {exportUntil}. Se eliminarán a más tardar el {deleteBy} y las copias de respaldo, a más tardar el {backupsBy}.",
+        "deleting": "La eliminación de esta empresa está en curso.",
+        "cancel": "Anular el cierre",
+        "cancelling": "Anulando el cierre…",
+        "cancelled": "Se anuló el cierre. Las invitaciones e integraciones quedaron desactivadas: vuelve a activar las que necesites.",
+        "certificatesTitle": "Constancias de cierre",
+        "certificatePending": "{name}: en cierre, se eliminará a más tardar el {deleteBy}.",
+        "certificateDeleted": "{name}: datos eliminados el {deletedAt}.",
+        "download": "Descargar constancia"
+      }
     }
   },
   "navbar": {
@@ -2378,7 +2398,7 @@
         },
         {
           "title": "6. Cuánto tiempo los conservamos",
-          "body": "Los plazos de conservación por tipo de dato todavía no están definidos. Desde Configuración puedes solicitar la baja de tu cuenta: se desactiva y anonimiza tu perfil, se eliminan tus credenciales y membresías, tu historial personal del asistente y tus mensajes enviados en chats humanos. La conversación puede conservarse para los demás participantes. Los registros compartidos del negocio, archivos y bitácoras pueden conservarse; no hay un plazo definido para eliminarlos ni se borran las copias de proveedores externos."
+          "body": "Los plazos de conservación por tipo de dato todavía no están definidos. Desde Configuración puedes solicitar la baja de tu cuenta: se desactiva y anonimiza tu perfil, se eliminan tus credenciales y membresías, tu historial personal del asistente y tus mensajes enviados en chats humanos. La conversación puede conservarse para los demás participantes. Los registros compartidos del negocio, archivos y bitácoras pueden conservarse mientras la empresa siga en uso, y no se borran las copias de proveedores externos. Si eres titular de una empresa, puedes cerrarla desde Configuración: tendrás 30 días para descargar sus datos y después se eliminan sus registros, archivos de evidencia e historial del asistente a más tardar a los 60 días de la solicitud, y las copias de respaldo a más tardar a los 90."
         },
         {
           "title": "7. Tus derechos",
