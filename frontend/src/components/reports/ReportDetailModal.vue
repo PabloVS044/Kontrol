@@ -57,30 +57,30 @@ const projectName = computed(() =>
 
 <style scoped>
 .modal-overlay {
-  position: fixed; inset: 0; background: #000;
+  position: fixed; inset: 0; background: var(--k-overlay-backdrop);
   display: flex; align-items: center; justify-content: center; z-index: var(--k-z-modal-overlay);
 }
-.modal-box { background: #111; border: 1px solid #2a2a2a; width: 100%; max-width: 440px; padding: 24px; }
+.modal-box { background: var(--k-shade-3); border: 1px solid var(--k-shade-7); width: 100%; max-width: 440px; padding: 24px; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-title { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: #e8e4de; letter-spacing: 0.04em; }
-.modal-close { background: none; border: none; color: var(--TextFaint); font-size: 14px; cursor: pointer; line-height: 1; transition: color .2s; }
-.modal-close:hover { color: var(--TextSoft); }
+.modal-title { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: var(--k-color-text); letter-spacing: 0.04em; }
+.modal-close { background: none; border: none; color: var(--k-text-faint); font-size: 14px; cursor: pointer; line-height: 1; transition: color .2s; }
+.modal-close:hover { color: var(--k-text-soft); }
 .rdetail-body { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
-.rdetail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
-.rdetail-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--TextFaint); letter-spacing: 0.06em; text-transform: uppercase; }
-.rdetail-val { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--TextSoft); }
-.rdetail-val.dim { color: var(--TextFaint); }
-.rdetail-link { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--Primary); text-decoration: none; transition: opacity .2s; }
+.rdetail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--k-shade-4); }
+.rdetail-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--k-text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+.rdetail-val { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--k-text-soft); }
+.rdetail-val.dim { color: var(--k-text-faint); }
+.rdetail-link { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--k-color-primary); text-decoration: none; transition: opacity .2s; }
 .rdetail-link:hover { opacity: 0.7; }
 .type-tag {
-  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: #a78bfa;
-  background: rgba(167,139,250,0.08); padding: 2px 7px; letter-spacing: 0.04em;
+  font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--k-hue-violet);
+  background: rgba(var(--k-hue-violet-rgb), 0.08); padding: 2px 7px; letter-spacing: 0.04em;
 }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .btn-outline {
-  display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: #111111;
-  border: 1px solid #2a2a2a; color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px;
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-7); color: var(--k-text-muted); font-family: 'Manrope', sans-serif; font-size: 12px;
   font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
+.btn-outline:hover { border-color: var(--k-color-primary); color: var(--k-color-primary); }
 </style>

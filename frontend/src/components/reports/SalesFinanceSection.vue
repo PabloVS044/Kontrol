@@ -76,14 +76,14 @@
         <div v-if="loading" class="sf-state">{{ $t('reports.sales.loading') }}</div>
         <div v-else-if="!serie.length" class="sf-state">{{ $t('reports.sales.noData') }}</div>
         <svg v-else class="sf-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
-          <line v-for="g in 4" :key="g" x1="0" :y1="g * 36" x2="600" :y2="g * 36" stroke="#1a1a1a" stroke-width="1" />
+          <line v-for="g in 4" :key="g" x1="0" :y1="g * 36" x2="600" :y2="g * 36" stroke="var(--k-shade-4)" stroke-width="1" />
           <path :d="areaPath('ingreso')" fill="url(#sfIncomeGrad)" />
-          <path :d="linePath('ingreso')" fill="none" stroke="#caa860" stroke-width="2" />
-          <path :d="linePath('ganancia')" fill="none" stroke="#34d399" stroke-width="1.6" stroke-dasharray="5 3" />
+          <path :d="linePath('ingreso')" fill="none" stroke="var(--k-color-primary)" stroke-width="2" />
+          <path :d="linePath('ganancia')" fill="none" stroke="var(--k-hue-emerald)" stroke-width="1.6" stroke-dasharray="5 3" />
           <defs>
             <linearGradient id="sfIncomeGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#caa860" stop-opacity="0.25" />
-              <stop offset="100%" stop-color="#caa860" stop-opacity="0" />
+              <stop offset="0%" stop-color="var(--k-color-primary)" stop-opacity="0.25" />
+              <stop offset="100%" stop-color="var(--k-color-primary)" stop-opacity="0" />
             </linearGradient>
           </defs>
         </svg>
@@ -247,27 +247,27 @@ function areaPath(key) {
 .sf-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 .sf-select {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextSoft);
+  background: var(--k-shade-1); border: 1px solid var(--k-shade-7); color: var(--k-text-soft);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 6px 10px; outline: none;
 }
-.sf-select option { background: #111; }
+.sf-select option { background: var(--k-shade-3); }
 
 .sf-presets { display: flex; gap: 4px; }
 .sf-preset {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextMuted);
+  background: var(--k-shade-1); border: 1px solid var(--k-shade-7); color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600;
   padding: 6px 12px; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
 }
-.sf-preset:hover { color: var(--TextSoft); }
-.sf-preset.active { color: var(--Primary); border-color: #caa860; background: #1a150f; box-shadow: var(--k-state-selected-indicator); }
+.sf-preset:hover { color: var(--k-text-soft); }
+.sf-preset.active { color: var(--k-color-primary); border-color: var(--k-color-primary); background: var(--k-surface-primary-tint-2); box-shadow: var(--k-state-selected-indicator); }
 
 .sf-custom-range { display: flex; gap: 16px; flex-wrap: wrap; }
 .sf-custom-range label {
   display: flex; align-items: center; gap: 8px;
-  font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim);
+  font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim);
 }
 .sf-custom-range input {
-  background: #0a0a0a; border: 1px solid #2a2a2a; color: var(--TextSoft);
+  background: var(--k-shade-1); border: 1px solid var(--k-shade-7); color: var(--k-text-soft);
   font-family: 'Manrope', sans-serif; font-size: 12px; padding: 6px 8px; outline: none;
 }
 
@@ -276,44 +276,44 @@ function areaPath(key) {
 }
 .sf-kpi {
   display: flex; flex-direction: column; gap: 6px;
-  padding: 14px; background: #0c0c0c; border: 1px solid #1e1e1e;
+  padding: 14px; background: var(--k-shade-1); border: 1px solid var(--k-shade-5);
 }
-.sf-kpi--accent { border-color: rgba(202,168,96,0.35); }
+.sf-kpi--accent { border-color: rgba(var(--k-color-primary-rgb), 0.35); }
 .sf-kpi-label {
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
-  color: var(--TextFaint); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--k-text-faint); letter-spacing: 0.06em; text-transform: uppercase;
 }
 .sf-kpi-value {
-  font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--Text); line-height: 1.1; font-variant-numeric: tabular-nums;
+  font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--k-color-text); line-height: 1.1; font-variant-numeric: tabular-nums;
 }
-.sf-kpi-value.pos { color: #34d399; }
-.sf-kpi-value.neg { color: #fb7185; }
+.sf-kpi-value.pos { color: var(--k-hue-emerald); }
+.sf-kpi-value.neg { color: var(--k-hue-rose); }
 
 .sf-chart-block { display: flex; flex-direction: column; gap: 8px; }
 .sf-chart-legend { display: flex; gap: 16px; }
-.leg { display: flex; align-items: center; gap: 6px; font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
+.leg { display: flex; align-items: center; gap: 6px; font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); }
 .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
-.leg-dot.gold { background: #caa860; }
-.leg-dot.green { background: #34d399; }
+.leg-dot.gold { background: var(--k-color-primary); }
+.leg-dot.green { background: var(--k-hue-emerald); }
 .sf-svg { width: 100%; height: 180px; display: block; }
 .sf-x-axis { display: flex; justify-content: space-between; }
-.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.sf-x-axis span { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
 
-.sf-state { padding: 24px 0; color: var(--TextDim); font-family: 'Manrope', sans-serif; font-size: 12px; text-align: center; }
-.sf-state--error { color: #fb7185; }
+.sf-state { padding: 24px 0; color: var(--k-text-dim); font-family: 'Manrope', sans-serif; font-size: 12px; text-align: center; }
+.sf-state--error { color: var(--k-hue-rose); }
 
 .sf-top { display: flex; flex-direction: column; gap: 6px; }
 .sf-top-title {
   font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
-  color: var(--TextFaint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
+  color: var(--k-text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
 }
 .sf-top-row {
   display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
-  padding: 8px 0; border-bottom: 1px solid #161616;
+  padding: 8px 0; border-bottom: 1px solid var(--k-shade-3b);
 }
-.sf-top-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: #ddd; }
-.sf-top-units { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
-.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--Primary); }
+.sf-top-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--k-text-soft); }
+.sf-top-units { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); }
+.sf-top-income { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--k-color-primary); }
 
 @media (max-width: 900px) {
   .sf-kpi-grid { grid-template-columns: repeat(2, 1fr); }
