@@ -263,7 +263,7 @@ Cuando la baja de cuenta de un owner deja su empresa sin sucesor, la empresa se 
 
 **Datos de prueba.** `npm run seed:test` deja la empresa de pruebas en Business con proveedor `seed`, sin identificadores de pasarela. Así las pruebas de UX y de carga (k6) siguen ejerciendo los módulos y topes que el plan Gratis bloquearía.
 
-## 11. Pendientes
+## 12. Pendientes
 
 - **Cuenta de prueba del equipo.** Faltan el titular, el país y la aceptación de los términos de Stripe (SSA/DPA). Ver el [anexo de proveedores](legal/anexo-proveedores.md).
 - **Proveedor para operar en Guatemala.** Hay que elegirlo y escribir su adaptador antes de cualquier cobro real. Los Términos exigen informar las condiciones y obtener aceptación expresa antes de cobrar.
