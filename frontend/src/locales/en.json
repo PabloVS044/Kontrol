@@ -1598,11 +1598,14 @@
     "ownerOnly": "Only the company owner or an admin can change how this company sells.",
     "prefs": {
       "title": "Your preferences",
-      "hint": "Saved in this browser. They do not affect anyone else on the team.",
+      "hint": "They are yours and do not affect anyone else on the team. They are saved in this browser only if you accept remembering your preferences.",
       "birdie": "Show the Birdie assistant bubble",
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",
-      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out."
+      "languageNote": "Applies to the whole app. If you accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "storage": "Remember preferences in this browser",
+      "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
+      "storagePolicy": "See the cookie and storage policy"
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
@@ -2066,7 +2069,6 @@
       "menu": "Menu"
     },
     "hero": {
-      "pill": "For shops and small businesses",
       "title": "Take control of your business",
       "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
@@ -2278,6 +2280,7 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
+    "cookieSettings": "Cookie preferences",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   },
@@ -2299,7 +2302,6 @@
     }
   },
   "legal": {
-    "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
     "updated": "Version {version} · Updated October 17, 2026",
@@ -2419,20 +2421,28 @@
       "title": "Cookie and Local Storage Policy",
       "clauses": [
         {
-          "title": "No advertising cookies",
-          "body": "Kontrol does not use advertising cookies or cross-site tracking tools."
+          "title": "1. No own cookies and no tracking",
+          "body": "Kontrol does not set its own cookies, advertising cookies or cross-site tracking. What it needs is kept in your browser's local storage (localStorage), which only the application itself reads."
         },
         {
-          "title": "Local storage",
-          "body": "We use the browser's local storage (localStorage) to keep your session, remember your interface preferences, such as language and visual theme, and remember which users accepted these terms in this browser."
+          "title": "2. What is essential",
+          "body": "Your session, your profile, your companies and permissions, your acceptance of the Terms and your answer to the storage notice. Without this data you cannot sign in, so it cannot be rejected if you use the platform. Signing out removes the session, the profile and the companies; your acceptance of the Terms and your answer to the notice are kept so you are not asked again."
         },
         {
-          "title": "External services",
-          "body": "To display the interface, your browser downloads fonts from Google Fonts and icons from Icons8. Those services receive your IP address and technical request data."
+          "title": "3. Session risk",
+          "body": "Your session is kept in localStorage, and any code that manages to run on the Kontrol page can read it. If someone managed to inject code into the application, they could copy your session and use it from another device, as if they were you, until it expires after 8 hours. Signing out removes the copy in your browser, but does not invalidate a copy that was already stolen. Sign out when you finish on shared computers."
         },
         {
-          "title": "When you log out",
-          "body": "When you log out, the authentication tokens and data are removed from your browser. Language and theme preferences and the record of your acceptance of the terms are kept."
+          "title": "4. Your preferences, only if you accept them",
+          "body": "The language, the theme, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
+        },
+        {
+          "title": "5. External services",
+          "body": "To display the interface, your browser downloads fonts from Google Fonts and the Google logo from Icons8. If you sign in with Google or attach files, it also connects to Google or UploadThing. Those services receive your IP address and technical request data; Kontrol does not store anything in your browser on their behalf."
+        },
+        {
+          "title": "6. How to change your choice or delete everything",
+          "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, including your acceptance of the Terms, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
         }
       ]
     },
@@ -2449,6 +2459,22 @@
     "checkbox": "I have read and accept the {terms}.",
     "termsLink": "Terms and Conditions of Service",
     "accept": "Accept"
+  },
+  "storageConsent": {
+    "ariaLabel": "Browser storage notice",
+    "title": "What Kontrol saves in your browser",
+    "essential": "To work, Kontrol saves your session, the company you are working in and your acceptance of the Terms. This is essential and cannot be turned off.",
+    "preferences": "If you allow it, it also remembers preferences such as the language, the projects view and where you left the assistant. If you reject them, Kontrol works the same but forgets them when you reload. We do not use advertising or tracking cookies.",
+    "accept": "Accept preferences",
+    "reject": "Reject preferences",
+    "status": {
+      "pending": "You have not decided yet: no preferences are saved.",
+      "accepted": "Now: your preferences are saved in this browser.",
+      "rejected": "Now: your preferences are not saved in this browser."
+    },
+    "policyLink": "Cookie and storage policy",
+    "close": "Close",
+    "manageTitle": "Your choice in this browser"
   },
   "notFound": {
     "title": "This page doesn't exist",
