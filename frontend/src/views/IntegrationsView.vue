@@ -302,7 +302,6 @@ import {
   testIntegration,
   deleteIntegrationConfig,
 } from '../services/integrations.js'
-import './IntegrationView.css'
 
 const { t, tm, rt, locale } = useI18n()
 const authStore = useAuthStore()
@@ -553,3 +552,5 @@ onMounted(() => {
   if (canManage.value) loadIntegrations()
 })
 </script>
+
+<style scoped src="./IntegrationView.css"></style>

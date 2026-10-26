@@ -5,7 +5,6 @@ import AppNavbar from '../components/AppNavbar.vue'
 import { useChatStore } from '../stores/chat.js'
 import { useAuthStore } from '../stores/auth.js'
 import { formatFileSize } from '../utils/chat.js'
-import './ChatView.css'
 
 const { t, locale } = useI18n()
 const chatStore = useChatStore()
@@ -560,6 +559,8 @@ onMounted(() => {
     </Teleport>
   </div>
 </template>
+
+<style scoped src="./ChatView.css"></style>
 
 <style scoped>
 .conv-empty-hint {
