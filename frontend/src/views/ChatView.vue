@@ -658,7 +658,7 @@ onMounted(() => {
   position: fixed;
   inset: 0;
   z-index: var(--k-z-overlay-top);
-  background: var(--k-shade-0);
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -670,6 +670,8 @@ onMounted(() => {
   max-height: 520px;
   background: var(--k-shade-2);
   border: 1px solid var(--k-shade-6);
+  border-radius: var(--k-radius-lg);
+  box-shadow: var(--k-shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
