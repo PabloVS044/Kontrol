@@ -1,12 +1,12 @@
 export const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa',
-  EN_PROGRESO: '#34d399',
-  PAUSADO:     '#f97316',
-  COMPLETADO:  '#caa860',
-  COMPLETADA:  '#caa860',
-  CANCELADO:   '#fb7185',
-  CANCELADA:   '#fb7185',
-  PENDIENTE:   '#60a5fa',
+  PLANIFICADO: 'var(--k-hue-blue)',
+  EN_PROGRESO: 'var(--k-hue-emerald)',
+  PAUSADO:     'var(--k-hue-orange)',
+  COMPLETADO:  'var(--k-color-primary)',
+  COMPLETADA:  'var(--k-color-primary)',
+  CANCELADO:   'var(--k-hue-rose)',
+  CANCELADA:   'var(--k-hue-rose)',
+  PENDIENTE:   'var(--k-hue-blue)',
 }
 
 export const STATUS_LABEL = {
@@ -20,9 +20,14 @@ export const STATUS_LABEL = {
   PENDIENTE:   'Pending',
 }
 
+// Un sufijo hex de alfa (c + '44') no se puede concatenar a un var().
+export function withAlpha(color, alpha) {
+  return `color-mix(in srgb, ${color} ${Math.round(alpha * 1000) / 10}%, transparent)`
+}
+
 export function statusStyle(estado) {
-  const c = STATUS_COLOR[estado] || '#666'
-  return { color: c, borderColor: c + '44', background: c + '14' }
+  const c = STATUS_COLOR[estado] || 'var(--k-gray-4)'
+  return { color: c, borderColor: withAlpha(c, 0.267), background: withAlpha(c, 0.078) }
 }
 
 // El fallback a '—' importa: un proyecto sin estado producia el string
@@ -32,19 +37,19 @@ export function statusLabel(estado) {
 }
 
 export function statusPill(estado) {
-  const c = STATUS_COLOR[estado] || '#888'
-  return { label: STATUS_LABEL[estado] || estado || '—', color: c, bg: c + '1a' }
+  const c = STATUS_COLOR[estado] || 'var(--k-gray-5)'
+  return { label: STATUS_LABEL[estado] || estado || '—', color: c, bg: withAlpha(c, 0.102) }
 }
 
 export const PRIORITY_COLOR = {
-  BAJA:   '#555',
-  MEDIA:  '#60a5fa',
-  ALTA:   '#f97316',
-  CRITICA:'#fb7185',
+  BAJA:   'var(--k-gray-3)',
+  MEDIA:  'var(--k-hue-blue)',
+  ALTA:   'var(--k-hue-orange)',
+  CRITICA:'var(--k-hue-rose)',
 }
 
 export function priorityColor(p) {
-  return PRIORITY_COLOR[p] || '#555'
+  return PRIORITY_COLOR[p] || 'var(--k-gray-3)'
 }
 
 export function formatDate(d) {

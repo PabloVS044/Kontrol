@@ -69,7 +69,7 @@ const THEMES = {
     ground: '#111111',
   },
   light: {
-    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-warm', '--k-surface-warm-2', '--k-surface-floating-3', '--k-surface-panel', '--k-surface-section', '#c9c9c9'],
+    surfaces: ['#ffffff', '--k-shade-1', '--k-shade-3', '--k-color-bg-2', '--k-shade-4', '--k-surface-warm', '--k-surface-warm-2', '--k-surface-floating-3', '--k-surface-panel', '--k-surface-section', '--k-surface-chart', '#c9c9c9'],
     ground: '--k-shade-3',
   },
 }
@@ -180,6 +180,11 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-surface-panel-border',
       '--k-surface-section',
       '--k-surface-code',
+      '--k-surface-card',
+      '--k-surface-chart',
+      '--k-surface-track',
+      '--k-chart-planned',
+      '--k-chart-actual',
       '--k-surface-warm',
       '--k-surface-warm-2',
       '--k-surface-floating',

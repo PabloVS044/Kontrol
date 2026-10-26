@@ -246,12 +246,11 @@
 
               <!-- Role pill -->
               <div class="lr-pill-col" @click.stop>
-                <!-- cambiar a token color azul -->
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(var(--k-hue-blue-rgb), 0.08)'"
+                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
+                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
                 />
               </div>
             </div>
@@ -285,12 +284,11 @@
                   <span class="card-status-dot" :style="{ backgroundColor: statusColor(project.estado) }"></span>
                   <span class="card-status-text" :style="{ color: statusColor(project.estado) }">{{ statusLabel(project.estado) }}</span>
                 </div>
-                <!-- cambiar a token color azul -->
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(var(--k-hue-blue-rgb), 0.08)'"
+                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
+                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
                 />
               </div>
 
@@ -492,14 +490,10 @@ const ESTADOS = computed(() => [
   { value: 'CANCELADO',   label: t('projects.statuses.cancelled')  },
 ])
 
-// TODO SCRUM-16: STATUS_COLOR se queda en hex porque el template lo concatena
-// (`:btnColor="statusColor(project.estado) + '18'"`) para formar un hex con
-// alpha, y var() no admite concatenacion. Ademas #60a5fa (azul) y #f97316
-// (naranja) no tienen equivalente en la paleta v2.
 const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa', /* cambiar a token color azul */
+  PLANIFICADO: 'var(--k-hue-blue)',
   EN_PROGRESO: 'var(--k-state-success-text)',
-  PAUSADO:     '#f97316',
+  PAUSADO:     'var(--k-hue-orange)',
   COMPLETADO:  'var(--k-color-primary)',
   CANCELADO:   'var(--k-state-error-text)',
 }
@@ -532,7 +526,7 @@ const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_comple
 const budgetColor  = (p) => {
   const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
   if (isCriticalBudgetLevel(lvl)) return 'var(--k-state-error-text)'
-  if (isWarningBudgetLevel(lvl)) return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  if (isWarningBudgetLevel(lvl)) return 'var(--k-hue-orange)'
   return 'var(--k-color-primary)'
 }
 function openBudget(p) {

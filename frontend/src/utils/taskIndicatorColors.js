@@ -5,24 +5,20 @@
  * archivo también lo consumen las pantallas de Reportes y el Dashboard, y
  * HU-32 tiene instrucción explícita de no tocar Reportes hasta que cierre
  * SCRUM-20. Este archivo solo lo importan TaskCard.vue y TaskDetailModal.vue.
- *
- * TODO SCRUM-16: '#60a5fa' (azul) y '#f97316' (naranja) no tienen token en la
- * paleta v2 — mismo hueco ya documentado en ProjectsView.vue y
- * ProjectDetailView.vue; se dejan como literal hasta que Diseño lo resuelva.
  */
 
 const STATUS_TOKEN = {
-  PLANIFICADO: { text: '#60a5fa', rgb: '96, 165, 250' },
+  PLANIFICADO: { text: 'var(--k-hue-blue)', rgb: 'var(--k-hue-blue-rgb)' },
   EN_PROGRESO: { text: 'var(--k-state-success-text)', rgb: 'var(--k-color-success-rgb)' },
-  PAUSADO:     { text: '#f97316', rgb: '249, 115, 22' },
+  PAUSADO:     { text: 'var(--k-hue-orange)', rgb: 'var(--k-hue-orange-rgb)' },
   COMPLETADO:  { text: 'var(--k-color-primary)', rgb: 'var(--k-color-primary-rgb)' },
   COMPLETADA:  { text: 'var(--k-color-primary)', rgb: 'var(--k-color-primary-rgb)' },
   CANCELADO:   { text: 'var(--k-state-error-text)', rgb: 'var(--k-color-error-rgb)' },
   CANCELADA:   { text: 'var(--k-state-error-text)', rgb: 'var(--k-color-error-rgb)' },
-  PENDIENTE:   { text: '#60a5fa', rgb: '96, 165, 250' },
+  PENDIENTE:   { text: 'var(--k-hue-blue)', rgb: 'var(--k-hue-blue-rgb)' },
 }
 
-const DEFAULT_STATUS_TOKEN = { text: 'var(--k-gray-4)', rgb: '102, 102, 102' }
+const DEFAULT_STATUS_TOKEN = { text: 'var(--k-gray-4)', rgb: 'var(--k-ink-rgb)' }
 
 /**
  * Equivalente tokenizado de statusStyle(): mismos niveles de opacidad
@@ -40,8 +36,8 @@ export function taskStatusStyle(estado) {
 
 const PRIORITY_TOKEN = {
   BAJA:    'var(--k-gray-3)',
-  MEDIA:   '#60a5fa',
-  ALTA:    '#f97316',
+  MEDIA:   'var(--k-hue-blue)',
+  ALTA:    'var(--k-hue-orange)',
   CRITICA: 'var(--k-state-error-text)',
 }
 
