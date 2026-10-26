@@ -39,6 +39,12 @@ El prestador sigue siendo un equipo sin entidad jurídica constituida: integrant
 Frente al planteamiento original del ticket, la instrucción del usuario sustituye la pasarela prevista por **Stripe solo DEMOSTRACIÓN TEST, sin integración observada ni cobros reales**. Su implementación está en otra tarea. No se trasladaron planes/precios, renovación, cancelación de cargos o reembolsos comerciales ficticios. Se preservan derechos ante un eventual cobro indebido. Un cobro futuro exige condiciones, información y aceptación previas; no conversión automática del acceso gratuito [Términos y Condiciones §§5 y 14; Marco legal N3/N5].
 
 P1 —exportación/supresión—, P2 —respaldos/restauración— y P3 —brechas— siguen **PENDIENTES SIN FECHA** por decisión expresa del usuario, no «completados» mediante los documentos. No se inventaron plazos, responsables personales, direcciones ni un procedimiento manual operativo. Una obligación legal aplicable no se suspende por esa anotación [Marco legal, cierre; Política de Privacidad §§6 y 10].
+Actualización técnica P-2 (25/10/2026, Guatemala): se añadieron
+[inventario, política propuesta, procedimiento y herramienta de ensayo](../respaldos/README.md).
+Los objetivos RPO de 6 h y RTO de 4 h son propuestas técnicas, sin garantía ni
+operación productiva acreditadas. P-2 continúa pendiente de cierre. Usar únicamente
+el [texto sustentado para L-1/L-2](../respaldos/alcance-y-textos-legales.md), sin
+presentar la política escrita como un respaldo probado.
 
 El equipo confirma Qwen/vLLM mediante ClawStitch como operación propia. **Servidor IA en Guatemala: declaración directa del equipo del 16-10-2026, sin verificación independiente.** Hosting (alojamiento), operadores, accesos, logs (registros técnicos), retención/copias siguen pendientes. No significa que todo tratamiento permanezca en Guatemala; los demás proveedores mantienen las reservas geográficas del anexo. No se atribuye intervención a OpenAI por compatibilidad API.
 
