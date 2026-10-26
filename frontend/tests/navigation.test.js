@@ -32,6 +32,15 @@ describe('router — redirección de la pestaña Equipo', () => {
   })
 })
 
+describe('router — carga diferida (DT-17)', () => {
+  it('la landing se carga en diferido, como el resto de las vistas', async () => {
+    const landing = router.getRoutes().find((r) => r.name === 'landing')
+    const cargar = landing.components.default
+    expect(typeof cargar).toBe('function')
+    expect((await cargar()).default).toBeDefined()
+  })
+})
+
 describe('router — Ventas', () => {
   it('/sales existe con los mismos permisos que /inventory', () => {
     const ventas = router.getRoutes().find((r) => r.name === 'sales')

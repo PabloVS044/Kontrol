@@ -18,3 +18,12 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'password is required.'),
   inviteToken: z.string().min(16, 'Invalid invitation token.').max(255).optional(),
 })
+
+export const deleteOwnAccountSchema = z.object({
+  password: z.string().max(200).optional(),
+  google_reauth_token: z.string().min(1).max(4096).optional(),
+}).refine(
+  ({ password, google_reauth_token }) =>
+    Boolean(password?.length) || Boolean(google_reauth_token?.length),
+  { message: 'Reauthentication is required.', path: ['password'] }
+)

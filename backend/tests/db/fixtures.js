@@ -36,7 +36,12 @@ export async function createUser({ nombre = 'Prueba', apellido = 'Integración',
 // JWT con la misma forma que firma `authController.signToken`.
 export function tokenFor(user) {
   return jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, nombre_rol: user.nombre_rol },
+    {
+      id_usuario: user.id_usuario,
+      email: user.email,
+      nombre_rol: user.nombre_rol,
+      token_version: 1,
+    },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
   )
@@ -72,6 +77,26 @@ export async function createCompanyWithOwner({ config = {} } = {}) {
   )
 
   return { company, owner, token: tokenFor(owner) }
+}
+
+// Agrega un usuario existente (o uno nuevo) a la empresa con el rol de empresa
+// indicado: owner, admin, manager o collaborator.
+export async function addCompanyMember({ id_empresa, rol_empresa, user }) {
+  const member = user ?? await createUser({ nombre: rol_empresa })
+  await pool.query(
+    `INSERT INTO public.empresa_usuario (id_empresa, id_usuario, id_rol_empresa)
+     SELECT $1, $2, id_rol_empresa FROM public.rol_empresa WHERE nombre = $3`,
+    [id_empresa, member.id_usuario, rol_empresa]
+  )
+  return { user: member, token: tokenFor(member) }
+}
+
+export async function createSupplier({ id_empresa, nombre = unique('Proveedor') }) {
+  const { rows } = await pool.query(
+    `INSERT INTO public.proveedor (nombre, id_empresa) VALUES ($1, $2) RETURNING id_proveedor, nombre`,
+    [nombre, id_empresa]
+  )
+  return rows[0]
 }
 
 export async function createProject({ id_empresa, id_encargado, nombre = unique('Proyecto') }) {

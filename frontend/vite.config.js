@@ -4,11 +4,29 @@ import { fileURLToPath, URL } from 'node:url'
 
 const proxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000'
 
+const VENDOR_CHUNKS = ['ogl', 'gsap', 'lenis']
+
+export function manualChunks(id) {
+  if (!id.includes('/node_modules/')) return undefined
+  // En un solo chunk, three pasa de los 500 kB del aviso de Vite.
+  if (id.includes('/node_modules/three/build/three.core')) return 'vendor-three-core'
+  if (id.includes('/node_modules/three/')) return 'vendor-three'
+  const lib = VENDOR_CHUNKS.find((name) => id.includes(`/node_modules/${name}/`))
+  return lib ? `vendor-${lib}` : undefined
+}
+
 export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks
+      }
     }
   },
   server: {
