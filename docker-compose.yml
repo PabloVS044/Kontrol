@@ -18,12 +18,16 @@ services:
 
   mongo:
     image: mongo:7
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    environment:
+      MONGO_REPLICA_HOST: mongo:27017
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+      - ./scripts/mongo-replica-health.js:/scripts/mongo-replica-health.js:ro
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
+      test: ["CMD", "mongosh", "--quiet", "/scripts/mongo-replica-health.js"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -41,7 +45,7 @@ services:
     environment:
       - PORT=3000
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/kontrol
-      - MONGODB_URI=mongodb://mongo:27017/kontrol_chat
+      - MONGODB_URI=mongodb://mongo:27017/kontrol_chat?replicaSet=rs0
     env_file:
       - ./backend/.env
     depends_on:

@@ -18,7 +18,9 @@ import companyRoutes from '../src/routes/companyRoutes.js'
 import supplierRoutes from '../src/routes/supplierRoutes.js'
 import { errorHandler } from '../src/middleware/errorHandler.js'
 import { asyncHandler, createRouter } from '../src/middleware/asyncHandler.js'
-import { signToken, companyMembership } from './helpers/authTestApp.js'
+import { installTestSessionAccountMock, signToken, companyMembership } from './helpers/authTestApp.js'
+
+installTestSessionAccountMock()
 
 function buildApp() {
   const app = express()
