@@ -44,4 +44,18 @@ export default async function setup() {
   } finally {
     await pool.end()
   }
+
+  // Teardown: al terminar, la base queda vacía. Ninguna corrida hereda filas
+  // de la anterior —el DROP del paso 1 ya lo garantizaba al empezar—, y una
+  // base local tampoco se queda con datos de prueba entre corridas.
+  return async function teardown() {
+    const cleanup = new pg.Client({ connectionString: url })
+    await cleanup.connect()
+    try {
+      await cleanup.query('DROP SCHEMA IF EXISTS public CASCADE')
+      await cleanup.query('CREATE SCHEMA public')
+    } finally {
+      await cleanup.end()
+    }
+  }
 }
