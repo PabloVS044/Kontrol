@@ -322,6 +322,7 @@
   --k-surface-scrim: rgba(var(--k-canvas-rgb), 0.6);
   --k-surface-panel: rgba(var(--k-canvas-rgb), 0.6);
   --k-surface-panel-border: transparent;
+  --k-surface-section: rgba(var(--k-color-black-rgb), 0.94);
   --k-surface-warm: #161310;
   --k-surface-warm-2: #1f1a13;
   --k-surface-floating: #0f0f0f;
@@ -384,6 +385,7 @@
   --k-shade-8: #a8a8a8;
   --k-surface-panel: #d2cec6;
   --k-surface-panel-border: #b5ae9f;
+  --k-surface-section: #d2cec6;
   --k-surface-warm: #efebe3;
   --k-surface-warm-2: #e7e1d6;
   --k-surface-floating: #e2ddd3;
@@ -469,6 +471,7 @@
     --k-shade-8: #a8a8a8;
     --k-surface-panel: #d2cec6;
     --k-surface-panel-border: #b5ae9f;
+    --k-surface-section: #d2cec6;
     --k-surface-warm: #efebe3;
     --k-surface-warm-2: #e7e1d6;
     --k-surface-floating: #e2ddd3;

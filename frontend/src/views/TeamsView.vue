@@ -472,7 +472,7 @@ h3 { font-size: var(--k-font-size-heading-2); }
 .teams-list,
 .team-editor,
 .panel-card {
-  background: rgba(var(--k-color-black-rgb), 0.94);
+  background: var(--k-surface-section);
   border: var(--k-border-width) solid var(--k-shade-6);
 }
 
