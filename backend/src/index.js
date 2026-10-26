@@ -12,6 +12,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
 import { startMongoAccountDeletionWorker } from './services/accountDeletionOutbox.js'
+import { startCompanyClosureWorker } from './services/companyClosure.js'
 import { logger } from './utils/logger.js'
 
 const app        = express()
@@ -77,6 +78,7 @@ if (process.env.NODE_ENV !== 'test') {
   }
 
   startMongoAccountDeletionWorker()
+  startCompanyClosureWorker()
 
   httpServer.listen(PORT, () => {
     logger.info(`Backend running at http://localhost:${PORT}`)

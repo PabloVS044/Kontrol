@@ -24,6 +24,46 @@ export const ensureDatabaseSchema = async () => {
       ON public.account_mongo_deletion_outbox (available_at, locked_until)
   `)
 
+  // Closure record and deletion certificate. It outlives the company, so it has
+  // no FK to empresa, and the column is not named id_empresa on purpose: the
+  // export and the deletion plan treat every id_empresa column as company data.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.company_closure (
+      company_id integer PRIMARY KEY,
+      company_name character varying NOT NULL,
+      reason character varying(32) NOT NULL
+        CHECK (reason IN ('owner_request', 'no_active_owner', 'provider_termination')),
+      requested_by integer,
+      requested_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      export_until timestamp with time zone NOT NULL,
+      delete_by timestamp with time zone NOT NULL,
+      backups_by timestamp with time zone NOT NULL,
+      status character varying(16) NOT NULL DEFAULT 'export_window'
+        CHECK (status IN ('export_window', 'deleting', 'deleted')),
+      file_keys jsonb NOT NULL DEFAULT '[]'::jsonb,
+      rows_deleted jsonb,
+      files_deleted integer,
+      assistant_documents_deleted integer,
+      sql_deleted_at timestamp with time zone,
+      files_deleted_at timestamp with time zone,
+      mongo_deleted_at timestamp with time zone,
+      deleted_at timestamp with time zone,
+      attempts integer NOT NULL DEFAULT 0,
+      available_at timestamp with time zone NOT NULL,
+      locked_until timestamp with time zone
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS company_closure_available_idx
+      ON public.company_closure (status, available_at, locked_until)
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS company_closure_requested_by_idx
+      ON public.company_closure (requested_by)
+  `)
+
   await pool.query(`
     ALTER TABLE public.empresa
       ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
