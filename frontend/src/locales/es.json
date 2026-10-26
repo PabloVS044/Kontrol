@@ -1602,7 +1602,10 @@
       "birdie": "Mostrar la burbuja del asistente Birdie",
       "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
       "language": "Idioma",
-      "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión."
+      "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión.",
+      "theme": "Tema",
+      "themeNote": "El oscuro es el predeterminado. Se recuerda en este navegador, también después de cerrar sesión.",
+      "themes": { "dark": "Oscuro", "light": "Claro" }
     },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",

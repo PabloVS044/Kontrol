@@ -1602,7 +1602,10 @@
       "birdie": "Show the Birdie assistant bubble",
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",
-      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out."
+      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out.",
+      "theme": "Theme",
+      "themeNote": "Dark is the default. Remembered in this browser, including after you sign out.",
+      "themes": { "dark": "Dark", "light": "Light" }
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
