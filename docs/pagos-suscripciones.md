@@ -252,8 +252,18 @@ Además:
 - `planRequiredNotice.test.js`
 - Las pruebas de `AppNavbar` y de `SettingsView`
 
+## 11. Baja de cuenta (integración con P-1)
+
+Cuando la baja de cuenta de un owner deja su empresa sin sucesor, la empresa se desactiva y su suscripción no debe seguir renovándose. Se sigue el mismo patrón que la limpieza de Mongo de P-1:
+
+1. Dentro de la transacción de la baja, `markSubscriptionsForCancellation` marca `cancelacion_pendiente = true`.
+2. Tras el COMMIT, `cancelPendingSubscriptions` cancela la suscripción en la pasarela y quita la marca. La respuesta de la baja lo informa en `subscriptionCancellation`.
+3. Si la pasarela falla, la marca queda puesta. `startSubscriptionCancellationWorker` lo reintenta cada 5 minutos.
+4. El estado final (`canceled`) llega, como siempre, por el evento verificado `customer.subscription.deleted`.
+
+**Datos de prueba.** `npm run seed:test` deja la empresa de pruebas en Business con proveedor `seed`, sin identificadores de pasarela. Así las pruebas de UX y de carga (k6) siguen ejerciendo los módulos y topes que el plan Gratis bloquearía.
+
 ## 11. Pendientes
 
-- **#162 (exportación y baja de cuenta).** Cuando la baja del owner desactive una empresa sin sucesor, hay que cancelar su suscripción con `cancelSubscription` del puerto. Se integra al fusionar #162 en `develop`.
 - **Cuenta de prueba del equipo.** Faltan el titular, el país y la aceptación de los términos de Stripe (SSA/DPA). Ver el [anexo de proveedores](legal/anexo-proveedores.md).
 - **Proveedor para operar en Guatemala.** Hay que elegirlo y escribir su adaptador antes de cualquier cobro real. Los Términos exigen informar las condiciones y obtener aceptación expresa antes de cobrar.
