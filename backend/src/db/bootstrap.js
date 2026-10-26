@@ -336,6 +336,7 @@ export const ensureDatabaseSchema = async () => {
       estado character varying NOT NULL DEFAULT 'none',
       fin_periodo_actual timestamp with time zone,
       cancelar_al_final boolean NOT NULL DEFAULT false,
+      cancelacion_pendiente boolean NOT NULL DEFAULT false,
       actualizado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT empresa_suscripcion_id_empresa_fkey
         FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE

@@ -80,6 +80,10 @@ CREATE TABLE public.empresa_suscripcion (
   estado character varying NOT NULL DEFAULT 'none',
   fin_periodo_actual timestamp with time zone,
   cancelar_al_final boolean NOT NULL DEFAULT false,
+  -- La baja de la cuenta del owner desactivó la empresa y falta cancelar la
+  -- suscripción en la pasarela. Se marca en la misma transacción de la baja y
+  -- la cancelación se reintenta hasta que la pasarela la confirma.
+  cancelacion_pendiente boolean NOT NULL DEFAULT false,
   actualizado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT empresa_suscripcion_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
 );

@@ -288,3 +288,93 @@ export const getBillingSummary = async (companyId, db = pool) => {
     usage,
   }
 }
+
+// ── Cancelación por baja de cuenta ────────────────────────────────────────────
+// Cuando la baja del owner deja una empresa sin sucesor, la empresa se
+// desactiva y su suscripción no debe seguir renovándose. La baja marca
+// `cancelacion_pendiente` dentro de su propia transacción (con el `client` que
+// recibe) y la cancelación en la pasarela ocurre después del COMMIT: la red no
+// entra en la transacción y, si la pasarela falla, el worker la reintenta.
+
+/** Marca las suscripciones de esas empresas para cancelarlas tras el COMMIT. */
+export const markSubscriptionsForCancellation = async (client, companyIds) => {
+  if (!companyIds.length) return
+  await client.query(
+    `UPDATE public.empresa_suscripcion
+     SET cancelacion_pendiente = true, actualizado_en = CURRENT_TIMESTAMP
+     WHERE id_empresa = ANY($1::int[])
+       AND id_suscripcion_proveedor IS NOT NULL
+       AND estado NOT IN ('canceled', 'incomplete_expired')`,
+    [companyIds]
+  )
+}
+
+const FINAL_STATUSES = ['canceled', 'incomplete_expired']
+
+/**
+ * Cancela en la pasarela las suscripciones marcadas. Si `companyIds` viene,
+ * solo esas; si no, todas las pendientes (lo usa el worker). Devuelve cuántas
+ * quedaron canceladas, o null si la pasarela no está configurada. Un fallo deja
+ * la marca puesta para el siguiente intento.
+ */
+export const cancelPendingSubscriptions = async (
+  { companyIds = null, batchSize = 20 } = {},
+  { provider = getBillingProvider(), db = pool } = {}
+) => {
+  if (!provider.configured) return null
+
+  const { rows } = await db.query(
+    `SELECT id_empresa, id_suscripcion_proveedor
+     FROM public.empresa_suscripcion
+     WHERE cancelacion_pendiente = true
+       AND ($1::int[] IS NULL OR id_empresa = ANY($1::int[]))
+     ORDER BY actualizado_en
+     LIMIT $2`,
+    [companyIds, batchSize]
+  )
+
+  let cancelled = 0
+  for (const row of rows) {
+    try {
+      const current = await provider.getSubscription(row.id_suscripcion_proveedor)
+      const result = FINAL_STATUSES.includes(current.status)
+        ? current
+        : await provider.cancelSubscription(row.id_suscripcion_proveedor)
+
+      // El estado definitivo lo sigue escribiendo el evento verificado
+      // customer.subscription.deleted; aquí solo se quita la marca.
+      await db.query(
+        `UPDATE public.empresa_suscripcion
+         SET cancelacion_pendiente = false, actualizado_en = CURRENT_TIMESTAMP
+         WHERE id_empresa = $1 AND id_suscripcion_proveedor = $2`,
+        [row.id_empresa, result.id ?? row.id_suscripcion_proveedor]
+      )
+      cancelled += 1
+    } catch (error) {
+      logger.error(`[billing] Could not cancel the subscription of company ${row.id_empresa}; will retry:`, error)
+    }
+  }
+  return cancelled
+}
+
+const CANCELLATION_POLL_MS = 5 * 60_000
+
+/** Reintenta cada 5 minutos las cancelaciones que quedaron pendientes. */
+export const startSubscriptionCancellationWorker = () => {
+  let running = false
+  const tick = async () => {
+    if (running) return
+    running = true
+    try {
+      await cancelPendingSubscriptions()
+    } catch (error) {
+      logger.error('[billing] Subscription cancellation worker failed:', error)
+    } finally {
+      running = false
+    }
+  }
+  const timer = setInterval(tick, CANCELLATION_POLL_MS)
+  timer.unref?.()
+  void tick()
+  return () => clearInterval(timer)
+}
