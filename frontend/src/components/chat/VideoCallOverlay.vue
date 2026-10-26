@@ -598,7 +598,7 @@ watch(showSideChat, async (isOpen) => {
   top: -2px;
   right: -2px;
   background: var(--k-hue-rose);
-  color: white;
+  color: rgb(var(--k-color-white-rgb));
   font-size: 11px;
   min-width: 16px;
   height: 16px;
