@@ -2,10 +2,10 @@ import { Server } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import Conversation from '../models/Conversation.js'
-import Message from '../models/Message.js'
+import { createDirectConversation, persistHumanMessage, markConversationRead } from '../services/chatPersistence.js'
 import pool from '../db/pool.js'
+import { isSessionTokenPayload } from '../auth/sessionToken.js'
 import {
-  buildMessagePreview,
   formatConversation,
   sanitizeAttachments,
   serializeMessage,
@@ -18,6 +18,7 @@ const CALL_DM_ONLY_MESSAGE = 'Only direct video calls are supported.'
 const CALL_TARGET_OFFLINE_MESSAGE = 'The other user is not connected to the chat.'
 const CALL_START_ERROR_MESSAGE = 'Could not start video call.'
 const CALL_SIGNAL_ERROR_MESSAGE = 'Could not deliver call signaling data.'
+let socketServer = null
 
 // ── helpers ──────────────────────────────────────────────────
 
@@ -120,6 +121,7 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
     pingInterval: 25000,
     pingTimeout: 20000,
   })
+  socketServer = io
 
   mongoose.connection.on('connected', () => {
     io.emit('chat:available', { message: CHAT_AVAILABLE_MESSAGE })
@@ -138,14 +140,26 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
   })
 
   // Auth middleware: validate JWT on handshake
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth?.token
     if (!token) return next(new Error('Authentication required'))
     try {
-      socket.user = jwt.verify(token, process.env.JWT_SECRET)
+      const payload = jwt.verify(token, process.env.JWT_SECRET)
+      if (!isSessionTokenPayload(payload)) return next(new Error('Invalid or expired token'))
+      const account = await pool.query(
+        'SELECT activo, token_version FROM public.usuario WHERE id_usuario = $1',
+        [payload.id_usuario]
+      )
+      const row = account.rows[0]
+      if (!row?.activo || row.token_version !== payload.token_version) {
+        return next(new Error('Account is unavailable'))
+      }
+      socket.user = payload
       next()
-    } catch {
-      next(new Error('Invalid or expired token'))
+    } catch (error) {
+      next(error instanceof jwt.JsonWebTokenError
+        ? new Error('Invalid or expired token')
+        : error)
     }
   })
 
@@ -187,22 +201,10 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return socket.emit('chat:error', { message: 'User not found' })
         }
 
-        const sorted = [userId, targetUserId].sort((a, b) => a - b)
-
-        // Find or create conversation
-        let conv = await Conversation.findOne({ participants: sorted })
-
-        if (!conv) {
-          conv = await Conversation.create({
-            type: 'dm',
-            participants: sorted,
-            participantInfo: [
-              { id: me.id_usuario, nombre: me.nombre, email: me.email, avatar: initials(me.nombre, me.apellido) },
-              { id: other.id_usuario, nombre: other.nombre, email: other.email, avatar: initials(other.nombre, other.apellido) },
-            ],
-            unreadCounts: new Map([[String(userId), 0], [String(targetUserId), 0]]),
-          })
-        }
+        const conv = await createDirectConversation([
+          { id: me.id_usuario, nombre: me.nombre, email: me.email, avatar: initials(me.nombre, me.apellido) },
+          { id: other.id_usuario, nombre: other.nombre, email: other.email, avatar: initials(other.nombre, other.apellido) },
+        ])
 
         // Join both users to the room if they're online
         socket.join(`conv:${conv._id}`)
@@ -344,11 +346,6 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return socket.emit('chat:error', { message: CHAT_UNAVAILABLE_MESSAGE })
         }
 
-        const conv = await Conversation.findById(conversationId)
-        if (!conv || !conv.participants.includes(userId)) {
-          return socket.emit('chat:error', { message: 'Conversation not found' })
-        }
-
         const cleanAttachments = sanitizeAttachments(attachments)
         const trimmedText = typeof text === 'string' ? text.trim() : ''
 
@@ -357,43 +354,17 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
         }
 
         const me = await getUserById(userId)
-        const msg = await Message.create({
-          conversationId,
-          senderId:     userId,
-          senderName:   me.nombre + (me.apellido ? ' ' + me.apellido : ''),
+        const { message: msg, conversation: updatedConv } = await persistHumanMessage({
+          userId, conversationId,
+          senderName: me.nombre + (me.apellido ? ' ' + me.apellido : ''),
           senderAvatar: initials(me.nombre, me.apellido),
-          text:         trimmedText,
-          attachments:  cleanAttachments,
-          readBy:       [userId],
+          text: trimmedText, attachments: cleanAttachments,
         })
-
-        const lastType = cleanAttachments.length ? cleanAttachments[0].type : 'text'
-
-        // Update conversation
-        const updatedConv = await Conversation.findByIdAndUpdate(
-          conversationId,
-          {
-            $set: {
-              lastMessage: {
-                text:      buildMessagePreview({ text: trimmedText, attachments: cleanAttachments }),
-                senderId:  userId,
-                type:      lastType,
-                createdAt: msg.createdAt,
-              },
-            },
-            $inc: Object.fromEntries(
-              conv.participants
-                .filter(p => p !== userId)
-                .map(p => [`unreadCounts.${p}`, 1])
-            ),
-          },
-          { returnDocument: 'after' }
-        )
 
         io.to(`conv:${conversationId}`).emit('chat:message', serializeMessage(msg))
 
         if (updatedConv) {
-          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
+          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, updatedConv.participants)
         }
       } catch (err) {
         logger.error('chat:send error:', err)
@@ -417,30 +388,12 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return
         }
 
-        const conv = await Conversation.findById(conversationId)
-        if (!conv || !conv.participants.includes(userId)) {
-          return
-        }
-
-        const updatedConv = await Conversation.findByIdAndUpdate(
-          conversationId,
-          {
-            $set: {
-              [`unreadCounts.${userId}`]: 0,
-            },
-          },
-          { returnDocument: 'after' }
-        )
-
-        await Message.updateMany(
-          { conversationId, readBy: { $ne: userId } },
-          { $addToSet: { readBy: userId } }
-        )
+        const updatedConv = await markConversationRead(userId, conversationId)
 
         socket.to(`conv:${conversationId}`).emit('chat:read_update', { conversationId, userId })
 
         if (updatedConv) {
-          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
+          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, updatedConv.participants)
         }
       } catch (err) {
         logger.error('chat:mark_read error:', err)
@@ -449,6 +402,10 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
   })
 
   return io
+}
+
+export function disconnectUserSockets(userId) {
+  socketServer?.in(`user:${userId}`).disconnectSockets(true)
 }
 
 // ── format conversation for a specific user ─────────────────

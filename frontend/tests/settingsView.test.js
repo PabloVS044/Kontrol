@@ -85,6 +85,24 @@ describe('SettingsView.vue — configuración unificada', () => {
     for (const rol of ['manager', 'collaborator']) {
       const wrapper = await montar({ rol })
       expect(enlaces(wrapper)).toEqual([])
+      expect(wrapper.find('.privacy-action button').exists()).toBe(false)
     }
+  })
+
+  it('owner and admin can request a company export, while other members cannot', async () => {
+    for (const rol of ['owner', 'admin']) {
+      const wrapper = await montar({ rol })
+      expect(wrapper.find('.privacy-action button').text()).toBe('Descargar datos de la empresa (JSON)')
+    }
+
+    const collaborator = await montar({ rol: 'collaborator' })
+    expect(collaborator.text()).toContain('La exportación completa solo está disponible')
+  })
+
+  it('explains immediate deletion and the business data that remains', async () => {
+    const wrapper = await montar()
+    expect(wrapper.find('.privacy-delete').text()).toContain('no tiene período de gracia')
+    expect(wrapper.find('.privacy-delete').text()).toContain('no define un plazo de conservación')
+    expect(wrapper.find('.privacy-delete button.privacy-delete-button').exists()).toBe(true)
   })
 })

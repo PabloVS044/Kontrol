@@ -34,6 +34,7 @@
     <BirdieAssistant v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <LegalConsentModal />
+    <StorageConsentBanner />
   </div>
 </template>
 
@@ -46,6 +47,7 @@ import BirdieFloatingButton from "./components/birdie/BirdieFloatingButton.vue";
 import BirdieAssistant from "./components/birdie/BirdieAssistant.vue";
 import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
 import LegalConsentModal from "./components/LegalConsentModal.vue";
+import StorageConsentBanner from "./components/StorageConsentBanner.vue";
 import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'

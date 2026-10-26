@@ -3,6 +3,11 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { initLocale, resolveInitialLocale, useLocale } from '@/composables/useLocale.js'
 import { i18n } from '@/locales/index.js'
+import { acceptPreferences, CONSENT_KEY } from '@/composables/useStorageConsent.js'
+
+function aceptarPreferencias() {
+  localStorage.setItem(CONSENT_KEY, JSON.stringify({ version: 1, preferences: true }))
+}
 
 /**
  * Preferencia de idioma (pruebas 9 y 10, bug B-01).
@@ -23,6 +28,9 @@ describe('useLocale — la preferencia de idioma', () => {
       removeItem: (k) => almacen.delete(k),
       clear: () => almacen.clear(),
     }
+    // Estas pruebas parten de las preferencias aceptadas; las de abajo cubren
+    // qué pasa sin consentimiento (L-3).
+    aceptarPreferencias()
     i18n.global.locale.value = 'en'
     document.documentElement.removeAttribute('lang')
   })
@@ -91,6 +99,36 @@ describe('useLocale — la preferencia de idioma', () => {
     vi.spyOn(navigator, 'language', 'get').mockReturnValue('en-US')
 
     expect(resolveInitialLocale()).toBe('en')
+  })
+
+  describe('sin consentimiento para preferencias', () => {
+    beforeEach(() => localStorage.removeItem(CONSENT_KEY))
+
+    it('aplica el idioma pero no lo guarda', () => {
+      const { wrapper } = montarConsumidor()
+      wrapper.vm.setLocale('es')
+
+      expect(wrapper.vm.locale).toBe('es')
+      expect(document.documentElement.getAttribute('lang')).toBe('es')
+      expect(localStorage.getItem('kontrol:locale')).toBeNull()
+    })
+
+    it('respeta la clave antigua sin migrarla', () => {
+      localStorage.setItem('user', JSON.stringify({ id_usuario: 42 }))
+      localStorage.setItem('locale_42', 'es')
+
+      expect(resolveInitialLocale()).toBe('es')
+      expect(localStorage.getItem('kontrol:locale')).toBeNull()
+    })
+
+    it('al aceptar guarda el idioma elegido antes de decidir', () => {
+      const { wrapper } = montarConsumidor()
+      wrapper.vm.setLocale('es')
+
+      acceptPreferences()
+
+      expect(localStorage.getItem('kontrol:locale')).toBe('es')
+    })
   })
 
   /** Monta un componente mínimo que expone el composable. */

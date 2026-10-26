@@ -334,9 +334,12 @@ backlog se confirman después.
 | 3 a 9. Mejoras secundarias | Historias | Secundario | 10 |
 
 - **Sprint 9 para los dos prioritarios y el error de hora.** Son los problemas que impiden o
-  retrasan tareas, o que guardan datos incorrectos. El estudio del Neurolab, programado para
-  ese sprint, puede repetir las tareas de venta (F3) y de marketing (F4) para verificar las
-  mejoras.
+  retrasan tareas, o que guardan datos incorrectos. El Neurolab que se consideró para ese
+  sprint no se realizó: la reserva del CIT 415-B no estuvo disponible en el Sprint 8 y la
+  decisión de alcance de Sprint 10 excluyó el estudio instrumentado. No hay mediciones de
+  laboratorio para F3 ni F4. La fecha exacta de la incidencia de reserva y de la decisión de
+  Sprint 10 no figura en el expediente revisado; la cronología y reflexión están en
+  [UX-N · Resultados de UX y reflexión sobre el Neurolab](./resultados-y-reflexion-neurolab.md).
 - **Sprint 10 para los secundarios.** Varios se pueden hacer junto con un prioritario que
   toca la misma pantalla:
     - Los problemas 3 y 9 van con el prioritario 1, en la pantalla de venta.
@@ -358,8 +361,10 @@ backlog se confirman después.
   todos los usuarios.
 - **Tiempos aproximados.** Se tomaron a mano, así que los porcentajes deben leerse como
   orden de magnitud.
-- **Sin medición de percepción.** El estudio con instrumentos del Neurolab se reprogramó para
-  el Sprint 9. Aquí la severidad se basa en lo observado y en los comentarios.
+- **Sin estudio instrumentado.** La severidad de este análisis se basa en lo observado y en
+  los comentarios; no se registraron fijaciones, recorrido visual ni carga cognitiva. El
+  estudio del Neurolab que se consideró para Sprint 9 no se realizó y quedó fuera del
+  alcance de Sprint 10.
 - **Criterio de límite.** Aquí terminar justo en el límite cuenta como éxito. En el Sprint 7
   se contó como fallo. Con el criterio anterior, P02 habría fallado F4, y el problema 2
   seguiría siendo prioritario.

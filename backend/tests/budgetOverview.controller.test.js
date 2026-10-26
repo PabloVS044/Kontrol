@@ -23,8 +23,14 @@ import inventoryMovementRoutes from '../src/routes/inventoryMovementRoutes.js'
 import { errorHandler } from '../src/middleware/errorHandler.js'
 import { clearBudgetCache } from '../src/utils/budgetSummaryCache.js'
 import { BUDGET_CACHE_TTL_MS } from '../src/utils/budgetSummaryCache.js'
-import { signToken, companyMembership, noMembership } from './helpers/authTestApp.js'
+import {
+  installTestSessionAccountMock,
+  signToken,
+  companyMembership,
+  noMembership,
+} from './helpers/authTestApp.js'
 
+installTestSessionAccountMock()
 const app = express()
 app.use(express.json())
 app.use('/api/budgets', budgetRoutes)

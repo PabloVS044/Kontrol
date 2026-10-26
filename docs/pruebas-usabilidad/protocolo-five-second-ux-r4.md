@@ -40,8 +40,8 @@ Registrar un identificador anónimo, confirmar que la persona pertenece al públ
 | ID | Público objetivo confirmado (Sí/No) | Fecha y modalidad | Viewport | Consentimiento para notas | Respuesta textual: qué hace | Respuesta textual: público | Producto correcto (Sí/No) | Público correcto (Sí/No) |
 |---|---|---|---|---|---|---|---|---|
 | P01 | Sí | 12/10 presencial | 1440x900 | Sí | "Un sistema para administrar un comercio. Leí que al cobrar una venta se descuenta el inventario automáticamente y lleva presupuestos." | "Decía arriba 'Para tiendas y pequeños negocios'." | Sí | Sí |
-| P02 | Sí | 12/10 presencial | 1440x900 | Sí | "Una plataforma todo en uno de gestión en la nube para proyectos, finanzas, chat y marketing." | "Para pequeños negocios y tiendas." | Sí | Sí |
-| P03 | Sí | 12/10 presencial | 1440x900 | Sí | "Un sistema administrativo para llevar cobros, caja, proveedores e inventarios." | "Para tiendas pequeñas y comercios." | Sí | Sí |
+| P02 | Sí | 12/10 presencial | 1440x900 | Sí | "Una plataforma todo en uno de gestión en la nube para proyectos, finanzas, chat y marketing." | "Para pequeños negocios y tiendas." | **No** | Sí |
+| P03 | Sí | 12/10 presencial | 1440x900 | Sí | "Un sistema administrativo para llevar cobros, caja, proveedores e inventarios." | "Para tiendas pequeñas y comercios." | **No** | Sí |
 | P04 | Sí | 12/10 presencial | 1440x900 | Sí | "Un software de administración empresarial que integra ventas, facturación, reportes y control de inventario." | "Pequeños negocios y locales comerciales." | Sí | Sí |
 | P05 | Sí | 12/10 presencial | 1440x900 | Sí | "Una herramienta para controlar las ventas cotidianas, el stock y los presupuestos." | "Para tiendas y pequeñas empresas." | Sí | Sí |
 
@@ -52,13 +52,13 @@ Una respuesta cuenta como identificación correcta del producto solo si menciona
 | Medida | Resultado |
 |---|---|
 | Participantes atendidos | 5 / 5 |
-| Identificaron el producto | 5 / 5 |
+| Identificaron el producto | 3 / 5 |
 | Identificaron el público objetivo | 5 / 5 |
-| ¿Cumple 4/5 producto? | Sí |
+| ¿Cumple 4/5 producto? | **No** |
 | ¿Cumple 3/5 público? | Sí |
 
 **Conclusión basada en las respuestas:**
-La inclusión de la etiqueta superior de segmentación ("Para tiendas y pequeños negocios") y el subtítulo enfocado en la relación de ventas e inventario permite que el 100% de los participantes identifique de manera unívoca tanto la propuesta de valor como el público objetivo en el tiempo estipulado de cinco segundos.
+Tres de cinco respuestas identifican ventas y existencias; el umbral mínimo de 4/5 no se cumple. P02 describió proyectos, finanzas, chat y marketing, pero no ventas ni inventario. P03 mencionó “cobros” e “inventarios”, pero no identificó explícitamente las ventas como función; conforme a la regla de no reinterpretar respuestas para hacerlas coincidir, se registra como No. Las cinco personas identificaron el público objetivo. La tabla original marcaba 5/5, cifra que no se sostiene al aplicar literalmente el criterio publicado.
 
 **Evidencia autorizada y ubicación:**
 

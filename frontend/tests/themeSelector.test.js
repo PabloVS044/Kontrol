@@ -52,7 +52,8 @@ describe('ThemeSelector', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
   })
 
-  it('al elegir Claro aplica el tema y lo recuerda', async () => {
+  it('al elegir Claro aplica el tema y, con consentimiento, lo recuerda', async () => {
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const wrapper = await montar()
     await botones(wrapper).Claro.trigger('click')
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')

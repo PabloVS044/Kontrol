@@ -466,6 +466,7 @@ import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Pill      from '../components/UI/Pill/Pill.vue'
 import Button    from '../components/UI/Button/Button.vue'
 import { statusLabel, formatDate } from '../utils/statusHelpers.js'
+import { getPreferenceItem, setPreferenceItem } from '../composables/useStorageConsent.js'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -474,8 +475,8 @@ const authStore    = useAuthStore()
 const saleConfigStore = useSaleConfigStore()
 const projects     = ref([])
 const searchQuery  = ref('')
-const viewMode     = ref(localStorage.getItem('projects-view-mode') || 'grid')
-watch(viewMode, (v) => localStorage.setItem('projects-view-mode', v))
+const viewMode     = ref(getPreferenceItem('projects-view-mode') || 'grid')
+watch(viewMode, (v) => setPreferenceItem('projects-view-mode', v))
 const budgetByProj = ref({}) // id_proyecto -> summary
 const loading      = ref(true)
 const fetchError = ref(null)

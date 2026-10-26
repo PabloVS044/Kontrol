@@ -286,6 +286,8 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   })
 
   it('el selector de idioma alterna y persiste la preferencia', async () => {
+    // Persistir el idioma requiere haber aceptado las preferencias (L-3).
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const { wrapper } = await montar({ user: { id_usuario: 42 } })
     expect(wrapper.find('.lang-dropdown').exists()).toBe(false)
 
@@ -304,6 +306,7 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   it('cerrar sesión no devuelve la app al inglés', async () => {
     // Antes el logout hacía `locale.value = 'en'`, así que la pantalla de login
     // aparecía en inglés justo después de haber elegido español.
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const { wrapper } = await montar({ user: { id_usuario: 42 }, locale: 'es' })
 
     await wrapper.find('.lang-btn').trigger('click')

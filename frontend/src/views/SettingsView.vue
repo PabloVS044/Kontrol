@@ -37,7 +37,7 @@
         <p class="sc-note">{{ $t('settings.prefs.themeNote') }}</p>
       </div>
 
-      <div class="sc-row sc-row--last">
+      <div class="sc-row">
         <label class="sc-toggle">
           <input
             type="checkbox"
@@ -47,6 +47,16 @@
           <span class="sc-toggle-label">{{ $t('settings.prefs.birdie') }}</span>
         </label>
         <p class="sc-note">{{ $t('settings.prefs.birdieNote') }}</p>
+      </div>
+
+      <!-- Si se guardan o no las preferencias de arriba (L-3). -->
+      <div class="sc-row sc-row--last">
+        <span class="sc-label">{{ $t('settings.prefs.storage') }}</span>
+        <StorageConsentControls />
+        <p class="sc-note">
+          {{ $t('settings.prefs.storageNote') }}
+          <RouterLink to="/legal#cookies">{{ $t('settings.prefs.storagePolicy') }}</RouterLink>
+        </p>
       </div>
     </section>
 
@@ -167,6 +177,55 @@
       <p class="sc-hint">{{ $t('settings.members.hint') }}</p>
       <RouterLink class="sc-link" :to="{ path: '/dashboard', hash: '#company-members' }">{{ $t('settings.members.link') }} →</RouterLink>
     </section>
+
+    <section class="set-card set-card--privacy">
+      <h2 class="sc-title">{{ $t('settings.privacy.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.privacy.hint') }}</p>
+      <div v-if="canExportCompany" class="privacy-action">
+        <button class="sc-save" type="button" :disabled="exporting" @click="exportCompany">
+          {{ exporting ? $t('settings.privacy.exporting') : $t('settings.privacy.export') }}
+        </button>
+      </div>
+      <p v-else class="sc-note">{{ $t('settings.privacy.exportOwnerOnly') }}</p>
+      <p v-if="privacyError" class="sc-error" role="alert">{{ privacyError }}</p>
+      <p v-if="privacyNotice" class="sc-saved" role="status">{{ privacyNotice }}</p>
+
+      <details class="privacy-delete">
+        <summary>{{ $t('settings.privacy.deleteTitle') }}</summary>
+        <p>{{ $t('settings.privacy.deleteWhat') }}</p>
+        <p>{{ $t('settings.privacy.deleteRetained') }}</p>
+        <p>{{ $t('settings.privacy.deleteDuration') }}</p>
+        <p>{{ $t('settings.privacy.deleteExternal') }}</p>
+        <label class="sc-field" for="account-delete-password">
+          <span class="sc-label">{{ $t('settings.privacy.password') }}</span>
+          <input
+            id="account-delete-password"
+            v-model="deletePassword"
+            class="sc-input privacy-password"
+            type="password"
+            autocomplete="current-password"
+          />
+        </label>
+        <button
+          v-if="!googleReauthToken"
+          class="privacy-google"
+          type="button"
+          :disabled="reauthenticating"
+          @click="reauthenticateWithGoogle"
+        >
+          {{ reauthenticating ? $t('settings.privacy.reauthenticating') : $t('settings.privacy.googleReauth') }}
+        </button>
+        <p v-if="deletePasswordError" class="sc-error" role="alert">{{ deletePasswordError }}</p>
+        <button
+          class="sc-save privacy-delete-button"
+          type="button"
+          :disabled="deleting || (!deletePassword && !googleReauthToken)"
+          @click="deleteAccount"
+        >
+          {{ deleting ? $t('settings.privacy.deleting') : $t('settings.privacy.deleteConfirm') }}
+        </button>
+      </details>
+    </section>
   </section>
   </div>
 </template>
@@ -175,25 +234,28 @@
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import LanguageSelector from '../components/common/LanguageSelector.vue'
 import ThemeSelector from '../components/common/ThemeSelector.vue'
+import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 const saleConfigStore = useSaleConfigStore()
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 
 /** La configuración de la empresa mueve lo que se cobra: solo owner y admin. */
 const canManageCompany = computed(() =>
   ['owner', 'admin'].includes(authStore.empresaActual?.rol)
 )
+const canExportCompany = canManageCompany
 
 function goBack() {
   // Si se llegó por un enlace directo no hay historia a la que volver, así que
@@ -207,6 +269,14 @@ const loadError = ref(null)
 const saving    = ref(false)
 const formError = ref(null)
 const saved     = ref(false)
+const exporting = ref(false)
+const deleting = ref(false)
+const reauthenticating = ref(false)
+const deletePassword = ref('')
+const googleReauthToken = ref('')
+const privacyError = ref('')
+const privacyNotice = ref('')
+const deletePasswordError = ref('')
 
 const form = ref({
   iva_activo: false,
@@ -277,10 +347,85 @@ async function save() {
   }
 }
 
+async function exportCompany() {
+  exporting.value = true
+  privacyError.value = ''
+  privacyNotice.value = ''
+  try {
+    const response = await requestApi('/api/companies/export', { headers: authHeaders() })
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}))
+      throw new Error(body.message || `HTTP ${response.status}`)
+    }
+    const file = URL.createObjectURL(await response.blob())
+    const link = document.createElement('a')
+    link.href = file
+    link.download = response.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1]
+      || 'kontrol-company-export.json'
+    link.click()
+    URL.revokeObjectURL(file)
+    privacyNotice.value = t('settings.privacy.exportSuccess')
+  } catch (error) {
+    privacyError.value = error.message || t('settings.privacy.error')
+  } finally {
+    exporting.value = false
+  }
+}
+
+async function reauthenticateWithGoogle() {
+  reauthenticating.value = true
+  deletePasswordError.value = ''
+  try {
+    const response = await requestApi('/api/auth/google/reauth-for-deletion', {
+      method: 'POST',
+      headers: authHeaders(),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok || !body.url) throw new Error(body.message || `HTTP ${response.status}`)
+    window.location.assign(body.url)
+  } catch (error) {
+    deletePasswordError.value = error.message || t('settings.privacy.error')
+    reauthenticating.value = false
+  }
+}
+
+async function deleteAccount() {
+  if (!window.confirm(t('settings.privacy.finalConfirm'))) return
+  deleting.value = true
+  deletePasswordError.value = ''
+  try {
+    const response = await requestApi('/api/auth/account', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({
+        password: deletePassword.value || undefined,
+        google_reauth_token: googleReauthToken.value || undefined,
+      }),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(body.message || `HTTP ${response.status}`)
+    authStore.logout()
+    await router.push('/')
+  } catch (error) {
+    deletePasswordError.value = error.message || t('settings.privacy.error')
+  } finally {
+    deleting.value = false
+  }
+}
+
 onMounted(() => {
   prefsStore.load()
   if (canManageCompany.value) load()
   else loading.value = false
+  const deletionProof = route.hash.match(/^#deletion_proof=(.+)$/)?.[1]
+  if (deletionProof) {
+    googleReauthToken.value = decodeURIComponent(deletionProof)
+    privacyNotice.value = t('settings.privacy.googleReauthSuccess')
+    router.replace({ path: '/settings' })
+  } else if (route.query.reauth_error) {
+    deletePasswordError.value = t('settings.privacy.googleReauthError')
+    router.replace({ path: '/settings' })
+  }
 })
 </script>
 
@@ -315,6 +460,7 @@ onMounted(() => {
 
 .set-card--prefs { margin-bottom: var(--k-space-5); }
 .set-card--link { margin-top: var(--k-space-5); }
+.set-card--privacy { margin-top: var(--k-space-5); }
 .set-card--link .sc-hint { margin-bottom: var(--k-space-3); }
 .sc-link {
   font-family: var(--k-font-sans);
@@ -323,6 +469,36 @@ onMounted(() => {
   text-decoration: none;
 }
 .sc-link:hover { text-decoration: underline; }
+.privacy-action { display: flex; justify-content: flex-start; }
+.privacy-delete {
+  margin-top: var(--k-space-5);
+  border-top: var(--k-border-width) solid var(--k-shade-6);
+  padding-top: var(--k-space-4);
+}
+.privacy-delete summary {
+  cursor: pointer;
+  color: var(--k-state-error-text);
+  font-family: var(--k-font-sans);
+}
+.privacy-delete p {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-text-muted);
+  line-height: 1.6;
+}
+.privacy-password { display: block; max-width: 320px; margin-top: var(--k-space-2); }
+.privacy-google {
+  margin: var(--k-space-3) 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.privacy-google:disabled { opacity: 0.5; cursor: wait; }
+.privacy-delete-button {
+  margin-top: var(--k-space-3);
+  background: var(--k-state-error-text);
+}
 /* La última fila de una tarjeta no necesita separación inferior. */
 .sc-row--last { margin-bottom: 0; }
 

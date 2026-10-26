@@ -57,11 +57,13 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 y SCRU
     expect(res.status).toBe(200)
 
     const params = parametrosDe(CONSULTA_BAJO_PRUEBA)
-    expect(params).toEqual([12.5, 1, 2])
+    // El último parámetro es el proyecto de X-Project-ID: la relación se acota
+    // a los productos de ese proyecto (aislamiento entre empresas).
+    expect(params).toEqual([12.5, 1, 2, 10])
     // El parámetro del proveedor es el de la URL, no un hueco: si el controlador
     // vuelve a leer un nombre que la ruta no declara, aquí llega null.
-    expect(params.at(-1)).toBe(2)
-    expect(params.at(-1)).not.toBeNull()
+    expect(params.at(-2)).toBe(2)
+    expect(params.at(-2)).not.toBeNull()
   })
 
   it('T2 · DELETE /:id/suppliers/:supplierId arma el DELETE con el id del proveedor de la URL', async () => {
@@ -73,9 +75,9 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 y SCRU
     expect(res.status).toBe(200)
 
     const params = parametrosDe(CONSULTA_BAJO_PRUEBA)
-    expect(params).toEqual([1, 2])
-    expect(params.at(-1)).toBe(2)
-    expect(params.at(-1)).not.toBeNull()
+    expect(params).toEqual([1, 2, 10])
+    expect(params.at(-2)).toBe(2)
+    expect(params.at(-2)).not.toBeNull()
   })
 
   it('T3 · POST /:id/suppliers inserta con el id del producto de la URL y el proveedor del cuerpo', async () => {
@@ -119,7 +121,7 @@ describe('Contrato del parámetro de ruta en producto-proveedor (SCRUM-41 y SCRU
     // Este es el caso que distingue el 404 legítimo del 404 fantasma: el código
     // de estado es el mismo que producía el defecto, y lo que los separa son los
     // parámetros con los que se armó la consulta.
-    expect(parametrosDe(CONSULTA_BAJO_PRUEBA)).toEqual([12.5, 1, 2])
+    expect(parametrosDe(CONSULTA_BAJO_PRUEBA)).toEqual([12.5, 1, 2, 10])
   })
 
   it('T6 · un cuerpo vacío se rechaza con 400, así el SET del UPDATE nunca queda vacío', async () => {

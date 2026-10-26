@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { isSessionTokenPayload } from './auth/sessionToken.js'
 import { z } from 'zod'
 import { createRouteHandler, createUploadthing } from 'uploadthing/express'
 import pool from './db/pool.js'
@@ -39,6 +40,7 @@ export const uploadRouter = {
 
       try {
         const user = jwt.verify(token, process.env.JWT_SECRET)
+        if (!isSessionTokenPayload(user)) throw new Error('Invalid or expired token.')
         return { userId: user.id_usuario }
       } catch {
         throw new Error('Invalid or expired token.')
@@ -76,6 +78,7 @@ export const uploadRouter = {
 
       try {
         user = jwt.verify(token, process.env.JWT_SECRET)
+        if (!isSessionTokenPayload(user)) throw new Error('Invalid or expired token.')
       } catch {
         throw new Error('Invalid or expired token.')
       }

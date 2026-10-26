@@ -1,10 +1,12 @@
 import { readonly, ref } from 'vue'
+import { setPreferenceItem } from './useStorageConsent.js'
 
 /**
  * Kontrol — control de tema (SCRUM-13 / HU-32, punto 4 del alcance).
  *
  * Escribe `data-theme` en `<html>`, que es lo que leen los tokens de
- * `src/styles/theme.css`. Preferencia persistida en localStorage.
+ * `src/styles/theme.css`. La preferencia se guarda en localStorage solo si el
+ * usuario aceptó el almacenamiento de preferencias (`useStorageConsent`).
  *
  * El tema claro es una propuesta pendiente de validación de Diseño.
  */
@@ -29,12 +31,10 @@ function readStored() {
   }
 }
 
+// Sin consentimiento para preferencias, o sin almacenamiento, el tema sigue
+// aplicándose en la sesión actual pero no se guarda.
 function persist(theme) {
-  try {
-    localStorage.setItem(STORAGE_KEY, theme)
-  } catch {
-    // idem: sin persistencia, el tema sigue aplicándose en la sesión actual.
-  }
+  setPreferenceItem(STORAGE_KEY, theme)
 }
 
 function clearStored() {
