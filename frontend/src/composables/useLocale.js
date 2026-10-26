@@ -1,5 +1,6 @@
 import { useI18n } from 'vue-i18n'
 import { i18n } from '../locales/index.js'
+import { onPreferencesAccepted, preferencesAllowed, setPreferenceItem } from './useStorageConsent.js'
 
 /**
  * Kontrol — preferencia de idioma (HU de traducción, bug B-01).
@@ -60,13 +61,20 @@ function readLegacy() {
   }
 }
 
+// Sin consentimiento para preferencias (L-3), o sin almacenamiento, el idioma
+// sigue aplicándose en esta pestaña pero no se guarda.
 function persist(locale) {
-  try {
-    localStorage.setItem(STORAGE_KEY, locale)
-  } catch {
-    // idem: sin persistencia, el idioma sigue aplicándose en esta sesión.
-  }
+  setPreferenceItem(STORAGE_KEY, locale)
 }
+
+// Idioma elegido a mano antes de responder al aviso de almacenamiento, por
+// ejemplo en la portada. Si después acepta, se guarda sin pedirle que lo
+// vuelva a elegir. El idioma deducido del navegador no cuenta como elección.
+let chosenBeforeConsent = null
+onPreferencesAccepted(() => {
+  if (chosenBeforeConsent) persist(chosenBeforeConsent)
+  chosenBeforeConsent = null
+})
 
 /**
  * `lang` manda en la pronunciación del lector de pantalla, la separación de
@@ -121,6 +129,7 @@ export function useLocale() {
     }
     locale.value = next
     applyHtmlLang(next)
+    if (!preferencesAllowed()) chosenBeforeConsent = next
     persist(next)
   }
 

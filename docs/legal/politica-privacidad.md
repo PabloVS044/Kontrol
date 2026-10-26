@@ -98,14 +98,14 @@ Fuentes exactas: [configuración y límites](../../backend/src/services/aiAgentS
 
 La Constitución art. 31 se refiere a archivos estatales; LAIP y sus procedimientos requieren ser sujeto obligado. No se presentan sus derechos/plazos como un catálogo automáticamente exigible a toda base privada. Si se activa una ley extranjera u otro supuesto nacional, los derechos y condiciones legales correspondientes se conservan [Marco legal, N1–N2, E1–E4; fuentes consultadas 16-10-2026].
 
-Kontrol elige avanzar hacia acceso, corrección, reducción de datos y supresión/exportación verificables como estándar voluntario. **No se ha implementado todavía un circuito completo ni un contacto operativo de privacidad.** La matriz indica estado real, sin fechas de ejecución comprometidas; no reduce derechos legales ni aplaza obligaciones existentes.
+Kontrol elige avanzar hacia acceso, corrección, reducción de datos y supresión/exportación verificables como estándar voluntario. **P-1 habilita una exportación empresarial y la baja de acceso de la cuenta, pero no un borrado integral de los registros del negocio ni de las copias de proveedores.** El mecanismo no sustituye un contacto operativo de privacidad ni reduce derechos legales u obligaciones existentes.
 
 | Solicitud o mecanismo | Fundamento y alcance | Mecanismo observado / estado SIN FECHA |
 | --- | --- | --- |
 | Conocer y acceder a información propia | Estándar voluntario; derecho legal con el alcance del régimen aplicable. | PARCIAL: vistas de cuenta, negocio e historiales según permisos. PENDIENTE: solicitud por titular, identificación y respuesta completa. |
 | Corregir o actualizar | Estándar voluntario y obligaciones de exactitud que correspondan. | PARCIAL: edición de determinados registros autorizados. PENDIENTE: circuito coordinado entre bases, copias y terceros. |
-| Obtener copia/exportación | Estándar voluntario; portabilidad legal solo si se cumplen sus condiciones. | PARCIAL: PDF/CSV comerciales. PENDIENTE P1: exportación integral por persona sin mezclar datos de otros. |
-| Suprimir | Estándar voluntario y derechos legales sujetos a excepciones/retenciones justificadas. | PARCIAL: ciertos registros e historial IA. Desactivar cuenta no borra sus datos. PENDIENTE P1: supresión coordinada y comprobada. |
+| Obtener copia/exportación | Estándar voluntario; portabilidad legal solo si se cumplen sus condiciones. | IMPLEMENTADO P1 (22-10-2026): endpoint autenticado de descarga JSON; solo owner/admin de la empresa activa. Exporta perfil del solicitante, empresa y filas PostgreSQL vinculadas por `id_empresa` o claves foráneas, conversaciones IA de esa empresa y metadatos mínimos de chats humanos donde participa el solicitante, junto con sus propios mensajes. No incluye mensajes ni datos de perfil de otros participantes. Credenciales, tokens y hashes se excluyen. Es una respuesta en streaming; no se crea un enlace ni archivo alojado que caduque. Los chats humanos no tienen `id_empresa`, por lo que no se pueden atribuir a la empresa conversaciones de otros miembros. |
+| Suprimir | Estándar voluntario y derechos legales sujetos a excepciones/retenciones justificadas. | IMPLEMENTADO PARCIALMENTE P1 (22-10-2026): baja inmediata autenticada con contraseña o reautenticación Google; invalida sesiones, elimina credenciales/contacto y membresías, y registra en la misma transacción PostgreSQL una tarea durable para limpiar conversaciones IA y mensajes humanos del titular en MongoDB después del `COMMIT`. El proceso reintenta fallos con espera exponencial (intervalo máximo de 24 horas); la respuesta distingue limpieza completada de `pending_retry`, pero no existe un plazo garantizado si MongoDB permanece indisponible. Se conserva una fila técnica anonimizada por las claves foráneas y se mantienen registros empresariales compartidos y bitácoras/logs que pueden identificar. Si hay sucesor activo, se transfiere el rol owner; sin sucesor la empresa se desactiva. No se borran archivos empresariales ni copias en proveedores: no existe flujo de borrado por cuenta que se propague a ellos. Los plazos de retención de esos datos siguen SIN DEFINIR; no se promete un plazo de borrado. |
 | Retirar consentimiento; oponerse o limitar, cuando corresponda | Depende de base y ley; no toda instrucción o relación contractual es consentimiento. | PENDIENTE: constancia de consentimiento/retirada y tramitación específica. Desconectar integración no retira mensajes ya recibidos ni elimina logs. |
 | Pedir atención o presentar reclamo | Derechos según régimen; canal propio debe existir para poder anunciarse. | PENDIENTE: identidad/contacto real, recepción, verificación y registro de respuesta. No hay buzón ni procedimiento manual acreditado. |
 
@@ -117,10 +117,10 @@ El contacto futuro solo podrá anunciarse después de habilitarlo y probarlo. Ho
 
 | Soporte o categoría | Conservación ACTUAL observada | Deuda y límite |
 | --- | --- | --- |
-| Cuenta, empresa, equipo, ventas y demás PostgreSQL | Persistencia sin TTL/job general de purga observado. Algunas bajas cambian estado; otros registros admiten DELETE sujeto a relaciones. | Plazo por categoría NO DEFINIDO. Baja de cuenta no suprime identidad/historial. |
+| Cuenta, empresa, equipo, ventas y demás PostgreSQL | Persistencia sin TTL/job general de purga observado. P-1 desactiva la cuenta, reemplaza nombre/apellido/correo/teléfono, elimina hash y Google ID, y retira membresías; la fila con identificador técnico permanece para no romper autoría/FK. Se conservan ventas, gastos, autoría seudonimizada y demás registros compartidos de negocio. | Plazo por categoría NO DEFINIDO. El borrado de cuenta no borra el negocio ni sus archivos; la retención y purga futura requieren decisión L-2/L-7 y revisión legal. |
 | Invitaciones, membresías y permisos | Desactivación o reemplazo según función; fechas conservadas; sin expiración/purga automática general observada. | Definir caducidad, revisión y eliminación; quitar acceso no borra autoría o copias. |
-| Chat humano, participantes, adjuntos referenciados y lecturas Mongo | Sin TTL observado; no ruta propia de borrado de conversación humana observada. | Plazo NO DEFINIDO; borrar sesión o pantalla no elimina mensajes. |
-| Historial IA Mongo | Sin TTL; borrado explícito de conversación/mensaje IA. | No elimina logs/copias del endpoint. Retención de inferencia NO CONFIRMADA. |
+| Chat humano, participantes, adjuntos referenciados y lecturas Mongo | Sin TTL observado. P-1 elimina mensajes enviados por el titular y lo retira de participantes/lecturas mediante una tarea Mongo posterior al `COMMIT`, con reintentos durables; el historial de otros participantes puede conservarse. | Plazo NO DEFINIDO; el reintento no garantiza un plazo de purga mientras MongoDB esté indisponible. No elimina copias externas ni adjuntos empresariales. |
+| Historial IA Mongo | Sin TTL; P-1 agenda el borrado de conversaciones y mensajes del titular tras el `COMMIT`, con reintentos durables. | No elimina logs/copias del endpoint. La limpieza puede quedar pendiente mientras MongoDB esté indisponible; retención de inferencia NO CONFIRMADA. |
 | Archivos UploadThing y referencias | Persistencia remota sin plazo de cuenta comprobado. Al borrar evidencia se intenta eliminar el objeto después de su fila. | Fallo remoto puede no impedir respuesta de éxito; adjuntos abandonados/copias requieren conciliación. |
 | Configuración y logs de integraciones | Desconectar elimina configuración; logs y mensajes enviados no desaparecen por esa acción. Logs SQL sin TTL observado. | Plazos NO DEFINIDOS; destinatarios y proveedores tienen conservación propia por verificar. |
 | Logs backend, OAuth, errores IA, SDK, proxies, contenedores y consola | Sin política integral propia de rotación/purga observada; driver/host/configuración efectiva desconocidos. | No equivalen a «hasta el próximo deploy». Algunos errores/URLs pueden reproducir identificadores o contenido. |
@@ -171,3 +171,17 @@ La identificación/contacto, contratos y ubicaciones por confirmar, P1/P2/P3, pr
 | Historial | Cambio |
 | --- | --- |
 | 16-10-2026 · 0.1 | Redacción inicial interna con inventario cerrado y servidor IA en Guatemala por declaración del equipo; sin verificación independiente, aprobación, publicación o vigencia. |
+
+
+### Nota técnica P1: atomicidad de la limpieza Mongo
+
+La implementación actual agrupa la limpieza de MongoDB en una transacción y
+conserva `account_privacy_states`: un registro técnico con identificador numérico,
+marca de eliminación y contador de revisión, sin nombre, correo ni contenido.
+Las escrituras de chat humano y de IA usan ese mismo registro dentro de sus
+transacciones para impedir que una petición en curso vuelva a crear información
+después de completar la limpieza. Este registro no se purga automáticamente.
+La baja de PostgreSQL y el trabajo del outbox siguen siendo una transacción
+separada: un fallo de Mongo deja la limpieza pendiente de reintento, sin reactivar
+la cuenta. Esto no modifica las retenciones empresariales ni elimina copias en
+proveedores. La validación operativa se documenta en `PRIVACY_VALIDATION.md`.

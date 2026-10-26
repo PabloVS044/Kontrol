@@ -13,6 +13,7 @@ import { mountBillingWebhook } from './billing/webhook.js'
 import { getBillingProvider } from './billing/provider.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
+import { startMongoAccountDeletionWorker } from './services/accountDeletionOutbox.js'
 import { logger } from './utils/logger.js'
 
 const app        = express()
@@ -81,6 +82,8 @@ if (process.env.NODE_ENV !== 'test') {
   } catch (error) {
     logger.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
   }
+
+  startMongoAccountDeletionWorker()
 
   httpServer.listen(PORT, () => {
     logger.info(`Backend running at http://localhost:${PORT}`)

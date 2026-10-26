@@ -450,3 +450,12 @@ Resumen rápido:
 - Commits: `type(scope): descripción en imperativo`.
 - Un PR por feature/fix · rellena la plantilla · al menos una review antes de mergear.
 - Nunca commitees `.env` con credenciales reales; actualiza `.env.example` al añadir variables.
+
+
+### Validación de privacidad P1
+
+La limpieza de cuentas y las escrituras de chat necesitan un MongoDB con soporte
+para transacciones (replica set o clúster fragmentado). El Compose local y el de
+integración inicializan un replica set de un nodo para desarrollo/pruebas.
+La guía [PRIVACY_VALIDATION.md](PRIVACY_VALIDATION.md) contiene los cambios,
+las pruebas, los comandos y el requisito de despliegue.

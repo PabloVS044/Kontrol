@@ -27,6 +27,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import birdieProfile from '../../assets/img/birdie/birdie-profile.png'
 import birdieWink from '../../assets/img/birdie/birdie-wink.png'
 import { useBirdieStore } from '../../stores/birdie'
+import { getPreferenceItem, setPreferenceItem } from '../../composables/useStorageConsent.js'
 
 const birdieStore = useBirdieStore()
 
@@ -50,7 +51,7 @@ const positionStyle = computed(() => ({
 
 function loadPosition() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = getPreferenceItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
       if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -81,9 +82,7 @@ function clampToViewport(x, y) {
 }
 
 function savePosition() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(position.value))
-  } catch (_) { /* ignore */ }
+  setPreferenceItem(STORAGE_KEY, JSON.stringify(position.value))
 }
 
 function onMouseDown(event) {

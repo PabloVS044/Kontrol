@@ -14,6 +14,7 @@ vi.mock('../src/controllers/authController.js', () => {
     getMe: ok,
     googleAuth: ok,
     googleCallback: ok,
+    googleDeletionReauthentication: ok,
   }
 })
 
@@ -23,6 +24,8 @@ const ENV_KEYS = [
   'RATE_LIMIT_LOGIN_IP_MAX',
   'RATE_LIMIT_LOGIN_ACCOUNT_MAX',
   'RATE_LIMIT_EXPENSIVE_MAX',
+  'RATE_LIMIT_ACCOUNT_DELETE_IP_MAX',
+  'RATE_LIMIT_ACCOUNT_DELETE_USER_MAX',
 ]
 
 // Los umbrales se leen al importar el módulo, así que cada prueba fija el
@@ -162,5 +165,148 @@ describe('DT-13 · Límite en endpoints costosos (SCRUM-28)', () => {
 
     expect((await request(app).get('/costoso')).status).toBe(200)
     expect((await request(app).get('/costoso')).status).toBe(429)
+  })
+})
+
+describe('P-1 · Protección de fuerza bruta para borrado de cuenta', () => {
+  async function buildDeletionApp(env) {
+    Object.assign(process.env, env)
+    vi.resetModules()
+    const {
+      accountDeletionIpLimiter,
+      accountDeletionUserLimiter,
+    } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    app.use((req, res, next) => {
+      req.user = { id_usuario: Number(req.get('x-test-user')) }
+      next()
+    })
+    app.delete(
+      '/account',
+      accountDeletionIpLimiter,
+      accountDeletionUserLimiter,
+      (req, res) => res.status(401).json({ success: false })
+    )
+    return app
+  }
+
+  it('limita los intentos fallidos por cuenta sin bloquear otras cuentas', async () => {
+    const app = await buildDeletionApp({
+      RATE_LIMIT_ACCOUNT_DELETE_IP_MAX: '20',
+      RATE_LIMIT_ACCOUNT_DELETE_USER_MAX: '2',
+    })
+    const as = (id) => request(app).delete('/account').set('x-test-user', String(id))
+
+    expect((await as(7)).status).toBe(401)
+    expect((await as(7)).status).toBe(401)
+    expect((await as(7)).status).toBe(429)
+    expect((await as(8)).status).toBe(401)
+  })
+
+  it('limita los intentos fallidos por IP aunque se usen distintas cuentas', async () => {
+    const app = await buildDeletionApp({
+      RATE_LIMIT_ACCOUNT_DELETE_IP_MAX: '2',
+      RATE_LIMIT_ACCOUNT_DELETE_USER_MAX: '20',
+    })
+    const as = (id) => request(app).delete('/account').set('x-test-user', String(id))
+
+    expect((await as(7)).status).toBe(401)
+    expect((await as(8)).status).toBe(401)
+    expect((await as(9)).status).toBe(429)
+  })
+})
+
+describe('P-1 · Concurrencia de exportaciones de empresa', () => {
+  it('rechaza una segunda exportación de la misma empresa hasta que termina la primera', async () => {
+    vi.resetModules()
+    const { companyExportConcurrencyLimiter } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    let releaseFirst
+    let markFirstStarted
+    const firstStarted = new Promise((resolve) => {
+      markFirstStarted = resolve
+    })
+    app.use((req, res, next) => {
+      req.company = { id_empresa: Number(req.get('x-test-company')) }
+      next()
+    })
+    app.get('/export', companyExportConcurrencyLimiter, (req, res) => {
+      if (req.get('x-hold') === 'true') {
+        releaseFirst = () => res.status(200).end()
+        markFirstStarted()
+        return
+      }
+      return res.status(200).end()
+    })
+
+    const firstRequest = request(app).get('/export')
+      .set('x-test-company', '31')
+      .set('x-hold', 'true')
+    const firstResponse = new Promise((resolve, reject) => {
+      firstRequest.end((error, response) => error ? reject(error) : resolve(response))
+    })
+    await firstStarted
+
+    const blocked = await request(app).get('/export').set('x-test-company', '31')
+    expect(blocked.status).toBe(429)
+    expect(blocked.headers).toHaveProperty('retry-after')
+
+    releaseFirst()
+    expect((await firstResponse).status).toBe(200)
+    expect((await request(app).get('/export').set('x-test-company', '31')).status).toBe(200)
+  })
+})
+
+describe('P1 export request limits', () => {
+  it('blocks the fourth export and separates user/company counters', async () => {
+    vi.resetModules()
+    process.env.RATE_LIMIT_COMPANY_EXPORT_MAX = '3'
+    const { companyExportRateLimiter } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    app.use((req, res, next) => {
+      req.user = { id_usuario: Number(req.get('x-user') || 7) }
+      req.company = { id_empresa: Number(req.get('x-company') || 1) }
+      next()
+    })
+    app.get('/export', companyExportRateLimiter, (req, res) => res.status(200).end())
+    try {
+      for (let i = 0; i < 3; i++) expect((await request(app).get('/export')).status).toBe(200)
+      const blocked = await request(app).get('/export')
+      expect(blocked.status).toBe(429)
+      expect(blocked.headers).toHaveProperty('retry-after')
+      expect((await request(app).get('/export').set('x-user', '8')).status).toBe(200)
+      expect((await request(app).get('/export').set('x-company', '2')).status).toBe(200)
+    } finally { delete process.env.RATE_LIMIT_COMPANY_EXPORT_MAX }
+  })
+  it('caps two companies globally and retains slots until controller cleanup', async () => {
+    vi.resetModules()
+    const { EventEmitter } = await import('node:events')
+    const { companyExportConcurrencyLimiter: limit } = await import('../src/middleware/rateLimit.js')
+    const response = () => {
+      const res = new EventEmitter()
+      res.locals = {}
+      res.status = vi.fn().mockReturnValue(res)
+      res.json = vi.fn().mockReturnValue(res)
+      res.set = vi.fn().mockReturnValue(res)
+      return res
+    }
+    const first = response(), second = response(), third = response()
+    const next = vi.fn()
+    limit({ company: { id_empresa: 1 } }, first, next)
+    limit({ company: { id_empresa: 2 } }, second, next)
+    limit({ company: { id_empresa: 3 } }, third, next)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(third.status).toHaveBeenCalledWith(429)
+    first.locals.companyExportOwnsSlot = true
+    first.emit('close')
+    const whileCleaning = response()
+    limit({ company: { id_empresa: 3 } }, whileCleaning, next)
+    expect(whileCleaning.status).toHaveBeenCalledWith(429)
+    first.locals.releaseCompanyExport()
+    first.locals.releaseCompanyExport() // exactly-once release
+    const available = response()
+    limit({ company: { id_empresa: 3 } }, available, next)
+    expect(next).toHaveBeenCalledTimes(3)
+    second.emit('finish'); second.emit('close'); available.emit('finish')
   })
 })

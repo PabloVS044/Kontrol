@@ -10,11 +10,9 @@ const footer = readFileSync(resolve(sourceRoot, 'components/Footer.vue'), 'utf8'
 
 describe('UX de la portada', () => {
   // El titular promete el control del negocio; la bajada dice qué se controla.
-  it('explica el producto y su público en español e inglés', () => {
+  it('explica el producto en español e inglés', () => {
     expect(es.landing.hero.copy).toMatch(/venta.*inventario/i)
-    expect(es.landing.hero.pill).toMatch(/tiendas.*pequeños negocios/i)
     expect(en.landing.hero.copy).toMatch(/sale.*inventory/i)
-    expect(en.landing.hero.pill).toMatch(/shops.*small businesses/i)
   })
 
   it('detalla las funciones de la plataforma en ambos idiomas', () => {

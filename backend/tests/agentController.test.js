@@ -24,8 +24,9 @@ import pool from '../src/db/pool.js'
 import agentRoutes from '../src/routes/agentRoutes.js'
 import { errorHandler } from '../src/middleware/errorHandler.js'
 import { runAgentTurn } from '../src/services/aiAgentService.js'
-import { signToken, companyMembership } from './helpers/authTestApp.js'
+import { installTestSessionAccountMock, signToken, companyMembership } from './helpers/authTestApp.js'
 
+installTestSessionAccountMock()
 const app = express()
 app.use(express.json())
 app.use('/api/agent', agentRoutes)

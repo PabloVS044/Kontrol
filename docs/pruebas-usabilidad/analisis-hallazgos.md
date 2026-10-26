@@ -304,11 +304,15 @@ este documento como evidencia. La columna de clave se completa al crearlas.
 
 ## 11. Destino de los hallazgos
 
-- Las mejoras priorizadas se planifican para el **Sprint 8**, junto con los hallazgos
-  instrumentados que produzca el Neurolab entre el **22 y el 25 de septiembre** en el
-  laboratorio CIT 415-B. Ese estudio aplicará el protocolo T1–T5 con medición de percepción
-  declarada, lo que permitirá contrastar estos hallazgos preliminares.
-- **T4 se repite con prioridad** en ese estudio: es la tarea con menor margen de tiempo y la
-  única con un fallo registrado, y sus tiempos verifican el criterio de aceptación de H-01.
+- La planificación original contempló el Neurolab entre el **22 y el 25 de septiembre
+  de 2026**, en CIT 415-B, para contrastar estas observaciones. **Ese estudio no se
+  realizó** por un conflicto de calendario en el Sprint 7; el día exacto del conflicto
+  no está registrado en las fuentes disponibles. En el Sprint 8 no estuvo disponible
+  la reserva del laboratorio, y la decisión de alcance de Sprint 10 deja fuera el
+  estudio instrumentado. No existen resultados de laboratorio que comparar.
+- **T4 sigue siendo un candidato para un futuro re-test manual o instrumentado:** fue
+  la tarea con menor margen y la única con un fallo en esta ronda. Su resultado manual
+  y la reflexión de qué habría medido el laboratorio se consolidan en
+  [UX-N · Resultados de UX y reflexión sobre el Neurolab](./resultados-y-reflexion-neurolab.md).
 - La observación de latencia en la carga de la lista de miembros (§5) pasa a las pruebas de
   carga de HU-38 y SCRUM-28.

@@ -31,6 +31,12 @@ export const createFakeBillingDb = ({ usage = {}, role = 'owner' } = {}) => {
       return { rows: [], rowCount: 0 }
     }
 
+    // requireAuth comprueba que la cuenta siga activa y con la misma versión de
+    // token que firmó signToken (token_version 1).
+    if (sql === 'SELECT activo, token_version FROM public.usuario WHERE id_usuario = $1') {
+      return { rows: [{ activo: true, token_version: 1 }], rowCount: 1 }
+    }
+
     if (sql.includes('FROM public.empresa_usuario eu JOIN public.rol_empresa re')) {
       if (!state.role) return { rows: [], rowCount: 0 }
       return { rows: [{ id_rol_empresa: 1, rol_empresa: state.role, activo: true, nombre: 'Empresa' }], rowCount: 1 }

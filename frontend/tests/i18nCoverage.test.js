@@ -22,6 +22,8 @@ const ARCHIVOS = [
   'components/billing/TestModeBanner.vue',
   'components/Footer.vue',
   'components/LegalConsentModal.vue',
+  'components/StorageConsentBanner.vue',
+  'components/StorageConsentControls.vue',
   'components/Navbar.vue',
   'components/admin/AdminNavbar.vue',
   'components/common/LanguageSelector.vue',

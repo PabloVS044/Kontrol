@@ -1,4 +1,9 @@
 import mongoose from 'mongoose'
+import Conversation from '../models/Conversation.js'
+import Message from '../models/Message.js'
+import AgentConversation from '../models/AgentConversation.js'
+import AgentMessage from '../models/AgentMessage.js'
+import AccountPrivacyState from '../models/AccountPrivacyState.js'
 import { logger } from '../utils/logger.js'
 
 mongoose.set('bufferCommands', false)
@@ -15,5 +20,18 @@ export async function connectMongo() {
   mongoose.connection.on('error', err => logger.error('MongoDB error:', err))
   mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'))
 
-  await mongoose.connect(uri)
+  await mongoose.connect(uri, { serverSelectionTimeoutMS: 10_000 })
+  try {
+    const hello = await mongoose.connection.db.admin().command({ hello: 1 })
+    if (!hello.setName && hello.msg !== 'isdbgrid') {
+      throw new Error('MongoDB transactions require a replica set or sharded cluster.')
+    }
+    // Create collections before transactions, including on a fresh deployment.
+    for (const model of [Conversation, Message, AgentConversation, AgentMessage, AccountPrivacyState]) {
+      await model.createCollection()
+    }
+  } catch (error) {
+    await mongoose.disconnect()
+    throw error
+  }
 }

@@ -54,6 +54,8 @@ const byIp = (req) => ipKeyGenerator(req.ip)
 
 // Clave por usuario autenticado; cae a IP si la ruta aún no pasó requireAuth.
 const byUserOrIp = (req) => (req.user?.id_usuario ? `user:${req.user.id_usuario}` : byIp(req))
+const byUserAndCompany = (req) =>
+  `user:${req.user.id_usuario}:company:${req.company.id_empresa}`
 
 // Clave por cuenta objetivo del login. Va después de validate(loginSchema),
 // así que el email ya existe; se normaliza para que `A@x.com` y `a@x.com`
@@ -94,6 +96,71 @@ export const loginAccountLimiter = createRateLimiter({
   skipSuccessfulRequests: true,
   message: 'Too many failed login attempts for this account. Please try again later.',
 })
+
+export const accountDeletionIpLimiter = createRateLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_ACCOUNT_DELETE_IP_MAX', 30),
+  keyGenerator: byIp,
+  skipSuccessfulRequests: true,
+  message: 'Too many account deletion attempts from this network. Please try again later.',
+})
+
+export const accountDeletionUserLimiter = createRateLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_ACCOUNT_DELETE_USER_MAX', 5),
+  keyGenerator: byUserOrIp,
+  skipSuccessfulRequests: true,
+  message: 'Too many account deletion attempts. Please try again later.',
+})
+
+export const companyExportRateLimiter = createRateLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_COMPANY_EXPORT_MAX', 3),
+  keyGenerator: byUserAndCompany,
+  message: 'Too many company exports. Please try again later.',
+})
+
+const MAX_ACTIVE_COMPANY_EXPORTS = 2
+const MAX_ACTIVE_EXPORTS_PER_COMPANY = 1
+let activeCompanyExports = 0
+const activeExportsByCompany = new Map()
+
+export function companyExportConcurrencyLimiter(req, res, next) {
+  const companyId = String(req.company.id_empresa)
+  const companyActive = activeExportsByCompany.get(companyId) ?? 0
+  if (
+    activeCompanyExports >= MAX_ACTIVE_COMPANY_EXPORTS ||
+    companyActive >= MAX_ACTIVE_EXPORTS_PER_COMPANY
+  ) {
+    res.set('Retry-After', '30')
+    return res.status(429).json({
+      success: false,
+      message: 'A company export is already in progress. Please try again shortly.',
+    })
+  }
+
+  activeCompanyExports += 1
+  activeExportsByCompany.set(companyId, companyActive + 1)
+  let released = false
+  const release = () => {
+    if (released) return
+    released = true
+    activeCompanyExports -= 1
+    const remaining = (activeExportsByCompany.get(companyId) ?? 1) - 1
+    if (remaining === 0) activeExportsByCompany.delete(companyId)
+    else activeExportsByCompany.set(companyId, remaining)
+  }
+
+  res.locals ??= {}
+  res.locals.releaseCompanyExport = release
+  // Once the controller takes ownership, keep the slot until DB cleanup ends.
+  const onResponseEnd = () => {
+    if (!res.locals.companyExportOwnsSlot) release()
+  }
+  res.once('finish', onResponseEnd)
+  res.once('close', onResponseEnd)
+  next()
+}
 
 /**
  * Endpoints costosos identificados en SCRUM-28 (C2, C4, C5). Va después de

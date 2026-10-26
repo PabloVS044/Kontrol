@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
+import { setPreferenceItem } from '../composables/useStorageConsent.js'
 
 /**
  * Preferencias de visualización de CADA usuario.
@@ -45,14 +46,8 @@ export const usePreferencesStore = defineStore('preferences', {
 
     persist() {
       const auth = useAuthStore()
-      try {
-        localStorage.setItem(
-          KEY(auth.idUsuario),
-          JSON.stringify({ birdieVisible: this.birdieVisible })
-        )
-      } catch {
-        // Modo privado o almacenamiento lleno: la preferencia dura la sesión.
-      }
+      // Sin consentimiento, o en modo privado, la preferencia dura la sesión.
+      setPreferenceItem(KEY(auth.idUsuario), JSON.stringify({ birdieVisible: this.birdieVisible }))
     },
   },
 })
