@@ -12,6 +12,7 @@
  * cancelación al final del período y pérdida de acceso.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import bcrypt from 'bcrypt'
 import { api, closeDb, createCompanyWithOwner, createProject, createUser, query, tokenFor } from '../db/fixtures.js'
 import { setBillingProvider } from '../../src/billing/provider.js'
 import { createFakeBillingProvider, SIGNATURE_HEADER, VALID_SIGNATURE } from '../helpers/fakeBillingProvider.js'
@@ -155,5 +156,38 @@ describe('PAY-1 — suscripciones con la pasarela simulada', () => {
       companyId,
     ])
     expect(rows[0].n).toBe(3)
+  })
+
+  it('si la baja del owner desactiva la empresa, cancela su suscripción en la pasarela', async () => {
+    const other = await createCompanyWithOwner()
+    const otherId = other.company.id_empresa
+    provider.setSubscription({ id: 'sub_baja', customerId: 'cus_baja', companyId: otherId, plan: 'business' })
+    await deliver(provider.event('checkout.session.completed', { subscriptionId: 'sub_baja', companyId: otherId }))
+    await query('UPDATE public.usuario SET password_hash = $1 WHERE id_usuario = $2', [
+      await bcrypt.hash('password-de-baja', 4),
+      other.owner.id_usuario,
+    ])
+
+    const res = await api()
+      .delete('/api/auth/account')
+      .set('Authorization', `Bearer ${other.token}`)
+      .send({ password: 'password-de-baja' })
+
+    expect(res.status).toBe(200)
+    expect(res.body.data.subscriptionCancellation).toBe('requested')
+    expect(provider.cancelSubscription).toHaveBeenCalledWith('sub_baja')
+
+    const { rows } = await query(
+      `SELECT e.activo, s.cancelacion_pendiente
+       FROM public.empresa e JOIN public.empresa_suscripcion s USING (id_empresa)
+       WHERE e.id_empresa = $1`,
+      [otherId]
+    )
+    expect(rows[0]).toEqual({ activo: false, cancelacion_pendiente: false })
+
+    // El estado final llega, como siempre, por el evento verificado.
+    await deliver(provider.event('customer.subscription.deleted', { subscriptionId: 'sub_baja', companyId: otherId }))
+    const after = await query('SELECT estado FROM public.empresa_suscripcion WHERE id_empresa = $1', [otherId])
+    expect(after.rows[0].estado).toBe('canceled')
   })
 })

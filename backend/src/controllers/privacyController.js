@@ -6,6 +6,7 @@ import pool from '../db/pool.js'
 import { isMongoReady } from '../db/mongo.js'
 import { prepareCompanyDataExport } from '../services/companyDataExport.js'
 import { processMongoAccountDeletion } from '../services/accountDeletionOutbox.js'
+import { cancelPendingSubscriptions, markSubscriptionsForCancellation } from '../services/billingService.js'
 import { disconnectUserSockets } from '../socket/index.js'
 import { logger } from '../utils/logger.js'
 
@@ -160,6 +161,7 @@ export const deleteOwnAccount = async (req, res) => {
     )
     if (!ownerRole.rows.length) throw new Error('Company owner role is missing.')
 
+    const deactivatedCompanies = []
     for (const membership of memberships.rows.filter(({ rol_empresa }) => rol_empresa === 'owner')) {
       const successor = await client.query(
         `SELECT eu.id_usuario
@@ -189,8 +191,13 @@ export const deleteOwnAccount = async (req, res) => {
           'UPDATE public.empresa SET activo = false WHERE id_empresa = $1',
           [membership.id_empresa]
         )
+        deactivatedCompanies.push(membership.id_empresa)
       }
     }
+
+    // PAY-1 — Una empresa desactivada no debe seguir renovando su plan. Se
+    // marca aquí y se cancela en la pasarela después del COMMIT.
+    await markSubscriptionsForCancellation(client, deactivatedCompanies)
 
     await client.query(
       `UPDATE public.empresa_invitacion
@@ -238,6 +245,16 @@ export const deleteOwnAccount = async (req, res) => {
     try { disconnectUserSockets(user.id_usuario) } catch (error) {
       logger.error('Could not disconnect deleted account sockets:', error)
     }
+    let subscriptionCancellation = deactivatedCompanies.length ? 'pending_retry' : 'not_applicable'
+    if (deactivatedCompanies.length) {
+      try {
+        const cancelled = await cancelPendingSubscriptions({ companyIds: deactivatedCompanies })
+        if (cancelled === null) subscriptionCancellation = 'billing_not_configured'
+        else if (cancelled > 0) subscriptionCancellation = 'requested'
+      } catch (error) {
+        logger.error('Subscription cancellation was queued for retry:', error)
+      }
+    }
     let mongoCleanup = 'pending_retry'
     try {
       if (await processMongoAccountDeletion(user.id_usuario)) mongoCleanup = 'completed'
@@ -252,6 +269,7 @@ export const deleteOwnAccount = async (req, res) => {
         retentionPeriod: 'not_defined_in_the_current_policy',
         externalProviders: 'not_deleted_by_this_operation',
         mongoConversationData: mongoCleanup,
+        subscriptionCancellation,
         ownerCompanies: memberships.rows
           .filter(({ rol_empresa }) => rol_empresa === 'owner')
           .map(({ id_empresa }) => id_empresa),

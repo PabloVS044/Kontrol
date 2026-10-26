@@ -14,6 +14,7 @@ import { getBillingProvider } from './billing/provider.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
 import { startMongoAccountDeletionWorker } from './services/accountDeletionOutbox.js'
+import { startSubscriptionCancellationWorker } from './services/billingService.js'
 import { logger } from './utils/logger.js'
 
 const app        = express()
@@ -84,6 +85,8 @@ if (process.env.NODE_ENV !== 'test') {
   }
 
   startMongoAccountDeletionWorker()
+  // PAY-1 — Reintenta cancelar suscripciones de empresas desactivadas por una baja.
+  startSubscriptionCancellationWorker()
 
   httpServer.listen(PORT, () => {
     logger.info(`Backend running at http://localhost:${PORT}`)
