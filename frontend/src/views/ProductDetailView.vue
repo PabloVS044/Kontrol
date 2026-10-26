@@ -706,7 +706,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .warning {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .danger {

@@ -28,8 +28,8 @@ const props = defineProps({
   // color explícito es un enlace de texto, no un botón. Ponerle un fallback
   // dorado convirtió los cuatro enlaces de la landing en píldoras.
   backColor: { type: String, default: "" },
-  hoverColor: { type: String, default: "var(--Primary)" },
-  textColor: { type: String, default: "var(--Text)" },
+  hoverColor: { type: String, default: "var(--k-color-primary)" },
+  textColor: { type: String, default: "var(--k-color-text)" },
   icon: { type: [String, Object, Function], default: "" },
 });
 
