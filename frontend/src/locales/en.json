@@ -2290,6 +2290,7 @@
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "cookies": "Cookies & Storage",
+      "ai": "AI Assistant",
       "contact": "Contact"
     },
     "terms": {
@@ -2423,6 +2424,45 @@
         {
           "title": "6. How to change your choice or delete everything",
           "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, including your acceptance of the Terms, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
+        }
+      ]
+    },
+    "ai": {
+      "badge": "Artificial intelligence",
+      "title": "AI Assistant Usage Notice",
+      "updated": "Version 1.0 · Published October 26, 2026",
+      "clauses": [
+        {
+          "title": "1. What it is",
+          "body": "Kontrol AI is an automated assistant that answers questions about your business by querying your data. It is read-only: it does not create, change or delete anything, and it does not send messages on your behalf. The help bubble (Birdie) is not this assistant: it shows prewritten answers and does not use artificial intelligence."
+        },
+        {
+          "title": "2. It can be wrong",
+          "body": "The assistant can misread the question, query the wrong data, add up incorrectly or leave information out, and still sound confident. Do not use its answers as the only basis for financial, tax or inventory decisions: check the figures in Budget, Inventory, Sales or Reports before acting. Its recommendations are not accounting, tax or legal advice."
+        },
+        {
+          "title": "3. What it can see",
+          "body": "Only the company you are working in, with your own permissions: owners, administrators and managers see all of its projects; everyone else sees only the projects they are assigned to. From those it sees projects, tasks, budgets, progress, reports, evidence, inventory and suppliers with their contacts, and the name, email and phone of the people working on them. Never passwords. It does not see other companies, chats between people or your integrations."
+        },
+        {
+          "title": "4. What is sent to the model",
+          "body": "Your question and up to ten previous messages; your email, your role and the company name; the list of projects you can see and the table structure; and real data from your business: up to 20 rows per query, with at most five queries per question. Greetings, help and four common questions (budget, project status, low stock and overdue tasks) are answered inside Kontrol without calling the model."
+        },
+        {
+          "title": "5. Who processes it and where",
+          "body": "The model is Qwen, run with vLLM on ClawStitch, a server owned by the Kontrol team and located in Guatemala. Your data does not go to OpenAI, Google, Anthropic or any other external artificial intelligence provider."
+        },
+        {
+          "title": "6. No training and no retention in the model",
+          "body": "What you send is not used to train or improve any model. The model server processes the request, returns the answer and does not keep questions, data or answers. Because the server is our own, there are no external provider terms: this is the position of the team that runs it."
+        },
+        {
+          "title": "7. What Kontrol keeps",
+          "body": "Your conversations (questions, answers and the text of the queries that were run, not their results) so you can see your history; only you can see them, and they are kept until you delete them. If the assistant fails, the server logs the error so it can be fixed. You can delete messages or whole conversations from the assistant, and closing your account deletes all of your assistant history."
+        },
+        {
+          "title": "8. If you do not want to use it",
+          "body": "The assistant cannot be turned off in settings, but it only works when you write to it: if you do not ask it anything, nothing is sent to the model. To delete what is already stored, remove your conversations. For questions or requests about your data, write to {email}."
         }
       ]
     },
