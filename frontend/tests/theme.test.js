@@ -36,6 +36,7 @@ const themeCode = themeCss.replace(/\/\*[\s\S]*?\*\//g, '')
 const declMap = (body) => new Map([...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]))
 const darkTokens = declMap(themeCode.match(/:root,\s*\[data-theme='dark'\]\s*\{([\s\S]*?)\n\}/)[1])
 const lightOverrides = declMap(themeCode.match(/\n\[data-theme='light'\]\s*\{([\s\S]*?)\n\}/)[1])
+const mediaOverrides = declMap(themeCode.match(/:root:not\(\[data-theme\]\)\s*\{([\s\S]*?)\n {2}\}/)[1])
 const tokensOf = (theme) => (theme === 'light' ? new Map([...darkTokens, ...lightOverrides]) : darkTokens)
 
 const resolveIn = (tokens, v) => {
@@ -350,8 +351,15 @@ describe('theme.css — mecanismo de temas', () => {
     expect(themeCss).toMatch(/\[data-theme='light'\]\s*\{/)
   })
 
-  it('no sigue prefers-color-scheme: el claro solo se elige en Configuración', () => {
-    expect(themeCss).not.toMatch(/prefers-color-scheme/)
+  it('respeta prefers-color-scheme cuando no hay preferencia explícita', () => {
+    expect(themeCss).toMatch(/@media \(prefers-color-scheme: light\)/)
+    expect(themeCss).toMatch(/:root:not\(\[data-theme\]\)/)
+  })
+
+  it('[data-theme="light"] y el bloque @media declaran exactamente lo mismo', () => {
+    const sorted = (m) => [...m].sort(([a], [b]) => a.localeCompare(b))
+    expect(lightOverrides.size).toBeGreaterThan(0)
+    expect(sorted(mediaOverrides)).toEqual(sorted(lightOverrides))
   })
 
   it('el tema claro no inventa tokens que el oscuro no tenga', () => {

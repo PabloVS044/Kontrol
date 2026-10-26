@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import es from '@/locales/es.json'
@@ -26,10 +26,15 @@ async function montar() {
 }
 
 describe('ThemeSelector', () => {
+  const sistema = (claro) => vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: claro })))
+
   beforeEach(() => {
     almacen.clear()
     document.documentElement.removeAttribute('data-theme')
+    sistema(false)
   })
+
+  afterEach(() => vi.unstubAllGlobals())
 
   it('arranca con Oscuro marcado', async () => {
     const wrapper = await montar()
@@ -44,6 +49,12 @@ describe('ThemeSelector', () => {
     await wrapper.findAll('button')[1].trigger('click')
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     expect(localStorage.getItem('kontrol:theme')).toBe('light')
+    expect(wrapper.findAll('button')[1].attributes('aria-pressed')).toBe('true')
+  })
+
+  it('marca Claro si el sistema lo pide y no hay nada elegido', async () => {
+    sistema(true)
+    const wrapper = await montar()
     expect(wrapper.findAll('button')[1].attributes('aria-pressed')).toBe('true')
   })
 

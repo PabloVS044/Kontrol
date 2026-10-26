@@ -1604,7 +1604,7 @@
       "language": "Idioma",
       "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión.",
       "theme": "Tema",
-      "themeNote": "El oscuro es el predeterminado. Se recuerda en este navegador, también después de cerrar sesión.",
+      "themeNote": "Por defecto sigue la preferencia de tu sistema. Lo que elijas aquí se recuerda en este navegador, también después de cerrar sesión.",
       "themes": { "dark": "Oscuro", "light": "Claro" }
     },
     "loading": "Cargando la configuración…",
