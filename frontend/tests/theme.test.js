@@ -179,6 +179,7 @@ describe('theme.css — catálogo de tokens', () => {
       '--k-overlay-backdrop',
       '--k-surface-panel-border',
       '--k-surface-section',
+      '--k-surface-code',
       '--k-surface-warm',
       '--k-surface-warm-2',
       '--k-surface-floating',
