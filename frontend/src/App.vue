@@ -104,11 +104,12 @@ watch(() => authStore.idUsuario, () => prefsStore.load())
 .background {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: var(--k-z-background);
+  filter: var(--k-bg-wave-filter);
 }
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: var(--k-z-base);
 }
 </style>

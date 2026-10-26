@@ -9,13 +9,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Landing siempre oscura. */
+main[data-theme='dark'] {
+  color: var(--k-color-text);
+}
+
 /* Solid layer under the video: it's dimmed over the hero, and without this
    the app's Waves background (App.vue, z-index 0) showed through it. Same
    stacking slot as the video, earlier in the DOM, so it paints underneath. */
 .bg-scroll-video-backdrop {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: rgb(var(--k-color-black-rgb));
   pointer-events: none;
 }
@@ -26,7 +31,7 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   pointer-events: none;
   /* Dimmed behind the hero so the headline, not the tangle of cables, is
      what gets read first; setupBackgroundVideoScrub brings it up to full as
@@ -37,7 +42,7 @@ html {
 .bg-scroll-video-scrim {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: rgba(0, 0, 0, 0.45);
   pointer-events: none;
 }
@@ -69,7 +74,7 @@ html {
   align-items: center;
   gap: 20px;
   width: 100%;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   margin-top: 20px;
 }
 
@@ -178,7 +183,7 @@ html {
 .control-k-wrapper {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: var(--k-z-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +196,7 @@ html {
 .control-moment {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: var(--k-z-raised);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -375,7 +380,7 @@ html {
 /* ─── Solution ───────────────────────────────────────────────────────────── */
 #solution {
   width: 100%;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
 }
 
 .solution-container {
@@ -384,7 +389,7 @@ html {
      through here too, instead of this being the one section that blocks it. */
   background-color: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -410,7 +415,7 @@ html {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: var(--k-z-base);
 }
 
 .graph {
@@ -471,7 +476,7 @@ html {
 .steps-header {
   flex: 2;
   text-align: left;
-  z-index: 2;
+  z-index: var(--k-z-raised);
 }
 
 .companies-swap {
@@ -517,7 +522,7 @@ html {
   padding: 140px 20px;
   box-sizing: border-box;
   position: relative;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
   overflow: hidden;
 }
 
@@ -536,7 +541,7 @@ html {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: radial-gradient(
     ellipse 55% 60% at 50% 45%,
     rgba(var(--k-color-primary-rgb), 0.16),

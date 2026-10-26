@@ -172,7 +172,7 @@ function toggleDropdown(e) {
       position: 'fixed',
       top:  rect.bottom + 8 + 'px',
       left: rect.left + 'px',
-      zIndex: 9999,
+      zIndex: 'calc(var(--k-z-system) - 1)',
     }
   }
   dropdownOpen.value = !dropdownOpen.value
@@ -249,11 +249,11 @@ const closeMenu = () => {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0b0b0b;
+  background: var(--k-shade-1);
   border-bottom: var(--k-border-width) solid var(--k-shade-6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 100;
+  z-index: var(--k-z-nav);
   display: flex;
   align-items: stretch;
 }
@@ -286,7 +286,7 @@ const closeMenu = () => {
   font-family: 'Bungee', var(--k-font-sans);
   font-size: var(--k-font-size-body-main);
   letter-spacing: 1px;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 /* ── Empresa selector ── */
@@ -311,7 +311,7 @@ const closeMenu = () => {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
   font-weight: 600;
-  color: var(--Text);
+  color: var(--k-color-text);
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -320,12 +320,12 @@ const closeMenu = () => {
 
 .empresa-role {
   font-size: 10px;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: #1e170d;
+  background: var(--k-surface-primary-tint);
   padding: 1px 6px;
-  border: var(--k-border-width) solid #3d3322;
+  border: var(--k-border-width) solid var(--k-color-border);
 }
 
 .chevron {
@@ -340,14 +340,14 @@ const closeMenu = () => {
 .empresa-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: calc(var(--k-z-system) - 2);
 }
 
 :global(.empresa-dropdown) {
   background: var(--k-shade-2);
   border: var(--k-border-width) solid var(--k-shade-6);
   min-width: 220px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: var(--k-shadow-dropdown);
   display: flex;
   flex-direction: column;
 }
@@ -358,7 +358,7 @@ const closeMenu = () => {
   letter-spacing: 0.1em;
   /* Estaba en var(--k-gray-1) sobre fondo var(--k-shade-2): ratio ~1.2:1, ilegible. Es el único
      cambio del PR #86 que se conserva aquí — es contraste, no estética. */
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   padding: 12px 16px 6px;
 }
 
@@ -380,13 +380,13 @@ const closeMenu = () => {
 }
 
 :global(.dd-item.active) {
-  background: #1a150f;
+  background: var(--k-surface-primary-tint-2);
 }
 
 :global(.dd-item-name) {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-small);
-  color: var(--Text);
+  color: var(--k-color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -409,7 +409,7 @@ const closeMenu = () => {
 :global(.dd-new) {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
-  color: var(--Primary);
+  color: var(--k-color-primary);
   padding: 10px 16px;
   text-decoration: none;
   display: block;
@@ -417,7 +417,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-new:hover) {
-  background: #1a150f;
+  background: var(--k-surface-primary-tint-2);
 }
 
 /* ── Nav links ── */
@@ -447,15 +447,15 @@ const closeMenu = () => {
   position: absolute;
   bottom: 0; left: 16px; right: 16px;
   height: 2px;
-  background: var(--Primary);
+  background: var(--k-color-primary);
   transform: scaleX(0);
   transition: transform .2s ease;
 }
 
-.appnav-link:hover { color: var(--Text); }
+.appnav-link:hover { color: var(--k-color-text); }
 
 .appnav-link.router-link-active {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .appnav-link.router-link-active::after {
@@ -465,11 +465,11 @@ const closeMenu = () => {
 /* --Secondary (#886911) daba 3.82:1 sobre la barra: no llega a AA. Se usa el
    dorado de marca; la ruta activa sigue marcada por el subrayado. */
 .appnav-link--agent {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .appnav-link--agent:hover {
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 /* ── End ── */
@@ -511,7 +511,7 @@ const closeMenu = () => {
   top: calc(100% + var(--k-space-2));
   right: 0;
   min-width: 220px;
-  z-index: 200;
+  z-index: var(--k-z-dropdown);
   background: var(--k-shade-2);
   border: var(--k-border-width) solid var(--k-shade-6);
   padding: var(--k-space-2) 0;
@@ -582,14 +582,14 @@ const closeMenu = () => {
   width: 24px;
   height: 20px;
   position: relative;
-  z-index: 101;
+  z-index: var(--k-z-top);
 }
 
 .hamburger .line {
   display: block;
   width: 100%;
   height: 2px;
-  background-color: var(--Text);
+  background-color: var(--k-color-text);
   position: absolute;
   left: 0;
   transition: all 0.3s ease;
@@ -614,7 +614,7 @@ const closeMenu = () => {
   position: fixed;
   top: 56px;
   left: 0; right: 0; bottom: 0;
-  z-index: 98;
+  z-index: var(--k-z-base);
   background: rgba(var(--k-color-black-rgb), 0.5);
 }
 
@@ -649,7 +649,7 @@ const closeMenu = () => {
     top: 56px;
     left: 0;
     right: 0;
-    z-index: 99;
+    z-index: var(--k-z-raised);
     background: var(--k-shade-1);
     border-bottom: var(--k-border-width) solid var(--k-shade-6);
     flex-direction: column;

@@ -109,7 +109,7 @@ function acceptTerms() {
 .consent-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: var(--k-z-system);
   display: flex;
   align-items: center;
   justify-content: center;

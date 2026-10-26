@@ -1603,6 +1603,9 @@
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",
       "languageNote": "Applies to the whole app. If you accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "theme": "Theme",
+      "themeNote": "\"System\" follows your device preference. If you choose Dark or Light and accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "themes": { "system": "System", "dark": "Dark", "light": "Light" },
       "storage": "Remember preferences in this browser",
       "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
       "storagePolicy": "See the cookie and storage policy"

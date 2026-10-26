@@ -1603,6 +1603,9 @@
       "birdieNote": "Oculta el botón flotante que te sigue por la aplicación. Puedes volver a activarlo aquí.",
       "language": "Idioma",
       "languageNote": "Se aplica a toda la aplicación. Si aceptas recordar tus preferencias, se mantiene en este navegador, también después de cerrar sesión.",
+      "theme": "Tema",
+      "themeNote": "\"Sistema\" sigue la preferencia de tu dispositivo. Si eliges Oscuro o Claro y aceptas recordar tus preferencias, se mantiene en este navegador, también después de cerrar sesión.",
+      "themes": { "system": "Sistema", "dark": "Oscuro", "light": "Claro" },
       "storage": "Recordar preferencias en este navegador",
       "storageNote": "Rechazarlo borra las preferencias ya guardadas. Tu sesión no se ve afectada.",
       "storagePolicy": "Ver la política de cookies y almacenamiento"

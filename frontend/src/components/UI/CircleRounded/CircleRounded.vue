@@ -25,7 +25,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: "var(--Primary)",
+    default: "var(--k-color-primary)",
   },
   animationDuration: {
     type: Number,
@@ -33,7 +33,7 @@ const props = defineProps({
   },
   roundedColor: {
     type: String,
-    default: "var(--Primary2)",
+    default: "var(--k-color-primary-2)",
   },
   icon: {
     type: [String, Object],

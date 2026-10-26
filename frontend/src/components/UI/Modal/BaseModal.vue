@@ -39,7 +39,7 @@ function close() {
   position: fixed;
   inset: 0;
   z-index: var(--k-z-modal-overlay);
-  background: rgba(var(--k-color-black-rgb), 0.78);
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -47,8 +47,8 @@ function close() {
 }
 
 .modal {
-  background: var(--Background2);
-  border: var(--k-border-width) solid var(--Border);
+  background: var(--k-color-bg-2);
+  border: var(--k-border-width) solid var(--k-color-border);
   border-radius: var(--k-radius-lg);
   box-shadow: var(--k-shadow-modal);
   width: 95%;
@@ -66,13 +66,13 @@ function close() {
   align-items: center;
   gap: var(--k-space-3);
   padding: var(--k-space-5) var(--k-space-6);
-  border-bottom: var(--k-border-width) solid var(--Border);
+  border-bottom: var(--k-border-width) solid var(--k-color-border);
 }
 
 .modal-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-heading-1); 
-  color: var(--Text);
+  color: var(--k-color-text);
   flex: 1;
 }
 
@@ -85,6 +85,6 @@ function close() {
 }
 
 .modal-close path {
-  stroke: var(--TextMuted);
+  stroke: var(--k-text-muted);
 }
 </style>

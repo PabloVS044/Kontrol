@@ -50,14 +50,14 @@ const props = defineProps({
   subtitle:        { type: String, default: "" },
   icon:            { default: null },
   iconSize:        { type: Number, default: 24 },
-  iconColor:       { type: String, default: "var(--Primary)" },
+  iconColor:       { type: String, default: "var(--k-color-primary)" },
   listIcon:        { default: null },
   listIconSize:    { type: Number, default: 20 },
-  listIconColor:   { type: String, default: "var(--Primary)" },
+  listIconColor:   { type: String, default: "var(--k-color-primary)" },
   characteristics: { type: Array,  default: () => [] },
-  back:            { type: String, default: "var(--Background2)" },
-  titleColor:      { type: String, default: "var(--Text)" },
-  borderColor:     { type: String, default: "var(--Border)" },
+  back:            { type: String, default: "var(--k-color-bg-2)" },
+  titleColor:      { type: String, default: "var(--k-color-text)" },
+  borderColor:     { type: String, default: "var(--k-color-border)" },
   // Es un COLOR, no una sombra: entra en `drop-shadow(0 0 .75rem <color>)`.
   // El default era `var(--shadow-card)` — una sombra completa en la posición
   // del color, inválida aunque el token existiera. Coincide a propósito con el

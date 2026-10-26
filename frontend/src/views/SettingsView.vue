@@ -30,6 +30,14 @@
       </div>
 
       <div class="sc-row">
+        <div class="sc-field">
+          <span class="sc-label">{{ $t('settings.prefs.theme') }}</span>
+          <ThemeSelector />
+        </div>
+        <p class="sc-note">{{ $t('settings.prefs.themeNote') }}</p>
+      </div>
+
+      <div class="sc-row">
         <label class="sc-toggle">
           <input
             type="checkbox"
@@ -232,6 +240,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import LanguageSelector from '../components/common/LanguageSelector.vue'
+import ThemeSelector from '../components/common/ThemeSelector.vue'
 import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 

@@ -149,7 +149,7 @@ onMounted(async () => {
   font-family: 'Playfair Display', serif;
   font-size: 48px;
   font-weight: 400;
-  color: var(--Text);
+  color: var(--k-color-text);
   line-height: 1.1;
   margin: 0;
 }
@@ -158,13 +158,13 @@ onMounted(async () => {
   padding-top: 0.5rem;
   padding-bottom: 2rem;
   font-size: 14px;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0;
 }
 
-.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: var(--font-sans); }
-.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: var(--font-sans); }
+.adm-loading { font-size: 0.9rem; color: var(--k-text-muted); font-family: var(--font-sans); }
+.adm-error   { font-size: 0.9rem; color: var(--k-state-error-text); font-family: var(--font-sans); }
 
 /* Sort bar — identical to Companies view */
 .sort-bar {
@@ -179,9 +179,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: #111111;
-  border: 1px solid var(--Border);
-  color: var(--TextMuted);
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-color-border);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
@@ -191,18 +191,18 @@ onMounted(async () => {
   transition: border-color 0.15s, color 0.15s;
 }
 
-.sort-btn:hover { border-color: var(--Background3); color: var(--Text); }
+.sort-btn:hover { border-color: var(--k-color-bg-3); color: var(--k-color-text); }
 
 .sort-btn.active {
-  border-color: var(--Secondary);
-  color: var(--Primary);
+  border-color: var(--k-color-secondary);
+  color: var(--k-color-primary);
 }
 
 .sort-arrow { font-size: 11px; }
 
 .sort-count {
   font-size: 12px;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   margin-left: 4px;
   font-family: var(--font-sans);
 }
@@ -218,19 +218,19 @@ onMounted(async () => {
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
 .task-card {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: 1px solid var(--k-shade-6);
   border-top: none;
   transition: border-color 0.15s;
 }
 
-.task-card:first-of-type { border-top: 1px solid var(--Border); }
-.task-card:hover { border-color: var(--Background3); }
+.task-card:first-of-type { border-top: 1px solid var(--k-color-border); }
+.task-card:hover { border-color: var(--k-color-bg-3); }
 
 .list-row {
   display: grid;
@@ -252,10 +252,10 @@ onMounted(async () => {
   height: 28px;
   flex-shrink: 0;
   border-radius: 2px;
-  background: var(--Primary);
+  background: var(--k-color-primary);
 }
 
-.priority-bar.inactive { background: var(--TextDim); }
+.priority-bar.inactive { background: var(--k-text-dim); }
 
 .task-info {
   display: flex;
@@ -268,7 +268,7 @@ onMounted(async () => {
   font-size: 13px;
   font-family: var(--font-sans);
   font-weight: 600;
-  color: var(--Text);
+  color: var(--k-color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -276,13 +276,13 @@ onMounted(async () => {
 
 .task-id {
   font-size: 11px;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
 .cell-email {
   font-size: 12px;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   white-space: nowrap;
   overflow: hidden;
@@ -302,22 +302,22 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 3px 8px;
-  background: var(--PillBack);
-  border: 1px solid var(--Border);
-  color: var(--TextMuted);
+  background: var(--k-color-pill-back);
+  border: 1px solid var(--k-color-border);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   width: fit-content;
 }
 
 .role-pill.super_user {
-  color: var(--Primary);
-  border-color: var(--Secondary);
-  background: var(--Background2);
+  color: var(--k-color-primary);
+  border-color: var(--k-color-secondary);
+  background: var(--k-color-bg-2);
 }
 
 .list-cell-num {
   font-size: 13px;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   text-align: center;
   font-family: var(--font-sans);
 }
@@ -338,23 +338,23 @@ onMounted(async () => {
   padding: 4px 10px;
   border: 1px solid;
   cursor: pointer;
-  background: #111111;
+  background: var(--k-shade-3);
   transition: opacity 0.15s;
 }
 
 .toggle-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.btn-deactivate { color: var(--ErrorText); border-color: var(--ErrorText); }
-.btn-activate   { color: var(--SuccessText); border-color: var(--SuccessText); }
+.btn-deactivate { color: var(--k-state-error-text); border-color: var(--k-state-error-text); }
+.btn-activate   { color: var(--k-state-success-text); border-color: var(--k-state-success-text); }
 
 .adm-empty {
   text-align: center;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
   padding: 40px;
   font-family: var(--font-sans);
   font-size: 13px;
-  background: var(--Background2);
-  border: 1px solid var(--Border);
+  background: var(--k-surface-card);
+  border: 1px solid var(--k-color-border);
 }
 
 /* Móvil: la tabla de usuarios hace scroll horizontal en vez de comprimirse. */

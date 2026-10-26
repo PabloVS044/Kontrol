@@ -101,7 +101,7 @@ const particles = [
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
-  z-index: 0;
+  z-index: var(--k-z-background);
   background:
     radial-gradient(circle at top left, rgba(255, 140, 0, 0.08), transparent 35%),
     radial-gradient(circle at top right, rgba(255, 180, 0, 0.06), transparent 40%),
