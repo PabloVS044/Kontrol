@@ -19,7 +19,9 @@
     "db:test:down": "docker compose -f ../docker-compose.integration.yml down",
     "seed:test": "node src/db/seed.js",
     "reset:test": "node src/db/reset.js",
-    "verify:ux-phase2": "node src/db/verifyUxPhase2.js"
+    "verify:ux-phase2": "node src/db/verifyUxPhase2.js",
+    "test:privacy": "vitest run -c vitest.privacy.config.js",
+    "validate:privacy": "npm run test:coverage && npm run test:integration && npm run test:regression && npm run test:privacy"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.10",

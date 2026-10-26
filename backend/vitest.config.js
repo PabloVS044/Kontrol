@@ -7,7 +7,7 @@ export default defineConfig({
     include: ['tests/**/*.test.js'],
     // Las suites de integración y de regresión necesitan un Postgres real y
     // tienen su propia configuración: `vitest.integration.config.js`.
-    exclude: ['tests/integration/**', 'tests/regression/**', 'node_modules/**'],
+    exclude: ['tests/integration/**', 'tests/regression/**', 'tests/privacy/**', 'node_modules/**'],
 
     coverage: {
       provider: 'v8',

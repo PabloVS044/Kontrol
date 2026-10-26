@@ -171,3 +171,17 @@ La identificación/contacto, contratos y ubicaciones por confirmar, P1/P2/P3, pr
 | Historial | Cambio |
 | --- | --- |
 | 16-10-2026 · 0.1 | Redacción inicial interna con inventario cerrado y servidor IA en Guatemala por declaración del equipo; sin verificación independiente, aprobación, publicación o vigencia. |
+
+
+### Nota técnica P1: atomicidad de la limpieza Mongo
+
+La implementación actual agrupa la limpieza de MongoDB en una transacción y
+conserva `account_privacy_states`: un registro técnico con identificador numérico,
+marca de eliminación y contador de revisión, sin nombre, correo ni contenido.
+Las escrituras de chat humano y de IA usan ese mismo registro dentro de sus
+transacciones para impedir que una petición en curso vuelva a crear información
+después de completar la limpieza. Este registro no se purga automáticamente.
+La baja de PostgreSQL y el trabajo del outbox siguen siendo una transacción
+separada: un fallo de Mongo deja la limpieza pendiente de reintento, sin reactivar
+la cuenta. Esto no modifica las retenciones empresariales ni elimina copias en
+proveedores. La validación operativa se documenta en `PRIVACY_VALIDATION.md`.
