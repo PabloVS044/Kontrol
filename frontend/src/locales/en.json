@@ -1632,6 +1632,28 @@
       "title": "Company members",
       "hint": "Invite people, change their role and their project access. The panel is on the Dashboard.",
       "link": "Go to company members"
+    },
+    "privacy": {
+      "title": "Your data and account",
+      "hint": "Download this company's data or delete your personal access.",
+      "export": "Download company data (JSON)",
+      "exporting": "Preparing download…",
+      "exportSuccess": "The data download has started.",
+      "exportOwnerOnly": "The complete export is available only to company owners and administrators.",
+      "deleteTitle": "Delete my account",
+      "deleteWhat": "Deletion is immediate and has no grace period. Your account is disabled, login credentials and contact details are removed, your personal AI conversations and chat messages are deleted. Anonymized technical references needed by business records remain; operational logs may still contain identifiable data.",
+      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is deactivated and its data archived. Other accounts are not deleted.",
+      "deleteDuration": "The current policy does not set a retention period for these business records. We therefore cannot promise a deletion date: they remain until a retention period is approved and implemented. This does not claim that a law requires their retention.",
+      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are not automatically deleted either.",
+      "password": "Current password (for password-based accounts)",
+      "googleReauth": "Reauthenticate with Google",
+      "reauthenticating": "Connecting to Google…",
+      "googleReauthSuccess": "Google verified your identity. Confirm deletion to continue.",
+      "googleReauthError": "Google account verification failed. Please try again.",
+      "deleteConfirm": "Delete my account now",
+      "deleting": "Deleting account…",
+      "finalConfirm": "This action is irreversible. Personal access will be deleted and the described business records will be retained. Do you want to continue?",
+      "error": "The operation could not be completed."
     }
   },
   "navbar": {
@@ -2356,11 +2378,11 @@
         },
         {
           "title": "6. How long we keep it",
-          "body": "We keep information while your account or company is active. We have not yet defined deletion periods per type of data, and deactivating an account does not erase its records: if you want us to delete your data, request it at {email}."
+          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain; there is no defined period for deleting them, and copies held by external providers are not removed."
         },
         {
           "title": "7. Your rights",
-          "body": "You can view and correct much of your information from the platform and download PDF or CSV reports. To request access, correction, a copy or the deletion of your personal data, write to {email} from the email address linked to your account. Some data may be retained when there is a legal obligation or a justified reason."
+          "body": "From Settings, a company owner or administrator can download the business data accessible to that account as JSON; the download is authenticated and does not use a public link. It includes minimal metadata for human chats involving the requester and their own messages, not other participants' messages or profiles. You can request account deletion in the same section using your password or by reauthenticating with Google. Deletion does not remove shared business records, logs or copies held by external providers, and their retention periods are not yet defined. This mechanism does not limit rights granted by applicable law."
         },
         {
           "title": "8. Security",

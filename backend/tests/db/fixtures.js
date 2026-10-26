@@ -36,7 +36,12 @@ export async function createUser({ nombre = 'Prueba', apellido = 'Integración',
 // JWT con la misma forma que firma `authController.signToken`.
 export function tokenFor(user) {
   return jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, nombre_rol: user.nombre_rol },
+    {
+      id_usuario: user.id_usuario,
+      email: user.email,
+      nombre_rol: user.nombre_rol,
+      token_version: 1,
+    },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
   )

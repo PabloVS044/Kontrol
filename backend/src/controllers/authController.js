@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { randomUUID } from 'node:crypto'
+import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
 import {
   acceptCompanyInvitation,
@@ -19,7 +21,12 @@ const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 
 const signToken = (user) =>
   jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, nombre_rol: user.nombre_rol },
+    {
+      id_usuario: user.id_usuario,
+      email: user.email,
+      nombre_rol: user.nombre_rol,
+      token_version: user.token_version ?? 1,
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
   )
@@ -156,7 +163,7 @@ export const login = async (req, res) => {
   const client = await pool.connect()
   try {
     const result = await client.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre_rol
+      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
        FROM public.usuario u
        JOIN public.rol r ON r.id_rol = u.id_rol
        WHERE u.email = $1`,
@@ -187,6 +194,7 @@ export const login = async (req, res) => {
 
     const token = signToken(user)
     const { password_hash, activo, ...userData } = user
+    delete userData.token_version
     return res.json({ success: true, token, data: userData, invite })
   } finally {
     client.release()
@@ -233,12 +241,104 @@ export const googleAuth = (req, res) => {
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 }
 
+export const googleDeletionReauthentication = (req, res) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CALLBACK_URL) {
+    return res.status(503).json({ success: false, message: 'Google reauthentication is not configured.' })
+  }
+
+  const frontend = getFrontendBaseUrl(req, req.headers.origin)
+  const nonce = randomUUID()
+  const state = jwt.sign(
+    { purpose: 'account-deletion-reauth', id_usuario: req.user.id_usuario, frontend, nonce },
+    process.env.JWT_SECRET,
+    { expiresIn: '5m' }
+  )
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+    response_type: 'code',
+    scope: 'openid email profile',
+    prompt: 'login select_account',
+    max_age: '0',
+    nonce,
+    state,
+  })
+
+  return res.json({
+    success: true,
+    url: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+  })
+}
+
 /**
  * GET /api/auth/google/callback
  * Google redirects here after the user grants (or denies) access.
  */
 export const googleCallback = async (req, res) => {
   const { code, error, state } = req.query
+  let deletionState = null
+  if (typeof state === 'string' && state.includes('.')) {
+    try {
+      const payload = jwt.verify(state, process.env.JWT_SECRET)
+      if (payload.purpose === 'account-deletion-reauth') deletionState = payload
+    } catch {
+      deletionState = null
+    }
+  }
+
+  if (deletionState) {
+    const frontendUrl = getFrontendBaseUrl(req, deletionState.frontend)
+    if (error) return res.redirect(`${frontendUrl}/settings?reauth_error=google_cancelled`)
+    try {
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+          grant_type: 'authorization_code',
+        }),
+      })
+      const tokens = await tokenResponse.json()
+      if (!tokenResponse.ok || !tokens.id_token) {
+        logger.error('[Google account deletion reauthentication] token exchange failed.')
+        return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+      }
+
+      const oauthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+      const ticket = await oauthClient.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
+      const googleUser = ticket.getPayload()
+      const userResult = await pool.query(
+        `SELECT google_id
+         FROM public.usuario
+         WHERE id_usuario = $1 AND activo = true`,
+        [deletionState.id_usuario]
+      )
+      if (
+        !googleUser ||
+        googleUser.sub !== userResult.rows[0]?.google_id ||
+        googleUser.nonce !== deletionState.nonce
+      ) {
+        return res.redirect(`${frontendUrl}/settings?reauth_error=google_account_mismatch`)
+      }
+
+      const proof = jwt.sign(
+        { id_usuario: deletionState.id_usuario, purpose: 'account-deletion' },
+        process.env.JWT_SECRET,
+        { expiresIn: '2m' }
+      )
+      return res.redirect(`${frontendUrl}/settings#deletion_proof=${encodeURIComponent(proof)}`)
+    } catch (err) {
+      logger.error('[Google account deletion reauthentication]', err)
+      return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+    }
+  }
+
   const { inviteToken, frontend } = decodeOAuthState(state)
   const frontendUrl = getFrontendBaseUrl(req, frontend)
 
@@ -272,7 +372,7 @@ export const googleCallback = async (req, res) => {
     const client = await pool.connect()
     try {
       let userRow = await client.query(
-        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
          FROM public.usuario u
          JOIN public.rol r ON r.id_rol = u.id_rol
          WHERE u.google_id = $1`,
@@ -281,7 +381,7 @@ export const googleCallback = async (req, res) => {
 
       if (!userRow.rows.length) {
         const byEmail = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+          `          SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.email = $1`,
@@ -313,7 +413,7 @@ export const googleCallback = async (req, res) => {
         )
 
         userRow = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.id_usuario = $1`,

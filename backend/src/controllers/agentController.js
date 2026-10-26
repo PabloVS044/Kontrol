@@ -3,6 +3,8 @@ import AgentConversation from '../models/AgentConversation.js'
 import AgentMessage from '../models/AgentMessage.js'
 import { isMongoReady } from '../db/mongo.js'
 import { isAgentConfigured, runAgentTurn } from '../services/aiAgentService.js'
+import { persistUserTurn, persistAssistantTurn } from '../services/agentPersistence.js'
+import { withAccountMongoWrite } from '../services/accountMongoWrite.js'
 import { logger } from '../utils/logger.js'
 
 /* ────────────────────────────────────────────────────────────────────────── */
@@ -13,20 +15,13 @@ function isValidObjectId(id) {
   return typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
 }
 
-/** Trims a user message into a usable conversation title. */
-function deriveTitle(text) {
-  const trimmed = (text || '').trim().replace(/\s+/g, ' ')
-  if (!trimmed) return 'Nueva conversación'
-  return trimmed.length > 60 ? `${trimmed.slice(0, 57)}…` : trimmed
-}
-
 /**
  * Loads a conversation if it belongs to the calling user. Returns null
  * otherwise (caller is expected to respond with 404).
  */
-async function loadOwnedConversation(conversationId, userId) {
+async function loadOwnedConversation(conversationId, userId, session = null) {
   if (!isValidObjectId(conversationId)) return null
-  const conv = await AgentConversation.findById(conversationId).lean()
+  const conv = await AgentConversation.findById(conversationId).session(session).lean()
   if (!conv || conv.userId !== userId) return null
   return conv
 }
@@ -95,50 +90,20 @@ export const chat = async (req, res) => {
   const empresaId = req.company.id_empresa
   const persist = PERSISTENCE_AVAILABLE()
 
-  // ── 1) Conversation
   let conversation = null
-  if (persist) {
-    if (conversationId) {
-      conversation = await loadOwnedConversation(conversationId, userId)
-      if (!conversation) {
-        return res.status(404).json({ success: false, message: 'Conversation not found.' })
-      }
-    } else {
-      conversation = await AgentConversation.create({
-        userId,
-        empresaId,
-        title: deriveTitle(lastMessage.content),
-        lastMessageAt: new Date(),
-      })
-      conversation = conversation.toObject()
-    }
-  }
-
-  // ── 2) Persist user message
   let savedUserMessage = null
-  if (persist) {
-    savedUserMessage = await AgentMessage.create({
-      conversationId: conversation._id,
-      userId,
-      empresaId,
-      role: 'user',
-      content: lastMessage.content,
-    })
-  }
-
-  // ── 3) Abort plumbing: link the client connection to an AbortController.
-  // Listen on `res`, not `req`: since Node 16 `req` emits 'close' as soon as
-  // the body is consumed, which either aborted every turn instantly (no await
-  // before this line) or fired before the listener existed, so Stop never
-  // cancelled anything. `res` closes on disconnect or after the reply is
-  // sent; `writableEnded` tells those apart.
   const ac = new AbortController()
-  const onClose = () => {
-    if (!res.writableEnded) ac.abort()
-  }
+  const onClose = () => { if (!res.writableEnded) ac.abort() }
   res.on('close', onClose)
 
   try {
+    if (req.aborted || res.destroyed) return
+    if (persist) {
+      const saved = await persistUserTurn({ userId, empresaId, conversationId, content: lastMessage.content })
+      conversation = saved.conversation
+      savedUserMessage = saved.message
+    }
+    ac.signal.throwIfAborted()
     const { answer, queries } = await runAgentTurn({
       history: messages,
       user: {
@@ -154,22 +119,12 @@ export const chat = async (req, res) => {
       signal: ac.signal,
     })
 
-    // ── 4) Persist assistant message
-    let savedAssistant = null
-    if (persist) {
-      savedAssistant = await AgentMessage.create({
-        conversationId: conversation._id,
-        userId,
-        empresaId,
-        role: 'assistant',
-        content: answer,
-        queries,
-      })
-      await AgentConversation.updateOne(
-        { _id: conversation._id },
-        { $set: { lastMessageAt: new Date() } }
-      )
-    }
+    ac.signal.throwIfAborted()
+    // No transaction is held during the network/LLM call. This second write
+    // rechecks the durable deletion fence and the conversation's existence.
+    const savedAssistant = persist ? await persistAssistantTurn({
+      userId, empresaId, conversationId: conversation._id, answer, queries,
+    }) : null
 
     return res.json({
       success: true,
@@ -193,6 +148,9 @@ export const chat = async (req, res) => {
     if (err?.name === 'AbortError' || ac.signal.aborted) {
       // Client cut the request. Don't try to write to res — it's gone.
       return
+    }
+    if (err.status === 401 || err.status === 404) {
+      return res.status(err.status).json({ success: false, message: err.message })
     }
     // Upstream errors embed the inference server's response body; keep that
     // in the logs, not in the client payload.
@@ -260,19 +218,22 @@ export const deleteConversation = async (req, res) => {
   if (!PERSISTENCE_AVAILABLE()) {
     return res.status(503).json({ success: false, message: 'Chat history unavailable: MongoDB is not connected.' })
   }
-  const conv = await loadOwnedConversation(req.params.id, req.user.id_usuario)
-  if (!conv) return res.status(404).json({ success: false, message: 'Conversation not found.' })
-
-  await AgentMessage.deleteMany({ conversationId: conv._id })
-  await AgentConversation.deleteOne({ _id: conv._id })
+  const deleted = await withAccountMongoWrite(req.user.id_usuario, async (session) => {
+    const conv = await loadOwnedConversation(req.params.id, req.user.id_usuario, session)
+    if (!conv) return false
+    await AgentMessage.deleteMany({ conversationId: conv._id }, { session })
+    await AgentConversation.deleteOne({ _id: conv._id }, { session })
+    return true
+  })
+  if (!deleted) return res.status(404).json({ success: false, message: 'Conversation not found.' })
   return res.json({ success: true })
 }
 
 /* ── Message-level edit / delete ─────────────────────────────────────────── */
 
-async function loadOwnedMessage(messageId, userId) {
+async function loadOwnedMessage(messageId, userId, session = null) {
   if (!isValidObjectId(messageId)) return null
-  const msg = await AgentMessage.findById(messageId)
+  const msg = await AgentMessage.findById(messageId).session(session)
   if (!msg || msg.userId !== userId) return null
   return msg
 }
@@ -290,19 +251,17 @@ export const updateMessage = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Message too long.' })
   }
 
-  const msg = await loadOwnedMessage(req.params.id, req.user.id_usuario)
-  if (!msg) return res.status(404).json({ success: false, message: 'Message not found.' })
-
-  // Only user messages can be edited — editing an assistant message would
-  // mean rewriting what the model said, which we don't want.
-  if (msg.role !== 'user') {
-    return res.status(403).json({ success: false, message: 'Only user messages can be edited.' })
-  }
-
-  msg.content = content
-  msg.edited = true
-  await msg.save()
-  return res.json({ success: true, data: serializeMessage(msg) })
+  const result = await withAccountMongoWrite(req.user.id_usuario, async (session) => {
+    const msg = await loadOwnedMessage(req.params.id, req.user.id_usuario, session)
+    if (!msg) return { status: 404, message: 'Message not found.' }
+    if (msg.role !== 'user') return { status: 403, message: 'Only user messages can be edited.' }
+    msg.content = content
+    msg.edited = true
+    await msg.save({ session })
+    return { data: serializeMessage(msg) }
+  })
+  if (result.status) return res.status(result.status).json({ success: false, message: result.message })
+  return res.json({ success: true, data: result.data })
 }
 
 /** DELETE /api/agent/messages/:id */
@@ -310,9 +269,12 @@ export const deleteMessage = async (req, res) => {
   if (!PERSISTENCE_AVAILABLE()) {
     return res.status(503).json({ success: false, message: 'Chat history unavailable: MongoDB is not connected.' })
   }
-  const msg = await loadOwnedMessage(req.params.id, req.user.id_usuario)
-  if (!msg) return res.status(404).json({ success: false, message: 'Message not found.' })
-
-  await AgentMessage.deleteOne({ _id: msg._id })
+  const deleted = await withAccountMongoWrite(req.user.id_usuario, async (session) => {
+    const msg = await loadOwnedMessage(req.params.id, req.user.id_usuario, session)
+    if (!msg) return false
+    await AgentMessage.deleteOne({ _id: msg._id }, { session })
+    return true
+  })
+  if (!deleted) return res.status(404).json({ success: false, message: 'Message not found.' })
   return res.json({ success: true })
 }
