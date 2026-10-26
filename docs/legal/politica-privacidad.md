@@ -171,4 +171,3 @@ La identificación/contacto, contratos y ubicaciones por confirmar, P1/P2/P3, pr
 | Historial | Cambio |
 | --- | --- |
 | 16-10-2026 · 0.1 | Redacción inicial interna con inventario cerrado y servidor IA en Guatemala por declaración del equipo; sin verificación independiente, aprobación, publicación o vigencia. |
-| 26-10-2026 · 0.1 | §§1, 3 y 11: remisiones a la Adenda de tratamiento de datos (L-4), sin cambio de contenido sustantivo. |

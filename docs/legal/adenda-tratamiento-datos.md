@@ -267,6 +267,7 @@ El software del asistente (ClawStitch, Qwen y vLLM) lo opera el propio equipo de
 | --- | --- |
 | Slack, Microsoft Teams, Telegram, Twilio SMS, Twilio SendGrid y webhooks genéricos | Son Proveedores del Cliente: los contrata el Cliente y los conecta con su propia clave, bot o webhook (§7.6). La conexión con WhatsApp está preparada en el código, pero no está activa. |
 | Google OAuth, Google Fonts, Icons8 y el servidor STUN de Google | Tratan Datos de cuenta y operación (inicio de sesión, IP y datos técnicos de la conexión) para fines propios de Kontrol, según la Política de Privacidad. El servidor STUN no recibe el audio ni el vídeo de las llamadas. |
+| Vercel (Vercel Inc.) | Sirve los archivos de la interfaz. Recibe la IP y la ruta de cada carga de página, que son Datos de cuenta y operación, pero no los registros del negocio, que van directamente al servidor de la aplicación. |
 | Stripe | Previsto solo para una demostración TEST con datos sintéticos. No recibe Datos del Cliente. |
 
 ### Anexo B. Medidas de seguridad
@@ -319,11 +320,11 @@ Borrador 0.1 elaborado el 26-10-2026 sobre `develop` en `1fd2300`. No hubo revis
 | --- | --- |
 | L-0 · [Marco legal](marco-legal.md) | Terminología *responsable*, *encargado* y *subencargado*, y reparto de roles («equipo responsable de fines propios y posible encargado de datos del negocio; negocio responsable de fines que decide»), opción B. Los titulares se llaman así igual que en la Política de Privacidad. No se importan obligaciones del RGPD como ley; el §14.3 prevé completarlas si otra ley se activa. |
 | L-1 · [Términos](terminos-condiciones.md) | Esta entrega actualiza el borrador interno de los Términos (§§10, 13 y 16, versión 0.2): incorpora la adenda por referencia y fija su prevalencia. **Pendiente para la versión publicada en `/legal`** (`frontend/src/locales/*.json`, `legal.terms`): cuando se apruebe la adenda, añadir la cláusula de remisión propuesta abajo y subir `LEGAL_VERSION` en `frontend/src/utils/legal.js` para pedir de nuevo la aceptación. No se modificó la versión publicada porque la adenda no está vigente. Las remisiones de la adenda a los Términos (§§1, 10, 12, 13 y 15) usan la numeración del borrador interno; deben ajustarse a la numeración de la versión publicada. |
-| L-2 · [Inventario](inventario-datos.md) y [anexo de proveedores](anexo-proveedores.md) | El Anexo A.2 reproduce las filas del anexo cuyo rol es subencargo con datos del negocio en cuenta del equipo (Supabase, GCP, MongoDB Atlas, UploadThing y el hosting de ClawStitch). El A.3 recoge las filas BYOK, los receptores técnicos y Stripe. Ver la discrepancia de N5. |
-| L-5 · aviso específico del asistente IA | No existe aún en el repositorio. Debe repetir sin matices la postura del §6. Ya coincide con `/legal` (Términos 9 y Aviso de Privacidad 3: «no los usamos para entrenar modelos») y con el §9 del borrador de Términos. La Política de Privacidad §5 dice que no se han verificado garantías de no entrenamiento en la infraestructura: el §6 es un compromiso de Kontrol y su verificación forma parte de la condición O10 (N4). |
+| L-2 · [Inventario](inventario-datos.md) y [anexo de proveedores](anexo-proveedores.md) | El Anexo A.2 reproduce las filas del anexo cuyo rol es subencargo con datos del negocio en cuenta del equipo (Supabase, GCP, MongoDB Atlas, UploadThing y el hosting de ClawStitch). El A.3 recoge las filas BYOK, los receptores técnicos, Vercel y Stripe. Vercel se incorporó a L-2 en esta entrega (N5). |
+| L-5 · Aviso de uso del asistente de IA | Tarea asignada a otro integrante; al 26-10-2026 no hay entrega en ninguna rama del repositorio. Cuando se redacte, debe repetir sin matices la postura del §6: ni entrenamiento ni mejora de modelos con Datos del Cliente, tampoco con datos derivados, y cambio solo con autorización separada. Ya coincide con `/legal` (Términos 9 y Aviso de Privacidad 3: «no los usamos para entrenar modelos») y con el §9 del borrador de Términos. La Política de Privacidad §5 dice que no se han verificado garantías de no entrenamiento en la infraestructura: el §6 es un compromiso de Kontrol y su verificación forma parte de la condición A3 (N4). Si L-5 se contradice con el §6, prevalece la adenda para los Datos del Cliente (§1.4). |
 | P-1 · exportación y supresión | Lo implementado está en `feat/p1-export-delete-account`, **sin integrar en `develop`** al 26-10-2026: exportación JSON de la empresa para propietario y administradores, y baja de la cuenta propia con limpieza diferida de MongoDB. El §10 necesita además: terminación y eliminación de una empresa completa con sus registros compartidos, eliminación de sus archivos en UploadThing, exportación disponible durante la ventana aunque la empresa esté desactivada, eliminación en respaldos y registros en 90 días y constancia de eliminación. |
 | P-2 · respaldos | La retención de respaldos debe ser como máximo de 90 días para que el §10.5 se pueda cumplir. |
-| P-3 · brechas | Debe dar soporte operativo al §8: persona responsable, detección, registro, plantillas de aviso, recepción de los avisos de los Subencargados y un ensayo. Los plazos de los proveedores encajan con el de 48 horas: Supabase avisa en 48 h cuando es viable, y GCP y MongoDB «sin demora indebida». |
+| P-3 · brechas | Todavía no ha empezado. La [referencia para P-3](referencia-p3-incidentes.md) fija sus requisitos (R1–R12), la línea de tiempo, los campos del registro, la consulta de contactos, la plantilla de aviso y la lista de contención que sostienen el §8. Los plazos de los proveedores encajan con el de 48 horas: Supabase avisa en 48 h cuando es viable, y GCP, MongoDB y Vercel «sin demora indebida». |
 
 **Cláusula de remisión propuesta para los Términos publicados** (nueva cláusula tras la 9):
 
@@ -357,17 +358,21 @@ Mientras alguna siga abierta, la adenda no debe ofrecerse ni firmarse, porque pr
 | A4 | Confirmar titular, cuenta, versión aceptada del DPA y región de Supabase, GCP y MongoDB Atlas, o reemplazar la fila por el proveedor que realmente se use. | O03 |
 | A5 | Completar en P-1 la terminación y eliminación de una empresa completa, con los plazos del §10.5 y la constancia del §10.7. | O05 |
 | A6 | Definir en P-2 respaldos con retención de 90 días o menos. | O06 |
-| A7 | Implementar en P-3 el procedimiento que sostiene el §8, incluido el aviso por correo y dentro de la plataforma. | O07 |
+| A7 | Implementar en P-3 el procedimiento que sostiene el §8, incluido el aviso por correo y dentro de la plataforma, según la [referencia para P-3](referencia-p3-incidentes.md#9-cuándo-se-considera-cumplida-la-condición-a7-de-la-adenda). | O07 |
 | A8 | Corregir los defectos de aislamiento y revocación del inventario §8 (tareas, evidencias, subidas, chat sin empresa, sesiones no revocadas) y verificar en el despliegue el HTTPS y el TLS hacia la base de datos que declara el Anexo B. El §5.6 y el Anexo B no deben ofrecerse con esos puntos abiertos. | O08, O09 |
 | A9 | Firmar compromisos de confidencialidad de los integrantes con acceso (§5.5) y limitar el uso de las cuentas de acceso global a las causas del §5.5. | O12 |
 | A10 | Prueba de aceptación: hoy la aceptación de los Términos solo se guarda en el navegador. Para que la incorporación por referencia sea demostrable hace falta registro en el servidor, o la firma separada del Anexo D. | O04 |
-| A11 | Clasificar e incorporar a L-2 a Vercel (N5) y actualizar los Anexos A.2 o A.3. | O03 |
+| A11 | Vercel: confirmar titular y plan de la cuenta, contratar Pro o Enterprise antes de cualquier uso comercial (el plan Hobby es solo no comercial), confirmar que su DPA cubre ese plan y dejar de enviar el JWT en la query de `/auth/callback` (N5). | O03, O08 |
 
-### N5. Discrepancia detectada con el inventario L-2
+### N5. Vercel: discrepancia con L-2, resuelta
 
-`develop` incluye desde el PR #158 (`ba7c2b7`, `frontend/vercel.json`) la configuración para servir el frontend en **Vercel**, y `FRONTEND_URL` admite dominios `*.vercel.app` (`backend/src/utils/frontendUrl.js`). Vercel no figura en el inventario ni en el anexo de proveedores, cuyo corte es del 16-10-2026. No se incluyó en el Anexo A.2 para no desalinear la lista de L-2.
+`develop` incluye desde el PR #158 (`ba7c2b7`, `frontend/vercel.json`) la configuración para servir el frontend en **Vercel**, y `FRONTEND_URL` admite dominios `*.vercel.app` (`backend/src/utils/frontendUrl.js`). Vercel no figuraba en el inventario ni en el anexo de proveedores, cuyo corte es del 16-10-2026. En esta entrega se añadió a ambos, con sus términos y su DPA consultados el 26-10-2026, y se clasificó como receptor técnico en el Anexo A.3: sirve archivos estáticos y no recibe los registros del negocio.
 
-Lo previsible, sin verificar, es que Vercel actúe como receptor técnico (Anexo A.3): sirve archivos estáticos y no recibe los registros del negocio, que van del navegador al API. Sus registros de acceso, sin embargo, pueden contener rutas como `/invite/:token` y la redirección de OAuth `/auth/callback?token=…`, que lleva el JWT en la URL (inventario §5). L-2 debe confirmarlo y revisar sus términos y su DPA. Conviene además revisar el paso del JWT por la URL como hallazgo de seguridad.
+Quedan tres puntos abiertos (condición A11):
+
+- **Plan:** el plan Hobby solo admite uso personal o no comercial. Todo uso comercial exige Pro o Enterprise.
+- **DPA:** los Términos de Vercel lo incorporan por referencia, pero el propio DPA dice aplicar a Pro y Enterprise.
+- **JWT en la URL:** la redirección de OAuth `/auth/callback?token=…` lleva el JWT de sesión en la URL (inventario §5), así que queda en los registros de acceso de Vercel. Es un hallazgo de seguridad que conviene corregir aparte, con un intercambio por código de un solo uso o un fragmento `#` que el navegador no envía al servidor.
 
 ### N6. Verificación de los criterios de aceptación
 
@@ -376,7 +381,7 @@ Lo previsible, sin verificar, es que Vercel actúe como receptor técnico (Anexo
 | Roles definidos con la terminología de L-0 | §3, con tabla por tratamiento y regla residual (§3.4) |
 | Cada obligación atribuida a una parte, sin zonas grises | §4 Cliente, §5 Kontrol y tabla de responsabilidad del §12.2 |
 | Postura sobre entrenamiento, sin ambigüedad | §6: prohibición total, incluidos los datos derivados y los Subencargados; cambio solo con autorización expresa y separada |
-| Subencargados coherentes con L-2 | Anexos A.2 y A.3, correspondencia en N2 y discrepancia en N5 |
+| Subencargados coherentes con L-2 | Anexos A.2 y A.3, correspondencia en N2; Vercel incorporado a L-2 (N5) |
 | Plazos concretos | §§4.8, 5.2, 5.3, 5.8, 7.3–7.5, 8.1–8.5, 9.2–9.3, 10.3–10.7, 11.1–11.3 y 14.2; resumen en N3 |
 | Nota de revisión profesional | Encabezado y N1 |
 | Incorporable por referencia o firmable aparte | §1.2–1.4, Anexo D y remisión en los Términos (N2) |
