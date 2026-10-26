@@ -29,7 +29,7 @@
         <p class="sc-note">{{ $t('settings.prefs.languageNote') }}</p>
       </div>
 
-      <div class="sc-row sc-row--last">
+      <div class="sc-row">
         <label class="sc-toggle">
           <input
             type="checkbox"
@@ -39,6 +39,16 @@
           <span class="sc-toggle-label">{{ $t('settings.prefs.birdie') }}</span>
         </label>
         <p class="sc-note">{{ $t('settings.prefs.birdieNote') }}</p>
+      </div>
+
+      <!-- Si se guardan o no las preferencias de arriba (L-3). -->
+      <div class="sc-row sc-row--last">
+        <span class="sc-label">{{ $t('settings.prefs.storage') }}</span>
+        <StorageConsentControls />
+        <p class="sc-note">
+          {{ $t('settings.prefs.storageNote') }}
+          <RouterLink to="/legal#cookies">{{ $t('settings.prefs.storagePolicy') }}</RouterLink>
+        </p>
       </div>
     </section>
 
@@ -222,6 +232,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import LanguageSelector from '../components/common/LanguageSelector.vue'
+import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()

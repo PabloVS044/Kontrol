@@ -122,6 +122,24 @@ describe('LegalView — Vista legal de Kontrol', () => {
     expect(cookiesSec.find('.legal-section-title').text()).toBe(es.legal.cookies.title)
   })
 
+  it('la sección de cookies permite cambiar la decisión de almacenamiento (L-3)', async () => {
+    const router = await createTestRouter()
+    const wrapper = mount(LegalView, {
+      global: {
+        plugins: [router, createTestI18n('es')],
+        stubs: { Navbar: true, Footer: true },
+      },
+    })
+    await flushPromises()
+
+    const eleccion = wrapper.find('#cookies .legal-storage-choice')
+    expect(eleccion.exists()).toBe(true)
+    expect(eleccion.find('[data-action="accept"]').exists()).toBe(true)
+    expect(eleccion.find('[data-action="reject"]').exists()).toBe(true)
+    // Solo en cookies: las otras secciones no llevan el control.
+    expect(wrapper.find('#terms .legal-storage-choice').exists()).toBe(false)
+  })
+
   it('funciona correctamente en inglés', async () => {
     const router = await createTestRouter()
     const wrapper = mount(LegalView, {

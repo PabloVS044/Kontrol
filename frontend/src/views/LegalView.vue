@@ -4,10 +4,6 @@
 
     <main class="legal-main">
       <header class="legal-header">
-        <div class="legal-badge">
-          <span class="legal-badge-dot"></span>
-          <span>{{ t('legal.badge') }}</span>
-        </div>
         <h1 class="legal-title">{{ t('legal.title') }}</h1>
         <p class="legal-subtitle">{{ t('legal.subtitle') }}</p>
 
@@ -51,6 +47,11 @@
               <h3 class="legal-clause-title">{{ clause.title }}</h3>
               <p>{{ clause.body }}</p>
             </article>
+            <!-- Aquí se cambia la decisión del aviso, también sin sesión. -->
+            <article v-if="section.id === 'cookies'" class="legal-storage-choice">
+              <h3 class="legal-clause-title">{{ t('storageConsent.manageTitle') }}</h3>
+              <StorageConsentControls />
+            </article>
           </div>
         </section>
 
@@ -81,6 +82,7 @@ import { useI18n } from 'vue-i18n'
 import { FileText, ShieldCheck, Cookie, Mail } from 'lucide-vue-next'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
+import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { LEGAL_VERSION, SUPPORT_EMAIL } from '../utils/legal.js'
 import './LegalView.css'
 
