@@ -5,6 +5,8 @@ const { emptyCursor } = vi.hoisted(() => ({
   emptyCursor: async function* () {},
 }))
 
+// This suite isolates PostgreSQL; real Mongo behavior lives in tests/privacy.
+vi.mock('../../src/services/mongoAccountCleanup.js', () => ({ removeMongoAccountData: async () => {} }))
 vi.mock('../../src/db/mongo.js', () => ({ isMongoReady: () => true }))
 vi.mock('../../src/models/Conversation.js', () => ({
   default: { find: () => ({ cursor: emptyCursor, lean: () => ({ cursor: emptyCursor }) }) },

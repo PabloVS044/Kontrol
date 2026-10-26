@@ -151,8 +151,14 @@ export function companyExportConcurrencyLimiter(req, res, next) {
     else activeExportsByCompany.set(companyId, remaining)
   }
 
-  res.once('finish', release)
-  res.once('close', release)
+  res.locals ??= {}
+  res.locals.releaseCompanyExport = release
+  // Once the controller takes ownership, keep the slot until DB cleanup ends.
+  const onResponseEnd = () => {
+    if (!res.locals.companyExportOwnsSlot) release()
+  }
+  res.once('finish', onResponseEnd)
+  res.once('close', onResponseEnd)
   next()
 }
 

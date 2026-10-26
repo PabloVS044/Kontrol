@@ -23,91 +23,106 @@ const verifyGoogleReauthentication = (token, userId) => {
 }
 
 export const exportCompanyData = async (req, res, next) => {
-  if (!isMongoReady()) {
-    return res.status(503).json({
-      success: false,
-      message: 'A complete export is temporarily unavailable because conversation storage is offline.',
-    })
-  }
-
-  const client = await pool.connect()
+  res.locals ??= {}
+  res.locals.companyExportOwnsSlot = true
+  let client
   let transactionStarted = false
   let stream
   let interrupted = false
-  let released = false
+  let connectionError
   const abortController = new AbortController()
-  const releaseClient = async () => {
-    if (released) return
-    released = true
-    if (transactionStarted) {
-      try {
-        await client.query('ROLLBACK')
-      } catch (error) {
-        logger.error('Could not roll back the company data export transaction:', error)
-      }
-    }
-    client.release()
-  }
   const abortExport = () => {
     if (res.writableEnded) return
     interrupted = true
     abortController.abort()
-    stream?.destroy(new Error('Export download was interrupted.'))
+    stream?.destroy()
   }
   const handleClose = () => {
     if (!res.writableEnded) abortExport()
   }
+  const handleClientError = (error) => {
+    connectionError = error
+    abortController.abort(error)
+    stream?.destroy(error)
+  }
+  // Install before the first await: a queued pool connection can outlive HTTP.
   req.once('aborted', abortExport)
   res.once('close', handleClose)
-  const timeout = setTimeout(abortExport, 15 * 60 * 1000)
+  const configuredTimeout = Number(process.env.COMPANY_EXPORT_TIMEOUT_MS)
+  const timeoutMs = Number.isSafeInteger(configuredTimeout) && configuredTimeout > 0
+    ? configuredTimeout : 15 * 60 * 1000
+  const timeout = setTimeout(() => {
+    abortExport()
+    if (!res.writableEnded) res.destroy()
+  }, timeoutMs)
   timeout.unref?.()
+  const closed = () => interrupted || req.aborted || res.destroyed
 
   try {
+    if (closed()) return
+    if (!isMongoReady()) {
+      return res.status(503).json({
+        success: false,
+        message: 'A complete export is temporarily unavailable because conversation storage is offline.',
+      })
+    }
+    client = await pool.connect()
+    client.on?.('error', handleClientError)
+    if (closed()) return
     await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY')
     transactionStarted = true
     await client.query("SET LOCAL statement_timeout = '10s'")
     await client.query("SET LOCAL idle_in_transaction_session_timeout = '30s'")
-    if (interrupted) return
-
+    if (closed()) return
     stream = await prepareCompanyDataExport(client, {
       companyId: req.company.id_empresa,
       userId: req.user.id_usuario,
+      signal: abortController.signal,
     })
-    if (interrupted) {
+    if (closed()) {
       stream.destroy()
       return
     }
-
-    res
-      .status(200)
-      .type('application/json; charset=utf-8')
-      .set({
-        'Cache-Control': 'no-store, private',
-        Pragma: 'no-cache',
-        'X-Content-Type-Options': 'nosniff',
-        'Content-Disposition': `attachment; filename="kontrol-company-${req.company.id_empresa}-export.json"`,
-        Vary: 'Authorization',
-      })
-
+    abortController.signal.throwIfAborted()
+    res.status(200).type('application/json; charset=utf-8').set({
+      'Cache-Control': 'no-store, private',
+      Pragma: 'no-cache',
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Disposition': `attachment; filename="kontrol-company-${req.company.id_empresa}-export.json"`,
+      Vary: 'Authorization',
+    })
     await pipeline(stream, res, { signal: abortController.signal })
   } catch (error) {
-    if (interrupted || abortController.signal.aborted) {
+    if (interrupted || req.aborted || (res.destroyed && !connectionError)) {
       logger.info('Company data export was interrupted by the client or its timeout.')
     } else {
       logger.error('Company data export failed:', error)
-      if (res.headersSent) res.destroy(error)
+      if (res.headersSent || res.destroyed) res.destroy(error)
       else next(error)
     }
   } finally {
     clearTimeout(timeout)
     req.removeListener('aborted', abortExport)
     res.removeListener('close', handleClose)
-    await releaseClient()
+    try {
+      if (client) {
+        if (transactionStarted && !connectionError) {
+          try { await client.query('ROLLBACK') } catch (error) { connectionError = error }
+        }
+        client.removeListener?.('error', handleClientError)
+        // Discard broken clients; never return them as healthy to the pool.
+        client.release(connectionError)
+      }
+    } finally {
+      res.locals.releaseCompanyExport?.()
+    }
   }
 }
 
 export const deleteOwnAccount = async (req, res) => {
   const client = await pool.connect()
+  let committed = false
+  let released = false
   try {
     await client.query('BEGIN')
     const userResult = await client.query(
@@ -217,7 +232,12 @@ export const deleteOwnAccount = async (req, res) => {
       [user.id_usuario]
     )
     await client.query('COMMIT')
-    disconnectUserSockets(user.id_usuario)
+    committed = true
+    client.release()
+    released = true
+    try { disconnectUserSockets(user.id_usuario) } catch (error) {
+      logger.error('Could not disconnect deleted account sockets:', error)
+    }
     let mongoCleanup = 'pending_retry'
     try {
       if (await processMongoAccountDeletion(user.id_usuario)) mongoCleanup = 'completed'
@@ -238,9 +258,14 @@ export const deleteOwnAccount = async (req, res) => {
       },
     })
   } catch (error) {
-    await client.query('ROLLBACK')
+    if (!committed) {
+      try { await client.query('ROLLBACK') } catch (rollbackError) {
+        client.release(rollbackError)
+        released = true
+      }
+    }
     throw error
   } finally {
-    client.release()
+    if (!released) client.release()
   }
 }

@@ -28,24 +28,24 @@ async function claimJob(userId = null) {
 }
 
 async function scheduleRetry(userId, attempts) {
-  const delaySeconds = Math.min(86_400, 30 * (2 ** Math.min(attempts - 1, 11)))
+  const delaySeconds = Math.min(86_400, 30 * (2 ** Math.min(attempts - 1, 12)))
   await pool.query(
     `UPDATE public.account_mongo_deletion_outbox
      SET locked_until = NULL,
          available_at = CURRENT_TIMESTAMP + ($2 * INTERVAL '1 second')
-     WHERE id_usuario = $1`,
-    [userId, delaySeconds]
+     WHERE id_usuario = $1 AND attempts = $3`,
+    [userId, delaySeconds, attempts]
   )
 }
 
 async function processClaimedJob(job) {
   try {
     await removeMongoAccountData(job.id_usuario)
-    await pool.query(
-      'DELETE FROM public.account_mongo_deletion_outbox WHERE id_usuario = $1',
-      [job.id_usuario]
+    const result = await pool.query(
+      'DELETE FROM public.account_mongo_deletion_outbox WHERE id_usuario = $1 AND attempts = $2',
+      [job.id_usuario, job.attempts]
     )
-    return true
+    return result.rowCount === 1
   } catch (error) {
     await scheduleRetry(job.id_usuario, job.attempts)
     throw error
@@ -73,14 +73,16 @@ export async function processPendingMongoAccountDeletions(batchSize = 10) {
 }
 
 export function startMongoAccountDeletionWorker() {
-  const timer = setInterval(() => {
-    processPendingMongoAccountDeletions().catch((error) => {
+  let running = false
+  const tick = async () => {
+    if (running) return
+    running = true
+    try { await processPendingMongoAccountDeletions() } catch (error) {
       logger.error('MongoDB account cleanup worker failed:', error)
-    })
-  }, POLL_INTERVAL_MS)
+    } finally { running = false }
+  }
+  const timer = setInterval(tick, POLL_INTERVAL_MS)
   timer.unref?.()
-  processPendingMongoAccountDeletions().catch((error) => {
-    logger.error('MongoDB account cleanup worker failed during startup:', error)
-  })
+  void tick()
   return () => clearInterval(timer)
 }

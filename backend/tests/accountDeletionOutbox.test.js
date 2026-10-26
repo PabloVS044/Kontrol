@@ -19,6 +19,7 @@ vi.mock('../src/services/mongoAccountCleanup.js', () => ({
 import {
   processMongoAccountDeletion,
   processPendingMongoAccountDeletions,
+  startMongoAccountDeletionWorker,
 } from '../src/services/accountDeletionOutbox.js'
 
 beforeEach(() => {
@@ -44,8 +45,8 @@ describe('account deletion MongoDB outbox', () => {
     )
     expect(mocks.query).toHaveBeenNthCalledWith(
       2,
-      'DELETE FROM public.account_mongo_deletion_outbox WHERE id_usuario = $1',
-      [7]
+      'DELETE FROM public.account_mongo_deletion_outbox WHERE id_usuario = $1 AND attempts = $2',
+      [7, 1]
     )
   })
 
@@ -58,7 +59,7 @@ describe('account deletion MongoDB outbox', () => {
 
     expect(mocks.query).toHaveBeenLastCalledWith(
       expect.stringContaining('available_at = CURRENT_TIMESTAMP'),
-      [7, 60]
+      [7, 60, 2]
     )
   })
 
@@ -76,5 +77,56 @@ describe('account deletion MongoDB outbox', () => {
 
     expect(mocks.removeMongoAccountData).toHaveBeenNthCalledWith(1, 7)
     expect(mocks.removeMongoAccountData).toHaveBeenNthCalledWith(2, 8)
+  })
+})
+
+
+describe('outbox leases and unavailable dependencies', () => {
+  it('does not claim jobs while Mongo is offline', async () => {
+    mocks.isMongoReady.mockReturnValue(false)
+    expect(await processMongoAccountDeletion(7)).toBe(false)
+    await processPendingMongoAccountDeletions()
+    expect(mocks.query).not.toHaveBeenCalled()
+  })
+  it('handles an empty queue and a job claimed by another worker', async () => {
+    expect(await processMongoAccountDeletion(7)).toBe(false)
+    await processPendingMongoAccountDeletions()
+    expect(mocks.removeMongoAccountData).not.toHaveBeenCalled()
+  })
+  it('does not acknowledge a job whose lease was superseded', async () => {
+    mocks.query.mockResolvedValueOnce({ rows: [{ id_usuario: 7, attempts: 2 }] })
+      .mockResolvedValueOnce({ rowCount: 0 })
+    expect(await processMongoAccountDeletion(7)).toBe(false)
+  })
+  it('caps retry backoff at one day', async () => {
+    mocks.query.mockResolvedValueOnce({ rows: [{ id_usuario: 7, attempts: 50 }] })
+    mocks.removeMongoAccountData.mockRejectedValueOnce(new Error('offline'))
+    await expect(processMongoAccountDeletion(7)).rejects.toThrow('offline')
+    expect(mocks.query).toHaveBeenLastCalledWith(expect.stringContaining('attempts = $3'), [7, 86400, 50])
+  })
+  it('starts immediately, does not overlap polls and can be stopped', async () => {
+    vi.useFakeTimers()
+    let release
+    mocks.query.mockImplementationOnce(() => new Promise((resolve) => { release = resolve }))
+    const stop = startMongoAccountDeletionWorker()
+    try {
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(mocks.query).toHaveBeenCalledOnce()
+      release({ rows: [] })
+      await vi.advanceTimersByTimeAsync(30_000)
+      expect(mocks.query).toHaveBeenCalledTimes(2)
+      stop()
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(mocks.query).toHaveBeenCalledTimes(2)
+    } finally { stop(); vi.useRealTimers() }
+  })
+  it('recovers the polling loop after a claim error', async () => {
+    vi.useFakeTimers()
+    mocks.query.mockRejectedValueOnce(new Error('postgres offline'))
+    const stop = startMongoAccountDeletionWorker()
+    try {
+      await vi.advanceTimersByTimeAsync(30_000)
+      expect(mocks.query).toHaveBeenCalledTimes(2)
+    } finally { stop(); vi.useRealTimers() }
   })
 })

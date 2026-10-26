@@ -77,12 +77,13 @@ function redactSensitiveFields(value) {
   )
 }
 
-async function* exportRows(client, table, scope, scopes) {
+async function* exportRows(client, table, scope, scopes, signal) {
   let cursor = null
   const where = renderCompanyTableScope(table.name, 't', scopes)
   if (!where) return
 
   while (true) {
+    signal?.throwIfAborted()
     const result = await client.query(
       `SELECT to_jsonb(t) AS row, t.ctid::text AS cursor
        FROM public.${quoteIdentifier(table.name)} t
@@ -95,16 +96,18 @@ async function* exportRows(client, table, scope, scopes) {
     if (result.rows.length === 0) return
 
     for (const row of result.rows) {
+      signal?.throwIfAborted()
       yield redactSensitiveFields(row.row)
     }
     cursor = result.rows.at(-1).cursor
   }
 }
 
-async function* exportAssistantData(companyId) {
+async function* exportAssistantData(companyId, signal) {
   yield '"assistant_conversations":['
   let first = true
   for await (const conversation of AgentConversation.find({ empresaId: companyId }).lean().cursor()) {
+    signal?.throwIfAborted()
     if (!first) yield ','
     first = false
     yield JSON.stringify(redactSensitiveFields(conversation))
@@ -112,6 +115,7 @@ async function* exportAssistantData(companyId) {
   yield '],"assistant_messages":['
   first = true
   for await (const message of AgentMessage.find({ empresaId: companyId }).lean().cursor()) {
+    signal?.throwIfAborted()
     if (!first) yield ','
     first = false
     yield JSON.stringify(redactSensitiveFields(message))
@@ -119,10 +123,11 @@ async function* exportAssistantData(companyId) {
   yield ']'
 }
 
-async function* exportHumanConversations(userId) {
+async function* exportHumanConversations(userId, signal) {
   yield '"human_conversations":['
   let firstConversation = true
   for await (const conversation of Conversation.find({ participants: userId }).lean().cursor()) {
+    signal?.throwIfAborted()
     if (!firstConversation) yield ','
     firstConversation = false
     const metadata = redactSensitiveFields({
@@ -136,6 +141,7 @@ async function* exportHumanConversations(userId) {
       conversationId: conversation._id,
       senderId: userId,
     }).lean().cursor()) {
+      signal?.throwIfAborted()
       if (!firstMessage) yield ','
       firstMessage = false
       yield JSON.stringify(redactSensitiveFields(message))
@@ -145,7 +151,8 @@ async function* exportHumanConversations(userId) {
   yield ']'
 }
 
-export async function prepareCompanyDataExport(client, { companyId, userId }) {
+export async function prepareCompanyDataExport(client, { companyId, userId, signal }) {
+  signal?.throwIfAborted()
   const tableResult = await client.query(
     `SELECT c.relname AS name, array_agg(a.attname::text ORDER BY a.attnum) AS columns
      FROM pg_class c
@@ -158,6 +165,7 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
      GROUP BY c.relname
      ORDER BY c.relname`
   )
+  signal?.throwIfAborted()
   const foreignKeyResult = await client.query(
     `SELECT child.relname AS child, parent.relname AS parent,
             array_agg(child_column.attname::text ORDER BY key_pair.ordinality) AS "childColumns",
@@ -178,6 +186,7 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
        AND parent_schema.nspname = 'public'
      GROUP BY child.relname, parent.relname`
   )
+  signal?.throwIfAborted()
   const profileResult = await client.query(
     `SELECT id_usuario, nombre, apellido, email, telefono
      FROM public.usuario
@@ -185,6 +194,7 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
     [userId]
   )
 
+  signal?.throwIfAborted()
   if (!profileResult.rows.length) throw new Error('Authenticated account no longer exists.')
 
   const tables = tableResult.rows
@@ -206,7 +216,7 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
       firstTable = false
       yield `${JSON.stringify(table.name)}:[`
       let firstRow = true
-      for await (const row of exportRows(client, table, { companyId }, scopes)) {
+      for await (const row of exportRows(client, table, { companyId }, scopes, signal)) {
         if (!firstRow) yield ','
         firstRow = false
         yield JSON.stringify(row)
@@ -214,9 +224,9 @@ export async function prepareCompanyDataExport(client, { companyId, userId }) {
       yield ']'
     }
     yield '},"conversations":{'
-    yield* exportAssistantData(companyId)
+    yield* exportAssistantData(companyId, signal)
     yield ','
-    yield* exportHumanConversations(userId)
+    yield* exportHumanConversations(userId, signal)
     yield '}}'
   })())
 }

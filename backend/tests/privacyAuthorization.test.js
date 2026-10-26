@@ -9,7 +9,10 @@ const mocks = vi.hoisted(() => ({
   messageFind: vi.fn(),
   agentConversationDeleteMany: vi.fn(),
   agentMessageDeleteMany: vi.fn(),
+  removeMongoAccountData: vi.fn(),
 }))
+
+vi.mock('../src/services/mongoAccountCleanup.js', () => ({ removeMongoAccountData: mocks.removeMongoAccountData }))
 
 vi.mock('../src/db/pool.js', () => ({
   default: { query: mocks.query, connect: mocks.connect },
@@ -43,6 +46,7 @@ beforeEach(() => {
   })
   mocks.agentConversationDeleteMany.mockResolvedValue({})
   mocks.agentMessageDeleteMany.mockResolvedValue({})
+  mocks.removeMongoAccountData.mockResolvedValue(undefined)
 })
 
 function mockDeletionWorker(userId = 7) {
@@ -53,7 +57,7 @@ function mockDeletionWorker(userId = 7) {
     if (sql.includes('SET locked_until')) {
       return { rows: [{ id_usuario: userId, attempts: 1 }] }
     }
-    return { rows: [] }
+    return { rows: [], rowCount: 1 }
   })
 }
 
@@ -135,8 +139,7 @@ describe('privacy endpoints authorization', () => {
     expect(client.query.mock.calls.findIndex(([sql]) =>
       sql.includes('INSERT INTO public.account_mongo_deletion_outbox')
     )).toBeLessThan(client.query.mock.calls.findIndex(([sql]) => sql === 'COMMIT'))
-    expect(mocks.agentMessageDeleteMany).toHaveBeenCalledWith({ userId: 7 })
-    expect(mocks.agentConversationDeleteMany).toHaveBeenCalledWith({ userId: 7 })
+    expect(mocks.removeMongoAccountData).toHaveBeenCalledWith(7)
   })
 
   it('commits account deletion and leaves Mongo cleanup queued when MongoDB is offline', async () => {
@@ -168,7 +171,7 @@ describe('privacy endpoints authorization', () => {
     expect(response.status).toBe(200)
     expect(response.body.data.mongoConversationData).toBe('pending_retry')
     expect(client.query).toHaveBeenCalledWith('COMMIT')
-    expect(mocks.agentMessageDeleteMany).not.toHaveBeenCalled()
+    expect(mocks.removeMongoAccountData).not.toHaveBeenCalled()
   })
 
   it('transfers an owner company to an active member before removing the old owner', async () => {

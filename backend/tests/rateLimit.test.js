@@ -256,3 +256,57 @@ describe('P-1 · Concurrencia de exportaciones de empresa', () => {
     expect((await request(app).get('/export').set('x-test-company', '31')).status).toBe(200)
   })
 })
+
+describe('P1 export request limits', () => {
+  it('blocks the fourth export and separates user/company counters', async () => {
+    vi.resetModules()
+    process.env.RATE_LIMIT_COMPANY_EXPORT_MAX = '3'
+    const { companyExportRateLimiter } = await import('../src/middleware/rateLimit.js')
+    const app = express()
+    app.use((req, res, next) => {
+      req.user = { id_usuario: Number(req.get('x-user') || 7) }
+      req.company = { id_empresa: Number(req.get('x-company') || 1) }
+      next()
+    })
+    app.get('/export', companyExportRateLimiter, (req, res) => res.status(200).end())
+    try {
+      for (let i = 0; i < 3; i++) expect((await request(app).get('/export')).status).toBe(200)
+      const blocked = await request(app).get('/export')
+      expect(blocked.status).toBe(429)
+      expect(blocked.headers).toHaveProperty('retry-after')
+      expect((await request(app).get('/export').set('x-user', '8')).status).toBe(200)
+      expect((await request(app).get('/export').set('x-company', '2')).status).toBe(200)
+    } finally { delete process.env.RATE_LIMIT_COMPANY_EXPORT_MAX }
+  })
+  it('caps two companies globally and retains slots until controller cleanup', async () => {
+    vi.resetModules()
+    const { EventEmitter } = await import('node:events')
+    const { companyExportConcurrencyLimiter: limit } = await import('../src/middleware/rateLimit.js')
+    const response = () => {
+      const res = new EventEmitter()
+      res.locals = {}
+      res.status = vi.fn().mockReturnValue(res)
+      res.json = vi.fn().mockReturnValue(res)
+      res.set = vi.fn().mockReturnValue(res)
+      return res
+    }
+    const first = response(), second = response(), third = response()
+    const next = vi.fn()
+    limit({ company: { id_empresa: 1 } }, first, next)
+    limit({ company: { id_empresa: 2 } }, second, next)
+    limit({ company: { id_empresa: 3 } }, third, next)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(third.status).toHaveBeenCalledWith(429)
+    first.locals.companyExportOwnsSlot = true
+    first.emit('close')
+    const whileCleaning = response()
+    limit({ company: { id_empresa: 3 } }, whileCleaning, next)
+    expect(whileCleaning.status).toHaveBeenCalledWith(429)
+    first.locals.releaseCompanyExport()
+    first.locals.releaseCompanyExport() // exactly-once release
+    const available = response()
+    limit({ company: { id_empresa: 3 } }, available, next)
+    expect(next).toHaveBeenCalledTimes(3)
+    second.emit('finish'); second.emit('close'); available.emit('finish')
+  })
+})

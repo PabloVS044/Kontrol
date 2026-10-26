@@ -2,11 +2,10 @@ import { Server } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import Conversation from '../models/Conversation.js'
-import Message from '../models/Message.js'
+import { createDirectConversation, persistHumanMessage, markConversationRead } from '../services/chatPersistence.js'
 import pool from '../db/pool.js'
 import { isSessionTokenPayload } from '../auth/sessionToken.js'
 import {
-  buildMessagePreview,
   formatConversation,
   sanitizeAttachments,
   serializeMessage,
@@ -202,22 +201,10 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return socket.emit('chat:error', { message: 'User not found' })
         }
 
-        const sorted = [userId, targetUserId].sort((a, b) => a - b)
-
-        // Find or create conversation
-        let conv = await Conversation.findOne({ participants: sorted })
-
-        if (!conv) {
-          conv = await Conversation.create({
-            type: 'dm',
-            participants: sorted,
-            participantInfo: [
-              { id: me.id_usuario, nombre: me.nombre, email: me.email, avatar: initials(me.nombre, me.apellido) },
-              { id: other.id_usuario, nombre: other.nombre, email: other.email, avatar: initials(other.nombre, other.apellido) },
-            ],
-            unreadCounts: new Map([[String(userId), 0], [String(targetUserId), 0]]),
-          })
-        }
+        const conv = await createDirectConversation([
+          { id: me.id_usuario, nombre: me.nombre, email: me.email, avatar: initials(me.nombre, me.apellido) },
+          { id: other.id_usuario, nombre: other.nombre, email: other.email, avatar: initials(other.nombre, other.apellido) },
+        ])
 
         // Join both users to the room if they're online
         socket.join(`conv:${conv._id}`)
@@ -359,11 +346,6 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return socket.emit('chat:error', { message: CHAT_UNAVAILABLE_MESSAGE })
         }
 
-        const conv = await Conversation.findById(conversationId)
-        if (!conv || !conv.participants.includes(userId)) {
-          return socket.emit('chat:error', { message: 'Conversation not found' })
-        }
-
         const cleanAttachments = sanitizeAttachments(attachments)
         const trimmedText = typeof text === 'string' ? text.trim() : ''
 
@@ -372,43 +354,17 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
         }
 
         const me = await getUserById(userId)
-        const msg = await Message.create({
-          conversationId,
-          senderId:     userId,
-          senderName:   me.nombre + (me.apellido ? ' ' + me.apellido : ''),
+        const { message: msg, conversation: updatedConv } = await persistHumanMessage({
+          userId, conversationId,
+          senderName: me.nombre + (me.apellido ? ' ' + me.apellido : ''),
           senderAvatar: initials(me.nombre, me.apellido),
-          text:         trimmedText,
-          attachments:  cleanAttachments,
-          readBy:       [userId],
+          text: trimmedText, attachments: cleanAttachments,
         })
-
-        const lastType = cleanAttachments.length ? cleanAttachments[0].type : 'text'
-
-        // Update conversation
-        const updatedConv = await Conversation.findByIdAndUpdate(
-          conversationId,
-          {
-            $set: {
-              lastMessage: {
-                text:      buildMessagePreview({ text: trimmedText, attachments: cleanAttachments }),
-                senderId:  userId,
-                type:      lastType,
-                createdAt: msg.createdAt,
-              },
-            },
-            $inc: Object.fromEntries(
-              conv.participants
-                .filter(p => p !== userId)
-                .map(p => [`unreadCounts.${p}`, 1])
-            ),
-          },
-          { returnDocument: 'after' }
-        )
 
         io.to(`conv:${conversationId}`).emit('chat:message', serializeMessage(msg))
 
         if (updatedConv) {
-          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
+          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, updatedConv.participants)
         }
       } catch (err) {
         logger.error('chat:send error:', err)
@@ -432,30 +388,12 @@ export function setupSocket(httpServer, { isChatAvailable = () => true, corsOrig
           return
         }
 
-        const conv = await Conversation.findById(conversationId)
-        if (!conv || !conv.participants.includes(userId)) {
-          return
-        }
-
-        const updatedConv = await Conversation.findByIdAndUpdate(
-          conversationId,
-          {
-            $set: {
-              [`unreadCounts.${userId}`]: 0,
-            },
-          },
-          { returnDocument: 'after' }
-        )
-
-        await Message.updateMany(
-          { conversationId, readBy: { $ne: userId } },
-          { $addToSet: { readBy: userId } }
-        )
+        const updatedConv = await markConversationRead(userId, conversationId)
 
         socket.to(`conv:${conversationId}`).emit('chat:read_update', { conversationId, userId })
 
         if (updatedConv) {
-          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, conv.participants)
+          emitConversationEvent(io, 'chat:conversation_updated', updatedConv, updatedConv.participants)
         }
       } catch (err) {
         logger.error('chat:mark_read error:', err)
