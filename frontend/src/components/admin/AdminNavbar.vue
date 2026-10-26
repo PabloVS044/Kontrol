@@ -61,8 +61,8 @@ function closeMenu()   { isMenuOpen.value = false }
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0a0a0a;
-  border-bottom: 1px solid #1f1f1f;
+  background: var(--k-shade-1);
+  border-bottom: 1px solid var(--k-shade-6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: var(--k-z-nav);
@@ -93,14 +93,14 @@ function closeMenu()   { isMenuOpen.value = false }
   font-family: 'Bungee', 'Manrope', sans-serif;
   font-size: 14px;
   letter-spacing: 1px;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 .admin-badge-wrap {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  border-right: 1px solid #1a1a1a;
+  border-right: 1px solid var(--k-shade-4);
   margin-right: 12px;
 }
 
@@ -109,10 +109,10 @@ function closeMenu()   { isMenuOpen.value = false }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--Primary);
-  background: rgba(202,168,96,0.1);
+  color: var(--k-color-primary);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
   padding: 2px 7px;
-  border: 1px solid rgba(202,168,96,0.2);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
 }
 
 .appnav-links {
@@ -127,7 +127,7 @@ function closeMenu()   { isMenuOpen.value = false }
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   text-decoration: none;
   padding: 0 16px;
   display: flex;
@@ -141,14 +141,14 @@ function closeMenu()   { isMenuOpen.value = false }
   position: absolute;
   bottom: 0; left: 16px; right: 16px;
   height: 2px;
-  background: #caa860;
+  background: var(--k-color-primary);
   transform: scaleX(0);
   transition: transform .2s ease;
 }
 
-.appnav-link:hover { color: var(--Text); }
+.appnav-link:hover { color: var(--k-color-text); }
 
-.appnav-link.router-link-exact-active { color: var(--Primary); }
+.appnav-link.router-link-exact-active { color: var(--k-color-primary); }
 .appnav-link.router-link-exact-active::after { transform: scaleX(1); }
 
 .appnav-end {
@@ -162,19 +162,19 @@ function closeMenu()   { isMenuOpen.value = false }
 .appnav-avatar {
   width: 32px;
   height: 32px;
-  background: #1f1f1f;
-  border: 1px solid #2e2e2e;
+  background: var(--k-shade-6);
+  border: 1px solid var(--k-shade-7);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
-.appnav-avatar:hover { border-color: #555; }
+.appnav-avatar:hover { border-color: var(--k-shade-8); }
 
 .hamburger {
   display: none;
@@ -192,7 +192,7 @@ function closeMenu()   { isMenuOpen.value = false }
   display: block;
   width: 100%;
   height: 2px;
-  background-color: #faf8f5;
+  background-color: var(--k-color-text);
   position: absolute;
   left: 0;
   transition: all 0.3s ease;
@@ -219,8 +219,8 @@ function closeMenu()   { isMenuOpen.value = false }
     position: fixed;
     top: 56px;
     left: 0; right: 0;
-    background: #0a0a0a;
-    border-bottom: 1px solid #1f1f1f;
+    background: var(--k-shade-1);
+    border-bottom: 1px solid var(--k-shade-6);
     flex-direction: column;
     padding: 20px 0;
     gap: 16px;
