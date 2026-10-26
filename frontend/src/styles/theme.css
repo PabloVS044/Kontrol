@@ -339,7 +339,7 @@
 /* Tema claro: propuesta derivada del oscuro, pendiente de validación de
    Diseño. Se activa desde Configuración. */
 [data-theme='light'] {
-  --k-color-primary: #665022;
+  --k-color-primary: #5e4a1f;
   --k-color-primary-2: #936923;
   --k-color-secondary: #8a6a12;
   --k-color-tertiary: #e6e5e0;
@@ -351,11 +351,11 @@
   --k-color-text: #1a1712;
   --k-color-text-muted: #585248;
   --k-color-success: #1c5e34;
-  --k-color-error: #a31d1d;
+  --k-color-error: #961a1a;
   --k-color-warning: #805305;
 
-  --k-color-primary-rgb: 102, 80, 34;
-  --k-color-error-rgb: 163, 29, 29;
+  --k-color-primary-rgb: 94, 74, 31;
+  --k-color-error-rgb: 150, 26, 26;
   --k-color-success-rgb: 28, 94, 52;
   --k-color-warning-rgb: 224, 190, 120;
   --k-ink-rgb: 0, 0, 0;
@@ -368,7 +368,7 @@
   --k-text-placeholder: #5e503c;
   --k-text-disabled: #a39d92;
 
-  --k-state-error-text: #a31d1d;
+  --k-state-error-text: #961a1a;
   --k-state-success-text: #1c5e34;
   --k-form-btn-text: #faf8f5;
 

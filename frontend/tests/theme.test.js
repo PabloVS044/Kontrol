@@ -546,6 +546,16 @@ describe.each(Object.keys(THEMES))('theme.css — contraste del texto (WCAG AA),
     }
   })
 
+  // Combinaciones que el medidor de Firefox marcó en pantalla: el dorado del
+  // avatar sobre shade-6 y el rojo de "Eliminar" sobre su tinte en un panel.
+  it('el dorado sobre shade-6 y el rojo sobre su tinte superan 4.5:1', () => {
+    const tint = (fg, a, bg) => hexRgb(fg).map((v, i) => Math.round(v * a + hexRgb(bg)[i] * (1 - a)))
+    const panel = theme === 'light' ? value('--k-surface-section') : '#000000'
+    expect(ratio(value('--k-color-primary'), value('--k-shade-6'))).toBeGreaterThanOrEqual(4.5)
+    const err = value('--k-state-error-text')
+    expect(contrast(hexRgb(err), tint(err, 0.08, panel))).toBeGreaterThanOrEqual(4.5)
+  })
+
   it('el texto deshabilitado se distingue del de una opción no seleccionada', () => {
     // Una opción no seleccionada usa la rampa (AA); la deshabilitada queda
     // por debajo a propósito (WCAG 1.4.3 la exime). Si se igualan, vuelve el
