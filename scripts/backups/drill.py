@@ -329,7 +329,17 @@ SELECT json_build_object(
                     '--no-owner', '--no-acl', '-U', 'p2drill', '-d', DB, data=pg_bytes)
         self.docker('exec', '-i', dest_mongo, 'mongorestore', '--archive', '--gzip', '--stopOnError', data=mongo_bytes)
         self.report['restore_seconds'] = round(time.monotonic() - restore_start, 3)
-        restored = {'postgres': self.pg_inventory(dest_pg), 'mongo': self.mongo_inventory(dest_mongo)}
+        restored = {
+            'postgres': self.pg_inventory(dest_pg),
+            'mongo': self.mongo_inventory(dest_mongo),
+        }
+
+        self.report['restored_snapshot'] = restored
+        self.report['comparison'] = {
+            'postgres_equal': canonical(source['postgres']) == canonical(restored['postgres']),
+            'mongo_equal': canonical(source['mongo']) == canonical(restored['mongo']),
+        }
+
         verify_equal(source, restored)
         if self.sql(dest_pg, "SELECT count(*) FROM public.usuario WHERE email='post-backup@example.test';").strip() != b'0':
             raise RuntimeError('Unexpected post-backup PostgreSQL row was recovered.')
@@ -339,7 +349,6 @@ SELECT json_build_object(
         totals = self.sql(dest_pg, 'SELECT count(*),sum(total) FROM public.venta v JOIN public.empresa e USING(id_empresa) JOIN public.usuario u USING(id_usuario);').decode().strip()
         if totals != '2|102':
             raise RuntimeError('Restored business totals do not match the fixture.')
-        self.report['restored_snapshot'] = restored
         self.report['business_smoke'] = {'sales': 2, 'total': '102'}
         self.report['recovery_with_validation_seconds'] = round(time.monotonic() - incident, 3)
         self.report['restoration_verified'] = True
