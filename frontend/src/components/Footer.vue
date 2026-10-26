@@ -28,6 +28,7 @@
             <li><RouterLink to="/legal#privacy">{{ t('footer.privacy') }}</RouterLink></li>
             <li><RouterLink to="/legal#terms">{{ t('footer.terms') }}</RouterLink></li>
             <li><RouterLink to="/legal#cookies">{{ t('footer.cookies') }}</RouterLink></li>
+            <li><RouterLink to="/legal#ai">{{ t('footer.aiNotice') }}</RouterLink></li>
             <li>
               <button type="button" class="footer-link-btn" @click="openPanel">
                 {{ t('footer.cookieSettings') }}

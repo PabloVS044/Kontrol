@@ -180,7 +180,7 @@ describe('LegalView — Vista legal de Kontrol', () => {
 })
 
 describe('Footer — Enlaces a la sección legal', () => {
-  it('enlaza hacia /legal#privacy, /legal#terms y /legal#cookies', async () => {
+  it('enlaza hacia /legal#privacy, /legal#terms, /legal#cookies y /legal#ai', async () => {
     const router = await createTestRouter()
     const wrapper = mount(Footer, {
       global: {
@@ -197,5 +197,6 @@ describe('Footer — Enlaces a la sección legal', () => {
     expect(legalTargets).toContain('/legal#privacy')
     expect(legalTargets).toContain('/legal#terms')
     expect(legalTargets).toContain('/legal#cookies')
+    expect(legalTargets).toContain('/legal#ai')
   })
 })
