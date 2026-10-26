@@ -39,16 +39,9 @@ function apply(theme) {
   document.documentElement.setAttribute('data-theme', theme)
 }
 
-/** Resuelve la preferencia: guardada > sistema > default. */
+/** Oscuro salvo que la persona haya elegido claro en Configuración. */
 function resolveInitial() {
-  const stored = readStored()
-  if (stored) return stored
-
-  const prefersLight =
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: light)').matches
-
-  return prefersLight ? 'light' : DEFAULT_THEME
+  return readStored() ?? DEFAULT_THEME
 }
 
 export function useTheme() {

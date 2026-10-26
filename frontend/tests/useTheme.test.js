@@ -27,20 +27,19 @@ describe('useTheme', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
   })
 
-  it('ignora un valor guardado inválido y sigue la preferencia del sistema', async () => {
+  it('ignora un valor guardado inválido y arranca en oscuro', async () => {
     localStorage.setItem('kontrol:theme', 'sepia')
-    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
-    const { initTheme, theme } = await freshUseTheme()
-    initTheme()
-    expect(window.matchMedia).toHaveBeenCalledWith('(prefers-color-scheme: light)')
-    expect(theme.value).toBe('light')
-  })
-
-  it('cae al oscuro sin preferencia guardada ni del sistema', async () => {
-    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
     const { initTheme, theme } = await freshUseTheme()
     initTheme()
     expect(theme.value).toBe('dark')
+  })
+
+  it('arranca en oscuro aunque el sistema pida claro', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
+    const { initTheme, theme } = await freshUseTheme()
+    initTheme()
+    expect(theme.value).toBe('dark')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
   })
 
   it('cae al oscuro si el entorno no tiene matchMedia', async () => {
