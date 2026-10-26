@@ -11,9 +11,12 @@ import { readonly, ref } from 'vue'
 
 const STORAGE_KEY = 'kontrol:theme'
 const THEMES = ['dark', 'light']
+// 'system' no se guarda: es la ausencia de una elección.
+const MODES = ['system', ...THEMES]
 const DEFAULT_THEME = 'dark'
 
 const current = ref(DEFAULT_THEME)
+const mode = ref('system')
 
 function readStored() {
   try {
@@ -34,16 +37,21 @@ function persist(theme) {
   }
 }
 
+function clearStored() {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // idem.
+  }
+}
+
 function apply(theme) {
   current.value = theme
   document.documentElement.setAttribute('data-theme', theme)
 }
 
-/** Resuelve la preferencia: elegida en Configuración > sistema > oscuro. */
-function resolveInitial() {
-  const stored = readStored()
-  if (stored) return stored
-
+/** Tema que pide el sistema; oscuro si no pide nada. */
+function systemTheme() {
   const prefersLight =
     typeof window.matchMedia === 'function' &&
     window.matchMedia('(prefers-color-scheme: light)').matches
@@ -54,15 +62,26 @@ function resolveInitial() {
 export function useTheme() {
   /** Llamar una vez al arrancar la app, antes del primer render. */
   function initTheme() {
-    apply(resolveInitial())
+    const stored = readStored()
+    mode.value = stored ?? 'system'
+    apply(stored ?? systemTheme())
   }
 
   function setTheme(theme) {
     if (!THEMES.includes(theme)) {
       throw new Error(`Tema desconocido: "${theme}". Válidos: ${THEMES.join(', ')}`)
     }
+    mode.value = theme
     apply(theme)
     persist(theme)
+  }
+
+  /** 'system' vuelve a seguir al sistema y olvida la elección guardada. */
+  function setMode(next) {
+    if (next !== 'system') return setTheme(next)
+    clearStored()
+    mode.value = 'system'
+    apply(systemTheme())
   }
 
   function toggleTheme() {
@@ -71,9 +90,12 @@ export function useTheme() {
 
   return {
     theme: readonly(current),
+    mode: readonly(mode),
     availableThemes: THEMES,
+    availableModes: MODES,
     initTheme,
     setTheme,
+    setMode,
     toggleTheme,
   }
 }

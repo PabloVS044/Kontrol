@@ -36,31 +36,37 @@ describe('ThemeSelector', () => {
 
   afterEach(() => vi.unstubAllGlobals())
 
-  it('arranca con Oscuro marcado', async () => {
+  const botones = (w) => Object.fromEntries(w.findAll('button').map((b) => [b.text(), b]))
+
+  it('muestra Sistema, Oscuro y Claro, con Sistema marcado por defecto', async () => {
     const wrapper = await montar()
-    const [oscuro, claro] = wrapper.findAll('button')
-    expect(oscuro.text()).toBe('Oscuro')
-    expect(oscuro.attributes('aria-pressed')).toBe('true')
-    expect(claro.attributes('aria-pressed')).toBe('false')
+    expect(wrapper.findAll('button').map((b) => b.text())).toEqual(['Sistema', 'Oscuro', 'Claro'])
+    expect(botones(wrapper).Sistema.attributes('aria-pressed')).toBe('true')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+  })
+
+  it('en Sistema sigue la preferencia del dispositivo', async () => {
+    sistema(true)
+    const wrapper = await montar()
+    expect(botones(wrapper).Sistema.attributes('aria-pressed')).toBe('true')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light')
   })
 
   it('al elegir Claro aplica el tema y lo recuerda', async () => {
     const wrapper = await montar()
-    await wrapper.findAll('button')[1].trigger('click')
+    await botones(wrapper).Claro.trigger('click')
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     expect(localStorage.getItem('kontrol:theme')).toBe('light')
-    expect(wrapper.findAll('button')[1].attributes('aria-pressed')).toBe('true')
+    expect(botones(wrapper).Claro.attributes('aria-pressed')).toBe('true')
   })
 
-  it('marca Claro si el sistema lo pide y no hay nada elegido', async () => {
-    sistema(true)
-    const wrapper = await montar()
-    expect(wrapper.findAll('button')[1].attributes('aria-pressed')).toBe('true')
-  })
-
-  it('respeta un tema claro guardado antes', async () => {
+  it('volver a Sistema olvida la elección y sigue al dispositivo', async () => {
     localStorage.setItem('kontrol:theme', 'light')
     const wrapper = await montar()
-    expect(wrapper.findAll('button')[1].attributes('aria-pressed')).toBe('true')
+    expect(botones(wrapper).Claro.attributes('aria-pressed')).toBe('true')
+    await botones(wrapper).Sistema.trigger('click')
+    expect(localStorage.getItem('kontrol:theme')).toBeNull()
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+    expect(botones(wrapper).Sistema.attributes('aria-pressed')).toBe('true')
   })
 })

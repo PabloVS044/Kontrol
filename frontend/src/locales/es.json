@@ -1604,8 +1604,8 @@
       "language": "Idioma",
       "languageNote": "Se aplica a toda la aplicación y se recuerda en este navegador, también después de cerrar sesión.",
       "theme": "Tema",
-      "themeNote": "Por defecto sigue la preferencia de tu sistema. Lo que elijas aquí se recuerda en este navegador, también después de cerrar sesión.",
-      "themes": { "dark": "Oscuro", "light": "Claro" }
+      "themeNote": "\"Sistema\" sigue la preferencia de tu dispositivo. Si eliges Oscuro o Claro, se recuerda en este navegador, también después de cerrar sesión.",
+      "themes": { "system": "Sistema", "dark": "Oscuro", "light": "Claro" }
     },
     "loading": "Cargando la configuración…",
     "loadError": "No se pudo cargar la configuración.",

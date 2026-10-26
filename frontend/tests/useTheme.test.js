@@ -72,6 +72,27 @@ describe('useTheme', () => {
     expect(localStorage.getItem('kontrol:theme')).toBe('dark')
   })
 
+  it('expone el modo: system sin elección, el tema elegido si lo hay', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
+    const { initTheme, mode, setTheme } = await freshUseTheme()
+    initTheme()
+    expect(mode.value).toBe('system')
+    setTheme('light')
+    expect(mode.value).toBe('light')
+  })
+
+  it("setMode('system') borra la elección y vuelve a seguir al sistema", async () => {
+    localStorage.setItem('kontrol:theme', 'dark')
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
+    const { initTheme, setMode, theme, mode } = await freshUseTheme()
+    initTheme()
+    expect(theme.value).toBe('dark')
+    setMode('system')
+    expect(localStorage.getItem('kontrol:theme')).toBeNull()
+    expect(mode.value).toBe('system')
+    expect(theme.value).toBe('light')
+  })
+
   it('setTheme rechaza un tema desconocido', async () => {
     const { setTheme } = await freshUseTheme()
     expect(() => setTheme('sepia')).toThrow('Tema desconocido: "sepia"')

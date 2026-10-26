@@ -1604,8 +1604,8 @@
       "language": "Language",
       "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out.",
       "theme": "Theme",
-      "themeNote": "By default it follows your system preference. What you choose here is remembered in this browser, including after you sign out.",
-      "themes": { "dark": "Dark", "light": "Light" }
+      "themeNote": "\"System\" follows your device preference. If you choose Dark or Light, it is remembered in this browser, including after you sign out.",
+      "themes": { "system": "System", "dark": "Dark", "light": "Light" }
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",

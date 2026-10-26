@@ -1,13 +1,13 @@
 <template>
   <div class="theme-inline" role="group" :aria-label="$t('settings.prefs.theme')">
     <button
-      v-for="option in availableThemes"
+      v-for="option in availableModes"
       :key="option"
       type="button"
       class="theme-inline-opt"
-      :class="{ selected: theme === option }"
-      :aria-pressed="theme === option"
-      @click="setTheme(option)"
+      :class="{ selected: mode === option }"
+      :aria-pressed="mode === option"
+      @click="setMode(option)"
     >{{ $t(`settings.prefs.themes.${option}`) }}</button>
   </div>
 </template>
@@ -15,7 +15,7 @@
 <script setup>
 import { useTheme } from '@/composables/useTheme.js'
 
-const { theme, availableThemes, setTheme } = useTheme()
+const { mode, availableModes, setMode } = useTheme()
 </script>
 
 <style scoped>
