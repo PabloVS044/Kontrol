@@ -1794,6 +1794,10 @@
     "placeholder": "Pregúntame cualquier cosa...",
     "stop": "Detener generación",
     "hint": "Presiona Enter para enviar · Shift+Enter para nueva línea",
+    "notice": {
+      "text": "Kontrol AI puede equivocarse. Comprueba las cifras antes de decidir.",
+      "link": "Cómo usa tus datos"
+    },
     "message": {
       "edit": "Editar",
       "delete": "Eliminar",

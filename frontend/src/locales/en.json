@@ -1794,6 +1794,10 @@
     "placeholder": "Ask me anything…",
     "stop": "Stop generating",
     "hint": "Press Enter to send · Shift+Enter for a new line",
+    "notice": {
+      "text": "Kontrol AI can make mistakes. Check the figures before you decide.",
+      "link": "How it uses your data"
+    },
     "message": {
       "edit": "Edit",
       "delete": "Delete",
