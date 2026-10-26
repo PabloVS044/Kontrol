@@ -102,6 +102,18 @@ def verify_equal(source, restored):
 def identifier(name):
     return '"' + name.replace('"', '""') + '"'
 
+def normalize_pg_constraint(definition):
+    """Normalize equivalent casts of varchar literal arrays to text arrays."""
+    literal = r"'(?:[^']|'')*'::character varying"
+    array_cast = rf"\(ARRAY\[({literal}(?:, {literal})*)\]\)::text\[\]"
+
+    def replace(match):
+        items = re.findall(literal, match.group(1))
+        return 'ARRAY[' + ', '.join(
+            f'({item})::text' for item in items
+        ) + ']'
+
+    return re.sub(array_cast, replace, definition)
 
 class Runner:
     def __init__(self, output):
@@ -250,6 +262,13 @@ SELECT json_build_object(
    (SELECT tablename,indexname,indexdef FROM pg_indexes WHERE schemaname='public') i));
 """
         inventory['definitions'] = json.loads(self.sql(container, definitions))
+
+        for constraint in inventory['definitions'].get('constraints') or []:
+            if constraint['type'] == 'c':
+                constraint['definition'] = normalize_pg_constraint(
+                    constraint['definition']
+                )
+
         return inventory
 
     def mongo_inventory(self, container):

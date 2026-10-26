@@ -136,6 +136,27 @@ class SafetyAndEvidence(unittest.TestCase):
             self.assertEqual(report['status'], 'cleanup_failed')
             self.assertTrue(report['restoration_verified'])
 
+class ConstraintNormalization(unittest.TestCase):
+    def test_equivalent_casts_match_but_changed_values_do_not(self):
+        source = (
+            "CHECK (moneda = ANY "
+            "((ARRAY['USD'::character varying, "
+            "'GTQ'::character varying])::text[]))"
+        )
+        restored = (
+            "CHECK (moneda = ANY "
+            "(ARRAY[('USD'::character varying)::text, "
+            "('GTQ'::character varying)::text]))"
+        )
+
+        self.assertEqual(
+            drill.normalize_pg_constraint(source),
+            drill.normalize_pg_constraint(restored),
+        )
+        self.assertNotEqual(
+            drill.normalize_pg_constraint(source),
+            drill.normalize_pg_constraint(restored.replace("'GTQ'", "'EUR'")),
+        )
 
 if __name__ == '__main__':
     unittest.main()
