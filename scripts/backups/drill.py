@@ -253,7 +253,7 @@ SELECT json_build_object(
         return inventory
 
     def mongo_inventory(self, container):
-        return json.loads(self.mongo(container, (HERE / 'mongo-inventory.js').read_text()))
+        return json.loads(self.mongo(container, (HERE / 'mongo-inventory.js').read_text(encoding='utf-8')))
 
     def label_owned(self, kind, name):
         if not name.startswith(self.run_id + '-') or not RUN_PATTERN.fullmatch(self.run_id):
@@ -278,9 +278,9 @@ SELECT json_build_object(
         self.create_network()
         source_pg = self.start_database('pg', 'source')
         source_mongo = self.start_database('mongo', 'source')
-        self.sql(source_pg, (ROOT / 'backend/kontrol.sql').read_text())
-        self.sql(source_pg, (HERE / 'seed.sql').read_text())
-        self.mongo(source_mongo, (HERE / 'mongo-seed.js').read_text())
+        self.sql(source_pg, (ROOT / 'backend/kontrol.sql').read_text(encoding='utf-8'))
+        self.sql(source_pg, (HERE / 'seed.sql').read_text(encoding='utf-8'))
+        self.mongo(source_mongo, (HERE / 'mongo-seed.js').read_text(encoding='utf-8'))
         source = {'postgres': self.pg_inventory(source_pg), 'mongo': self.mongo_inventory(source_mongo)}
         if not source['postgres']['tables'] or len(source['mongo']) != 4:
             raise RuntimeError('Fixtures did not initialize the expected source.')
@@ -372,7 +372,10 @@ SELECT json_build_object(
         self.report['total_attempt_seconds'] = round(time.monotonic() - self.started, 3)
         self.report['host_free_bytes_after'] = shutil.disk_usage(self.output).free
         # Only allow-listed tool metadata/counts/hashes are retained, not stderr or dumps.
-        (self.output / 'evidence.json').write_text(json.dumps(self.report, indent=2, ensure_ascii=False) + '\n')
+        (self.output / 'evidence.json').write_text(
+            json.dumps(self.report, indent=2, ensure_ascii=False) + '\n',
+            encoding='utf-8',
+        )
         verified = self.report['restoration_verified']
         text = '\n'.join([
             '# P-2 · Evidencia de intento de restauración', '',
@@ -388,7 +391,7 @@ SELECT json_build_object(
             'Ver evidence.json para conteos, huellas, índices, secuencias, exclusiones y pasos.', '',
             'No adjuntar el directorio private: contiene claves y respaldos.', '',
         ])
-        (self.output / 'evidence.md').write_text(text)
+        (self.output / 'evidence.md').write_text(text, encoding='utf-8')
 
     def run(self):
         code = 0

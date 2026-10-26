@@ -103,7 +103,7 @@ class SafetyAndEvidence(unittest.TestCase):
                     patch.object(runner, 'execute') as execute, patch('builtins.print'):
                 self.assertEqual(runner.run(), 2)
                 execute.assert_not_called()
-            report = json.loads((runner.output / 'evidence.json').read_text())
+            report = json.loads((runner.output / 'evidence.json').read_text(encoding='utf-8'))
             self.assertEqual(report['status'], 'blocked')
             self.assertFalse(report['restoration_started'])
             self.assertFalse(report['restoration_verified'])
@@ -132,7 +132,7 @@ class SafetyAndEvidence(unittest.TestCase):
             with patch.object(runner, 'preflight'), patch.object(runner, 'execute', side_effect=restored), \
                     patch.object(runner, 'cleanup', return_value=['owned-container']), patch('builtins.print'):
                 self.assertEqual(runner.run(), 1)
-            report = json.loads((runner.output / 'evidence.json').read_text())
+            report = json.loads((runner.output / 'evidence.json').read_text(encoding='utf-8'))
             self.assertEqual(report['status'], 'cleanup_failed')
             self.assertTrue(report['restoration_verified'])
 
