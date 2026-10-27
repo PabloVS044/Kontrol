@@ -544,7 +544,7 @@ function requestProjectId() {
 
 async function apiFetch(path) {
   const res = await requestApi(path, {
-    headers: authHeaders(requestProjectId()),
+    headers: authHeaders({}, { projectId: requestProjectId() }),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -1181,7 +1181,7 @@ async function submitProduct(formData) {
   try {
     const res = await requestApi('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(formData.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: formData.id_proyecto }),
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
@@ -1230,7 +1230,7 @@ async function submitEdit(payload) {
     // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(product.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.id_proyecto }),
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1268,7 +1268,7 @@ async function confirmDelete() {
   try {
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeaders(product.id_proyecto),
+      headers: authHeaders({}, { projectId: product.id_proyecto }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {

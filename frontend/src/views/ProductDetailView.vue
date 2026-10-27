@@ -207,7 +207,7 @@ async function saveBarcode() {
     const value = barcodeInput.value.trim()
     const res = await requestApi(`/api/products/${productId.value}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.value?.id_proyecto }),
       body: JSON.stringify({ codigo_barras: value || null }),
     })
     const payload = await res.json().catch(() => ({}))
@@ -261,7 +261,7 @@ const stockTone = computed(() => {
 async function loadSupplierCatalog() {
   if (!canLinkSuppliers.value || !product.value?.id_proyecto) return
   try {
-    const res = await requestApi('/api/suppliers', { headers: authHeaders(product.value.id_proyecto) })
+    const res = await requestApi('/api/suppliers', { headers: authHeaders({}, { projectId: product.value.id_proyecto }) })
     const payload = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(payload.message || t('inventory.productDetail.supplierLoadError'))
     supplierCatalog.value = payload.data ?? []
@@ -279,7 +279,7 @@ async function linkSupplier() {
   try {
     const res = await requestApi(`/api/products/${productId.value}/suppliers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(product.value.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.value.id_proyecto }),
       body: JSON.stringify({
         id_proveedor: selectedSupplierId.value,
         precio_unitario: supplierPrice.value,
