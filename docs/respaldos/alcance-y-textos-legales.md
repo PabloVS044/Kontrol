@@ -1,53 +1,50 @@
-# Exclusiones y redacción sustentada para L-1/L-2
+# Alcance, exclusiones y textos para L-1/L-2
 
-## Qué queda sin respaldo/restauración acreditados
+## Medida comprobada
 
-| Activo | Lo previsto / lo probado | Límite |
-| --- | --- | --- |
-| Datos PostgreSQL/Mongo | Herramienta preparada; restauración aún bloqueada | No hay copia productiva ni recuperación verificada en esta entrega |
-| Binarios de UploadThing | Referencias dentro de las bases | No se copian/restauran bytes. La prueba usa una URL ficticia y no descarga archivos |
-| Roles globales, contraseñas de motor, propietarios y permisos | El laboratorio crea su propio usuario; usa `--no-owner --no-acl` | No acredita recuperación de autenticación/roles del cluster. `pg_dump` no sustituye un respaldo de objetos globales |
-| Usuarios/roles de administración Mongo | Solo se respalda la base ficticia | No se recuperan cuentas/roles externos a ella |
-| Bootstrap/migraciones fuera de `backend/kontrol.sql` | El laboratorio carga el SQL versionado | No acredita igualdad con el esquema desplegado ni tablas añadidas al iniciar backend |
-| Secretos y certificados | No incluidos | Deben reaprovisionarse desde custodia separada; no ponerlos en Git |
-| VM, proxy, DNS, sistema operativo, logs | No incluidos | No hay restauración de disco completo, servicio web o recuperación de historial de logs |
-| Correo, identidad externa, IA y demás proveedores | Fuera de las dos bases | No se respalda el estado/control del proveedor |
-| Cambios posteriores al snapshot | Se introduce deliberadamente una fila y un documento tardíos | Quedan fuera; no hay PITR/WAL/oplog probado |
-| Bajas posteriores al snapshot | Requieren reaplicación antes de habilitar una recuperación | Registro independiente y ejecución operativa no acreditados; P-1 no se fusiona con este cambio |
+El 26/10/2026 se completó una restauración de laboratorio de PostgreSQL y MongoDB con datos sintéticos en un entorno aislado.
 
-## Texto que corresponde al estado actual
+El resultado fue `restored_verified_lab`, con inventarios coincidentes y limpieza completa.
 
-Estos párrafos describen medidas técnicas verificadas/documentadas, no sustituyen
-la revisión jurídica ni aprueban publicar los documentos legales.
+La restauración tomó 1.437 segundos; la recuperación con recreación de destinos y validación tomó 23.875 segundos. Estos tiempos corresponden únicamente al ensayo y no constituyen compromisos de recuperación del servicio.
 
-**L-1 — Términos, disponibilidad y recuperación:**
+Ver [evidencia](evidencias/kontrol-p2-20261026t230439z-6fee091f237c/evidence.json) y [ficha del operador](evidencias/kontrol-p2-20261026t230439z-6fee091f237c/ficha-operador.md).
 
-Se ha definido un procedimiento de respaldo y restauración de las bases de datos.
-Su ejecución de prueba aún no ha podido completarse, por lo que no se afirma que
-exista recuperación verificada ni se garantizan tiempos de recuperación o una
-pérdida máxima de datos. La cobertura de copias de los proveedores y de archivos
-adjuntos no está acreditada.
+## Exclusiones y límites
 
-**L-2 — Privacidad, medidas de protección y copias:**
+| Activo o proceso | Alcance acreditado |
+| --- | --- |
+| Datos PostgreSQL/MongoDB | Restauración verificada de las bases sintéticas del ensayo |
+| Copias productivas | No verificadas por esta ejecución |
+| Archivos de UploadThing | No se respaldan ni restauran sus bytes; solo se conservan referencias presentes en las bases |
+| Roles, credenciales, propietarios y permisos de los motores | No se acredita su recuperación operativa; el laboratorio utiliza sus propias cuentas |
+| Bootstrap fuera del SQL base | No cubierto por el esquema sintético utilizado |
+| Secretos, certificados, VM, DNS y logs | No recuperados por el ensayo |
+| Aplicación y proveedores externos | No se prueba la recuperación completa del servicio |
+| Datos posteriores al respaldo | Quedan fuera; se comprueba deliberadamente la ausencia de registros tardíos |
+| Bajas posteriores al respaldo | Su reaplicación operativa sigue requiriendo un procedimiento y registro independiente |
+| Programación, almacenamiento externo y retención | Definidos en la política propuesta, sin activación productiva acreditada |
+| RPO/RTO productivos | Objetivos propuestos, no verificados por el tiempo del laboratorio |
 
-La política técnica propuesta contempla copias cifradas con acceso restringido y
-retención limitada. Su operación y restauración aún están pendientes de verificación.
-No se afirma que los archivos adjuntos estén respaldados ni que la supresión de
-una cuenta elimine inmediatamente todas las copias anteriores. La cobertura y
-retención efectivas se documentarán al comprobar el proceso.
+## Texto técnico para L-1 — Disponibilidad y recuperación
 
-El intento bloqueado no permite afirmar «se realizan copias cada 4 h», «retención
-activa de 28 días», «RPO garantizado de 6 h», «RTO garantizado de 4 h» ni «restauración
-probada». Los valores de la política son objetivos elegidos, todavía sin operación
-ni medición productivas acreditadas.
+Se ha definido una política de respaldo y recuperación y se ha verificado una restauración de laboratorio de bases PostgreSQL y MongoDB con datos sintéticos en un entorno aislado. Esta prueba no acredita recuperación del entorno productivo ni establece una garantía de disponibilidad, tiempo de recuperación o pérdida máxima de datos. La cobertura de archivos adjuntos y de copias de proveedores requiere verificación adicional.
 
-## Tras un futuro éxito del laboratorio
+## Texto técnico para L-2 — Protección y copias
 
-Solo después de adjuntar el informe se podrá informar la fecha, motores, alcance
-sintético y duración exactos, manteniendo expresamente que no valida producción,
-archivos externos ni RPO/RTO productivos. No se incluye aquí un texto en pasado con
-fechas o tiempos ficticios para evitar publicarlo por accidente.
+El procedimiento de laboratorio probado incluye cifrado de respaldos y comprobación de integridad y de los datos restaurados. La política propuesta contempla almacenamiento separado, acceso restringido y retención limitada, cuya operación productiva sigue pendiente de acreditación. El ensayo no demuestra respaldo de archivos adjuntos ni eliminación inmediata de información en todas las copias anteriores.
 
-Para afirmar que existe un proceso operativo, contrastar la programación real,
-ubicación, retención/purga, acceso, custodia de claves y una restauración del alcance
-real con su informe. Entonces actualizar L-1/L-2 con esos hechos y sus exclusiones.
+## Condiciones para ampliar estas afirmaciones
+
+Antes de describir el proceso como operativo en producción, verificar:
+
+- Programación y monitoreo de capturas.
+- Almacenamiento externo e identidades con acceso.
+- Custodia independiente de claves.
+- Retención y eliminación efectiva de copias.
+- Restauración de una copia representativa del alcance productivo.
+- Reaplicación de bajas y validación de la aplicación antes de habilitar el servicio.
+
+Los objetivos RPO de 6 horas y RTO de 4 horas no deben publicarse como garantías basándose en esta prueba.
+
+Estos textos aportan hechos técnicos para L-1/L-2. No sustituyen su revisión jurídica ni constituyen aprobación de publicación.
