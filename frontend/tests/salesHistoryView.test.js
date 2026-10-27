@@ -19,7 +19,7 @@ globalThis.localStorage = {
 }
 
 const HISTORIAL = {
-  resumen: { ventas: 2, subtotal: 60, descuentos: 5, iva: 6.6, cobrado_total: 61.6, unidades: 4, ticket_promedio: 30.8 },
+  resumen: { ventas: 2, subtotal: 60, descuentos: 5, iva: 6.6, cobrado_total: 61.6, ingreso_neto: 55, costo_ventas: 31.5, utilidad: 23.5, unidades: 4, ticket_promedio: 30.8 },
   truncado: false,
   ventas: [
     {
@@ -117,8 +117,18 @@ describe('SalesHistoryView.vue — historial por fechas', () => {
     const wrapper = await montar()
     const kpis = wrapper.findAll('.sh-kpi-value').map((k) => k.text())
     expect(kpis[0]).toContain('61.60')
-    expect(kpis[1]).toBe('2')
+    expect(kpis[2]).toBe('2')
     expect(wrapper.find('.sh-kpi-note').text()).toContain('5.00')
+  })
+
+  it('a la derecha de los ingresos muestra la utilidad: ingreso sin IVA menos costo', async () => {
+    const wrapper = await montar()
+    const [ingresos, utilidad] = wrapper.findAll('.sh-kpi')
+    expect(ingresos.find('.sh-kpi-label').text()).toBe('Ingresos')
+    expect(utilidad.find('.sh-kpi-label').text()).toBe('Utilidad')
+    expect(utilidad.find('.sh-kpi-value').text()).toContain('23.50')
+    expect(utilidad.find('.sh-kpi-note').text()).toMatch(/55.00.*31.50/)
+    expect(utilidad.classes()).not.toContain('is-loss')
   })
 
   it('los atajos de semana y mes cambian el rango', async () => {

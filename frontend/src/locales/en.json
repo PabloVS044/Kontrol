@@ -2318,6 +2318,8 @@
     "kpis": {
       "income": "Income",
       "incomeNote": "Includes VAT {vat} · Discounts {discounts}",
+        "profit": "Profit",
+        "profitNote": "Income without VAT {net} − cost {cost}",
       "sales": "Sales",
       "average": "Average ticket",
       "units": "Units sold"
@@ -2345,7 +2347,7 @@
       "amount": "Amount",
       "subtotal": "Subtotal"
     },
-    "toReports": "Charts and best sellers in Reports"
+    "toReports": "More information in Reports"
   },
   "sales": {
     "eyebrow": "Sales",

@@ -50,7 +50,7 @@ function scriptHistory({ rol = 'owner', resumen, cabeceras = [cabecera()], linea
     const q = String(sql)
     if (q.includes('FROM public.empresa_usuario')) return companyMembership(rol)
     if (q.includes('COUNT(DISTINCT')) {
-      return { rows: [resumen ?? { ventas: '1', subtotal: '50.00', descuentos: '5.00', iva: '5.40', unidades: '3' }] }
+      return { rows: [resumen ?? { ventas: '1', subtotal: '50.00', descuentos: '5.00', iva: '5.40', unidades: '3', costo: '27.10' }] }
     }
     if (q.includes('array_agg(DISTINCT proj.nombre)')) return { rows: cabeceras }
     if (q.includes('AS producto_nombre')) {
@@ -89,6 +89,9 @@ describe('GET /api/inventory-movements/sales', () => {
       descuentos: 5,
       iva: 5.4,
       cobrado_total: 50.4,
+      ingreso_neto: 45,
+      costo_ventas: 27.1,
+      utilidad: 17.9,
       unidades: 3,
       ticket_promedio: 50.4,
     })
@@ -106,6 +109,13 @@ describe('GET /api/inventory-movements/sales', () => {
       ['Azúcar 1kg', 1, 10.08],
     ])
     expect(res.body.data.truncado).toBe(false)
+  })
+
+  it('la utilidad es el ingreso sin IVA menos el costo congelado de cada venta', async () => {
+    scriptHistory()
+    await auth(request(app).get(`/api/inventory-movements/sales${RANGO}`))
+    const [sql] = callsWith('COUNT(DISTINCT')[0]
+    expect(sql).toContain('COALESCE(m.costo_unitario_venta, p.costo_promedio_ponderado, 0) * m.cantidad')
   })
 
   it('compara el rango en la zona del cliente y filtra por proyecto si se pide', async () => {
@@ -127,7 +137,7 @@ describe('GET /api/inventory-movements/sales', () => {
   })
 
   it('sin ventas en el rango no consulta líneas', async () => {
-    scriptHistory({ cabeceras: [], resumen: { ventas: '0', subtotal: '0', descuentos: '0', iva: '0', unidades: '0' } })
+    scriptHistory({ cabeceras: [], resumen: { ventas: '0', subtotal: '0', descuentos: '0', iva: '0', unidades: '0', costo: '0' } })
     const res = await auth(request(app).get(`/api/inventory-movements/sales${RANGO}`))
 
     expect(res.body.data.ventas).toEqual([])

@@ -747,7 +747,10 @@ export const getSalesHistory = async (req, res) => {
   const { id_empresa } = req.empresa
   const accessibleProjectIds = await getAccessibleInventoryProjectIds(req)
 
-  const emptyResumen = { ventas: 0, subtotal: 0, descuentos: 0, iva: 0, cobrado_total: 0, unidades: 0, ticket_promedio: 0 }
+  const emptyResumen = {
+    ventas: 0, subtotal: 0, descuentos: 0, iva: 0, cobrado_total: 0,
+    ingreso_neto: 0, costo_ventas: 0, utilidad: 0, unidades: 0, ticket_promedio: 0,
+  }
 
   if (accessibleProjectIds && !accessibleProjectIds.length) {
     return res.json({ success: true, data: { resumen: emptyResumen, ventas: [], truncado: false } })
@@ -781,9 +784,13 @@ export const getSalesHistory = async (req, res) => {
          COALESCE(SUM(m.precio_unitario * m.cantidad), 0)          AS subtotal,
          COALESCE(SUM(m.descuento_linea), 0)                       AS descuentos,
          COALESCE(SUM(m.iva_linea), 0)                             AS iva,
-         COALESCE(SUM(m.cantidad), 0)                              AS unidades
+         COALESCE(SUM(m.cantidad), 0)                              AS unidades,
+         -- Mismo costo que /stats: el congelado al vender y, en ventas
+         -- anteriores a esa columna, el promedio actual del producto.
+         COALESCE(SUM(COALESCE(m.costo_unitario_venta, p.costo_promedio_ponderado, 0) * m.cantidad), 0) AS costo
        FROM public.movimiento_inventario m
        JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
+       LEFT JOIN public.producto p ON p.id_producto = m.id_producto
        WHERE ${where}`,
       values
     ),
@@ -885,12 +892,19 @@ export const getSalesHistory = async (req, res) => {
   const iva = Number(r.iva)
   // Lo que pagaron los clientes, IVA incluido: el mismo `cobrado_total` de Reportes.
   const cobradoTotal = round2(subtotal - descuentos + iva)
+  // La utilidad sale del ingreso SIN IVA, como la ganancia bruta de Reportes:
+  // el impuesto se cobra para entregarlo y restarle el costo lo inflaría.
+  const ingresoNeto = round2(subtotal - descuentos)
+  const costo = round2(Number(r.costo))
   const resumen = {
     ventas: numVentas,
     subtotal,
     descuentos,
     iva,
     cobrado_total: cobradoTotal,
+    ingreso_neto: ingresoNeto,
+    costo_ventas: costo,
+    utilidad: round2(ingresoNeto - costo),
     unidades: Number(r.unidades),
     ticket_promedio: numVentas ? round2(cobradoTotal / numVentas) : 0,
   }

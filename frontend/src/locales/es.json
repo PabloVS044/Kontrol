@@ -2318,6 +2318,8 @@
     "kpis": {
       "income": "Ingresos",
       "incomeNote": "Incluye IVA {vat} · Descuentos {discounts}",
+        "profit": "Utilidad",
+        "profitNote": "Ingresos sin IVA {net} − costo {cost}",
       "sales": "Ventas",
       "average": "Ticket promedio",
       "units": "Unidades vendidas"
@@ -2345,7 +2347,7 @@
       "amount": "Importe",
       "subtotal": "Subtotal"
     },
-    "toReports": "Gráficos y productos más vendidos en Reportes"
+    "toReports": "Más información en Reportes"
   },
   "sales": {
     "eyebrow": "Ventas",

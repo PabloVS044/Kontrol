@@ -61,6 +61,13 @@
               {{ $t('salesHistory.kpis.incomeNote', { vat: money(resumen.iva), discounts: money(resumen.descuentos) }) }}
             </span>
           </div>
+          <div class="sh-kpi sh-kpi--main sh-kpi--profit" :class="{ 'is-loss': resumen.utilidad < 0 }">
+            <span class="sh-kpi-label">{{ $t('salesHistory.kpis.profit') }}</span>
+            <span class="sh-kpi-value">{{ money(resumen.utilidad) }}</span>
+            <span class="sh-kpi-note">
+              {{ $t('salesHistory.kpis.profitNote', { net: money(resumen.ingreso_neto), cost: money(resumen.costo_ventas) }) }}
+            </span>
+          </div>
           <div class="sh-kpi">
             <span class="sh-kpi-label">{{ $t('salesHistory.kpis.sales') }}</span>
             <span class="sh-kpi-value">{{ resumen.ventas }}</span>
@@ -187,7 +194,10 @@ const customFrom = ref(today)
 const customTo = ref(today)
 const projectId = ref(null)
 
-const EMPTY = { ventas: 0, subtotal: 0, descuentos: 0, iva: 0, cobrado_total: 0, unidades: 0, ticket_promedio: 0 }
+const EMPTY = {
+  ventas: 0, subtotal: 0, descuentos: 0, iva: 0, cobrado_total: 0,
+  ingreso_neto: 0, costo_ventas: 0, utilidad: 0, unidades: 0, ticket_promedio: 0,
+}
 const resumen = ref({ ...EMPTY })
 const ventas = ref([])
 const truncado = ref(false)
@@ -342,9 +352,10 @@ onMounted(() => {
 
 .sh-range { margin: 0 0 var(--k-space-4); color: var(--k-text-muted); font-size: var(--k-font-size-caption-lg); }
 
+/* Ingresos y utilidad arriba, a lo ancho; ventas, ticket y unidades debajo. */
 .sh-kpis {
   display: grid;
-  grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--k-space-3);
   margin-bottom: var(--k-space-5);
 }
@@ -357,7 +368,8 @@ onMounted(() => {
   background: var(--k-shade-3);
   border: var(--k-border-width) solid var(--k-shade-6);
 }
-.sh-kpi--main { border-color: var(--k-color-border); }
+.sh-kpi { grid-column: span 2; }
+.sh-kpi--main { grid-column: span 3; border-color: var(--k-color-border); }
 .sh-kpi-label {
   color: var(--k-text-soft);
   font-size: var(--k-font-size-caption);
@@ -370,6 +382,8 @@ onMounted(() => {
   overflow-wrap: anywhere;
 }
 .sh-kpi--main .sh-kpi-value { color: var(--k-color-primary); font-size: var(--k-font-size-display-2); }
+.sh-kpi--profit .sh-kpi-value { color: var(--k-state-success-text); }
+.sh-kpi--profit.is-loss .sh-kpi-value { color: var(--k-state-error-text); }
 .sh-kpi-note { color: var(--k-text-dim); font-size: var(--k-font-size-caption); }
 
 .sh-state { padding: var(--k-space-6) 0; color: var(--k-text-muted); font-size: var(--k-font-size-body-small); }
@@ -473,7 +487,13 @@ onMounted(() => {
 
 @media (max-width: 900px) {
   .sh-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sh-kpi--main { grid-column: 1 / -1; }
+  .sh-kpi,
+  .sh-kpi--main { grid-column: span 1; }
+  .sh-kpi:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+  .sh-kpis { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* En un teléfono cada venta es una ficha y su detalle se abre debajo. */
