@@ -719,3 +719,181 @@ export const getInventorySalesStats = async (req, res) => {
 
   return res.json({ success: true, data: { resumen, serie, top_productos } })
 }
+
+/** Máximo de ventas que devuelve el historial; el resumen cubre el rango entero. */
+export const SALES_HISTORY_LIMIT = 200
+
+/**
+ * Identidad de la venta a la que pertenece una línea. Con cabecera es la venta;
+ * las SALIDA anteriores a la tabla venta no tienen id_venta y se agrupan como
+ * ya hace el informe: mismo segundo y mismo usuario.
+ */
+const SALE_KEY = `COALESCE('v' || m.id_venta::text,
+  'm' || to_char(date_trunc('second', m.fecha), 'YYYYMMDDHH24MISS') || '-' || m.id_usuario::text)`
+
+/**
+ * GET /api/inventory-movements/sales
+ * Query: ?desde, ?hasta (hora local del cliente), ?tz, ?projectId
+ *
+ * Historial de ventas del rango: un resumen con lo cobrado y, por cada venta,
+ * su cabecera y sus líneas. Los importes salen de las LÍNEAS y no de la
+ * cabecera: una venta puede abarcar varios proyectos y, filtrando por uno o
+ * sin acceso a todos, solo deben contar las líneas visibles. Sin filtro, las
+ * líneas suman exactamente la cabecera (el reparto del descuento y del IVA
+ * cuadra al céntimo), así que las cifras coinciden con el ticket y con Reportes.
+ */
+export const getSalesHistory = async (req, res) => {
+  const { projectId, desde, hasta } = req.query
+  const { id_empresa } = req.empresa
+  const accessibleProjectIds = await getAccessibleInventoryProjectIds(req)
+
+  const emptyResumen = { ventas: 0, subtotal: 0, descuentos: 0, iva: 0, cobrado_total: 0, unidades: 0, ticket_promedio: 0 }
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: { resumen: emptyResumen, ventas: [], truncado: false } })
+  }
+
+  if (accessibleProjectIds && projectId && !accessibleProjectIds.includes(Number(projectId))) {
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
+  }
+
+  const values = [id_empresa, clientTz(req), desde, hasta]
+  const filters = [
+    'proj.id_empresa = $1',
+    "m.tipo = 'SALIDA'",
+    `m.fecha >= ${localBoundToUtc(3, 2)}`,
+    `m.fecha <= ${localBoundToUtc(4, 2)}`,
+  ]
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    filters.push(`m.id_proyecto = ANY($${values.length}::int[])`)
+  }
+  if (projectId) {
+    values.push(projectId)
+    filters.push(`m.id_proyecto = $${values.length}`)
+  }
+  const where = filters.join(' AND ')
+
+  const [resumenRes, ventasRes] = await Promise.all([
+    pool.query(
+      `SELECT
+         COUNT(DISTINCT ${SALE_KEY})                               AS ventas,
+         COALESCE(SUM(m.precio_unitario * m.cantidad), 0)          AS subtotal,
+         COALESCE(SUM(m.descuento_linea), 0)                       AS descuentos,
+         COALESCE(SUM(m.iva_linea), 0)                             AS iva,
+         COALESCE(SUM(m.cantidad), 0)                              AS unidades
+       FROM public.movimiento_inventario m
+       JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
+       WHERE ${where}`,
+      values
+    ),
+    pool.query(
+      `SELECT
+         ${SALE_KEY}                                               AS clave,
+         MIN(m.id_venta)                                           AS id_venta,
+         -- La columna guarda el reloj UTC: se marca como tal para que el
+         -- navegador la muestre en su hora local.
+         to_char(MIN(m.fecha), 'YYYY-MM-DD"T"HH24:MI:SS"Z"')       AS fecha,
+         MIN(u.nombre)                                             AS usuario_nombre,
+         MIN(u.apellido)                                           AS usuario_apellido,
+         array_agg(DISTINCT proj.nombre)                           AS proyectos,
+         SUM(m.precio_unitario * m.cantidad)                       AS subtotal,
+         SUM(m.descuento_linea)                                    AS descuento,
+         SUM(m.iva_linea)                                          AS iva,
+         SUM(m.cantidad)                                           AS unidades
+       FROM public.movimiento_inventario m
+       JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
+       JOIN public.usuario u     ON u.id_usuario     = m.id_usuario
+       WHERE ${where}
+       GROUP BY clave
+       ORDER BY MIN(m.fecha) DESC, clave DESC
+       LIMIT ${SALES_HISTORY_LIMIT + 1}`,
+      values
+    ),
+  ])
+
+  const truncado = ventasRes.rows.length > SALES_HISTORY_LIMIT
+  const cabeceras = ventasRes.rows.slice(0, SALES_HISTORY_LIMIT)
+
+  const lineasPorVenta = new Map()
+  if (cabeceras.length) {
+    const lineValues = [...values, cabeceras.map((v) => v.clave)]
+    const lineasRes = await pool.query(
+      `SELECT
+         ${SALE_KEY}          AS clave,
+         m.id_movimiento,
+         m.id_producto,
+         p.nombre             AS producto_nombre,
+         m.id_proyecto,
+         proj.nombre          AS proyecto_nombre,
+         m.cantidad,
+         m.precio_unitario,
+         m.descuento_linea,
+         m.iva_linea
+       FROM public.movimiento_inventario m
+       JOIN public.proyecto proj ON proj.id_proyecto = m.id_proyecto
+       JOIN public.producto p    ON p.id_producto    = m.id_producto
+       WHERE ${where} AND ${SALE_KEY} = ANY($${lineValues.length}::text[])
+       ORDER BY m.id_movimiento`,
+      lineValues
+    )
+    for (const row of lineasRes.rows) {
+      const cantidad = Number(row.cantidad)
+      const precio = Number(row.precio_unitario)
+      const descuento = Number(row.descuento_linea)
+      const iva = Number(row.iva_linea)
+      const linea = {
+        id_movimiento: row.id_movimiento,
+        id_producto: row.id_producto,
+        producto_nombre: row.producto_nombre,
+        id_proyecto: row.id_proyecto,
+        proyecto_nombre: row.proyecto_nombre,
+        cantidad,
+        precio_unitario: precio,
+        descuento,
+        iva,
+        importe: round2(precio * cantidad - descuento + iva),
+      }
+      if (!lineasPorVenta.has(row.clave)) lineasPorVenta.set(row.clave, [])
+      lineasPorVenta.get(row.clave).push(linea)
+    }
+  }
+
+  const ventas = cabeceras.map((row) => {
+    const subtotal = Number(row.subtotal)
+    const descuento = Number(row.descuento)
+    const iva = Number(row.iva)
+    return {
+      clave: row.clave,
+      id_venta: row.id_venta,
+      fecha: row.fecha,
+      vendedor: [row.usuario_nombre, row.usuario_apellido].filter(Boolean).join(' '),
+      proyectos: row.proyectos ?? [],
+      unidades: Number(row.unidades),
+      subtotal,
+      descuento,
+      iva,
+      total: round2(subtotal - descuento + iva),
+      lineas: lineasPorVenta.get(row.clave) ?? [],
+    }
+  })
+
+  const r = resumenRes.rows[0]
+  const numVentas = Number(r.ventas)
+  const subtotal = Number(r.subtotal)
+  const descuentos = Number(r.descuentos)
+  const iva = Number(r.iva)
+  // Lo que pagaron los clientes, IVA incluido: el mismo `cobrado_total` de Reportes.
+  const cobradoTotal = round2(subtotal - descuentos + iva)
+  const resumen = {
+    ventas: numVentas,
+    subtotal,
+    descuentos,
+    iva,
+    cobrado_total: cobradoTotal,
+    unidades: Number(r.unidades),
+    ticket_promedio: numVentas ? round2(cobradoTotal / numVentas) : 0,
+  }
+
+  return res.json({ success: true, data: { resumen, ventas, truncado } })
+}
