@@ -1,7 +1,8 @@
 # Política propuesta de respaldo y recuperación — versión 1
 
-**Estado:** definida para revisión y activación. No está acreditada como operativa.
-No hay restauración verificada en esta entrega. Esta política no constituye un SLA.
+**Estado:** política propuesta, con restauración de laboratorio verificada el 26/10/2026. La verificación de RPO/RTO productivos sigue pendiente. Esta política no constituye un SLA.
+
+Evidencia: [historial de ensayos](evidencias/README.md).
 
 ## Alcance
 

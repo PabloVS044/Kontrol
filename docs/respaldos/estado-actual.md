@@ -46,3 +46,11 @@ del responsable y suplente. Preguntar si hubo una restauración anterior y adjun
 su informe. Verificar si el esquema desplegado incluye bootstrap y cambios aún no
 presentes en el SQL base. Si no hay evidencia, conservar «desconocido/no acreditado».
 No reemplazarlo por «no existe» solo por no estar en el repositorio.
+
+## Actualización posterior: ensayo local verificado
+
+El 26/10/2026 se completó una restauración sintética en un equipo Windows con Docker Desktop. La ejecución `kontrol-p2-20261026t230439z-6fee091f237c` terminó con `restored_verified_lab`, inventarios PostgreSQL/MongoDB coincidentes y limpieza completa.
+
+Este ensayo supera el bloqueo del entorno de preparación descrito anteriormente. No modifica los hallazgos sobre cobertura productiva desconocida ni acredita configuraciones de proveedores.
+
+Ver [evidencias](evidencias/README.md).

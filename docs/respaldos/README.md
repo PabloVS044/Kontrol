@@ -1,58 +1,67 @@
 # P-2 · Política de respaldos con restauración probada
 
-**Estado de esta entrega: implementación y documentación preparadas; P-2 NO cerrada.**
-La ejecución del 25/10/2026 a las 21:08:56 de Guatemala (26/10 UTC) se detuvo
-porque este entorno no tiene Docker. No se creó ni restauró ninguna base. El
-informe de ese intento registra `status: blocked`, no una restauración exitosa.
+## Estado
 
-Este cambio parte exclusivamente del ZIP `Kontrol-develop (2).zip`. No incorpora
-las correcciones de código de P-1. El documento
-[de P-1](../p1-cambios-y-aplicacion.md) explica por separado el ZIP anterior.
+La restauración de laboratorio se ejecutó y verificó el **26/10/2026**, con inicio a las **17:04:39 de Guatemala**.
 
-## Documentos y código
+Resultado: `restored_verified_lab`.
+
+El ensayo utilizó bases sintéticas de PostgreSQL y MongoDB en contenedores aislados. La comparación de origen y destino fue satisfactoria en ambos motores y la limpieza terminó correctamente.
+
+La aceptación de la tarea queda sujeta a revisión de la evidencia y del alcance declarado. La operación de respaldos productivos no está acreditada por este ensayo.
+
+## Resultados
+
+| Comprobación | Resultado |
+| --- | --- |
+| Pruebas unitarias de la herramienta | 16 aprobadas |
+| Inventario PostgreSQL | Coincide |
+| Inventario MongoDB | Coincide |
+| Restauración verificada | Sí |
+| Limpieza de recursos del ensayo | Completa |
+| Captura y cifrado | 0.735 s |
+| Descifrado y restauración | 1.437 s |
+| Recuperación con validación | 23.875 s |
+
+La herramienta crea fuentes sintéticas, captura y cifra respaldos, elimina los contenedores y volúmenes fuente, restaura en destinos nuevos y compara los inventarios.
+
+La comparación incluye datos, secuencias, columnas, restricciones e índices de PostgreSQL, además de documentos, opciones e índices de MongoDB. También se verifican relaciones y totales de ventas y la pérdida esperada de registros posteriores al respaldo.
+
+## Documentación
 
 - [Estado actual y fuentes](estado-actual.md).
 - [Política y objetivos RPO/RTO](politica.md).
-- [Procedimiento paso a paso](procedimiento-restauracion.md).
-- [Exclusiones y texto para L-1/L-2](alcance-y-textos-legales.md).
-- [Evidencia y pendientes](evidencias/README.md).
-- Herramienta: `scripts/backups/drill.py`; fixtures sintéticos SQL/Mongo e inventario.
+- [Procedimiento de restauración](procedimiento-restauracion.md).
+- [Exclusiones y textos para L-1/L-2](alcance-y-textos-legales.md).
+- [Historial de evidencias](evidencias/README.md).
+- [Informe de la ejecución exitosa](evidencias/kontrol-p2-20261026t230439z-6fee091f237c/evidence.json).
+- [Ficha del operador](evidencias/kontrol-p2-20261026t230439z-6fee091f237c/ficha-operador.md).
+
+## Implementación
+
+- Herramienta: `scripts/backups/drill.py`.
+- Fixtures e inventario: `scripts/backups/`.
 - Pruebas: `tests/backups/test_drill.py`.
-- CI: `.github/workflows/backup-restore-drill.yml`.
+- Workflow: `.github/workflows/backup-restore-drill.yml`.
 
-## Qué demuestra la herramienta cuando termina correctamente
+Se corrigió la lectura y escritura de texto para utilizar UTF-8 explícito en Windows. También se añadió una normalización limitada para representaciones equivalentes de conversiones de arrays en restricciones CHECK de PostgreSQL, manteniendo la detección de diferencias reales.
 
-Crea una red interna y bases nuevas PostgreSQL 16/MongoDB 7, carga el esquema
-versionado y datos ficticios, toma respaldos lógicos, los cifra, elimina los
-contenedores y volúmenes fuente, crea destinos vacíos y restaura desde las copias.
-Compara todas las filas del esquema base, conteos, hashes, secuencias, columnas,
-restricciones e índices; también los documentos, opciones e índices de las cuatro
-colecciones Mongo. Comprueba relaciones y totales de ventas. Agrega datos después
-del respaldo para demostrar expresamente que esos datos no se recuperan.
+## Criterios de aceptación
 
-La herramienta mide respaldo, restauración y recuperación con validación. Solo
-publica metadatos de la prueba; claves y respaldos quedan en `private/`, ignorados
-por Git y excluidos del artifact de CI. Rechaza Docker remoto y no acepta URI de
-origen ni destino. No inicia la aplicación ni ejecuta despliegues.
+| Criterio | Situación |
+| --- | --- |
+| Estado actual documentado | Disponible; configuraciones de proveedores no verificadas siguen identificadas como desconocidas |
+| Política con objetivos justificados | RPO de 6 h y RTO de 4 h definidos como objetivos propuestos |
+| Restauración ejecutada | Verificada para el alcance sintético del laboratorio |
+| Procedimiento versionado | Disponible |
+| Exclusiones | Documentadas |
+| Evidencia | Informes y ficha del operador asociados a la ejecución |
+| Texto para L-1/L-2 | Ajustado al alcance efectivamente probado |
 
-Un resultado `restored_verified_lab` acredita una restauración real de **datos
-sintéticos**, con ese esquema y volumen. No demuestra que haya copias de producción,
-que UploadThing esté respaldado o que se cumplan los objetivos de producción.
-No se debe presentar el tiempo del laboratorio como RTO productivo.
+## Límites
 
-## Criterios de aceptación y situación
+Los tiempos del laboratorio no acreditan RPO/RTO productivos. No se verificaron copias productivas, recuperación de archivos de UploadThing, reaprovisionamiento del servicio completo ni activación de programación, almacenamiento externo y retención.
 
-| Criterio | Evidencia disponible | Estado |
-| --- | --- | --- |
-| Estado actual | Revisión del repositorio; cobertura de proveedores desconocida | Documentado, sin acceso al panel/VM actual |
-| Política con RPO/RTO justificados | Objetivos 6 h / 4 h; frecuencia, retención, custodia y roles definidos | Escrita; activación y asignación nominal pendientes |
-| Restauración ejecutada | Intento bloqueado, ninguna base restaurada | **PENDIENTE: impide cerrar P-2** |
-| Procedimiento reproducible | Runbook, herramienta y workflow aislado | Versionables; falta ejecución integral |
-| Qué no se respalda | Lista explícita, incluidos archivos externos | Documentado |
-| Texto L-1/L-2 sustentado | Texto conservador que reconoce ausencia de recuperación probada | Preparado; no publicar garantías |
+El workflow está preparado; la evidencia de esta entrega corresponde a una ejecución local, no a un run de GitHub Actions.
 
-Para cerrar el criterio de restauración hay que ejecutar el procedimiento en un
-equipo aparte o runner de GitHub, revisar el informe exitoso y versionarlo. Para
-presentar además la política como **operativa**, verificar la programación,
-almacenamiento externo, custodia de claves y responsables reales, y restaurar una
-copia representativa de la fuente que se vaya a prometer. Registrar sus límites.
+Los informes de intentos anteriores se conservan como antecedentes. No se versionan dumps, claves ni el directorio `private/`.
