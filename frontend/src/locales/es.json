@@ -49,8 +49,13 @@
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "Mínimo 6 caracteres",
         "generic": "Algo salió mal. Por favor intenta de nuevo.",
-        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
-      }
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+        "legalRequired": "Debes aceptar los Términos y Condiciones y la Política de Privacidad para crear tu cuenta.",
+        "legalOutdated": "Los documentos legales se actualizaron. Recarga la página, revisa la versión vigente y vuelve a aceptarla."
+      },
+      "legal": "He leído y acepto los {terms} y la {privacy}.",
+      "legalTerms": "Términos y Condiciones",
+      "legalPrivacy": "Política de Privacidad"
     }
   },
   "dashboard": {
@@ -2267,6 +2272,7 @@
     "privacy": "Aviso de privacidad",
     "terms": "Términos del servicio",
     "cookies": "Política de cookies",
+    "dataProcessing": "Adenda de tratamiento de datos",
     "aiNotice": "Aviso del asistente IA",
     "cookieSettings": "Preferencias de cookies",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
@@ -2292,7 +2298,6 @@
   "legal": {
     "title": "Términos, Privacidad y Cumplimiento",
     "subtitle": "Transparencia sobre el uso de Kontrol en Guatemala, la protección de los datos de tu empresa y el alcance del servicio.",
-    "updated": "Versión {version} · Actualizado el 17 de octubre de 2026",
     "nav": {
       "ariaLabel": "Navegación de secciones legales",
       "privacy": "Aviso de Privacidad",
@@ -2361,7 +2366,11 @@
           "title": "14. Ley aplicable y reclamos",
           "body": "Estos Términos se rigen por las leyes de la República de Guatemala. Las controversias se resolverán ante los tribunales competentes conforme a la ley, sin perjuicio de los derechos que te reconozca la Ley de Protección al Consumidor y Usuario. Puedes presentar reclamos a {email}."
         }
-      ]
+      ],
+      "summary": "Las condiciones para usar Kontrol: qué ofrece el servicio, tus responsabilidades y las nuestras.",
+      "history": {
+        "v1_0": "Primera versión publicada."
+      }
     },
     "privacy": {
       "badge": "Protección de datos",
@@ -2377,7 +2386,7 @@
         },
         {
           "title": "3. Para qué los usamos",
-          "body": "Para darte acceso, operar las funciones que utilizas, permitir la colaboración dentro de tu empresa, enviar las alertas que configures y proteger la seguridad del servicio. No vendemos ni cedemos comercialmente datos personales y no los usamos para entrenar modelos de inteligencia artificial."
+          "body": "Para darte acceso, operar las funciones que utilizas, permitir la colaboración dentro de tu empresa, enviar las alertas que configures y proteger la seguridad del servicio, y para conservar constancia de qué versión de los Términos y de este Aviso aceptaste, cuándo y desde qué dirección IP. No vendemos ni cedemos comercialmente datos personales y no los usamos para entrenar modelos de inteligencia artificial."
         },
         {
           "title": "4. Asistente de inteligencia artificial",
@@ -2403,7 +2412,13 @@
           "title": "9. Cambios a este Aviso",
           "body": "Publicaremos en esta página cualquier cambio a este Aviso de Privacidad y, cuando sea relevante, te pediremos aceptarlo de nuevo."
         }
-      ]
+      ],
+      "summary": "Qué datos personales tratamos, para qué, con quién los compartimos y cómo ejercer tus derechos.",
+      "history": {
+        "v1_2": "Se informa que guardamos constancia de la versión aceptada de los Términos y de este Aviso, con la fecha y la dirección IP.",
+        "v1_1": "Se describen la exportación de datos de la empresa y la baja de cuenta desde Configuración.",
+        "v1_0": "Primera versión publicada."
+      }
     },
     "cookies": {
       "badge": "Almacenamiento local",
@@ -2415,7 +2430,7 @@
         },
         {
           "title": "2. Lo imprescindible",
-          "body": "Tu sesión, tu perfil, tus empresas y permisos, tu aceptación de los Términos y tu respuesta al aviso de almacenamiento. Sin estos datos no se puede iniciar sesión, así que no se pueden rechazar si usas la plataforma. Al cerrar sesión se borran la sesión, el perfil y las empresas; la aceptación de los Términos y tu respuesta al aviso se conservan para no volver a pedírtelas."
+          "body": "Tu sesión, tu perfil, tus empresas y permisos y tu respuesta al aviso de almacenamiento. Sin estos datos no se puede iniciar sesión, así que no se pueden rechazar si usas la plataforma. Al cerrar sesión se borran la sesión, el perfil y las empresas; tu respuesta al aviso se conserva para no volver a pedírtela. Tu aceptación de los Términos no se guarda en el navegador, sino en los servidores de Kontrol."
         },
         {
           "title": "3. Riesgo de la sesión",
@@ -2431,14 +2446,23 @@
         },
         {
           "title": "6. Cómo cambiar tu decisión o borrarlo todo",
-          "body": "Puedes cambiar tu decisión aquí abajo, desde Preferencias de cookies en el pie de página o en Configuración. Para borrarlo todo, incluida la aceptación de los Términos, borra los datos de este sitio en la configuración de tu navegador. Eso no elimina la información de tu cuenta en los servidores de Kontrol."
+          "body": "Puedes cambiar tu decisión aquí abajo, desde Preferencias de cookies en el pie de página o en Configuración. Para borrarlo todo, borra los datos de este sitio en la configuración de tu navegador. Eso no elimina la información de tu cuenta en los servidores de Kontrol."
         }
-      ]
+      ],
+      "summary": "Qué guarda Kontrol en tu navegador, para qué y cómo cambiar tu decisión.",
+      "history": {
+        "v1_1": "La aceptación de los Términos deja de guardarse en el navegador: ahora se registra en el servidor.",
+        "v1_0": "Primera versión como política propia, con el aviso de consentimiento de almacenamiento."
+      }
+    },
+    "dataProcessing": {
+      "badge": "Tratamiento de datos",
+      "title": "Adenda de tratamiento de datos",
+      "summary": "Las condiciones con las que Kontrol trata los datos personales que tu negocio registra en la plataforma."
     },
     "ai": {
       "badge": "Inteligencia artificial",
       "title": "Aviso de uso del Asistente IA",
-      "updated": "Versión 1.0 · Publicado el 26 de octubre de 2026",
       "clauses": [
         {
           "title": "1. Qué es",
@@ -2472,7 +2496,11 @@
           "title": "8. Si no quieres usarlo",
           "body": "El asistente no se puede desactivar desde la configuración, pero solo funciona cuando le escribes: si no le preguntas nada, no se envía nada al modelo. Para borrar lo que ya quedó, elimina tus conversaciones. Para dudas o solicitudes sobre tus datos, escribe a {email}."
         }
-      ]
+      ],
+      "summary": "Cómo funciona el asistente de IA, sus límites y qué pasa con lo que le escribes.",
+      "history": {
+        "v1_0": "Primera versión publicada."
+      }
     },
     "contact": {
       "badge": "Atención y reclamos",
@@ -2480,13 +2508,44 @@
       "copy": "Para consultas legales, solicitudes sobre tus datos personales, avisos de seguridad o reclamos, escríbenos a:",
       "note": "Escríbenos desde el correo asociado a tu cuenta para que podamos verificar tu identidad antes de atender una solicitud sobre tus datos."
     },
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "index": {
+      "ariaLabel": "Documentos legales",
+      "read": "Leer el documento",
+      "pending": "En preparación"
+    },
+    "document": {
+      "version": "Versión {version}",
+      "effective": "Vigente desde el {date}",
+      "back": "Todos los documentos legales",
+      "languageOnly": "Este documento solo está disponible en {language}.",
+      "languageNames": {
+        "es": "español",
+        "en": "inglés"
+      },
+      "acceptanceNote": "Aceptas este documento al crear tu cuenta. Si cambia de forma sustancial, te pediremos aceptarlo de nuevo antes de seguir usando Kontrol.",
+      "historyTitle": "Historial de cambios",
+      "historyVersion": "Versión",
+      "historyDate": "Fecha",
+      "historyChange": "Cambio",
+      "substantial": "Sustancial",
+      "minor": "Menor",
+      "pendingTitle": "Documento en preparación",
+      "pendingBody": "Este documento todavía no está vigente: está en revisión y no se publica un texto que no esté aprobado. Aquí aparecerán su texto, su versión y su fecha de vigencia cuando se apruebe.",
+      "pendingVersion": "Sin versión vigente",
+      "contact": "¿Dudas sobre este documento? Escríbenos a"
+    }
   },
   "legalConsent": {
-    "ariaLabel": "Aceptación de los Términos y Condiciones",
-    "checkbox": "He leído y acepto los {terms}.",
-    "termsLink": "Términos y Condiciones del Servicio",
-    "accept": "Aceptar"
+    "ariaLabel": "Aceptación de los documentos legales",
+    "title": "Antes de continuar",
+    "intro": "Para usar Kontrol necesitas aceptar la versión vigente de estos documentos:",
+    "checkbox": "He leído y acepto los documentos de la lista.",
+    "accept": "Aceptar",
+    "errors": {
+      "outdated": "Los documentos se actualizaron mientras leías. Recarga la página para ver la versión vigente.",
+      "generic": "No se pudo guardar tu aceptación. Inténtalo de nuevo."
+    }
   },
   "storageConsent": {
     "ariaLabel": "Aviso de almacenamiento en el navegador",

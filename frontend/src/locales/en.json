@@ -49,8 +49,13 @@
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
         "generic": "Something went wrong. Please try again.",
-        "unreachable": "Can't reach the server. Check your connection and try again."
-      }
+        "unreachable": "Can't reach the server. Check your connection and try again.",
+        "legalRequired": "You must accept the Terms and Conditions and the Privacy Policy to create your account.",
+        "legalOutdated": "The legal documents were updated. Reload the page, review the current version and accept it again."
+      },
+      "legal": "I have read and accept the {terms} and the {privacy}.",
+      "legalTerms": "Terms and Conditions",
+      "legalPrivacy": "Privacy Policy"
     }
   },
   "dashboard": {
@@ -2267,6 +2272,7 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
+    "dataProcessing": "Data Processing Addendum",
     "aiNotice": "AI assistant notice",
     "cookieSettings": "Cookie preferences",
     "rights": "© {year} Kontrol. All rights reserved.",
@@ -2292,7 +2298,6 @@
   "legal": {
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
-    "updated": "Version {version} · Updated October 17, 2026",
     "nav": {
       "ariaLabel": "Legal sections navigation",
       "privacy": "Privacy Policy",
@@ -2361,7 +2366,11 @@
           "title": "14. Governing law and complaints",
           "body": "These Terms are governed by the laws of the Republic of Guatemala. Disputes will be resolved before the competent courts as provided by law, without prejudice to the rights granted to you by the Consumer and User Protection Law. You can submit complaints to {email}."
         }
-      ]
+      ],
+      "summary": "The conditions for using Kontrol: what the service offers, your responsibilities and ours.",
+      "history": {
+        "v1_0": "First published version."
+      }
     },
     "privacy": {
       "badge": "Data Protection",
@@ -2377,7 +2386,7 @@
         },
         {
           "title": "3. What we use it for",
-          "body": "To give you access, operate the features you use, enable collaboration within your company, send the alerts you configure and protect the security of the service. We do not sell or commercially transfer personal data and we do not use it to train artificial intelligence models."
+          "body": "To give you access, operate the features you use, enable collaboration within your company, send the alerts you configure and protect the security of the service, and to keep a record of which version of the Terms and of this Notice you accepted, when and from which IP address. We do not sell or commercially transfer personal data and we do not use it to train artificial intelligence models."
         },
         {
           "title": "4. Artificial intelligence assistant",
@@ -2403,7 +2412,13 @@
           "title": "9. Changes to this Notice",
           "body": "We will publish any change to this Privacy Notice on this page and, when relevant, ask you to accept it again."
         }
-      ]
+      ],
+      "summary": "Which personal data we process, why, who we share it with and how to exercise your rights.",
+      "history": {
+        "v1_2": "States that we keep a record of the version of the Terms and of this Notice you accepted, with the date and IP address.",
+        "v1_1": "Describes the company data export and account deletion available in Settings.",
+        "v1_0": "First published version."
+      }
     },
     "cookies": {
       "badge": "Local Storage",
@@ -2415,7 +2430,7 @@
         },
         {
           "title": "2. What is essential",
-          "body": "Your session, your profile, your companies and permissions, your acceptance of the Terms and your answer to the storage notice. Without this data you cannot sign in, so it cannot be rejected if you use the platform. Signing out removes the session, the profile and the companies; your acceptance of the Terms and your answer to the notice are kept so you are not asked again."
+          "body": "Your session, your profile, your companies and permissions and your answer to the storage notice. Without this data you cannot sign in, so it cannot be rejected if you use the platform. Signing out removes the session, the profile and the companies; your answer to the notice is kept so you are not asked again. Your acceptance of the Terms is not stored in the browser but on Kontrol's servers."
         },
         {
           "title": "3. Session risk",
@@ -2431,14 +2446,23 @@
         },
         {
           "title": "6. How to change your choice or delete everything",
-          "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, including your acceptance of the Terms, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
+          "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
         }
-      ]
+      ],
+      "summary": "What Kontrol stores in your browser, why, and how to change your choice.",
+      "history": {
+        "v1_1": "Your acceptance of the Terms is no longer stored in the browser: it is now recorded on the server.",
+        "v1_0": "First version as a standalone policy, with the storage consent notice."
+      }
+    },
+    "dataProcessing": {
+      "badge": "Data processing",
+      "title": "Data Processing Addendum",
+      "summary": "The terms under which Kontrol processes the personal data your business records on the platform."
     },
     "ai": {
       "badge": "Artificial intelligence",
       "title": "AI Assistant Usage Notice",
-      "updated": "Version 1.0 · Published October 26, 2026",
       "clauses": [
         {
           "title": "1. What it is",
@@ -2472,7 +2496,11 @@
           "title": "8. If you do not want to use it",
           "body": "The assistant cannot be turned off in settings, but it only works when you write to it: if you do not ask it anything, nothing is sent to the model. To delete what is already stored, remove your conversations. For questions or requests about your data, write to {email}."
         }
-      ]
+      ],
+      "summary": "How the AI assistant works, its limits and what happens to what you write to it.",
+      "history": {
+        "v1_0": "First published version."
+      }
     },
     "contact": {
       "badge": "Support & Complaints",
@@ -2480,13 +2508,44 @@
       "copy": "For legal questions, requests about your personal data, security reports or complaints, write to us at:",
       "note": "Write from the email address linked to your account so we can verify your identity before handling a request about your data."
     },
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "index": {
+      "ariaLabel": "Legal documents",
+      "read": "Read the document",
+      "pending": "In preparation"
+    },
+    "document": {
+      "version": "Version {version}",
+      "effective": "In force since {date}",
+      "back": "All legal documents",
+      "languageOnly": "This document is only available in {language}.",
+      "languageNames": {
+        "es": "Spanish",
+        "en": "English"
+      },
+      "acceptanceNote": "You accept this document when you create your account. If it changes substantially, we will ask you to accept it again before you keep using Kontrol.",
+      "historyTitle": "Change history",
+      "historyVersion": "Version",
+      "historyDate": "Date",
+      "historyChange": "Change",
+      "substantial": "Substantial",
+      "minor": "Minor",
+      "pendingTitle": "Document in preparation",
+      "pendingBody": "This document is not in force yet: it is under review, and we do not publish text that has not been approved. Its text, version and effective date will appear here once it is approved.",
+      "pendingVersion": "No version in force",
+      "contact": "Questions about this document? Write to us at"
+    }
   },
   "legalConsent": {
-    "ariaLabel": "Acceptance of the Terms and Conditions",
-    "checkbox": "I have read and accept the {terms}.",
-    "termsLink": "Terms and Conditions of Service",
-    "accept": "Accept"
+    "ariaLabel": "Acceptance of the legal documents",
+    "title": "Before you continue",
+    "intro": "To use Kontrol you need to accept the current version of these documents:",
+    "checkbox": "I have read and accept the documents listed.",
+    "accept": "Accept",
+    "errors": {
+      "outdated": "The documents were updated while you were reading. Reload the page to see the current version.",
+      "generic": "Your acceptance could not be saved. Please try again."
+    }
   },
   "storageConsent": {
     "ariaLabel": "Browser storage notice",

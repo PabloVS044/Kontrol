@@ -35,7 +35,7 @@ async function montar(component) {
     history: createMemoryHistory(),
     routes: [
       { path: '/', component: Stub },
-      { path: '/legal', component: Stub },
+      { path: '/legal/cookies', component: Stub },
     ],
   })
   await router.push('/')
@@ -71,7 +71,7 @@ describe('StorageConsentBanner', () => {
     expect(wrapper.find('[data-action="accept"]').exists()).toBe(true)
     expect(wrapper.find('[data-action="reject"]').exists()).toBe(true)
     const link = wrapper.findComponent({ name: 'RouterLink' })
-    expect(link.props('to')).toBe('/legal#cookies')
+    expect(link.props('to')).toBe('/legal/cookies')
   })
 
   it('sin decidir no se puede cerrar: no hay botón de cerrar', async () => {
