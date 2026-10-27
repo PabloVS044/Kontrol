@@ -29,8 +29,8 @@
         <RouterView />
       </AppSurface>
     </div>
-    <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat'" />
-    <BirdieFloatingButton v-if="authStore.isLoggedIn && authStore.hasEmpresa && prefsStore.birdieVisible" />
+    <FloatingChat v-if="authStore.isLoggedIn && authStore.hasEmpresa && route.name !== 'chat' && !hideFloatingButtons" />
+    <BirdieFloatingButton v-if="authStore.isLoggedIn && authStore.hasEmpresa && prefsStore.birdieVisible && !hideFloatingButtons" />
     <BirdieAssistant v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <LegalConsentModal />
@@ -39,7 +39,8 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, onMounted, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, watch } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { RouterView, useRoute } from "vue-router";
 import AppSurface from "./components/UI/AppSurface/AppSurface.vue";
 import FloatingChat from "./components/chat/FloatingChat.vue";
@@ -66,6 +67,12 @@ const { setFontScaleActive } = useFontScale()
 // El tamaño de letra elegido es para la aplicación: las pantallas públicas
 // (landing, login, registro) se maquetan con su propia tipografía fluida.
 watch(() => Boolean(route.meta.surface), setFontScaleActive, { immediate: true })
+
+// En un teléfono, Chat y el asistente IA ocupan la pantalla entera y los
+// botones flotantes caían encima de sus controles: Birdie sobre videollamada y
+// nuevo mensaje, la burbuja del chat sobre el botón de enviar.
+const isPhone = useMediaQuery('(max-width: 768px)')
+const hideFloatingButtons = computed(() => isPhone.value && ['chat', 'agent'].includes(route.name))
 
 onMounted(() => {
   prefsStore.load()

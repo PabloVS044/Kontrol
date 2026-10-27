@@ -1836,6 +1836,7 @@
   },
   "chat": {
     "title": "Messages",
+    "backToList": "Back to conversations",
     "newDM": "New direct message",
     "searchMessages": "Search messages…",
     "directMessages": "Direct Messages",

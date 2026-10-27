@@ -275,7 +275,8 @@ onMounted(() => {
   <div class="chat-page">
     <AppNavbar />
 
-    <div class="chat-body">
+    <!-- En móvil cabe un panel: la lista o la conversación abierta. -->
+    <div class="chat-body" :class="{ 'has-active': activeChat }">
       <aside class="chat-sidebar">
         <div class="sidebar-top">
           <h2 class="sidebar-title">{{ t('chat.title') }}</h2>
@@ -295,6 +296,10 @@ onMounted(() => {
           </svg>
           <input v-model="searchQuery" type="text" :placeholder="t('chat.searchMessages')" />
         </div>
+        <!-- En móvil el panel de la derecha no se ve sin una conversación abierta,
+             así que el error de conexión se repite aquí. -->
+        <p v-if="panelError && !activeChat" class="chat-panel-error chat-panel-error--list">{{ panelError }}</p>
+
 
         <div class="sidebar-content">
           <div class="sidebar-section">
@@ -362,8 +367,14 @@ onMounted(() => {
         <div v-else class="chat-active">
           <div class="chat-header">
             <div class="chat-header-info">
+              <!-- Solo en móvil, donde la conversación tapa la lista. -->
+              <button type="button" class="chat-back-btn" :aria-label="t('chat.backToList')" :title="t('chat.backToList')" @click="activeChatId = null">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
               <div class="chat-header-avatar at-dm">{{ activeChat.avatar }}</div>
-              <div>
+              <div class="chat-header-text">
                 <div class="chat-header-name">{{ activeChat.name }}</div>
                 <div class="chat-header-meta">
                   <span class="type-badge badge-dm">{{ t('chat.directBadge') }}</span>
