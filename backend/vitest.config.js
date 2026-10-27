@@ -1,4 +1,6 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+import { assertThresholdGlobsMatch } from '../scripts/coverage-thresholds.mjs'
 
 export default defineConfig({
   test: {
@@ -44,7 +46,11 @@ export default defineConfig({
 
       // Vitest sale con código 1 si no se cumple un umbral, así que el step
       // `npm run test:coverage -w backend` de ci.yml pone el job en rojo solo.
-      thresholds: {
+      //
+      // RTF 2 (TEST-01): `assertThresholdGlobsMatch` hace fallar este config
+      // si algún glob de abajo no casa con ningún archivo, en lugar de dejarlo
+      // aprobar en vacío.
+      thresholds: assertThresholdGlobsMatch({
         // Trinquete, punto 2: el umbral global se fija en la línea base real
         // medida el 20/09/2026 sobre el denominador completo, truncada a
         // entero y menos 1 punto porcentual de margen.
@@ -74,11 +80,9 @@ export default defineConfig({
         // contra la ruta relativa a la raíz del workspace, y los archivos que
         // casan siguen contando también en el umbral global de arriba.
         //
-        // Ojo: un glob que no casa con ningún archivo del reporte pasa en
-        // vacío, sin avisar. Con `include` declarado eso ya solo pasa si la
-        // ruta no existe, pero el riesgo sigue: cada glob de esta lista lleva
-        // al lado su medición real, y si un glob no lleva número es que no se
-        // ha comprobado que case con algo.
+        // Un glob que no casa con ningún archivo hace fallar el config (ver
+        // `scripts/coverage-thresholds.mjs`). Cada glob lleva al lado su
+        // medición real.
 
         // Presupuesto: cálculo financiero puro. Medido 100 % en las cuatro.
         'src/utils/budgetCalculations.js': {
@@ -120,39 +124,56 @@ export default defineConfig({
           lines: 70
         },
 
-        // POS: la venta real. Hasta ahora el único umbral de POS del proyecto
-        // era `frontend/src/utils/sales.js`, que mide 95 % — pero ahí solo
-        // están el subtotal y el total de línea del navegador, y `calcSale`
-        // (descuento e IVA) no lo importa nadie. La venta que descuenta stock
-        // y cobra vive aquí, y mide 0 % en las cuatro métricas: 198 sentencias
-        // sin una sola prueba.
-        //
-        // El umbral va en 0 a propósito. En 0 no protege nada: es un marcador
-        // que deja el módulo declarado como crítico con su cifra real a la
-        // vista. La tarea de validación de precios del POS lo sube en el mismo
-        // PR en que entren sus pruebas de caracterización.
+        // POS, inventario, proveedores y autenticación del backend: la RTF 2
+        // (TEST-03, TEST-04) los encontró en 0 %, con el umbral del POS en 0
+        // como simple marcador. Ya no están en 0, pero lejos del 70 % de la
+        // regla 1: el umbral se fija en lo medido el 26/10/2026, truncado y
+        // menos 1 punto, como el global. No pide más cobertura; impide que
+        // baje. Subirlos hacia el 70 % queda como trabajo a futuro.
         'src/controllers/inventoryMovementController.js': {
-          // 0 / 0 / 0 / 0 — 180 sentencias
-          statements: 0,
-          branches: 0,
-          functions: 0,
-          lines: 0
+          // 31.25 / 17.5 / 28.57 / 31.18 — 65 de 208 sentencias
+          statements: 30,
+          branches: 16,
+          functions: 27,
+          lines: 30
         },
         'src/routes/inventoryMovementRoutes.js': {
-          // 0 / 0 / 0 / 0 — 11 sentencias
-          statements: 0,
+          // 81.81 / 0 / 0 / 81.81 — 11 sentencias; ramas y funciones son las
+          // de los middlewares en línea, que las pruebas no recorren
+          statements: 80,
           branches: 0,
           functions: 0,
-          lines: 0
+          lines: 80
         },
         'src/schemas/inventoryMovementSchemas.js': {
-          // 0 / 0 / 0 / 0 — 7 sentencias
-          statements: 0,
-          branches: 0,
-          functions: 0,
-          lines: 0
+          // 100 en las cuatro — 7 sentencias
+          statements: 99,
+          branches: 99,
+          functions: 99,
+          lines: 99
+        },
+        'src/controllers/productController.js': {
+          // 30.2 / 13.38 / 41.66 / 33.33 — 58 de 192 sentencias
+          statements: 29,
+          branches: 12,
+          functions: 40,
+          lines: 32
+        },
+        'src/controllers/supplierController.js': {
+          // 30 / 10.71 / 40 / 30 — 18 de 60 sentencias
+          statements: 29,
+          branches: 9,
+          functions: 39,
+          lines: 29
+        },
+        'src/controllers/authController.js': {
+          // 37.25 / 32.95 / 63.63 / 38.25 — 57 de 153 sentencias
+          statements: 36,
+          branches: 31,
+          functions: 62,
+          lines: 37
         }
-      }
+      }, fileURLToPath(new URL('.', import.meta.url)))
     }
   }
 })
