@@ -1,7 +1,8 @@
 # Procedimiento de restauración
 
-Estado: reproducible en código, pendiente de primera ejecución integral. No usar
-esta guía como evidencia de una restauración ya realizada.
+Estado: procedimiento ejecutado y verificado en laboratorio el 26/10/2026 con datos sintéticos PostgreSQL y MongoDB. La ejecución `kontrol-p2-20261026t230439z-6fee091f237c` terminó con `restored_verified_lab`.
+
+Consultar la [evidencia y ficha del operador](evidencias/README.md). Este resultado no acredita recuperación productiva ni cumplimiento de RPO/RTO del servicio.
 
 ## 1. Preparar un destino separado
 
@@ -38,6 +39,39 @@ py -3 -m venv .venv-backups
 Los siguientes comandos usan `python` en ambos casos. No se necesita `npm ci` para
 esta herramienta. Las pruebas auxiliares comprueban integridad y protecciones;
 no restauran bases y no cuentan como evidencia de aceptación de P-2.
+
+### Preparación validada en Windows con PowerShell y uv
+
+Desde la raíz del repositorio:
+
+```powershell
+$uvP2 = "$env:USERPROFILE\.local\bin\uv.exe"
+
+& $uvP2 python install 3.12
+if ($LASTEXITCODE -ne 0) { throw "Falló la instalación de Python" }
+
+& $uvP2 venv --python 3.12 .venv-backups
+if ($LASTEXITCODE -ne 0) { throw "Falló la creación del entorno" }
+
+& $uvP2 pip install --python .\.venv-backups\Scripts\python.exe -r scripts/backups/requirements.txt
+if ($LASTEXITCODE -ne 0) { throw "Falló la instalación de dependencias" }
+
+& .\.venv-backups\Scripts\python.exe -m unittest discover -s tests/backups -v
+if ($LASTEXITCODE -ne 0) { throw "Fallaron las pruebas unitarias" }
+```
+
+No se necesita activar el entorno: los comandos utilizan directamente su ejecutable.
+
+Para ejecutar el ensayo en Windows:
+
+```powershell
+& .\.venv-backups\Scripts\python.exe scripts/backups/drill.py --output backup-drill-output
+if ($LASTEXITCODE -ne 0) { throw "Falló el ensayo; revisar el nuevo evidence.json" }
+```
+
+La versión validada utiliza UTF-8 explícito al leer y escribir archivos. La comparación normaliza únicamente representaciones equivalentes de conversiones de arrays de literales en restricciones CHECK de PostgreSQL; mantiene la comprobación del resto del inventario y detecta cambios en los valores permitidos.
+
+Resultado de referencia: 16 pruebas unitarias aprobadas y ensayo `restored_verified_lab`. Cada ejecución nueva debe generar y revisar su propia evidencia.
 
 ## 3. Ejecutar la restauración real de laboratorio
 
