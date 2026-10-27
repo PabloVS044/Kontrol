@@ -52,6 +52,7 @@ import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'
 import { usePreferencesStore } from './stores/preferences'
+import { useFontScale } from './composables/useFontScale.js'
 
 const LineWaves = defineAsyncComponent(() => import("./components/UI/Backgrounds/Waves/Waves.vue"));
 
@@ -60,6 +61,11 @@ const chatStore = useChatStore()
 const saleConfigStore = useSaleConfigStore()
 const prefsStore = usePreferencesStore()
 const route = useRoute()
+const { setFontScaleActive } = useFontScale()
+
+// El tamaño de letra elegido es para la aplicación: las pantallas públicas
+// (landing, login, registro) se maquetan con su propia tipografía fluida.
+watch(() => Boolean(route.meta.surface), setFontScaleActive, { immediate: true })
 
 onMounted(() => {
   prefsStore.load()

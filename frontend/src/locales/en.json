@@ -1606,6 +1606,9 @@
       "theme": "Theme",
       "themeNote": "\"System\" follows your device preference. If you choose Dark or Light and accept remembering your preferences, it stays in this browser, including after you sign out.",
       "themes": { "system": "System", "dark": "Dark", "light": "Light" },
+      "fontSize": "Text size",
+      "fontSizeNote": "Makes the app's text larger without changing how the screens are laid out. If you accept remembering your preferences, it stays in this browser.",
+      "fontSizes": { "default": "Normal", "large": "Large", "larger": "Larger", "largest": "Largest" },
       "storage": "Remember preferences in this browser",
       "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
       "storagePolicy": "See the cookie and storage policy"
@@ -2417,7 +2420,7 @@
         },
         {
           "title": "4. Your preferences, only if you accept them",
-          "body": "The language, the theme, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
+          "body": "The language, the theme, the text size, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
         },
         {
           "title": "5. External services",

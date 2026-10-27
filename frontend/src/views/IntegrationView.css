@@ -21,7 +21,10 @@
 
 .page-title {
   font-family: 'Playfair Display', serif;
-  font-size: 3rem;
+  /* Fluido: a 48px fijos, con la letra agrandada "Integraciones" no cabía en un
+     móvil y abría scroll horizontal en toda la página. */
+  font-size: clamp(2rem, 9vw, 3rem);
+  overflow-wrap: break-word;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;

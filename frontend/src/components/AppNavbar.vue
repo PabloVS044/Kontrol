@@ -1,5 +1,5 @@
 <template>
-  <header class="appnav">
+  <header class="appnav" :class="{ 'appnav--drawer': isDrawer }">
     <div class="appnav-inner">
 
       <RouterLink class="appnav-brand" to="/">
@@ -129,6 +129,7 @@ import { useI18n } from 'vue-i18n'
 import { LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useFontScale } from '../composables/useFontScale.js'
 import { translateRole } from '../utils/roles.js'
 import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
@@ -234,6 +235,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
   document.removeEventListener('click', handleClickOutside)
+  drawerQuery?.removeEventListener?.('change', syncDrawer)
 })
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -242,6 +244,36 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false
 }
+
+/*
+ * Ancho por debajo del cual la fila de enlaces no cabe y se pliega en el
+ * cajón. Con la letra al 100 % son 1400px; cada nivel de tamaño de letra
+ * ensancha los enlaces y la fila desbordaba por la derecha, con el avatar
+ * fuera de la pantalla. Medido en español, el idioma con las etiquetas más
+ * largas, y redondeado hacia arriba para dejar sitio a un rol más largo.
+ */
+const DRAWER_MAX_WIDTH = { default: 1400, large: 1760, larger: 1880, largest: 2000 }
+const { fontScale } = useFontScale()
+const isDrawer = ref(false)
+let drawerQuery = null
+
+function syncDrawer() {
+  isDrawer.value = Boolean(drawerQuery?.matches)
+  // En fila el cajón no existe, pero su fondo oscuro sí seguiría encima.
+  if (!isDrawer.value) closeMenu()
+}
+
+function watchDrawerQuery() {
+  drawerQuery?.removeEventListener?.('change', syncDrawer)
+  drawerQuery = typeof window.matchMedia === 'function'
+    ? window.matchMedia(`(max-width: ${DRAWER_MAX_WIDTH[fontScale.value] ?? DRAWER_MAX_WIDTH.default}px)`)
+    : null
+  drawerQuery?.addEventListener?.('change', syncDrawer)
+  syncDrawer()
+}
+
+// En setup y no en onMounted: el primer render ya sale en el modo correcto.
+watch(fontScale, watchDrawerQuery, { immediate: true })
 </script>
 
 <style scoped>
@@ -293,7 +325,10 @@ const closeMenu = () => {
 .empresa-selector {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  /* Es lo único de la barra que puede ceder sitio: el nombre se recorta con
+     puntos suspensivos antes que empujar el avatar fuera de la pantalla. */
+  flex-shrink: 1;
+  min-width: 0;
   padding: 0 var(--k-space-4);
   cursor: pointer;
   border-right: var(--k-border-width) solid var(--k-shade-4);
@@ -305,6 +340,7 @@ const closeMenu = () => {
   display: flex;
   align-items: center;
   gap: var(--k-space-2);
+  min-width: 0;
 }
 
 .empresa-name {
@@ -313,6 +349,7 @@ const closeMenu = () => {
   font-weight: 600;
   color: var(--k-color-text);
   max-width: 160px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -638,68 +675,80 @@ const closeMenu = () => {
  * Ahora se plega en cuanto la fila deja de caber, que es el único momento en el
  * que el cajón hace falta. Con Ventas en el menú la fila creció: medido en
  * 1360px el avatar ya quedaba fuera.
+ *
+ * Es una clase y no un media query porque el umbral depende del tamaño de
+ * letra elegido: lo decide DRAWER_MAX_WIDTH, en el script.
  */
-@media (max-width: 1400px) {
-  .hamburger { display: block; }
+.appnav--drawer .hamburger { display: block; }
 
-  .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
+.appnav--drawer .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
 
-  .appnav-links {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    z-index: var(--k-z-raised);
-    background: var(--k-shade-1);
-    border-bottom: var(--k-border-width) solid var(--k-shade-6);
-    flex-direction: column;
-    padding: var(--k-space-3) 0;
-    gap: 0;
-    align-items: stretch;
-    /* Once enlaces no caben en un móvil apaisado: el cajón se desplaza en vez
-       de dejar los últimos fuera de la pantalla, que es el fallo que se
-       arrastraba en la fila. */
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-    transition: clip-path 0.3s ease-in-out;
-    pointer-events: none;
-  }
+.appnav--drawer .appnav-links {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: var(--k-z-raised);
+  background: var(--k-shade-1);
+  border-bottom: var(--k-border-width) solid var(--k-shade-6);
+  flex-direction: column;
+  padding: var(--k-space-3) 0;
+  gap: 0;
+  align-items: stretch;
+  /* Once enlaces no caben en un móvil apaisado: el cajón se desplaza en vez
+     de dejar los últimos fuera de la pantalla, que es el fallo que se
+     arrastraba en la fila. */
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  transition: clip-path 0.3s ease-in-out;
+  pointer-events: none;
+}
 
-  .appnav-links.is-open {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    pointer-events: auto;
-  }
+.appnav--drawer .appnav-links.is-open {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: auto;
+}
 
-  .appnav-link {
-    font-size: var(--k-font-size-body-main);
-    padding: 0 var(--k-space-5);
-    min-height: var(--k-target-min-size);
-    width: 100%;
-    justify-content: flex-start;
-  }
+.appnav--drawer .appnav-link {
+  font-size: var(--k-font-size-body-main);
+  padding: 0 var(--k-space-5);
+  min-height: var(--k-target-min-size);
+  width: 100%;
+  justify-content: flex-start;
+}
 
-  /* En fila el subrayado marca la activa; apilado se lee mejor como barra
-     lateral, y el subrayado a 16px del borde quedaba flotando. El eje de la
-     escala cambia con la orientación: scaleX no abre una barra vertical. */
-  .appnav-link::after {
-    left: 0;
-    right: auto;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    height: auto;
-    transform: scaleY(0);
-  }
+/* En fila el subrayado marca la activa; apilado se lee mejor como barra
+   lateral, y el subrayado a 16px del borde quedaba flotando. El eje de la
+   escala cambia con la orientación: scaleX no abre una barra vertical. */
+.appnav--drawer .appnav-link::after {
+  left: 0;
+  right: auto;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  height: auto;
+  transform: scaleY(0);
+}
 
-  .appnav-link.router-link-active::after {
-    transform: scaleY(1);
-  }
+.appnav--drawer .appnav-link.router-link-active::after {
+  transform: scaleY(1);
 }
 
 @media (max-width: 640px) {
   .empresa-role { display: none; }
-  .appnav-link { font-size: var(--k-font-size-body-large); }
+  .appnav--drawer .appnav-link { font-size: var(--k-font-size-body-large); }
+}
+
+/* En un móvil la fila no cabía: medido en 375px, el avatar y el hamburguesa
+   quedaban fuera de la pantalla y no había forma de abrir el menú. El logo
+   sigue; el nombre de la empresa necesita más ese sitio que la palabra
+   "Kontrol", y los márgenes entre bloques se reducen a la mitad. */
+@media (max-width: 480px) {
+  .appnav-brand span { display: none; }
+  .appnav-brand { padding-right: var(--k-space-3); margin-right: 0; }
+  .empresa-selector { padding: 0 var(--k-space-2); margin-right: 0; }
+  .appnav-end { gap: var(--k-space-2); }
 }
 </style>

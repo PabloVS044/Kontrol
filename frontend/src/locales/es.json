@@ -1606,6 +1606,9 @@
       "theme": "Tema",
       "themeNote": "\"Sistema\" sigue la preferencia de tu dispositivo. Si eliges Oscuro o Claro y aceptas recordar tus preferencias, se mantiene en este navegador, también después de cerrar sesión.",
       "themes": { "system": "Sistema", "dark": "Oscuro", "light": "Claro" },
+      "fontSize": "Tamaño de letra",
+      "fontSizeNote": "Agranda el texto de la aplicación sin cambiar la distribución de las pantallas. Si aceptas recordar tus preferencias, se mantiene en este navegador.",
+      "fontSizes": { "default": "Normal", "large": "Grande", "larger": "Muy grande", "largest": "Máximo" },
       "storage": "Recordar preferencias en este navegador",
       "storageNote": "Rechazarlo borra las preferencias ya guardadas. Tu sesión no se ve afectada.",
       "storagePolicy": "Ver la política de cookies y almacenamiento"
@@ -2417,7 +2420,7 @@
         },
         {
           "title": "4. Tus preferencias, solo si las aceptas",
-          "body": "El idioma, el tema, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
+          "body": "El idioma, el tema, el tamaño de letra, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
         },
         {
           "title": "5. Servicios externos",

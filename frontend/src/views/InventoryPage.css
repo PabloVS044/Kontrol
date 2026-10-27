@@ -84,7 +84,9 @@
 :where(.inventory-root) .search-input {
   background: none; border: none; outline: none;
   font-family: var(--k-font-sans); font-size: var(--k-font-size-body-main);
-  color: var(--k-color-text); flex: 1;
+  /* Sin min-width: 0 el input conserva su ancho intrínseco (~20 caracteres),
+     que crece con la letra, y empujaba el botón de buscar fuera en móvil. */
+  color: var(--k-color-text); flex: 1; min-width: 0;
 }
 :where(.inventory-root) .search-input::placeholder { color: var(--k-text-dim); }
 :where(.inventory-root) .search-submit {
