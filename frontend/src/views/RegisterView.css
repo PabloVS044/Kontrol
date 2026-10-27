@@ -198,6 +198,39 @@
   color: var(--k-state-error-text);
 }
 
+/* ── Aceptación de los documentos legales (L-6) ── */
+.register-legal {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-space-2);
+  font-size: var(--k-font-size-caption);
+  line-height: 1.5;
+  color: var(--k-text-soft);
+  cursor: pointer;
+}
+
+.register-legal-checkbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--k-color-primary);
+  cursor: pointer;
+}
+
+.register-legal a {
+  color: var(--k-color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.register-legal a:focus-visible,
+.register-legal-checkbox:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+  border-radius: var(--k-radius-sm);
+}
+
 /* ── Botón principal ── */
 .register-btn-primary {
   position: relative;
