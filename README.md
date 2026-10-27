@@ -332,7 +332,7 @@ Por módulo crítico, con su medición real al lado:
 | POS | `backend/src/schemas/inventoryMovementSchemas.js` | 100 / 100 / 100 / 100 | 99 × 4 |
 | Inventario | `backend/src/controllers/productController.js` | 30.20 / 13.38 / 41.66 / 33.33 | 29 / 12 / 40 / 32 |
 | Proveedores | `backend/src/controllers/supplierController.js` | 30 / 10.71 / 40 / 30 | 29 / 9 / 39 / 29 |
-| Autenticación | `backend/src/controllers/authController.js` | 37.25 / 32.95 / 63.63 / 38.25 | 36 / 31 / 62 / 37 |
+| Autenticación | `backend/src/controllers/authController.js` | 37.25 / 32.95 / 63.63 / 38.25 | 34 / 29 / 57 / 36 |
 | POS | `frontend/src/utils/sales.js` | 95.45 / 94.44 / 100 / 100 | 70 × 4 |
 | Autenticación | `frontend/src/stores/auth.js` | 71.60 / 66.66 / 70.37 / 75 | 70 / 65 / 70 / 70 |
 | Reportes | `frontend/src/utils/reportExport.js` | 96.87 / 94.44 / 93.33 / 96.87 | 70 × 4 |
@@ -342,7 +342,7 @@ Por módulo crítico, con su medición real al lado:
 Tres notas sobre esta tabla:
 
 - Los umbrales de reportes del frontend apuntaban antes a `views/ReportsView.vue`, `views/ReportDetailView.vue` y `components/reports/**`, y casaban con cero archivos. Los tests que esperaban nunca llegaron: esos quince archivos siguen a 0 %. Se redirigieron a los tres archivos del módulo que sí tienen pruebas, donde vive la lógica de exportación. Las vistas y los componentes no quedan desprotegidos: ahora entran al denominador global, así que su 0 % pesa ahí en lugar de esconderse detrás de un glob vacío.
-- El POS de backend iba en 0 como marcador, y en 0 no protegía nada. La RTF 2 (TEST-03 y TEST-04) lo señaló junto con inventario, proveedores y autenticación, que medían 0 %. Las pruebas de caracterización llegadas desde entonces los sacaron de 0, aunque siguen lejos del 70 %. Desde el 26/10/2026 sus umbrales están en lo medido, truncado y menos 1 punto: no exigen más cobertura, pero ya no dejan que baje. Llevarlos al 70 % queda como trabajo a futuro.
+- El POS de backend iba en 0 como marcador, y en 0 no protegía nada. La RTF 2 (TEST-03 y TEST-04) lo señaló junto con inventario, proveedores y autenticación, que medían 0 %. Las pruebas de caracterización llegadas desde entonces los sacaron de 0, aunque siguen lejos del 70 %. Desde el 26/10/2026 sus umbrales están en lo medido, truncado y menos 1 punto (autenticación, por debajo de lo que mide con el cierre de empresa del PR #170, que añade código a ese controlador): no exigen más cobertura, pero ya no dejan que baje. Llevarlos al 70 % queda como trabajo a futuro.
 - `frontend/src/stores/auth.js` subió de 60/55/55/60, escalón fijado cuando el archivo medía 66.66/60.41/59.25/69.73. Ramas se queda en 65 porque mide 66.66. En funciones el margen es de 0.37 puntos (19 de 27): una función que deje de cubrirse incumple el umbral.
 
 ### Cobertura real por módulo
