@@ -104,6 +104,22 @@ describe('executeReadOnly con scope del agente', () => {
     expect(usuarioView).not.toMatch(/u\.\*|password_hash|google_id|token_version/)
   })
 
+  it('las vistas de inventario usan solo los proyectos con acceso a inventario', async () => {
+    await executeReadOnly('SELECT 1', [], {
+      ...scope,
+      project_ids: [10, 11],
+      inventory_project_ids: [10],
+    })
+
+    const sql = sentSql()
+    const view = (name) => sql.find((s) => s.startsWith(`CREATE OR REPLACE TEMP VIEW ${name} `))
+    for (const name of ['producto', 'producto_proveedor', 'proveedor', 'movimiento_inventario']) {
+      expect(view(name)).toContain('ARRAY[10]::int[]')
+      expect(view(name)).not.toContain('ARRAY[10, 11]::int[]')
+    }
+    expect(view('tarea')).toContain('ARRAY[10, 11]::int[]')
+  })
+
   it('sin scope no cambia de rol ni crea vistas', async () => {
     await executeReadOnly('SELECT 1', [])
 

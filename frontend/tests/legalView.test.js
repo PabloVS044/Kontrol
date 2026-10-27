@@ -55,7 +55,7 @@ describe('LegalView — Vista legal de Kontrol', () => {
     expect(wrapper.find('.legal-subtitle').text()).toBe(es.legal.subtitle)
   })
 
-  it('incluye los accesos directos (#terms, #privacy, #cookies, #contact)', async () => {
+  it('incluye los accesos directos (#terms, #privacy, #cookies, #ai, #contact)', async () => {
     const router = await createTestRouter()
     const wrapper = mount(LegalView, {
       global: {
@@ -66,11 +66,12 @@ describe('LegalView — Vista legal de Kontrol', () => {
     await flushPromises()
 
     const pills = wrapper.findAll('.legal-nav-pill')
-    expect(pills.length).toBe(4)
+    expect(pills.length).toBe(5)
     const hrefs = pills.map((p) => p.attributes('href'))
     expect(hrefs).toContain('#terms')
     expect(hrefs).toContain('#privacy')
     expect(hrefs).toContain('#cookies')
+    expect(hrefs).toContain('#ai')
     expect(hrefs).toContain('#contact')
   })
 
@@ -122,6 +123,26 @@ describe('LegalView — Vista legal de Kontrol', () => {
     expect(cookiesSec.find('.legal-section-title').text()).toBe(es.legal.cookies.title)
   })
 
+  it('publica el aviso del asistente IA con su propia versión (L-5)', async () => {
+    const router = await createTestRouter()
+    const wrapper = mount(LegalView, {
+      global: {
+        plugins: [router, createTestI18n('es')],
+        stubs: { Navbar: true, Footer: true },
+      },
+    })
+    await flushPromises()
+
+    const ai = wrapper.find('#ai')
+    expect(ai.exists()).toBe(true)
+    expect(ai.find('.legal-section-title').text()).toBe(es.legal.ai.title)
+    expect(ai.findAll('.legal-clause').length).toBe(es.legal.ai.clauses.length)
+    expect(ai.find('.legal-section-date').text()).toBe(es.legal.ai.updated)
+    expect(ai.text()).toContain(SUPPORT_EMAIL)
+    // La advertencia de fiabilidad va antes que el detalle técnico.
+    expect(ai.findAll('.legal-clause-title')[1].text()).toBe(es.legal.ai.clauses[1].title)
+  })
+
   it('la sección de cookies permite cambiar la decisión de almacenamiento (L-3)', async () => {
     const router = await createTestRouter()
     const wrapper = mount(LegalView, {
@@ -154,11 +175,12 @@ describe('LegalView — Vista legal de Kontrol', () => {
     expect(wrapper.find('#terms .legal-section-title').text()).toBe(en.legal.terms.title)
     expect(wrapper.find('#privacy .legal-section-title').text()).toBe(en.legal.privacy.title)
     expect(wrapper.find('#cookies .legal-section-title').text()).toBe(en.legal.cookies.title)
+    expect(wrapper.find('#ai .legal-section-title').text()).toBe(en.legal.ai.title)
   })
 })
 
 describe('Footer — Enlaces a la sección legal', () => {
-  it('enlaza hacia /legal#privacy, /legal#terms y /legal#cookies', async () => {
+  it('enlaza hacia /legal#privacy, /legal#terms, /legal#cookies y /legal#ai', async () => {
     const router = await createTestRouter()
     const wrapper = mount(Footer, {
       global: {
@@ -175,5 +197,6 @@ describe('Footer — Enlaces a la sección legal', () => {
     expect(legalTargets).toContain('/legal#privacy')
     expect(legalTargets).toContain('/legal#terms')
     expect(legalTargets).toContain('/legal#cookies')
+    expect(legalTargets).toContain('/legal#ai')
   })
 })

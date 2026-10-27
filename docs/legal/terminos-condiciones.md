@@ -77,7 +77,7 @@ Según el equipo, el asistente utiliza Qwen/vLLM a través de su endpoint ClawSt
 
 Cuando la consulta requiere inferencia, pueden enviarse el texto de tu pregunta; identificador, correo y rol de tu cuenta; identificador, nombre y rol en la empresa; permisos y proyectos visibles; historial reciente; y columnas, conteos, muestras de resultados SQL o errores. Las muestras pueden contener contactos, autores, importes y otros datos que aparezcan en las vistas consultadas. Algunas respuestas locales se resuelven sin llamar al modelo. El detalle está en la [Política de Privacidad, §5](politica-privacidad.md#5-qué-información-llega-al-asistente-ia) y el [inventario, §5](inventario-datos.md).
 
-El asistente puede equivocarse, omitir contexto o producir consultas y conclusiones inadecuadas. Revisa los resultados antes de actuar; no lo uses como asesoría tributaria, jurídica, bancaria o profesional. No se ofrece como sistema de decisiones automáticas vinculantes sobre personas. Los límites de historial o muestras no equivalen a borrado. No se ha confirmado ausencia de logs, conservación o entrenamiento en la infraestructura de inferencia.
+El asistente puede equivocarse, omitir contexto o producir consultas y conclusiones inadecuadas. Revisa los resultados antes de actuar; no lo uses como asesoría tributaria, jurídica, bancaria o profesional. No se ofrece como sistema de decisiones automáticas vinculantes sobre personas. Los límites de historial o muestras no equivalen a borrado. El equipo declara (26-10-2026) que la infraestructura de inferencia no conserva lo recibido ni lo usa para entrenar; detalle en el [aviso del asistente](aviso-asistente-ia.md).
 
 ## 9. Software, contenidos y licencia limitada
 

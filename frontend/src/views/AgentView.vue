@@ -530,6 +530,11 @@ function autoResizeEdit(e) {
           </div>
         </div>
         <p class="input-hint">{{ t('agent.hint') }}</p>
+        <!-- Aviso L-5: se abre en otra pestaña para no perder la conversación. -->
+        <p class="agent-notice" data-testid="agent-ai-notice">
+          {{ t('agent.notice.text') }}
+          <RouterLink to="/legal#ai" target="_blank" rel="noopener">{{ t('agent.notice.link') }}</RouterLink>
+        </p>
       </div>
     </main>
     </div>
@@ -982,6 +987,20 @@ function autoResizeEdit(e) {
   color: var(--k-text-dim);
   margin: 0;
   letter-spacing: 0.02em;
+}
+
+.agent-notice {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  color: var(--TextMuted, #8a8070);
+  margin: 0;
+  text-align: center;
+}
+
+.agent-notice a {
+  color: var(--Primary, #caa860);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ── Conversation thread ── */
