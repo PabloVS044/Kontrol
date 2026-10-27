@@ -262,6 +262,13 @@ export const ensureDatabaseSchema = async () => {
       ON public.producto (id_proyecto, codigo_barras)
       WHERE codigo_barras IS NOT NULL
   `)
+  // DT-22: el POS busca por código sin proyecto («todos los proyectos»), y el
+  // índice único empieza por id_proyecto, así que no sirve para esa búsqueda.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS producto_codigo_barras_idx
+      ON public.producto (codigo_barras)
+      WHERE codigo_barras IS NOT NULL
+  `)
 
   // Suppliers stopped being global: every proveedor belongs to one company, and
   // supplierController filters and inserts by pr.id_empresa. Nullable here (an
