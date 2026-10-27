@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--k-shade-7);
   color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color .2s, color .2s;
@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
 
 .pop-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -187,7 +187,7 @@ onBeforeUnmount(() => {
   margin-top: 1px;
   padding: 3px 7px;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--k-color-primary);
@@ -204,14 +204,14 @@ onBeforeUnmount(() => {
 
 .pop-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-color-text);
 }
 
 .pop-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.4;
   color: var(--k-text-faint);
 }
@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
   margin-top: 6px;
   border-top: 1px solid var(--k-shade-4);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
   background: var(--k-shade-2);
   border: 1px solid rgba(var(--k-color-error-rgb), 0.4);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-state-error-text);
 }
 

@@ -45,14 +45,14 @@ defineEmits(['create'])
 }
 .header-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(28px, 5vw, 48px);
+  font-size: clamp(1.75rem, 5vw, 3rem);
   font-weight: 400;
   color: var(--Text);
   margin: 0;
   line-height: 1.1;
 }
 .header-subtitle {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--TextMuted);
   margin: 0;
 }
@@ -72,7 +72,7 @@ defineEmits(['create'])
   color: var(--BtnText);
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   padding: 10px 18px;
   white-space: nowrap;

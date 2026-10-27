@@ -597,7 +597,7 @@ function autoResizeEdit(e) {
 
 .sidebar-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -635,7 +635,7 @@ function autoResizeEdit(e) {
   border-radius: 2px;
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -664,7 +664,7 @@ function autoResizeEdit(e) {
 
 .conv-empty {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   padding: 8px 4px;
   margin: 0;
@@ -683,7 +683,7 @@ function autoResizeEdit(e) {
   color: var(--k-color-text);
   text-align: left;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -770,7 +770,7 @@ function autoResizeEdit(e) {
 
 .agent-greeting {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--k-color-primary);
   letter-spacing: 0.08em;
@@ -834,7 +834,7 @@ function autoResizeEdit(e) {
 
 .card-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-color-text);
   letter-spacing: 0.02em;
@@ -842,7 +842,7 @@ function autoResizeEdit(e) {
 
 .card-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-muted);
   line-height: 1.4;
 }
@@ -925,7 +925,7 @@ function autoResizeEdit(e) {
   outline: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   resize: none;
   min-height: 24px;
@@ -978,7 +978,7 @@ function autoResizeEdit(e) {
 
 .input-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   margin: 0;
   letter-spacing: 0.02em;
@@ -1037,7 +1037,7 @@ function autoResizeEdit(e) {
 .msg-bubble {
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   border-radius: 2px;
   white-space: pre-wrap;
@@ -1047,7 +1047,7 @@ function autoResizeEdit(e) {
 .msg-edited-tag {
   display: inline-block;
   margin-left: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-style: italic;
   color: var(--k-text-dim);
   vertical-align: middle;
@@ -1070,10 +1070,10 @@ function autoResizeEdit(e) {
   font-weight: 700;
   line-height: 1.3;
 }
-.msg-md :deep(h1) { font-size: 17px; }
-.msg-md :deep(h2) { font-size: 15px; }
-.msg-md :deep(h3) { font-size: 14px; }
-.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 13px; }
+.msg-md :deep(h1) { font-size: 1.0625rem; }
+.msg-md :deep(h2) { font-size: 0.9375rem; }
+.msg-md :deep(h3) { font-size: 0.875rem; }
+.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 0.8125rem; }
 
 .msg-md :deep(ul), .msg-md :deep(ol) {
   margin: 0 0 8px;
@@ -1092,7 +1092,7 @@ function autoResizeEdit(e) {
 
 .msg-md :deep(code) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   border-radius: 2px;
@@ -1111,7 +1111,7 @@ function autoResizeEdit(e) {
   background: none;
   border: none;
   padding: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
@@ -1131,7 +1131,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(table) {
   border-collapse: collapse;
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .msg-md :deep(th), .msg-md :deep(td) {
   border: 1px solid rgba(var(--k-ink-rgb), 0.12);
@@ -1193,7 +1193,7 @@ function autoResizeEdit(e) {
   resize: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   min-height: 24px;
   max-height: 200px;
@@ -1208,7 +1208,7 @@ function autoResizeEdit(e) {
 
 .msg-action-btn {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 4px 10px;
   background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-ink-rgb), 0.08);
@@ -1269,7 +1269,7 @@ function autoResizeEdit(e) {
   width: 100%;
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   border-radius: 2px;
   border: 1px solid;
 }
@@ -1287,7 +1287,7 @@ function autoResizeEdit(e) {
   background: var(--k-surface-code);
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 /* ── Responsive ── */

@@ -106,7 +106,7 @@ const completionItems = [
 
 .ctx-badge {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--Primary);
   letter-spacing: 0.04em;
@@ -142,7 +142,7 @@ const completionItems = [
 
 .ctx-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--TextFaint);
   letter-spacing: 0.1em;
@@ -152,7 +152,7 @@ const completionItems = [
 
 .ctx-insight {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextDim);
   line-height: 1.7;
   margin: 0;
@@ -171,7 +171,7 @@ const completionItems = [
   border: 1px solid #1e1e1e;
   color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   outline: none;
   cursor: not-allowed;
   box-sizing: border-box;
@@ -186,7 +186,7 @@ const completionItems = [
   border: 1px solid #1a1a1a;
   color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   border-radius: 0;
   margin-bottom: 6px;
 }
@@ -212,7 +212,7 @@ const completionItems = [
 .bar-val,
 .bar-labels span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 

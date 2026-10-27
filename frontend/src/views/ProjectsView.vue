@@ -764,7 +764,7 @@ async function submitProject() {
 .search-input::placeholder { color: var(--k-gray-2); }
 .search-clear {
   background: none; border: none; color: var(--k-gray-3); cursor: pointer;
-  font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
+  font-size: 1rem; padding: 0; line-height: 1; transition: color 0.15s;
 }
 .search-clear:hover { color: var(--k-text-soft); }
 
@@ -1095,7 +1095,7 @@ async function submitProject() {
 @media (max-width: 900px) {
   .projects-layout { flex-direction: column; }
   .main-panel { padding: 32px 28px; gap: 24px; }
-  .proj-title { font-size: 36px; }
+  .proj-title { font-size: 2.25rem; }
   .context-panel {
     width: 100%; max-height: none; position: static;
     border-left: none; border-top: 1px solid var(--k-shade-4);

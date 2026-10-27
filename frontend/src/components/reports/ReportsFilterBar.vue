@@ -42,7 +42,7 @@ defineEmits(['update:modelValue'])
   border: 1px solid #1f1f1f;
   color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: color .2s, border-color .2s, background .2s;
 }

@@ -41,7 +41,7 @@
 
 .sidebar-title {
   font-family: 'Playfair Display', serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--k-color-text);
   font-weight: 700;
 }
@@ -85,7 +85,7 @@
   outline: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 8px 0;
 }
 .sidebar-search input::placeholder { color: var(--k-text-faint); }
@@ -121,7 +121,7 @@
 .section-label {
   flex: 1;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -129,7 +129,7 @@
 }
 .section-count {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
 }
 .section-chevron {
@@ -164,7 +164,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
 }
 
@@ -196,7 +196,7 @@
 }
 .conv-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-text-soft);
   white-space: nowrap;
@@ -205,7 +205,7 @@
 }
 .conv-time {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
   flex-shrink: 0;
 }
@@ -217,7 +217,7 @@
 }
 .conv-preview {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   white-space: nowrap;
   overflow: hidden;
@@ -230,7 +230,7 @@
   background: var(--k-color-primary);
   color: var(--k-form-btn-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   border-radius: 9px;
   display: flex;
@@ -259,7 +259,7 @@
   justify-content: center;
   color: var(--k-text-soft);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 24px;
   text-align: center;
 }
@@ -285,13 +285,13 @@
 }
 .empty-title {
   font-family: 'Playfair Display', serif;
-  font-size: 22px;
+  font-size: 1.375rem;
   color: var(--k-text-faint);
   font-weight: 700;
 }
 .empty-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-faint);
   text-align: center;
   max-width: 280px;
@@ -325,13 +325,13 @@
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 .chat-header-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--k-color-text);
   margin-bottom: 3px;
@@ -345,7 +345,7 @@
 /* Type badges */
 .type-badge {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -358,10 +358,10 @@
 .badge-company { background: rgba(var(--k-hue-violet-rgb), 0.16); border: 1px solid rgba(var(--k-hue-violet-rgb), 0.4); color: var(--k-hue-violet); }
 .badge-group   { background: rgba(var(--k-hue-orange-rgb), 0.16); border: 1px solid rgba(var(--k-hue-orange-rgb), 0.4); color: var(--k-hue-orange); }
 
-.chat-meta-sep { color: var(--k-text-faint); font-size: 12px; }
+.chat-meta-sep { color: var(--k-text-faint); font-size: 0.75rem; }
 .chat-members {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 .chat-online {
@@ -369,7 +369,7 @@
   align-items: center;
   gap: 5px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 .chat-online-dot {
@@ -424,7 +424,7 @@
 }
 .date-divider span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -450,7 +450,7 @@
   border: 1px solid var(--k-color-border);
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -470,7 +470,7 @@
 
 .msg-sender-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--k-color-primary);
   margin-bottom: 2px;
@@ -489,7 +489,7 @@
 .msg-bubble {
   padding: 9px 13px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--k-text-soft);
   background: var(--k-shade-3);
@@ -507,7 +507,7 @@
 
 .msg-time {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
   padding: 0 3px;
 }
@@ -540,7 +540,7 @@
 .attach-file-name {
   display: block;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-text-soft);
   white-space: nowrap;
@@ -549,7 +549,7 @@
 }
 .attach-file-size {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 .attach-dl-btn {
@@ -587,7 +587,7 @@
 .img-placeholder-icon { color: var(--k-text-faint); }
 .img-placeholder-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
 }
 
@@ -633,7 +633,7 @@
 .msg-attach-audio:hover .wave-bar { background: var(--k-color-primary); }
 .audio-duration {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   flex-shrink: 0;
 }
@@ -673,7 +673,7 @@
 .video-play-btn:hover { background: rgba(var(--k-color-primary-rgb), 0.22); }
 .video-duration {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   position: absolute;
   bottom: 8px;
@@ -699,7 +699,7 @@
 }
 .integration-app-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -707,7 +707,7 @@
 }
 .integration-type-badge {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -718,7 +718,7 @@
 }
 .integration-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--k-text-soft);
   margin-bottom: 6px;
@@ -731,7 +731,7 @@
 }
 .integration-context {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 .integration-progress-wrap {
@@ -753,7 +753,7 @@
 }
 .integration-pct {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-color-primary);
   font-weight: 600;
 }
@@ -803,7 +803,7 @@
   border: 1px solid var(--k-shade-6b);
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 10px 14px;
   outline: none;
   resize: none;

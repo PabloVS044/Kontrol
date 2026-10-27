@@ -596,7 +596,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .stock-number {
   display: block;
-  font-size: 52px;
+  font-size: 3.25rem;
   line-height: 1;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -695,7 +695,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .supplier-price {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--k-state-success-text);
   font-variant-numeric: tabular-nums;
@@ -731,7 +731,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 @media (max-width: 640px) {
   .title {
-    font-size: 32px;
+    font-size: 2rem;
   }
 
   .section-head,
@@ -741,7 +741,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   }
 
   .stock-number {
-    font-size: 40px;
+    font-size: 2.5rem;
   }
 }
 </style>

@@ -82,7 +82,7 @@
 
 :where(.pd-root, .modal-overlay) .pd-title {
   font-family: var(--k-font-display);
-  font-size: 42px;
+  font-size: 2.625rem;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;
@@ -509,7 +509,7 @@
 }
 :where(.pd-root, .modal-overlay) .role-count {
   font-family: var(--k-font-display);
-  font-size: 42px;
+  font-size: 2.625rem;
   color: var(--k-color-primary);
   line-height: 1;
 }

@@ -202,7 +202,7 @@ function logout() {
 
 .ob-headline {
   font-family: var(--k-font-display);
-  font-size: 52px;
+  font-size: 3.25rem;
   font-weight: 400;
   line-height: 1.1;
   color: var(--k-color-text);
@@ -366,7 +366,7 @@ function logout() {
     width: 100%;
   }
   .ob-headline {
-    font-size: 40px;
+    font-size: 2.5rem;
   }
 }
 

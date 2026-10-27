@@ -76,7 +76,7 @@ const dots = [
 
 .section-title {
   font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-size: 1.25rem;
   color: var(--Text);
 }
 
@@ -91,7 +91,7 @@ const dots = [
   align-items: center;
   gap: 5px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 
@@ -115,7 +115,7 @@ const dots = [
 .y-axis span,
 .x-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
 }
 

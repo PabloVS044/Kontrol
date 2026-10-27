@@ -411,7 +411,7 @@ watch(showSideChat, async (isOpen) => {
   background: var(--k-surface-warm-2);
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
 }
 
@@ -422,7 +422,7 @@ watch(showSideChat, async (isOpen) => {
 .call-kicker {
   margin: 0 0 6px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -432,7 +432,7 @@ watch(showSideChat, async (isOpen) => {
 .call-name {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  font-size: 30px;
+  font-size: 1.875rem;
   color: var(--k-color-text);
 }
 
@@ -440,14 +440,14 @@ watch(showSideChat, async (isOpen) => {
 .call-stage-status {
   margin: 8px 0 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-dim);
 }
 
 .call-error {
   margin: 12px 0 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-hue-rose);
 }
 
@@ -471,7 +471,7 @@ watch(showSideChat, async (isOpen) => {
   border: none;
   padding: 11px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.15s ease;
@@ -582,7 +582,7 @@ watch(showSideChat, async (isOpen) => {
   padding: 12px;
   color: var(--k-text-soft);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
   background: var(--k-shade-3);
   border-radius: 8px;
@@ -599,7 +599,7 @@ watch(showSideChat, async (isOpen) => {
   right: -2px;
   background: var(--k-hue-rose);
   color: rgb(var(--k-color-white-rgb));
-  font-size: 11px;
+  font-size: 0.6875rem;
   min-width: 16px;
   height: 16px;
   padding: 2px 6px;
@@ -638,14 +638,14 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .mini-msg-name {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-color-primary);
   letter-spacing: 0.5px;
 }
 
 .mini-msg-text {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-color-text);
   background: var(--k-shade-3);
   padding: 8px 12px;
@@ -669,7 +669,7 @@ watch(showSideChat, async (isOpen) => {
   color: var(--k-color-text);
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   outline: none;
   transition: border-color 0.3s;
 }
@@ -726,7 +726,7 @@ watch(showSideChat, async (isOpen) => {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-soft);
   background: var(--k-shade-0);
 }
@@ -746,7 +746,7 @@ watch(showSideChat, async (isOpen) => {
 .call-stage-title {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  font-size: 34px;
+  font-size: 2.125rem;
   color: var(--k-color-text);
 }
 
@@ -798,7 +798,7 @@ watch(showSideChat, async (isOpen) => {
   align-items: center;
   text-align: center;
   color: var(--k-hue-rose); /* Rojo Luxury */
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -846,7 +846,7 @@ watch(showSideChat, async (isOpen) => {
   }
 
   .call-stage-title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 
@@ -857,7 +857,7 @@ watch(showSideChat, async (isOpen) => {
 
 .side-msg-text {
   color: var(--k-color-text);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 
@@ -892,7 +892,7 @@ watch(showSideChat, async (isOpen) => {
     height: 95vh;
   }
   .call-stage-title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 </style>

@@ -545,7 +545,7 @@ onMounted(() => {
 
           <div class="ndm-list">
             <div v-for="user in filteredCompanyUsers" :key="user.id" class="ndm-user" @click="startDM(user)">
-              <div class="conv-avatar at-dm" style="width: 36px; height: 36px; font-size: 11px;">{{ user.avatar }}</div>
+              <div class="conv-avatar at-dm" style="width: 36px; height: 36px; font-size: 0.6875rem;">{{ user.avatar }}</div>
               <div>
                 <div class="ndm-name">{{ user.nombre }} {{ user.apellido }}</div>
                 <div class="ndm-email">{{ user.email }}</div>
@@ -566,27 +566,27 @@ onMounted(() => {
 .conv-empty-hint {
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
   line-height: 1.5;
 }
 
 .chat-header-email {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
 }
 
 .chat-panel-error {
   margin-top: 12px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-hue-rose);
 }
 
 .chat-typing-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-color-primary);
   font-style: italic;
 }
@@ -617,14 +617,14 @@ onMounted(() => {
 
 .upload-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-color-primary);
   padding-left: 8px;
 }
 
 .upload-error {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-hue-rose);
   padding-left: 8px;
 }
@@ -687,7 +687,7 @@ onMounted(() => {
 
 .ndm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--k-color-text);
 }
 
@@ -723,7 +723,7 @@ onMounted(() => {
   outline: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 9px 0;
 }
 
@@ -751,14 +751,14 @@ onMounted(() => {
 
 .ndm-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--k-text-soft);
 }
 
 .ndm-email {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
 }
 
@@ -766,7 +766,7 @@ onMounted(() => {
   padding: 20px;
   text-align: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-faint);
 }
 </style>

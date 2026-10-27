@@ -136,17 +136,17 @@ function money(amount) {
 
 .ctx-title {
   font-family: 'Playfair Display', serif;
-  font-size: 28px;
+  font-size: 1.75rem;
   color: var(--Text);
 }
 .ctx-subtitle {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--TextFaint);
   margin-top: 4px;
 }
 
 .ctx-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   color: var(--TextFaint);
   margin-bottom: 12px;
@@ -167,17 +167,17 @@ function money(amount) {
   gap: 4px;
 }
 .s-value {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--Text);
   line-height: 1;
 }
 .s-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 .s-sub {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 .s-sub.gold { color: var(--Primary); }
@@ -194,7 +194,7 @@ function money(amount) {
 .cat-row {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .cat-name {
   color: var(--Text);
@@ -232,13 +232,13 @@ function money(amount) {
   display: block;
 }
 .alert-code {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #fecdd3;
   display: block;
   margin-bottom: 4px;
 }
 .alert-status {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 3px;
@@ -256,7 +256,7 @@ function money(amount) {
   width: 100%;
   border-radius: 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 12px 16px;
   display: block;
@@ -277,13 +277,13 @@ function money(amount) {
   margin-top: auto;
 }
 .ds-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   color: var(--k-gray-1);
   margin-bottom: 4px;
 }
 .ds-text {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 </style>

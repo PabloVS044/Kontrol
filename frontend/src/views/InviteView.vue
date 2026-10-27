@@ -312,7 +312,7 @@ watch(() => route.params.token, loadInvitation)
 
 .invite-title {
   font-family: var(--k-font-display);
-  font-size: 48px;
+  font-size: 3rem;
   line-height: 1;
   letter-spacing: -0.03em;
 }
@@ -352,7 +352,7 @@ watch(() => route.params.token, loadInvitation)
 }
 
 .summary-value {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: var(--k-font-weight-semibold);
 }
 
@@ -437,7 +437,7 @@ watch(() => route.params.token, loadInvitation)
   }
 
   .invite-title {
-    font-size: 34px;
+    font-size: 2.125rem;
   }
 
   .invite-summary {

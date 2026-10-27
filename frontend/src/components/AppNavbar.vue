@@ -319,7 +319,7 @@ const closeMenu = () => {
 }
 
 .empresa-role {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--k-color-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -354,7 +354,7 @@ const closeMenu = () => {
 
 :global(.dd-label) {
   font-family: var(--k-font-sans);
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.1em;
   /* Estaba en var(--k-gray-1) sobre fondo var(--k-shade-2): ratio ~1.2:1, ilegible. Es el único
      cambio del PR #86 que se conserva aquí — es contraste, no estética. */
@@ -394,7 +394,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-item-role) {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--k-gray-3);
   flex-shrink: 0;
   text-transform: capitalize;

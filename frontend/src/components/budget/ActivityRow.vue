@@ -268,7 +268,7 @@ function formatDate(v) {
   min-width: 56px;
 }
 .detail-tag {
-  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; /* sin token exacto */
+  font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase; /* sin token exacto */
   color: var(--k-color-primary); background: var(--k-surface-primary-tint);
   padding: 1px 6px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   align-self: center;

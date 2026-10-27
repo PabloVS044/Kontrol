@@ -170,7 +170,7 @@ function handleSubmit() {
 :global(.modal-actions :deep(.btn)) {
   border-radius: 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 10px 20px;
 }

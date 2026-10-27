@@ -591,7 +591,7 @@ async function submitCreate(payload) {
 
 .rep-subtitle {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   margin: 0;
 }
@@ -611,7 +611,7 @@ async function submitCreate(payload) {
   border: 1px solid var(--k-shade-7);
   color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color .2s, color .2s;
@@ -644,7 +644,7 @@ async function submitCreate(payload) {
   border-radius: var(--k-radius-sm) var(--k-radius-sm) 0 0;
   color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: color .2s, border-color .2s, background .2s;
@@ -682,7 +682,7 @@ async function submitCreate(payload) {
 
 .kpi-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-text-faint);
   letter-spacing: 0.08em;
@@ -701,7 +701,7 @@ async function submitCreate(payload) {
   display: inline-block;
   padding: 3px 10px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   border-radius: 2px;
   width: fit-content;
@@ -728,7 +728,7 @@ async function submitCreate(payload) {
 
 .section-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--k-text-muted);
   letter-spacing: 0.08em;
@@ -740,7 +740,7 @@ async function submitCreate(payload) {
   border: none;
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   opacity: 0.8;
   transition: opacity .2s;
@@ -754,7 +754,7 @@ async function submitCreate(payload) {
   width: 100%;
   border-collapse: collapse;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .rep-table th {
@@ -763,7 +763,7 @@ async function submitCreate(payload) {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 0 12px 10px 0;
   border-bottom: 1px solid var(--k-shade-4);
 }
@@ -788,7 +788,7 @@ async function submitCreate(payload) {
   background: var(--k-shade-3);
   border: 1px solid var(--k-shade-6);
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
 }
 
@@ -798,7 +798,7 @@ async function submitCreate(payload) {
   gap: 5px;
   padding: 3px 8px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
 }
 
@@ -809,16 +809,16 @@ async function submitCreate(payload) {
   flex-shrink: 0;
 }
 
-.td-date { color: var(--k-text-faint); font-size: 11px; }
+.td-date { color: var(--k-text-faint); font-size: 0.6875rem; }
 
 .progress-cell { display: flex; align-items: center; gap: 7px; }
 .prog-track { flex: 1; height: 4px; background: var(--k-shade-4); border-radius: 2px; overflow: hidden; min-width: 60px; }
 .prog-fill  { height: 100%; background: linear-gradient(90deg, var(--k-color-primary-2), var(--k-color-primary)); border-radius: 2px; }
-.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); min-width: 30px; }
+.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); min-width: 30px; }
 
 .type-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-hue-violet);
   background: rgba(var(--k-hue-violet-rgb), 0.08);
@@ -828,7 +828,7 @@ async function submitCreate(payload) {
 
 .section-count {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-faint);
 }
 
@@ -837,7 +837,7 @@ async function submitCreate(payload) {
   border: none;
   color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: color .2s;
 }
@@ -847,7 +847,7 @@ async function submitCreate(payload) {
   text-align: center;
   color: var(--k-text-faint);
   padding: 24px 0 !important;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* Skeleton */
@@ -877,7 +877,7 @@ async function submitCreate(payload) {
   align-items: center;
   gap: 5px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
 }
 .leg-dot {
@@ -903,7 +903,7 @@ async function submitCreate(payload) {
 
 .y-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
 }
 
@@ -923,7 +923,7 @@ async function submitCreate(payload) {
 
 .x-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
 }
 

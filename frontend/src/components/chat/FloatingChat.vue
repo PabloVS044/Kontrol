@@ -789,7 +789,7 @@ watch(() => chatStore.lastError, (message) => {
     border: var(--k-border-width) solid var(--k-alert-watching-border);
     color: var(--k-color-primary);
     font-family: var(--k-font-sans);
-    font-size: 8px;
+    font-size: 0.5rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -1054,7 +1054,7 @@ watch(() => chatStore.lastError, (message) => {
   border: var(--k-border-width) solid var(--k-alert-watching-border);
   color: var(--k-color-primary);
   font-family: var(--k-font-sans);
-  font-size: 8px;
+  font-size: 0.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
