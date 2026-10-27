@@ -42,6 +42,12 @@
 /* Header */
 :where(.inventory-root) .inv-header { display: flex; align-items: flex-start; justify-content: space-between; }
 :where(.inventory-root) .inv-header-left { display: flex; flex-direction: column; gap: 4px; }
+:where(.inventory-root) .inv-back {
+  display: inline-flex; align-items: center; gap: var(--k-space-2);
+  color: var(--k-text-muted); font-size: var(--k-font-size-caption-lg);
+  letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none;
+}
+:where(.inventory-root) .inv-back:hover { color: var(--k-color-primary); }
 :where(.inventory-root) .inv-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-display);

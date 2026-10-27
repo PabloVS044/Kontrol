@@ -108,8 +108,12 @@
         <!-- Encabezado -->
         <div class="inv-header">
           <div class="inv-header-left">
-            <h1 class="inv-title">{{ $t('inventory.header.title') }}</h1>
-            <p class="inv-subtitle">{{ $t('inventory.header.subtitle') }}</p>
+            <!-- Esta pantalla es Ventas > Cobrar; la tabla de Inventario es otra. -->
+            <RouterLink class="inv-back" :to="{ name: 'sales' }">
+              <span aria-hidden="true">←</span> {{ $t('sales.title') }}
+            </RouterLink>
+            <h1 class="inv-title">{{ $t('sales.checkout.title') }}</h1>
+            <p class="inv-subtitle">{{ $t('sales.checkout.subtitle') }}</p>
           </div>
           <div class="inv-header-actions">
             <button
@@ -478,7 +482,7 @@
 <script setup>
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import ErrorState from '../components/common/ErrorState.vue'
@@ -746,7 +750,8 @@ function stockNumClass(p) {
 
 function detailLink(product) {
   const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
-  const query = projectId ? `?project=${projectId}` : ''
+  // `from` hace que el detalle vuelva aquí y no a la tabla de Inventario.
+  const query = projectId ? `?project=${projectId}&from=charge` : '?from=charge'
   return `/inventory/${product.id_producto}${query}`
 }
 

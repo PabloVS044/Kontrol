@@ -762,6 +762,7 @@
       "loadingMsg": "Fetching the latest inventory details.",
       "errorTitle": "Could not load product",
       "back": "Back to inventory",
+      "backToCharge": "Back to Charge",
       "retry": "Retry",
       "uncategorized": "Uncategorized",
       "noProject": "Project not available",
@@ -1487,11 +1488,11 @@
       },
       "inventoryCreate": {
         "q": "How do I add a product?",
-        "a": "Pick a project from the tabs above, then click New Product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
+        "a": "Go to Sales > Charge, pick a project from the tabs above, then click New product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
       },
       "inventorySell": {
         "q": "How do I register a sale?",
-        "a": "Go to Sales > Charge, which takes you to the inventory. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+        "a": "Go to Sales > Charge. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
       },
       "inventoryMovements": {
         "q": "What inventory movement types exist?",
@@ -1583,7 +1584,7 @@
       },
       "inventoryShortcut": {
         "q": "Where is inventory?",
-        "a": "The Inventory section lists every product across your projects. From here you can create products, register movements (entradas/salidas/ajustes) or kick off a sale using the Sell button on any product card."
+        "a": "The Inventory section is the table of every product across your projects, with its price and stock; you can filter by project, search and see which ones are low or out of stock. To sell, create products or register movements, go to Sales > Charge."
       },
       "dashboardShortcut": {
         "q": "Where is the executive dashboard?",
@@ -2271,17 +2272,93 @@
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   },
+  "inventoryTable": {
+    "subtitle": "All your products with their price and stock.",
+    "goToCharge": "Go to Charge",
+    "project": "Project",
+    "allProjects": "All projects",
+    "search": "Search",
+    "searchPlaceholder": "Name, code or category",
+    "stockFilter": "Stock",
+    "stockFilters": {
+      "all": "All",
+      "low": "Low stock",
+      "out": "Out of stock"
+    },
+    "summary": "Products: {count} · Low stock: {low} · Out of stock: {out}",
+    "loading": "Loading products…",
+    "loadError": "The products could not be loaded.",
+    "retry": "Retry",
+    "empty": "There are no products yet. They are added in Sales > Charge.",
+    "noMatches": "No product matches the search or the filter.",
+    "columns": {
+      "product": "Product",
+      "category": "Category",
+      "project": "Project",
+      "price": "Price",
+      "cost": "Cost",
+      "stock": "Stock",
+      "minimum": "Minimum"
+    }
+  },
+  "salesHistory": {
+    "title": "Sales history",
+    "subtitle": "Each sale with its details and what came in on the dates you pick.",
+    "range": "Period",
+    "presets": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Custom"
+    },
+    "from": "From",
+    "to": "To",
+    "invalidRange": "Pick a start date that is not after the end date.",
+    "summaryLabel": "Period summary",
+    "kpis": {
+      "income": "Income",
+      "incomeNote": "Includes VAT {vat} · Discounts {discounts}",
+      "sales": "Sales",
+      "average": "Average ticket",
+      "units": "Units sold"
+    },
+    "loading": "Loading sales…",
+    "loadError": "The sales could not be loaded.",
+    "empty": "There are no sales in this period.",
+    "truncated": "Showing the {count} most recent sales of the period. The totals above include all of them.",
+    "columns": {
+      "date": "Date",
+      "seller": "Seller",
+      "project": "Project",
+      "units": "Units",
+      "total": "Total",
+      "details": "Details"
+    },
+    "showDetails": "View details",
+    "hideDetails": "Hide",
+    "lines": {
+      "product": "Product",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "vat": "VAT",
+      "amount": "Amount",
+      "subtotal": "Subtotal"
+    },
+    "toReports": "Charts and best sellers in Reports"
+  },
   "sales": {
     "eyebrow": "Sales",
     "title": "Sales",
     "subtitle": "Charge, review what was sold and adjust how your company charges.",
     "checkout": {
       "title": "Charge",
-      "copy": "Record a sale from your inventory products."
+      "subtitle": "Search or scan products, build the cart and record the sale.",
+      "copy": "Record a sale, add products and move stock."
     },
     "history": {
       "title": "Sales history",
-      "copy": "Income, profit and average ticket in Reports."
+      "copy": "Sales by date, with their details and what came in during the period."
     },
     "config": {
       "title": "Sale settings",

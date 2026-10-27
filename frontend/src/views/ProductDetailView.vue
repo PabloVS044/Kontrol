@@ -12,7 +12,7 @@
         <p class="state-title">{{ t('inventory.productDetail.errorTitle') }}</p>
         <p class="state-msg">{{ error }}</p>
         <div class="state-actions">
-          <RouterLink class="ghost-link" :to="backTarget">{{ t('inventory.productDetail.back') }}</RouterLink>
+          <RouterLink class="ghost-link" :to="backTarget">{{ backLabel }}</RouterLink>
           <button class="btn-primary" @click="loadProduct">{{ t('inventory.productDetail.retry') }}</button>
         </div>
       </div>
@@ -21,7 +21,7 @@
         <header class="detail-header">
           <RouterLink class="ghost-link" :to="backTarget">
             <span aria-hidden="true">←</span>
-            <span>{{ t('inventory.productDetail.back') }}</span>
+            <span>{{ backLabel }}</span>
           </RouterLink>
 
           <div class="detail-header-main">
@@ -231,10 +231,14 @@ const projectQuery = computed(() => {
   return Number.isFinite(value) && value > 0 ? value : null
 })
 
-const backTarget = computed(() =>
-  projectQuery.value
-    ? { name: 'inventory', query: { project: projectQuery.value } }
-    : { name: 'inventory' }
+// Se llega desde dos sitios: la tabla de Inventario y Ventas > Cobrar, que
+// marca el enlace con `from=charge`. Volver lleva al que corresponde.
+const backTarget = computed(() => {
+  const name = route.query.from === 'charge' ? 'sales-charge' : 'inventory'
+  return projectQuery.value ? { name, query: { project: projectQuery.value } } : { name }
+})
+const backLabel = computed(() =>
+  route.query.from === 'charge' ? t('inventory.productDetail.backToCharge') : t('inventory.productDetail.back')
 )
 
 const suppliers = computed(() => product.value?.proveedores ?? [])

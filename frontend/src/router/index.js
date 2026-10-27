@@ -83,10 +83,13 @@ const router = createRouter({
       component: () => import('../views/TeamsView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
     },
+    // Inventario es la tabla de productos; vender, dar de alta y mover stock
+    // viven en Ventas > Cobrar (/sales/charge), que es la pantalla que antes
+    // ocupaba esta ruta.
     {
       path: '/inventory',
       name: 'inventory',
-      component: () => import('../views/InventoryPage.vue'),
+      component: () => import('../views/InventoryView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
@@ -99,6 +102,18 @@ const router = createRouter({
       path: '/sales',
       name: 'sales',
       component: () => import('../views/SalesView.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/sales/charge',
+      name: 'sales-charge',
+      component: () => import('../views/InventoryPage.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/sales/history',
+      name: 'sales-history',
+      component: () => import('../views/SalesHistoryView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
