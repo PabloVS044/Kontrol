@@ -9,8 +9,14 @@
  */
 import { afterAll, describe, expect, it } from 'vitest'
 import { api, closeDb, query, unique } from '../db/fixtures.js'
+import { requiredDocuments } from '../../src/services/legalDocuments.js'
 
 const PASSWORD = 'Kontrol2026!'
+// L-6: la casilla del alta, con las versiones vigentes que vio el usuario.
+const LEGAL = {
+  accepted: true,
+  versions: Object.fromEntries(requiredDocuments().map((d) => [d.document, d.version])),
+}
 
 describe('I1 — registro, login y sesión contra la base real', () => {
   const email = `${unique('i1')}@kontrol-test.dev`
@@ -21,7 +27,7 @@ describe('I1 — registro, login y sesión contra la base real', () => {
   it('POST /api/auth/register persiste al usuario con la contraseña hasheada', async () => {
     const res = await api()
       .post('/api/auth/register')
-      .send({ nombre: 'Ana', apellido: 'Martínez', email, password: PASSWORD, role: 'usuario' })
+      .send({ nombre: 'Ana', apellido: 'Martínez', email, password: PASSWORD, role: 'usuario', legal: LEGAL })
 
     expect(res.status).toBe(201)
     expect(res.body.token).toEqual(expect.any(String))
@@ -41,10 +47,43 @@ describe('I1 — registro, login y sesión contra la base real', () => {
     expect(rows[0].password_hash).toMatch(/^\$2[aby]\$/)
   })
 
+  it('L-6: el alta deja en la base la versión aceptada de cada documento, con fecha e IP', async () => {
+    const { rows } = await query(
+      `SELECT a.documento, a.version, a.aceptado_en, a.ip, a.origen
+       FROM public.aceptacion_legal a JOIN public.usuario u ON u.id_usuario = a.id_usuario
+       WHERE u.email = $1
+       ORDER BY a.documento`,
+      [email]
+    )
+
+    expect(rows.map(({ documento, version, origen }) => ({ documento, version, origen }))).toEqual(
+      requiredDocuments()
+        .map(({ document, version }) => ({ documento: document, version, origen: 'registro' }))
+        .sort((a, b) => a.documento.localeCompare(b.documento))
+    )
+    for (const row of rows) {
+      expect(row.aceptado_en).toBeInstanceOf(Date)
+      expect(Date.now() - row.aceptado_en.getTime()).toBeLessThan(60_000)
+      expect(row.ip).toEqual(expect.any(String))
+    }
+  })
+
+  it('L-6: sin la casilla marcada no se crea la cuenta ni la constancia', async () => {
+    const other = `${unique('i1-sin-casilla')}@kontrol-test.dev`
+    const res = await api()
+      .post('/api/auth/register')
+      .send({ nombre: 'Ana', apellido: 'Sin casilla', email: other, password: PASSWORD, role: 'usuario',
+        legal: { ...LEGAL, accepted: false } })
+
+    expect(res.status).toBe(400)
+    const { rows } = await query('SELECT COUNT(*)::int AS n FROM public.usuario WHERE email = $1', [other])
+    expect(rows[0].n).toBe(0)
+  })
+
   it('rechaza un segundo registro con el mismo correo (409)', async () => {
     const res = await api()
       .post('/api/auth/register')
-      .send({ nombre: 'Ana', apellido: 'Duplicada', email, password: PASSWORD, role: 'usuario' })
+      .send({ nombre: 'Ana', apellido: 'Duplicada', email, password: PASSWORD, role: 'usuario', legal: LEGAL })
 
     expect(res.status).toBe(409)
     const { rows } = await query('SELECT COUNT(*)::int AS n FROM public.usuario WHERE email = $1', [email])
