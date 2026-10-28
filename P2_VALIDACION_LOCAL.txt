@@ -1,0 +1,42 @@
+P-2 — REGISTRO DE VALIDACIÓN
+
+EJECUCIÓN EXITOSA
+Identificador: kontrol-p2-20261026t230439z-6fee091f237c
+Inicio: 26/10/2026 17:04:39, America/Guatemala.
+Entorno: Windows, PowerShell, Docker Desktop y Python 3.12.
+Alcance: PostgreSQL y MongoDB con datos sintéticos aislados.
+
+COMANDOS EJECUTADOS
+.\.venv-backups\Scripts\python.exe -m unittest discover -s tests/backups -v
+.\.venv-backups\Scripts\python.exe scripts/backups/drill.py --output backup-drill-output
+
+RESULTADOS
+- 16 pruebas unitarias aprobadas.
+- Estado del ensayo: restored_verified_lab.
+- restoration_verified: true.
+- cleanup_complete: true.
+- comparison.postgres_equal: true.
+- comparison.mongo_equal: true.
+- Captura y cifrado: 0.735 segundos.
+- Descifrado y restauración: 1.437 segundos.
+- Recuperación con validación: 23.875 segundos.
+
+CORRECCIONES REALIZADAS
+- Lectura y escritura explícitas en UTF-8.
+- Conservación del inventario restaurado antes de comparar.
+- Normalización limitada de conversiones equivalentes en restricciones CHECK.
+- Prueba de regresión para mantener la detección de cambios en valores permitidos.
+
+EVIDENCIA
+docs/respaldos/evidencias/kontrol-p2-20261026t230439z-6fee091f237c/
+
+ANTECEDENTE
+El intento del entorno de preparación quedó bloqueado por falta de Docker.
+Ese informe se conserva como antecedente y no representa esta ejecución exitosa.
+
+LÍMITES
+La ejecución acredita restauración de laboratorio.
+No acredita respaldo ni recuperación de producción, archivos de UploadThing,
+activación de almacenamiento externo, retención o programación productiva.
+No demuestra cumplimiento de RPO/RTO productivos.
+El workflow de GitHub Actions no está acreditado como ejecutado por esta evidencia.

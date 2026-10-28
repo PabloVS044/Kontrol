@@ -116,10 +116,13 @@ export const getMyCompanies = async (req, res) => {
   const id_usuario = req.user.id_usuario
 
   const result = await pool.query(
-    `SELECT e.id_empresa, e.nombre, e.industria, e.email, e.telefono, re.nombre AS rol
+    `SELECT e.id_empresa, e.nombre, e.industria, e.email, e.telefono, re.nombre AS rol,
+            e.activo, cc.status AS closure_status, cc.export_until AS closure_export_until,
+            cc.delete_by AS closure_delete_by
      FROM public.empresa e
      JOIN public.empresa_usuario eu ON eu.id_empresa = e.id_empresa
      JOIN public.rol_empresa re ON re.id_rol_empresa = eu.id_rol_empresa
+     LEFT JOIN public.company_closure cc ON cc.company_id = e.id_empresa
      WHERE eu.id_usuario = $1
      ORDER BY e.nombre`,
     [id_usuario]

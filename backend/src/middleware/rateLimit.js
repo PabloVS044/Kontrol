@@ -113,6 +113,14 @@ export const accountDeletionUserLimiter = createRateLimiter({
   message: 'Too many account deletion attempts. Please try again later.',
 })
 
+export const companyClosureUserLimiter = createRateLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_COMPANY_CLOSURE_USER_MAX', 5),
+  keyGenerator: byUserOrIp,
+  skipSuccessfulRequests: true,
+  message: 'Too many company closure attempts. Please try again later.',
+})
+
 export const companyExportRateLimiter = createRateLimiter({
   windowMs: 15 * MINUTE,
   limit: envInt('RATE_LIMIT_COMPANY_EXPORT_MAX', 3),

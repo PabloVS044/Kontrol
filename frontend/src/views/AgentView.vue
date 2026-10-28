@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth.js'
@@ -29,7 +29,16 @@ const persistenceAvailable = ref(false)
 // Sidebar state
 const conversations = ref([])
 const conversationId = ref(null)
-const sidebarOpen = ref(true)
+// En móvil la lista es un panel encima de la conversación: abierta de inicio
+// tapaba el chat entero y había que cerrarla antes de poder escribir.
+const isNarrow = () => typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches
+const sidebarOpen = ref(!isNarrow())
+
+// Alto real de la barra de entrada, que es fija: crece con el tamaño de letra
+// y al escribir varias líneas, y sin medirlo tapaba el final de la conversación.
+const inputSectionEl = ref(null)
+const inputHeight = ref(0)
+let inputObserver = null
 
 // Inline edit state
 const editingId = ref(null)
@@ -37,6 +46,16 @@ const editingDraft = ref('')
 
 // Active fetch controller, used by the Stop button
 let activeController = null
+
+onMounted(() => {
+  if (typeof ResizeObserver !== 'function' || !inputSectionEl.value) return
+  inputObserver = new ResizeObserver(([entry]) => {
+    inputHeight.value = Math.ceil(entry.target.getBoundingClientRect().height)
+  })
+  inputObserver.observe(inputSectionEl.value)
+})
+
+onUnmounted(() => inputObserver?.disconnect())
 
 onMounted(async () => {
   const status = await fetchAgentStatus()
@@ -62,6 +81,7 @@ async function refreshConversations() {
 
 async function openConversation(id) {
   if (loading.value) return
+  if (isNarrow()) sidebarOpen.value = false
   try {
     const { conversation, messages: msgs } = await loadConversation(id)
     conversationId.value = conversation._id
@@ -82,6 +102,7 @@ async function openConversation(id) {
 
 function newConversation() {
   if (loading.value) return
+  if (isNarrow()) sidebarOpen.value = false
   conversationId.value = null
   messages.value = []
   prompt.value = ''
@@ -299,7 +320,7 @@ function autoResizeEdit(e) {
 </script>
 
 <template>
-  <div class="agent-page">
+  <div class="agent-page" :style="inputHeight ? { '--agent-input-h': `${inputHeight}px` } : null">
     <AppNavbar />
 
     <div class="agent-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
@@ -358,6 +379,9 @@ function autoResizeEdit(e) {
           </button>
         </div>
       </aside>
+
+      <!-- En móvil la lista va encima: un toque fuera la cierra. -->
+      <div v-if="sidebarOpen" class="agent-sidebar-backdrop" @click="toggleSidebar" />
 
       <!-- Floating toggle when the sidebar is hidden -->
       <button
@@ -489,7 +513,7 @@ function autoResizeEdit(e) {
       </div>
 
       <!-- Input with animated golden beam border -->
-      <div class="input-section">
+      <div ref="inputSectionEl" class="input-section">
         <div class="beam-wrap">
           <div class="beam-inner">
             <div class="input-row">
@@ -576,8 +600,8 @@ function autoResizeEdit(e) {
 .agent-sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  background: rgba(17, 17, 17, 0.94);
-  border-right: 1px solid rgba(202, 168, 96, 0.1);
+  background: color-mix(in srgb, var(--k-shade-3) 94%, transparent);
+  border-right: 1px solid rgba(var(--k-color-primary-rgb), 0.1);
   display: flex;
   flex-direction: column;
   padding: 16px 12px;
@@ -597,11 +621,11 @@ function autoResizeEdit(e) {
 
 .sidebar-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--TextMuted, #8a8070);
+  color: var(--k-text-muted);
 }
 
 .sidebar-icon-btn {
@@ -609,8 +633,8 @@ function autoResizeEdit(e) {
   height: 24px;
   border-radius: 2px;
   border: 1px solid transparent;
-  background: #111111;
-  color: var(--TextMuted, #8a8070);
+  background: var(--k-shade-3);
+  color: var(--k-text-muted);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -618,9 +642,9 @@ function autoResizeEdit(e) {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .sidebar-icon-btn:hover {
-  background: rgba(202, 168, 96, 0.08);
-  color: var(--Primary, #caa860);
-  border-color: rgba(202, 168, 96, 0.25);
+  background: rgba(var(--k-color-primary-rgb), 0.08);
+  color: var(--k-color-primary);
+  border-color: rgba(var(--k-color-primary-rgb), 0.25);
 }
 
 .new-conv-btn {
@@ -630,19 +654,19 @@ function autoResizeEdit(e) {
   gap: 8px;
   width: 100%;
   padding: 9px 12px;
-  background: rgba(202, 168, 96, 0.08);
-  border: 1px solid rgba(202, 168, 96, 0.28);
+  background: rgba(var(--k-color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.28);
   border-radius: 2px;
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .new-conv-btn:hover:not(:disabled) {
-  background: rgba(202, 168, 96, 0.16);
-  border-color: rgba(202, 168, 96, 0.5);
+  background: rgba(var(--k-color-primary-rgb), 0.16);
+  border-color: rgba(var(--k-color-primary-rgb), 0.5);
 }
 .new-conv-btn:disabled {
   opacity: 0.5;
@@ -656,16 +680,16 @@ function autoResizeEdit(e) {
   gap: 2px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #252525 transparent;
+  scrollbar-color: var(--k-shade-6b) transparent;
   padding-right: 2px;
 }
 .conv-list::-webkit-scrollbar { width: 4px; }
-.conv-list::-webkit-scrollbar-thumb { background: #252525; }
+.conv-list::-webkit-scrollbar-thumb { background: var(--k-shade-6b); }
 
 .conv-empty {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextDim, #5a5040);
+  font-size: 0.6875rem;
+  color: var(--k-text-dim);
   padding: 8px 4px;
   margin: 0;
   line-height: 1.5;
@@ -677,22 +701,22 @@ function autoResizeEdit(e) {
   gap: 6px;
   width: 100%;
   padding: 8px 10px;
-  background: #111111;
+  background: var(--k-shade-3);
   border: 1px solid transparent;
   border-radius: 2px;
-  color: var(--Text, #faf8f5);
+  color: var(--k-color-text);
   text-align: left;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
 .conv-item:hover:not(:disabled) {
-  background: #111111;
+  background: var(--k-shade-3);
 }
 .conv-item.active {
-  background: rgba(202, 168, 96, 0.12);
-  border-color: rgba(202, 168, 96, 0.3);
+  background: rgba(var(--k-color-primary-rgb), 0.12);
+  border-color: rgba(var(--k-color-primary-rgb), 0.3);
 }
 .conv-item:disabled {
   cursor: not-allowed;
@@ -712,7 +736,7 @@ function autoResizeEdit(e) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--TextMuted, #8a8070);
+  color: var(--k-text-muted);
   border-radius: 2px;
   opacity: 0;
   transition: opacity 0.15s, color 0.15s, background 0.15s;
@@ -722,8 +746,8 @@ function autoResizeEdit(e) {
   opacity: 1;
 }
 .conv-delete:hover {
-  background: rgba(220, 80, 80, 0.18);
-  color: #e88080;
+  background: rgba(var(--k-color-error-rgb), 0.18);
+  color: var(--k-state-error-text);
 }
 
 .sidebar-reopen {
@@ -733,18 +757,18 @@ function autoResizeEdit(e) {
   width: 28px;
   height: 28px;
   border-radius: 2px;
-  background: rgba(202, 168, 96, 0.1);
-  border: 1px solid rgba(202, 168, 96, 0.3);
-  color: var(--Primary, #caa860);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.3);
+  color: var(--k-color-primary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 11;
+  z-index: calc(var(--k-z-sticky) + 1);
   transition: background 0.15s;
 }
 .sidebar-reopen:hover {
-  background: rgba(202, 168, 96, 0.2);
+  background: rgba(var(--k-color-primary-rgb), 0.2);
 }
 
 .agent-main {
@@ -753,7 +777,8 @@ function autoResizeEdit(e) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px 120px;
+  /* Abajo, el alto medido de la barra de entrada fija (--agent-input-h). */
+  padding: 80px 24px max(120px, calc(var(--agent-input-h, 0px) + 16px));
   gap: 40px;
   max-width: 760px;
   margin: 0 auto;
@@ -770,9 +795,9 @@ function autoResizeEdit(e) {
 
 .agent-greeting {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin: 0;
@@ -781,14 +806,14 @@ function autoResizeEdit(e) {
 .agent-title {
   font-family: 'Playfair Display', 'Alfa Slab One', serif;
   font-size: clamp(2rem, 5vw, 3.2rem);
-  color: var(--Text, #faf8f5);
+  color: var(--k-color-text);
   margin: 0;
   line-height: 1.15;
   font-weight: 700;
 }
 
 .title-accent {
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
 }
 
 /* ── Quick action cards ── */
@@ -803,9 +828,9 @@ function autoResizeEdit(e) {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(17, 17, 17, 0.94);
-  border: 1px solid rgba(202, 168, 96, 0.14);
-  box-shadow: inset 0 1px 0 rgba(202, 168, 96, 0.06);
+  background: color-mix(in srgb, var(--k-shade-3) 94%, transparent);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.14);
+  box-shadow: inset 0 1px 0 rgba(var(--k-color-primary-rgb), 0.06);
   padding: 16px;
   cursor: pointer;
   text-align: left;
@@ -814,14 +839,14 @@ function autoResizeEdit(e) {
 }
 
 .agent-card:hover {
-  background: rgba(202, 168, 96, 0.1);
-  border-color: rgba(202, 168, 96, 0.28);
-  box-shadow: inset 0 1px 0 rgba(202, 168, 96, 0.1), 0 2px 12px rgba(202, 168, 96, 0.06);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border-color: rgba(var(--k-color-primary-rgb), 0.28);
+  box-shadow: inset 0 1px 0 rgba(var(--k-color-primary-rgb), 0.1), 0 2px 12px rgba(var(--k-color-primary-rgb), 0.06);
   transform: translateY(-1px);
 }
 
 .card-icon {
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -834,16 +859,16 @@ function autoResizeEdit(e) {
 
 .card-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--Text, #faf8f5);
+  color: var(--k-color-text);
   letter-spacing: 0.02em;
 }
 
 .card-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextMuted, #8a8070);
+  font-size: 0.6875rem;
+  color: var(--k-text-muted);
   line-height: 1.4;
 }
 
@@ -858,8 +883,8 @@ function autoResizeEdit(e) {
   align-items: center;
   gap: 10px;
   padding: 16px 24px 20px;
-  background: linear-gradient(to top, #0a0a0a 70%, transparent);
-  z-index: 10;
+  background: linear-gradient(to top, rgb(var(--k-canvas-rgb)) 70%, transparent);
+  z-index: var(--k-z-sticky);
   transition: left 0.2s;
 }
 
@@ -874,19 +899,19 @@ function autoResizeEdit(e) {
   padding: 1.5px;
   background: conic-gradient(
     from var(--beam-angle),
-    #1a1409 0%,
-    #1a1409 32%,
-    #2a1a00 38%,
-    #886911 44%,
-    #b27f2a 47%,
-    #caa860 49.5%,
-    #f5e090 50%,
-    #caa860 50.5%,
-    #b27f2a 53%,
-    #886911 57%,
-    #2a1a00 62%,
-    #1a1409 68%,
-    #1a1409 100%
+    var(--k-surface-warm) 0%,
+    var(--k-surface-warm) 32%,
+    var(--k-surface-warm-2) 38%,
+    var(--k-color-secondary) 44%,
+    var(--k-color-primary-2) 47%,
+    var(--k-color-primary) 49.5%,
+    var(--k-color-primary) 50%,
+    var(--k-color-primary) 50.5%,
+    var(--k-color-primary-2) 53%,
+    var(--k-color-secondary) 57%,
+    var(--k-surface-warm-2) 62%,
+    var(--k-surface-warm) 68%,
+    var(--k-surface-warm) 100%
   );
   animation: beam-spin 4s linear infinite;
   transition: filter 0.3s;
@@ -898,7 +923,7 @@ function autoResizeEdit(e) {
 }
 
 .beam-inner {
-  background: #111009;
+  background: var(--k-color-bg-2);
   border-radius: 12.5px;
   padding: 4px 6px;
 }
@@ -911,7 +936,7 @@ function autoResizeEdit(e) {
 }
 
 .sparkle-icon {
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -920,12 +945,12 @@ function autoResizeEdit(e) {
 
 .agent-textarea {
   flex: 1;
-  background: #111111;
+  background: transparent;
   border: none;
   outline: none;
-  color: var(--Text, #faf8f5);
+  color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   resize: none;
   min-height: 24px;
@@ -937,7 +962,7 @@ function autoResizeEdit(e) {
 .agent-textarea::-webkit-scrollbar { display: none; }
 
 .agent-textarea::placeholder {
-  color: var(--TextPlaceholder, #4a4030);
+  color: var(--k-text-placeholder);
 }
 
 .agent-send {
@@ -945,9 +970,9 @@ function autoResizeEdit(e) {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111111;
-  color: var(--TextFaint);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
+  background: var(--k-shade-3);
+  color: var(--k-text-faint);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -956,19 +981,19 @@ function autoResizeEdit(e) {
 }
 
 .agent-send.active {
-  background: var(--Primary, #caa860);
-  border-color: var(--Primary, #caa860);
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  border-color: var(--k-color-primary);
+  color: var(--k-form-btn-text);
 }
 
 .agent-send.stop {
-  background: rgba(220, 80, 80, 0.16);
-  border-color: rgba(220, 80, 80, 0.5);
-  color: #e88080;
+  background: rgba(var(--k-color-error-rgb), 0.16);
+  border-color: rgba(var(--k-color-error-rgb), 0.5);
+  color: var(--k-state-error-text);
 }
 .agent-send.stop:hover {
-  background: rgba(220, 80, 80, 0.26);
-  color: #ffb0b0;
+  background: rgba(var(--k-color-error-rgb), 0.26);
+  color: var(--k-state-error-text);
 }
 
 .agent-send:disabled {
@@ -978,10 +1003,15 @@ function autoResizeEdit(e) {
 
 .input-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextDim, #5a5040);
+  font-size: 0.6875rem;
+  color: var(--k-text-dim);
   margin: 0;
   letter-spacing: 0.02em;
+}
+
+/* En un teclado táctil no hay Shift+Enter: la pista solo ocupaba sitio. */
+@media (hover: none) and (pointer: coarse) {
+  .input-hint { display: none; }
 }
 
 /* ── Conversation thread ── */
@@ -993,12 +1023,12 @@ function autoResizeEdit(e) {
   max-height: 45vh;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #252525 transparent;
+  scrollbar-color: var(--k-shade-6b) transparent;
   padding: 4px 0;
 }
 
 .agent-thread::-webkit-scrollbar { width: 4px; }
-.agent-thread::-webkit-scrollbar-thumb { background: #252525; }
+.agent-thread::-webkit-scrollbar-thumb { background: var(--k-shade-6b); }
 
 .msg-row {
   display: flex;
@@ -1013,13 +1043,13 @@ function autoResizeEdit(e) {
 .msg-avatar {
   width: 28px;
   height: 28px;
-  background: rgba(202, 168, 96, 0.1);
-  border: 1px solid rgba(202, 168, 96, 0.2);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   flex-shrink: 0;
 }
 
@@ -1037,7 +1067,7 @@ function autoResizeEdit(e) {
 .msg-bubble {
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   border-radius: 2px;
   white-space: pre-wrap;
@@ -1047,9 +1077,9 @@ function autoResizeEdit(e) {
 .msg-edited-tag {
   display: inline-block;
   margin-left: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-style: italic;
-  color: var(--TextDim, #5a5040);
+  color: var(--k-text-dim);
   vertical-align: middle;
 }
 
@@ -1070,10 +1100,10 @@ function autoResizeEdit(e) {
   font-weight: 700;
   line-height: 1.3;
 }
-.msg-md :deep(h1) { font-size: 17px; }
-.msg-md :deep(h2) { font-size: 15px; }
-.msg-md :deep(h3) { font-size: 14px; }
-.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 13px; }
+.msg-md :deep(h1) { font-size: 1.0625rem; }
+.msg-md :deep(h2) { font-size: 0.9375rem; }
+.msg-md :deep(h3) { font-size: 0.875rem; }
+.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 0.8125rem; }
 
 .msg-md :deep(ul), .msg-md :deep(ol) {
   margin: 0 0 8px;
@@ -1083,7 +1113,7 @@ function autoResizeEdit(e) {
 .msg-md :deep(li > p) { margin: 0; }
 
 .msg-md :deep(a) {
-  color: var(--Primary, #caa860);
+  color: var(--k-color-primary);
   text-decoration: underline;
 }
 
@@ -1092,9 +1122,9 @@ function autoResizeEdit(e) {
 
 .msg-md :deep(code) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 12px;
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   border-radius: 2px;
   padding: 1px 5px;
 }
@@ -1102,8 +1132,8 @@ function autoResizeEdit(e) {
 .msg-md :deep(pre) {
   margin: 0 0 8px;
   padding: 10px 12px;
-  background: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--k-surface-code);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   border-radius: 2px;
   overflow-x: auto;
 }
@@ -1111,34 +1141,41 @@ function autoResizeEdit(e) {
   background: none;
   border: none;
   padding: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
 .msg-md :deep(blockquote) {
   margin: 0 0 8px;
   padding: 4px 0 4px 12px;
-  border-left: 2px solid rgba(202, 168, 96, 0.4);
-  color: var(--TextMuted, #8a8070);
+  border-left: 2px solid rgba(var(--k-color-primary-rgb), 0.4);
+  color: var(--k-text-muted);
 }
 
 .msg-md :deep(hr) {
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(var(--k-ink-rgb), 0.1);
   margin: 12px 0;
 }
 
+/* En bloque para que una tabla ancha se desplace dentro de la burbuja en vez
+   de estrujarse: en un móvil partía las palabras ("Unidad-es"). */
 .msg-md :deep(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .msg-md :deep(th), .msg-md :deep(td) {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   padding: 4px 8px;
   text-align: left;
+  overflow-wrap: normal;
+  word-break: normal;
 }
-.msg-md :deep(th) { background: #111111; font-weight: 700; }
+.msg-md :deep(th) { background: var(--k-shade-3); font-weight: 700; }
 
 .msg-md :deep(img) { max-width: 100%; border-radius: 2px; }
 
@@ -1160,25 +1197,25 @@ function autoResizeEdit(e) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   border-radius: 2px;
-  color: var(--TextMuted, #8a8070);
+  color: var(--k-text-muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .msg-action-icon:hover {
-  background: rgba(202, 168, 96, 0.1);
-  border-color: rgba(202, 168, 96, 0.3);
-  color: var(--Primary, #caa860);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border-color: rgba(var(--k-color-primary-rgb), 0.3);
+  color: var(--k-color-primary);
 }
 
 /* Inline edit */
 .msg-edit {
   width: 100%;
-  background: #111111;
-  border: 1px solid rgba(202, 168, 96, 0.25);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.25);
   border-radius: 2px;
   padding: 8px;
   display: flex;
@@ -1187,13 +1224,13 @@ function autoResizeEdit(e) {
 }
 
 .msg-edit-textarea {
-  background: #111111;
+  background: var(--k-shade-3);
   border: none;
   outline: none;
   resize: none;
-  color: var(--Text, #faf8f5);
+  color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   min-height: 24px;
   max-height: 200px;
@@ -1208,25 +1245,25 @@ function autoResizeEdit(e) {
 
 .msg-action-btn {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 4px 10px;
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--TextMuted, #8a8070);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
+  color: var(--k-text-muted);
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .msg-action-btn:hover {
-  border-color: rgba(202, 168, 96, 0.4);
-  color: var(--Text, #faf8f5);
+  border-color: rgba(var(--k-color-primary-rgb), 0.4);
+  color: var(--k-color-text);
 }
 
 .msg-action-btn.primary {
-  background: var(--Primary, #caa860);
-  border-color: var(--Primary, #caa860);
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  border-color: var(--k-color-primary);
+  color: var(--k-form-btn-text);
 }
 
 .msg-action-btn.primary:hover {
@@ -1234,15 +1271,15 @@ function autoResizeEdit(e) {
 }
 
 .msg-row.user .msg-bubble {
-  background: rgba(202, 168, 96, 0.1);
-  border: 1px solid rgba(202, 168, 96, 0.15);
-  color: var(--Text, #faf8f5);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.15);
+  color: var(--k-color-text);
 }
 
 .msg-row.assistant .msg-bubble {
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--Text, #faf8f5);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.06);
+  color: var(--k-color-text);
 }
 
 .msg-bubble.thinking {
@@ -1255,7 +1292,7 @@ function autoResizeEdit(e) {
 .msg-bubble.thinking span {
   width: 6px;
   height: 6px;
-  background: var(--Primary, #caa860);
+  background: var(--k-color-primary);
   border-radius: 50%;
   animation: thinking-blink 1.2s infinite;
   opacity: 0.3;
@@ -1269,25 +1306,30 @@ function autoResizeEdit(e) {
   width: 100%;
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   border-radius: 2px;
   border: 1px solid;
 }
 .agent-banner.warn {
-  background: rgba(202, 168, 96, 0.08);
-  border-color: rgba(202, 168, 96, 0.32);
-  color: var(--Primary);
+  background: rgba(var(--k-color-primary-rgb), 0.08);
+  border-color: rgba(var(--k-color-primary-rgb), 0.32);
+  color: var(--k-color-primary);
 }
 .agent-banner.error {
-  background: rgba(220, 80, 80, 0.08);
-  border-color: rgba(220, 80, 80, 0.32);
-  color: #e88080;
+  background: rgba(var(--k-color-error-rgb), 0.08);
+  border-color: rgba(var(--k-color-error-rgb), 0.32);
+  color: var(--k-state-error-text);
 }
 .agent-banner code {
-  background: #000000;
+  background: var(--k-surface-code);
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 0.6875rem;
+}
+
+/* Solo existe en móvil, donde la lista va encima de la conversación. */
+.agent-sidebar-backdrop {
+  display: none;
 }
 
 /* ── Responsive ── */
@@ -1295,13 +1337,20 @@ function autoResizeEdit(e) {
   .agent-shell {
     --sidebar-width: 0px;
   }
+  .agent-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: calc(var(--k-z-elevated) - 1);
+    background: rgba(var(--k-color-black-rgb), 0.5);
+  }
   .agent-sidebar {
     position: fixed;
     top: 56px;
     left: 0;
     width: 240px;
-    z-index: 20;
-    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.5);
+    z-index: var(--k-z-elevated);
+    box-shadow: 6px 0 24px rgba(var(--k-color-black-rgb), 0.5);
   }
   .input-section {
     left: 0;
@@ -1309,9 +1358,29 @@ function autoResizeEdit(e) {
 }
 
 @media (max-width: 640px) {
+  /* Arriba deja sitio al botón que reabre la lista (fijo, de 64 a 92px). */
   .agent-main {
-    padding: 80px 16px 24px;
+    padding: 100px 16px calc(var(--agent-input-h, 120px) + 12px);
     gap: 28px;
+  }
+
+  .sidebar-reopen {
+    top: 64px;
+  }
+
+  /* La conversación ocupa lo que dejan libre la barra superior y la de
+     entrada; con 45vh fijos quedaba una franja estrecha en el centro. */
+  .agent-thread {
+    max-height: calc(100dvh - 100px - var(--agent-input-h, 120px) - 12px);
+  }
+
+  .input-section {
+    padding: 10px 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  /* iOS acerca la página al enfocar un campo con letra de menos de 16px. */
+  .agent-textarea {
+    font-size: max(16px, 0.875rem);
   }
 
   .agent-cards {

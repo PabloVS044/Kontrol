@@ -8,7 +8,7 @@ import Button from '../components/UI/Button/Button.vue'
 import Pill from '../components/UI/Pill/Pill.vue'
 import { useAuthStore } from '../stores/auth'
 import { useSaleConfigStore } from '../stores/saleConfig'
-import { statusLabel } from '../utils/statusHelpers'
+import { statusLabel, withAlpha } from '../utils/statusHelpers'
 import { projectPermissionLabel } from '../utils/projectAccessLabels'
 import { translateRole } from '../utils/roles.js'
 
@@ -106,30 +106,26 @@ const spentPct = computed(() => {
   return t > 0 ? Math.round((totalSpent.value / t) * 100) : 0
 })
 
-// TODO SCRUM-15: trendColor se queda en hex porque el template lo concatena
-// (`:btnColor="stat.trendColor + '18'"`) para construir un hex de 8 digitos con
-// alpha. var() no se puede concatenar, y separarlo en dos campos seria
-// refactorizar la estructura, que queda fuera del alcance de este ticket.
 const stats = computed(() => [
   {
     label: t('dashboard.stats.totalSpent'),
     value: money(totalSpent.value),
     trend: totalAllocated.value > 0 ? t('dashboard.stats.ofBudget', { pct: spentPct.value }) : t('dashboard.stats.noBudget'),
-    trendColor: spentPct.value >= 80 ? '#fb7185' : '#34d399',
+    trendColor: spentPct.value >= 80 ? 'var(--k-hue-rose)' : 'var(--k-hue-emerald)',
     back: 'var(--k-color-tertiary)',
   },
   {
     label: t('dashboard.stats.activeProjects'),
     value: String(activeProjectsCount.value),
     trend: t('dashboard.stats.totalProjects', { count: projects.value.length }),
-    trendColor: '#c9a962',
+    trendColor: 'var(--k-color-primary)',
     back: 'var(--k-color-tertiary)',
   },
   {
     label: t('dashboard.stats.overrunAlerts'),
     value: String(overrunCount.value),
     trend: warningCount.value ? t('dashboard.stats.warning', { count: warningCount.value }) : (overrunCount.value ? t('dashboard.stats.critical') : t('dashboard.stats.allHealthy')),
-    trendColor: overrunCount.value ? '#fb7185' : (warningCount.value ? '#c9a962' : '#34d399'),
+    trendColor: overrunCount.value ? 'var(--k-hue-rose)' : (warningCount.value ? 'var(--k-color-primary)' : 'var(--k-hue-emerald)'),
     back: overrunCount.value ? 'rgba(var(--k-color-error-rgb), 0.12)' : 'var(--k-color-tertiary)',
   },
 ])
@@ -724,7 +720,7 @@ watch(() => authStore.idEmpresaActual, () => {
         >
           <Pill
             :label="stat.trend"
-            :btnColor="stat.trendColor + '18'"
+            :btnColor="withAlpha(stat.trendColor, 0.094)"
             :circleColor="stat.trendColor"
             :textColor="stat.trendColor"
           />
@@ -805,14 +801,14 @@ watch(() => authStore.idEmpresaActual, () => {
           <!-- Planned line (dashed gold) -->
           <path
             :d="chartData.plannedPath"
-            fill="none" stroke="var(--k-color-primary)" stroke-width="1.5"
+            fill="none" stroke="var(--k-chart-planned)" stroke-width="1.5"
             stroke-dasharray="6,5" opacity="0.75"
           />
 
           <!-- Actual cumulative line -->
           <path
             :d="chartData.actualPath"
-            fill="none" stroke="var(--k-state-success-text)" stroke-width="2"
+            fill="none" stroke="var(--k-chart-actual)" stroke-width="2"
           />
 
           <!-- Today marker -->
@@ -832,9 +828,9 @@ watch(() => authStore.idEmpresaActual, () => {
           <!-- Legend -->
           <g :transform="`translate(${chartArea.x + chartArea.w - 210}, ${chartArea.y + 8})`">
             <rect x="0" y="0" width="210" height="40" fill="var(--k-color-bg)" stroke="var(--k-shade-6)"/>
-            <line x1="10" y1="14" x2="32" y2="14" stroke="var(--k-color-primary)" stroke-width="1.5" stroke-dasharray="6,5"/>
+            <line x1="10" y1="14" x2="32" y2="14" stroke="var(--k-chart-planned)" stroke-width="1.5" stroke-dasharray="6,5"/>
             <text x="40" y="17" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.planned') }}</text>
-            <line x1="10" y1="30" x2="32" y2="30" stroke="var(--k-state-success-text)" stroke-width="2"/>
+            <line x1="10" y1="30" x2="32" y2="30" stroke="var(--k-chart-actual)" stroke-width="2"/>
             <text x="40" y="33" fill="var(--k-gray-6)" font-size="10" font-family="var(--k-font-sans)">{{ $t('dashboard.trend.legend.actual') }}</text>
           </g>
         </svg>
@@ -1237,7 +1233,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .chart-card {
-  background: var(--k-color-bg);
+  background: var(--k-surface-chart);
   border: 1px solid var(--k-color-border);
   padding: 30px;
   flex: 1;
@@ -1284,7 +1280,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .bar-bg {
-  background: var(--k-shade-3);
+  background: var(--k-surface-track);
   height: 6px;
   border-radius: 3px;
   /* Los dos tramos —lo gastado dentro de presupuesto y el exceso— van en fila y
@@ -1302,7 +1298,7 @@ watch(() => authStore.idEmpresaActual, () => {
   transition: width .4s ease;
 }
 
-.bar-fill.advertencia { background: #f59e0b; } /* cambiar a token color ambar */
+.bar-fill.advertencia { background: var(--k-hue-amber); }
 /* Cuando hay exceso, el rojo es el tramo que se pasó, no la barra entera: el
    tramo base sigue siendo el presupuesto consumido. Solo pinta todo de rojo
    cuando el nivel es crítico SIN haberse pasado (justo en el límite). */
@@ -1354,7 +1350,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-variant-numeric: tabular-nums;
 }
 .project-bar-pct { color: var(--k-color-primary); font-weight: 600; }
-.project-bar-pct.advertencia { color: #f59e0b; } /* cambiar a token color ambar */
+.project-bar-pct.advertencia { color: var(--k-hue-amber); }
 .project-bar-pct.critico     { color: var(--k-state-error-text); }
 
 .snapshot-row {
@@ -1362,7 +1358,7 @@ watch(() => authStore.idEmpresaActual, () => {
   justify-content: space-between;
   align-items: baseline;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(var(--k-color-white-rgb), 0.05);
+  border-bottom: 1px solid rgba(var(--k-ink-rgb), 0.05);
   font-family: var(--k-font-sans);
 }
 .snapshot-label { color: var(--k-gray-6); font-size: var(--k-font-size-caption-lg); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -1460,7 +1456,7 @@ watch(() => authStore.idEmpresaActual, () => {
   font-size: var(--k-font-size-caption);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   background: var(--k-shade-3);
   color: var(--k-color-text);
 }
@@ -1476,7 +1472,7 @@ watch(() => authStore.idEmpresaActual, () => {
 }
 
 .team-card {
-  background: var(--k-color-bg-2);
+  background: var(--k-surface-card);
   border: 1px solid var(--k-shade-6);
   padding: var(--k-space-5);
   display: flex;
@@ -1538,7 +1534,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-btn--secondary {
   background: var(--k-shade-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   color: var(--k-color-text);
 }
 
@@ -1559,7 +1555,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .feedback {
   padding: 14px 16px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   font-family: var(--k-font-sans);
 }
@@ -1577,7 +1573,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .team-state {
   padding: 18px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   font-family: var(--k-font-sans);
 }
@@ -1595,7 +1591,7 @@ watch(() => authStore.idEmpresaActual, () => {
   gap: 20px;
   padding: 18px;
   background: var(--k-shade-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.06);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.06);
 }
 
 .member-main,
@@ -1615,7 +1611,7 @@ watch(() => authStore.idEmpresaActual, () => {
   flex-direction: column;
   gap: var(--k-space-4);
   padding-top: 8px;
-  border-top: 1px solid rgba(var(--k-color-white-rgb), 0.06);
+  border-top: 1px solid rgba(var(--k-ink-rgb), 0.06);
 }
 
 .member-project-access-head {
@@ -1655,7 +1651,7 @@ watch(() => authStore.idEmpresaActual, () => {
 
 .project-assignment-card {
   padding: var(--k-space-4);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   display: flex;
   flex-direction: column;
@@ -1681,7 +1677,7 @@ watch(() => authStore.idEmpresaActual, () => {
   flex-direction: column;
   gap: var(--k-space-1);
   padding: var(--k-space-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   cursor: pointer;
 }
@@ -1729,25 +1725,22 @@ watch(() => authStore.idEmpresaActual, () => {
   color: var(--k-color-primary);
 }
 
-/* cambiar a token color azul */
 .role-chip.admin {
-  color: #93c5fd;
+  color: var(--k-hue-blue);
 }
 
-/* cambiar a token color rojo */
 .role-chip.manager {
-  color: #fca5a5;
+  color: var(--k-hue-rose);
 }
 
-/* cambiar a token color verde */
 .role-chip.collaborator {
-  color: #86efac;
+  color: var(--k-hue-green);
 }
 
 .role-select {
   padding: var(--k-space-3) 14px;
   background: var(--k-shade-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   color: var(--k-color-text);
 }
 

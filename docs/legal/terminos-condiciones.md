@@ -1,7 +1,7 @@
 # Términos y Condiciones de Kontrol
 
-**Versión 0.1 — BORRADOR INTERNO**  
-**Fecha de elaboración: 16 de octubre de 2026**  
+**Versión 0.2 — BORRADOR INTERNO**  
+**Fecha de elaboración: 16 de octubre de 2026 · revisión: 26 de octubre de 2026**  
 **Entrada en vigencia: PENDIENTE DE APROBACIÓN Y PUBLICACIÓN**
 
 > **Revisión profesional en Guatemala requerida antes de uso comercial.** Este borrador no está vigente ni acredita aceptación al registrarte. Faltan la identificación de las personas prestadoras, el contacto legal/privacidad y mecanismos operativos descritos al final. No autoriza lanzamiento ni publicación para contratación.
@@ -93,7 +93,7 @@ Conservas los derechos que tengas sobre tus datos y contenidos; tampoco puedes c
 
 El [anexo de proveedores](anexo-proveedores.md) distingue bases/hosting por confirmar, archivos, Google OAuth, conexiones opcionales, receptores técnicos y Stripe previsto TEST. No todos son subencargados contratados por Kontrol. Si el negocio es titular de Slack, Teams, Telegram, Twilio, SendGrid o un destino webhook, hay que distinguir su contrato con el proveedor de las instrucciones que da al equipo.
 
-Para datos de cuenta y fines propios, el equipo puede actuar como responsable; para datos del negocio que solo trate siguiendo instrucciones, como encargado. La asignación debe concretarse por tratamiento. **El acuerdo de tratamiento por instrucciones está pendiente; esta descripción y los DPA públicos de proveedores no significan que el acuerdo esté completado o aceptado.** Resolver contratos e instrucciones forma parte de los bloqueos del expediente.
+Para datos de cuenta y fines propios, el equipo actúa como responsable; para los datos de clientes, proveedores, trabajadores y otras personas que el negocio registra, el negocio es responsable y el equipo, encargado. La [Adenda de tratamiento de datos](adenda-tratamiento-datos.md) forma parte de estos Términos por referencia: asigna los roles por tratamiento, las obligaciones de cada parte, los subencargados, el aviso de incidentes y los efectos del fin de la relación sobre esos datos. En lo relativo a esos datos prevalece sobre estos Términos y puede firmarse por separado. **La adenda es un borrador 0.1 no vigente: sus condiciones previas siguen abiertas y los DPA públicos de proveedores no significan que estén aceptados.** Resolver contratos e instrucciones forma parte de los bloqueos del expediente.
 
 ## 11. Disponibilidad, conservación y respaldos
 
@@ -113,7 +113,7 @@ La suspensión o terminación propuesta se limita a causas justificadas: uso il�
 
 El equipo también deberá avisar un eventual cierre ordinario del servicio por un mecanismo previamente definido, con oportunidad razonable para gestionar la información dentro de las capacidades disponibles. No existe un plazo de preaviso o una exportación integral acreditados que este borrador pueda prometer.
 
-Desactivar acceso no elimina automáticamente datos ni revoca de inmediato toda sesión. La información seguirá sujeta a la situación de conservación descrita en la Política de Privacidad y a las obligaciones que procedan. No se promete borrado en treinta días, eliminación total o devolución completa mientras P1 no esté resuelto; tampoco se concede con ello una autorización de conservación indefinida.
+Desactivar acceso no elimina automáticamente datos ni revoca de inmediato toda sesión. La información seguirá sujeta a la situación de conservación descrita en la Política de Privacidad y a las obligaciones que procedan. No se promete borrado en treinta días, eliminación total o devolución completa mientras P1 no esté resuelto; tampoco se concede con ello una autorización de conservación indefinida. Para los datos que el negocio registra sobre terceros, la [adenda, §10](adenda-tratamiento-datos.md#10-fin-de-la-relación) propone preaviso de cierre, ventana de exportación y plazos de eliminación; solo serán exigibles cuando la adenda entre en vigencia, lo que requiere completar P1 y P2.
 
 ## 14. Cambios de condiciones
 
@@ -129,7 +129,7 @@ Si la relación queda comprendida en la Ley de Protección al Consumidor y Usuar
 
 ## 16. Documentos relacionados y trazabilidad interna
 
-Este borrador se lee con la [Política de Privacidad](politica-privacidad.md), el [inventario técnico cerrado](inventario-datos.md), el [anexo de proveedores](anexo-proveedores.md) y el [índice de pendientes](README.md). La política de cookies y almacenamiento, el acuerdo de tratamiento por instrucciones y los avisos específicos permanecen pendientes: no se presentan como aprobados ni se enlazan archivos inexistentes.
+Este borrador se lee con la [Política de Privacidad](politica-privacidad.md), la [Adenda de tratamiento de datos](adenda-tratamiento-datos.md) (borrador 0.1), el [inventario técnico cerrado](inventario-datos.md), el [anexo de proveedores](anexo-proveedores.md) y el [índice de pendientes](README.md). La política de cookies y almacenamiento y los avisos específicos permanecen pendientes: no se presentan como aprobados ni se enlazan archivos inexistentes.
 
 La descripción funcional proviene del inventario §§1–9 y sus referencias de código, con corte 16-10-2026 y referencia HEAD `3a004d9` aportada. La declaración de ubicación del servidor IA procede del equipo, 16-10-2026. No hubo comprobación de producción.
 
@@ -143,3 +143,4 @@ La descripción funcional proviene del inventario §§1–9 y sus referencias de
 | Historial | Cambio |
 | --- | --- |
 | 16-10-2026 · 0.1 | Elaboración inicial interna; pendiente de identificación, revisión, aprobación, implementación de mecanismos y publicación. Sin entrada en vigencia. |
+| 26-10-2026 · 0.2 | §§10, 13 y 16: incorporación por referencia de la Adenda de tratamiento de datos (L-4), su prevalencia y su relación con P1/P2. Sin entrada en vigencia. |

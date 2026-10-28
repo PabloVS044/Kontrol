@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page" data-theme="dark">
 
     <SoftParticle />
 

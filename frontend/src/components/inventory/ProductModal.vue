@@ -181,6 +181,15 @@ watch(() => props.modelValue, (open) => {
   if (open) form.value = emptyForm()
 })
 
+// Si la lista de proyectos llega o cambia con el modal abierto, el destino
+// vuelve a uno válido en vez de quedarse vacío o apuntando a uno que ya no está.
+watch(() => props.projects, (projects) => {
+  if (!props.modelValue) return
+  if (!projects.some((p) => p.id_proyecto === form.value.id_proyecto)) {
+    form.value.id_proyecto = defaultProject()
+  }
+})
+
 // Live resolution of units + per-unit cost from the box inputs.
 const resolved = computed(() =>
   resolveStockEntry({

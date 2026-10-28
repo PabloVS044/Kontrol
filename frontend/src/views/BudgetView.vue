@@ -449,7 +449,7 @@ async function submitFunds(payload) {
                   <span>{{ $t('budget.distribution.planningLabel') }}</span>
                   <span class="planning-value">{{ $t('budget.distribution.planningValue', { pct: Math.round(plannedVsBudgetPct) }) }}</span>
                 </div>
-                <ProgressBar :pct="plannedVsBudgetPct" color="#6b6b6b" height="4px" /> <!-- sin token exacto -->
+                <ProgressBar :pct="plannedVsBudgetPct" color="var(--k-gray-1)" height="4px" />
               </div>
 
               <div v-if="!activities.length" class="empty-hint">
@@ -535,14 +535,14 @@ async function submitFunds(payload) {
 .title { font-family: var(--k-font-display); font-size: var(--k-font-size-display); font-weight: 400; color: var(--k-color-text); }
 .subtitle { font-size: var(--k-font-size-body-small); color: var(--k-gray-5); display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
+  font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
   color: var(--k-color-primary); background: rgba(var(--k-color-primary-rgb), 0.1);
   padding: 2px 8px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
 }
 
 .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .project-select {
-  background: var(--k-shade-1); border: 1px solid #3a3a3a; color: var(--k-color-text); /* sin token exacto */
+  background: var(--k-shade-1); border: 1px solid var(--k-shade-8); color: var(--k-color-text);
   padding: 10px 12px; font-size: var(--k-font-size-body-small); font-family: var(--k-font-sans);
   outline: none; min-width: 220px;
 }
@@ -552,7 +552,7 @@ async function submitFunds(payload) {
 
 .readonly-hint {
   font-size: var(--k-font-size-caption-lg); color: var(--k-gray-5);
-  background: rgba(17, 17, 17, 0.92); /* sin triplete rgb declarado para los shades */
+  background: var(--k-shade-3);
   border: 1px solid var(--k-shade-6); border-left: 2px solid var(--k-color-primary);
   padding: 10px 14px; margin-bottom: 20px;
   font-family: var(--k-font-sans);
@@ -566,13 +566,16 @@ async function submitFunds(payload) {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   gap: 32px;
 }
-@media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+/* minmax(0, …) y no 1fr: 1fr deja que el ancho mínimo del contenido estire la
+   columna, y la tabla de productos llevaba la página a ~850px en un teléfono,
+   ensanchando también la navbar. */
+@media (max-width: 1100px) { .main-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* Movements strip */
 .movements-strip {
   display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
   padding: 12px 16px; margin-bottom: 24px;
-  background: rgba(10, 10, 10, 0.92); /* sin triplete rgb declarado para los shades */
+  background: var(--k-shade-1);
   border: 1px solid var(--k-shade-6);
   font-family: var(--k-font-sans);
 }
@@ -588,8 +591,8 @@ async function submitFunds(payload) {
 }
 .mv-dot.purchase { background: var(--k-color-primary); }
 .mv-dot.sale     { background: var(--k-state-success-text); }
-.mv-dot.admin    { background: #60a5fa; } /* sin token de marca, ver ProjectDetailsView.css .area-badge */
-.mv-label  { color: #d4d4d4; letter-spacing: 0.05em; } /* sin token exacto */
+.mv-dot.admin    { background: var(--k-hue-blue); }
+.mv-label  { color: var(--k-text-soft); letter-spacing: 0.05em; }
 .mv-count  {
   color: var(--k-color-text); font-weight: 700; font-variant-numeric: tabular-nums;
   padding-left: 6px; border-left: 1px solid var(--k-shade-7);
@@ -610,7 +613,7 @@ async function submitFunds(payload) {
 .muted { color: var(--k-gray-5); display: block; margin-top: 6px; font-size: var(--k-font-size-caption); }
 
 /* Distribution */
-.distribution-section { background: rgba(12, 12, 12, 0.92); border: 1px solid var(--k-shade-7); padding: 24px; } /* sin triplete rgb declarado */
+.distribution-section { background: var(--k-shade-1); border: 1px solid var(--k-shade-7); padding: 24px; }
 .section-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 16px; gap: 12px;
@@ -637,14 +640,14 @@ async function submitFunds(payload) {
 
 /* AI Box */
 .ai-insight-box {
-  border: 1px dashed #4a4a4a; padding: 18px; background: rgba(10, 10, 10, 0.92); /* sin token exacto */
+  border: 1px dashed var(--k-shade-8); padding: 18px; background: var(--k-shade-1);
   margin-bottom: 16px;
 }
 .ai-insight-box h4 {
   font-size: var(--k-font-size-caption-lg); margin-bottom: 8px; letter-spacing: 0.1em;
   color: var(--k-color-primary); text-transform: uppercase;
 }
-.ai-insight-box p  { font-size: var(--k-font-size-caption-lg); color: #d4d4d4; line-height: 1.6; margin: 0; } /* sin token exacto */
+.ai-insight-box p  { font-size: var(--k-font-size-caption-lg); color: var(--k-text-soft); line-height: 1.6; margin: 0; }
 .gold   { color: var(--k-color-primary); }
 .danger { color: var(--k-state-error-text); }
 
@@ -659,6 +662,9 @@ async function submitFunds(payload) {
   .title { font-size: var(--k-font-size-display-2); }
   .header { flex-direction: column; align-items: stretch; }
   .header-actions { width: 100%; }
-  .project-select { flex: 1; min-width: 0; }
+  /* El selector en su propia fila: compartiendo fila con los tres botones
+     quedaba aplastado a unos pocos píxeles. */
+  .project-select { flex: 1 1 100%; min-width: 0; }
+  .header-actions :deep(.btn) { flex: 1 1 auto; }
 }
 </style>

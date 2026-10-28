@@ -80,12 +80,9 @@ const displayPct = computed(() => {
 const remainingClass = computed(() => props.remaining < 0 ? 'danger' : 'gold')
 const netClass       = computed(() => props.netResult < 0 ? 'danger' : 'income')
 
-// Mismo colapso de niveles que budgetColor() en ProjectsView.vue: la paleta v2
-// no define un ámbar/naranja intermedio (theme.css, sección "superficies de
-// alerta"), así que precaución+advertencia comparten color.
 const progressColor = computed(() => {
   if (props.usageRatio > 1)     return 'var(--k-state-error-text)'
-  if (props.usageRatio >= 0.6)  return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  if (props.usageRatio >= 0.6)  return 'var(--k-hue-orange)'
   return 'var(--k-color-primary)'
 })
 
@@ -96,13 +93,14 @@ function money(v) {
 
 <style scoped>
 .summary-card {
-  background: #0c0c0c; /* sin token exacto en la rampa de shades */
+  background: var(--k-shade-1);
   border: 1px solid var(--k-shade-7);
   padding: 32px;
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 24px; gap: 32px; flex-wrap: wrap;
 }
-.summary-info { flex: 1; min-width: 280px; }
+/* min(…, 100%): en 320px los 280px fijos más el padding no caben en la tarjeta. */
+.summary-info { flex: 1; min-width: min(280px, 100%); }
 .card-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-heading-1); margin-bottom: 22px; color: var(--k-color-text);
@@ -121,18 +119,18 @@ function money(v) {
 .label.danger, .danger  { color: var(--k-state-error-text); }
 .label.income, .income  { color: var(--k-state-success-text); }
 
-.total-value     { font-size: 26px; font-weight: 700; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
-.spent-value     { font-size: 22px; font-weight: 600; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
-.income-value    { font-size: 22px; font-weight: 700; color: var(--k-state-success-text); font-variant-numeric: tabular-nums; }
+.total-value     { font-size: 1.625rem; font-weight: 700; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
+.spent-value     { font-size: 1.375rem; font-weight: 600; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
+.income-value    { font-size: 1.375rem; font-weight: 700; color: var(--k-state-success-text); font-variant-numeric: tabular-nums; }
 .net-value       { font-size: var(--k-font-size-heading-1); font-weight: 700; font-variant-numeric: tabular-nums; }
-.remaining-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.planned-value   { font-size: var(--k-font-size-heading-2); font-weight: 600; color: #d4d4d4; font-variant-numeric: tabular-nums; } /* sin token exacto */
+.remaining-value { font-size: 1.375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.planned-value   { font-size: var(--k-font-size-heading-2); font-weight: 600; color: var(--k-text-soft); font-variant-numeric: tabular-nums; }
 
 .chart-donut {
   width: 180px; height: 180px; position: relative; flex-shrink: 0;
 }
 .chart-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.circle-bg       { fill: none; stroke: #242424; stroke-width: 8; } /* sin token exacto */
+.circle-bg       { fill: none; stroke: var(--k-shade-6b); stroke-width: 8; }
 .circle-progress {
   fill: none; stroke-width: 8; stroke-linecap: round;
   transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;
@@ -142,7 +140,7 @@ function money(v) {
   transform: translate(-50%, -50%); text-align: center;
 }
 .p-label { font-size: var(--k-font-size-caption); letter-spacing: 0.1em; color: var(--k-gray-5); display: block; }
-.p-value { font-size: 22px; font-weight: 700; color: var(--k-color-text); }
+.p-value { font-size: 1.375rem; font-weight: 700; color: var(--k-color-text); }
 
 @media (max-width: 800px) {
   .amount-grid { grid-template-columns: repeat(2, 1fr); }
@@ -151,7 +149,7 @@ function money(v) {
   .summary-card { padding: 24px; gap: 20px; }
   .amount-grid { gap: 12px; }
   .chart-donut { width: 150px; height: 150px; margin: 0 auto; }
-  .total-value { font-size: 22px; }
-  .net-value, .remaining-value, .income-value { font-size: 18px; }
+  .total-value { font-size: 1.375rem; }
+  .net-value, .remaining-value, .income-value { font-size: 1.125rem; }
 }
 </style>

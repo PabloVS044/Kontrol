@@ -93,6 +93,12 @@ alcance ya documentado en la política del proyecto.
 | Fallo de COMMIT PostgreSQL, recuperación outbox y desconexión Mongo real | `privacy/privacyLifecycle.test.js` |
 | Exportación con datos Mongo reales y aislamiento entre empresas | `privacy/privacyLifecycle.test.js` |
 | Reintentos, leases vencidos, trabajador concurrente y límite de backoff | `accountDeletionOutbox.test.js` y suite real |
+| Cierre de empresa: ventana de 30 días, uso bloqueado, exportación disponible y anulación | `privacy/companyClosure.test.js` |
+| Cierre: nombre, contraseña, prueba Google del cierre y rol owner | `companyClosureController.test.js` y suite real |
+| Borrado de todas las tablas de la empresa sin tocar otra empresa ni las cuentas | `privacy/companyClosure.test.js` |
+| Fallo de UploadThing con la base ya borrada y reintento hasta la constancia | `privacy/companyClosure.test.js` |
+| Plan de borrado: orden, tablas protegidas, ciclos y reintentos del trabajador | `companyClosure.test.js` |
+| Cierre programado cuando el último owner borra su cuenta sin sucesor | `privacy/companyClosure.test.js` |
 
 La suite real simula únicamente el proveedor externo de IA y fallos deliberados.
 No sustituye los modelos ni las conexiones Mongo/PostgreSQL por mocks. La prueba
@@ -102,7 +108,7 @@ la de COMMIT usa un trigger diferido real en PostgreSQL.
 ## Cobertura y CI
 
 `vitest.privacy.config.js` exige al menos **70 % por archivo** en sentencias,
-ramas, funciones y líneas para los siete archivos de privacidad/persistencia
+ramas, funciones y líneas para los diez archivos de privacidad/persistencia
 incluidos explícitamente. Es un criterio de aceptación configurado, no una
 medición ya obtenida. Los umbrales generales existentes se mantienen.
 
@@ -118,6 +124,24 @@ ejecuta el gate y publica reportes en cada PR a `main`/`develop`, o manualmente.
 Para bloquear el merge, el administrador del repositorio debe añadir el check
 `Privacidad - PostgreSQL y Mongo reales` a las reglas de protección de la rama.
 Crear el workflow no cambia por sí mismo esas reglas de GitHub.
+
+## Cierre de empresa (26-10-2026)
+
+Implementa el §10 de la adenda de tratamiento de datos (L-4). Los plazos se
+cuentan desde la solicitud y viven en `src/services/companyClosure.js`:
+
+| Paso | Qué ocurre |
+| --- | --- |
+| Solicitud | `POST /api/companies/closure`, solo owner, con contraseña o prueba Google `company-closure` y el nombre de la empresa. Desactiva la empresa, sus invitaciones e integraciones y crea `company_closure`. |
+| Ventana de 30 días | Solo funcionan `GET /api/companies/export`, `GET /api/companies/closure` y la anulación `DELETE /api/companies/closure`. Con `skip_export_window` no hay ventana ni anulación. |
+| Eliminación, a más tardar a los 60 días | El trabajador marca por `ctid` las filas de la empresa (columna `id_empresa` y claves foráneas NO ACTION, RESTRICT o CASCADE), padres primero, y las borra hijas primero en una transacción REPEATABLE READ. Después borra los archivos de evidencia en UploadThing y el historial del asistente en Mongo. Cada paso queda registrado y se reintenta por separado. |
+| Constancia | `GET /api/companies/closures/mine` devuelve los cierres que pidió la cuenta, con fechas y conteos. Funciona aunque la empresa ya no exista. |
+
+Si el último owner borra su cuenta sin sucesor, el cierre se programa con motivo
+`no_active_owner` y no se puede anular. Las cuentas de los miembros, los chats
+humanos (no tienen `id_empresa`), los adjuntos de chat y lo ya enviado a
+integraciones no se borran. El plazo de 90 días para respaldos y registros
+técnicos depende de P-2 y de la rotación de registros, fuera de este código.
 
 ## Despliegue
 
@@ -153,6 +177,11 @@ preparación: no dispone de las dependencias ni de Docker/bases reales, y el
 registro npm devolvió HTTP 403 al intentar instalarlas. La revisión de sintaxis,
 referencias y las comprobaciones aisladas se describen en `VALIDACION_LOCAL.txt`.
 Ejecuta los comandos anteriores y conserva los reportes antes de aprobar el PR.
+
+Actualización del 26-10-2026, con el cierre de empresa: ejecutado en local con
+Node 24, PostgreSQL 16 y MongoDB 7 en Docker. `test:coverage`, `test:integration`,
+`test:regression` y `test:privacy` terminaron en verde, incluido el umbral del
+70 % por archivo. CI usa Node 22.
 
 Documentación técnica utilizada:
 

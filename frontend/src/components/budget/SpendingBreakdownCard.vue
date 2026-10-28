@@ -71,8 +71,8 @@ const props = defineProps({
 // para .area-badge), así que se conservan literales.
 const expenseSources = computed(() => [
   { key: 'stock',      label: t('budget.breakdown.inventoryPurchases'), value: props.totalInventoryStock, color: 'var(--k-color-primary)' },
-  { key: 'admin',      label: t('budget.breakdown.adminExpenses'),      value: props.totalInventoryAdmin, color: '#60a5fa' },
-  { key: 'activities', label: t('budget.breakdown.activitiesManual'),   value: props.totalActivities,     color: '#a78bfa' },
+  { key: 'admin',      label: t('budget.breakdown.adminExpenses'),      value: props.totalInventoryAdmin, color: 'var(--k-hue-blue)' },
+  { key: 'activities', label: t('budget.breakdown.activitiesManual'),   value: props.totalActivities,     color: 'var(--k-hue-violet)' },
 ])
 
 const totalExpenses = computed(() =>
@@ -126,7 +126,7 @@ function money(v) {
 }
 .row-label {
   display: inline-flex; align-items: center; gap: 8px;
-  color: #d4d4d4; /* sin token exacto */
+  color: var(--k-text-soft);
 }
 .row-dot {
   width: 8px; height: 8px; border-radius: 50%; display: inline-block;
@@ -171,11 +171,11 @@ function money(v) {
 .net-row.positive .net-label { color: var(--k-alert-ok-text); }
 .net-row.negative .net-label { color: var(--k-alert-critical-text); }
 .net-value {
-  font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .net-row.positive .net-value { color: var(--k-alert-ok-text); }
 .net-row.negative .net-value { color: var(--k-alert-critical-text); }
 
-:deep(.pb-bg) { background: #1c1c1c; height: 6px; } /* sin token exacto */
+:deep(.pb-bg) { background: var(--k-shade-5); height: 6px; }
 :deep(.pb-fill) { height: 100% !important; }
 </style>

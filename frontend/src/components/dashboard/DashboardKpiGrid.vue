@@ -53,7 +53,7 @@ defineProps({
 }
 
 .kpi-grid :deep(.card-subtitle) {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--TextDim);

@@ -59,11 +59,11 @@
           <p class="chart-title">{{ $t('admin.dashboard.chart.usersByRole') }}</p>
           <div class="donut-wrap">
             <svg width="180" height="180" viewBox="0 0 180 180">
-              <circle cx="90" cy="90" r="68" fill="none" stroke="var(--Background3)" stroke-width="22"/>
+              <circle cx="90" cy="90" r="68" fill="none" stroke="var(--k-shade-7)" stroke-width="22"/>
               <circle
                 cx="90" cy="90" r="68"
                 fill="none"
-                stroke="var(--Primary)"
+                stroke="var(--k-color-primary)"
                 stroke-width="22"
                 stroke-dasharray="427.3"
                 :stroke-dashoffset="usuarioPctOffset"
@@ -211,23 +211,23 @@ onMounted(async () => {
 
 .adm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 400;
-  color: var(--Text);
+  color: var(--k-color-text);
   line-height: 1.1;
   margin: 0;
 }
 
 .adm-subtitle {
   padding-top: 0.5rem;
-  font-size: 14px;
-  color: var(--TextMuted);
+  font-size: 0.875rem;
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0;
 }
 
-.adm-loading { font-size: 0.9rem; color: var(--TextMuted); font-family: var(--font-sans); }
-.adm-error   { font-size: 0.9rem; color: var(--ErrorText); font-family: var(--font-sans); }
+.adm-loading { font-size: 0.9rem; color: var(--k-text-muted); font-family: var(--font-sans); }
+.adm-error   { font-size: 0.9rem; color: var(--k-state-error-text); font-family: var(--font-sans); }
 
 /* ── KPI row ── */
 .kpi-grid {
@@ -238,8 +238,8 @@ onMounted(async () => {
 }
 
 .kpi-card {
-  background: var(--Background2);
-  border: 1px solid var(--Border);
+  background: var(--k-surface-card);
+  border: 1px solid var(--k-color-border);
   border-radius: 10px;
   padding: 32px 28px;
   display: flex;
@@ -250,25 +250,25 @@ onMounted(async () => {
 .kpi-dim { opacity: 0.65; }
 
 .kpi-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
 }
 
 .kpi-value {
   font-size: 3rem;
   font-weight: 700;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-family: var(--font-sans);
   line-height: 1.1;
 }
 
 .kpi-sub {
-  font-size: 12px;
-  color: var(--TextDim);
+  font-size: 0.75rem;
+  color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
@@ -280,8 +280,8 @@ onMounted(async () => {
 }
 
 .chart-card {
-  background: var(--Background2);
-  border: 1px solid var(--Border);
+  background: var(--k-surface-card);
+  border: 1px solid var(--k-color-border);
   border-radius: 10px;
   padding: 32px 28px;
   min-height: 320px;
@@ -295,18 +295,18 @@ onMounted(async () => {
 }
 
 .chart-title {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0 0 16px;
 }
 
 .chart-empty {
-  font-size: 13px;
-  color: var(--TextDim);
+  font-size: 0.8125rem;
+  color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
@@ -323,8 +323,8 @@ onMounted(async () => {
 .status-row { grid-template-columns: 60px 1fr 28px; }
 
 .bar-label, .status-lbl {
-  font-size: 12px;
-  color: var(--TextMuted);
+  font-size: 0.75rem;
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   white-space: nowrap;
   overflow: hidden;
@@ -333,25 +333,25 @@ onMounted(async () => {
 
 .bar-track {
   height: 6px;
-  background: var(--Background3);
+  background: var(--k-shade-7);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  background: var(--Primary);
+  background: var(--k-color-primary);
   border-radius: 3px;
   transition: width 0.4s ease;
 }
 
-.bar-fill.green { background: var(--SuccessText); }
-.bar-fill.red   { background: var(--ErrorText); }
-.bar-fill.gold  { background: var(--Primary); }
+.bar-fill.green { background: var(--k-state-success-text); }
+.bar-fill.red   { background: var(--k-state-error-text); }
+.bar-fill.gold  { background: var(--k-color-primary); }
 
 .bar-val {
-  font-size: 12px;
-  color: var(--TextMuted);
+  font-size: 0.75rem;
+  color: var(--k-text-muted);
   font-family: var(--font-sans);
   text-align: right;
 }
@@ -379,14 +379,14 @@ onMounted(async () => {
 .donut-pct {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-family: var(--font-sans);
   line-height: 1;
 }
 
 .donut-sub {
-  font-size: 11px;
-  color: var(--TextDim);
+  font-size: 0.6875rem;
+  color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
@@ -398,8 +398,8 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   font-family: var(--font-sans);
-  font-size: 13px;
-  color: var(--TextMuted);
+  font-size: 0.8125rem;
+  color: var(--k-text-muted);
 }
 
 .legend-dot {
@@ -409,14 +409,14 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.legend-dot.gold { background: var(--Primary); }
-.legend-dot.dim  { background: var(--Background3); }
+.legend-dot.gold { background: var(--k-color-primary); }
+.legend-dot.dim  { background: var(--k-shade-7); }
 
 .legend-label { flex: 1; }
 
 .legend-val {
   font-weight: 600;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 @media (max-width: 900px) {

@@ -5,7 +5,6 @@ import AppNavbar from '../components/AppNavbar.vue'
 import { useChatStore } from '../stores/chat.js'
 import { useAuthStore } from '../stores/auth.js'
 import { formatFileSize } from '../utils/chat.js'
-import './ChatView.css'
 
 const { t, locale } = useI18n()
 const chatStore = useChatStore()
@@ -276,7 +275,8 @@ onMounted(() => {
   <div class="chat-page">
     <AppNavbar />
 
-    <div class="chat-body">
+    <!-- En móvil cabe un panel: la lista o la conversación abierta. -->
+    <div class="chat-body" :class="{ 'has-active': activeChat }">
       <aside class="chat-sidebar">
         <div class="sidebar-top">
           <h2 class="sidebar-title">{{ t('chat.title') }}</h2>
@@ -296,6 +296,10 @@ onMounted(() => {
           </svg>
           <input v-model="searchQuery" type="text" :placeholder="t('chat.searchMessages')" />
         </div>
+        <!-- En móvil el panel de la derecha no se ve sin una conversación abierta,
+             así que el error de conexión se repite aquí. -->
+        <p v-if="panelError && !activeChat" class="chat-panel-error chat-panel-error--list">{{ panelError }}</p>
+
 
         <div class="sidebar-content">
           <div class="sidebar-section">
@@ -352,7 +356,7 @@ onMounted(() => {
         <div v-if="!activeChat" class="chat-empty">
           <div class="empty-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#444" stroke-width="1.5" stroke-linejoin="round" />
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="var(--k-shade-8)" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
           </div>
           <h3 class="empty-title">{{ t('chat.emptyTitle') }}</h3>
@@ -363,8 +367,14 @@ onMounted(() => {
         <div v-else class="chat-active">
           <div class="chat-header">
             <div class="chat-header-info">
+              <!-- Solo en móvil, donde la conversación tapa la lista. -->
+              <button type="button" class="chat-back-btn" :aria-label="t('chat.backToList')" :title="t('chat.backToList')" @click="activeChatId = null">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
               <div class="chat-header-avatar at-dm">{{ activeChat.avatar }}</div>
-              <div>
+              <div class="chat-header-text">
                 <div class="chat-header-name">{{ activeChat.name }}</div>
                 <div class="chat-header-meta">
                   <span class="type-badge badge-dm">{{ t('chat.directBadge') }}</span>
@@ -546,7 +556,7 @@ onMounted(() => {
 
           <div class="ndm-list">
             <div v-for="user in filteredCompanyUsers" :key="user.id" class="ndm-user" @click="startDM(user)">
-              <div class="conv-avatar at-dm" style="width: 36px; height: 36px; font-size: 11px;">{{ user.avatar }}</div>
+              <div class="conv-avatar at-dm" style="width: 36px; height: 36px; font-size: 0.6875rem;">{{ user.avatar }}</div>
               <div>
                 <div class="ndm-name">{{ user.nombre }} {{ user.apellido }}</div>
                 <div class="ndm-email">{{ user.email }}</div>
@@ -561,32 +571,34 @@ onMounted(() => {
   </div>
 </template>
 
+<style scoped src="./ChatView.css"></style>
+
 <style scoped>
 .conv-empty-hint {
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextFaint);
+  font-size: 0.6875rem;
+  color: var(--k-text-faint);
   line-height: 1.5;
 }
 
 .chat-header-email {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextFaint);
+  font-size: 0.6875rem;
+  color: var(--k-text-faint);
 }
 
 .chat-panel-error {
   margin-top: 12px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #fb7185;
+  font-size: 0.75rem;
+  color: var(--k-hue-rose);
 }
 
 .chat-typing-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--Primary);
+  font-size: 0.6875rem;
+  color: var(--k-color-primary);
   font-style: italic;
 }
 
@@ -601,7 +613,7 @@ onMounted(() => {
 .typing-indicator span {
   width: 6px;
   height: 6px;
-  background: #444;
+  background: var(--k-shade-8);
   border-radius: 50%;
   animation: blink 1.2s infinite;
 }
@@ -616,15 +628,15 @@ onMounted(() => {
 
 .upload-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--Primary);
+  font-size: 0.6875rem;
+  color: var(--k-color-primary);
   padding-left: 8px;
 }
 
 .upload-error {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: #fb7185;
+  font-size: 0.6875rem;
+  color: var(--k-hue-rose);
   padding-left: 8px;
 }
 
@@ -656,8 +668,8 @@ onMounted(() => {
 .ndm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
-  background: #050505;
+  z-index: var(--k-z-overlay-top);
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -667,8 +679,10 @@ onMounted(() => {
 .ndm-modal {
   width: 400px;
   max-height: 520px;
-  background: #0d0d0d;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: 1px solid var(--k-shade-6);
+  border-radius: var(--k-radius-lg);
+  box-shadow: var(--k-shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -679,13 +693,13 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--k-shade-4);
 }
 
 .ndm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  color: var(--Text);
+  font-size: 1rem;
+  color: var(--k-color-text);
 }
 
 .ndm-close {
@@ -693,7 +707,7 @@ onMounted(() => {
   height: 26px;
   border: none;
   background: none;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -701,7 +715,7 @@ onMounted(() => {
   transition: color 0.12s;
 }
 
-.ndm-close:hover { color: var(--TextSoft); }
+.ndm-close:hover { color: var(--k-text-soft); }
 
 .ndm-search {
   display: flex;
@@ -709,8 +723,8 @@ onMounted(() => {
   gap: 8px;
   padding: 0 12px;
   margin: 10px 12px;
-  background: #111111;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-6);
 }
 
 .ndm-search input {
@@ -718,13 +732,13 @@ onMounted(() => {
   background: none;
   border: none;
   outline: none;
-  color: var(--Text);
+  color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 9px 0;
 }
 
-.ndm-search input::placeholder { color: var(--TextFaint); }
+.ndm-search input::placeholder { color: var(--k-text-faint); }
 
 .ndm-list {
   flex: 1;
@@ -733,7 +747,7 @@ onMounted(() => {
 }
 
 .ndm-list::-webkit-scrollbar { width: 4px; }
-.ndm-list::-webkit-scrollbar-thumb { background: #252525; }
+.ndm-list::-webkit-scrollbar-thumb { background: var(--k-shade-6b); }
 
 .ndm-user {
   display: flex;
@@ -744,26 +758,26 @@ onMounted(() => {
   transition: background 0.1s;
 }
 
-.ndm-user:hover { background: #151515; }
+.ndm-user:hover { background: var(--k-shade-3b); }
 
 .ndm-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: #e0dcd5;
+  color: var(--k-text-soft);
 }
 
 .ndm-email {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextFaint);
+  font-size: 0.6875rem;
+  color: var(--k-text-faint);
 }
 
 .ndm-empty {
   padding: 20px;
   text-align: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: var(--TextFaint);
+  font-size: 0.75rem;
+  color: var(--k-text-faint);
 }
 </style>

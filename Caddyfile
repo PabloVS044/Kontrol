@@ -1,5 +1,10 @@
 {$PUBLIC_HOST} {
+  # RTF 2 (TLS-01, RNF-6.2): protocolos explícitos. Es el mínimo que Caddy ya
+  # usaba por defecto; escrito aquí, una actualización no puede cambiarlo sin
+  # que se vea. zap/verify-controls.sh tls lo comprueba sobre el ambiente.
+  tls {
+    protocols tls1.2 tls1.3
+  }
   encode zstd gzip
   reverse_proxy frontend:80
 }
-

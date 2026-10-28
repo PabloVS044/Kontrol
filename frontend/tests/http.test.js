@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { apiFetch as domainApiFetch } from '../src/services/api.js'
 import { apiFetch, authHeaders, resolveApiUrl } from '../src/services/http.js'
 
@@ -27,6 +29,25 @@ describe('shared HTTP client', () => {
     expect(headers['X-Company-ID']).toBe('42')
     expect(headers['X-Project-ID']).toBe('19')
     expect(headers['X-Trace-ID']).toBe('trace-1')
+  })
+
+  it('ignores a project id passed as the first argument, which is for extra headers', () => {
+    // authHeaders(5) does not send X-Project-ID. The refactor to the shared
+    // client left that shape in the inventory, and creating, editing or
+    // deleting a product answered 400 "Select a project to continue.".
+    expect(authHeaders(5)['X-Project-ID']).toBeUndefined()
+    expect(authHeaders({}, { projectId: 5 })['X-Project-ID']).toBe('5')
+  })
+
+  it('no view passes a bare project id as the extra headers argument', () => {
+    const root = resolve(__dirname, '../src')
+    const llamada = /authHeaders\(\s*(?!\)|\{)[^,()]*(?:\([^()]*\))?\s*\)/
+    const infractores = readdirSync(root, { recursive: true })
+      .map((ruta) => String(ruta).replaceAll('\\', '/'))
+      .filter((ruta) => /\.(js|vue)$/.test(ruta))
+      .filter((ruta) => llamada.test(readFileSync(join(root, ruta), 'utf8')))
+
+    expect(infractores).toEqual([])
   })
 
   it('retries a transient GET response once', async () => {

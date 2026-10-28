@@ -1,27 +1,17 @@
-import bcrypt from 'bcrypt'
 import { randomUUID } from 'node:crypto'
 import { pipeline } from 'node:stream/promises'
-import jwt from 'jsonwebtoken'
 import pool from '../db/pool.js'
 import { isMongoReady } from '../db/mongo.js'
+import { isReauthenticated, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import { prepareCompanyDataExport } from '../services/companyDataExport.js'
 import { processMongoAccountDeletion } from '../services/accountDeletionOutbox.js'
 import { cancelPendingSubscriptions, markSubscriptionsForCancellation } from '../services/billingService.js'
+import { CLOSURE_REASONS, scheduleCompanyClosure } from '../services/companyClosure.js'
 import { disconnectUserSockets } from '../socket/index.js'
 import { logger } from '../utils/logger.js'
 
 const invalidCredentials = (res) =>
   res.status(401).json({ success: false, message: 'Reauthentication failed.' })
-
-const verifyGoogleReauthentication = (token, userId) => {
-  if (!token) return false
-  try {
-    const proof = jwt.verify(token, process.env.JWT_SECRET)
-    return proof.purpose === 'account-deletion' && proof.id_usuario === userId
-  } catch {
-    return false
-  }
-}
 
 export const exportCompanyData = async (req, res, next) => {
   res.locals ??= {}
@@ -139,11 +129,13 @@ export const deleteOwnAccount = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Account not found.' })
     }
 
-    const hasPassword = user.password_hash
-      ? await bcrypt.compare(req.body.password || '', user.password_hash)
-      : false
-    const hasGoogleProof = verifyGoogleReauthentication(req.body.google_reauth_token, user.id_usuario)
-    if (!hasPassword && !hasGoogleProof) {
+    const reauthenticated = await isReauthenticated({
+      user,
+      password: req.body.password,
+      googleProof: req.body.google_reauth_token,
+      purpose: REAUTH_ACTIONS.ACCOUNT_DELETION,
+    })
+    if (!reauthenticated) {
       await client.query('ROLLBACK')
       return invalidCredentials(res)
     }
@@ -161,7 +153,7 @@ export const deleteOwnAccount = async (req, res) => {
     )
     if (!ownerRole.rows.length) throw new Error('Company owner role is missing.')
 
-    const deactivatedCompanies = []
+    const closedCompanies = []
     for (const membership of memberships.rows.filter(({ rol_empresa }) => rol_empresa === 'owner')) {
       const successor = await client.query(
         `SELECT eu.id_usuario
@@ -187,17 +179,20 @@ export const deleteOwnAccount = async (req, res) => {
           [ownerRole.rows[0].id_rol_empresa, membership.id_empresa, successor.rows[0].id_usuario]
         )
       } else {
-        await client.query(
-          'UPDATE public.empresa SET activo = false WHERE id_empresa = $1',
-          [membership.id_empresa]
-        )
-        deactivatedCompanies.push(membership.id_empresa)
+        // Nobody is left to run the company: the relationship ends (addendum
+        // §10.1 d) and the company follows the regular closure deadlines.
+        await scheduleCompanyClosure(client, {
+          companyId: membership.id_empresa,
+          requestedBy: user.id_usuario,
+          reason: CLOSURE_REASONS.NO_ACTIVE_OWNER,
+        })
+        closedCompanies.push(membership.id_empresa)
       }
     }
 
-    // PAY-1 — Una empresa desactivada no debe seguir renovando su plan. Se
+    // PAY-1 — Una empresa en cierre no debe seguir renovando su plan. Se
     // marca aquí y se cancela en la pasarela después del COMMIT.
-    await markSubscriptionsForCancellation(client, deactivatedCompanies)
+    await markSubscriptionsForCancellation(client, closedCompanies)
 
     await client.query(
       `UPDATE public.empresa_invitacion
@@ -245,10 +240,10 @@ export const deleteOwnAccount = async (req, res) => {
     try { disconnectUserSockets(user.id_usuario) } catch (error) {
       logger.error('Could not disconnect deleted account sockets:', error)
     }
-    let subscriptionCancellation = deactivatedCompanies.length ? 'pending_retry' : 'not_applicable'
-    if (deactivatedCompanies.length) {
+    let subscriptionCancellation = closedCompanies.length ? 'pending_retry' : 'not_applicable'
+    if (closedCompanies.length) {
       try {
-        const cancelled = await cancelPendingSubscriptions({ companyIds: deactivatedCompanies })
+        const cancelled = await cancelPendingSubscriptions({ companyIds: closedCompanies })
         if (cancelled === null) subscriptionCancellation = 'billing_not_configured'
         else if (cancelled > 0) subscriptionCancellation = 'requested'
       } catch (error) {
@@ -273,6 +268,7 @@ export const deleteOwnAccount = async (req, res) => {
         ownerCompanies: memberships.rows
           .filter(({ rol_empresa }) => rol_empresa === 'owner')
           .map(({ id_empresa }) => id_empresa),
+        companiesScheduledForDeletion: closedCompanies,
       },
     })
   } catch (error) {

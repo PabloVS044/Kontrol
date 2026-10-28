@@ -182,5 +182,5 @@ async function removeEvidence(id) {
   padding: 6px 12px; border: 1px solid var(--k-gray-3);
   font-size: var(--k-font-size-caption); font-family: var(--k-font-sans);
 }
-.evidence-error { color: #fb7185; font-size: var(--k-font-size-caption); font-family: var(--k-font-sans); }
+.evidence-error { color: var(--k-hue-rose); font-size: var(--k-font-size-caption); font-family: var(--k-font-sans); }
 </style>

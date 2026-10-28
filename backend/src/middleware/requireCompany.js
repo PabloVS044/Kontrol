@@ -3,8 +3,11 @@ import pool from '../db/pool.js'
 /**
  * Validates that the authenticated user belongs to the company selected
  * in the X-Company-ID header. Keeps req.company and req.empresa in sync.
+ *
+ * With `allowClosing`, a company inside its closure export window also
+ * passes; only the export and closure routes use it.
  */
-const requireCompany = async (req, res, next) => {
+const buildRequireCompany = ({ allowClosing = false } = {}) => async (req, res, next) => {
   const id_empresa = req.headers['x-company-id'] ?? req.headers['x-empresa-id']
 
   if (!id_empresa) {
@@ -42,19 +45,34 @@ const requireCompany = async (req, res, next) => {
     return res.status(403).json({ success: false, message: 'You do not have access to this company.' })
   }
 
+  let closing = false
   if (!result.rows[0].activo) {
-    return res.status(403).json({ success: false, message: 'This company is currently inactive.' })
+    if (allowClosing) {
+      const closure = await pool.query(
+        'SELECT status FROM public.company_closure WHERE company_id = $1',
+        [id_empresa]
+      )
+      closing = closure.rows[0]?.status === 'export_window'
+    }
+    if (!closing) {
+      return res.status(403).json({ success: false, message: 'This company is currently inactive.' })
+    }
   }
 
   const companyContext = {
     id_empresa: parseInt(id_empresa),
     nombre: result.rows[0].nombre,
     rol_empresa: result.rows[0].rol_empresa,
+    ...(closing ? { closing: true } : {}),
   }
   req.company = companyContext
   req.empresa = companyContext
 
   next()
 }
+
+const requireCompany = buildRequireCompany()
+
+export const requireCompanyAllowingClosure = buildRequireCompany({ allowClosing: true })
 
 export default requireCompany

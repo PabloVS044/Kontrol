@@ -7,6 +7,7 @@ import validate from '../middleware/validate.js'
 import {
   getInventoryMovementsQuerySchema,
   getInventorySalesStatsQuerySchema,
+  getSalesHistoryQuerySchema,
   inventoryMovementIdParamSchema,
   createInventoryMovementSchema,
   createSaleSchema,
@@ -14,6 +15,7 @@ import {
 import {
   getInventoryMovements,
   getInventorySalesStats,
+  getSalesHistory,
   getInventoryMovementById,
   createInventoryMovement,
   createSale,
@@ -35,6 +37,15 @@ router.get(
   '/stats',
   validate(getInventorySalesStatsQuerySchema, 'query'),
   getInventorySalesStats
+)
+
+// Historial de ventas por rango (Ventas > Historial). Autoriza como /stats:
+// por los proyectos cuyo inventario puede ver el usuario.
+router.get(
+  '/sales',
+  expensiveLimiter,
+  validate(getSalesHistoryQuerySchema, 'query'),
+  getSalesHistory
 )
 
 router.get(

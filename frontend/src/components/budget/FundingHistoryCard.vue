@@ -105,7 +105,7 @@ function formatDate(v) {
 .fh-list { list-style: none; padding: 0; margin: 12px 0 0; }
 .fh-item {
   padding: 10px 0;
-  border-bottom: 1px solid #161616; /* sin token exacto en la rampa de shades */
+  border-bottom: 1px solid var(--k-shade-3b);
   font-family: var(--k-font-sans);
 }
 .fh-item:last-child { border-bottom: none; }
@@ -117,7 +117,7 @@ function formatDate(v) {
 }
 .fh-date { font-size: var(--k-font-size-caption); color: var(--k-gray-5); }
 .fh-motivo {
-  font-size: var(--k-font-size-caption-lg); color: #d4d4d4; margin: 4px 0 0; /* sin token exacto */
+  font-size: var(--k-font-size-caption-lg); color: var(--k-text-soft); margin: 4px 0 0;
   line-height: 1.4;
 }
 .fh-user { font-size: var(--k-font-size-caption); color: var(--k-gray-4); }

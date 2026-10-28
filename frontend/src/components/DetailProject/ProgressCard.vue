@@ -17,7 +17,7 @@
       </div>
 
       <p class="descripcion">{{ entry.title }}</p>
-      <p v-if="entry.details" class="descripcion" style="opacity: 0.7; font-size: 13px; margin-top: 6px;">{{ entry.details }}</p>
+      <p v-if="entry.details" class="descripcion" style="opacity: 0.7; font-size: 0.8125rem; margin-top: 6px;">{{ entry.details }}</p>
     </div>
   </div>
 </template>

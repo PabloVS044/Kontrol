@@ -1,3 +1,12 @@
+# DT-21 (RTF 2, OPS-02): sin rotación, los logs de los contenedores crecían
+# sin límite en el mismo disco que el Postgres de producción, que llegó al 98 %
+# el 26/09/2026 y se llenó el 01/10/2026. Tope de 30 MB por contenedor.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -16,6 +25,7 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    logging: *default-logging
 
   backend:
     build:
@@ -48,6 +58,7 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    logging: *default-logging
 
   frontend:
     build:
@@ -62,6 +73,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    logging: *default-logging
 
   caddy:
     image: caddy:2-alpine
@@ -77,6 +89,7 @@ services:
     depends_on:
       - frontend
     restart: unless-stopped
+    logging: *default-logging
 
 volumes:
   postgres_data:

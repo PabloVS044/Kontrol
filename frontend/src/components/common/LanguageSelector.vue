@@ -115,12 +115,12 @@ onUnmounted(() => {
 
 .lang-btn:hover,
 .lang-btn.active {
-  color: var(--Primary);
+  color: var(--k-color-primary);
   border-color: var(--k-shade-6);
 }
 
 .lang-btn:focus-visible {
-  outline: 2px solid var(--Primary);
+  outline: 2px solid var(--k-color-primary);
   outline-offset: 2px;
 }
 
@@ -138,7 +138,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 2px;
   min-width: 130px;
-  z-index: 200;
+  z-index: var(--k-z-dropdown);
 }
 
 .lang-opt {
@@ -153,8 +153,8 @@ onUnmounted(() => {
   transition: color 0.15s, background 0.15s;
 }
 
-.lang-opt:hover { color: var(--Text); background: rgba(255, 255, 255, 0.04); }
-.lang-opt.selected { color: var(--Primary); }
+.lang-opt:hover { color: var(--k-color-text); background: rgba(var(--k-ink-rgb), 0.04); }
+.lang-opt.selected { color: var(--k-color-primary); }
 
 /* ── Variante inline ── */
 .lang-inline {
@@ -178,15 +178,15 @@ onUnmounted(() => {
   transition: color 0.15s, background 0.15s;
 }
 
-.lang-inline-opt:hover { color: var(--Text); background: rgba(255, 255, 255, 0.04); }
+.lang-inline-opt:hover { color: var(--k-color-text); background: rgba(var(--k-ink-rgb), 0.04); }
 
 .lang-inline-opt.selected {
   color: var(--k-shade-1);
-  background: var(--Primary);
+  background: var(--k-color-primary);
 }
 
 .lang-inline-opt:focus-visible {
-  outline: 2px solid var(--Primary);
+  outline: 2px solid var(--k-color-primary);
   outline-offset: 2px;
 }
 

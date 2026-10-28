@@ -3,7 +3,6 @@ import { createServer } from 'http'
 import express from 'express'
 import cors from 'cors'
 import router from './router.js'
-import helmet from 'helmet';
 import { ensureDatabaseSchema } from './db/bootstrap.js'
 import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
@@ -15,6 +14,7 @@ import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
 import { startMongoAccountDeletionWorker } from './services/accountDeletionOutbox.js'
 import { startSubscriptionCancellationWorker } from './services/billingService.js'
+import { startCompanyClosureWorker } from './services/companyClosure.js'
 import { logger } from './utils/logger.js'
 
 const app        = express()
@@ -43,16 +43,6 @@ app.use(cors({
   origin: corsOriginFn,
   credentials: true,
 }))
-app.use(
-  helmet({
-    xFrameOptions: { action: 'deny' },
-    strictTransportSecurity: {
-      maxAge: 15552000, // 180 días en segundos
-      includeSubDomains: true,
-      preload: true,
-    },
-  })
-);
 app.locals.corsOriginFn = corsOriginFn
 app.locals.allowedOrigins = allowedOrigins
 // PAY-1 — Antes de express.json(): la firma del webhook se verifica sobre el
@@ -87,6 +77,7 @@ if (process.env.NODE_ENV !== 'test') {
   startMongoAccountDeletionWorker()
   // PAY-1 — Reintenta cancelar suscripciones de empresas desactivadas por una baja.
   startSubscriptionCancellationWorker()
+  startCompanyClosureWorker()
 
   httpServer.listen(PORT, () => {
     logger.info(`Backend running at http://localhost:${PORT}`)

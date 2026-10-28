@@ -21,19 +21,19 @@ defineProps({
   align-items: center;
   justify-content: center;
   gap: var(--k-space-2);
-  background: var(--Background);
+  background: var(--k-color-bg);
   min-height: 300px;
   padding: var(--k-space-7);
 }
 .state-title {
   font-family: Var(--font-display), serif;
   font-size: var(--k-font-size-heading-1);
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 .state-msg {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-small);
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   text-align: center;
   max-width: 400px;
   line-height: var(--k-leading-relaxed);

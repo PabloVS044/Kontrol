@@ -1,6 +1,6 @@
 <template>
-  <div class="app-surface" :class="{ 'app-surface--active': active }">
-    <div v-if="active" class="app-surface__scrim" aria-hidden="true"></div>
+  <div class="app-surface" :class="{ 'app-surface--active': active, 'app-surface--block': block }">
+    <div v-if="active && !block" class="app-surface__scrim" aria-hidden="true"></div>
     <slot />
   </div>
 </template>
@@ -17,9 +17,11 @@
  *
  * App.vue la activa con `meta.surface` de la ruta. Landing, login, registro,
  * onboarding e invitación no la llevan: muestran el fondo animado completo.
+ * Con `block`, el velo es el fondo del propio bloque y no de toda la pantalla.
  */
 defineProps({
   active: { type: Boolean, default: false },
+  block: { type: Boolean, default: false },
 })
 </script>
 
@@ -30,8 +32,15 @@ defineProps({
 .app-surface__scrim {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--k-z-negative);
   background: var(--k-surface-scrim);
   pointer-events: none;
+}
+
+.app-surface--block {
+  background: var(--k-surface-panel);
+  box-shadow: inset 0 0 0 var(--k-border-width) var(--k-surface-panel-border);
+  border-radius: var(--k-radius-lg);
+  padding: var(--k-space-5);
 }
 </style>

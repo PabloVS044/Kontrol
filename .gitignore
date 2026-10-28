@@ -39,3 +39,10 @@ backend/reports/
 
 # Local tooling & MCP artifacts
 .playwright-mcp/
+
+# P2: archives, keys and local reports. Commit only reviewed public evidence.
+.backups-local/
+backup-drill-output/
+.venv-backups/
+__pycache__/
+*.pyc
