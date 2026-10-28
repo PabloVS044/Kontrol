@@ -789,7 +789,7 @@ watch(() => chatStore.lastError, (message) => {
     border: var(--k-border-width) solid var(--k-alert-watching-border);
     color: var(--k-color-primary);
     font-family: var(--k-font-sans);
-    font-size: 8px;
+    font-size: 0.5rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -1054,7 +1054,7 @@ watch(() => chatStore.lastError, (message) => {
   border: var(--k-border-width) solid var(--k-alert-watching-border);
   color: var(--k-color-primary);
   font-family: var(--k-font-sans);
-  font-size: 8px;
+  font-size: 0.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1283,5 +1283,22 @@ watch(() => chatStore.lastError, (message) => {
 @keyframes blink {
   0%, 80%, 100% { opacity: 0.2; }
   40% { opacity: 1; }
+}
+
+/* En un teléfono el panel fijo de 340×540 no cabía: en pantallas bajas su
+   cabecera (volver, videollamada, pantalla completa) quedaba bajo la barra
+   superior, y el botón de Birdie, que va por encima del panel, tapaba esas
+   acciones. Aquí ocupa el alto disponible y se pone por encima de Birdie. */
+@media (max-width: 640px) {
+  .float-panel,
+  .float-panel.in-chat {
+    top: 64px;
+    right: 12px;
+    bottom: 86px;
+    left: 12px;
+    width: auto;
+    height: auto;
+    z-index: calc(var(--k-z-floating) + 2);
+  }
 }
 </style>

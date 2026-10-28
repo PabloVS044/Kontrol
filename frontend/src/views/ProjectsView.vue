@@ -764,7 +764,7 @@ async function submitProject() {
 .search-input::placeholder { color: var(--k-gray-2); }
 .search-clear {
   background: none; border: none; color: var(--k-gray-3); cursor: pointer;
-  font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
+  font-size: 1rem; padding: 0; line-height: 1; transition: color 0.15s;
 }
 .search-clear:hover { color: var(--k-text-soft); }
 
@@ -1095,7 +1095,7 @@ async function submitProject() {
 @media (max-width: 900px) {
   .projects-layout { flex-direction: column; }
   .main-panel { padding: 32px 28px; gap: 24px; }
-  .proj-title { font-size: 36px; }
+  .proj-title { font-size: 2.25rem; }
   .context-panel {
     width: 100%; max-height: none; position: static;
     border-left: none; border-top: 1px solid var(--k-shade-4);
@@ -1112,6 +1112,15 @@ async function submitProject() {
   .proj-header { flex-direction: column; gap: 16px; }
   .proj-header-actions { align-self: flex-start; }
   .tabs { gap: 16px; overflow-x: auto; }
+  /* Cada pestaña en una línea: la fila se desplaza en vez de partir "En
+     riesgo" en dos renglones de distinto alto. */
+  .tab { flex-shrink: 0; white-space: nowrap; }
+  /* El buscador baja a su propia fila a todo el ancho: con 180px fijos el
+     conmutador cuadrícula/lista quedaba fuera de la pantalla en 375px. */
+  .section-header { flex-wrap: wrap; gap: 12px; }
+  .section-controls { flex: 1 1 100%; min-width: 0; }
+  .search-wrap { flex: 1; min-width: 0; }
+  .search-input { width: 100%; min-width: 0; }
   .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
   .summary-grid { grid-template-columns: 1fr 1fr; }
   .project-grid { grid-template-columns: 1fr; }

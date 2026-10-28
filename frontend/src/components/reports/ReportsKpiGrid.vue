@@ -82,7 +82,7 @@ const metrics = computed(() => [
 }
 
 .kpi-grid :deep(.card-title) {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-variant-numeric: tabular-nums;
 }
 

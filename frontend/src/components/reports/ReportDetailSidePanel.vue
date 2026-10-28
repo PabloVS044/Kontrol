@@ -121,7 +121,7 @@ defineProps({
 .side-section { margin-bottom: 16px; }
 .side-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--TextFaint);
   letter-spacing: 0.1em;
@@ -141,14 +141,14 @@ defineProps({
 .health-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0; }
 .health-text {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--TextDim);
   display: block;
 }
 .health-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
   display: block;
 }
@@ -169,8 +169,8 @@ defineProps({
   padding: 7px 0;
   border-bottom: 1px solid #111;
 }
-.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); }
-.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: var(--TextSoft); }
+.qstat-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--TextDim); }
+.qstat-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 600; color: var(--TextSoft); }
 .qstat-val.gold { color: var(--Primary); }
 .qstat-val.red { color: #fb7185; }
 
@@ -183,7 +183,7 @@ defineProps({
   border: 1px solid #1a1a1a;
   color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   border-radius: 0;
   margin-bottom: 6px;
   transition: border-color .2s, color .2s;
@@ -203,18 +203,18 @@ defineProps({
 }
 .info-row :deep(.pill) {
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
-.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
-.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextMuted); }
+.info-key { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--TextFaint); }
+.info-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--TextMuted); }
 .info-val.gold { color: var(--Primary); }
 
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--TextFaint); width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: #111111; border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
+.risk-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; min-width: 40px; text-align: right; }
 
 @media (max-width: 1100px) {
   .side-panel { border-left: none; border-top: 1px solid #1e1e1e; }

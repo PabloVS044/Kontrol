@@ -767,6 +767,7 @@
       "loadingMsg": "Fetching the latest inventory details.",
       "errorTitle": "Could not load product",
       "back": "Back to inventory",
+      "backToCharge": "Back to Charge",
       "retry": "Retry",
       "uncategorized": "Uncategorized",
       "noProject": "Project not available",
@@ -1492,11 +1493,11 @@
       },
       "inventoryCreate": {
         "q": "How do I add a product?",
-        "a": "Pick a project from the tabs above, then click New Product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
+        "a": "Go to Sales > Charge, pick a project from the tabs above, then click New product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
       },
       "inventorySell": {
         "q": "How do I register a sale?",
-        "a": "Go to Sales > Charge, which takes you to the inventory. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+        "a": "Go to Sales > Charge. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
       },
       "inventoryMovements": {
         "q": "What inventory movement types exist?",
@@ -1588,7 +1589,7 @@
       },
       "inventoryShortcut": {
         "q": "Where is inventory?",
-        "a": "The Inventory section lists every product across your projects. From here you can create products, register movements (entradas/salidas/ajustes) or kick off a sale using the Sell button on any product card."
+        "a": "The Inventory section is the table of every product across your projects, with its price and stock; you can filter by project, search and see which ones are low or out of stock. To sell, create products or register movements, go to Sales > Charge."
       },
       "dashboardShortcut": {
         "q": "Where is the executive dashboard?",
@@ -1611,6 +1612,9 @@
       "theme": "Theme",
       "themeNote": "\"System\" follows your device preference. If you choose Dark or Light and accept remembering your preferences, it stays in this browser, including after you sign out.",
       "themes": { "system": "System", "dark": "Dark", "light": "Light" },
+      "fontSize": "Text size",
+      "fontSizeNote": "Makes the app's text larger without changing how the screens are laid out. If you accept remembering your preferences, it stays in this browser.",
+      "fontSizes": { "default": "Normal", "large": "Large", "larger": "Larger", "largest": "Largest" },
       "storage": "Remember preferences in this browser",
       "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
       "storagePolicy": "See the cookie and storage policy"
@@ -1653,9 +1657,9 @@
       "exportOwnerOnly": "The complete export is available only to company owners and administrators.",
       "deleteTitle": "Delete my account",
       "deleteWhat": "Deletion is immediate and has no grace period. Your account is disabled, login credentials and contact details are removed, your personal AI conversations and chat messages are deleted. Anonymized technical references needed by business records remain; operational logs may still contain identifiable data.",
-      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is deactivated and its data archived. Other accounts are not deleted.",
-      "deleteDuration": "The current policy does not set a retention period for these business records. We therefore cannot promise a deletion date: they remain until a retention period is approved and implemented. This does not claim that a law requires their retention.",
-      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are not automatically deleted either.",
+      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is closed: its data can be downloaded for 30 days and is deleted within 60. Other accounts are not deleted.",
+      "deleteDuration": "For a company that is still in use, the current policy does not set a retention period for these records, so we cannot promise a deletion date while it stays active. To delete them, the owner can close the company. This does not claim that a law requires their retention.",
+      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are deleted only when the company is closed.",
       "password": "Current password (for password-based accounts)",
       "googleReauth": "Reauthenticate with Google",
       "reauthenticating": "Connecting to Google…",
@@ -1664,7 +1668,27 @@
       "deleteConfirm": "Delete my account now",
       "deleting": "Deleting account…",
       "finalConfirm": "This action is irreversible. Personal access will be deleted and the described business records will be retained. Do you want to continue?",
-      "error": "The operation could not be completed."
+      "error": "The operation could not be completed.",
+      "closure": {
+        "title": "Close the company",
+        "what": "Closing the company blocks its use, disables its invitations and integrations and opens a 30-day period to download its data. Afterwards all its records (projects, inventory, suppliers, sales, reports, evidence files and assistant history) are deleted no later than 60 days after the request, and backups no later than 90.",
+        "kept": "Member accounts, person-to-person chats, anything already sent to Slack, Teams, email, SMS or other integrations, and downloads someone already made are not deleted. You can cancel the closure while the download period is open.",
+        "confirmName": "Type the company name to confirm",
+        "skipWindow": "Delete without waiting 30 days (it can no longer be cancelled)",
+        "submit": "Close the company",
+        "submitting": "Closing the company…",
+        "finalConfirm": "You are about to close “{name}” and its data will be deleted. Do you want to continue?",
+        "googleReauthSuccess": "Google verified your identity. Confirm the company closure to continue.",
+        "inProgress": "This company is being closed. You can download its data until {exportUntil}. It will be deleted no later than {deleteBy}, and backups no later than {backupsBy}.",
+        "deleting": "This company is being deleted.",
+        "cancel": "Cancel the closure",
+        "cancelling": "Cancelling the closure…",
+        "cancelled": "The closure was cancelled. Invitations and integrations remain disabled: turn back on the ones you need.",
+        "certificatesTitle": "Closure certificates",
+        "certificatePending": "{name}: being closed, to be deleted no later than {deleteBy}.",
+        "certificateDeleted": "{name}: data deleted on {deletedAt}.",
+        "download": "Download certificate"
+      }
     }
   },
   "navbar": {
@@ -1842,6 +1866,7 @@
   },
   "chat": {
     "title": "Messages",
+    "backToList": "Back to conversations",
     "newDM": "New direct message",
     "searchMessages": "Search messages…",
     "directMessages": "Direct Messages",
@@ -2278,17 +2303,95 @@
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
   },
+  "inventoryTable": {
+    "subtitle": "All your products with their price and stock.",
+    "goToCharge": "Go to Charge",
+    "project": "Project",
+    "allProjects": "All projects",
+    "search": "Search",
+    "searchPlaceholder": "Name, code or category",
+    "stockFilter": "Stock",
+    "stockFilters": {
+      "all": "All",
+      "low": "Low stock",
+      "out": "Out of stock"
+    },
+    "summary": "Products: {count} · Low stock: {low} · Out of stock: {out}",
+    "loading": "Loading products…",
+    "loadError": "The products could not be loaded.",
+    "retry": "Retry",
+    "empty": "There are no products yet. They are added in Sales > Charge.",
+    "noMatches": "No product matches the search or the filter.",
+    "columns": {
+      "product": "Product",
+      "category": "Category",
+      "project": "Project",
+      "price": "Price",
+      "cost": "Cost",
+      "stock": "Stock",
+      "minimum": "Minimum"
+    }
+  },
+  "salesHistory": {
+    "title": "Sales history",
+    "subtitle": "Each sale with its details and what came in on the dates you pick.",
+    "range": "Period",
+    "presets": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Custom"
+    },
+    "from": "From",
+    "to": "To",
+    "invalidRange": "Pick a start date that is not after the end date.",
+    "summaryLabel": "Period summary",
+    "kpis": {
+      "income": "Income",
+      "incomeNote": "Includes VAT {vat} · Discounts {discounts}",
+        "profit": "Profit",
+        "profitNote": "Income without VAT {net} − cost {cost}",
+      "sales": "Sales",
+      "average": "Average ticket",
+      "units": "Units sold"
+    },
+    "loading": "Loading sales…",
+    "loadError": "The sales could not be loaded.",
+    "empty": "There are no sales in this period.",
+    "truncated": "Showing the {count} most recent sales of the period. The totals above include all of them.",
+    "columns": {
+      "date": "Date",
+      "seller": "Seller",
+      "project": "Project",
+      "units": "Units",
+      "total": "Total",
+      "details": "Details"
+    },
+    "showDetails": "View details",
+    "hideDetails": "Hide",
+    "lines": {
+      "product": "Product",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "vat": "VAT",
+      "amount": "Amount",
+      "subtotal": "Subtotal"
+    },
+    "toReports": "More information in Reports"
+  },
   "sales": {
     "eyebrow": "Sales",
     "title": "Sales",
     "subtitle": "Charge, review what was sold and adjust how your company charges.",
     "checkout": {
       "title": "Charge",
-      "copy": "Record a sale from your inventory products."
+      "subtitle": "Search or scan products, build the cart and record the sale.",
+      "copy": "Record a sale, add products and move stock."
     },
     "history": {
       "title": "Sales history",
-      "copy": "Income, profit and average ticket in Reports."
+      "copy": "Sales by date, with their details and what came in during the period."
     },
     "config": {
       "title": "Sale settings",
@@ -2398,7 +2501,7 @@
         },
         {
           "title": "6. How long we keep it",
-          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain; there is no defined period for deleting them, and copies held by external providers are not removed."
+          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain while the company is in use, and copies held by external providers are not removed. If you own a company, you can close it from Settings: you will have 30 days to download its data, and then its records, evidence files and assistant history are deleted no later than 60 days after the request, and backups no later than 90."
         },
         {
           "title": "7. Your rights",
@@ -2438,7 +2541,7 @@
         },
         {
           "title": "4. Your preferences, only if you accept them",
-          "body": "The language, the theme, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
+          "body": "The language, the theme, the text size, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
         },
         {
           "title": "5. External services",

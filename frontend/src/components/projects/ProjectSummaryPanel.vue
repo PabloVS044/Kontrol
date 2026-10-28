@@ -79,16 +79,16 @@ defineEmits(['create-project'])
 
 .ctx-title {
   font-family: 'Playfair Display', serif;
-  font-size: 28px;
+  font-size: 1.75rem;
   color: var(--Text);
 }
 .ctx-subtitle {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--TextFaint);
   margin-top: 4px;
 }
 .ctx-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   color: var(--TextFaint);
   margin-bottom: 12px;
@@ -108,17 +108,17 @@ defineEmits(['create-project'])
   gap: 4px;
 }
 .s-value {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--Text);
   line-height: 1;
 }
 .s-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 .s-sub {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 .s-sub.gold { color: var(--Primary); }
@@ -128,7 +128,7 @@ defineEmits(['create-project'])
   width: 100%;
   border-radius: 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 12px 16px;
   display: block;
@@ -149,13 +149,13 @@ defineEmits(['create-project'])
   margin-top: auto;
 }
 .ds-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   color: var(--k-gray-1);
   margin-bottom: 4px;
 }
 .ds-text {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 </style>

@@ -417,6 +417,17 @@ describe('chat store — acciones del usuario', () => {
     expect(store.messages.c.map((m) => m.readBy)).toEqual([[1], [1], [1]])
   })
 
+  it('markRead no reemplaza los mensajes si ya estaban todos leídos', () => {
+    // El chat flotante vigila los mensajes y llama a markRead: un array nuevo
+    // en cada llamada volvía a disparar el watcher, en bucle.
+    const store = useChatStore()
+    connected(store)
+    store.messages = { c: [{ _id: '1', readBy: [1] }] }
+    const antes = store.messages.c
+    store.markRead('c')
+    expect(store.messages.c).toBe(antes)
+  })
+
   it('markRead sin usuario no toca los mensajes', () => {
     auth.user = null
     const store = useChatStore()

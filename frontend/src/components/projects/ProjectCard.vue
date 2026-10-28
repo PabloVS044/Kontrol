@@ -193,7 +193,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 }
 .card-name {
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--Text);
   white-space: nowrap;
   overflow: hidden;
@@ -209,7 +209,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   flex: 1;
 }
 .card-desc {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--TextDim);
   line-height: 1.5;
 }
@@ -220,7 +220,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   gap: 10px;
 }
 .progress-val {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
   width: 30px;
   text-align: right;
@@ -235,7 +235,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 .budget-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextMuted);
 }
 .budget-val {
@@ -257,11 +257,11 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 .alert-pill {
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 2px 6px;
   letter-spacing: 0.08em;
   border-radius: 2px;
@@ -286,7 +286,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   gap: 10px;
 }
 .due-date {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
 }
 
@@ -311,7 +311,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: none;
   color: var(--status-color, #faf8f5);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.04em;
   padding: 0;
   padding-right: 14px;
@@ -329,7 +329,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
 
 .status-error {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #fecdd3;
   font-family: 'Manrope', sans-serif;
 }
@@ -339,7 +339,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   padding: 10px 16px;
 }
 .open-anchor {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--TextFaint);
   cursor: pointer;
   display: block;
@@ -358,7 +358,7 @@ const projectLink = computed(() => `/projects/${props.project.id_proyecto}`)
   border: 1px solid currentColor;
 }
 :deep(.pill-text) {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.06em;
   font-family: 'Manrope', sans-serif;
 }

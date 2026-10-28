@@ -42,6 +42,12 @@
 /* Header */
 :where(.inventory-root) .inv-header { display: flex; align-items: flex-start; justify-content: space-between; }
 :where(.inventory-root) .inv-header-left { display: flex; flex-direction: column; gap: 4px; }
+:where(.inventory-root) .inv-back {
+  display: inline-flex; align-items: center; gap: var(--k-space-2);
+  color: var(--k-text-muted); font-size: var(--k-font-size-caption-lg);
+  letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none;
+}
+:where(.inventory-root) .inv-back:hover { color: var(--k-color-primary); }
 :where(.inventory-root) .inv-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-display);
@@ -84,7 +90,9 @@
 :where(.inventory-root) .search-input {
   background: none; border: none; outline: none;
   font-family: var(--k-font-sans); font-size: var(--k-font-size-body-main);
-  color: var(--k-color-text); flex: 1;
+  /* Sin min-width: 0 el input conserva su ancho intrínseco (~20 caracteres),
+     que crece con la letra, y empujaba el botón de buscar fuera en móvil. */
+  color: var(--k-color-text); flex: 1; min-width: 0;
 }
 :where(.inventory-root) .search-input::placeholder { color: var(--k-text-dim); }
 :where(.inventory-root) .search-submit {
@@ -298,14 +306,14 @@
   :where(.inventory-root) .product-grid { grid-template-columns: repeat(3, 1fr); }
   :where(.inventory-root) .context-panel { width: 300px; padding: 32px 20px; }
   :where(.inventory-root) .main-panel { padding: 40px 32px; }
-  :where(.inventory-root) .inv-title { font-size: 36px; }
+  :where(.inventory-root) .inv-title { font-size: 2.25rem; }
 }
 
 /* Tablet (≤900px): grid 2 col, panel debajo */
 @media (max-width: 900px) {
   :where(.inventory-root) .inventory-layout { flex-direction: column; }
   :where(.inventory-root) .main-panel { padding: 32px 24px; gap: 20px; }
-  :where(.inventory-root) .inv-title { font-size: 32px; }
+  :where(.inventory-root) .inv-title { font-size: 2rem; }
   :where(.inventory-root) .inv-header { flex-wrap: wrap; gap: 16px; }
   :where(.inventory-root) .product-grid { grid-template-columns: repeat(2, 1fr); }
   :where(.inventory-root) .context-panel {

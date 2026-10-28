@@ -6,13 +6,14 @@
 #   zap/verify-controls.sh ssrf        # SCRUM-43 / DT-12
 #   zap/verify-controls.sh ssrf-redirect  # needs an external redirector (httpbin.org)
 #   zap/verify-controls.sh timeout        # DT-15, needs a slow public endpoint (httpbin.org)
+#   zap/verify-controls.sh tls            # RTF 2 (TLS-01, RNF-6.2), only openssl, no account
 #
 # headers and ssrf need ZAP_USER / ZAP_PASSWORD. ssrf creates a company owned
 # by that account (the DT-12 vector) and leaves it for `reset:test` to remove.
 set -euo pipefail
 source "$(dirname "$0")/lib/common.sh"
 
-CHECK="${1:?usage: verify-controls.sh headers|ratelimit|ssrf|ssrf-redirect|timeout}"
+CHECK="${1:?usage: verify-controls.sh headers|ratelimit|ssrf|ssrf-redirect|timeout|tls}"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 log="$OUT_DIR/verify-$CHECK-$stamp.txt"
 exec > >(tee "$log") 2>&1
@@ -46,6 +47,28 @@ case "$CHECK" in
     check_headers "public: GET /api/health" "$BASE_URL/api/health"
     check_headers "authenticated: GET /api/auth/me" -H "Authorization: Bearer $TOKEN" "$BASE_URL/api/auth/me"
     check_headers "SPA document (nginx, outside the SEC2 criterion): GET /" "$BASE_URL/"
+    ;;
+
+  tls)
+    # RNF-6.2 was closed checking HSTS only, never the negotiated protocol
+    # (RTF 2). TLS 1.0 and 1.1 must be refused and 1.2 and 1.3 accepted.
+    # SECLEVEL=0 lets the local client offer the old versions, so a refusal
+    # comes from the server and not from the local openssl defaults.
+    host="${BASE_URL#*://}"; host="${host%%/*}"
+    failed=0
+    for v in tls1:refuse tls1_1:refuse tls1_2:accept tls1_3:accept; do
+      proto="${v%%:*}"; want="${v#*:}"
+      extra=()
+      case "$proto" in tls1|tls1_1) extra=(-cipher 'DEFAULT@SECLEVEL=0') ;; esac
+      out="$(echo | openssl s_client -connect "$host:443" -servername "$host" "-$proto" "${extra[@]}" 2>&1 || true)"
+      if grep -q 'Cipher is ' <<<"$out" && ! grep -q 'Cipher is (NONE)' <<<"$out"; then got=accept
+      elif grep -qiE 'connect error|connection refused|getaddrinfo|BIO_lookup' <<<"$out"; then got=unreachable
+      else got=refuse; fi
+      [ "$got" = "$want" ] && verdict=OK || { verdict=FAIL; failed=1; }
+      printf '  %-7s expected %-6s got %-11s %s
+' "$proto" "$want" "$got" "$verdict"
+    done
+    echo "result: $([ "$failed" = 0 ] && echo PASS || echo FAIL)"
     ;;
 
   ratelimit)
@@ -127,19 +150,25 @@ case "$CHECK" in
         "must-block|http://[fd00::1]/"
         "must-block|http://127.0.0.1.nip.io:3000/api/health"
         "must-block|file:///etc/passwd"
-        "bypass-hypothesis|http://0.0.0.0:3000/api/health"
-        "bypass-hypothesis|http://[::ffff:127.0.0.1]:3000/api/health"
-        "bypass-hypothesis|http://127.1:3000/api/health"
-        "bypass-hypothesis|http://2130706433:3000/api/health"
+        # DT-18 (RTF 2): reached the backend before the fix; must block now.
+        "must-block|http://0.0.0.0:3000/api/health"
+        "must-block|http://0:3000/api/health"
+        "must-block|http://[::]:3000/api/health"
+        "must-block|http://[::ffff:127.0.0.1]:3000/api/health"
+        "must-block|http://[::ffff:7f00:1]:3000/api/health"
+        "must-block|http://100.100.100.200/latest/meta-data/"
+        "must-block|http://127.1:3000/api/health"
+        "must-block|http://2130706433:3000/api/health"
         "control-public|https://example.com/"
       )
     else
       # 302 turns the POST into a GET, so an internal /api/health answers 200
       # and the tester reports success: unambiguous proof the redirect was
-      # followed. 307 keeps the POST and gets the internal 404 instead.
+      # followed. 307 keeps the POST and gets the internal 404 instead. Since
+      # DT-18 redirects are not followed: the tester reports the 3xx itself.
       targets=(
-        "bypass-hypothesis|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=302"
-        "bypass-hypothesis|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=307"
+        "must-not-follow|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=302"
+        "must-not-follow|https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A3000%2Fapi%2Fhealth&status_code=307"
       )
     fi
 
@@ -155,15 +184,19 @@ case "$CHECK" in
         api POST /integrations/webhook/test
         test_status="$LAST_STATUS"; test_msg="$(json '.message // empty')"
       fi
-      if [ "$save_status" != 200 ] && [ "$save_status" != 201 ]; then verdict="SCHEMA"
+      # DT-18: the guard also runs when saving, so a blocked url can stop there.
+      if [ "$save_status" != 200 ] && [ "$save_status" != 201 ]; then
+        if [ "$save_msg" = "$guard_msg" ]; then verdict="GUARD"; else verdict="SCHEMA"; fi
       elif [ "$test_msg" = "$guard_msg" ]; then verdict="GUARD"
+      elif [ "$CHECK" = ssrf-redirect ] && [[ "$test_msg" =~ status\ 30[12378] ]]; then verdict="NOT-FOLLOWED"
       else verdict="REACHED"; fi
       printf '%-18s | %-6s | %-6s | %-8s | %s -> %s\n' "$kind" "$save_status" "$test_status" "$verdict" "$url" "${test_msg:-$save_msg}"
     done
     api DELETE /integrations/webhook || true
     echo
     echo "SCHEMA/GUARD = rejected before any outbound request; REACHED = the backend sent the request."
-    echo "A must-block or bypass-hypothesis row marked REACHED is an open SSRF path."
+    echo "NOT-FOLLOWED = the redirector answered and its 3xx came back without being followed."
+    echo "A must-block or must-not-follow row marked REACHED is an open SSRF path."
     ;;
 
   *) echo "unknown check: $CHECK" >&2; exit 1 ;;

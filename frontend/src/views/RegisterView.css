@@ -29,7 +29,10 @@
   justify-content: center;
   width: 25%;
   min-width: 280px;
-  margin-left: -180px;
+  /* Mismo criterio que la K del login (LoginView.css), en espejo: puede invadir
+     el borde difuminado del formulario, pero no la tarjeta. Con márgenes fijos
+     la K tapaba los campos entre 821 y ~960px y entre 1201 y ~1270px. */
+  margin-left: calc(-1 * clamp(120px, 50vw - 470px, 180px));
   pointer-events: none;
 }
 
@@ -437,7 +440,7 @@
     max-width: 540px;
   }
   .register-logo-panel {
-    margin-left: -140px;
+    margin-left: calc(-1 * clamp(110px, 40vw - 290px, 140px));
   }
   .register-logo-img,
   .register-logo-3d {
@@ -456,7 +459,7 @@
   .register-logo-panel {
     width: 30%;
     min-width: 220px;
-    margin-left: -110px;
+    margin-left: calc(-1 * clamp(30px, 50vw - 400px, 110px));
   }
   .register-logo-img,
   .register-logo-3d {

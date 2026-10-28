@@ -331,37 +331,37 @@ const FAQ_CATALOG = [
   // ── Inventory ────────────────────────────────────────────
   {
     id: 'inventory-create',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge', '/inventory'],
     questionKey: 'birdie.faqs.inventoryCreate.q',
     answerKey:   'birdie.faqs.inventoryCreate.a',
-    route: '/inventory',
+    route: '/sales/charge',
     target: '[data-birdie="create-product"], .inv-header-actions .btn-primary',
   },
   {
     id: 'inventory-sell',
-    contextRoutes: ['/inventory', '/inventory/*', '/sales'],
+    contextRoutes: ['/sales', '/sales/charge', '/inventory', '/inventory/*'],
     questionKey: 'birdie.faqs.inventorySell.q',
     answerKey:   'birdie.faqs.inventorySell.a',
-    route: '/inventory',
+    route: '/sales/charge',
     target: '.sell-btn, [data-birdie="sell-product"], .product-card',
   },
   {
     id: 'inventory-movements',
-    contextRoutes: ['/inventory', '/inventory/*'],
+    contextRoutes: ['/sales/charge', '/inventory/*'],
     questionKey: 'birdie.faqs.inventoryMovements.q',
     answerKey:   'birdie.faqs.inventoryMovements.a',
     target: '[data-birdie="movements"], .product-card, [data-birdie="create-product"]',
   },
   {
     id: 'inventory-filter',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge', '/inventory', '/sales/history'],
     questionKey: 'birdie.faqs.inventoryFilter.q',
     answerKey:   'birdie.faqs.inventoryFilter.a',
-    target: '.project-filter, .pf-tabs',
+    target: '.project-filter, .pf-tabs, .invt-select, .sh-select',
   },
   {
     id: 'inventory-category-filter',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge'],
     questionKey: 'birdie.faqs.inventoryCategoryFilter.q',
     answerKey:   'birdie.faqs.inventoryCategoryFilter.a',
     target: '[data-birdie="inventory-category-filter"], .filter-row',
@@ -512,7 +512,7 @@ const FAQ_CATALOG = [
     questionKey: 'birdie.faqs.inventoryShortcut.q',
     answerKey:   'birdie.faqs.inventoryShortcut.a',
     route: '/inventory',
-    target: '.product-grid, .inv-header, [data-birdie="create-product"]',
+    target: '.invt-table, .invt-header',
   },
   {
     id: 'global-dashboard',
@@ -1095,7 +1095,7 @@ function closeAssistant() {
   border: 1px solid rgba(var(--k-color-primary-rgb), 0.45);
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -1132,7 +1132,7 @@ function closeAssistant() {
     0 0 0 1px rgba(var(--k-color-primary-rgb), 0.18) inset;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
   pointer-events: auto;
   z-index: var(--k-z-raised);
@@ -1224,7 +1224,7 @@ function closeAssistant() {
 
 .birdie-bubble-q {
   font-family: 'Bungee', 'Manrope', sans-serif;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--k-color-primary);
   width: 28px;
@@ -1240,7 +1240,7 @@ function closeAssistant() {
 /* ── FAQ ── */
 .birdie-faq-title {
   margin: 0 0 10px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--k-color-primary);
@@ -1253,7 +1253,7 @@ function closeAssistant() {
 
 .birdie-faq-section-title {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--k-text-dim);
@@ -1265,7 +1265,7 @@ function closeAssistant() {
 
 .birdie-faq-empty {
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-style: italic;
 }
@@ -1293,7 +1293,7 @@ function closeAssistant() {
   border-radius: 8px;
   padding: 8px 10px;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 0.7813rem;
   color: var(--k-color-text);
   text-align: left;
   cursor: pointer;
@@ -1314,7 +1314,7 @@ function closeAssistant() {
   padding: 6px;
   margin-bottom: 8px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-color-primary);
   cursor: pointer;
   display: flex;
@@ -1332,7 +1332,7 @@ function closeAssistant() {
 
 .birdie-faq-toggle-icon {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1;
 }
@@ -1345,7 +1345,7 @@ function closeAssistant() {
   padding: 6px;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
@@ -1358,7 +1358,7 @@ function closeAssistant() {
 /* ── Speech ── */
 .birdie-speech-text {
   margin: 0 0 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-color-text);
   white-space: pre-wrap;
 }
@@ -1372,7 +1372,7 @@ function closeAssistant() {
   padding: 5px 12px;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;

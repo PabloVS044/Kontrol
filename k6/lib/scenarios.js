@@ -103,7 +103,12 @@ export function c5PosSaleScenario(data) {
   const token = loginAs(pickAccount(__VU))
   const headers = authHeaders(token, { companyId: COMPANY_ID, projectId: PROJECT_ID })
 
-  const search = http.get(`${BASE_URL}/api/products?projectId=${PROJECT_ID}`, { headers, tags: { name: 'product_search' } })
+  // DT-22 (RTF 2): el POS resuelve el código en el servidor. Antes este paso
+  // descargaba el inventario completo del proyecto, igual que hacía la vista.
+  const search = http.get(
+    `${BASE_URL}/api/products/barcode/${encodeURIComponent(data.codigoBarras)}?projectId=${PROJECT_ID}`,
+    { headers, tags: { name: 'product_search' } }
+  )
   check(search, { 'C5: product search 200': (r) => r.status === 200 })
 
   const sale = http.post(

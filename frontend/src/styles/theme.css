@@ -80,14 +80,17 @@
   --k-font-sans: 'Manrope', 'DM Sans', system-ui, sans-serif;
   --k-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --k-font-size-display: 42px;
-  --k-font-size-heading-1: 24px;
+  /* En rem para que sigan al tamaño de letra elegido en Configuración, que
+     cambia el `font-size` de <html> (ver useFontScale.js). Al 100 % valen lo
+     mismo que los px de la lámina, anotados a la derecha. */
+  --k-font-size-display: 2.625rem; /* 42px */
+  --k-font-size-heading-1: 1.5rem; /* 24px */
   /* body-large: la lámina de Figma define este nivel pero ninguna fuente le
      asigna px (design-system.md solo escala 42/24/14/11). 16px es un supuesto
      de implementación — confirmar con Diseño antes de propagarlo. */
-  --k-font-size-body-large: 16px;
-  --k-font-size-body-main: 14px;
-  --k-font-size-caption: 11px;
+  --k-font-size-body-large: 1rem; /* 16px */
+  --k-font-size-body-main: 0.875rem; /* 14px */
+  --k-font-size-caption: 0.6875rem; /* 11px */
 
   --k-font-weight-regular: 400;
   --k-font-weight-medium: 500;
@@ -160,9 +163,9 @@
      con los valores que ya tenían, en vez de encajarlos al nivel aprobado más
      cercano: ese redondeo es justo lo que degradó el login (título 32→24px).
      Cuando Diseño amplíe la lámina, estos tres suben al bloque de Figma. */
-  --k-font-size-heading-2: 20px; /* títulos de navbar */
-  --k-font-size-body-small: 13px; /* celdas de tabla, texto secundario */
-  --k-font-size-caption-lg: 12px; /* etiquetas de formulario, pills */
+  --k-font-size-heading-2: 1.25rem; /* 20px — títulos de navbar */
+  --k-font-size-body-small: 0.8125rem; /* 13px — celdas de tabla, texto secundario */
+  --k-font-size-caption-lg: 0.75rem; /* 12px — etiquetas de formulario, pills */
 
   /* ── superficies de alerta ──────────────────────────────── */
   /* Tres niveles derivados de la paleta. El PR #86 traía #facc15 / #f97316 /
@@ -246,7 +249,7 @@
   /* ── pasos de tamaño que faltaban ───────────────────────── */
   /* Ambos los usa el diseño aprobado de login y registro; sin ellos, migrar
      esas pantallas obligaba a redondear y encogía el título un 25 %. */
-  --k-font-size-display-2: 32px; /* título de las pantallas de autenticación */
+  --k-font-size-display-2: 2rem; /* 32px — título de las pantallas de autenticación */
   --k-radius-field: 6px; /* inputs y banners: la escala salta de 4 a 8 */
   --k-radius-xs: 2px; /* trazos finos, p. ej. las barras del menú hamburguesa */
 
