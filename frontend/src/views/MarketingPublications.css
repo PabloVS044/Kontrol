@@ -116,7 +116,9 @@
 
 .mkt-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  /* min(…, 100%): en pantallas de menos de ~330px una columna de 300px fijos
+     ya no cabe. */
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: var(--k-space-4);
 }
 
@@ -160,6 +162,14 @@
   object-fit: cover;
   border-radius: var(--k-radius-md);
   background: var(--k-color-bg-3);
+}
+
+/* Un hashtag o una URL no tienen dónde partirse: sin esto salían de la tarjeta
+   y ensanchaban la página (y la navbar) en el teléfono. */
+.mkt-card-title,
+.mkt-card-caption,
+.mkt-meta dd {
+  overflow-wrap: anywhere;
 }
 
 .mkt-card-title {
@@ -334,7 +344,10 @@
     padding: var(--k-space-5) var(--k-space-4);
   }
 
+  /* min-width: 0: un select mide lo que su opción más larga, y un nombre de
+     proyecto largo lo sacaba de la pantalla. */
   .mkt-filters .mkt-select {
     flex: 1 1 100%;
+    min-width: 0;
   }
 }

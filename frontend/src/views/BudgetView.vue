@@ -566,7 +566,10 @@ async function submitFunds(payload) {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   gap: 32px;
 }
-@media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+/* minmax(0, …) y no 1fr: 1fr deja que el ancho mínimo del contenido estire la
+   columna, y la tabla de productos llevaba la página a ~850px en un teléfono,
+   ensanchando también la navbar. */
+@media (max-width: 1100px) { .main-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* Movements strip */
 .movements-strip {
@@ -659,6 +662,9 @@ async function submitFunds(payload) {
   .title { font-size: var(--k-font-size-display-2); }
   .header { flex-direction: column; align-items: stretch; }
   .header-actions { width: 100%; }
-  .project-select { flex: 1; min-width: 0; }
+  /* El selector en su propia fila: compartiendo fila con los tres botones
+     quedaba aplastado a unos pocos píxeles. */
+  .project-select { flex: 1 1 100%; min-width: 0; }
+  .header-actions :deep(.btn) { flex: 1 1 auto; }
 }
 </style>

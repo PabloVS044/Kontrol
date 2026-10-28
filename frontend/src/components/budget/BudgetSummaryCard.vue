@@ -99,7 +99,8 @@ function money(v) {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 24px; gap: 32px; flex-wrap: wrap;
 }
-.summary-info { flex: 1; min-width: 280px; }
+/* min(…, 100%): en 320px los 280px fijos más el padding no caben en la tarjeta. */
+.summary-info { flex: 1; min-width: min(280px, 100%); }
 .card-title {
   font-family: var(--k-font-display);
   font-size: var(--k-font-size-heading-1); margin-bottom: 22px; color: var(--k-color-text);
