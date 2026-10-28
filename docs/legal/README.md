@@ -41,9 +41,9 @@ Frente al planteamiento original del ticket, la instrucción del usuario sustitu
 
 P1 —exportación/supresión—, P2 —respaldos/restauración— y P3 —brechas— siguen **PENDIENTES SIN FECHA** por decisión expresa del usuario, no «completados» mediante los documentos. No se inventaron plazos, responsables personales, direcciones ni un procedimiento manual operativo. Una obligación legal aplicable no se suspende por esa anotación [Marco legal, cierre; Política de Privacidad §§6 y 10].
 
-El equipo confirma Qwen/vLLM mediante ClawStitch como operación propia. **Servidor IA en Guatemala: declaración directa del equipo del 16-10-2026, sin verificación independiente.** Hosting (alojamiento), operadores, accesos, logs (registros técnicos), retención/copias siguen pendientes. No significa que todo tratamiento permanezca en Guatemala; los demás proveedores mantienen las reservas geográficas del anexo. No se atribuye intervención a OpenAI por compatibilidad API.
+Actualización técnica P-2 (26/10/2026, Guatemala): se completó una restauración de laboratorio con bases sintéticas PostgreSQL y MongoDB en un entorno aislado. La ejecución `kontrol-p2-20261026t230439z-6fee091f237c` terminó con `restored_verified_lab`, inventarios coincidentes y limpieza completa. La restauración tomó 1.437 s y la recuperación con validación, 23.875 s.
 
-El marco legal se cerró como investigación y decisión antes de redactar Términos y Condiciones y Política de Privacidad sobre el inventario técnico. El expediente se conserva como documentación del repositorio; la publicación de los textos sigue pendiente.
+La [evidencia y ficha del operador](../respaldos/evidencias/README.md) sustentan este alcance. La operación de respaldos productivos y el cumplimiento de los objetivos RPO de 6 h y RTO de 4 h continúan sin acreditarse mediante este ensayo. El cierre de la tarea queda sujeto a revisión del alcance y evidencia entregados. Para L-1/L-2, utilizar el [texto técnico actualizado](../respaldos/alcance-y-textos-legales.md).
 
 ## Checklist de aceptación documental trazable
 
