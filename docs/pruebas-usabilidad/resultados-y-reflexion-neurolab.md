@@ -1,14 +1,16 @@
 # UX-N · Resultados de UX y reflexión sobre el Neurolab
 
-**Corte documental: 23/10/2026**
-**Conclusión principal:** el estudio instrumentado del Neurolab no se realizó. Los
-resultados que siguen provienen de sesiones moderadas, de la batería de diez pruebas
-UX y de un five-second test posterior; no son una comparación entre observación y
-datos instrumentados.
+**Corte documental original: 23/10/2026. Corrección posterior del estado de ejecución.**
+
+**Conclusión principal:** el estudio instrumentado del Neurolab sí se realizó el 19 de octubre de 2026, de 18:00 a 19:15, con cinco participantes y utilizando eye tracking y GSR. Se dispone de cinco videos de los casos evaluados. La consolidación de resultados por participante y el análisis cuantitativo de las señales permanecen pendientes.
+
+La versión anterior indicaba que el estudio no se había realizado. En realidad, la falta de resultados consolidados impedía cerrar el análisis, pero no significaba que la sesión no hubiera ocurrido.
+
+Los resultados de las sesiones moderadas anteriores, de la batería de diez pruebas UX y del five-second test se conservan como estudios independientes. Sus porcentajes y hallazgos no se atribuyen a la sesión del Neurolab.
 
 ## 1. Alcance y fuentes
 
-Este informe distingue tres clases de evidencia:
+Este informe distingue cuatro conjuntos de evidencia:
 
 1. **Sesiones moderadas observadas:** las cinco tareas de la Fase 1, el 06/09/2026,
    y las cinco tareas de la Fase 2, el 27/09/2026. En ambas rondas participaron tres
@@ -23,6 +25,7 @@ Este informe distingue tres clases de evidencia:
    el 12/10/2026, en español y con viewport de 1440 × 900. Es distinta de la
    Prueba 10 del PDF, realizada el 02/10
    en inglés y en dispositivos variados; sus cifras no son una comparación controlada.
+4. **Sesión instrumentada del Neurolab:** realizada el 19/10/2026, de 18:00 a 19:15, con cinco participantes. Se utilizaron eye tracking y GSR, cuyo uso fue autorizado según la confirmación del equipo. Se dispone de cinco videos con visualizaciones del registro instrumentado. Está pendiente completar la tabla de ejecución por participante y consolidar el análisis de resultados.
 
 Fuentes primarias:
 
@@ -186,102 +189,70 @@ presentan como comparación experimental ni se combinan sus muestras.
 | **UX-R4 · Propuesta de valor** | Se rediseña la portada para explicar el producto y su público. | En five-second test: al menos **4/5** identifican ventas e inventario y **3/5** identifican tiendas/pequeños negocios. | La Prueba 10 previa registró 2/5 identificaciones claras del producto y 0/5 que se reconocieran como parte del público objetivo, en inglés y con dispositivos variados. En el test posterior de [UX-R4](./protocolo-five-second-ux-r4.md), el resultado literal es **3/5** producto (no cumple) y **5/5** público (cumple); las rondas no son directamente comparables. |
 | **UX-R5 · Controles de Integraciones** | Se hace reconocible el interruptor de pausa, se explican sus estados, se diferencian los botones y “Cerrar conexión” pasa a “Eliminar configuración” con confirmación. | Al repetir first-click, al menos **80 %** de éxito en T1–T4 y **cero** participantes deben elegir “Eliminar configuración” cuando quieren pausar. | El Test 7 previo registró 1/5 aciertos para pausar Telegram; P20 hizo clic en “Cerrar conexión”. [PR #140](https://github.com/PabloVS044/Kontrol/pull/140) describe el criterio posterior “por verificar con el equipo”; no se encontró un re-test de UX-R5 con participantes y no se declara cumplido. |
 
-## 6. Por qué no hubo estudio instrumentado
+## 6. Ejecución del estudio instrumentado
 
-| Momento | Registro |
-|---|---|
-| Sprint 7 · 06/09/2026 | Se hicieron las sesiones manuales. El análisis planificó Neurolab para el 22–25/09/2026. El estudio no se hizo por conflicto de calendario, según la decisión de alcance comunicada para UX-N. El día exacto en que surgió el conflicto no aparece en las fuentes revisadas. |
-| Sprint 8 · 27/09/2026 | Se hicieron las sesiones manuales de Fase 2. La reserva del CIT 415-B no estuvo disponible para el estudio instrumentado, según la decisión de alcance comunicada para UX-N. No se encontró una fecha de reserva o cancelación verificable. |
-| Sprint 10 · decisión documentada en este corte, 23/10/2026 | El estudio instrumentado queda fuera del alcance. No se pospone una medición ficticia ni se presentan resultados que no existen. La fecha de la reunión o acuerdo original de Sprint 10 no está documentada en el material revisado. |
+La sesión del Neurolab se realizó el 19 de octubre de 2026, de 18:00 a 19:15, con cinco participantes. Se utilizaron eye tracking y GSR. El equipo confirmó que volvió a enviar la solicitud incluyendo GSR y que su uso fue autorizado; el respaldo documental corresponde a la solicitud y autorización conservadas en OneDrive.
 
-Las fechas conocidas delimitan la planificación y las sesiones manuales; no completan
-las fechas que faltan de las incidencias de calendario/reserva. Si se aporta el acta o
-el correo de reserva, se puede actualizar esa cronología sin inferencias.
+La afirmación anterior de que el estudio no se realizó era incorrecta. Lo pendiente era disponer de los resultados consolidados y completar su análisis.
 
-## 7. Reflexión: qué habría aportado el Neurolab
+### Organización de la sesión
 
-El protocolo instrumentado habría podido registrar el recorrido visual y las áreas de
-interés; tiempo hasta la primera fijación; tiempo de permanencia; revisitas; trazado
-del ratón y, si el diseño de estudio lo incluyera, una medida definida de carga
-cognitiva. Ninguna de esas variables se midió en estas sesiones. Los tiempos manuales
-y el pensamiento en voz alta no son sustitutos ni estimaciones de seguimiento ocular
-o carga cognitiva.
+Pablo y Jonathán acompañaron a los participantes en la sala de pruebas. Juan, Ivana y Alejandra permanecieron en la sala de espera con quienes todavía no habían realizado las pruebas.
 
-Los casos concretos muestran dónde habría complementado la observación:
+Las funciones específicas de moderación, registro, calibración y operación de los equipos deben confirmarse antes de asignarlas nominalmente. No se atribuye la operación del equipo a la coordinadora del Neurolab sin confirmación.
 
-- **Guardar/Cancelar (P01, Fase 2):** la observación registra el clic equivocado y la
-  repetición del alta; una herramienta visual podría haber distinguido si P01 miró
-  “Guardar”, si fijó la atención en “Cancelar” o si no recorrió esa zona. Eso ayudaría
-  a precisar la hipótesis de jerarquía visual, sin cambiar el hecho medido: la tarea
-  se completó después de repetirla.
-- **Comprensión de la portada (Prueba 10 y UX-R4):** el PDF registra 2/5
-  identificaciones claras del producto y 0/5 que se reconocieran como público
-  objetivo en la ronda en inglés; el protocolo posterior en español registra 3/5 y
-  5/5, respectivamente. Las preguntas,
-  dispositivos y criterios no fueron iguales. Un laboratorio habría podido mostrar si
-  las personas miraron el subtítulo o si el fondo animado compitió por su atención;
-  no habría demostrado por sí solo que comprendieron el mensaje.
-- **Interruptor de Integraciones (Test 7):** hay evidencia de first-click: solo 1/5
-  eligió correctamente el interruptor para pausar Telegram y P20 eligió “Cerrar
-  conexión”. El laboratorio podría haber complementado ese resultado con áreas de
-  interés y primera fijación, pero esos datos no existen; el primer clic documenta
-  la elección, no dónde miró cada persona.
-- **Legibilidad (Prueba 9):** cuatro de cinco participantes señalaron problemas de
-  lectura en condiciones como brillo bajo, monitor a distancia o uso sin lentes. El
-  laboratorio podría describir qué zonas visuales recibieron atención en esas
-  condiciones; no sustituiría la comprobación de contraste ni las respuestas verbales.
-- **Opciones de Marketing (Fase 2):** tres personas reportaron que no se leían las
-  opciones sin pasar el cursor. El análisis manual detectó la fricción y el análisis
-  de código planteó una causa probable; el laboratorio habría descrito el recorrido de
-  atención y las revisitas, pero la causa debía seguir confirmándose en navegador.
+Los cinco participantes pasaron a realizar las pruebas. La tabla individual de tareas se completará a partir de la evidencia disponible, diferenciando éxito sin ayuda, éxito con ayuda, fallo y resultado no confirmado.
 
-### Qué funcionó sin laboratorio
+### Evidencia disponible
 
-Las sesiones moderadas detectaron problemas accionables con su contexto: en Fase 1,
-T4 consumió el 92 % del tiempo disponible y falló para una persona; el análisis ubicó
-el control en `ProgressTab.vue` y propuso rótulo, posición y un criterio de repetición
-con tres personas. En Fase 2, las tres personas buscaron dónde vender, una no completó
-la tarea, y las tres reportaron las listas de Marketing ilegibles; se formularon
-umbrales de repetición de 60 % y 75 % del tiempo máximo, respectivamente. También se
-encontró un defecto de hora con evidencia concreta. Para detectar tareas fallidas,
-dudas expresadas y errores funcionales, el método manual fue suficiente, barato y
-directamente útil para priorizar.
+Se dispone de cinco videos identificados como casos 1 a 5, que muestran la interfaz de Kontrol y visualizaciones del registro instrumentado. La correspondencia entre cada caso y el código anónimo del participante se documentará en el registro de ejecución.
 
-### Costo, beneficio y recomendación
+Los videos permiten revisar visualmente segmentos de la sesión, pero no sustituyen las exportaciones necesarias para calcular y verificar métricas por tarea. Los tiempos de los videos tampoco se interpretan automáticamente como la duración completa de cada sesión.
 
-Las sesiones manuales requieren preparar un entorno, un guion, cronómetro y una
-persona moderadora/anotadora; permiten escuchar expectativas y preguntar sin sugerir
-la respuesta. No necesitan reserva del laboratorio ni instrumentación y análisis
-especializados, pero sus tiempos son aproximados y no muestran de forma fiable qué
-elemento visual recibió atención ni las revisitas.
+El protocolo, las autorizaciones, los documentos de cumplimiento ético y los consentimientos informados se conservan por separado en OneDrive. El informe académico se entrega fuera del repositorio. No se incorporan aquí consentimientos firmados, credenciales ni datos que identifiquen a los participantes.
 
-El laboratorio cuesta reservar, preparar e instrumentar el entorno, calibrar
-dispositivos, revisar la calidad de las señales y analizar recorridos/áreas de
-interés. Ese costo vale la pena cuando una fricción se repite tras una corrección,
-cuando hay que distinguir entre “no lo vio” y “lo vio pero no lo entendió”, o cuando
-la ubicación/jerarquía visual de una acción crítica es la pregunta central. Para
-descubrir fallos, comprender lenguaje y priorizar mejoras iniciales, tres sesiones
-moderadas con tareas claras fueron suficientes en este proyecto.
+### Información pendiente de consolidar
 
-**Recomendación:** conservar el método moderado como primera evaluación y re-test
-barato; reservar el Neurolab de forma selectiva cuando el re-test manual deje
-ambigüedad sobre atención visual o cuando una acción de alto impacto siga fallando.
-Combinar ambos métodos permite que la medición instrumentada explique el “dónde miró”
-y que el moderador investigue el “qué esperaba”; ninguno debe reemplazar al otro ni
-convertir una muestra pequeña en una conclusión sobre toda la población.
+- Resultado de cada tarea para cada participante, con su fuente de evidencia.
+- Roles específicos desempeñados durante la sesión.
+- Tiempos, ayudas e incidencias efectivamente registrados.
+- Relación entre el tiempo total de la jornada y la duración prevista por participante.
+- Exportaciones y controles de calidad disponibles para eye tracking y GSR.
+- Hallazgos sustentados en la sesión y su correspondencia con mejoras, responsables y sprints.
+
+## 7. Reflexión sobre la evidencia del Neurolab
+
+La sesión instrumentada complementa las evaluaciones manuales anteriores, pero constituye un estudio independiente. No se combinan sus participantes, tareas ni resultados para calcular una tasa global de éxito o afirmar una mejora entre rondas.
+
+Los videos permiten revisar la interacción y las visualizaciones disponibles. Cualquier observación debe vincularse con un caso, una tarea y un instante del video. Las métricas de fijación, permanencia o revisitas solo se incorporarán cuando se disponga de datos y condiciones de análisis suficientes para sustentarlas.
+
+La presencia de una señal GSR o de picos detectados no demuestra por sí sola estrés, frustración ni carga cognitiva. Su interpretación requiere revisar la calidad de la señal, el segmento analizado, los parámetros de procesamiento y el contexto de la tarea.
+
+### Relación con los estudios anteriores
+
+Las sesiones moderadas, la batería de diez pruebas UX y el five-second test ya documentados conservan sus propios resultados y limitaciones. La ejecución del Neurolab no acredita automáticamente un re-test de UX-R1 a UX-R5 ni confirma sus criterios de aceptación.
+
+Para relacionar un hallazgo del Neurolab con una mejora del producto se documentará:
+
+1. La tarea y el segmento que sustentan la observación.
+2. El número de participantes en quienes aparece.
+3. La diferencia entre lo observado y su posible interpretación.
+4. La mejora propuesta, su issue, responsable y sprint.
+5. El criterio y procedimiento para comprobarla después de implementarla.
+
+### Estado del análisis
+
+Se confirma la ejecución de la sesión y la disponibilidad de los cinco videos. El análisis permanece abierto hasta consolidar los resultados por participante y los hallazgos respaldados por la evidencia.
 
 ## 8. Limitaciones declaradas
 
-- Muestras pequeñas: tres participantes por ronda moderada y cinco en el five-second
-  test; los hallazgos son indicativos, no estimaciones poblacionales.
-- Los tiempos de las rondas moderadas son manuales y aproximados.
-- Las reglas de éxito en el límite de tiempo difieren entre Fase 1 y Fase 2.
-- No se hizo el estudio instrumentado: no hay datos de mirada, fijación, permanencia,
-  revisitas, ratón ni carga cognitiva.
-- El informe PDF se incluye en el repositorio como fuente auditable de la batería y
-  de los resultados resumidos en §4.
-- No se encontró el re-test de first-click de UX-R5 con participantes. El Test 7 del
-  PDF es evidencia previa a la implementación.
-- Las respuestas de P02 y P03 del five-second test no identifican ventas e inventario
-  de forma explícita; se recodifican como No conforme a la regla escrita, corrigiendo
-  el total original a 3/5 para identificación del producto.
+- Las muestras son pequeñas: tres participantes por ronda moderada, cinco en el five-second test y cinco en la sesión del Neurolab. No se generalizan sus resultados a toda la población.
+- Los tiempos de las rondas moderadas anteriores son manuales y aproximados.
+- Las reglas de éxito al alcanzar el límite de tiempo difieren entre la Fase 1 y la Fase 2.
+- La tabla de resultados individuales del Neurolab está pendiente de consolidación. No se declara una tasa de éxito global para esa sesión.
+- Los videos instrumentados están disponibles, pero todavía no se incorporan métricas cuantitativas verificadas por tarea ni una evaluación documentada de la calidad de las señales.
+- No se infieren emociones, estrés o carga cognitiva a partir de los mapas de calor o de GSR.
+- Falta confirmar la distribución detallada de roles y explicar la relación entre los 75 minutos de la jornada y la duración prevista por participante.
+- El PDF de la batería de diez pruebas UX ya incluido en el repositorio corresponde a otro estudio; no es el informe académico de la sesión del Neurolab.
+- No se encontró un re-test de first-click de UX-R5 con participantes en las fuentes revisadas. El Test 7 documenta evidencia previa a la implementación.
+- Las respuestas de P02 y P03 del five-second test no identifican ventas e inventario de forma explícita; se conserva la recodificación a 3/5 conforme al criterio publicado.
