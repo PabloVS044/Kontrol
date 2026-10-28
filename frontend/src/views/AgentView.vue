@@ -1016,7 +1016,7 @@ function autoResizeEdit(e) {
 
 .agent-notice {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--TextMuted, #8a8070);
   margin: 0;
   text-align: center;
