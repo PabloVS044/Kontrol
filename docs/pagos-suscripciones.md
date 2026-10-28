@@ -252,14 +252,15 @@ Además:
 - `planRequiredNotice.test.js`
 - Las pruebas de `AppNavbar` y de `SettingsView`
 
-## 11. Baja de cuenta (integración con P-1)
+## 11. Cierre de empresa y baja de cuenta (integración con P-1)
 
-Cuando la baja de cuenta de un owner deja su empresa sin sucesor, la empresa se desactiva y su suscripción no debe seguir renovándose. Se sigue el mismo patrón que la limpieza de Mongo de P-1:
+Una empresa en cierre no debe seguir renovando su suscripción. Pasa en dos casos: el owner (o soporte) cierra la empresa con `POST /api/companies/closure`, o la baja de cuenta de un owner deja la empresa sin sucesor y se programa su cierre. Se sigue el mismo patrón que la limpieza de Mongo de P-1:
 
-1. Dentro de la transacción de la baja, `markSubscriptionsForCancellation` marca `cancelacion_pendiente = true`.
-2. Tras el COMMIT, `cancelPendingSubscriptions` cancela la suscripción en la pasarela y quita la marca. La respuesta de la baja lo informa en `subscriptionCancellation`.
+1. Dentro de la transacción, `scheduleCompanyClosure` llama a `markSubscriptionsForCancellation`, que marca `cancelacion_pendiente = true`.
+2. Tras el COMMIT, `cancelPendingSubscriptions` cancela la suscripción en la pasarela y quita la marca. La respuesta de la baja de cuenta lo informa en `subscriptionCancellation`.
 3. Si la pasarela falla, la marca queda puesta. `startSubscriptionCancellationWorker` lo reintenta cada 5 minutos.
 4. El estado final (`canceled`) llega, como siempre, por el evento verificado `customer.subscription.deleted`.
+5. Si el owner anula el cierre durante la ventana de exportación, la suscripción no se reactiva: la empresa vuelve al plan Gratis y puede contratar de nuevo.
 
 **Datos de prueba.** `npm run seed:test` deja la empresa de pruebas en Business con proveedor `seed`, sin identificadores de pasarela. Así las pruebas de UX y de carga (k6) siguen ejerciendo los módulos y topes que el plan Gratis bloquearía.
 

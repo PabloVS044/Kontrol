@@ -5,7 +5,7 @@ import { isMongoReady } from '../db/mongo.js'
 import { isReauthenticated, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import { prepareCompanyDataExport } from '../services/companyDataExport.js'
 import { processMongoAccountDeletion } from '../services/accountDeletionOutbox.js'
-import { cancelPendingSubscriptions, markSubscriptionsForCancellation } from '../services/billingService.js'
+import { cancelPendingSubscriptions } from '../services/billingService.js'
 import { CLOSURE_REASONS, scheduleCompanyClosure } from '../services/companyClosure.js'
 import { disconnectUserSockets } from '../socket/index.js'
 import { logger } from '../utils/logger.js'
@@ -189,10 +189,6 @@ export const deleteOwnAccount = async (req, res) => {
         closedCompanies.push(membership.id_empresa)
       }
     }
-
-    // PAY-1 — Una empresa en cierre no debe seguir renovando su plan. Se
-    // marca aquí y se cancela en la pasarela después del COMMIT.
-    await markSubscriptionsForCancellation(client, closedCompanies)
 
     await client.query(
       `UPDATE public.empresa_invitacion

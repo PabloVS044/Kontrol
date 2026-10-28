@@ -1,5 +1,7 @@
 import pool from '../db/pool.js'
 import { isReauthenticated, REAUTH_ACTIONS } from '../auth/reauthentication.js'
+import { cancelPendingSubscriptions } from '../services/billingService.js'
+import { logger } from '../utils/logger.js'
 import {
   cancelCompanyClosure as cancelClosure,
   CLOSURE_REASONS,
@@ -70,11 +72,22 @@ export const requestCompanyClosure = async (req, res) => {
     }
 
     await client.query('COMMIT')
+    client.release()
+    released = true
+    // PAY-1 — scheduleCompanyClosure marked the subscription; if the provider
+    // fails here the billing worker retries it.
+    try {
+      await cancelPendingSubscriptions({ companyIds: [req.company.id_empresa] })
+    } catch (error) {
+      logger.error('Subscription cancellation was queued for retry:', error)
+    }
     return res.status(201).json({ success: true, data: presentClosure(closure) })
   } catch (error) {
-    try { await client.query('ROLLBACK') } catch (rollbackError) {
-      client.release(rollbackError)
-      released = true
+    if (!released) {
+      try { await client.query('ROLLBACK') } catch (rollbackError) {
+        client.release(rollbackError)
+        released = true
+      }
     }
     throw error
   } finally {

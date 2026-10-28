@@ -1,9 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import jwt from 'jsonwebtoken'
 
-const mocks = vi.hoisted(() => ({ connect: vi.fn(), query: vi.fn(), compare: vi.fn() }))
+const mocks = vi.hoisted(() => ({
+  connect: vi.fn(), query: vi.fn(), compare: vi.fn(), cancelSubscriptions: vi.fn(), error: vi.fn(),
+}))
 vi.mock('../src/db/pool.js', () => ({ default: { connect: mocks.connect, query: mocks.query } }))
 vi.mock('bcrypt', () => ({ default: { compare: mocks.compare } }))
+vi.mock('../src/services/billingService.js', () => ({
+  cancelPendingSubscriptions: mocks.cancelSubscriptions,
+  markSubscriptionsForCancellation: vi.fn(),
+}))
+vi.mock('../src/utils/logger.js', () => ({ logger: { error: mocks.error, info: vi.fn(), warn: vi.fn() } }))
 import {
   cancelCompanyClosure,
   getCompanyClosure,
@@ -107,6 +114,34 @@ describe('requesting a company closure', () => {
     await requestCompanyClosure(req, res)
     expect(res.status).toHaveBeenCalledWith(status)
     expect(client.query).not.toHaveBeenCalledWith('COMMIT')
+  })
+
+  it('cancels the subscription with the provider after the commit', async () => {
+    client.query.mockImplementation(async (sql) => {
+      if (sql === 'COMMIT') expect(mocks.cancelSubscriptions).not.toHaveBeenCalled()
+      if (sql.includes('FROM public.usuario')) return { rows: [user] }
+      if (sql.includes('FROM public.empresa WHERE')) return { rows: [company] }
+      if (sql.includes('INSERT INTO public.company_closure')) return { rows: inserted }
+      return { rows: [] }
+    })
+    await requestCompanyClosure(req, res)
+    expect(mocks.cancelSubscriptions).toHaveBeenCalledWith({ companyIds: [4] })
+    expect(client.release).toHaveBeenCalledOnce()
+  })
+
+  it('still closes the company when the provider fails, leaving the retry to the worker', async () => {
+    mocks.cancelSubscriptions.mockRejectedValue(new Error('stripe down'))
+    await requestCompanyClosure(req, res)
+    expect(res.status).toHaveBeenCalledWith(201)
+    expect(client.query).not.toHaveBeenCalledWith('ROLLBACK')
+    expect(mocks.error).toHaveBeenCalledWith('Subscription cancellation was queued for retry:', expect.any(Error))
+    expect(client.release).toHaveBeenCalledOnce()
+  })
+
+  it('does not cancel any subscription when the closure is refused', async () => {
+    company.activo = false
+    await requestCompanyClosure(req, res)
+    expect(mocks.cancelSubscriptions).not.toHaveBeenCalled()
   })
 
   it('rolls back, releases a broken client and rethrows on a database error', async () => {

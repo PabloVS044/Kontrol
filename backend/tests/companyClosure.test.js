@@ -94,6 +94,12 @@ describe('closure records', () => {
     expect(presentClosure({ ...base, status: 'deleted' }).deletion.rows_deleted).toEqual({})
   })
 
+  it('marks the subscription of the company for cancellation', async () => {
+    const client = { query: vi.fn(async (sql) => ({ rows: sql.includes('INSERT INTO public.company_closure') ? [{ company_id: 4 }] : [] })) }
+    expect(await scheduleCompanyClosure(client, { companyId: 4 })).toEqual({ company_id: 4 })
+    expect(client.query).toHaveBeenLastCalledWith(expect.stringContaining('SET cancelacion_pendiente = true'), [[4]])
+  })
+
   it('does not disable invitations again when the company is already closing', async () => {
     const client = { query: vi.fn(async () => ({ rows: [] })) }
     expect(await scheduleCompanyClosure(client, { companyId: 4 })).toBeNull()

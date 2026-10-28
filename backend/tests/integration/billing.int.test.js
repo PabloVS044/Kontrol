@@ -190,4 +190,32 @@ describe('PAY-1 — suscripciones con la pasarela simulada', () => {
     const after = await query('SELECT estado FROM public.empresa_suscripcion WHERE id_empresa = $1', [otherId])
     expect(after.rows[0].estado).toBe('canceled')
   })
+
+  it('si el owner cierra la empresa, cancela su suscripción en la pasarela', async () => {
+    const other = await createCompanyWithOwner()
+    const otherId = other.company.id_empresa
+    provider.setSubscription({ id: 'sub_cierre', customerId: 'cus_cierre', companyId: otherId, plan: 'pro' })
+    await deliver(provider.event('checkout.session.completed', { subscriptionId: 'sub_cierre', companyId: otherId }))
+    await query('UPDATE public.usuario SET password_hash = $1 WHERE id_usuario = $2', [
+      await bcrypt.hash('password-de-cierre', 4),
+      other.owner.id_usuario,
+    ])
+
+    const res = await api()
+      .post('/api/companies/closure')
+      .set('Authorization', `Bearer ${other.token}`)
+      .set('X-Company-ID', String(otherId))
+      .send({ password: 'password-de-cierre', confirm_name: other.company.nombre })
+
+    expect(res.status).toBe(201)
+    expect(provider.cancelSubscription).toHaveBeenCalledWith('sub_cierre')
+
+    const { rows } = await query(
+      `SELECT e.activo, s.cancelacion_pendiente
+       FROM public.empresa e JOIN public.empresa_suscripcion s USING (id_empresa)
+       WHERE e.id_empresa = $1`,
+      [otherId]
+    )
+    expect(rows[0]).toEqual({ activo: false, cancelacion_pendiente: false })
+  })
 })
