@@ -28,21 +28,21 @@ defineProps({
   font-size: var(--k-font-size-caption);
   font-family: var(--k-font-sans);
   font-weight: var(--k-font-weight-semibold);
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--k-tracking-caps);
 }
 .req {
-  color: var(--Primary);
+  color: var(--k-color-primary);
   margin-left: 2px;
 }
 
 input,
 textarea,
 select {
-  background: var(--InputBg);
-  border: var(--k-border-width) solid var(--Border);
-  color: var(--Text);
+  background: var(--k-form-input-bg);
+  border: var(--k-border-width) solid var(--k-color-border);
+  color: var(--k-color-text);
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-small);
   padding: var(--k-space-2) var(--k-space-3);
@@ -53,27 +53,27 @@ select {
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--TextPlaceholder);
+  color: var(--k-text-placeholder);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--Primary);
-  background: var(--InputFocusBg);
+  border-color: var(--k-color-primary);
+  background: var(--k-form-input-focus-bg);
   box-shadow: 0 0 0 var(--k-focus-ring-width) rgba(var(--k-color-primary-rgb), 0.12);
 }
 
 .field-error {
   font-size: var(--k-font-size-caption-lg);
-  color: var(--ErrorText);
+  color: var(--k-state-error-text);
   font-weight: var(--k-font-weight-medium);
   margin-top: var(--k-space-1);
 }
 
 .form-field:has(.field-error) input,
 .form-field:has(.field-error) textarea {
-  border-color: var(--ErrorText);
+  border-color: var(--k-state-error-text);
 }
 
 </style>

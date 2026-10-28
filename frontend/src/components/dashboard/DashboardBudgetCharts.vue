@@ -86,7 +86,7 @@ function barWidth(pct) {
 
 .chart-card h3 {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--TextMuted);
   text-transform: uppercase;
@@ -98,7 +98,7 @@ function barWidth(pct) {
   padding: 24px 0;
   color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .chart-state--error { color: #fecdd3; }
 
@@ -114,7 +114,7 @@ function barWidth(pct) {
   justify-content: space-between;
   gap: 12px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--Text);
 }
 .project-bar-name {
@@ -127,7 +127,7 @@ function barWidth(pct) {
   display: flex;
   gap: 10px;
   color: var(--TextMuted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 .project-bar-pct { color: var(--Primary); font-weight: 600; }
@@ -159,11 +159,11 @@ function barWidth(pct) {
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-family: 'Manrope', sans-serif;
 }
-.snapshot-label { color: var(--TextMuted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-.snapshot-value { color: var(--Text); font-size: 15px; font-variant-numeric: tabular-nums; }
+.snapshot-label { color: var(--TextMuted); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.snapshot-value { color: var(--Text); font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
 .snapshot-value.gold { color: var(--Primary); }
 .snapshot-bar { margin: 14px 0 10px; height: 6px; border-radius: 3px; }
-.snapshot-foot { color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; }
+.snapshot-foot { color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 0.75rem; line-height: 1.5; }
 
 @media (max-width: 900px) {
   .charts-container { flex-direction: column; }

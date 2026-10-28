@@ -2,7 +2,7 @@
   <svg :viewBox="`0 0 ${size} ${size}`" :width="displayWidth" :height="displayWidth">
     <circle
       :cx="center" :cy="center" :r="radius"
-      fill="none" stroke="#181818" :stroke-width="strokeWidth"
+      fill="none" stroke="var(--k-shade-4)" :stroke-width="strokeWidth"
     />
     <circle
       :cx="center" :cy="center" :r="radius"
@@ -34,12 +34,12 @@ import { computed } from 'vue'
 
 const props = defineProps({
   pct:              { type: Number, default: 0 },
-  color:            { type: String, default: '#caa860' },
+  color:            { type: String, default: 'var(--k-color-primary)' },
   size:             { type: Number, default: 80 },
   radius:           { type: Number, default: 28 },
   strokeWidth:      { type: Number, default: 10 },
   label:            { type: String, default: '' },
-  labelColor:       { type: String, default: '#fff' },
+  labelColor:       { type: String, default: 'var(--k-color-text)' },
   labelFontSize:    { type: Number, default: 11 },
   labelOffsetY:     { type: Number, default: 4 },
   sublabel:         { type: String, default: '' },

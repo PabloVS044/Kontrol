@@ -33,11 +33,11 @@ export default {
         },
         backColor: {
             type: String,
-            default: 'var(--Primary)'
+            default: 'var(--k-color-primary)'
         },
         hoverBack: {
             type: String,
-            default: 'var(--Primary2)'
+            default: 'var(--k-color-primary-2)'
         }
     },
     methods: {

@@ -15,3 +15,12 @@ describe('fondo de la página (DT-17)', () => {
     expect(leer('src/components/navbar.css')).not.toMatch(/(?:^|\})\s*body\s*\{/)
   })
 })
+
+describe('pantallas siempre oscuras', () => {
+  for (const vista of ['LandingPage', 'LoginView', 'RegisterView']) {
+    it(`${vista} fija el tema oscuro en su raíz`, () => {
+      const plantilla = leer(`src/views/${vista}.vue`).match(/<template>\s*<(\w+)([^>]*)>/)
+      expect(plantilla[2]).toMatch(/data-theme="dark"/)
+    })
+  }
+})

@@ -20,7 +20,7 @@ globalThis.localStorage = {
 
 const Stub = { template: '<div />' }
 
-const montar = async ({ rol = 'owner', canManageUsers = rol === 'owner' } = {}) => {
+const montar = async ({ rol = 'owner', canManageUsers = rol === 'owner', path = '/settings' } = {}) => {
   const store = useAuthStore()
   store.setEmpresaActual({ id_empresa: 1, nombre: 'Skiot', rol })
   store.setAccessContext({ capabilities: { can_manage_users: canManageUsers } })
@@ -33,7 +33,7 @@ const montar = async ({ rol = 'owner', canManageUsers = rol === 'owner' } = {}) 
       { path: '/dashboard', component: Stub },
     ],
   })
-  await router.push('/settings')
+  await router.push(path)
   await router.isReady()
 
   const wrapper = mount(SettingsView, {
@@ -62,6 +62,13 @@ describe('SettingsView.vue — configuración unificada', () => {
   it('se ve con la barra de navegación, como el resto de secciones', async () => {
     const wrapper = await montar()
     expect(wrapper.findComponent({ name: 'AppNavbar' }).exists()).toBe(true)
+  })
+
+  it('el tamaño de letra está en las preferencias personales, para cualquier rol', async () => {
+    const wrapper = await montar({ rol: 'collaborator' })
+    const prefs = wrapper.find('.set-card--prefs')
+    expect(prefs.find('label[for="font-scale"]').text()).toBe('Tamaño de letra')
+    expect(prefs.find('#font-scale').attributes('type')).toBe('range')
   })
 
   it('el bloque de venta tiene el ancla a la que lleva Ventas', async () => {
@@ -101,8 +108,156 @@ describe('SettingsView.vue — configuración unificada', () => {
 
   it('explains immediate deletion and the business data that remains', async () => {
     const wrapper = await montar()
-    expect(wrapper.find('.privacy-delete').text()).toContain('no tiene período de gracia')
-    expect(wrapper.find('.privacy-delete').text()).toContain('no define un plazo de conservación')
-    expect(wrapper.find('.privacy-delete button.privacy-delete-button').exists()).toBe(true)
+    const accountDeletion = wrapper.find('.privacy-delete:not(.privacy-closure)')
+    expect(accountDeletion.text()).toContain('no tiene período de gracia')
+    expect(accountDeletion.text()).toContain('no define un plazo de conservación')
+    expect(accountDeletion.find('button.privacy-delete-button').exists()).toBe(true)
+  })
+})
+
+// Respuestas del backend por ruta y método; lo demás contesta vacío.
+const responder = (routes) => vi.fn(async (url, options = {}) => {
+  const key = `${options.method || 'GET'} ${new URL(String(url), 'http://localhost').pathname}`
+  const body = routes[key]
+  return {
+    ok: body?.ok ?? true,
+    status: body?.status ?? 200,
+    json: async () => body?.json ?? { data: {} },
+  }
+})
+const llamada = (method, path) => globalThis.fetch.mock.calls.find(([url, options = {}]) =>
+  (options.method || 'GET') === method && String(url).endsWith(path))
+const confirmar = (respuesta) => { window.confirm = vi.fn(() => respuesta) }
+const enCierre = {
+  company_id: 1,
+  company_name: 'Skiot',
+  reason: 'owner_request',
+  status: 'export_window',
+  requested_at: '2026-10-26T12:00:00.000Z',
+  export_until: '2026-11-25T12:00:00.000Z',
+  delete_by: '2026-12-25T12:00:00.000Z',
+  backups_by: '2027-01-24T12:00:00.000Z',
+}
+
+describe('SettingsView.vue — cierre de la empresa', () => {
+  it('solo el owner ve el formulario de cierre', async () => {
+    expect((await montar()).find('.privacy-closure').exists()).toBe(true)
+    for (const rol of ['admin', 'collaborator']) {
+      expect((await montar({ rol })).find('.privacy-closure').exists()).toBe(false)
+    }
+  })
+
+  it('pide el nombre y la contraseña, envía el cierre y muestra los plazos', async () => {
+    globalThis.fetch = responder({ 'POST /api/companies/closure': { json: { data: enCierre } } })
+    confirmar(true)
+    const wrapper = await montar()
+    const boton = () => wrapper.find('.privacy-closure-button')
+    expect(boton().attributes('disabled')).toBeDefined()
+
+    await wrapper.find('#company-close-name').setValue('Skiot')
+    await wrapper.find('#company-close-password').setValue('secreta')
+    await wrapper.find('.privacy-closure input[type="checkbox"]').setValue(true)
+    expect(boton().attributes('disabled')).toBeUndefined()
+    await boton().trigger('click')
+    await flushPromises()
+
+    const [, options] = llamada('POST', '/api/companies/closure')
+    expect(JSON.parse(options.body)).toEqual({ confirm_name: 'Skiot', password: 'secreta', skip_export_window: true })
+    expect(wrapper.find('.privacy-closure-status').text()).toContain('Esta empresa está en cierre')
+    expect(wrapper.find('.privacy-closure').exists()).toBe(false)
+  })
+
+  it('no envía nada si el owner no confirma', async () => {
+    confirmar(false)
+    const wrapper = await montar()
+    await wrapper.find('#company-close-name').setValue('Skiot')
+    await wrapper.find('#company-close-password').setValue('secreta')
+    await wrapper.find('.privacy-closure-button').trigger('click')
+    expect(llamada('POST', '/api/companies/closure')).toBeUndefined()
+  })
+
+  it('muestra el error del servidor si el cierre falla', async () => {
+    globalThis.fetch = responder({
+      'POST /api/companies/closure': { ok: false, status: 400, json: { message: 'The company name does not match.' } },
+    })
+    confirmar(true)
+    const wrapper = await montar()
+    await wrapper.find('#company-close-name').setValue('Otra')
+    await wrapper.find('#company-close-password').setValue('secreta')
+    await wrapper.find('.privacy-closure-button').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('.privacy-closure [role="alert"]').text()).toBe('The company name does not match.')
+  })
+
+  it('una empresa en cierre muestra los plazos y el owner puede anularlo', async () => {
+    globalThis.fetch = responder({
+      'GET /api/companies/closure': { json: { data: enCierre } },
+      'DELETE /api/companies/closure': { json: { data: { company_id: 1, status: 'active' } } },
+    })
+    const wrapper = await montar()
+    expect(wrapper.find('.privacy-closure-status').text()).toContain('Puedes descargar sus datos hasta el')
+
+    await wrapper.find('.privacy-closure-cancel').trigger('click')
+    await flushPromises()
+    expect(llamada('DELETE', '/api/companies/closure')).toBeDefined()
+    expect(wrapper.text()).toContain('Se anuló el cierre')
+    expect(wrapper.find('.privacy-closure').exists()).toBe(true)
+  })
+
+  it('no ofrece anular el cierre de una empresa que quedó sin titular', async () => {
+    globalThis.fetch = responder({
+      'GET /api/companies/closure': { json: { data: { ...enCierre, reason: 'no_active_owner' } } },
+    })
+    const wrapper = await montar()
+    expect(wrapper.find('.privacy-closure-status').exists()).toBe(true)
+    expect(wrapper.find('.privacy-closure-cancel').exists()).toBe(false)
+  })
+
+  it('lista las constancias y permite descargarlas', async () => {
+    globalThis.fetch = responder({
+      'GET /api/companies/closures/mine': {
+        json: { data: [{ ...enCierre, company_id: 9, company_name: 'Vieja', status: 'deleted', deleted_at: '2026-12-01T12:00:00.000Z' }] },
+      },
+    })
+    URL.createObjectURL = vi.fn(() => 'blob:constancia')
+    URL.revokeObjectURL = vi.fn()
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+    const wrapper = await montar({ rol: 'collaborator' })
+
+    expect(wrapper.find('.privacy-certificates').text()).toContain('Vieja: datos eliminados el')
+    await wrapper.find('.privacy-certificates button').trigger('click')
+    expect(click).toHaveBeenCalledOnce()
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:constancia')
+  })
+
+  it('usa la prueba de Google del cierre en lugar de la contraseña', async () => {
+    globalThis.fetch = responder({ 'POST /api/companies/closure': { json: { data: enCierre } } })
+    confirmar(true)
+    const wrapper = await montar({ path: '/settings#closure_proof=prueba-google' })
+    expect(wrapper.text()).toContain('Confirma el cierre de la empresa')
+    expect(wrapper.find('.privacy-closure').attributes('open')).toBeDefined()
+
+    await wrapper.find('#company-close-name').setValue('Skiot')
+    await wrapper.find('.privacy-closure-button').trigger('click')
+    await flushPromises()
+    const [, options] = llamada('POST', '/api/companies/closure')
+    expect(JSON.parse(options.body)).toMatchObject({ google_reauth_token: 'prueba-google' })
+  })
+
+  it('pide a Google una prueba de cierre y muestra el error si no se pudo', async () => {
+    globalThis.fetch = responder({
+      'POST /api/auth/google/reauth-for-deletion': { ok: false, status: 503, json: { message: 'Google reauthentication is not configured.' } },
+    })
+    const wrapper = await montar()
+    await wrapper.find('.privacy-closure .privacy-google').trigger('click')
+    await flushPromises()
+    const [, options] = llamada('POST', '/api/auth/google/reauth-for-deletion')
+    expect(JSON.parse(options.body)).toEqual({ action: 'company-closure' })
+    expect(wrapper.find('.privacy-closure [role="alert"]').text()).toBe('Google reauthentication is not configured.')
+  })
+
+  it('muestra en el cierre el error de Google que vuelve a esta página', async () => {
+    const wrapper = await montar({ path: '/settings?reauth_error=google_cancelled&reauth_for=company-closure' })
+    expect(wrapper.find('.privacy-closure [role="alert"]').text()).toContain('No se pudo verificar la cuenta de Google')
   })
 })

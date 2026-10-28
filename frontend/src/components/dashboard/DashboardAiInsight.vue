@@ -38,7 +38,7 @@ defineEmits(['review-budget'])
 
 .ai-title {
   color: var(--Primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   margin-bottom: 12px;
   font-family: var(--font-sans);
@@ -56,7 +56,7 @@ defineEmits(['review-budget'])
   background: var(--Primary);
   color: var(--BtnText);
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   border-radius: 0;

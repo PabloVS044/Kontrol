@@ -1,10 +1,9 @@
 import crypto from 'crypto'
-import { assertPublicHttpUrl } from './ssrfGuard.js'
-import { fetchWithTimeout } from '../utils/fetchWithTimeout.js'
+// La validación SSRF va dentro de fetchPublicUrl: ningún envío puede saltársela.
+import { fetchPublicUrl } from '../utils/httpTransport.js'
 
 export async function testWebhookConnection({ url, secret }) {
   if (!url) throw new Error('url es requerido.')
-  await assertPublicHttpUrl(url)
 
   const payload = {
     event: 'test',
@@ -18,7 +17,7 @@ export async function testWebhookConnection({ url, secret }) {
     headers['X-Kontrol-Signature'] = sign(payload, secret)
   }
 
-  const res = await fetchWithTimeout(url, {
+  const res = await fetchPublicUrl(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
@@ -45,7 +44,7 @@ export async function sendWebhookEvent({ url, secret }, { event, data }) {
     headers['X-Kontrol-Signature'] = sign(payload, secret)
   }
 
-  const res = await fetchWithTimeout(url, {
+  const res = await fetchPublicUrl(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),

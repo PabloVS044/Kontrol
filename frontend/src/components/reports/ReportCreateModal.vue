@@ -74,38 +74,38 @@ function submit() {
 
 <style scoped>
 .modal-overlay {
-  position: fixed; inset: 0; background: #000;
-  display: flex; align-items: center; justify-content: center; z-index: 999;
+  position: fixed; inset: 0; background: var(--k-overlay-backdrop);
+  display: flex; align-items: center; justify-content: center; z-index: var(--k-z-modal-overlay);
 }
-.modal-box { background: #111; border: 1px solid #2a2a2a; width: 100%; max-width: 440px; padding: 24px; }
+.modal-box { background: var(--k-shade-3); border: 1px solid var(--k-shade-7); width: 100%; max-width: 440px; padding: 24px; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-title { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: #e8e4de; letter-spacing: 0.04em; }
-.modal-close { background: none; border: none; color: var(--TextFaint); font-size: 14px; cursor: pointer; line-height: 1; transition: color .2s; }
-.modal-close:hover { color: var(--TextSoft); }
+.modal-title { font-family: 'Manrope', sans-serif; font-size: 0.8125rem; font-weight: 700; color: var(--k-color-text); letter-spacing: 0.04em; }
+.modal-close { background: none; border: none; color: var(--k-text-faint); font-size: 0.875rem; cursor: pointer; line-height: 1; transition: color .2s; }
+.modal-close:hover { color: var(--k-text-soft); }
 .modal-form { display: flex; flex-direction: column; gap: 14px; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--TextFaint); letter-spacing: 0.08em; text-transform: uppercase; }
-.form-optional { font-weight: 400; color: var(--TextFaint); text-transform: none; letter-spacing: 0; }
+.form-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; color: var(--k-text-faint); letter-spacing: 0.08em; text-transform: uppercase; }
+.form-optional { font-weight: 400; color: var(--k-text-faint); text-transform: none; letter-spacing: 0; }
 .form-input {
-  padding: 8px 10px; background: #111111; border: 1px solid #2a2a2a; color: var(--TextSoft);
-  font-family: 'Manrope', sans-serif; font-size: 12px; outline: none; width: 100%;
+  padding: 8px 10px; background: var(--k-shade-3); border: 1px solid var(--k-shade-7); color: var(--k-text-soft);
+  font-family: 'Manrope', sans-serif; font-size: 0.75rem; outline: none; width: 100%;
   box-sizing: border-box; transition: border-color .2s;
 }
-.form-input:focus { border-color: rgba(202,168,96,0.4); }
-.form-input option { background: #111; }
-.form-error { font-family: 'Manrope', sans-serif; font-size: 11px; color: #fb7185; margin: 0; }
+.form-input:focus { border-color: rgba(var(--k-color-primary-rgb), 0.4); }
+.form-input option { background: var(--k-shade-3); }
+.form-error { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-hue-rose); margin: 0; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .btn-outline {
-  display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: #111111;
-  border: 1px solid #2a2a2a; color: var(--TextMuted); font-family: 'Manrope', sans-serif; font-size: 12px;
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-7); color: var(--k-text-muted); font-family: 'Manrope', sans-serif; font-size: 0.75rem;
   font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s;
 }
-.btn-outline:hover { border-color: #caa860; color: var(--Primary); }
+.btn-outline:hover { border-color: var(--k-color-primary); color: var(--k-color-primary); }
 .btn-primary {
-  display: flex; align-items: center; padding: 8px 16px; background: rgba(202,168,96,0.12);
-  border: 1px solid rgba(202,168,96,0.3); color: var(--Primary); font-family: 'Manrope', sans-serif;
-  font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s;
+  display: flex; align-items: center; padding: 8px 16px; background: rgba(var(--k-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.3); color: var(--k-color-primary); font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background .2s;
 }
-.btn-primary:hover:not(:disabled) { background: rgba(202,168,96,0.22); }
+.btn-primary:hover:not(:disabled) { background: rgba(var(--k-color-primary-rgb), 0.22); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

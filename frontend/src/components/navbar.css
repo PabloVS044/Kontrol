@@ -6,7 +6,7 @@
   align-items: center;
   width: 100%;
   color: var(--k-color-text);
-  z-index: 50;
+  z-index: var(--k-z-nav);
 }
 
 .landing-nav {
@@ -33,6 +33,20 @@
   justify-content: center;
   align-items: center;
   gap: 20px; /* --k-space-5 son 24px */
+}
+
+/* Sin el padding y el margen de lista del navegador: eran 40px a la izquierda
+   que la fila no tenía de sobra. */
+.navigation {
+  padding: 0;
+  margin: 0;
+}
+
+/* Una etiqueta partida en dos o tres líneas ("How / it / works") ensanchaba la
+   barra hacia abajo y empujaba "Get Started" fuera por la derecha. En una sola
+   línea, el ancho que falta lo resuelve el breakpoint del hamburguesa. */
+.landing-nav a.anchor {
+  white-space: nowrap;
 }
 
 .icon {
@@ -111,13 +125,19 @@
   padding: 0 var(--k-space-5);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.3s ease;
+  /* Cerrado, el borde de 3px seguía pintándose: una franja dorada de 6px bajo
+     la barra, también en escritorio. `visibility` se suelta al terminar la
+     animación de cierre y además saca los enlaces del orden de tabulación. */
+  visibility: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease, visibility 0s linear 0.4s;
   box-sizing: border-box;
 }
 
 .mobile-menu.open {
   max-height: 500px;
   padding: 20px var(--k-space-5);
+  visibility: visible;
+  transition: max-height 0.4s ease, padding 0.3s ease;
 }
 
 .mobile-nav {
@@ -159,17 +179,35 @@
 }
 
 /* ─── Responsive breakpoints ─────────────────────────────────────────────── */
-@media (max-width: 1024px) and (min-width: 951px) {
-  nav { width: 90%; }
-  .mobile-menu { width: 90%; }
+/* Con `.landing-nav` y no `nav`: como `nav` a secas perdían contra
+   `.landing-nav { width: 80% }` y no hacían nada en la barra, pero esta hoja se
+   queda cargada al salir de la landing y sí alcanzaban a los <nav> de Ventas,
+   Detalle de proyecto y Legal. */
+/* La fila completa (logo, cuatro enlaces, idioma, Login y Get Started) mide
+   ~975px en español, el idioma más largo. Al 80 % de ancho cabe desde ~1300px;
+   por debajo la barra se ensancha y se aprietan los huecos, y desde 1100px ya
+   no cabe y pasa al hamburguesa. Antes el salto era en 950px y entre 951 y
+   ~1170px "Get Started" se salía de la barra. */
+@media (max-width: 1360px) {
+  .landing-nav {
+    width: 92%;
+    padding-left: var(--k-space-5);
+  }
+  .mobile-menu { width: 92%; }
 
   .navigation {
-    gap: var(--k-space-3);
+    gap: var(--k-space-2);
   }
 }
 
-@media (max-width: 950px) {
-  nav {
+/* El menú móvil no existe en escritorio, aunque se quedara abierto al
+   ensanchar la ventana. */
+@media (min-width: 1101px) {
+  .mobile-menu { display: none; }
+}
+
+@media (max-width: 1100px) {
+  .landing-nav {
     width: 92%;
     height: 68px;
     padding-left: 20px;
@@ -184,6 +222,6 @@
 }
 
 @media (max-width: 480px) {
-  nav { width: 94%; border-radius: 20px; }
+  .landing-nav { width: 94%; border-radius: 20px; }
   .mobile-menu { width: 94%; }
 }

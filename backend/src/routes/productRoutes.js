@@ -13,6 +13,8 @@ import {
   updateProductSchema,
   linkSupplierSchema,
   updateSupplierLinkSchema,
+  barcodeParamSchema,
+  barcodeQuerySchema,
 } from '../schemas/productSchemas.js'
 import {
   getProducts,
@@ -24,6 +26,7 @@ import {
   linkSupplier,
   updateSupplierLink,
   unlinkSupplier,
+  getProductsByBarcode,
 } from '../controllers/productController.js'
 
 const router = createRouter()
@@ -61,6 +64,15 @@ router.get(
   expensiveLimiter,
   validate(getProductsQuerySchema, 'query'),
   getProducts
+)
+
+// Búsqueda del POS por código (DT-22). Sin `expensiveLimiter`: es una consulta
+// por índice y el cajero escanea seguido. Autoriza como los listados.
+router.get(
+  '/barcode/:code',
+  validate(barcodeParamSchema, 'params'),
+  validate(barcodeQuerySchema, 'query'),
+  getProductsByBarcode
 )
 
 // El detalle tampoco lleva contexto de proyecto: se abre desde el catálogo de

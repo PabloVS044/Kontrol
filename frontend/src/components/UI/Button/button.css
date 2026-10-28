@@ -7,8 +7,8 @@
     font-size: var(--k-font-size-body-main);
     font-weight: var(--k-font-weight-semibold);
     letter-spacing: 0.02em;
-    color: var(--BtnText);
-    background-color: var(--background, var(--Primary));
+    color: var(--k-form-btn-text);
+    background-color: var(--background, var(--k-color-primary));
     transition: var(--k-transition-ui);
     display: inline-flex;
     align-items: center;
@@ -23,7 +23,7 @@
 }
 
 .btn:hover:not(:disabled) {
-    background-color: var(--hoverBack, var(--Primary2));
+    background-color: var(--hoverBack, var(--k-color-primary-2));
     filter: brightness(var(--k-state-hover-brightness));
     box-shadow: var(--k-shadow-glow);
     transform: translateY(-1px);

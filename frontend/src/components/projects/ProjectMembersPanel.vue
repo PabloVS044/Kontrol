@@ -591,7 +591,7 @@ watch(
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   background: var(--k-shade-3);
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
@@ -607,7 +607,7 @@ watch(
 .pm-state,
 .pm-feedback {
   padding: 16px 18px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   font-family: var(--k-font-sans);
 }
@@ -674,7 +674,7 @@ watch(
   min-width: 280px;
   padding: 12px 14px;
   background: var(--k-shade-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   color: var(--k-color-text);
   font-family: var(--k-font-sans);
 }
@@ -696,7 +696,7 @@ watch(
   flex-direction: column;
   gap: 6px;
   padding: 12px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.08);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   background: var(--k-shade-3);
   cursor: pointer;
 }
@@ -749,7 +749,7 @@ watch(
 
 .pm-btn--secondary {
   background: var(--k-shade-3);
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.12);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   color: var(--k-color-text);
 }
 
@@ -767,7 +767,7 @@ watch(
 
 .pm-member {
   padding: 18px;
-  border: 1px solid rgba(var(--k-color-white-rgb), 0.06);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.06);
   background: var(--k-shade-3);
   display: flex;
   flex-direction: column;

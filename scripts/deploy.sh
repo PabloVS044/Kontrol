@@ -89,7 +89,7 @@ ENV_B64=$(printf '%s\n' \
   "VITE_WEBRTC_ICE_SERVERS=${VITE_WEBRTC_ICE_SERVERS-}" \
   | base64 -w0)
 
-echo "==> [1/3] Actualizando código en $VM_USER@$VM_IP ..."
+echo "==> [1/4] Actualizando código en $VM_USER@$VM_IP ..."
 $SSH "
   set -e
   if [ ! -d /app/Kontrol ]; then
@@ -103,7 +103,7 @@ $SSH "
   echo '==> .env actualizado'
 "
 
-echo "==> [2/3] Lanzando build en el servidor (secuencial, para no saturar RAM/disco)..."
+echo "==> [2/4] Lanzando build en el servidor (secuencial, para no saturar RAM/disco)..."
 $SSH "
   set -e
   cd /app/Kontrol
@@ -119,7 +119,7 @@ $SSH "
   docker image prune -f >/dev/null 2>&1 || true
 "
 
-echo "==> [3/3] Verificando salud del despliegue..."
+echo "==> [3/4] Verificando salud del despliegue..."
 $SSH "
   set -e
   cd /app/Kontrol
@@ -137,6 +137,38 @@ $SSH "
       exit 1
     fi
   done
+"
+
+# DT-21 (RTF 2, DEP-01): un despliegue llegó a dejar contenedores con la imagen
+# anterior (por eso --force-recreate), y producción corrió una versión distinta
+# de la que se creía. Aquí se comprueba, en lugar de suponerlo, que la VM tiene
+# el commit pedido y que cada contenedor construido corre la imagen recién
+# construida. El disco solo avisa: el 01/10/2026 se llenó y rompió el build.
+echo "==> [4/4] Verificando la versión desplegada..."
+$SSH "
+  set -e
+  cd /app/Kontrol
+  deployed=\$(git rev-parse HEAD)
+  echo \"  commit: \${deployed:0:7} (esperado ${REMOTE_SHA:0:7}, origin/$GIT_REF)\"
+  [ \"\$deployed\" = '$REMOTE_SHA' ] || { echo '  El checkout de la VM no es el commit esperado.'; exit 1; }
+  stale=0
+  for svc in backend frontend; do
+    cid=\$(docker compose $COMPOSE_FILES ps -q \$svc)
+    running=\$(docker inspect --format '{{.Image}}' \"\$cid\")
+    built=\$(docker image inspect --format '{{.Id}}' \"\$(docker inspect --format '{{.Config.Image}}' \"\$cid\")\")
+    if [ \"\$running\" = \"\$built\" ]; then
+      echo \"  \$svc: imagen recién construida (\${running:7:12})\"
+    else
+      echo \"  \$svc: corre \${running:7:12}, pero la última construida es \${built:7:12}\"
+      stale=1
+    fi
+  done
+  [ \"\$stale\" = 0 ] || { echo '  Hay contenedores con una imagen anterior.'; exit 1; }
+  used=\$(df --output=pcent / | tail -1 | tr -dc '0-9')
+  echo \"  disco: \${used} % usado\"
+  if [ \"\$used\" -ge 85 ]; then
+    echo '  AVISO: el disco supera el 85 %. Libera la caché de build: docker builder prune -f'
+  fi
 "
 
 echo ""

@@ -112,19 +112,19 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: #111111;
-  border: 1px solid #2a2a2a;
-  color: var(--TextMuted);
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-7);
+  color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
 
 .btn-outline:hover:not(:disabled) {
-  border-color: #caa860;
-  color: var(--Primary);
+  border-color: var(--k-color-primary);
+  color: var(--k-color-primary);
 }
 
 .btn-outline:disabled {
@@ -143,24 +143,24 @@ onBeforeUnmount(() => {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 40;
+  z-index: var(--k-z-popover);
   width: 268px;
   display: flex;
   flex-direction: column;
   gap: 2px;
   padding: 10px;
-  background: #0d0d0d;
-  border: 1px solid #2a2a2a;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  background: var(--k-shade-2);
+  border: 1px solid var(--k-shade-7);
+  box-shadow: 0 10px 40px rgba(var(--k-color-black-rgb), 0.8);
 }
 
 .pop-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   padding: 2px 4px 8px;
 }
 
@@ -178,8 +178,8 @@ onBeforeUnmount(() => {
 }
 
 .pop-item:hover {
-  background: #141414;
-  border-color: rgba(202, 168, 96, 0.3);
+  background: var(--k-shade-3b);
+  border-color: rgba(var(--k-color-primary-rgb), 0.3);
 }
 
 .pop-tag {
@@ -187,12 +187,12 @@ onBeforeUnmount(() => {
   margin-top: 1px;
   padding: 3px 7px;
   font-family: 'Manrope', sans-serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: var(--Primary);
-  background: rgba(202, 168, 96, 0.1);
-  border: 1px solid rgba(202, 168, 96, 0.25);
+  color: var(--k-color-primary);
+  background: rgba(var(--k-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.25);
 }
 
 .pop-text {
@@ -204,40 +204,40 @@ onBeforeUnmount(() => {
 
 .pop-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #e8e4de;
+  color: var(--k-color-text);
 }
 
 .pop-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.4;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
 }
 
 .pop-footnote {
   padding: 8px 4px 2px;
   margin-top: 6px;
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid var(--k-shade-4);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextDim);
+  font-size: 0.6875rem;
+  color: var(--k-text-dim);
 }
 
 .export-error {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 30;
+  z-index: calc(var(--k-z-popover) - 1);
   margin: 0;
   padding: 6px 10px;
   max-width: 268px;
-  background: #0d0d0d;
-  border: 1px solid rgba(224, 82, 82, 0.4);
+  background: var(--k-shade-2);
+  border: 1px solid rgba(var(--k-color-error-rgb), 0.4);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--ErrorText);
+  font-size: 0.6875rem;
+  color: var(--k-state-error-text);
 }
 
 @media (max-width: 640px) {

@@ -177,8 +177,8 @@ onBeforeUnmount(() => {
 .csa-wrap {
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  background: #111111;
+  z-index: calc(var(--k-z-system) - 1);
+  background: var(--k-shade-3);
   pointer-events: all;
 }
 
@@ -205,20 +205,20 @@ onBeforeUnmount(() => {
 }
 
 .csa-text {
-  color: var(--Text);
+  color: var(--k-color-text);
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   margin: 0;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 12px rgba(var(--k-color-black-rgb), 0.5);
 }
 
 .csa-btn {
   padding: 10px 32px;
   border-radius: 8px;
   border: none;
-  background: var(--Primary, #caa860);
-  color: var(--Text);
+  background: var(--k-color-primary);
+  color: var(--k-color-text);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;

@@ -30,7 +30,7 @@ defineProps({
 .scroll-stack-card {
   transform-origin: top center;
   will-change: transform, opacity;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 30px rgba(var(--k-color-black-rgb), 0.1);
   min-height: 20rem;
   width: 100%;
   margin: 30px 0;
@@ -60,22 +60,22 @@ defineProps({
   height: 3rem;
   padding: 0 1rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--Text) 12%, transparent);
-  color: var(--Text);
+  background: color-mix(in srgb, var(--k-color-text) 12%, transparent);
+  color: var(--k-color-text);
   font-weight: 700;
   font-size: 0.95rem;
 }
 
 .scroll-stack-card-title {
   margin: 0;
-  color: var(--Text);
+  color: var(--k-color-text);
   font-size: 1.6rem;
   line-height: 1.2;
 }
 
 .scroll-stack-card-description {
   margin: 1rem 0 0;
-  color: color-mix(in srgb, var(--Text) 75%, transparent);
+  color: color-mix(in srgb, var(--k-color-text) 75%, transparent);
   font-size: 1rem;
   line-height: 1.6;
   max-width: 40rem;
@@ -104,13 +104,13 @@ defineProps({
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--Text) 15%, transparent);
-  color: var(--Text);
+  background: color-mix(in srgb, var(--k-color-text) 15%, transparent);
+  color: var(--k-color-text);
   font-weight: 700;
 }
 
 .process-item-text {
-  color: color-mix(in srgb, var(--Text) 85%, transparent);
+  color: color-mix(in srgb, var(--k-color-text) 85%, transparent);
   line-height: 1.6;
 }
 

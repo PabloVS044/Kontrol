@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main data-theme="dark">
     <!-- Fixed background video, scrubbed by total page scroll (see
          setupBackgroundVideoScrub): frame 0 = fully chaotic, last frame =
          fully ordered, so scrolling from Header to Start visually traces the

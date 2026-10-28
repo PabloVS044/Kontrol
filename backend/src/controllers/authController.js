@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { randomUUID } from 'node:crypto'
 import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
+import { isReauthAction, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import {
   acceptCompanyInvitation,
   getInvitationByToken as getCompanyInvitationByToken,
@@ -157,48 +158,59 @@ export const register = async (req, res) => {
 }
 
 // POST /api/auth/login (validado por Zod)
+//
+// RTF 2 (PERF-01): el cliente del pool se tomaba al entrar y se retenía
+// durante bcrypt.compare, que es CPU pura. Bajo carga, los logins ocupaban
+// las 10 conexiones esperando al hash y el resto de la API hacía cola detrás.
+// Ahora la consulta no reserva cliente y solo se toma uno si hay invitación.
+//
+// Bajar BCRYPT_SALT_ROUNDS no acelera este camino: compare usa el costo
+// guardado en cada hash, no el configurado.
 export const login = async (req, res) => {
   const { email, password, inviteToken } = req.body
 
-  const client = await pool.connect()
-  try {
-    const result = await client.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
-       FROM public.usuario u
-       JOIN public.rol r ON r.id_rol = u.id_rol
-       WHERE u.email = $1`,
-      [email]
-    )
+  const result = await pool.query(
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
+     FROM public.usuario u
+     JOIN public.rol r ON r.id_rol = u.id_rol
+     WHERE u.email = $1`,
+    [email]
+  )
 
-    if (!result.rows.length) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const user = result.rows[0]
-
-    if (!user.activo) {
-      return res.status(403).json({ success: false, message: 'Account disabled.' })
-    }
-
-    const valid = await bcrypt.compare(password, user.password_hash)
-    if (!valid) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const invite = await maybeResolveInvite({
-      client,
-      inviteToken,
-      id_usuario: user.id_usuario,
-      req,
-    })
-
-    const token = signToken(user)
-    const { password_hash, activo, ...userData } = user
-    delete userData.token_version
-    return res.json({ success: true, token, data: userData, invite })
-  } finally {
-    client.release()
+  if (!result.rows.length) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
   }
+
+  const user = result.rows[0]
+
+  if (!user.activo) {
+    return res.status(403).json({ success: false, message: 'Account disabled.' })
+  }
+
+  const valid = await bcrypt.compare(password, user.password_hash)
+  if (!valid) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
+  }
+
+  let invite = null
+  if (inviteToken) {
+    const client = await pool.connect()
+    try {
+      invite = await maybeResolveInvite({
+        client,
+        inviteToken,
+        id_usuario: user.id_usuario,
+        req,
+      })
+    } finally {
+      client.release()
+    }
+  }
+
+  const token = signToken(user)
+  const { password_hash, activo, ...userData } = user
+  delete userData.token_version
+  return res.json({ success: true, token, data: userData, invite })
 }
 
 // GET /api/auth/me
@@ -248,8 +260,11 @@ export const googleDeletionReauthentication = (req, res) => {
 
   const frontend = getFrontendBaseUrl(req, req.headers.origin)
   const nonce = randomUUID()
+  // The same Google round trip serves every destructive action; `action`
+  // decides the purpose of the proof it returns.
+  const action = isReauthAction(req.body?.action) ? req.body.action : REAUTH_ACTIONS.ACCOUNT_DELETION
   const state = jwt.sign(
-    { purpose: 'account-deletion-reauth', id_usuario: req.user.id_usuario, frontend, nonce },
+    { purpose: 'account-deletion-reauth', action, id_usuario: req.user.id_usuario, frontend, nonce },
     process.env.JWT_SECRET,
     { expiresIn: '5m' }
   )
@@ -288,7 +303,14 @@ export const googleCallback = async (req, res) => {
 
   if (deletionState) {
     const frontendUrl = getFrontendBaseUrl(req, deletionState.frontend)
-    if (error) return res.redirect(`${frontendUrl}/settings?reauth_error=google_cancelled`)
+    const action = isReauthAction(deletionState.action)
+      ? deletionState.action
+      : REAUTH_ACTIONS.ACCOUNT_DELETION
+    const closure = action === REAUTH_ACTIONS.COMPANY_CLOSURE
+    const failed = (reason) => res.redirect(
+      `${frontendUrl}/settings?reauth_error=${reason}${closure ? '&reauth_for=company-closure' : ''}`
+    )
+    if (error) return failed('google_cancelled')
     try {
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
@@ -304,7 +326,7 @@ export const googleCallback = async (req, res) => {
       const tokens = await tokenResponse.json()
       if (!tokenResponse.ok || !tokens.id_token) {
         logger.error('[Google account deletion reauthentication] token exchange failed.')
-        return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+        return failed('google_error')
       }
 
       const oauthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -324,18 +346,19 @@ export const googleCallback = async (req, res) => {
         googleUser.sub !== userResult.rows[0]?.google_id ||
         googleUser.nonce !== deletionState.nonce
       ) {
-        return res.redirect(`${frontendUrl}/settings?reauth_error=google_account_mismatch`)
+        return failed('google_account_mismatch')
       }
 
       const proof = jwt.sign(
-        { id_usuario: deletionState.id_usuario, purpose: 'account-deletion' },
+        { id_usuario: deletionState.id_usuario, purpose: action },
         process.env.JWT_SECRET,
         { expiresIn: '2m' }
       )
-      return res.redirect(`${frontendUrl}/settings#deletion_proof=${encodeURIComponent(proof)}`)
+      const fragment = closure ? 'closure_proof' : 'deletion_proof'
+      return res.redirect(`${frontendUrl}/settings#${fragment}=${encodeURIComponent(proof)}`)
     } catch (err) {
       logger.error('[Google account deletion reauthentication]', err)
-      return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+      return failed('google_error')
     }
   }
 

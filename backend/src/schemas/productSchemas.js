@@ -6,6 +6,15 @@ export const getProductsQuerySchema = z.object({
   projectId: z.coerce.number().int().positive().optional(),
 })
 
+// DT-22: búsqueda del POS por código. El tope es el mismo que al guardarlo.
+export const barcodeParamSchema = z.object({
+  code: z.string().trim().min(1).max(64),
+})
+
+export const barcodeQuerySchema = z.object({
+  projectId: z.coerce.number().int().positive().optional(),
+})
+
 export const productIdParamSchema = z.object({
   id: z.coerce.number().int().positive({ message: 'The id must be a positive integer.' }),
 })

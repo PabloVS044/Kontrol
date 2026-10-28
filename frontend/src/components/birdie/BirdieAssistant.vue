@@ -331,37 +331,37 @@ const FAQ_CATALOG = [
   // ── Inventory ────────────────────────────────────────────
   {
     id: 'inventory-create',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge', '/inventory'],
     questionKey: 'birdie.faqs.inventoryCreate.q',
     answerKey:   'birdie.faqs.inventoryCreate.a',
-    route: '/inventory',
+    route: '/sales/charge',
     target: '[data-birdie="create-product"], .inv-header-actions .btn-primary',
   },
   {
     id: 'inventory-sell',
-    contextRoutes: ['/inventory', '/inventory/*', '/sales'],
+    contextRoutes: ['/sales', '/sales/charge', '/inventory', '/inventory/*'],
     questionKey: 'birdie.faqs.inventorySell.q',
     answerKey:   'birdie.faqs.inventorySell.a',
-    route: '/inventory',
+    route: '/sales/charge',
     target: '.sell-btn, [data-birdie="sell-product"], .product-card',
   },
   {
     id: 'inventory-movements',
-    contextRoutes: ['/inventory', '/inventory/*'],
+    contextRoutes: ['/sales/charge', '/inventory/*'],
     questionKey: 'birdie.faqs.inventoryMovements.q',
     answerKey:   'birdie.faqs.inventoryMovements.a',
     target: '[data-birdie="movements"], .product-card, [data-birdie="create-product"]',
   },
   {
     id: 'inventory-filter',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge', '/inventory', '/sales/history'],
     questionKey: 'birdie.faqs.inventoryFilter.q',
     answerKey:   'birdie.faqs.inventoryFilter.a',
-    target: '.project-filter, .pf-tabs',
+    target: '.project-filter, .pf-tabs, .invt-select, .sh-select',
   },
   {
     id: 'inventory-category-filter',
-    contextRoutes: ['/inventory'],
+    contextRoutes: ['/sales/charge'],
     questionKey: 'birdie.faqs.inventoryCategoryFilter.q',
     answerKey:   'birdie.faqs.inventoryCategoryFilter.a',
     target: '[data-birdie="inventory-category-filter"], .filter-row',
@@ -512,7 +512,7 @@ const FAQ_CATALOG = [
     questionKey: 'birdie.faqs.inventoryShortcut.q',
     answerKey:   'birdie.faqs.inventoryShortcut.a',
     route: '/inventory',
-    target: '.product-grid, .inv-header, [data-birdie="create-product"]',
+    target: '.invt-table, .invt-header',
   },
   {
     id: 'global-dashboard',
@@ -1022,22 +1022,22 @@ function closeAssistant() {
   position: relative;
   animation: birdiePulse 1.4s ease-in-out infinite;
   box-shadow:
-    0 0 0 3px rgba(202, 168, 96, 0.55),
-    0 0 24px 6px rgba(202, 168, 96, 0.35) !important;
+    0 0 0 3px rgba(var(--k-color-primary-rgb), 0.55),
+    0 0 24px 6px rgba(var(--k-color-primary-rgb), 0.35) !important;
   border-radius: inherit;
-  z-index: 5;
+  z-index: var(--k-z-sticky);
 }
 
 @keyframes birdiePulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(202, 168, 96, 0.45), 0 0 16px 4px rgba(202, 168, 96, 0.25); }
-  50%      { box-shadow: 0 0 0 5px rgba(202, 168, 96, 0.75), 0 0 28px 10px rgba(202, 168, 96, 0.5); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--k-color-primary-rgb), 0.45), 0 0 16px 4px rgba(var(--k-color-primary-rgb), 0.25); }
+  50%      { box-shadow: 0 0 0 5px rgba(var(--k-color-primary-rgb), 0.75), 0 0 28px 10px rgba(var(--k-color-primary-rgb), 0.5); }
 }
 </style>
 
 <style scoped>
 .birdie-assistant {
   position: fixed;
-  z-index: 700;
+  z-index: calc(var(--k-z-floating) + 2);
   pointer-events: none;
   transition:
     left 0.9s cubic-bezier(0.45, 0.05, 0.25, 1),
@@ -1057,7 +1057,7 @@ function closeAssistant() {
   pointer-events: auto;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 8px 18px rgba(var(--k-color-black-rgb), 0.55));
   transition: transform 0.25s ease;
   transform-origin: 50% 50%;
   touch-action: none;
@@ -1087,15 +1087,15 @@ function closeAssistant() {
   position: absolute;
   top: -10px;
   right: -10px;
-  z-index: 3;
+  z-index: var(--k-z-top);
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(20, 18, 14, 0.95);
-  border: 1px solid rgba(202, 168, 96, 0.45);
-  color: var(--Primary);
+  background: var(--k-surface-warm);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.45);
+  color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -1103,14 +1103,14 @@ function closeAssistant() {
   align-items: center;
   justify-content: center;
   pointer-events: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 12px rgba(var(--k-color-black-rgb), 0.45);
   transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
 }
 
 .birdie-close:hover {
-  background: rgba(202, 168, 96, 0.18);
-  color: var(--Text);
-  border-color: rgba(202, 168, 96, 0.8);
+  background: rgba(var(--k-color-primary-rgb), 0.18);
+  color: var(--k-color-text);
+  border-color: rgba(var(--k-color-primary-rgb), 0.8);
   transform: scale(1.1);
 }
 
@@ -1124,18 +1124,18 @@ function closeAssistant() {
   min-width: 64px;
   max-width: 320px;
   padding: 12px 14px;
-  background: linear-gradient(135deg, #161310 0%, #1f1a13 100%);
-  border: 1px solid rgba(202, 168, 96, 0.55);
+  background: linear-gradient(135deg, var(--k-surface-warm) 0%, var(--k-surface-warm-2) 100%);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.55);
   border-radius: 14px;
   box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(202, 168, 96, 0.18) inset;
-  color: var(--Text);
+    0 12px 30px rgba(var(--k-color-black-rgb), 0.55),
+    0 0 0 1px rgba(var(--k-color-primary-rgb), 0.18) inset;
+  color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
   pointer-events: auto;
-  z-index: 2;
+  z-index: var(--k-z-raised);
 }
 
 /* Anchor variants — only one is active at a time */
@@ -1174,16 +1174,16 @@ function closeAssistant() {
   transform: translateY(-2px);
 }
 .birdie-bubble--clickable:hover {
-  border-color: rgba(202, 168, 96, 0.85);
+  border-color: rgba(var(--k-color-primary-rgb), 0.85);
   box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(202, 168, 96, 0.35) inset,
-    0 0 18px rgba(202, 168, 96, 0.25);
+    0 14px 34px rgba(var(--k-color-black-rgb), 0.6),
+    0 0 0 1px rgba(var(--k-color-primary-rgb), 0.35) inset,
+    0 0 18px rgba(var(--k-color-primary-rgb), 0.25);
 }
 
 .birdie-bubble--clickable:hover .birdie-bubble-q {
-  background: rgba(202, 168, 96, 0.18);
-  color: var(--Text);
+  background: rgba(var(--k-color-primary-rgb), 0.18);
+  color: var(--k-color-text);
   transform: scale(1.08);
 }
 
@@ -1194,9 +1194,9 @@ function closeAssistant() {
   bottom: -7px;
   width: 12px;
   height: 12px;
-  background: linear-gradient(135deg, #161310 0%, #1f1a13 100%);
-  border-right: 1px solid rgba(202, 168, 96, 0.55);
-  border-bottom: 1px solid rgba(202, 168, 96, 0.55);
+  background: linear-gradient(135deg, var(--k-surface-warm) 0%, var(--k-surface-warm-2) 100%);
+  border-right: 1px solid rgba(var(--k-color-primary-rgb), 0.55);
+  border-bottom: 1px solid rgba(var(--k-color-primary-rgb), 0.55);
   transform: rotate(45deg);
 }
 
@@ -1218,15 +1218,15 @@ function closeAssistant() {
   top: -7px;
   border-right: none;
   border-bottom: none;
-  border-left: 1px solid rgba(202, 168, 96, 0.55);
-  border-top: 1px solid rgba(202, 168, 96, 0.55);
+  border-left: 1px solid rgba(var(--k-color-primary-rgb), 0.55);
+  border-top: 1px solid rgba(var(--k-color-primary-rgb), 0.55);
 }
 
 .birdie-bubble-q {
   font-family: 'Bungee', 'Manrope', sans-serif;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   width: 28px;
   height: 28px;
   display: flex;
@@ -1240,10 +1240,10 @@ function closeAssistant() {
 /* ── FAQ ── */
 .birdie-faq-title {
   margin: 0 0 10px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .birdie-faq-section + .birdie-faq-toggle,
@@ -1253,10 +1253,10 @@ function closeAssistant() {
 
 .birdie-faq-section-title {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--TextDim);
+  color: var(--k-text-dim);
 }
 
 .birdie-faq-section {
@@ -1265,8 +1265,8 @@ function closeAssistant() {
 
 .birdie-faq-empty {
   margin: 0 0 8px;
-  font-size: 12px;
-  color: var(--TextMuted);
+  font-size: 0.75rem;
+  color: var(--k-text-muted);
   font-style: italic;
 }
 
@@ -1283,39 +1283,39 @@ function closeAssistant() {
   width: 6px;
 }
 .birdie-faq-list::-webkit-scrollbar-thumb {
-  background: rgba(202, 168, 96, 0.35);
+  background: rgba(var(--k-color-primary-rgb), 0.35);
   border-radius: 6px;
 }
 
 .birdie-faq-item {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(var(--k-ink-rgb), 0.03);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.06);
   border-radius: 8px;
   padding: 8px 10px;
   font-family: inherit;
-  font-size: 12.5px;
-  color: var(--Text);
+  font-size: 0.7813rem;
+  color: var(--k-color-text);
   text-align: left;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .birdie-faq-item:hover {
-  background: rgba(202, 168, 96, 0.12);
-  border-color: rgba(202, 168, 96, 0.4);
-  color: var(--Primary);
+  background: rgba(var(--k-color-primary-rgb), 0.12);
+  border-color: rgba(var(--k-color-primary-rgb), 0.4);
+  color: var(--k-color-primary);
 }
 
 .birdie-faq-toggle {
   width: 100%;
   background: transparent;
-  border: 1px dashed rgba(202, 168, 96, 0.3);
+  border: 1px dashed rgba(var(--k-color-primary-rgb), 0.3);
   border-radius: 8px;
   padding: 6px;
   margin-bottom: 8px;
   font-family: inherit;
-  font-size: 11px;
-  color: var(--Primary);
+  font-size: 0.6875rem;
+  color: var(--k-color-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1325,14 +1325,14 @@ function closeAssistant() {
 }
 
 .birdie-faq-toggle:hover {
-  background: rgba(202, 168, 96, 0.08);
-  border-color: rgba(202, 168, 96, 0.55);
-  color: var(--Text);
+  background: rgba(var(--k-color-primary-rgb), 0.08);
+  border-color: rgba(var(--k-color-primary-rgb), 0.55);
+  color: var(--k-color-text);
 }
 
 .birdie-faq-toggle-icon {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1;
 }
@@ -1340,47 +1340,47 @@ function closeAssistant() {
 .birdie-faq-close {
   width: 100%;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--TextMuted);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.1);
+  color: var(--k-text-muted);
   padding: 6px;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
 
 .birdie-faq-close:hover {
-  color: var(--Text);
-  border-color: rgba(255, 255, 255, 0.25);
+  color: var(--k-color-text);
+  border-color: rgba(var(--k-ink-rgb), 0.25);
 }
 
 /* ── Speech ── */
 .birdie-speech-text {
   margin: 0 0 10px;
-  font-size: 13px;
-  color: var(--Text);
+  font-size: 0.8125rem;
+  color: var(--k-color-text);
   white-space: pre-wrap;
 }
 
 .birdie-speech-ok {
   display: block;
   margin-left: auto;
-  background: rgba(202, 168, 96, 0.15);
-  border: 1px solid rgba(202, 168, 96, 0.45);
-  color: var(--Primary);
+  background: rgba(var(--k-color-primary-rgb), 0.15);
+  border: 1px solid rgba(var(--k-color-primary-rgb), 0.45);
+  color: var(--k-color-primary);
   padding: 5px 12px;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
 .birdie-speech-ok:hover {
-  background: rgba(202, 168, 96, 0.3);
-  color: var(--Text);
+  background: rgba(var(--k-color-primary-rgb), 0.3);
+  color: var(--k-color-text);
 }
 
 /* ── Bubble enter/leave ── */

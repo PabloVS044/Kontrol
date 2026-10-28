@@ -4,9 +4,9 @@ import { taskStatusStyle, taskPriorityColor } from '@/utils/taskIndicatorColors.
 describe('taskStatusStyle', () => {
   it('arma color, borde y fondo con la opacidad del original', () => {
     expect(taskStatusStyle('PAUSADO')).toEqual({
-      color: '#f97316',
-      borderColor: 'rgba(249, 115, 22, 0.27)',
-      background: 'rgba(249, 115, 22, 0.08)',
+      color: 'var(--k-hue-orange)',
+      borderColor: 'rgba(var(--k-hue-orange-rgb), 0.27)',
+      background: 'rgba(var(--k-hue-orange-rgb), 0.08)',
     })
   })
 
@@ -14,8 +14,8 @@ describe('taskStatusStyle', () => {
     expect(taskStatusStyle('EN_PROGRESO').color).toBe('var(--k-state-success-text)')
     expect(taskStatusStyle('INEXISTENTE')).toEqual({
       color: 'var(--k-gray-4)',
-      borderColor: 'rgba(102, 102, 102, 0.27)',
-      background: 'rgba(102, 102, 102, 0.08)',
+      borderColor: 'rgba(var(--k-ink-rgb), 0.27)',
+      background: 'rgba(var(--k-ink-rgb), 0.08)',
     })
   })
 })
@@ -23,7 +23,7 @@ describe('taskStatusStyle', () => {
 describe('taskPriorityColor', () => {
   it('mapea cada prioridad y cae a gris para las desconocidas', () => {
     expect(taskPriorityColor('CRITICA')).toBe('var(--k-state-error-text)')
-    expect(taskPriorityColor('MEDIA')).toBe('#60a5fa')
+    expect(taskPriorityColor('MEDIA')).toBe('var(--k-hue-blue)')
     expect(taskPriorityColor(undefined)).toBe('var(--k-gray-3)')
   })
 })

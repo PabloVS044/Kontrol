@@ -371,3 +371,41 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     }
   })
 })
+
+describe('AppNavbar.vue — cajón según el tamaño de letra', () => {
+  // happy-dom no evalúa media queries por ancho: se simula una ventana de 1600px.
+  const ventana = (ancho) => vi.fn((query) => ({
+    matches: ancho <= Number(query.match(/max-width:\s*(\d+)px/)?.[1] ?? Infinity),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }))
+
+  afterEach(async () => {
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    useFontScale().setFontScale('default')
+    vi.unstubAllGlobals()
+  })
+
+  it('con la letra normal, en 1600px los enlaces van en fila', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav').classes()).not.toContain('appnav--drawer')
+  })
+
+  it('con la letra más grande la fila no cabe en 1600px y se pliega en el cajón', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    useFontScale().setFontScale('largest')
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav').classes()).toContain('appnav--drawer')
+  })
+
+  it('cambiar el tamaño con la barra montada vuelve a decidir', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    const { wrapper } = await montar()
+    useFontScale().setFontScale('larger')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.appnav').classes()).toContain('appnav--drawer')
+  })
+})
