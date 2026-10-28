@@ -88,6 +88,29 @@
             <span v-if="errors.password" class="register-field-error">{{ errors.password }}</span>
           </div>
 
+          <!-- Aceptación de los documentos legales (L-6): nunca viene marcada. -->
+          <div class="register-field">
+            <label class="register-legal">
+              <input
+                v-model="form.acceptLegal"
+                type="checkbox"
+                class="register-legal-checkbox"
+                :aria-invalid="Boolean(errors.acceptLegal)"
+                aria-describedby="register-legal-error"
+                @change="validate('acceptLegal')"
+              />
+              <i18n-t keypath="auth.register.legal" tag="span" scope="global">
+                <template #terms>
+                  <RouterLink to="/legal/terms" target="_blank" rel="noopener">{{ $t('auth.register.legalTerms') }}</RouterLink>
+                </template>
+                <template #privacy>
+                  <RouterLink to="/legal/privacy" target="_blank" rel="noopener">{{ $t('auth.register.legalPrivacy') }}</RouterLink>
+                </template>
+              </i18n-t>
+            </label>
+            <span v-if="errors.acceptLegal" id="register-legal-error" class="register-field-error">{{ errors.acceptLegal }}</span>
+          </div>
+
           <!-- Botón Create Account -->
           <button
             class="register-btn-primary"
@@ -143,6 +166,7 @@ import { useAuthStore } from '@/stores/auth'
 import { registerUser, loginWithGoogle } from '@/services/auth'
 import { finalizeAuthenticatedSession, getDefaultAuthenticatedRoute } from '@/utils/authFlow'
 import { getInviteTokenFromQuery } from '@/utils/invitation'
+import { acceptanceVersions } from '@/utils/legal'
 import './RegisterView.css'
 
 const { t }     = useI18n()
@@ -150,8 +174,8 @@ const router    = useRouter()
 const route     = useRoute()
 const authStore = useAuthStore()
 
-const form = reactive({ firstName: '', lastName: '', email: '', password: '' })
-const errors = reactive({ firstName: '', lastName: '', email: '', password: '' })
+const form = reactive({ firstName: '', lastName: '', email: '', password: '', acceptLegal: false })
+const errors = reactive({ firstName: '', lastName: '', email: '', password: '', acceptLegal: '' })
 const isLoading     = ref(false)
 const errorMessage  = ref('')
 const successMessage = ref('')
@@ -171,6 +195,7 @@ const rules = {
     if (form.password.length < 6) return t('auth.register.errors.passwordMin')
     return ''
   },
+  acceptLegal: () => form.acceptLegal !== true ? t('auth.register.errors.legalRequired') : '',
 }
 
 function validate(field) {
@@ -198,7 +223,10 @@ async function handleRegister() {
       form.lastName,
       form.email,
       form.password,
-      { inviteToken: inviteToken.value || undefined }
+      {
+        inviteToken: inviteToken.value || undefined,
+        legal: { accepted: form.acceptLegal, versions: acceptanceVersions() },
+      }
     )
 
     if (inviteToken.value) {
@@ -225,6 +253,10 @@ async function handleRegister() {
     successMessage.value = t('auth.register.success')
     setTimeout(() => router.push({ name: 'login' }), 1400)
   } catch (err) {
+    if (err.serverCode === 'legal_version_outdated') {
+      errorMessage.value = t('auth.register.errors.legalOutdated')
+      return
+    }
     errorMessage.value = err.code
       ? t(`auth.register.errors.${err.code}`)
       : err.message || t('auth.register.errors.generic')

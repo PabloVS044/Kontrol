@@ -1,5 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { LEGAL_DOCUMENTS, legalDocumentPath } from '../utils/legal.js'
 // All views lazy-loaded, landing included, to keep the entry bundle small (DT-17).
+
+// Hasta L-6 los documentos eran secciones de /legal (#terms, #privacy…). Los
+// enlaces viejos —correos, marcadores— llevan ahora a la página de cada uno.
+export function redirectLegacyLegalAnchor(to) {
+  const id = to.hash.slice(1)
+  if (!LEGAL_DOCUMENTS.some((doc) => doc.id === id)) return true
+  return { path: legalDocumentPath(id), replace: true }
+}
 
 // La pestaña "Equipo" del proyecto se ocultó: el acceso se da en "Miembros".
 export function redirectLegacyProjectTab(to) {
@@ -29,6 +38,13 @@ const router = createRouter({
       path: '/legal',
       name: 'legal',
       component: () => import('../views/LegalView.vue'),
+      beforeEnter: redirectLegacyLegalAnchor,
+    },
+    {
+      // Una URL estable por documento (L-6); el slug que no existe cae en 404.
+      path: `/legal/:document(${LEGAL_DOCUMENTS.map((doc) => doc.slug).join('|')})`,
+      name: 'legal-document',
+      component: () => import('../views/LegalDocumentView.vue'),
     },
     {
       path: '/login',

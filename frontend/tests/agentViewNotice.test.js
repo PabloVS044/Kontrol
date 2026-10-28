@@ -25,7 +25,7 @@ const montar = async (locale = 'es') => {
     history: createMemoryHistory(),
     routes: [
       { path: '/agent', component: AgentView },
-      { path: '/legal', component: Stub },
+      { path: '/legal/ai-assistant', component: Stub },
     ],
   })
   await router.push('/agent')
@@ -58,7 +58,7 @@ describe('AgentView — aviso del asistente IA', () => {
     expect(aviso.text()).toContain(es.agent.notice.text)
 
     const enlace = aviso.find('a')
-    expect(enlace.attributes('href')).toBe('/legal#ai')
+    expect(enlace.attributes('href')).toBe('/legal/ai-assistant')
     expect(enlace.attributes('target')).toBe('_blank')
     expect(enlace.text()).toBe(es.agent.notice.link)
   })

@@ -1,6 +1,6 @@
 # Política de cookies y almacenamiento local
 
-**Versión 1.0 · 23 de octubre de 2026 · tarea L-3.** Se publica resumida en `/legal#cookies` (textos `legal.cookies` de `frontend/src/locales`). Sigue la misma reserva que el resto del expediente: requiere revisión profesional antes de uso comercial ([README](README.md)).
+**Versión 1.1 · 27 de octubre de 2026 · tareas L-3 y L-6.** Se publica resumida en `/legal/cookies` (textos `legal.cookies` de `frontend/src/locales`). Sigue la misma reserva que el resto del expediente: requiere revisión profesional antes de uso comercial ([README](README.md)).
 
 Detalle técnico de cada clave: [inventario de almacenamiento en el navegador](inventario-almacenamiento-navegador.md). Esta política y el inventario tienen que nombrar las mismas claves; si cambia uno, cambia el otro.
 
@@ -17,12 +17,11 @@ Detalle técnico de cada clave: [inventario de almacenamiento en el navegador](i
 | --- | --- | --- |
 | Tu sesión | `token` | Demostrar a Kontrol que eres tú en cada acción. |
 | Tu perfil y tus empresas | `user`, `empresas`, `empresaActual`, `accessContext` | Mostrar tu nombre, la empresa en la que trabajas y las secciones a las que tienes acceso. |
-| Tu aceptación de los Términos | `kontrol:legal-consent` | No pedirte que aceptes los Términos cada vez que entras. |
 | Tu respuesta a este aviso | `kontrol:storage-consent` | Recordar si aceptaste o rechazaste las preferencias, y no volver a preguntarte. |
 
 **Si no lo quieres:** no se puede rechazar y seguir usando Kontrol, porque sin estos datos no se puede iniciar sesión. Sin sesión, en la portada y en `/legal`, solo se guarda tu respuesta a este aviso, y solo si respondes.
 
-**Cuánto dura:** al cerrar sesión se borran la sesión, el perfil y las empresas. La aceptación de los Términos y tu respuesta a este aviso se quedan para no volver a pedírtelas; se borran al borrar los datos del sitio (sección 5).
+**Cuánto dura:** al cerrar sesión se borran la sesión, el perfil y las empresas. Tu respuesta a este aviso se queda para no volver a pedírtela; se borra al borrar los datos del sitio (sección 5). Desde la versión 1.1 (L-6) tu aceptación de los Términos no se guarda en el navegador, sino en los servidores de Kontrol.
 
 ### Riesgo conocido de la sesión
 
@@ -65,7 +64,7 @@ Estas conexiones no dependen del aviso: Kontrol no las usa para guardar nada en 
 En cualquier momento, desde:
 
 - **El pie de página:** "Preferencias de cookies" vuelve a abrir el aviso.
-- **`/legal#cookies`:** debajo de esta política, con o sin sesión.
+- **`/legal/cookies`:** debajo de esta política, con o sin sesión.
 - **Configuración → Tus preferencias:** "Recordar preferencias en este navegador".
 
 La decisión es de cada navegador. Si usas Kontrol en otro equipo o en otro navegador, te lo preguntará de nuevo.
@@ -74,7 +73,7 @@ La decisión es de cada navegador. Si usas Kontrol en otro equipo o en otro nave
 
 - **Cerrar sesión** borra la sesión, el perfil y las empresas.
 - **Rechazar las preferencias** borra las preferencias.
-- **Borrar los datos del sitio** en el navegador lo borra todo, incluida tu aceptación de los Términos y tu respuesta a este aviso, que se te volverán a pedir:
+- **Borrar los datos del sitio** en el navegador lo borra todo, incluida tu respuesta a este aviso, que se te volverá a pedir:
   - Chrome y Edge: Configuración → Privacidad y seguridad → Configuración de sitios → Ver permisos y datos almacenados en sitios → buscar el dominio de Kontrol → Borrar datos.
   - Firefox: Configuración → Privacidad y seguridad → Cookies y datos del sitio → Gestionar datos → seleccionar el dominio de Kontrol → Eliminar.
   - Safari: Ajustes → Privacidad → Gestionar datos de sitios web → seleccionar el dominio de Kontrol → Eliminar.
@@ -101,7 +100,7 @@ Criterio de aceptación de L-3: el aviso no escribe nada no imprescindible antes
 2. Cambiar el idioma a Español sin responder al aviso: el texto cambia, `kontrol:locale` no aparece.
 3. Rechazar: aparece solo `kontrol:storage-consent` con `preferences: false`. Recargar: el aviso no vuelve y el idioma vuelve al del navegador.
 4. Pie de página → "Preferencias de cookies" → Aceptar: `preferences: true`. Elegir Español y recargar: se mantiene y aparece `kontrol:locale`.
-5. Iniciar sesión: aparecen `token`, `user`, `empresas`, `empresaActual`, `accessContext` y, tras aceptar los Términos, `kontrol:legal-consent`. Ninguna otra clave fuera de las de esta política.
+5. Iniciar sesión: aparecen `token`, `user`, `empresas`, `empresaActual`, `accessContext`. Aceptar los Términos no escribe nada en el navegador. Ninguna otra clave fuera de las de esta política.
 6. Configuración → rechazar: desaparecen `kontrol:locale`, `prefs_<id>`, `projects-view-mode` y las posiciones del asistente; la sesión sigue activa.
 7. Cerrar el navegador y volver a abrir Kontrol: la decisión se mantiene.
 

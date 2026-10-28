@@ -16,7 +16,7 @@
       <StorageConsentControls />
 
       <div class="storage-banner-footer">
-        <RouterLink to="/legal#cookies" class="storage-banner-link">
+        <RouterLink to="/legal/cookies" class="storage-banner-link">
           {{ t('storageConsent.policyLink') }}
         </RouterLink>
         <button v-if="decision" type="button" class="storage-banner-close" @click="closePanel">

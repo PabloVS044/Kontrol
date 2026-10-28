@@ -912,6 +912,24 @@ export const ensureDatabaseSchema = async () => {
       ON public.evidencia (id_tarea)
   `)
 
+  // L-6 — constancia de qué versión de cada documento legal aceptó cada
+  // usuario, cuándo y desde qué IP. Una fila por documento y versión.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.aceptacion_legal (
+      id_aceptacion SERIAL PRIMARY KEY,
+      id_usuario integer NOT NULL
+        REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+      documento character varying(40) NOT NULL,
+      version character varying(20) NOT NULL,
+      aceptado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      ip character varying(45),
+      origen character varying(20) NOT NULL
+        CHECK (origen IN ('registro', 'aviso')),
+      CONSTRAINT aceptacion_legal_usuario_documento_version_unique
+        UNIQUE (id_usuario, documento, version)
+    )
+  `)
+
   await ensureAgentRole()
 }
 

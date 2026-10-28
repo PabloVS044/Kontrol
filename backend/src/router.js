@@ -18,6 +18,7 @@ import marketingRoutes from './routes/marketingRoutes.js'
 import uploadthingRouter from './uploadthing.js'
 import adminRoutes from './routes/adminRoutes.js'
 import billingRoutes from './routes/billingRoutes.js'
+import legalRoutes from './routes/legalRoutes.js'
 import { authLimiter } from './middleware/rateLimit.js'
 import pool from './db/pool.js'
 import { createHealthHandler } from './db/poolStats.js'
@@ -29,6 +30,7 @@ const router = Router()
 router.get('/health', createHealthHandler(pool))
 
 router.use('/auth', authLimiter, authRoutes)
+router.use('/legal', legalRoutes)
 router.use('/users', userRoutes)
 router.use('/global', globalRoutes)
 router.use('/products', productRoutes)

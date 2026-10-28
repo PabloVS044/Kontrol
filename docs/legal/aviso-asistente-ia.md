@@ -1,6 +1,6 @@
 # Aviso de uso del asistente de inteligencia artificial
 
-**Versión 1.0 · 26 de octubre de 2026 · tarea L-5.** Se publica resumido en `/legal#ai` (textos `legal.ai` de `frontend/src/locales`) y se enlaza desde la pantalla del asistente (`/agent`). Sigue la misma reserva que el resto del expediente: requiere revisión profesional antes de uso comercial ([README](README.md)).
+**Versión 1.0 · 26 de octubre de 2026 · tarea L-5.** Se publica resumido en `/legal/ai-assistant` (textos `legal.ai` de `frontend/src/locales`) y se enlaza desde la pantalla del asistente (`/agent`). Sigue la misma reserva que el resto del expediente: requiere revisión profesional antes de uso comercial ([README](README.md)).
 
 Este documento tiene dos partes: el **aviso**, escrito para quien usa Kontrol, y la **verificación**, que dice de qué línea de código sale cada afirmación. Si cambia el código del asistente, cambia la verificación y, si hace falta, el aviso.
 

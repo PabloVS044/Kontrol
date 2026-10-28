@@ -557,7 +557,7 @@ function autoResizeEdit(e) {
         <!-- Aviso L-5: se abre en otra pestaña para no perder la conversación. -->
         <p class="agent-notice" data-testid="agent-ai-notice">
           {{ t('agent.notice.text') }}
-          <RouterLink to="/legal#ai" target="_blank" rel="noopener">{{ t('agent.notice.link') }}</RouterLink>
+          <RouterLink to="/legal/ai-assistant" target="_blank" rel="noopener">{{ t('agent.notice.link') }}</RouterLink>
         </p>
       </div>
     </main>
