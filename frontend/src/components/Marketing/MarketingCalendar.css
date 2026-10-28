@@ -72,7 +72,9 @@
 
 .mkt-cal-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  /* minmax(0, …): con 1fr el título de una publicación (nowrap) ensanchaba su
+     columna y el resto de la semana quedaba recortado en el teléfono. */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 1px;
   background: var(--k-color-border);
   border: 1px solid var(--k-color-border);

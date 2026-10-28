@@ -246,12 +246,11 @@
 
               <!-- Role pill -->
               <div class="lr-pill-col" @click.stop>
-                <!-- cambiar a token color azul -->
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(var(--k-hue-blue-rgb), 0.08)'"
+                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
+                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
                 />
               </div>
             </div>
@@ -285,12 +284,11 @@
                   <span class="card-status-dot" :style="{ backgroundColor: statusColor(project.estado) }"></span>
                   <span class="card-status-text" :style="{ color: statusColor(project.estado) }">{{ statusLabel(project.estado) }}</span>
                 </div>
-                <!-- cambiar a token color azul -->
                 <Pill
                   :label="isAdmin(project) ? 'ADMIN' : 'MEMBER'"
-                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(96,165,250,0.08)'"
-                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
-                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : '#60a5fa'"
+                  :btnColor="isAdmin(project) ? 'rgba(var(--k-color-primary-rgb), 0.12)' : 'rgba(var(--k-hue-blue-rgb), 0.08)'"
+                  :circleColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
+                  :textColor="isAdmin(project) ? 'var(--k-color-primary)' : 'var(--k-hue-blue)'"
                 />
               </div>
 
@@ -468,6 +466,7 @@ import BaseModal from '../components/UI/Modal/BaseModal.vue'
 import Pill      from '../components/UI/Pill/Pill.vue'
 import Button    from '../components/UI/Button/Button.vue'
 import { statusLabel, formatDate } from '../utils/statusHelpers.js'
+import { getPreferenceItem, setPreferenceItem } from '../composables/useStorageConsent.js'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -476,8 +475,8 @@ const authStore    = useAuthStore()
 const saleConfigStore = useSaleConfigStore()
 const projects     = ref([])
 const searchQuery  = ref('')
-const viewMode     = ref(localStorage.getItem('projects-view-mode') || 'grid')
-watch(viewMode, (v) => localStorage.setItem('projects-view-mode', v))
+const viewMode     = ref(getPreferenceItem('projects-view-mode') || 'grid')
+watch(viewMode, (v) => setPreferenceItem('projects-view-mode', v))
 const budgetByProj = ref({}) // id_proyecto -> summary
 const loading      = ref(true)
 const fetchError = ref(null)
@@ -492,14 +491,10 @@ const ESTADOS = computed(() => [
   { value: 'CANCELADO',   label: t('projects.statuses.cancelled')  },
 ])
 
-// TODO SCRUM-16: STATUS_COLOR se queda en hex porque el template lo concatena
-// (`:btnColor="statusColor(project.estado) + '18'"`) para formar un hex con
-// alpha, y var() no admite concatenacion. Ademas #60a5fa (azul) y #f97316
-// (naranja) no tienen equivalente en la paleta v2.
 const STATUS_COLOR = {
-  PLANIFICADO: '#60a5fa', /* cambiar a token color azul */
+  PLANIFICADO: 'var(--k-hue-blue)',
   EN_PROGRESO: 'var(--k-state-success-text)',
-  PAUSADO:     '#f97316',
+  PAUSADO:     'var(--k-hue-orange)',
   COMPLETADO:  'var(--k-color-primary)',
   CANCELADO:   'var(--k-state-error-text)',
 }
@@ -532,7 +527,7 @@ const budgetPct    = (p) => budgetByProj.value[p.id_proyecto]?.porcentaje_comple
 const budgetColor  = (p) => {
   const lvl = budgetByProj.value[p.id_proyecto]?.alerta_nivel
   if (isCriticalBudgetLevel(lvl)) return 'var(--k-state-error-text)'
-  if (isWarningBudgetLevel(lvl)) return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  if (isWarningBudgetLevel(lvl)) return 'var(--k-hue-orange)'
   return 'var(--k-color-primary)'
 }
 function openBudget(p) {
@@ -769,7 +764,7 @@ async function submitProject() {
 .search-input::placeholder { color: var(--k-gray-2); }
 .search-clear {
   background: none; border: none; color: var(--k-gray-3); cursor: pointer;
-  font-size: 16px; padding: 0; line-height: 1; transition: color 0.15s;
+  font-size: 1rem; padding: 0; line-height: 1; transition: color 0.15s;
 }
 .search-clear:hover { color: var(--k-text-soft); }
 
@@ -795,7 +790,7 @@ async function submitProject() {
   grid-template-columns: 3px 1fr 150px 190px 100px 140px 80px;
   background: var(--k-shade-1);
   border-bottom: 1px solid var(--k-shade-6);
-  position: sticky; top: 56px; z-index: 1;
+  position: sticky; top: 56px; z-index: var(--k-z-base);
 }
 .lh-spacer { }
 .lh-col {
@@ -1100,7 +1095,7 @@ async function submitProject() {
 @media (max-width: 900px) {
   .projects-layout { flex-direction: column; }
   .main-panel { padding: 32px 28px; gap: 24px; }
-  .proj-title { font-size: 36px; }
+  .proj-title { font-size: 2.25rem; }
   .context-panel {
     width: 100%; max-height: none; position: static;
     border-left: none; border-top: 1px solid var(--k-shade-4);
@@ -1117,6 +1112,15 @@ async function submitProject() {
   .proj-header { flex-direction: column; gap: 16px; }
   .proj-header-actions { align-self: flex-start; }
   .tabs { gap: 16px; overflow-x: auto; }
+  /* Cada pestaña en una línea: la fila se desplaza en vez de partir "En
+     riesgo" en dos renglones de distinto alto. */
+  .tab { flex-shrink: 0; white-space: nowrap; }
+  /* El buscador baja a su propia fila a todo el ancho: con 180px fijos el
+     conmutador cuadrícula/lista quedaba fuera de la pantalla en 375px. */
+  .section-header { flex-wrap: wrap; gap: 12px; }
+  .section-controls { flex: 1 1 100%; min-width: 0; }
+  .search-wrap { flex: 1; min-width: 0; }
+  .search-input { width: 100%; min-width: 0; }
   .context-panel { grid-template-columns: 1fr; padding: 24px 16px; }
   .summary-grid { grid-template-columns: 1fr 1fr; }
   .project-grid { grid-template-columns: 1fr; }

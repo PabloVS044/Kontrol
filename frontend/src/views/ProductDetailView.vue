@@ -12,7 +12,7 @@
         <p class="state-title">{{ t('inventory.productDetail.errorTitle') }}</p>
         <p class="state-msg">{{ error }}</p>
         <div class="state-actions">
-          <RouterLink class="ghost-link" :to="backTarget">{{ t('inventory.productDetail.back') }}</RouterLink>
+          <RouterLink class="ghost-link" :to="backTarget">{{ backLabel }}</RouterLink>
           <button class="btn-primary" @click="loadProduct">{{ t('inventory.productDetail.retry') }}</button>
         </div>
       </div>
@@ -21,7 +21,7 @@
         <header class="detail-header">
           <RouterLink class="ghost-link" :to="backTarget">
             <span aria-hidden="true">←</span>
-            <span>{{ t('inventory.productDetail.back') }}</span>
+            <span>{{ backLabel }}</span>
           </RouterLink>
 
           <div class="detail-header-main">
@@ -207,7 +207,7 @@ async function saveBarcode() {
     const value = barcodeInput.value.trim()
     const res = await requestApi(`/api/products/${productId.value}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.value?.id_proyecto }),
       body: JSON.stringify({ codigo_barras: value || null }),
     })
     const payload = await res.json().catch(() => ({}))
@@ -231,10 +231,14 @@ const projectQuery = computed(() => {
   return Number.isFinite(value) && value > 0 ? value : null
 })
 
-const backTarget = computed(() =>
-  projectQuery.value
-    ? { name: 'inventory', query: { project: projectQuery.value } }
-    : { name: 'inventory' }
+// Se llega desde dos sitios: la tabla de Inventario y Ventas > Cobrar, que
+// marca el enlace con `from=charge`. Volver lleva al que corresponde.
+const backTarget = computed(() => {
+  const name = route.query.from === 'charge' ? 'sales-charge' : 'inventory'
+  return projectQuery.value ? { name, query: { project: projectQuery.value } } : { name }
+})
+const backLabel = computed(() =>
+  route.query.from === 'charge' ? t('inventory.productDetail.backToCharge') : t('inventory.productDetail.back')
 )
 
 const suppliers = computed(() => product.value?.proveedores ?? [])
@@ -261,7 +265,7 @@ const stockTone = computed(() => {
 async function loadSupplierCatalog() {
   if (!canLinkSuppliers.value || !product.value?.id_proyecto) return
   try {
-    const res = await requestApi('/api/suppliers', { headers: authHeaders(product.value.id_proyecto) })
+    const res = await requestApi('/api/suppliers', { headers: authHeaders({}, { projectId: product.value.id_proyecto }) })
     const payload = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(payload.message || t('inventory.productDetail.supplierLoadError'))
     supplierCatalog.value = payload.data ?? []
@@ -279,7 +283,7 @@ async function linkSupplier() {
   try {
     const res = await requestApi(`/api/products/${productId.value}/suppliers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(product.value.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.value.id_proyecto }),
       body: JSON.stringify({
         id_proveedor: selectedSupplierId.value,
         precio_unitario: supplierPrice.value,
@@ -596,7 +600,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 .stock-number {
   display: block;
-  font-size: 52px;
+  font-size: 3.25rem;
   line-height: 1;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -695,7 +699,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .supplier-price {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--k-state-success-text);
   font-variant-numeric: tabular-nums;
@@ -706,7 +710,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 }
 
 .warning {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .danger {
@@ -731,7 +735,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
 
 @media (max-width: 640px) {
   .title {
-    font-size: 32px;
+    font-size: 2rem;
   }
 
   .section-head,
@@ -741,7 +745,7 @@ watch(() => authStore.idEmpresaActual, loadProduct)
   }
 
   .stock-number {
-    font-size: 40px;
+    font-size: 2.5rem;
   }
 }
 </style>

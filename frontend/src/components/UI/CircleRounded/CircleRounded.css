@@ -9,7 +9,7 @@
     border: var(--roundedColor) solid 2px;
     background-color: color-mix(in srgb, var(--roundedColor) 50%, transparent);
     border-radius: 50%;
-    z-index: 10;
+    z-index: var(--k-z-sticky);
     box-sizing: border-box;
 }
 
@@ -24,6 +24,6 @@
     position: absolute;
     background-color: var(--back);
     border-radius: 50%;
-    z-index: 30;
+    z-index: var(--k-z-base);
     box-sizing: border-box;
 }

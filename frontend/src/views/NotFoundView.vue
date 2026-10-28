@@ -1,40 +1,42 @@
 <template>
   <main class="nf-root">
-    <section class="nf-card" aria-labelledby="nf-title">
-      <!-- «4 K 4»: el logo 3D del login ocupa el lugar del cero. -->
-      <div class="nf-code" role="img" :aria-label="t('notFound.codeLabel')">
-        <span class="nf-digit" data-text="4" aria-hidden="true">4</span>
-        <KontrolLogo3D
-          class="nf-logo3d"
-          width="var(--nf-logo-size)"
-          height="var(--nf-logo-size)"
-          :intensity="0.6"
-          aria-hidden="true"
-        />
-        <span class="nf-digit nf-digit--late" data-text="4" aria-hidden="true">4</span>
-      </div>
+    <AppSurface block>
+      <section class="nf-card" aria-labelledby="nf-title">
+        <!-- «4 K 4»: el logo 3D del login ocupa el lugar del cero. -->
+        <div class="nf-code" role="img" :aria-label="t('notFound.codeLabel')">
+          <span class="nf-digit" data-text="4" aria-hidden="true">4</span>
+          <KontrolLogo3D
+            class="nf-logo3d"
+            width="var(--nf-logo-size)"
+            height="var(--nf-logo-size)"
+            :intensity="0.6"
+            aria-hidden="true"
+          />
+          <span class="nf-digit nf-digit--late" data-text="4" aria-hidden="true">4</span>
+        </div>
 
-      <h1 id="nf-title" class="nf-title">{{ t('notFound.title') }}</h1>
-      <p class="nf-text">{{ t('notFound.description') }}</p>
+        <h1 id="nf-title" class="nf-title">{{ t('notFound.title') }}</h1>
+        <p class="nf-text">{{ t('notFound.description') }}</p>
 
-      <p class="nf-path">
-        <XCircleIcon class="nf-path-icon" :size="14" aria-hidden="true" />
-        <span class="visually-hidden">{{ t('notFound.missingPath') }}</span>
-        <s class="nf-path-url">{{ route.fullPath }}</s>
-      </p>
+        <p class="nf-path">
+          <XCircleIcon class="nf-path-icon" :size="14" aria-hidden="true" />
+          <span class="visually-hidden">{{ t('notFound.missingPath') }}</span>
+          <s class="nf-path-url">{{ route.fullPath }}</s>
+        </p>
 
-      <div class="nf-actions">
-        <RouterLink :to="home" class="nf-btn nf-btn--primary">{{ t('notFound.home') }}</RouterLink>
-        <Button
-          v-if="canGoBack"
-          class="nf-btn nf-btn--ghost"
-          :label="t('notFound.back')"
-          back-color="transparent"
-          hover-back="transparent"
-          @click="router.back()"
-        />
-      </div>
-    </section>
+        <div class="nf-actions">
+          <RouterLink :to="home" class="nf-btn nf-btn--primary">{{ t('notFound.home') }}</RouterLink>
+          <Button
+            v-if="canGoBack"
+            class="nf-btn nf-btn--ghost"
+            :label="t('notFound.back')"
+            back-color="transparent"
+            hover-back="transparent"
+            @click="router.back()"
+          />
+        </div>
+      </section>
+    </AppSurface>
   </main>
 </template>
 
@@ -43,6 +45,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { XCircleIcon } from 'lucide-vue-next'
+import AppSurface from '@/components/UI/AppSurface/AppSurface.vue'
 import KontrolLogo3D from '@/components/UI/KontrolLogo3D/KontrolLogo3D.vue'
 import { useAuthStore } from '@/stores/auth'
 import Button from '@/components/UI/Button/Button.vue'

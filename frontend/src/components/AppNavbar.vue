@@ -1,5 +1,5 @@
 <template>
-  <header class="appnav">
+  <header class="appnav" :class="{ 'appnav--drawer': isDrawer }">
     <div class="appnav-inner">
 
       <RouterLink class="appnav-brand" to="/">
@@ -53,12 +53,12 @@
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/inventory" @click="closeMenu">{{ $t('navbar.inventory') }}</RouterLink>
         <RouterLink v-if="authStore.canViewInventory" class="appnav-link" to="/suppliers" @click="closeMenu">{{ $t('navbar.suppliers') }}</RouterLink>
         <RouterLink v-if="authStore.canViewProjects" class="appnav-link" to="/projects" @click="closeMenu">{{ $t('navbar.projects') }}</RouterLink>
-        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}</RouterLink>
+        <RouterLink v-if="authStore.canManageTeams" class="appnav-link" to="/teams" @click="closeMenu">{{ $t('navbar.teams') }}<Lock v-if="isLocked('teams')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
         <RouterLink class="appnav-link" to="/budget" @click="closeMenu">{{ $t('navbar.budget') }}</RouterLink>
         <RouterLink class="appnav-link" to="/reports" @click="closeMenu">{{ $t('navbar.reports') }}</RouterLink>
         <RouterLink class="appnav-link" to="/chat" @click="closeMenu">{{ $t('navbar.chat') }}</RouterLink>
-        <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}</RouterLink>
-        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}</RouterLink>
+        <RouterLink class="appnav-link" to="/marketing" @click="closeMenu">{{ $t('navbar.marketing') }}<Lock v-if="isLocked('marketing')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
+        <RouterLink class="appnav-link appnav-link--agent" to="/agent" @click="closeMenu">{{ $t('navbar.ai') }}<Lock v-if="isLocked('ai_agent')" class="appnav-lock" :size="12" :aria-label="$t('billing.gate.locked')" /></RouterLink>
         <!-- Idioma, preferencias, venta e integraciones viven juntos en /settings. -->
         <RouterLink class="appnav-link" to="/settings" @click="closeMenu">{{ $t('navbar.settings') }}</RouterLink>
       </div>
@@ -126,14 +126,18 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LogOut, Settings } from 'lucide-vue-next'
+import { Lock, LogOut, Settings } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useFontScale } from '../composables/useFontScale.js'
 import { translateRole } from '../utils/roles.js'
 import LanguageSelector from './common/LanguageSelector.vue'
 import logo from '../assets/img/kontrol.png'
 
 const authStore = useAuthStore()
+// PAY-1 — Módulo fuera del plan de la empresa: el enlace sigue visible con un
+// candado y el router lleva a /billing. El servidor aplica la misma regla.
+const isLocked = (feature) => !authStore.isSuperUser && !authStore.hasFeature(feature)
 const router    = useRouter()
 const route     = useRoute()
 const { t, te } = useI18n()
@@ -172,7 +176,7 @@ function toggleDropdown(e) {
       position: 'fixed',
       top:  rect.bottom + 8 + 'px',
       left: rect.left + 'px',
-      zIndex: 9999,
+      zIndex: 'calc(var(--k-z-system) - 1)',
     }
   }
   dropdownOpen.value = !dropdownOpen.value
@@ -234,6 +238,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
   document.removeEventListener('click', handleClickOutside)
+  drawerQuery?.removeEventListener?.('change', syncDrawer)
 })
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -242,6 +247,36 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false
 }
+
+/*
+ * Ancho por debajo del cual la fila de enlaces no cabe y se pliega en el
+ * cajón. Con la letra al 100 % son 1400px; cada nivel de tamaño de letra
+ * ensancha los enlaces y la fila desbordaba por la derecha, con el avatar
+ * fuera de la pantalla. Medido en español, el idioma con las etiquetas más
+ * largas, y redondeado hacia arriba para dejar sitio a un rol más largo.
+ */
+const DRAWER_MAX_WIDTH = { default: 1400, large: 1760, larger: 1880, largest: 2000 }
+const { fontScale } = useFontScale()
+const isDrawer = ref(false)
+let drawerQuery = null
+
+function syncDrawer() {
+  isDrawer.value = Boolean(drawerQuery?.matches)
+  // En fila el cajón no existe, pero su fondo oscuro sí seguiría encima.
+  if (!isDrawer.value) closeMenu()
+}
+
+function watchDrawerQuery() {
+  drawerQuery?.removeEventListener?.('change', syncDrawer)
+  drawerQuery = typeof window.matchMedia === 'function'
+    ? window.matchMedia(`(max-width: ${DRAWER_MAX_WIDTH[fontScale.value] ?? DRAWER_MAX_WIDTH.default}px)`)
+    : null
+  drawerQuery?.addEventListener?.('change', syncDrawer)
+  syncDrawer()
+}
+
+// En setup y no en onMounted: el primer render ya sale en el modo correcto.
+watch(fontScale, watchDrawerQuery, { immediate: true })
 </script>
 
 <style scoped>
@@ -249,11 +284,11 @@ const closeMenu = () => {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #0b0b0b;
+  background: var(--k-shade-1);
   border-bottom: var(--k-border-width) solid var(--k-shade-6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 100;
+  z-index: var(--k-z-nav);
   display: flex;
   align-items: stretch;
 }
@@ -286,14 +321,17 @@ const closeMenu = () => {
   font-family: 'Bungee', var(--k-font-sans);
   font-size: var(--k-font-size-body-main);
   letter-spacing: 1px;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 /* ── Empresa selector ── */
 .empresa-selector {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  /* Es lo único de la barra que puede ceder sitio: el nombre se recorta con
+     puntos suspensivos antes que empujar el avatar fuera de la pantalla. */
+  flex-shrink: 1;
+  min-width: 0;
   padding: 0 var(--k-space-4);
   cursor: pointer;
   border-right: var(--k-border-width) solid var(--k-shade-4);
@@ -305,27 +343,29 @@ const closeMenu = () => {
   display: flex;
   align-items: center;
   gap: var(--k-space-2);
+  min-width: 0;
 }
 
 .empresa-name {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
   font-weight: 600;
-  color: var(--Text);
+  color: var(--k-color-text);
   max-width: 160px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .empresa-role {
-  font-size: 10px;
-  color: var(--Primary);
+  font-size: 0.625rem;
+  color: var(--k-color-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: #1e170d;
+  background: var(--k-surface-primary-tint);
   padding: 1px 6px;
-  border: var(--k-border-width) solid #3d3322;
+  border: var(--k-border-width) solid var(--k-color-border);
 }
 
 .chevron {
@@ -340,25 +380,25 @@ const closeMenu = () => {
 .empresa-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: calc(var(--k-z-system) - 2);
 }
 
 :global(.empresa-dropdown) {
   background: var(--k-shade-2);
   border: var(--k-border-width) solid var(--k-shade-6);
   min-width: 220px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: var(--k-shadow-dropdown);
   display: flex;
   flex-direction: column;
 }
 
 :global(.dd-label) {
   font-family: var(--k-font-sans);
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.1em;
   /* Estaba en var(--k-gray-1) sobre fondo var(--k-shade-2): ratio ~1.2:1, ilegible. Es el único
      cambio del PR #86 que se conserva aquí — es contraste, no estética. */
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   padding: 12px 16px 6px;
 }
 
@@ -380,13 +420,13 @@ const closeMenu = () => {
 }
 
 :global(.dd-item.active) {
-  background: #1a150f;
+  background: var(--k-surface-primary-tint-2);
 }
 
 :global(.dd-item-name) {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-body-small);
-  color: var(--Text);
+  color: var(--k-color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -394,7 +434,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-item-role) {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--k-gray-3);
   flex-shrink: 0;
   text-transform: capitalize;
@@ -409,7 +449,7 @@ const closeMenu = () => {
 :global(.dd-new) {
   font-family: var(--k-font-sans);
   font-size: var(--k-font-size-caption-lg);
-  color: var(--Primary);
+  color: var(--k-color-primary);
   padding: 10px 16px;
   text-decoration: none;
   display: block;
@@ -417,7 +457,7 @@ const closeMenu = () => {
 }
 
 :global(.dd-new:hover) {
-  background: #1a150f;
+  background: var(--k-surface-primary-tint-2);
 }
 
 /* ── Nav links ── */
@@ -447,15 +487,15 @@ const closeMenu = () => {
   position: absolute;
   bottom: 0; left: 16px; right: 16px;
   height: 2px;
-  background: var(--Primary);
+  background: var(--k-color-primary);
   transform: scaleX(0);
   transition: transform .2s ease;
 }
 
-.appnav-link:hover { color: var(--Text); }
+.appnav-link:hover { color: var(--k-color-text); }
 
 .appnav-link.router-link-active {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .appnav-link.router-link-active::after {
@@ -465,11 +505,11 @@ const closeMenu = () => {
 /* --Secondary (#886911) daba 3.82:1 sobre la barra: no llega a AA. Se usa el
    dorado de marca; la ruta activa sigue marcada por el subrayado. */
 .appnav-link--agent {
-  color: var(--Primary);
+  color: var(--k-color-primary);
 }
 
 .appnav-link--agent:hover {
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 /* ── End ── */
@@ -511,7 +551,7 @@ const closeMenu = () => {
   top: calc(100% + var(--k-space-2));
   right: 0;
   min-width: 220px;
-  z-index: 200;
+  z-index: var(--k-z-dropdown);
   background: var(--k-shade-2);
   border: var(--k-border-width) solid var(--k-shade-6);
   padding: var(--k-space-2) 0;
@@ -582,14 +622,14 @@ const closeMenu = () => {
   width: 24px;
   height: 20px;
   position: relative;
-  z-index: 101;
+  z-index: var(--k-z-top);
 }
 
 .hamburger .line {
   display: block;
   width: 100%;
   height: 2px;
-  background-color: var(--Text);
+  background-color: var(--k-color-text);
   position: absolute;
   left: 0;
   transition: all 0.3s ease;
@@ -614,7 +654,7 @@ const closeMenu = () => {
   position: fixed;
   top: 56px;
   left: 0; right: 0; bottom: 0;
-  z-index: 98;
+  z-index: var(--k-z-base);
   background: rgba(var(--k-color-black-rgb), 0.5);
 }
 
@@ -638,68 +678,85 @@ const closeMenu = () => {
  * Ahora se plega en cuanto la fila deja de caber, que es el único momento en el
  * que el cajón hace falta. Con Ventas en el menú la fila creció: medido en
  * 1360px el avatar ya quedaba fuera.
+ *
+ * Es una clase y no un media query porque el umbral depende del tamaño de
+ * letra elegido: lo decide DRAWER_MAX_WIDTH, en el script.
  */
-@media (max-width: 1400px) {
-  .hamburger { display: block; }
+.appnav--drawer .hamburger { display: block; }
 
-  .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
+.appnav--drawer .appnav-inner { padding: 0 var(--k-space-4); gap: 0; }
 
-  .appnav-links {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    z-index: 99;
-    background: var(--k-shade-1);
-    border-bottom: var(--k-border-width) solid var(--k-shade-6);
-    flex-direction: column;
-    padding: var(--k-space-3) 0;
-    gap: 0;
-    align-items: stretch;
-    /* Once enlaces no caben en un móvil apaisado: el cajón se desplaza en vez
-       de dejar los últimos fuera de la pantalla, que es el fallo que se
-       arrastraba en la fila. */
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-    transition: clip-path 0.3s ease-in-out;
-    pointer-events: none;
-  }
+.appnav--drawer .appnav-links {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: var(--k-z-raised);
+  background: var(--k-shade-1);
+  border-bottom: var(--k-border-width) solid var(--k-shade-6);
+  flex-direction: column;
+  padding: var(--k-space-3) 0;
+  gap: 0;
+  align-items: stretch;
+  /* Once enlaces no caben en un móvil apaisado: el cajón se desplaza en vez
+     de dejar los últimos fuera de la pantalla, que es el fallo que se
+     arrastraba en la fila. */
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  transition: clip-path 0.3s ease-in-out;
+  pointer-events: none;
+}
 
-  .appnav-links.is-open {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    pointer-events: auto;
-  }
+.appnav--drawer .appnav-links.is-open {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: auto;
+}
 
-  .appnav-link {
-    font-size: var(--k-font-size-body-main);
-    padding: 0 var(--k-space-5);
-    min-height: var(--k-target-min-size);
-    width: 100%;
-    justify-content: flex-start;
-  }
+.appnav--drawer .appnav-link {
+  font-size: var(--k-font-size-body-main);
+  padding: 0 var(--k-space-5);
+  min-height: var(--k-target-min-size);
+  width: 100%;
+  justify-content: flex-start;
+}
 
-  /* En fila el subrayado marca la activa; apilado se lee mejor como barra
-     lateral, y el subrayado a 16px del borde quedaba flotando. El eje de la
-     escala cambia con la orientación: scaleX no abre una barra vertical. */
-  .appnav-link::after {
-    left: 0;
-    right: auto;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    height: auto;
-    transform: scaleY(0);
-  }
+/* En fila el subrayado marca la activa; apilado se lee mejor como barra
+   lateral, y el subrayado a 16px del borde quedaba flotando. El eje de la
+   escala cambia con la orientación: scaleX no abre una barra vertical. */
+.appnav--drawer .appnav-link::after {
+  left: 0;
+  right: auto;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  height: auto;
+  transform: scaleY(0);
+}
 
-  .appnav-link.router-link-active::after {
-    transform: scaleY(1);
-  }
+.appnav--drawer .appnav-link.router-link-active::after {
+  transform: scaleY(1);
 }
 
 @media (max-width: 640px) {
   .empresa-role { display: none; }
-  .appnav-link { font-size: var(--k-font-size-body-large); }
+  .appnav--drawer .appnav-link { font-size: var(--k-font-size-body-large); }
+}
+
+/* En un móvil la fila no cabía: medido en 375px, el avatar y el hamburguesa
+   quedaban fuera de la pantalla y no había forma de abrir el menú. El logo
+   sigue; el nombre de la empresa necesita más ese sitio que la palabra
+   "Kontrol", y los márgenes entre bloques se reducen a la mitad. */
+@media (max-width: 480px) {
+  .appnav-brand span { display: none; }
+  .appnav-brand { padding-right: var(--k-space-3); margin-right: 0; }
+  .empresa-selector { padding: 0 var(--k-space-2); margin-right: 0; }
+  .appnav-end { gap: var(--k-space-2); }
+}
+.appnav-lock {
+  margin-left: var(--k-space-1);
+  vertical-align: -1px;
+  color: var(--k-text-muted);
 }
 </style>

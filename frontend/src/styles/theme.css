@@ -42,6 +42,9 @@
   --k-color-warning-rgb: 120, 80, 10;
   --k-color-black-rgb: 0, 0, 0;
   --k-color-white-rgb: 255, 255, 255;
+  /* Se invierten con el tema: ink = tinte de texto, canvas = tinte de fondo. */
+  --k-ink-rgb: 255, 255, 255;
+  --k-canvas-rgb: 0, 0, 0;
 
   /* ── text/ ──────────────────────────────────────────────── */
   /* Toda la rampa cumple WCAG AA (4.5:1) incluso sobre la superficie más
@@ -68,8 +71,8 @@
   --k-state-success-text: #48c774;
 
   /* ── forms/ ─────────────────────────────────────────────── */
-  --k-form-input-bg: rgba(255, 255, 255, 0.04);
-  --k-form-input-focus-bg: rgba(202, 168, 96, 0.05);
+  --k-form-input-bg: rgba(var(--k-ink-rgb), 0.04);
+  --k-form-input-focus-bg: rgba(var(--k-color-primary-rgb), 0.05);
   --k-form-btn-text: #0e0c08;
 
   /* ── font/ ──────────────────────────────────────────────── */
@@ -77,14 +80,17 @@
   --k-font-sans: 'Manrope', 'DM Sans', system-ui, sans-serif;
   --k-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --k-font-size-display: 42px;
-  --k-font-size-heading-1: 24px;
+  /* En rem para que sigan al tamaño de letra elegido en Configuración, que
+     cambia el `font-size` de <html> (ver useFontScale.js). Al 100 % valen lo
+     mismo que los px de la lámina, anotados a la derecha. */
+  --k-font-size-display: 2.625rem; /* 42px */
+  --k-font-size-heading-1: 1.5rem; /* 24px */
   /* body-large: la lámina de Figma define este nivel pero ninguna fuente le
      asigna px (design-system.md solo escala 42/24/14/11). 16px es un supuesto
      de implementación — confirmar con Diseño antes de propagarlo. */
-  --k-font-size-body-large: 16px;
-  --k-font-size-body-main: 14px;
-  --k-font-size-caption: 11px;
+  --k-font-size-body-large: 1rem; /* 16px */
+  --k-font-size-body-main: 0.875rem; /* 14px */
+  --k-font-size-caption: 0.6875rem; /* 11px */
 
   --k-font-weight-regular: 400;
   --k-font-weight-medium: 500;
@@ -109,8 +115,10 @@
 
   /* ── shadow/ — pensadas para fondo oscuro ───────────────── */
   --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
-  --k-shadow-glow: 0 0 15px 5px rgba(202, 168, 96, 0.5);
+  --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.5);
   --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+  --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.78);
 
   /* ── estados de interacción ─────────────────────────────── */
   --k-state-hover-brightness: 1.15;
@@ -155,9 +163,9 @@
      con los valores que ya tenían, en vez de encajarlos al nivel aprobado más
      cercano: ese redondeo es justo lo que degradó el login (título 32→24px).
      Cuando Diseño amplíe la lámina, estos tres suben al bloque de Figma. */
-  --k-font-size-heading-2: 20px; /* títulos de navbar */
-  --k-font-size-body-small: 13px; /* celdas de tabla, texto secundario */
-  --k-font-size-caption-lg: 12px; /* etiquetas de formulario, pills */
+  --k-font-size-heading-2: 1.25rem; /* 20px — títulos de navbar */
+  --k-font-size-body-small: 0.8125rem; /* 13px — celdas de tabla, texto secundario */
+  --k-font-size-caption-lg: 0.75rem; /* 12px — etiquetas de formulario, pills */
 
   /* ── superficies de alerta ──────────────────────────────── */
   /* Tres niveles derivados de la paleta. El PR #86 traía #facc15 / #f97316 /
@@ -213,6 +221,26 @@
   --k-gray-5: #8f8f8f; /* era #888: 4.21:1 sobre el pico del fondo animado */
   --k-gray-6: #8f8f8f;
 
+  --k-shade-0: #050505;
+  --k-shade-3b: #151515;
+  --k-shade-6b: #252525;
+
+  /* ── tonalidades de estado ──────────────────────────────── */
+  --k-hue-rose: #fb7185;
+  --k-hue-blue: #60a5fa;
+  --k-hue-emerald: #34d399;
+  --k-hue-green: #4ade80;
+  --k-hue-violet: #a78bfa;
+  --k-hue-orange: #fb923c;
+  --k-hue-amber: #f59e0b;
+  --k-hue-rose-rgb: 251, 113, 133;
+  --k-hue-blue-rgb: 96, 165, 250;
+  --k-hue-emerald-rgb: 52, 211, 153;
+  --k-hue-green-rgb: 74, 222, 128;
+  --k-hue-violet-rgb: 167, 139, 250;
+  --k-hue-orange-rgb: 251, 146, 60;
+  --k-hue-amber-rgb: 245, 158, 11;
+
   /* ⚠️ El dorado real de la aplicación es #c9a962 (272 usos) y el token de
      Figma es #caa860 (29 usos). Difieren en uno o dos puntos por canal —por
      debajo del umbral de percepción— pero la divergencia es sistémica y
@@ -221,7 +249,7 @@
   /* ── pasos de tamaño que faltaban ───────────────────────── */
   /* Ambos los usa el diseño aprobado de login y registro; sin ellos, migrar
      esas pantallas obligaba a redondear y encogía el título un 25 %. */
-  --k-font-size-display-2: 32px; /* título de las pantallas de autenticación */
+  --k-font-size-display-2: 2rem; /* 32px — título de las pantallas de autenticación */
   --k-radius-field: 6px; /* inputs y banners: la escala salta de 4 a 8 */
   --k-radius-xs: 2px; /* trazos finos, p. ej. las barras del menú hamburguesa */
 
@@ -255,13 +283,23 @@
   /* Escalera con hueco entre niveles para poder insertar capas sin renumerar.
      `modal` va justo encima de `modal-overlay` a propósito: son la misma capa
      visual, el overlay solo tiene que quedar por debajo de su propio diálogo. */
+  /* Entre dos capas vecinas: calc(var(--k-z-x) ± n), con n ≤ 2. */
   --k-z-negative: -1;
+  --k-z-background: 0;
   --k-z-base: 1;
+  --k-z-raised: 2;
+  --k-z-top: 3;
+  --k-z-sticky: 10;
+  --k-z-elevated: 20;
+  --k-z-popover: 40;
   --k-z-nav: 100;
   --k-z-dropdown: 200;
+  --k-z-floating: 500;
   --k-z-modal-overlay: 1000;
   --k-z-modal: 1001;
-  --k-z-tooltip: 2000;
+  --k-z-overlay: 1400;
+  --k-z-overlay-top: 2000;
+  --k-z-system: 10000;
 
   /* ── fondo animado ──────────────────────────────────────── */
   /* Color de las líneas de `Waves` (App.vue). Antes leía `--Text`, el mismo
@@ -270,37 +308,220 @@
      conservar la identidad; App.vue le pone tope a sus picos para que no
      compitan con las letras. Hex de 6 dígitos: es lo que parsea Waves.vue. */
   --k-bg-wave-line: #faf8f5;
+  --k-bg-wave-filter: none;
+
+  --k-color-scheme: dark;
 
   /* ── superficies derivadas ──────────────────────────────── */
   /* Transparencias de tokens ya aprobados, no colores nuevos: se declaran para
      que el mismo tinte no se reescriba con literales distintos en cada hoja. */
   --k-surface-primary-tint: rgba(var(--k-color-primary-rgb), 0.1);
   --k-surface-primary-tint-2: rgba(var(--k-color-primary-rgb), 0.05);
-  --k-surface-hover-subtle: rgba(var(--k-color-white-rgb), 0.02);
+  --k-surface-hover-subtle: rgba(var(--k-ink-rgb), 0.02);
   /* Velo de <AppSurface> sobre el fondo animado en las vistas internas.
      Más ligero que --k-color-bg (0.92) para que las ondas se noten. El
      contraste no depende de él: el texto ya supera 4.5:1 sobre el pico de
      las ondas sin velo (WAVE_PEAK en tests/theme.test.js). */
-  --k-surface-scrim: rgba(var(--k-color-black-rgb), 0.6);
+  --k-surface-scrim: rgba(var(--k-canvas-rgb), 0.6);
+  --k-surface-panel: rgba(var(--k-canvas-rgb), 0.6);
+  --k-surface-panel-border: transparent;
+  --k-surface-section: rgba(var(--k-color-black-rgb), 0.94);
+  --k-surface-code: #000000;
+  --k-surface-card: var(--k-color-bg-2);
+  --k-surface-chart: var(--k-color-bg);
+  --k-surface-track: #111111;
+  --k-chart-planned: var(--k-color-primary);
+  --k-chart-actual: var(--k-state-success-text);
+  --k-surface-warm: #161310;
+  --k-surface-warm-2: #1f1a13;
+  --k-surface-floating: #0f0f0f;
+  --k-surface-floating-2: #111111;
+  --k-surface-floating-3: #1a1a1a;
 }
 
-/**
- * TODO(SCRUM-12): paleta clara pendiente de Diseño.
- *
- * SCRUM-12 definió únicamente la identidad "Luxury Dark"; no existe paleta
- * clara aprobada. El mecanismo de theming queda operativo (`[data-theme]` y
- * `prefers-color-scheme`), pero sin overrides: el tema claro hereda el oscuro
- * a propósito, para no inventar colores de marca sin aprobación.
- *
- * Cuando Diseño entregue la paleta, basta redeclarar aquí los tokens que
- * cambien. Ningún consumidor necesita tocarse.
- */
+/* Tema claro: propuesta derivada del oscuro, pendiente de validación de
+   Diseño. Sigue al sistema o a lo elegido en Configuración; ambos bloques
+   deben declarar lo mismo. */
 [data-theme='light'] {
-  /* overrides del tema claro van aquí */
+  --k-color-primary: #5e4a1f;
+  --k-color-primary-2: #936923;
+  --k-color-secondary: #8a6a12;
+  --k-color-tertiary: #e6e5e0;
+  --k-color-border: #c9b994;
+  --k-color-pill-back: #ebe7de;
+  --k-color-bg: rgba(216, 213, 207, 0.92);
+  --k-color-bg-2: #ebe7de;
+  --k-color-bg-3: #cfcdc8;
+  --k-color-text: #1a1712;
+  --k-color-text-muted: #585248;
+  --k-color-success: #1c5e34;
+  --k-color-error: #961a1a;
+  --k-color-warning: #805305;
+
+  --k-color-primary-rgb: 94, 74, 31;
+  --k-color-error-rgb: 150, 26, 26;
+  --k-color-success-rgb: 28, 94, 52;
+  --k-color-warning-rgb: 224, 190, 120;
+  --k-ink-rgb: 0, 0, 0;
+  --k-canvas-rgb: 216, 213, 207;
+
+  --k-text-soft: #403a30;
+  --k-text-muted: #575249;
+  --k-text-dim: #5a5247;
+  --k-text-faint: #595347;
+  --k-text-placeholder: #5e503c;
+  --k-text-disabled: #a39d92;
+
+  --k-state-error-text: #961a1a;
+  --k-state-success-text: #1c5e34;
+  --k-form-btn-text: #faf8f5;
+
+  --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
+  --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+  --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.4);
+
+  --k-shade-0: #ededed;
+  --k-shade-1: #eaeaea;
+  --k-shade-2: #e7e7e7;
+  --k-shade-3: #e4e4e4;
+  --k-shade-3b: #dfdfdf;
+  --k-shade-4: #d6d6d6;
+  --k-shade-5: #d0d0d0;
+  --k-shade-6: #c2c2c2;
+  --k-shade-6b: #bcbcbc;
+  --k-shade-7: #b5b5b5;
+  --k-shade-8: #a8a8a8;
+  --k-surface-panel: #d2cec6;
+  --k-surface-panel-border: #b5ae9f;
+  --k-surface-section: #d2cec6;
+  --k-surface-code: rgba(0, 0, 0, 0.07);
+  --k-surface-card: #d2cec6;
+  --k-surface-chart: var(--k-color-tertiary);
+  --k-surface-track: #c2c2c2;
+  --k-chart-planned: #8a6a1f;
+  --k-chart-actual: #217a44;
+  --k-surface-warm: #efebe3;
+  --k-surface-warm-2: #e7e1d6;
+  --k-surface-floating: #e2ddd3;
+  --k-surface-floating-2: #d9d3c7;
+  --k-surface-floating-3: #d0c9bc;
+  --k-gray-1: #535353;
+  --k-gray-2: #535353;
+  --k-gray-3: #535353;
+  --k-gray-4: #535353;
+  --k-gray-5: #535353;
+  --k-gray-6: #535353;
+
+  --k-hue-rose: #a8041d;
+  --k-hue-blue: #0550ac;
+  --k-hue-emerald: #155f44;
+  --k-hue-green: #115f2e;
+  --k-hue-violet: #4c14f5;
+  --k-hue-orange: #873e03;
+  --k-hue-amber: #744b05;
+  --k-hue-rose-rgb: 168, 4, 29;
+  --k-hue-blue-rgb: 5, 80, 172;
+  --k-hue-emerald-rgb: 21, 95, 68;
+  --k-hue-green-rgb: 17, 95, 46;
+  --k-hue-violet-rgb: 76, 20, 245;
+  --k-hue-orange-rgb: 135, 62, 3;
+  --k-hue-amber-rgb: 116, 75, 5;
+
+  --k-bg-wave-filter: invert(1);
+  --k-color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    /* idem: sin overrides hasta que exista paleta clara aprobada */
+    --k-color-primary: #5e4a1f;
+    --k-color-primary-2: #936923;
+    --k-color-secondary: #8a6a12;
+    --k-color-tertiary: #e6e5e0;
+    --k-color-border: #c9b994;
+    --k-color-pill-back: #ebe7de;
+    --k-color-bg: rgba(216, 213, 207, 0.92);
+    --k-color-bg-2: #ebe7de;
+    --k-color-bg-3: #cfcdc8;
+    --k-color-text: #1a1712;
+    --k-color-text-muted: #585248;
+    --k-color-success: #1c5e34;
+    --k-color-error: #961a1a;
+    --k-color-warning: #805305;
+
+    --k-color-primary-rgb: 94, 74, 31;
+    --k-color-error-rgb: 150, 26, 26;
+    --k-color-success-rgb: 28, 94, 52;
+    --k-color-warning-rgb: 224, 190, 120;
+    --k-ink-rgb: 0, 0, 0;
+    --k-canvas-rgb: 216, 213, 207;
+
+    --k-text-soft: #403a30;
+    --k-text-muted: #575249;
+    --k-text-dim: #5a5247;
+    --k-text-faint: #595347;
+    --k-text-placeholder: #5e503c;
+    --k-text-disabled: #a39d92;
+
+    --k-state-error-text: #961a1a;
+    --k-state-success-text: #1c5e34;
+    --k-form-btn-text: #faf8f5;
+
+    --k-shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+    --k-shadow-glow: 0 0 15px 5px rgba(var(--k-color-primary-rgb), 0.25);
+    --k-shadow-modal: 0 10px 40px 0 rgba(0, 0, 0, 0.18);
+    --k-shadow-dropdown: 0 8px 32px rgba(0, 0, 0, 0.15);
+    --k-overlay-backdrop: rgba(var(--k-color-black-rgb), 0.4);
+
+    --k-shade-0: #ededed;
+    --k-shade-1: #eaeaea;
+    --k-shade-2: #e7e7e7;
+    --k-shade-3: #e4e4e4;
+    --k-shade-3b: #dfdfdf;
+    --k-shade-4: #d6d6d6;
+    --k-shade-5: #d0d0d0;
+    --k-shade-6: #c2c2c2;
+    --k-shade-6b: #bcbcbc;
+    --k-shade-7: #b5b5b5;
+    --k-shade-8: #a8a8a8;
+    --k-surface-panel: #d2cec6;
+    --k-surface-panel-border: #b5ae9f;
+    --k-surface-section: #d2cec6;
+    --k-surface-code: rgba(0, 0, 0, 0.07);
+    --k-surface-card: #d2cec6;
+    --k-surface-chart: var(--k-color-tertiary);
+    --k-surface-track: #c2c2c2;
+    --k-chart-planned: #8a6a1f;
+    --k-chart-actual: #217a44;
+    --k-surface-warm: #efebe3;
+    --k-surface-warm-2: #e7e1d6;
+    --k-surface-floating: #e2ddd3;
+    --k-surface-floating-2: #d9d3c7;
+    --k-surface-floating-3: #d0c9bc;
+    --k-gray-1: #535353;
+    --k-gray-2: #535353;
+    --k-gray-3: #535353;
+    --k-gray-4: #535353;
+    --k-gray-5: #535353;
+    --k-gray-6: #535353;
+
+    --k-hue-rose: #a8041d;
+    --k-hue-blue: #0550ac;
+    --k-hue-emerald: #155f44;
+    --k-hue-green: #115f2e;
+    --k-hue-violet: #4c14f5;
+    --k-hue-orange: #873e03;
+    --k-hue-amber: #744b05;
+    --k-hue-rose-rgb: 168, 4, 29;
+    --k-hue-blue-rgb: 5, 80, 172;
+    --k-hue-emerald-rgb: 21, 95, 68;
+    --k-hue-green-rgb: 17, 95, 46;
+    --k-hue-violet-rgb: 76, 20, 245;
+    --k-hue-orange-rgb: 135, 62, 3;
+    --k-hue-amber-rgb: 116, 75, 5;
+
+    --k-bg-wave-filter: invert(1);
+    --k-color-scheme: light;
   }
 }

@@ -39,9 +39,9 @@
       <div class="donut-wrap">
         <DonutChart
           :pct="budgetPct"
-          color="#caa860"
+          color="var(--k-color-primary)"
           :size="80" :radius="30" :stroke-width="10"
-          :label="budgetPct + '%'" label-color="#fff" :label-font-size="13" :label-offset-y="4"
+          :label="budgetPct + '%'" label-color="var(--k-color-text)" :label-font-size="13" :label-offset-y="4"
           display-width="90px"
         />
       </div>
@@ -97,52 +97,52 @@ function barPct(n) {
 </script>
 
 <style scoped>
-.ctx-panel { padding: 24px 20px; border-left: 1px solid #1e1e1e; background: rgba(10, 10, 10, 0.92); overflow-y: auto; }
+.ctx-panel { padding: 24px 20px; border-left: 1px solid var(--k-shade-5); background: color-mix(in srgb, var(--k-shade-1) 92%, transparent); overflow-y: auto; }
 .ctx-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.ctx-badge { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--Primary); letter-spacing: 0.04em; }
+.ctx-badge { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; color: var(--k-color-primary); letter-spacing: 0.04em; }
 
 .toggle { display: flex; align-items: center; cursor: pointer; }
 .toggle input { display: none; }
-.toggle-track { width: 30px; height: 16px; background: #1e1e1e; border-radius: 8px; position: relative; transition: background .2s; }
-.toggle input:checked + .toggle-track { background: #caa860; }
-.toggle-thumb { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #444; transition: transform .2s, background .2s; }
-.toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(14px); background: #caa860; }
+.toggle-track { width: 30px; height: 16px; background: var(--k-shade-5); border-radius: 8px; position: relative; transition: background .2s; }
+.toggle input:checked + .toggle-track { background: var(--k-color-primary); }
+.toggle-thumb { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--k-shade-8); transition: transform .2s, background .2s; }
+.toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(14px); background: var(--k-color-primary); }
 
 .ctx-section { margin-bottom: 16px; }
-.ctx-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--TextFaint); letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; }
-.ctx-insight { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); line-height: 1.7; margin: 0; }
-.ctx-divider { height: 1px; background: #141414; margin: 16px 0; }
+.ctx-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; color: var(--k-text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; }
+.ctx-insight { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); line-height: 1.7; margin: 0; }
+.ctx-divider { height: 1px; background: var(--k-shade-3b); margin: 16px 0; }
 .ctx-input-wrap { margin-top: 4px; }
 .ctx-input {
-  width: 100%; padding: 8px 10px; background: #111111; border: 1px solid #1e1e1e; color: var(--TextFaint);
-  font-family: 'Manrope', sans-serif; font-size: 11px; outline: none; cursor: not-allowed; box-sizing: border-box;
+  width: 100%; padding: 8px 10px; background: var(--k-shade-3); border: 1px solid var(--k-shade-5); color: var(--k-text-faint);
+  font-family: 'Manrope', sans-serif; font-size: 0.6875rem; outline: none; cursor: not-allowed; box-sizing: border-box;
 }
 .ctx-actions :deep(.btn) {
-  display: block; width: 100%; text-align: left; padding: 8px 10px; background: #111111;
-  border: 1px solid #1a1a1a; color: var(--TextFaint); font-family: 'Manrope', sans-serif; font-size: 11px;
+  display: block; width: 100%; text-align: left; padding: 8px 10px; background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-4); color: var(--k-text-faint); font-family: 'Manrope', sans-serif; font-size: 0.6875rem;
   border-radius: 0; margin-bottom: 6px; transition: border-color .2s, color .2s;
 }
-.ctx-actions :deep(.btn:hover) { border-color: rgba(202,168,96,0.3); color: var(--Primary); }
+.ctx-actions :deep(.btn:hover) { border-color: rgba(var(--k-color-primary-rgb), 0.3); color: var(--k-color-primary); }
 
 .donut-wrap { display: flex; justify-content: center; margin: 8px 0; }
 .donut-legend { display: flex; gap: 12px; justify-content: center; }
-.dl-item { display: flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); }
+.dl-item { display: flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
 .dl-dot { width: 6px; height: 6px; border-radius: 50%; }
-.dl-dot.gold { background: #caa860; }
-.dl-dot.dim { background: #333; }
+.dl-dot.gold { background: var(--k-color-primary); }
+.dl-dot.dim { background: var(--k-shade-8); }
 
 .bar-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
 .bar-item { display: flex; align-items: center; gap: 8px; }
-.bar-track { flex: 1; height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
+.bar-track { flex: 1; height: 6px; background: var(--k-shade-4); border-radius: 3px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 3px; }
-.bar-fill.gold { background: #caa860; }
-.bar-fill.blue { background: #60a5fa; }
-.bar-fill.dim { background: #444; }
-.bar-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); min-width: 24px; text-align: right; }
+.bar-fill.gold { background: var(--k-color-primary); }
+.bar-fill.blue { background: var(--k-hue-blue); }
+.bar-fill.dim { background: var(--k-shade-8); }
+.bar-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); min-width: 24px; text-align: right; }
 .bar-labels { display: flex; flex-direction: column; gap: 8px; }
-.bar-labels span { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextFaint); padding-top: 2px; }
+.bar-labels span { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); padding-top: 2px; }
 
 @media (max-width: 1100px) {
-  .ctx-panel { border-left: none; border-top: 1px solid #181818; }
+  .ctx-panel { border-left: none; border-top: 1px solid var(--k-shade-4); }
 }
 </style>

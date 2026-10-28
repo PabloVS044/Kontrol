@@ -122,12 +122,9 @@ const usagePct = computed(() => {
   return Math.round((efectivo.value / planned) * 100)
 })
 
-// Mismo colapso de niveles que budgetColor() en ProjectsView.vue y
-// progressColor() en BudgetSummaryCard.vue: la paleta v2 no define un
-// ámbar/naranja intermedio.
 const usageColor = computed(() => {
   if (usagePct.value > 100) return 'var(--k-state-error-text)'
-  if (usagePct.value >= 60) return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  if (usagePct.value >= 60) return 'var(--k-hue-orange)'
   return 'var(--k-color-primary)'
 })
 
@@ -217,7 +214,7 @@ function formatDate(v) {
 }
 
 .row-btn {
-  background: var(--k-shade-3); border: 1px solid #2e2e2e; color: #b8b8b8; /* sin token exacto */
+  background: var(--k-shade-3); border: 1px solid var(--k-shade-7); color: var(--k-text-soft);
   width: 26px; height: 26px; cursor: pointer; font-size: var(--k-font-size-caption-lg); line-height: 1;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color 0.15s, border-color 0.15s;
@@ -228,7 +225,7 @@ function formatDate(v) {
 
 .bar-amounts {
   display: flex; justify-content: space-between;
-  font-size: var(--k-font-size-caption-lg); color: #bcbcbc; margin-bottom: 6px; /* sin token exacto */
+  font-size: var(--k-font-size-caption-lg); color: var(--k-text-soft); margin-bottom: 6px;
 }
 .amt-label {
   font-size: var(--k-font-size-caption); letter-spacing: 0.05em; text-transform: uppercase;
@@ -242,7 +239,7 @@ function formatDate(v) {
 .bar-details {
   margin-top: 12px;
   padding: 12px 14px;
-  background: rgb(var(--k-color-black-rgb));
+  background: rgb(var(--k-canvas-rgb));
   border: 1px solid var(--k-shade-4);
   border-left: 2px solid var(--k-color-primary);
 }
@@ -271,13 +268,13 @@ function formatDate(v) {
   min-width: 56px;
 }
 .detail-tag {
-  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; /* sin token exacto */
+  font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase; /* sin token exacto */
   color: var(--k-color-primary); background: var(--k-surface-primary-tint);
   padding: 1px 6px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   align-self: center;
 }
 .detail-text {
-  color: #d4d4d4; line-height: 1.4; /* sin token exacto */
+  color: var(--k-text-soft); line-height: 1.4;
   overflow: hidden; text-overflow: ellipsis;
 }
 .detail-user { color: var(--k-gray-5); font-size: var(--k-font-size-caption); }
@@ -292,7 +289,7 @@ function formatDate(v) {
 
 /* Override ProgressBar default background */
 :deep(.pb-bg) {
-  background: #202020; /* sin token exacto */
+  background: var(--k-shade-6);
   border: 1px solid var(--k-shade-7);
   height: 10px;
 }

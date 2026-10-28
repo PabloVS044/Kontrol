@@ -1,5 +1,7 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig, mergeConfig } from 'vitest/config'
 import viteConfig from './vite.config.js'
+import { assertThresholdGlobsMatch } from '../scripts/coverage-thresholds.mjs'
 
 export default mergeConfig(
   viteConfig,
@@ -48,7 +50,10 @@ export default mergeConfig(
         // Vitest sale con código 1 si no se cumple un umbral, así que el step
         // `npm run test:coverage -w frontend` de ci.yml pone el job en rojo
         // por sí solo.
-        thresholds: {
+        // RTF 2 (TEST-01): el config falla si algún glob no casa con ningún
+        // archivo (`scripts/coverage-thresholds.mjs`), en lugar de aprobar en
+        // vacío como pasó con los umbrales de reportes.
+        thresholds: assertThresholdGlobsMatch({
           // Trinquete, punto 2: el umbral global se fija en la línea base real
           // medida el 20/09/2026 sobre el denominador completo, truncada a
           // entero y menos 1 punto porcentual de margen.
@@ -156,7 +161,7 @@ export default mergeConfig(
             functions: 70,
             lines: 70
           }
-        }
+        }, fileURLToPath(new URL('.', import.meta.url)))
       }
     }
   })

@@ -19,12 +19,20 @@ describe('AppSurface', () => {
     expect(inactiva.find('p').exists()).toBe(true)
   })
 
+  it('con block pinta el velo en el propio bloque, no fijo a la pantalla', () => {
+    const bloque = mount(AppSurface, { props: { block: true, active: true }, slots: { default: '<p>x</p>' } })
+    expect(bloque.classes()).toContain('app-surface--block')
+    expect(bloque.find('.app-surface__scrim').exists()).toBe(false)
+    expect(bloque.find('p').exists()).toBe(true)
+  })
+
   it('usa el token del velo', () => {
     const sfc = readFileSync(
       resolve(__dirname, '../src/components/UI/AppSurface/AppSurface.vue'),
       'utf8',
     )
     expect(sfc).toMatch(/background:\s*var\(--k-surface-scrim\)/)
+    expect(sfc).toMatch(/background:\s*var\(--k-surface-panel\)/)
   })
 })
 
@@ -44,4 +52,13 @@ describe('router — meta.surface', () => {
     expect(internas.length).toBeGreaterThan(10)
     for (const r of internas) expect(r.meta.surface, r.name ?? r.path).toBe(true)
   })
+})
+
+describe('vistas públicas con texto sobre el fondo animado', () => {
+  for (const vista of ['OnboardingView', 'NotFoundView']) {
+    it(`${vista} envuelve su bloque de texto en AppSurface block`, () => {
+      const sfc = readFileSync(resolve(__dirname, `../src/views/${vista}.vue`), 'utf8')
+      expect(sfc).toMatch(/<AppSurface block\b/)
+    })
+  }
 })

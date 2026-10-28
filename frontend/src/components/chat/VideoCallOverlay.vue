@@ -374,12 +374,12 @@ watch(showSideChat, async (isOpen) => {
 .call-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1400;
+  z-index: var(--k-z-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #050505;
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(10px);
 }
 
@@ -390,9 +390,9 @@ watch(showSideChat, async (isOpen) => {
 .call-card,
 .call-shell {
   width: min(100%, 1080px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, #12100e, #070707);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.08);
+  background: linear-gradient(180deg, var(--k-shade-2), var(--k-shade-0));
+  box-shadow: 0 30px 80px rgba(var(--k-color-black-rgb), 0.45);
 }
 
 .call-card--incoming {
@@ -407,11 +407,11 @@ watch(showSideChat, async (isOpen) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #3f3121;
-  background: #1f180f;
-  color: var(--Primary);
+  border: 1px solid var(--k-color-border);
+  background: var(--k-surface-warm-2);
+  color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
 }
 
@@ -422,33 +422,33 @@ watch(showSideChat, async (isOpen) => {
 .call-kicker {
   margin: 0 0 6px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8d7d55;
+  color: var(--k-text-placeholder);
 }
 
 .call-name {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  font-size: 30px;
-  color: var(--Text);
+  font-size: 1.875rem;
+  color: var(--k-color-text);
 }
 
 .call-sub,
 .call-stage-status {
   margin: 8px 0 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  color: #9d9689;
+  font-size: 0.8125rem;
+  color: var(--k-text-dim);
 }
 
 .call-error {
   margin: 12px 0 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #fb7185;
+  font-size: 0.75rem;
+  color: var(--k-hue-rose);
 }
 
 .call-actions,
@@ -471,7 +471,7 @@ watch(showSideChat, async (isOpen) => {
   border: none;
   padding: 11px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.15s ease;
@@ -484,13 +484,13 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .call-btn--ghost {
-  background: #171717;
-  color: #d6d0c4;
+  background: var(--k-shade-3b);
+  color: var(--k-text-soft);
 }
 
 .call-btn--primary {
-  background: #caa860;
-  color: var(--BtnText);
+  background: var(--k-color-primary);
+  color: var(--k-form-btn-text);
 }
 
 .call-shell {
@@ -500,8 +500,8 @@ watch(showSideChat, async (isOpen) => {
   max-height: 800px;
   width: min(95vw, 1300px);
   overflow: hidden;
-  background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--k-shade-0);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.1);
   border-radius: 8px;
   position: relative;
 }
@@ -522,13 +522,13 @@ watch(showSideChat, async (isOpen) => {
 .call-side-chat {
   width: 360px;
   flex-shrink: 0;
-  background: #0c0c0c;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--k-shade-1);
+  border-left: 1px solid rgba(var(--k-ink-rgb), 0.08);
   display: flex;
   flex-direction: column;
   animation: 100%;
   height: 100%;
-  z-index: 250;
+  z-index: var(--k-z-raised);
 }
 
 .side-chat-header {
@@ -536,21 +536,21 @@ watch(showSideChat, async (isOpen) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(202, 168, 96, 0.15);
+  border-bottom: 1px solid rgba(var(--k-color-primary-rgb), 0.15);
 }
 
 .side-chat-header span {
   font-family: 'Playfair Display', serif;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-weight: 700;
   font-size: 1.1rem;
 }
 
 /* Botón X con estilo */
 .close-side-btn {
-  background: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--TextMuted);
+  background: var(--k-shade-3);
+  border: 1px solid rgba(var(--k-ink-rgb), 0.1);
+  color: var(--k-text-muted);
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -561,8 +561,8 @@ watch(showSideChat, async (isOpen) => {
   transition: all 0.2s;
 }
 .close-side-btn:hover {
-  background: #881a34;
-  color: #ef4444;
+  background: rgba(var(--k-color-error-rgb), 0.55);
+  color: var(--k-state-error-text);
 }
 
 .side-chat-body {
@@ -580,26 +580,26 @@ watch(showSideChat, async (isOpen) => {
   justify-content: center;
   min-height: 120px;
   padding: 12px;
-  color: var(--TextSoft);
+  color: var(--k-text-soft);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
-  background: #111111;
+  background: var(--k-shade-3);
   border-radius: 8px;
 }
 
 .side-chat-placeholder--error {
-  color: #fb7185;
-  border: 1px solid rgba(251, 113, 133, 0.25);
+  color: var(--k-hue-rose);
+  border: 1px solid rgba(var(--k-hue-rose-rgb), 0.25);
 }
 
 .unread-badge {
   position: absolute;
   top: -2px;
   right: -2px;
-  background: #fb7185;
-  color: white;
-  font-size: 11px;
+  background: var(--k-hue-rose);
+  color: rgb(var(--k-color-white-rgb));
+  font-size: 0.6875rem;
   min-width: 16px;
   height: 16px;
   padding: 2px 6px;
@@ -607,22 +607,22 @@ watch(showSideChat, async (isOpen) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #0a0a0a;
+  border: 2px solid var(--k-shade-1);
   font-weight: bold;
-  z-index: 300;
+  z-index: var(--k-z-top);
 }
 
 .call-circle-btn.has-unread {
-  color: #fb7185;
-  box-shadow: 0 0 15px rgba(251, 113, 133, 0.3);
+  color: var(--k-hue-rose);
+  box-shadow: 0 0 15px rgba(var(--k-hue-rose-rgb), 0.3);
 }
 
 /* Scrollbar */
 .side-chat-body::-webkit-scrollbar { width: 4px; }
-.side-chat-body::-webkit-scrollbar-thumb { background: var(--Primary); border-radius: 4px; }
+.side-chat-body::-webkit-scrollbar-thumb { background: var(--k-color-primary); border-radius: 4px; }
 
 .mini-msg {
-  background: #111111;
+  background: var(--k-shade-3);
   padding: 10px;
   border-radius: 4px;
   border-left: 2px solid transparent;
@@ -633,21 +633,21 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .mini-msg:hover {
-  background: #14110b;
-  border-left-color: var(--Primary);
+  background: var(--k-color-bg-2);
+  border-left-color: var(--k-color-primary);
 }
 
 .mini-msg-name {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   letter-spacing: 0.5px;
 }
 
 .mini-msg-text {
-  font-size: 13px;
-  color: var(--Text);
-  background: #111111;
+  font-size: 0.8125rem;
+  color: var(--k-color-text);
+  background: var(--k-shade-3);
   padding: 8px 12px;
   border-radius: 4px;
   line-height: 1.5;
@@ -658,30 +658,30 @@ watch(showSideChat, async (isOpen) => {
 .side-chat-input-area {
   flex-shrink: 0;
   padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0a0a0a;
+  border-top: 1px solid rgba(var(--k-ink-rgb), 0.08);
+  background: var(--k-shade-1);
 }
 
 .side-chat-input-area input {
   width: 100%;
-  background: #070707;
-  border: 1px solid #1f1f1f;
-  color: var(--Text);
+  background: var(--k-shade-0);
+  border: 1px solid var(--k-shade-6);
+  color: var(--k-color-text);
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   outline: none;
   transition: border-color 0.3s;
 }
 
 .side-chat-input-area input:focus {
-  border-color: var(--Primary);
+  border-color: var(--k-color-primary);
 }
 
 .call-stage {
   position: relative;
   flex: 1;
-  background: linear-gradient(180deg, #050505, #0d0d0d);
+  background: linear-gradient(180deg, var(--k-shade-0), var(--k-shade-2));
   min-height: 0;
   overflow: hidden;
 }
@@ -691,7 +691,7 @@ watch(showSideChat, async (isOpen) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #050505;
+  background: rgb(var(--k-color-black-rgb));
 }
 
 .call-remote-video {
@@ -700,7 +700,7 @@ watch(showSideChat, async (isOpen) => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #050505;
+  background: rgb(var(--k-color-black-rgb));
 }
 
 .call-local-preview {
@@ -709,10 +709,10 @@ watch(showSideChat, async (isOpen) => {
   bottom: 20px;
   width: min(22vw, 220px);
   aspect-ratio: 4 / 3;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #050505;
+  border: 1px solid rgba(var(--k-ink-rgb), 0.12);
+  background: rgb(var(--k-color-black-rgb));
   overflow: hidden;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 40px rgba(var(--k-color-black-rgb), 0.35);
 }
 
 .call-local-video.is-hidden {
@@ -726,9 +726,9 @@ watch(showSideChat, async (isOpen) => {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: #d0c8bb;
-  background: #050505;
+  font-size: 0.75rem;
+  color: var(--k-text-soft);
+  background: var(--k-shade-0);
 }
 
 .call-stage-placeholder {
@@ -746,8 +746,8 @@ watch(showSideChat, async (isOpen) => {
 .call-stage-title {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  font-size: 34px;
-  color: var(--Text);
+  font-size: 2.125rem;
+  color: var(--k-color-text);
 }
 
 .call-toolbar {
@@ -756,9 +756,9 @@ watch(showSideChat, async (isOpen) => {
   justify-content: space-between;
   gap: 20px;
   padding: 18px 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  background: #090909;
-  z-index: 200;
+  border-top: 1px solid rgba(var(--k-ink-rgb), 0.12);
+  background: var(--k-shade-1);
+  z-index: var(--k-z-base);
   position: relative;
   /* Keep controls visible when scrolling messages or resizing */
   position: sticky;
@@ -774,8 +774,8 @@ watch(showSideChat, async (isOpen) => {
   height: 48px;
   border: none;
   border-radius: 999px;
-  background: #131313;
-  color: #f2ede4;
+  background: var(--k-shade-3);
+  color: var(--k-color-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -784,21 +784,21 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .call-circle-btn.inactive {
-  background: #101010;
-  color: var(--TextDim);
+  background: var(--k-shade-2);
+  color: var(--k-text-dim);
 }
 
 .call-circle-btn--danger {
-  background: #e11d48;
-  color: #fff6f8;
+  background: rgb(var(--k-color-error-rgb));
+  color: rgb(var(--k-color-white-rgb));
 }
 
 .new-messages-divider {
   display: flex;
   align-items: center;
   text-align: center;
-  color: #fb7185; /* Rojo Luxury */
-  font-size: 11px;
+  color: var(--k-hue-rose); /* Rojo Luxury */
+  font-size: 0.6875rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -813,7 +813,7 @@ watch(showSideChat, async (isOpen) => {
 .new-messages-divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid rgba(251, 113, 133, 0.4);
+  border-bottom: 1px solid rgba(var(--k-hue-rose-rgb), 0.4);
 }
 
 .new-messages-divider:not(:empty)::before { margin-right: .5em; }
@@ -846,7 +846,7 @@ watch(showSideChat, async (isOpen) => {
   }
 
   .call-stage-title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 
@@ -856,8 +856,8 @@ watch(showSideChat, async (isOpen) => {
 }
 
 .side-msg-text {
-  color: var(--Text);
-  font-size: 13px;
+  color: var(--k-color-text);
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 
@@ -876,7 +876,7 @@ watch(showSideChat, async (isOpen) => {
     width: 100%;
     height: 40%;
     border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(var(--k-ink-rgb), 0.1);
   }
 
   .call-toolbar {
@@ -892,7 +892,7 @@ watch(showSideChat, async (isOpen) => {
     height: 95vh;
   }
   .call-stage-title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 </style>

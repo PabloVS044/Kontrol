@@ -1,22 +1,24 @@
 import { readonly, ref } from 'vue'
+import { setPreferenceItem } from './useStorageConsent.js'
 
 /**
  * Kontrol — control de tema (SCRUM-13 / HU-32, punto 4 del alcance).
  *
  * Escribe `data-theme` en `<html>`, que es lo que leen los tokens de
- * `src/styles/theme.css`. Preferencia persistida en localStorage.
+ * `src/styles/theme.css`. La preferencia se guarda en localStorage solo si el
+ * usuario aceptó el almacenamiento de preferencias (`useStorageConsent`).
  *
- * Estado actual: SCRUM-12 definió únicamente la identidad "Luxury Dark".
- * El tema claro está declarado pero sin overrides, así que seleccionarlo
- * hereda el oscuro. El mecanismo es funcional; faltan los valores de marca.
- * Ver el TODO(SCRUM-12) en `theme.css`.
+ * El tema claro es una propuesta pendiente de validación de Diseño.
  */
 
 const STORAGE_KEY = 'kontrol:theme'
 const THEMES = ['dark', 'light']
+// 'system' no se guarda: es la ausencia de una elección.
+const MODES = ['system', ...THEMES]
 const DEFAULT_THEME = 'dark'
 
 const current = ref(DEFAULT_THEME)
+const mode = ref('system')
 
 function readStored() {
   try {
@@ -29,11 +31,17 @@ function readStored() {
   }
 }
 
+// Sin consentimiento para preferencias, o sin almacenamiento, el tema sigue
+// aplicándose en la sesión actual pero no se guarda.
 function persist(theme) {
+  setPreferenceItem(STORAGE_KEY, theme)
+}
+
+function clearStored() {
   try {
-    localStorage.setItem(STORAGE_KEY, theme)
+    localStorage.removeItem(STORAGE_KEY)
   } catch {
-    // idem: sin persistencia, el tema sigue aplicándose en la sesión actual.
+    // idem.
   }
 }
 
@@ -42,11 +50,8 @@ function apply(theme) {
   document.documentElement.setAttribute('data-theme', theme)
 }
 
-/** Resuelve la preferencia: guardada > sistema > default. */
-function resolveInitial() {
-  const stored = readStored()
-  if (stored) return stored
-
+/** Tema que pide el sistema; oscuro si no pide nada. */
+function systemTheme() {
   const prefersLight =
     typeof window.matchMedia === 'function' &&
     window.matchMedia('(prefers-color-scheme: light)').matches
@@ -57,15 +62,26 @@ function resolveInitial() {
 export function useTheme() {
   /** Llamar una vez al arrancar la app, antes del primer render. */
   function initTheme() {
-    apply(resolveInitial())
+    const stored = readStored()
+    mode.value = stored ?? 'system'
+    apply(stored ?? systemTheme())
   }
 
   function setTheme(theme) {
     if (!THEMES.includes(theme)) {
       throw new Error(`Tema desconocido: "${theme}". Válidos: ${THEMES.join(', ')}`)
     }
+    mode.value = theme
     apply(theme)
     persist(theme)
+  }
+
+  /** 'system' vuelve a seguir al sistema y olvida la elección guardada. */
+  function setMode(next) {
+    if (next !== 'system') return setTheme(next)
+    clearStored()
+    mode.value = 'system'
+    apply(systemTheme())
   }
 
   function toggleTheme() {
@@ -74,9 +90,12 @@ export function useTheme() {
 
   return {
     theme: readonly(current),
+    mode: readonly(mode),
     availableThemes: THEMES,
+    availableModes: MODES,
     initTheme,
     setTheme,
+    setMode,
     toggleTheme,
   }
 }

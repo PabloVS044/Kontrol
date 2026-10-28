@@ -513,7 +513,7 @@ watch(() => chatStore.lastError, (message) => {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  z-index: 500;
+  z-index: var(--k-z-floating);
   width: 52px;
   height: 52px;
   border: none;
@@ -562,10 +562,10 @@ watch(() => chatStore.lastError, (message) => {
   position: fixed;
   right: 24px;
   bottom: 86px;
-  z-index: 499;
+  z-index: calc(var(--k-z-floating) - 1);
   width: 340px;
   height: 500px;
-  background: var(--k-shade-2);
+  background: var(--k-surface-floating);
   border: var(--k-border-width) solid var(--k-shade-6);
   display: flex;
   flex-direction: column;
@@ -626,7 +626,7 @@ watch(() => chatStore.lastError, (message) => {
     height: 28px;
     border: none;
     border-radius: 4px;
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-text-dim);
     cursor: pointer;
     display: flex;
@@ -639,7 +639,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-icon-btn:hover,
   .fp-back-btn:hover,
   .fp-att-btn:hover {
-    background: var(--k-shade-4);
+    background: var(--k-surface-floating-3);
     color: var(--k-text-soft);
   }
 
@@ -649,13 +649,13 @@ watch(() => chatStore.lastError, (message) => {
     gap: 8px;
     margin: 0 12px 12px;
     padding: 0 10px;
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     border: var(--k-border-width) solid var(--k-shade-4);
   }
 
   .fp-search input {
     flex: 1;
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     border: none;
     outline: none;
     color: var(--k-color-text);
@@ -737,7 +737,7 @@ watch(() => chatStore.lastError, (message) => {
     font-family: var(--k-font-sans);
     font-size: var(--k-font-size-body-small);
     text-align: center;
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     border-radius: 8px;
   }
 
@@ -753,7 +753,7 @@ watch(() => chatStore.lastError, (message) => {
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    background: var(--k-shade-2);
+    background: var(--k-surface-floating);
     border: none;
     text-align: left;
     cursor: pointer;
@@ -762,7 +762,7 @@ watch(() => chatStore.lastError, (message) => {
 
   .fp-conv-item:hover,
   .fp-modal-user:hover {
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
   }
 
   .fp-conv-top,
@@ -789,7 +789,7 @@ watch(() => chatStore.lastError, (message) => {
     border: var(--k-border-width) solid var(--k-alert-watching-border);
     color: var(--k-color-primary);
     font-family: var(--k-font-sans);
-    font-size: 8px;
+    font-size: 0.5rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -810,7 +810,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-msg-bubble {
     padding: 7px 10px;
     border-radius: 2px 10px 10px 10px;
-    background: var(--k-shade-4);
+    background: var(--k-surface-floating-3);
     border: var(--k-border-width) solid var(--k-shade-6);
     color: var(--k-text-soft);
     font-family: var(--k-font-sans);
@@ -832,7 +832,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-attach-video {
     max-width: 200px;
     border: var(--k-border-width) solid var(--k-shade-6);
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-text-muted);
     text-decoration: none;
   }
@@ -881,7 +881,7 @@ watch(() => chatStore.lastError, (message) => {
     flex-shrink: 0;
     border-top: var(--k-border-width) solid var(--k-shade-4);
     padding: 8px 10px;
-    background: var(--k-shade-2);
+    background: var(--k-surface-floating);
   }
 
   .fp-attach-row {
@@ -904,7 +904,7 @@ watch(() => chatStore.lastError, (message) => {
     resize: none;
     outline: none;
     border: var(--k-border-width) solid var(--k-shade-6);
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-color-text);
     padding: 7px 10px;
     font-family: var(--k-font-sans);
@@ -925,7 +925,7 @@ watch(() => chatStore.lastError, (message) => {
     width: 32px;
     height: 32px;
     border: var(--k-border-width) solid var(--k-shade-6);
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-text-faint);
     cursor: pointer;
     display: flex;
@@ -954,7 +954,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-modal-overlay {
     position: fixed;
     inset: 0;
-    z-index: 700;
+    z-index: calc(var(--k-z-floating) + 2);
     background: rgb(var(--k-color-black-rgb));
     display: flex;
     align-items: center;
@@ -964,7 +964,7 @@ watch(() => chatStore.lastError, (message) => {
   .fp-modal {
     width: 320px;
     max-height: 420px;
-    background: var(--k-shade-2);
+    background: var(--k-surface-floating);
     border: var(--k-border-width) solid var(--k-shade-6);
     display: flex;
     flex-direction: column;
@@ -1054,7 +1054,7 @@ watch(() => chatStore.lastError, (message) => {
   border: var(--k-border-width) solid var(--k-alert-watching-border);
   color: var(--k-color-primary);
   font-family: var(--k-font-sans);
-  font-size: 8px;
+  font-size: 0.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1075,7 +1075,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-msg-bubble {
   padding: 7px 10px;
   border-radius: 2px 10px 10px 10px;
-  background: var(--k-shade-4);
+  background: var(--k-surface-floating-3);
   border: var(--k-border-width) solid var(--k-shade-6);
   color: var(--k-text-soft);
   font-family: var(--k-font-sans);
@@ -1097,7 +1097,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-attach-video {
   max-width: 200px;
   border: var(--k-border-width) solid var(--k-shade-6);
-  background: var(--k-shade-3);
+  background: var(--k-surface-floating-2);
   color: var(--k-text-muted);
   text-decoration: none;
 }
@@ -1163,7 +1163,7 @@ watch(() => chatStore.lastError, (message) => {
   flex-shrink: 0;
   border-top: var(--k-border-width) solid var(--k-shade-4);
   padding: 8px 10px;
-  background: var(--k-shade-2);
+  background: var(--k-surface-floating);
 }
 
 .fp-attach-row {
@@ -1186,7 +1186,7 @@ watch(() => chatStore.lastError, (message) => {
     resize: none;
     outline: none;
     border: var(--k-border-width) solid var(--k-shade-6);
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-color-text);
     padding: 7px 10px;
     font-family: var(--k-font-sans);
@@ -1207,7 +1207,7 @@ watch(() => chatStore.lastError, (message) => {
     width: 32px;
     height: 32px;
     border: var(--k-border-width) solid var(--k-shade-6);
-    background: var(--k-shade-3);
+    background: var(--k-surface-floating-2);
     color: var(--k-text-faint);
     cursor: pointer;
     display: flex;
@@ -1235,7 +1235,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 700;
+  z-index: calc(var(--k-z-floating) + 2);
   background: rgb(var(--k-color-black-rgb));
   display: flex;
   align-items: center;
@@ -1245,7 +1245,7 @@ watch(() => chatStore.lastError, (message) => {
 .fp-modal {
   width: 320px;
   max-height: 420px;
-  background: var(--k-shade-2);
+  background: var(--k-surface-floating);
   border: var(--k-border-width) solid var(--k-shade-6);
   display: flex;
   flex-direction: column;
@@ -1283,5 +1283,22 @@ watch(() => chatStore.lastError, (message) => {
 @keyframes blink {
   0%, 80%, 100% { opacity: 0.2; }
   40% { opacity: 1; }
+}
+
+/* En un teléfono el panel fijo de 340×540 no cabía: en pantallas bajas su
+   cabecera (volver, videollamada, pantalla completa) quedaba bajo la barra
+   superior, y el botón de Birdie, que va por encima del panel, tapaba esas
+   acciones. Aquí ocupa el alto disponible y se pone por encima de Birdie. */
+@media (max-width: 640px) {
+  .float-panel,
+  .float-panel.in-chat {
+    top: 64px;
+    right: 12px;
+    bottom: 86px;
+    left: 12px;
+    width: auto;
+    height: auto;
+    z-index: calc(var(--k-z-floating) + 2);
+  }
 }
 </style>

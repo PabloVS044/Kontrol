@@ -450,8 +450,8 @@ h1, h2, h3 {
   margin: 0;
 }
 
-h1 { font-size: clamp(32px, 5vw, 48px); }
-h2 { font-size: 28px; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: 1.75rem; }
 h3 { font-size: var(--k-font-size-heading-2); }
 
 .teams-header p:not(.eyebrow),
@@ -472,7 +472,7 @@ h3 { font-size: var(--k-font-size-heading-2); }
 .teams-list,
 .team-editor,
 .panel-card {
-  background: rgba(var(--k-color-black-rgb), 0.94);
+  background: var(--k-surface-section);
   border: var(--k-border-width) solid var(--k-shade-6);
 }
 

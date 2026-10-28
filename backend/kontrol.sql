@@ -64,6 +64,39 @@ CREATE TABLE public.empresa_config (
   CONSTRAINT empresa_config_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
 );
 
+-- PAY-1 — Suscripción de la empresa en la pasarela (modo de prueba). Una fila
+-- por empresa; sin fila, la empresa está en el plan gratuito. Solo la escriben
+-- los eventos verificados del proveedor y el inicio del checkout: el plan nunca
+-- se toma de lo que mande el cliente. `estado` copia el del proveedor ('none'
+-- mientras no hay suscripción). Los identificadores son del proveedor, no de
+-- Stripe en concreto, para poder cambiarlo sin migrar la tabla.
+CREATE TABLE public.empresa_suscripcion (
+  id_empresa integer PRIMARY KEY,
+  proveedor character varying NOT NULL,
+  id_cliente_proveedor character varying UNIQUE,
+  id_suscripcion_proveedor character varying UNIQUE,
+  plan character varying NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'business')),
+  intervalo character varying CHECK (intervalo IN ('month', 'year')),
+  estado character varying NOT NULL DEFAULT 'none',
+  fin_periodo_actual timestamp with time zone,
+  cancelar_al_final boolean NOT NULL DEFAULT false,
+  -- La empresa entró en cierre (lo pidió el owner o lo dejó sin sucesor la
+  -- baja de su cuenta) y falta cancelar la suscripción en la pasarela. Se marca
+  -- en la misma transacción del cierre y se reintenta hasta que la confirma.
+  cancelacion_pendiente boolean NOT NULL DEFAULT false,
+  actualizado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT empresa_suscripcion_id_empresa_fkey FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+);
+
+-- PAY-1 — Eventos de la pasarela ya procesados. El proveedor reintenta los
+-- envíos; la clave primaria hace que el mismo evento se aplique una sola vez.
+CREATE TABLE public.evento_pago_procesado (
+  id_evento character varying PRIMARY KEY,
+  proveedor character varying NOT NULL,
+  tipo character varying NOT NULL,
+  procesado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE public.categoria (
   id_categoria SERIAL PRIMARY KEY,
   nombre character varying NOT NULL,
@@ -350,6 +383,20 @@ CREATE TABLE public.evidencia (
   id_usuario integer NOT NULL,
   CONSTRAINT evidencia_id_tarea_fkey FOREIGN KEY (id_tarea) REFERENCES public.tarea(id_tarea),
   CONSTRAINT evidencia_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
+);
+
+-- L-6: constancia de la versión de cada documento legal aceptada por cada
+-- usuario, con fecha y dirección IP. Una fila por documento y versión.
+CREATE TABLE public.aceptacion_legal (
+  id_aceptacion SERIAL PRIMARY KEY,
+  id_usuario integer NOT NULL,
+  documento character varying(40) NOT NULL,
+  version character varying(20) NOT NULL,
+  aceptado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ip character varying(45),
+  origen character varying(20) NOT NULL CHECK (origen IN ('registro', 'aviso')),
+  CONSTRAINT aceptacion_legal_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+  CONSTRAINT aceptacion_legal_usuario_documento_version_unique UNIQUE (id_usuario, documento, version)
 );
 
 -- Audit log for top-up additions to a project's allocated budget.

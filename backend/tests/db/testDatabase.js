@@ -2,7 +2,7 @@
 //
 // La URL por defecto es la del Postgres de `docker-compose.integration.yml`.
 // En CI llega por variable de entorno desde el service container del job.
-export const DEFAULT_TEST_DATABASE_URL = 'postgres://kontrol:kontrol@localhost:5433/kontrol_test'
+export const DEFAULT_TEST_DATABASE_URL = 'postgres://kontrol:kontrol@localhost:55433/kontrol_test'
 
 export const testDatabaseUrl = () => process.env.TEST_DATABASE_URL || DEFAULT_TEST_DATABASE_URL
 

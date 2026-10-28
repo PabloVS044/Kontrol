@@ -61,6 +61,27 @@ async function upsertEmpresa() {
   return empresa.id_empresa
 }
 
+// PAY-1 — La empresa de pruebas va en Business. Tiene seis participantes,
+// tres proyectos y usa exportación, equipos, marketing y el agente: en el plan
+// Gratis superaría los topes y perdería esos módulos, y las pruebas de UX y de
+// carga (k6, escenario C4) dejarían de ejercitarlos. No es una suscripción de
+// la pasarela: proveedor 'seed' y sin identificadores del proveedor, así que
+// ningún evento de Stripe la toca.
+async function ensureSuscripcionDemo(idEmpresa) {
+  await pool.query(
+    `INSERT INTO public.empresa_suscripcion (id_empresa, proveedor, plan, intervalo, estado, fin_periodo_actual)
+     VALUES ($1, 'seed', 'business', 'year', 'active', CURRENT_TIMESTAMP + INTERVAL '10 years')
+     ON CONFLICT (id_empresa) DO UPDATE SET
+       plan = EXCLUDED.plan,
+       intervalo = EXCLUDED.intervalo,
+       estado = EXCLUDED.estado,
+       fin_periodo_actual = EXCLUDED.fin_periodo_actual,
+       actualizado_en = CURRENT_TIMESTAMP
+     WHERE public.empresa_suscripcion.proveedor = 'seed'`,
+    [idEmpresa]
+  )
+}
+
 async function ensureEmpresaUsuario(idEmpresa, idUsuario, rolNombre) {
   const { rows: [rol] } = await pool.query(
     'SELECT id_rol_empresa FROM public.rol_empresa WHERE nombre = $1',
@@ -315,6 +336,8 @@ export async function seed() {
 
   const idEmpresa = await upsertEmpresa()
   console.log(`  Empresa: ${EMPRESA_NOMBRE} (#${idEmpresa})`)
+  await ensureSuscripcionDemo(idEmpresa)
+  console.log('  Plan de pruebas: Business (sembrado, sin pasarela).')
 
   // El primer participante es owner y el resto managers. Con los seis como
   // manager, el ambiente no podía ejercitar nada reservado al dueño —la

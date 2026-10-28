@@ -25,9 +25,16 @@
         <div class="footer-col">
           <h4>{{ t('footer.legal') }}</h4>
           <ul>
-            <li><RouterLink to="/legal#privacy">{{ t('footer.privacy') }}</RouterLink></li>
-            <li><RouterLink to="/legal#terms">{{ t('footer.terms') }}</RouterLink></li>
-            <li><RouterLink to="/legal#cookies">{{ t('footer.cookies') }}</RouterLink></li>
+            <li><RouterLink to="/legal/privacy">{{ t('footer.privacy') }}</RouterLink></li>
+            <li><RouterLink to="/legal/terms">{{ t('footer.terms') }}</RouterLink></li>
+            <li><RouterLink to="/legal/cookies">{{ t('footer.cookies') }}</RouterLink></li>
+            <li><RouterLink to="/legal/data-processing">{{ t('footer.dataProcessing') }}</RouterLink></li>
+            <li><RouterLink to="/legal/ai-assistant">{{ t('footer.aiNotice') }}</RouterLink></li>
+            <li>
+              <button type="button" class="footer-link-btn" @click="openPanel">
+                {{ t('footer.cookieSettings') }}
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -46,6 +53,10 @@
 import { useI18n } from "vue-i18n";
 import { RouterLink } from "vue-router";
 import logo from "../assets/img/kontrol.png";
+import { useStorageConsent } from "../composables/useStorageConsent.js";
+
+// Reabre el aviso de almacenamiento para cambiar la decisión (L-3).
+const { openPanel } = useStorageConsent();
 
 const { t } = useI18n();
 const year = new Date().getFullYear();
@@ -59,7 +70,7 @@ const year = new Date().getFullYear();
   padding: 60px 0 0;
   box-sizing: border-box;
   position: relative;
-  z-index: 20;
+  z-index: var(--k-z-elevated);
 }
 
 .footer-inner {
@@ -147,10 +158,23 @@ const year = new Date().getFullYear();
   transition: color 0.2s;
 }
 
-.footer-col ul li a:hover {
+.footer-link-btn {
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: var(--k-font-size-body-main);
+  color: var(--k-text-soft);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover,
+.footer-link-btn:hover {
   color: var(--k-color-text);
 }
 
+.footer-link-btn:focus-visible,
 .footer-col ul li a:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);

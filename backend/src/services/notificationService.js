@@ -7,6 +7,8 @@ import { sendSms } from './twilioSmsService.js'
 import { sendEmail } from './sendgridService.js'
 import { sendWebhookEvent } from './webhookService.js'
 import { logger } from '../utils/logger.js'
+import { FEATURES, planAllows } from '../billing/plans.js'
+import { getCompanyPlan } from './billingService.js'
 
 /**
  * Dispatches a notification to every active integration of a company.
@@ -16,6 +18,10 @@ import { logger } from '../utils/logger.js'
 export async function notifyCompany(id_empresa, { title, text, event = 'alert', data = {} }) {
   let rows
   try {
+    // PAY-1 — Las integraciones son del plan Pro. Al bajar de plan se
+    // conservan configuradas pero dejan de enviar.
+    if (!planAllows(await getCompanyPlan(id_empresa), FEATURES.INTEGRATIONS)) return
+
     const result = await pool.query(
       `SELECT slug, credentials_enc FROM public.integracion
        WHERE id_empresa = $1 AND status = 'active'`,

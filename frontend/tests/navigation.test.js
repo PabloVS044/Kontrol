@@ -32,12 +32,37 @@ describe('router — redirección de la pestaña Equipo', () => {
   })
 })
 
+describe('router — carga diferida (DT-17)', () => {
+  it('la landing se carga en diferido, como el resto de las vistas', async () => {
+    const landing = router.getRoutes().find((r) => r.name === 'landing')
+    const cargar = landing.components.default
+    expect(typeof cargar).toBe('function')
+    expect((await cargar()).default).toBeDefined()
+  })
+})
+
 describe('router — Ventas', () => {
   it('/sales existe con los mismos permisos que /inventory', () => {
     const ventas = router.getRoutes().find((r) => r.name === 'sales')
     const inventario = router.getRoutes().find((r) => r.name === 'inventory')
     expect(ventas.path).toBe('/sales')
     expect(ventas.meta).toEqual(inventario.meta)
+  })
+
+  it('Cobrar e Historial cuelgan de /sales con los mismos permisos', () => {
+    const inventario = router.getRoutes().find((r) => r.name === 'inventory')
+    for (const [name, path] of [['sales-charge', '/sales/charge'], ['sales-history', '/sales/history']]) {
+      const ruta = router.getRoutes().find((r) => r.name === name)
+      expect(ruta.path).toBe(path)
+      expect(ruta.meta).toEqual(inventario.meta)
+    }
+  })
+
+  it('Cobrar es la pantalla que antes ocupaba /inventory; Inventario es la tabla', async () => {
+    const cobrar = router.getRoutes().find((r) => r.name === 'sales-charge')
+    const inventario = router.getRoutes().find((r) => r.name === 'inventory')
+    expect((await cobrar.components.default()).default.__file).toMatch(/InventoryPage.vue$/)
+    expect((await inventario.components.default()).default.__file).toMatch(/InventoryView.vue$/)
   })
 })
 

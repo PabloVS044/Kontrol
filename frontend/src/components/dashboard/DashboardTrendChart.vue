@@ -128,7 +128,7 @@ defineEmits(['update:modelValue'])
 
 .chart-card h3 {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--TextMuted);
   text-transform: uppercase;
@@ -148,7 +148,7 @@ defineEmits(['update:modelValue'])
 .timeline-hint {
   color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.6;
   margin: 4px 0 12px;
   max-width: 520px;
@@ -158,7 +158,7 @@ defineEmits(['update:modelValue'])
   border: 1px solid #1f1f1f;
   color: var(--Text);
   padding: 10px 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: 'Manrope', sans-serif;
   min-width: 220px;
 }
@@ -172,7 +172,7 @@ defineEmits(['update:modelValue'])
   padding: 24px 0;
   color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .chart-state--error { color: #fecdd3; }
 </style>

@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: kontrol
       POSTGRES_DB: kontrol_test
     ports:
-      - "5433:5432"
+      - "127.0.0.1:55433:5432"
     tmpfs:
       - /var/lib/postgresql/data
     healthcheck:
@@ -19,3 +19,18 @@ services:
       interval: 2s
       timeout: 3s
       retries: 15
+
+  mongo-test:
+    image: mongo:7
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27018:27017"
+    tmpfs:
+      - /data/db
+    volumes:
+      - ./scripts/mongo-replica-health.js:/scripts/mongo-replica-health.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "/scripts/mongo-replica-health.js"]
+      interval: 2s
+      timeout: 5s
+      retries: 30

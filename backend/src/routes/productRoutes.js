@@ -5,6 +5,7 @@ import requireCompany from '../middleware/requireCompany.js'
 import requireProject from '../middleware/requireProject.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
 import {
   getProductsQuerySchema,
   productIdParamSchema,
@@ -13,6 +14,8 @@ import {
   updateProductSchema,
   linkSupplierSchema,
   updateSupplierLinkSchema,
+  barcodeParamSchema,
+  barcodeQuerySchema,
 } from '../schemas/productSchemas.js'
 import {
   getProducts,
@@ -24,6 +27,7 @@ import {
   linkSupplier,
   updateSupplierLink,
   unlinkSupplier,
+  getProductsByBarcode,
 } from '../controllers/productController.js'
 
 const router = createRouter()
@@ -63,6 +67,15 @@ router.get(
   getProducts
 )
 
+// Búsqueda del POS por código (DT-22). Sin `expensiveLimiter`: es una consulta
+// por índice y el cajero escanea seguido. Autoriza como los listados.
+router.get(
+  '/barcode/:code',
+  validate(barcodeParamSchema, 'params'),
+  validate(barcodeQuerySchema, 'query'),
+  getProductsByBarcode
+)
+
 // El detalle tampoco lleva contexto de proyecto: se abre desde el catálogo de
 // "todos los proyectos", donde no hay ninguno seleccionado, y el proyecto se
 // deduce del propio producto. Autoriza dentro del controller como los listados.
@@ -76,6 +89,7 @@ router.post(
   '/',
   requireProject,
   requireProjectPermission('gestionar_inventario'),
+  requirePlanLimit('products'),
   validate(createProductSchema),
   createProduct
 )

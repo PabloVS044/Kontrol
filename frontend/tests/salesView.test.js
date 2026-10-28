@@ -29,8 +29,8 @@ const montar = async ({ rol = 'owner', capabilities = { can_view_inventory: true
     history: createMemoryHistory(),
     routes: [
       { path: '/sales', component: Stub },
-      { path: '/inventory', component: Stub },
-      { path: '/reports', component: Stub },
+      { path: '/sales/charge', name: 'sales-charge', component: Stub },
+      { path: '/sales/history', name: 'sales-history', component: Stub },
       { path: '/settings', component: Stub },
     ],
   })
@@ -55,7 +55,7 @@ beforeEach(() => {
 describe('SalesView.vue — navegación de Ventas', () => {
   it('el owner ve las tres tarjetas con sus destinos', async () => {
     const wrapper = await montar()
-    expect(destinos(wrapper)).toEqual(['/inventory', '/reports#sales', '/settings#sale-config'])
+    expect(destinos(wrapper)).toEqual(['/sales/charge', '/sales/history', '/settings#sale-config'])
   })
 
   it('nombra las tarjetas como en el card sorting', async () => {
@@ -73,12 +73,12 @@ describe('SalesView.vue — navegación de Ventas', () => {
     // Misma regla que SettingsView: solo owner y admin pueden cambiarla.
     for (const rol of ['manager', 'collaborator']) {
       const wrapper = await montar({ rol })
-      expect(destinos(wrapper)).toEqual(['/inventory', '/reports#sales'])
+      expect(destinos(wrapper)).toEqual(['/sales/charge', '/sales/history'])
     }
   })
 
   it('sin acceso al inventario no se ofrece cobrar', async () => {
     const wrapper = await montar({ rol: 'collaborator', capabilities: {} })
-    expect(destinos(wrapper)).toEqual(['/reports#sales'])
+    expect(destinos(wrapper)).toEqual(['/sales/history'])
   })
 })

@@ -1,12 +1,14 @@
 import { requestAgent } from './domains/agent.js'
 import { requestAdmin } from './domains/admin.js'
 import { requestAuth } from './domains/auth.js'
+import { requestBilling } from './domains/billing.js'
 import { requestBudgets } from './domains/budgets.js'
 import { requestChat } from './domains/chat.js'
 import { requestCompanies } from './domains/companies.js'
 import { requestGlobal } from './domains/global.js'
 import { requestIntegrations } from './domains/integrations.js'
 import { requestInventoryMovements } from './domains/inventory-movements.js'
+import { requestLegal } from './domains/legal.js'
 import { requestMarketing } from './domains/marketing.js'
 import { requestProducts } from './domains/products.js'
 import { requestProjects } from './domains/projects.js'
@@ -28,12 +30,14 @@ const domainServices = {
   agent: requestAgent,
   admin: requestAdmin,
   auth: requestAuth,
+  billing: requestBilling,
   budgets: requestBudgets,
   chat: requestChat,
   companies: requestCompanies,
   global: requestGlobal,
   integrations: requestIntegrations,
   'inventory-movements': requestInventoryMovements,
+  legal: requestLegal,
   marketing: requestMarketing,
   products: requestProducts,
   projects: requestProjects,

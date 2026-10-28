@@ -138,6 +138,53 @@ export const getProducts = async (req, res) => {
 }
 
 /**
+ * GET /api/products/barcode/:code
+ * Optional: ?projectId
+ *
+ * DT-22 (RTF 2, PERF-04): el POS resolvía cada escaneo descargando el
+ * inventario completo y buscando en el navegador: 8.1 MB y 3.69 s de p95 con
+ * 20 000 productos. Aquí se resuelve con el índice del código y solo viajan
+ * las coincidencias, con el stock de ese momento.
+ *
+ * Devuelve todas las coincidencias, no la primera: el código es único por
+ * proyecto, no por empresa, y en «todos los proyectos» el cajero elige de cuál
+ * vender (PR #126). Mismo control de acceso que el listado.
+ */
+export const getProductsByBarcode = async (req, res) => {
+  const { code } = req.params
+  const { projectId } = req.query
+  const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: [] })
+  }
+
+  if (accessibleProjectIds && projectId && !accessibleProjectIds.includes(Number(projectId))) {
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
+  }
+
+  const filters = ['p.codigo_barras = $1', 'proj.id_empresa = $2']
+  const values = [code, req.empresa.id_empresa]
+
+  if (projectId) {
+    values.push(projectId)
+    filters.push(`p.id_proyecto = $${values.length}`)
+  }
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    filters.push(`p.id_proyecto = ANY($${values.length}::int[])`)
+  }
+
+  const result = await pool.query(
+    `SELECT ${PRODUCTO_SELECT} ${PRODUCTO_FROM}
+     WHERE ${filters.join(' AND ')}
+     ORDER BY proj.id_proyecto, p.id_producto`,
+    values
+  )
+  return res.json({ success: true, data: result.rows })
+}
+
+/**
  * GET /api/products/alerts/low-stock
  * Optional: ?projectId
  */
@@ -269,6 +316,12 @@ export const createProduct = async (req, res) => {
   return res.status(201).json({ success: true, data: newProducto.rows[0] })
 }
 
+// PUT, DELETE y producto ↔ proveedor reciben el producto por `:id`, pero el
+// proyecto que autorizan requireProject y requireProjectPermission es el de la
+// cabecera. Sin cruzar ambos, un usuario con acceso a SU proyecto podía operar
+// productos de cualquier otra empresa con solo cambiar el id de la URL.
+const PRODUCT_IN_PROJECT = 'id_producto = $1 AND id_proyecto = $2'
+
 /**
  * PUT /api/products/:id
  */
@@ -280,8 +333,8 @@ export const updateProduct = async (req, res) => {
   // dejarlo por debajo del costo ya guardado, y el esquema —que es parcial— no
   // tiene forma de verlo.
   const actual = await pool.query(
-    'SELECT precio_venta, precio_costo FROM public.producto WHERE id_producto = $1',
-    [id]
+    `SELECT precio_venta, precio_costo FROM public.producto WHERE ${PRODUCT_IN_PROJECT}`,
+    [id, req.proyecto.id_proyecto]
   )
   if (!actual.rows.length) {
     return res.status(404).json({ success: false, message: 'Product not found.' })
@@ -332,7 +385,10 @@ export const deleteProduct = async (req, res) => {
   const { id } = req.params
 
   try {
-    const result = await pool.query('DELETE FROM public.producto WHERE id_producto = $1 RETURNING id_producto', [id])
+    const result = await pool.query(
+      `DELETE FROM public.producto WHERE ${PRODUCT_IN_PROJECT} RETURNING id_producto`,
+      [id, req.proyecto.id_proyecto]
+    )
     if (!result.rows.length) {
       return res.status(404).json({ success: false, message: 'Product not found.' })
     }
@@ -349,10 +405,13 @@ export const linkSupplier = async (req, res) => {
   const { id } = req.params
   const { id_proveedor, precio_unitario } = req.body
 
-  const product = await pool.query('SELECT id_producto FROM public.producto WHERE id_producto = $1', [id])
+  const product = await pool.query(`SELECT id_producto FROM public.producto WHERE ${PRODUCT_IN_PROJECT}`, [id, req.proyecto.id_proyecto])
   if (!product.rows.length) return res.status(404).json({ success: false, message: 'Product not found.' })
 
-  const proveedor = await pool.query('SELECT id_proveedor FROM public.proveedor WHERE id_proveedor = $1', [id_proveedor])
+  const proveedor = await pool.query(
+    'SELECT id_proveedor FROM public.proveedor WHERE id_proveedor = $1 AND id_empresa = $2',
+    [id_proveedor, req.empresa.id_empresa]
+  )
   if (!proveedor.rows.length) return res.status(404).json({ success: false, message: 'Supplier not found.' })
 
   const existing = await pool.query(
@@ -379,15 +438,22 @@ export const updateSupplierLink = async (req, res) => {
   if (fecha_ultima_cotizacion !== undefined) { values.push(fecha_ultima_cotizacion); setClauses.push(`fecha_ultima_cotizacion = $${values.length}`) }
 
   if (!setClauses.length) {
-    const rel = await pool.query('SELECT * FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2', [id, supplierId])
+    const rel = await pool.query(
+      `SELECT pp.* FROM public.producto_proveedor pp
+       JOIN public.producto p ON p.id_producto = pp.id_producto
+       WHERE pp.id_producto = $1 AND pp.id_proveedor = $2 AND p.id_proyecto = $3`,
+      [id, supplierId, req.proyecto.id_proyecto]
+    )
     if (!rel.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
     return res.json({ success: true, data: rel.rows[0] })
   }
 
-  values.push(id, supplierId)
+  values.push(id, supplierId, req.proyecto.id_proyecto)
   const result = await pool.query(
     `UPDATE public.producto_proveedor SET ${setClauses.join(', ')}
-     WHERE id_producto = $${values.length - 1} AND id_proveedor = $${values.length} RETURNING *`,
+     WHERE id_producto = $${values.length - 2} AND id_proveedor = $${values.length - 1}
+       AND id_producto IN (SELECT id_producto FROM public.producto WHERE id_proyecto = $${values.length})
+     RETURNING *`,
     values
   )
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
@@ -398,8 +464,11 @@ export const unlinkSupplier = async (req, res) => {
   const { id, supplierId } = req.params
 
   const result = await pool.query(
-    'DELETE FROM public.producto_proveedor WHERE id_producto = $1 AND id_proveedor = $2 RETURNING id_producto',
-    [id, supplierId]
+    `DELETE FROM public.producto_proveedor
+     WHERE id_producto = $1 AND id_proveedor = $2
+       AND id_producto IN (SELECT id_producto FROM public.producto WHERE id_proyecto = $3)
+     RETURNING id_producto`,
+    [id, supplierId, req.proyecto.id_proyecto]
   )
   if (!result.rows.length) return res.status(404).json({ success: false, message: 'Relationship not found.' })
   return res.json({ success: true, message: 'Supplier unlinked successfully.' })

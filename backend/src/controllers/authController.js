@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { randomUUID } from 'node:crypto'
+import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
+import { isReauthAction, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import {
   acceptCompanyInvitation,
   getInvitationByToken as getCompanyInvitationByToken,
@@ -9,6 +12,11 @@ import {
   acceptProjectInvitation,
   getProjectInvitationByToken,
 } from '../services/projectInvitationService.js'
+import {
+  matchesCurrentVersions,
+  recordAcceptances,
+  requiredDocuments,
+} from '../services/legalDocuments.js'
 import { getFrontendBaseUrl } from '../utils/frontendUrl.js'
 import { logger } from '../utils/logger.js'
 
@@ -19,7 +27,12 @@ const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 
 const signToken = (user) =>
   jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, nombre_rol: user.nombre_rol },
+    {
+      id_usuario: user.id_usuario,
+      email: user.email,
+      nombre_rol: user.nombre_rol,
+      token_version: user.token_version ?? 1,
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
   )
@@ -102,9 +115,23 @@ const getAuthRedirectForGoogle = async ({ client, user, req, inviteToken, fronte
 }
 
 // POST /api/auth/register (validado por Zod)
+//
+// L-6: la cuenta y la constancia de aceptación de los documentos legales se
+// crean en la misma transacción. Si el formulario mostró una versión que ya no
+// es la vigente, no se crea nada y el cliente recarga los textos.
 export const register = async (req, res) => {
-  const { nombre, apellido, email, password, role, telefono, inviteToken } = req.body
+  const { nombre, apellido, email, password, role, telefono, inviteToken, legal } = req.body
   const platformRole = inviteToken ? 'usuario' : role
+
+  const legalDocuments = requiredDocuments()
+  if (!matchesCurrentVersions(legalDocuments, legal.versions)) {
+    return res.status(409).json({
+      success: false,
+      code: 'legal_version_outdated',
+      message: 'The legal documents changed. Review the current version and accept it again.',
+      required: legalDocuments,
+    })
+  }
 
   const client = await pool.connect()
   try {
@@ -120,25 +147,43 @@ export const register = async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
 
-    const inserted = await client.query(
-      `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_rol)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id_usuario`,
-      [nombre, apellido, email, password_hash, telefono ?? null, rolRow.rows[0].id_rol]
-    )
+    let id_usuario
+    await client.query('BEGIN')
+    try {
+      const inserted = await client.query(
+        `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_rol)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id_usuario`,
+        [nombre, apellido, email, password_hash, telefono ?? null, rolRow.rows[0].id_rol]
+      )
+      id_usuario = inserted.rows[0].id_usuario
+
+      await recordAcceptances(client, {
+        id_usuario,
+        documents: legalDocuments,
+        ip: req.ip,
+        origen: 'registro',
+      })
+      await client.query('COMMIT')
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {})
+      throw err
+    }
 
     const user = await client.query(
       `SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre_rol
        FROM public.usuario u
        JOIN public.rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = $1`,
-      [inserted.rows[0].id_usuario]
+      [id_usuario]
     )
 
+    // Fuera de la transacción, como antes: una invitación que falla no deshace
+    // el alta, y el usuario puede volver a usarla después.
     const invite = await maybeResolveInvite({
       client,
       inviteToken,
-      id_usuario: inserted.rows[0].id_usuario,
+      id_usuario,
       req,
     })
 
@@ -150,47 +195,59 @@ export const register = async (req, res) => {
 }
 
 // POST /api/auth/login (validado por Zod)
+//
+// RTF 2 (PERF-01): el cliente del pool se tomaba al entrar y se retenía
+// durante bcrypt.compare, que es CPU pura. Bajo carga, los logins ocupaban
+// las 10 conexiones esperando al hash y el resto de la API hacía cola detrás.
+// Ahora la consulta no reserva cliente y solo se toma uno si hay invitación.
+//
+// Bajar BCRYPT_SALT_ROUNDS no acelera este camino: compare usa el costo
+// guardado en cada hash, no el configurado.
 export const login = async (req, res) => {
   const { email, password, inviteToken } = req.body
 
-  const client = await pool.connect()
-  try {
-    const result = await client.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre_rol
-       FROM public.usuario u
-       JOIN public.rol r ON r.id_rol = u.id_rol
-       WHERE u.email = $1`,
-      [email]
-    )
+  const result = await pool.query(
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
+     FROM public.usuario u
+     JOIN public.rol r ON r.id_rol = u.id_rol
+     WHERE u.email = $1`,
+    [email]
+  )
 
-    if (!result.rows.length) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const user = result.rows[0]
-
-    if (!user.activo) {
-      return res.status(403).json({ success: false, message: 'Account disabled.' })
-    }
-
-    const valid = await bcrypt.compare(password, user.password_hash)
-    if (!valid) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const invite = await maybeResolveInvite({
-      client,
-      inviteToken,
-      id_usuario: user.id_usuario,
-      req,
-    })
-
-    const token = signToken(user)
-    const { password_hash, activo, ...userData } = user
-    return res.json({ success: true, token, data: userData, invite })
-  } finally {
-    client.release()
+  if (!result.rows.length) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
   }
+
+  const user = result.rows[0]
+
+  if (!user.activo) {
+    return res.status(403).json({ success: false, message: 'Account disabled.' })
+  }
+
+  const valid = await bcrypt.compare(password, user.password_hash)
+  if (!valid) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
+  }
+
+  let invite = null
+  if (inviteToken) {
+    const client = await pool.connect()
+    try {
+      invite = await maybeResolveInvite({
+        client,
+        inviteToken,
+        id_usuario: user.id_usuario,
+        req,
+      })
+    } finally {
+      client.release()
+    }
+  }
+
+  const token = signToken(user)
+  const { password_hash, activo, ...userData } = user
+  delete userData.token_version
+  return res.json({ success: true, token, data: userData, invite })
 }
 
 // GET /api/auth/me
@@ -233,12 +290,115 @@ export const googleAuth = (req, res) => {
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 }
 
+export const googleDeletionReauthentication = (req, res) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CALLBACK_URL) {
+    return res.status(503).json({ success: false, message: 'Google reauthentication is not configured.' })
+  }
+
+  const frontend = getFrontendBaseUrl(req, req.headers.origin)
+  const nonce = randomUUID()
+  // The same Google round trip serves every destructive action; `action`
+  // decides the purpose of the proof it returns.
+  const action = isReauthAction(req.body?.action) ? req.body.action : REAUTH_ACTIONS.ACCOUNT_DELETION
+  const state = jwt.sign(
+    { purpose: 'account-deletion-reauth', action, id_usuario: req.user.id_usuario, frontend, nonce },
+    process.env.JWT_SECRET,
+    { expiresIn: '5m' }
+  )
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+    response_type: 'code',
+    scope: 'openid email profile',
+    prompt: 'login select_account',
+    max_age: '0',
+    nonce,
+    state,
+  })
+
+  return res.json({
+    success: true,
+    url: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+  })
+}
+
 /**
  * GET /api/auth/google/callback
  * Google redirects here after the user grants (or denies) access.
  */
 export const googleCallback = async (req, res) => {
   const { code, error, state } = req.query
+  let deletionState = null
+  if (typeof state === 'string' && state.includes('.')) {
+    try {
+      const payload = jwt.verify(state, process.env.JWT_SECRET)
+      if (payload.purpose === 'account-deletion-reauth') deletionState = payload
+    } catch {
+      deletionState = null
+    }
+  }
+
+  if (deletionState) {
+    const frontendUrl = getFrontendBaseUrl(req, deletionState.frontend)
+    const action = isReauthAction(deletionState.action)
+      ? deletionState.action
+      : REAUTH_ACTIONS.ACCOUNT_DELETION
+    const closure = action === REAUTH_ACTIONS.COMPANY_CLOSURE
+    const failed = (reason) => res.redirect(
+      `${frontendUrl}/settings?reauth_error=${reason}${closure ? '&reauth_for=company-closure' : ''}`
+    )
+    if (error) return failed('google_cancelled')
+    try {
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+          grant_type: 'authorization_code',
+        }),
+      })
+      const tokens = await tokenResponse.json()
+      if (!tokenResponse.ok || !tokens.id_token) {
+        logger.error('[Google account deletion reauthentication] token exchange failed.')
+        return failed('google_error')
+      }
+
+      const oauthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+      const ticket = await oauthClient.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
+      const googleUser = ticket.getPayload()
+      const userResult = await pool.query(
+        `SELECT google_id
+         FROM public.usuario
+         WHERE id_usuario = $1 AND activo = true`,
+        [deletionState.id_usuario]
+      )
+      if (
+        !googleUser ||
+        googleUser.sub !== userResult.rows[0]?.google_id ||
+        googleUser.nonce !== deletionState.nonce
+      ) {
+        return failed('google_account_mismatch')
+      }
+
+      const proof = jwt.sign(
+        { id_usuario: deletionState.id_usuario, purpose: action },
+        process.env.JWT_SECRET,
+        { expiresIn: '2m' }
+      )
+      const fragment = closure ? 'closure_proof' : 'deletion_proof'
+      return res.redirect(`${frontendUrl}/settings#${fragment}=${encodeURIComponent(proof)}`)
+    } catch (err) {
+      logger.error('[Google account deletion reauthentication]', err)
+      return failed('google_error')
+    }
+  }
+
   const { inviteToken, frontend } = decodeOAuthState(state)
   const frontendUrl = getFrontendBaseUrl(req, frontend)
 
@@ -272,7 +432,7 @@ export const googleCallback = async (req, res) => {
     const client = await pool.connect()
     try {
       let userRow = await client.query(
-        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+        `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
          FROM public.usuario u
          JOIN public.rol r ON r.id_rol = u.id_rol
          WHERE u.google_id = $1`,
@@ -281,7 +441,7 @@ export const googleCallback = async (req, res) => {
 
       if (!userRow.rows.length) {
         const byEmail = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+          `          SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.email = $1`,
@@ -313,7 +473,7 @@ export const googleCallback = async (req, res) => {
         )
 
         userRow = await client.query(
-          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre_rol
+          `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, u.token_version, r.nombre_rol
            FROM public.usuario u
            JOIN public.rol r ON r.id_rol = u.id_rol
            WHERE u.id_usuario = $1`,

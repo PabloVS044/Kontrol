@@ -16,7 +16,9 @@ import pool from '../src/db/pool.js'
 import supplierRoutes from '../src/routes/supplierRoutes.js'
 import companyRoutes from '../src/routes/companyRoutes.js'
 import { errorHandler } from '../src/middleware/errorHandler.js'
-import { signToken, companyMembership } from './helpers/authTestApp.js'
+import { installTestSessionAccountMock, signToken, companyMembership } from './helpers/authTestApp.js'
+
+installTestSessionAccountMock()
 
 function buildApp() {
   const app = express()

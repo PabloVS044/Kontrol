@@ -15,11 +15,15 @@
     "test:coverage": "vitest run --coverage",
     "test:integration": "cross-env TEST_SUITE=integration vitest run -c vitest.integration.config.js tests/integration",
     "test:regression": "cross-env TEST_SUITE=regression vitest run -c vitest.integration.config.js tests/regression",
+    "test:integration:report": "node scripts/integration-report.js",
     "db:test:up": "docker compose -f ../docker-compose.integration.yml up -d --wait",
     "db:test:down": "docker compose -f ../docker-compose.integration.yml down",
     "seed:test": "node src/db/seed.js",
     "reset:test": "node src/db/reset.js",
-    "verify:ux-phase2": "node src/db/verifyUxPhase2.js"
+    "stripe:seed": "node scripts/stripe-seed.js",
+    "verify:ux-phase2": "node src/db/verifyUxPhase2.js",
+    "test:privacy": "vitest run -c vitest.privacy.config.js",
+    "validate:privacy": "npm run test:coverage && npm run test:integration && npm run test:regression && npm run test:privacy"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.10",
@@ -40,8 +44,9 @@
     "pg": "^8.20.0",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "stripe": "^23.0.0",
     "uploadthing": "^7.7.4",
-    "zod": "^4.3.6"
+    "zod": "^4.6.7"
   },
   "overrides": {
     "effect": "^3.22.3"

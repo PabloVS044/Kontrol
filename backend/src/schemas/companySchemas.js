@@ -21,6 +21,18 @@ export const createCompanySchema = z.object({
   direccion: z.string().optional(),
 })
 
+// Cerrar una empresa borra sus datos: se reautentica y se escribe el nombre.
+export const companyClosureSchema = z.object({
+  confirm_name: z.string().trim().min(1, 'Type the company name to confirm.').max(255),
+  password: z.string().max(200).optional(),
+  google_reauth_token: z.string().min(1).max(4096).optional(),
+  skip_export_window: z.boolean().optional(),
+}).refine(
+  ({ password, google_reauth_token }) =>
+    Boolean(password?.length) || Boolean(google_reauth_token?.length),
+  { message: 'Reauthentication is required.', path: ['password'] }
+)
+
 export const companyInvitationTokenParamSchema = z.object({
   token: z.string().min(16, 'Invalid invitation token.').max(255),
 })

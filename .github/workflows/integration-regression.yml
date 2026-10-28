@@ -1,17 +1,22 @@
 name: Integración y regresión
 
 # Tarea 5 — pruebas de integración y de regresión del backend contra un
-# PostgreSQL real. Igual que ci.yml, solo valida lo que va a integrarse a una
-# rama protegida (PRs a main o develop); workflow_dispatch permite lanzarlo a
-# mano desde la pestaña Actions sobre cualquier rama.
+# PostgreSQL real; ampliadas en el Sprint 10 a los cinco grupos de flujos de
+# docs/pruebas-integracion.md. Corre en cada push a develop (la rama de
+# integración, es decir, cada merge) y en cada PR dirigido a main o develop.
+# workflow_dispatch permite lanzarlo a mano desde la pestaña Actions.
 on:
+  push:
+    branches: [develop]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
 
+# En un PR, un commit nuevo cancela la corrida anterior. En develop no: cada
+# merge deja su propia corrida completa como evidencia de integración continua.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -70,32 +75,12 @@ jobs:
       - name: Ejecutar pruebas de ${{ matrix.suite }}
         run: npm run test:${{ matrix.suite }} -w backend
 
+      # Mismo Markdown en el resumen del job y en reports/, que se publica
+      # como artefacto para adjuntarlo al informe (ver scripts/integration-report.js).
       - name: Resumen de resultados
         if: always()
         working-directory: backend
-        run: |
-          node --input-type=module -e "
-            import { existsSync, readFileSync, appendFileSync } from 'node:fs'
-            const file = 'reports/${{ matrix.suite }}-results.json'
-            const out = process.env.GITHUB_STEP_SUMMARY
-            if (!existsSync(file)) {
-              appendFileSync(out, '### ${{ matrix.label }}\n\nNo se generó reporte: la ejecución falló antes de correr las pruebas.\n')
-              process.exit(0)
-            }
-            const r = JSON.parse(readFileSync(file, 'utf8'))
-            const ok = r.numFailedTests === 0 && r.success !== false
-            let md = '### ${{ matrix.label }} — ' + (ok ? '✅ aprobado' : '❌ fallido') + '\n\n'
-            md += '| Total | Aprobadas | Fallidas |\n|---|---|---|\n'
-            md += '| ' + r.numTotalTests + ' | ' + r.numPassedTests + ' | ' + r.numFailedTests + ' |\n\n'
-            md += '| Resultado | Suite | Prueba |\n|---|---|---|\n'
-            for (const s of r.testResults) {
-              const suite = s.name.split('/tests/')[1] ?? s.name
-              for (const t of s.assertionResults) {
-                md += '| ' + (t.status === 'passed' ? '✅' : '❌') + ' | ' + suite + ' | ' + t.title.replace(/\|/g, '\\\\|') + ' |\n'
-              }
-            }
-            appendFileSync(out, md)
-          "
+        run: node scripts/integration-report.js --out reports/${{ matrix.suite }}-report.md ${{ matrix.suite }}
 
       - name: Publicar reportes como artefacto
         if: always()

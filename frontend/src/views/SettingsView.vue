@@ -29,7 +29,23 @@
         <p class="sc-note">{{ $t('settings.prefs.languageNote') }}</p>
       </div>
 
-      <div class="sc-row sc-row--last">
+      <div class="sc-row">
+        <div class="sc-field">
+          <span class="sc-label">{{ $t('settings.prefs.theme') }}</span>
+          <ThemeSelector />
+        </div>
+        <p class="sc-note">{{ $t('settings.prefs.themeNote') }}</p>
+      </div>
+
+      <div class="sc-row">
+        <div class="sc-field">
+          <label class="sc-label" for="font-scale">{{ $t('settings.prefs.fontSize') }}</label>
+          <FontScaleSlider id="font-scale" />
+        </div>
+        <p class="sc-note">{{ $t('settings.prefs.fontSizeNote') }}</p>
+      </div>
+
+      <div class="sc-row">
         <label class="sc-toggle">
           <input
             type="checkbox"
@@ -39,6 +55,16 @@
           <span class="sc-toggle-label">{{ $t('settings.prefs.birdie') }}</span>
         </label>
         <p class="sc-note">{{ $t('settings.prefs.birdieNote') }}</p>
+      </div>
+
+      <!-- Si se guardan o no las preferencias de arriba (L-3). -->
+      <div class="sc-row sc-row--last">
+        <span class="sc-label">{{ $t('settings.prefs.storage') }}</span>
+        <StorageConsentControls />
+        <p class="sc-note">
+          {{ $t('settings.prefs.storageNote') }}
+          <RouterLink to="/legal/cookies">{{ $t('settings.prefs.storagePolicy') }}</RouterLink>
+        </p>
       </div>
     </section>
 
@@ -146,6 +172,14 @@
     </form>
     </section>
 
+    <!-- PAY-1 — El plan es de la empresa: todos lo ven; solo el owner lo cambia
+         desde /billing. -->
+    <section id="plan" class="set-card set-card--link">
+      <h2 class="sc-title">{{ $t('settings.billing.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.billing.hint', { plan: $t(`billing.plans.${authStore.planCode}.name`) }) }}</p>
+      <RouterLink class="sc-link" to="/billing">{{ $t('settings.billing.link') }} →</RouterLink>
+    </section>
+
     <!-- Integraciones conserva su ruta y sus permisos; aquí solo se enlaza. -->
     <section v-if="canManageCompany" class="set-card set-card--link">
       <h2 class="sc-title">{{ $t('settings.integrations.title') }}</h2>
@@ -159,6 +193,141 @@
       <p class="sc-hint">{{ $t('settings.members.hint') }}</p>
       <RouterLink class="sc-link" :to="{ path: '/dashboard', hash: '#company-members' }">{{ $t('settings.members.link') }} →</RouterLink>
     </section>
+
+    <section class="set-card set-card--privacy">
+      <h2 class="sc-title">{{ $t('settings.privacy.title') }}</h2>
+      <p class="sc-hint">{{ $t('settings.privacy.hint') }}</p>
+      <div v-if="canExportCompany" class="privacy-action">
+        <button class="sc-save" type="button" :disabled="exporting" @click="exportCompany">
+          {{ exporting ? $t('settings.privacy.exporting') : $t('settings.privacy.export') }}
+        </button>
+      </div>
+      <p v-else class="sc-note">{{ $t('settings.privacy.exportOwnerOnly') }}</p>
+      <p v-if="privacyError" class="sc-error" role="alert">{{ privacyError }}</p>
+      <p v-if="privacyNotice" class="sc-saved" role="status">{{ privacyNotice }}</p>
+
+      <!-- Cierre de la empresa (adenda de tratamiento, §10): ventana de 30 días
+           para exportar, eliminación a 60 y respaldos a 90. -->
+      <div v-if="closure" class="privacy-closure-status" role="status">
+        <p v-if="closure.status === 'export_window'">
+          {{ $t('settings.privacy.closure.inProgress', {
+            exportUntil: formatDate(closure.export_until),
+            deleteBy: formatDate(closure.delete_by),
+            backupsBy: formatDate(closure.backups_by),
+          }) }}
+        </p>
+        <p v-else>{{ $t('settings.privacy.closure.deleting') }}</p>
+        <button
+          v-if="canCloseCompany && closure.status === 'export_window' && closure.reason !== 'no_active_owner'"
+          class="privacy-google privacy-closure-cancel"
+          type="button"
+          :disabled="cancellingClosure"
+          @click="cancelClosure"
+        >
+          {{ cancellingClosure ? $t('settings.privacy.closure.cancelling') : $t('settings.privacy.closure.cancel') }}
+        </button>
+      </div>
+
+      <details v-else-if="canCloseCompany" class="privacy-delete privacy-closure" :open="Boolean(closureProof) || undefined">
+        <summary>{{ $t('settings.privacy.closure.title') }}</summary>
+        <p>{{ $t('settings.privacy.closure.what') }}</p>
+        <p>{{ $t('settings.privacy.closure.kept') }}</p>
+        <label class="sc-field" for="company-close-name">
+          <span class="sc-label">{{ $t('settings.privacy.closure.confirmName') }}</span>
+          <input
+            id="company-close-name"
+            v-model="closureName"
+            class="sc-input privacy-password"
+            type="text"
+            autocomplete="off"
+          />
+        </label>
+        <label class="sc-field privacy-closure-password" for="company-close-password">
+          <span class="sc-label">{{ $t('settings.privacy.password') }}</span>
+          <input
+            id="company-close-password"
+            v-model="closurePassword"
+            class="sc-input privacy-password"
+            type="password"
+            autocomplete="current-password"
+          />
+        </label>
+        <button
+          v-if="!closureProof"
+          class="privacy-google"
+          type="button"
+          :disabled="reauthenticating"
+          @click="reauthenticateWithGoogle('company-closure')"
+        >
+          {{ reauthenticating ? $t('settings.privacy.reauthenticating') : $t('settings.privacy.googleReauth') }}
+        </button>
+        <label class="sc-toggle">
+          <input v-model="skipExportWindow" type="checkbox" />
+          <span class="sc-toggle-label">{{ $t('settings.privacy.closure.skipWindow') }}</span>
+        </label>
+        <p v-if="closureError" class="sc-error" role="alert">{{ closureError }}</p>
+        <button
+          class="sc-save privacy-delete-button privacy-closure-button"
+          type="button"
+          :disabled="closingCompany || !closureName.trim() || (!closurePassword && !closureProof)"
+          @click="closeCompany"
+        >
+          {{ closingCompany ? $t('settings.privacy.closure.submitting') : $t('settings.privacy.closure.submit') }}
+        </button>
+      </details>
+
+      <div v-if="closureCertificates.length" class="privacy-certificates">
+        <h3 class="sc-label">{{ $t('settings.privacy.closure.certificatesTitle') }}</h3>
+        <ul>
+          <li v-for="item in closureCertificates" :key="item.company_id">
+            <span>
+              {{ item.status === 'deleted'
+                ? $t('settings.privacy.closure.certificateDeleted', { name: item.company_name, deletedAt: formatDate(item.deleted_at) })
+                : $t('settings.privacy.closure.certificatePending', { name: item.company_name, deleteBy: formatDate(item.delete_by) }) }}
+            </span>
+            <button class="privacy-google" type="button" @click="downloadCertificate(item)">
+              {{ $t('settings.privacy.closure.download') }}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <details class="privacy-delete">
+        <summary>{{ $t('settings.privacy.deleteTitle') }}</summary>
+        <p>{{ $t('settings.privacy.deleteWhat') }}</p>
+        <p>{{ $t('settings.privacy.deleteRetained') }}</p>
+        <p>{{ $t('settings.privacy.deleteDuration') }}</p>
+        <p>{{ $t('settings.privacy.deleteExternal') }}</p>
+        <label class="sc-field" for="account-delete-password">
+          <span class="sc-label">{{ $t('settings.privacy.password') }}</span>
+          <input
+            id="account-delete-password"
+            v-model="deletePassword"
+            class="sc-input privacy-password"
+            type="password"
+            autocomplete="current-password"
+          />
+        </label>
+        <button
+          v-if="!googleReauthToken"
+          class="privacy-google"
+          type="button"
+          :disabled="reauthenticating"
+          @click="reauthenticateWithGoogle('account-deletion')"
+        >
+          {{ reauthenticating ? $t('settings.privacy.reauthenticating') : $t('settings.privacy.googleReauth') }}
+        </button>
+        <p v-if="deletePasswordError" class="sc-error" role="alert">{{ deletePasswordError }}</p>
+        <button
+          class="sc-save privacy-delete-button"
+          type="button"
+          :disabled="deleting || (!deletePassword && !googleReauthToken)"
+          @click="deleteAccount"
+        >
+          {{ deleting ? $t('settings.privacy.deleting') : $t('settings.privacy.deleteConfirm') }}
+        </button>
+      </details>
+    </section>
   </section>
   </div>
 </template>
@@ -167,24 +336,31 @@
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth'
 import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import LanguageSelector from '../components/common/LanguageSelector.vue'
+import ThemeSelector from '../components/common/ThemeSelector.vue'
+import FontScaleSlider from '../components/common/FontScaleSlider.vue'
+import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 
 const authStore = useAuthStore()
 const prefsStore = usePreferencesStore()
 const saleConfigStore = useSaleConfigStore()
 const router = useRouter()
-const { t } = useI18n()
+const route = useRoute()
+const { t, locale } = useI18n()
 
 /** La configuración de la empresa mueve lo que se cobra: solo owner y admin. */
 const canManageCompany = computed(() =>
   ['owner', 'admin'].includes(authStore.empresaActual?.rol)
 )
+const canExportCompany = canManageCompany
+/** Cerrar la empresa borra sus datos: solo el owner, como eliminarla. */
+const canCloseCompany = computed(() => authStore.empresaActual?.rol === 'owner')
 
 function goBack() {
   // Si se llegó por un enlace directo no hay historia a la que volver, así que
@@ -198,6 +374,23 @@ const loadError = ref(null)
 const saving    = ref(false)
 const formError = ref(null)
 const saved     = ref(false)
+const exporting = ref(false)
+const deleting = ref(false)
+const reauthenticating = ref(false)
+const deletePassword = ref('')
+const googleReauthToken = ref('')
+const privacyError = ref('')
+const privacyNotice = ref('')
+const deletePasswordError = ref('')
+const closure = ref(null)
+const closureCertificates = ref([])
+const closureName = ref('')
+const closurePassword = ref('')
+const closureProof = ref('')
+const skipExportWindow = ref(false)
+const closingCompany = ref(false)
+const cancellingClosure = ref(false)
+const closureError = ref('')
 
 const form = ref({
   iva_activo: false,
@@ -268,10 +461,183 @@ async function save() {
   }
 }
 
+async function exportCompany() {
+  exporting.value = true
+  privacyError.value = ''
+  privacyNotice.value = ''
+  try {
+    const response = await requestApi('/api/companies/export', { headers: authHeaders() })
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}))
+      throw new Error(body.message || `HTTP ${response.status}`)
+    }
+    const file = URL.createObjectURL(await response.blob())
+    const link = document.createElement('a')
+    link.href = file
+    link.download = response.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1]
+      || 'kontrol-company-export.json'
+    link.click()
+    URL.revokeObjectURL(file)
+    privacyNotice.value = t('settings.privacy.exportSuccess')
+  } catch (error) {
+    privacyError.value = error.message || t('settings.privacy.error')
+  } finally {
+    exporting.value = false
+  }
+}
+
+/** Google devuelve una prueba distinta para borrar la cuenta y para cerrar la empresa. */
+async function reauthenticateWithGoogle(action) {
+  const errorRef = action === 'company-closure' ? closureError : deletePasswordError
+  reauthenticating.value = true
+  errorRef.value = ''
+  try {
+    const response = await requestApi('/api/auth/google/reauth-for-deletion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ action }),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok || !body.url) throw new Error(body.message || `HTTP ${response.status}`)
+    window.location.assign(body.url)
+  } catch (error) {
+    errorRef.value = error.message || t('settings.privacy.error')
+    reauthenticating.value = false
+  }
+}
+
+function formatDate(value) {
+  return value ? new Date(value).toLocaleDateString(locale.value, { dateStyle: 'long' }) : ''
+}
+
+async function loadClosure() {
+  if (!canManageCompany.value) return
+  try {
+    const response = await requestApi('/api/companies/closure', { headers: authHeaders() })
+    if (!response.ok) return
+    const { data } = await response.json()
+    closure.value = data?.status ? data : null
+  } catch {
+    closure.value = null
+  }
+}
+
+async function loadClosureCertificates() {
+  try {
+    const response = await requestApi('/api/companies/closures/mine', { headers: authHeaders() })
+    if (!response.ok) return
+    const { data } = await response.json()
+    closureCertificates.value = Array.isArray(data) ? data : []
+  } catch {
+    closureCertificates.value = []
+  }
+}
+
+async function closeCompany() {
+  const name = authStore.empresaActual?.nombre
+  if (!window.confirm(t('settings.privacy.closure.finalConfirm', { name }))) return
+  closingCompany.value = true
+  closureError.value = ''
+  try {
+    const response = await requestApi('/api/companies/closure', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({
+        confirm_name: closureName.value,
+        password: closurePassword.value || undefined,
+        google_reauth_token: closureProof.value || undefined,
+        skip_export_window: skipExportWindow.value,
+      }),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(body.message || `HTTP ${response.status}`)
+    closure.value = body.data
+    closurePassword.value = ''
+    closureProof.value = ''
+    await loadClosureCertificates()
+  } catch (error) {
+    closureError.value = error.message || t('settings.privacy.error')
+  } finally {
+    closingCompany.value = false
+  }
+}
+
+async function cancelClosure() {
+  cancellingClosure.value = true
+  privacyError.value = ''
+  try {
+    const response = await requestApi('/api/companies/closure', {
+      method: 'DELETE',
+      headers: authHeaders(),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(body.message || `HTTP ${response.status}`)
+    closure.value = null
+    privacyNotice.value = t('settings.privacy.closure.cancelled')
+    await loadClosureCertificates()
+  } catch (error) {
+    privacyError.value = error.message || t('settings.privacy.error')
+  } finally {
+    cancellingClosure.value = false
+  }
+}
+
+/** La constancia es el registro del cierre tal como lo guarda el servidor. */
+function downloadCertificate(item) {
+  const file = URL.createObjectURL(new Blob([JSON.stringify(item, null, 2)], { type: 'application/json' }))
+  const link = document.createElement('a')
+  link.href = file
+  link.download = `kontrol-constancia-cierre-${item.company_id}.json`
+  link.click()
+  URL.revokeObjectURL(file)
+}
+
+async function deleteAccount() {
+  if (!window.confirm(t('settings.privacy.finalConfirm'))) return
+  deleting.value = true
+  deletePasswordError.value = ''
+  try {
+    const response = await requestApi('/api/auth/account', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({
+        password: deletePassword.value || undefined,
+        google_reauth_token: googleReauthToken.value || undefined,
+      }),
+    })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(body.message || `HTTP ${response.status}`)
+    authStore.logout()
+    await router.push('/')
+  } catch (error) {
+    deletePasswordError.value = error.message || t('settings.privacy.error')
+  } finally {
+    deleting.value = false
+  }
+}
+
 onMounted(() => {
   prefsStore.load()
   if (canManageCompany.value) load()
   else loading.value = false
+  const deletionProof = route.hash.match(/^#deletion_proof=(.+)$/)?.[1]
+  const companyClosureProof = route.hash.match(/^#closure_proof=(.+)$/)?.[1]
+  if (deletionProof) {
+    googleReauthToken.value = decodeURIComponent(deletionProof)
+    privacyNotice.value = t('settings.privacy.googleReauthSuccess')
+    router.replace({ path: '/settings' })
+  } else if (companyClosureProof) {
+    closureProof.value = decodeURIComponent(companyClosureProof)
+    privacyNotice.value = t('settings.privacy.closure.googleReauthSuccess')
+    router.replace({ path: '/settings' })
+  } else if (route.query.reauth_error) {
+    const message = t('settings.privacy.googleReauthError')
+    if (route.query.reauth_for === 'company-closure') closureError.value = message
+    else deletePasswordError.value = message
+    router.replace({ path: '/settings' })
+  }
+  loadClosure()
+  loadClosureCertificates()
 })
 </script>
 
@@ -306,6 +672,7 @@ onMounted(() => {
 
 .set-card--prefs { margin-bottom: var(--k-space-5); }
 .set-card--link { margin-top: var(--k-space-5); }
+.set-card--privacy { margin-top: var(--k-space-5); }
 .set-card--link .sc-hint { margin-bottom: var(--k-space-3); }
 .sc-link {
   font-family: var(--k-font-sans);
@@ -314,6 +681,57 @@ onMounted(() => {
   text-decoration: none;
 }
 .sc-link:hover { text-decoration: underline; }
+.privacy-action { display: flex; justify-content: flex-start; }
+.privacy-delete {
+  margin-top: var(--k-space-5);
+  border-top: var(--k-border-width) solid var(--k-shade-6);
+  padding-top: var(--k-space-4);
+}
+.privacy-delete summary {
+  cursor: pointer;
+  color: var(--k-state-error-text);
+  font-family: var(--k-font-sans);
+}
+.privacy-delete p {
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-text-muted);
+  line-height: 1.6;
+}
+.privacy-password { display: block; max-width: 320px; margin-top: var(--k-space-2); }
+.privacy-google {
+  margin: var(--k-space-3) 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.privacy-google:disabled { opacity: 0.5; cursor: wait; }
+.privacy-delete-button {
+  margin-top: var(--k-space-3);
+  background: var(--k-state-error-text);
+}
+.privacy-closure-password { margin-top: var(--k-space-3); }
+.privacy-closure .sc-toggle { display: flex; margin-top: var(--k-space-2); }
+.privacy-closure-status,
+.privacy-certificates {
+  margin-top: var(--k-space-5);
+  border-top: var(--k-border-width) solid var(--k-shade-6);
+  padding-top: var(--k-space-4);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-font-size-caption-lg);
+  color: var(--k-text-muted);
+  line-height: 1.6;
+}
+.privacy-closure-status p { margin: 0; color: var(--k-state-error-text); }
+.privacy-certificates ul { list-style: none; margin: var(--k-space-2) 0 0; padding: 0; }
+.privacy-certificates li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-space-3);
+}
+.privacy-certificates .privacy-google { margin: 0; }
 /* La última fila de una tarjeta no necesita separación inferior. */
 .sc-row--last { margin-bottom: 0; }
 

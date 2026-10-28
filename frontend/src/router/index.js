@@ -1,9 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// Landing is the public entry point → keep it eager for instant first paint.
-// Every other view is lazy-loaded (() => import) so each route ships its own
-// chunk and the initial bundle stays small (heavy deps like three/zxing only
-// load when their route does).
-import LandingPage from '../views/LandingPage.vue'
+import { LEGAL_DOCUMENTS, legalDocumentPath } from '../utils/legal.js'
+// All views lazy-loaded, landing included, to keep the entry bundle small (DT-17).
+
+// Hasta L-6 los documentos eran secciones de /legal (#terms, #privacy…). Los
+// enlaces viejos —correos, marcadores— llevan ahora a la página de cada uno.
+export function redirectLegacyLegalAnchor(to) {
+  const id = to.hash.slice(1)
+  if (!LEGAL_DOCUMENTS.some((doc) => doc.id === id)) return true
+  return { path: legalDocumentPath(id), replace: true }
+}
 
 // La pestaña "Equipo" del proyecto se ocultó: el acceso se da en "Miembros".
 export function redirectLegacyProjectTab(to) {
@@ -27,12 +32,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'landing',
-      component: LandingPage,
+      component: () => import('../views/LandingPage.vue'),
     },
     {
       path: '/legal',
       name: 'legal',
       component: () => import('../views/LegalView.vue'),
+      beforeEnter: redirectLegacyLegalAnchor,
+    },
+    {
+      // Una URL estable por documento (L-6); el slug que no existe cae en 404.
+      path: `/legal/:document(${LEGAL_DOCUMENTS.map((doc) => doc.slug).join('|')})`,
+      name: 'legal-document',
+      component: () => import('../views/LegalDocumentView.vue'),
     },
     {
       path: '/login',
@@ -85,12 +97,15 @@ const router = createRouter({
       path: '/teams',
       name: 'teams',
       component: () => import('../views/TeamsView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true, requiresFeature: 'teams' },
     },
+    // Inventario es la tabla de productos; vender, dar de alta y mover stock
+    // viven en Ventas > Cobrar (/sales/charge), que es la pantalla que antes
+    // ocupaba esta ruta.
     {
       path: '/inventory',
       name: 'inventory',
-      component: () => import('../views/InventoryPage.vue'),
+      component: () => import('../views/InventoryView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
@@ -103,6 +118,18 @@ const router = createRouter({
       path: '/sales',
       name: 'sales',
       component: () => import('../views/SalesView.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/sales/charge',
+      name: 'sales-charge',
+      component: () => import('../views/InventoryPage.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
+    },
+    {
+      path: '/sales/history',
+      name: 'sales-history',
+      component: () => import('../views/SalesHistoryView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresInventoryAccess: true },
     },
     {
@@ -139,18 +166,25 @@ const router = createRouter({
       path: '/agent',
       name: 'agent',
       component: () => import('../views/AgentView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'ai_agent' },
     },
     {
       path: '/integrations',
       name: 'integrations',
       component: () => import('../views/IntegrationsView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'integrations' },
     },
     {
       path: '/marketing',
       name: 'marketing',
       component: () => import('../views/MarketingPublicationsView.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'marketing' },
+    },
+    {
+      // PAY-1 — Planes y suscripción de la empresa (pasarela en modo de prueba).
+      path: '/billing',
+      name: 'billing',
+      component: () => import('../views/BillingView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
@@ -226,6 +260,13 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresTeamManagement && !authStore.canManageTeams) {
     next({ name: 'dashboard' })
+    return
+  }
+
+  // PAY-1 — Módulo fuera del plan: se muestra la página de planes en vez de
+  // una vista que solo recibiría 403. El backend aplica la misma regla.
+  if (to.meta.requiresFeature && !authStore.isSuperUser && !authStore.hasFeature(to.meta.requiresFeature)) {
+    next({ name: 'billing', query: { feature: to.meta.requiresFeature } })
     return
   }
 

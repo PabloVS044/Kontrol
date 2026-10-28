@@ -3,14 +3,18 @@ import { createServer } from 'http'
 import express from 'express'
 import cors from 'cors'
 import router from './router.js'
-import helmet from 'helmet';
 import { ensureDatabaseSchema } from './db/bootstrap.js'
 import { connectMongo, isMongoReady } from './db/mongo.js'
 import { setupSocket } from './socket/index.js'
 import { securityMiddleware } from './middleware/security.middleware.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { mountBillingWebhook } from './billing/webhook.js'
+import { getBillingProvider } from './billing/provider.js'
 import pool from './db/pool.js'
 import { startPoolStatsLogger, resolveStatsIntervalMs } from './db/poolStats.js'
+import { startMongoAccountDeletionWorker } from './services/accountDeletionOutbox.js'
+import { startSubscriptionCancellationWorker } from './services/billingService.js'
+import { startCompanyClosureWorker } from './services/companyClosure.js'
 import { logger } from './utils/logger.js'
 
 const app        = express()
@@ -39,18 +43,11 @@ app.use(cors({
   origin: corsOriginFn,
   credentials: true,
 }))
-app.use(
-  helmet({
-    xFrameOptions: { action: 'deny' },
-    strictTransportSecurity: {
-      maxAge: 15552000, // 180 días en segundos
-      includeSubDomains: true,
-      preload: true,
-    },
-  })
-);
 app.locals.corsOriginFn = corsOriginFn
 app.locals.allowedOrigins = allowedOrigins
+// PAY-1 — Antes de express.json(): la firma del webhook se verifica sobre el
+// cuerpo crudo.
+mountBillingWebhook(app)
 app.use(express.json())
 app.use('/api', router)
 // DT-01 — último de la cadena: recibe todo lo que llegue a next(err).
@@ -63,6 +60,8 @@ setupSocket(httpServer, {
 // Se conecta a DB y levanta el puerto cuando no está en entorno de prueba
 if (process.env.NODE_ENV !== 'test') {
   try {
+    // PAY-1 — Falla al arrancar si STRIPE_SECRET_KEY no es de modo de prueba.
+    getBillingProvider()
     await ensureDatabaseSchema()
   } catch (error) {
     logger.error('Could not initialize the backend:', error)
@@ -74,6 +73,11 @@ if (process.env.NODE_ENV !== 'test') {
   } catch (error) {
     logger.error('MongoDB is unavailable. Chat and realtime features are disabled:', error)
   }
+
+  startMongoAccountDeletionWorker()
+  // PAY-1 — Reintenta cancelar suscripciones de empresas desactivadas por una baja.
+  startSubscriptionCancellationWorker()
+  startCompanyClosureWorker()
 
   httpServer.listen(PORT, () => {
     logger.info(`Backend running at http://localhost:${PORT}`)

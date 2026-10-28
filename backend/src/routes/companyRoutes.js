@@ -1,8 +1,21 @@
 import { createRouter } from '../middleware/asyncHandler.js'
 import requireAuth from '../middleware/requireAuth.js'
-import requireCompany from '../middleware/requireCompany.js'
+import requireCompany, { requireCompanyAllowingClosure } from '../middleware/requireCompany.js'
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
+import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
+import {
+  companyClosureUserLimiter,
+  companyExportConcurrencyLimiter,
+  companyExportRateLimiter,
+} from '../middleware/rateLimit.js'
+import {
+  cancelCompanyClosure,
+  getCompanyClosure,
+  listMyCompanyClosures,
+  requestCompanyClosure,
+} from '../controllers/companyClosureController.js'
 import {
   acceptCompanyInvitation,
   createCompany,
@@ -19,7 +32,9 @@ import {
   updateCompanyMemberRole,
   updateCompanySaleConfig,
 } from '../controllers/companyController.js'
+import { exportCompanyData } from '../controllers/privacyController.js'
 import {
+  companyClosureSchema,
   createCompanySchema,
   companyInvitationTokenParamSchema,
   companyMemberParamSchema,
@@ -44,10 +59,44 @@ router.post(
 )
 
 router.get('/my-companies', requireAuth, getMyCompanies)
+// The export keeps working during the closure export window (addendum §10.4).
+router.get(
+  '/export',
+  requireAuth,
+  requireCompanyAllowingClosure,
+  requireCompanyRole('owner', 'admin'),
+  companyExportRateLimiter,
+  companyExportConcurrencyLimiter,
+  exportCompanyData
+)
+router.get('/closures/mine', requireAuth, listMyCompanyClosures)
+router.get(
+  '/closure',
+  requireAuth,
+  requireCompanyAllowingClosure,
+  requireCompanyRole('owner', 'admin'),
+  getCompanyClosure
+)
+router.post(
+  '/closure',
+  requireAuth,
+  requireCompany,
+  requireCompanyRole('owner'),
+  companyClosureUserLimiter,
+  validate(companyClosureSchema),
+  requestCompanyClosure
+)
+router.delete(
+  '/closure',
+  requireAuth,
+  requireCompanyAllowingClosure,
+  requireCompanyRole('owner'),
+  cancelCompanyClosure
+)
 router.post('/', requireAuth, validate(createCompanySchema), createCompany)
 router.get('/access-context', requireAuth, requireCompany, getCompanyAccessContext)
 router.get('/members-panel', requireAuth, requireCompany, requireCompanyOwner, getCompanyUsersPanel)
-router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, createOrGetCompanyInvitation)
+router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, requirePlanLimit('members'), createOrGetCompanyInvitation)
 router.delete('/invitation', requireAuth, requireCompany, requireCompanyOwner, deactivateCompanyInvitation)
 router.patch(
   '/members/:userId/role',

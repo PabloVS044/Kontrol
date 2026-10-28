@@ -159,7 +159,7 @@ function money(amount) {
   border-radius: 4px;
 }
 .img-placeholder span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextDim);
   letter-spacing: 0.05em;
 }
@@ -172,7 +172,7 @@ function money(amount) {
   gap: 8px;
 }
 .card-project-tag {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #60a5fa;
   /* La paleta no tiene azul; se deja el literal con el tinte que faltaba en
      vez de inventar un color de marca. */
@@ -182,14 +182,14 @@ function money(amount) {
   align-self: flex-start;
 }
 .card-code {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextMuted);
   font-weight: 500;
   letter-spacing: 0.08em;
 }
 .card-name {
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--Text);
   line-height: 1.2;
 }
@@ -203,11 +203,11 @@ function money(amount) {
   border-top: 1px solid #1a1a1a;
 }
 .card-price-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextDim);
 }
 .card-price {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--Text);
   margin-top: 2px;
@@ -216,21 +216,21 @@ function money(amount) {
   text-align: right;
 }
 .card-stock-num {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1;
 }
 .card-stock-num.red { color: #fb7185; }
 .card-stock-num.gold { color: var(--Primary); }
 .card-stock-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextDim);
 }
 
 .card-proj-usage {
   padding-top: 12px;
   border-top: 1px solid #1a1a1a;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .proj-usage-row {
   display: flex;

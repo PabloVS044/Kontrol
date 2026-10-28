@@ -1,7 +1,7 @@
 # Términos y Condiciones de Kontrol
 
-**Versión 0.1 — BORRADOR INTERNO**  
-**Fecha de elaboración: 16 de octubre de 2026**  
+**Versión 0.2 — BORRADOR INTERNO**  
+**Fecha de elaboración: 16 de octubre de 2026 · revisión: 26 de octubre de 2026**  
 **Entrada en vigencia: PENDIENTE DE APROBACIÓN Y PUBLICACIÓN**
 
 > **Revisión profesional en Guatemala requerida antes de uso comercial.** Este borrador no está vigente ni acredita aceptación al registrarte. Faltan la identificación de las personas prestadoras, el contacto legal/privacidad y mecanismos operativos descritos al final. No autoriza lanzamiento ni publicación para contratación.
@@ -45,11 +45,13 @@ El titular o administrador debe gestionar las invitaciones y permisos, revisar l
 
 Existen controles de empresa, proyecto y rol, con limitaciones identificadas que requieren corrección y prueba. La presencia de un permiso en pantalla no constituye una garantía general de separación de datos. La protección de credenciales por el usuario no reemplaza las obligaciones de seguridad que correspondan al equipo.
 
-## 5. Servicio sin cobros reales y demostración Stripe
+## 5. Servicio sin cobros reales y demostración Stripe TEST
 
-**Hoy no se realizan cobros reales por Kontrol. Stripe está previsto exclusivamente para una DEMOSTRACIÓN TEST — NO COBRA. No hay integración Stripe observada en el código revisado; su implementación pertenece a otra tarea.** No se ofrecen planes, precios, suscripciones ni renovaciones comerciales actuales de Kontrol. Al no haber cobros reales, no existen cargos de suscripción que cancelar o reembolsar; esto no limita derechos por un eventual cobro indebido.
+**Hoy no se realizan cobros reales por Kontrol. Stripe está integrado exclusivamente en modo de prueba (TEST) — NO COBRA (PAY-1, 24-10-2026).** Stripe no opera en Guatemala, de modo que esta integración no puede usarse para cobrar a negocios guatemaltecos; una operación comercial exigiría sustituirla por un proveedor autorizado en el país. Los planes Gratis, Pro y Business y sus precios en USD que muestra la aplicación son de demostración: describen qué desbloquearía cada plan y cómo se cobraría, no una oferta comercial vigente. La interfaz lo indica con el aviso visible «Modo de prueba — sin cobros reales». Al no haber cobros reales, no existen cargos de suscripción que cancelar o reembolsar; esto no limita derechos por un eventual cobro indebido.
 
-Cuando se implemente esa demostración, solo deberán usarse el entorno y los datos de prueba autorizados. No introduzcas tarjetas, cuentas bancarias, DPI, nombres, correos ni identidades reales en los escenarios de demo. Esta restricción no autoriza abrir una cuenta del proveedor con identidad falsa; cualquier identificación legítima de su titular se trata por separado.
+En la demostración, la suscripción pertenece a la empresa y solo su titular (owner) puede contratarla, cambiarla o cancelarla. El pago se introduce únicamente en la página hospedada de Stripe (Checkout y portal de cliente); Kontrol no recibe ni almacena números de tarjeta. Al cancelar, el plan se mantiene hasta el fin del período simulado y la empresa vuelve al plan Gratis; sus datos no se borran, pero no podrá crear recursos por encima de los topes del plan Gratis ni usar los módulos que este no incluye.
+
+En la demostración solo deben usarse el entorno y los datos de prueba autorizados. No introduzcas tarjetas, cuentas bancarias, DPI, nombres, correos ni identidades reales en los escenarios de demo. Esta restricción no autoriza abrir una cuenta del proveedor con identidad falsa; cualquier identificación legítima de su titular se trata por separado.
 
 El acceso actual no se convertirá automáticamente en un servicio de pago. Antes de cualquier cobro futuro deberán definirse el prestador, precios, impuestos aplicables, prestaciones, cancelación y reglas de devolución correspondientes; comunicar las nuevas condiciones con antelación suficiente y obtener la aceptación expresa necesaria antes de activar el cobro. No se cobrará por silencio o por una supuesta renovación de esta demostración. El mecanismo de aviso y reaceptación sigue pendiente de implementación.
 
@@ -77,7 +79,7 @@ Según el equipo, el asistente utiliza Qwen/vLLM a través de su endpoint ClawSt
 
 Cuando la consulta requiere inferencia, pueden enviarse el texto de tu pregunta; identificador, correo y rol de tu cuenta; identificador, nombre y rol en la empresa; permisos y proyectos visibles; historial reciente; y columnas, conteos, muestras de resultados SQL o errores. Las muestras pueden contener contactos, autores, importes y otros datos que aparezcan en las vistas consultadas. Algunas respuestas locales se resuelven sin llamar al modelo. El detalle está en la [Política de Privacidad, §5](politica-privacidad.md#5-qué-información-llega-al-asistente-ia) y el [inventario, §5](inventario-datos.md).
 
-El asistente puede equivocarse, omitir contexto o producir consultas y conclusiones inadecuadas. Revisa los resultados antes de actuar; no lo uses como asesoría tributaria, jurídica, bancaria o profesional. No se ofrece como sistema de decisiones automáticas vinculantes sobre personas. Los límites de historial o muestras no equivalen a borrado. No se ha confirmado ausencia de logs, conservación o entrenamiento en la infraestructura de inferencia.
+El asistente puede equivocarse, omitir contexto o producir consultas y conclusiones inadecuadas. Revisa los resultados antes de actuar; no lo uses como asesoría tributaria, jurídica, bancaria o profesional. No se ofrece como sistema de decisiones automáticas vinculantes sobre personas. Los límites de historial o muestras no equivalen a borrado. El equipo declara (26-10-2026) que la infraestructura de inferencia no conserva lo recibido ni lo usa para entrenar; detalle en el [aviso del asistente](aviso-asistente-ia.md).
 
 ## 9. Software, contenidos y licencia limitada
 
@@ -91,7 +93,7 @@ Conservas los derechos que tengas sobre tus datos y contenidos; tampoco puedes c
 
 El [anexo de proveedores](anexo-proveedores.md) distingue bases/hosting por confirmar, archivos, Google OAuth, conexiones opcionales, receptores técnicos y Stripe previsto TEST. No todos son subencargados contratados por Kontrol. Si el negocio es titular de Slack, Teams, Telegram, Twilio, SendGrid o un destino webhook, hay que distinguir su contrato con el proveedor de las instrucciones que da al equipo.
 
-Para datos de cuenta y fines propios, el equipo puede actuar como responsable; para datos del negocio que solo trate siguiendo instrucciones, como encargado. La asignación debe concretarse por tratamiento. **El acuerdo de tratamiento por instrucciones está pendiente; esta descripción y los DPA públicos de proveedores no significan que el acuerdo esté completado o aceptado.** Resolver contratos e instrucciones forma parte de los bloqueos del expediente.
+Para datos de cuenta y fines propios, el equipo actúa como responsable; para los datos de clientes, proveedores, trabajadores y otras personas que el negocio registra, el negocio es responsable y el equipo, encargado. La [Adenda de tratamiento de datos](adenda-tratamiento-datos.md) forma parte de estos Términos por referencia: asigna los roles por tratamiento, las obligaciones de cada parte, los subencargados, el aviso de incidentes y los efectos del fin de la relación sobre esos datos. En lo relativo a esos datos prevalece sobre estos Términos y puede firmarse por separado. **La adenda es un borrador 0.1 no vigente: sus condiciones previas siguen abiertas y los DPA públicos de proveedores no significan que estén aceptados.** Resolver contratos e instrucciones forma parte de los bloqueos del expediente.
 
 ## 11. Disponibilidad, conservación y respaldos
 
@@ -111,7 +113,7 @@ La suspensión o terminación propuesta se limita a causas justificadas: uso il�
 
 El equipo también deberá avisar un eventual cierre ordinario del servicio por un mecanismo previamente definido, con oportunidad razonable para gestionar la información dentro de las capacidades disponibles. No existe un plazo de preaviso o una exportación integral acreditados que este borrador pueda prometer.
 
-Desactivar acceso no elimina automáticamente datos ni revoca de inmediato toda sesión. La información seguirá sujeta a la situación de conservación descrita en la Política de Privacidad y a las obligaciones que procedan. No se promete borrado en treinta días, eliminación total o devolución completa mientras P1 no esté resuelto; tampoco se concede con ello una autorización de conservación indefinida.
+Desactivar acceso no elimina automáticamente datos ni revoca de inmediato toda sesión. La información seguirá sujeta a la situación de conservación descrita en la Política de Privacidad y a las obligaciones que procedan. No se promete borrado en treinta días, eliminación total o devolución completa mientras P1 no esté resuelto; tampoco se concede con ello una autorización de conservación indefinida. Para los datos que el negocio registra sobre terceros, la [adenda, §10](adenda-tratamiento-datos.md#10-fin-de-la-relación) propone preaviso de cierre, ventana de exportación y plazos de eliminación; solo serán exigibles cuando la adenda entre en vigencia, lo que requiere completar P1 y P2.
 
 ## 14. Cambios de condiciones
 
@@ -127,7 +129,7 @@ Si la relación queda comprendida en la Ley de Protección al Consumidor y Usuar
 
 ## 16. Documentos relacionados y trazabilidad interna
 
-Este borrador se lee con la [Política de Privacidad](politica-privacidad.md), el [inventario técnico cerrado](inventario-datos.md), el [anexo de proveedores](anexo-proveedores.md) y el [índice de pendientes](README.md). La política de cookies y almacenamiento, el acuerdo de tratamiento por instrucciones y los avisos específicos permanecen pendientes: no se presentan como aprobados ni se enlazan archivos inexistentes.
+Este borrador se lee con la [Política de Privacidad](politica-privacidad.md), la [Adenda de tratamiento de datos](adenda-tratamiento-datos.md) (borrador 0.1), el [inventario técnico cerrado](inventario-datos.md), el [anexo de proveedores](anexo-proveedores.md) y el [índice de pendientes](README.md). La política de cookies y almacenamiento y los avisos específicos permanecen pendientes: no se presentan como aprobados ni se enlazan archivos inexistentes.
 
 La descripción funcional proviene del inventario §§1–9 y sus referencias de código, con corte 16-10-2026 y referencia HEAD `3a004d9` aportada. La declaración de ubicación del servidor IA procede del equipo, 16-10-2026. No hubo comprobación de producción.
 
@@ -141,3 +143,4 @@ La descripción funcional proviene del inventario §§1–9 y sus referencias de
 | Historial | Cambio |
 | --- | --- |
 | 16-10-2026 · 0.1 | Elaboración inicial interna; pendiente de identificación, revisión, aprobación, implementación de mecanismos y publicación. Sin entrada en vigencia. |
+| 26-10-2026 · 0.2 | §§10, 13 y 16: incorporación por referencia de la Adenda de tratamiento de datos (L-4), su prevalencia y su relación con P1/P2. Sin entrada en vigencia. |

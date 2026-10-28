@@ -286,6 +286,8 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   })
 
   it('el selector de idioma alterna y persiste la preferencia', async () => {
+    // Persistir el idioma requiere haber aceptado las preferencias (L-3).
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const { wrapper } = await montar({ user: { id_usuario: 42 } })
     expect(wrapper.find('.lang-dropdown').exists()).toBe(false)
 
@@ -304,6 +306,7 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   it('cerrar sesión no devuelve la app al inglés', async () => {
     // Antes el logout hacía `locale.value = 'en'`, así que la pantalla de login
     // aparecía en inglés justo después de haber elegido español.
+    localStorage.setItem('kontrol:storage-consent', JSON.stringify({ version: 1, preferences: true }))
     const { wrapper } = await montar({ user: { id_usuario: 42 }, locale: 'es' })
 
     await wrapper.find('.lang-btn').trigger('click')
@@ -366,5 +369,69 @@ describe('AppNavbar.vue — sesión e idioma', () => {
     for (const esperado of ['/dashboard', '/marketing', '/agent', '/settings']) {
       expect(hrefs).toContain(esperado)
     }
+  })
+})
+
+// PAY-1 — Módulos fuera del plan: el enlace sigue, con un candado.
+describe('AppNavbar.vue — módulos según el plan', () => {
+  const candados = (wrapper) =>
+    wrapper.findAll('.appnav-link').filter((link) => link.find('.appnav-lock').exists()).map((link) => link.attributes('href'))
+
+  it('en el plan gratuito marca equipos, marketing y la IA', async () => {
+    const { wrapper } = await montar({ capabilities: { can_view_projects: true } })
+    expect(candados(wrapper)).toEqual(['/teams', '/marketing', '/agent'])
+  })
+
+  it('con Pro solo queda bloqueada la IA', async () => {
+    const { wrapper, store } = await montar()
+    store.setAccessContext({
+      capabilities: {},
+      plan: { code: 'pro', features: ['report_export', 'teams', 'integrations', 'marketing'] },
+    })
+    await wrapper.vm.$nextTick()
+    expect(candados(wrapper)).toEqual(['/agent'])
+  })
+
+  it('el candado tiene texto accesible traducido', async () => {
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav-lock').attributes('aria-label')).toBe('Requiere un plan superior')
+  })
+})
+
+describe('AppNavbar.vue — cajón según el tamaño de letra', () => {
+  // happy-dom no evalúa media queries por ancho: se simula una ventana de 1600px.
+  const ventana = (ancho) => vi.fn((query) => ({
+    matches: ancho <= Number(query.match(/max-width:\s*(\d+)px/)?.[1] ?? Infinity),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }))
+
+  afterEach(async () => {
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    useFontScale().setFontScale('default')
+    vi.unstubAllGlobals()
+  })
+
+  it('con la letra normal, en 1600px los enlaces van en fila', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav').classes()).not.toContain('appnav--drawer')
+  })
+
+  it('con la letra más grande la fila no cabe en 1600px y se pliega en el cajón', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    useFontScale().setFontScale('largest')
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav').classes()).toContain('appnav--drawer')
+  })
+
+  it('cambiar el tamaño con la barra montada vuelve a decidir', async () => {
+    vi.stubGlobal('matchMedia', ventana(1600))
+    const { useFontScale } = await import('@/composables/useFontScale.js')
+    const { wrapper } = await montar()
+    useFontScale().setFontScale('larger')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.appnav').classes()).toContain('appnav--drawer')
   })
 })

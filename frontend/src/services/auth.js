@@ -31,7 +31,13 @@ async function unwrap(response) {
   const data = await readBody(response)
   if (response.ok && data) return data
 
-  if (data?.message) throw new Error(data.message)
+  if (data?.message) {
+    const error = new Error(data.message)
+    // Código propio del backend (p. ej. `legal_version_outdated`), aparte de
+    // `code`, que las vistas usan para elegir el texto traducido.
+    if (data.code) error.serverCode = data.code
+    throw error
+  }
 
   const error = new Error(`HTTP ${response.status}`)
   // 5xx o cuerpo ilegible = el servidor no contesta como debe, no es culpa de
@@ -60,8 +66,12 @@ export async function loginUser(email, password, inviteToken) {
 
 // ── Register ──────────────────────────────────────────────────────────────────
 
+/**
+ * `legal` es la casilla del formulario (L-6): `{ accepted, versions }`, con
+ * las versiones de los documentos que se le mostraron al usuario.
+ */
 export async function registerUser(firstName, lastName, email, password, options = {}) {
-  const { inviteToken } = options
+  const { inviteToken, legal } = options
 
   const response = await requestApi('/api/auth/register', {
     auth: false,
@@ -74,6 +84,7 @@ export async function registerUser(firstName, lastName, email, password, options
       password,
       role: inviteToken ? 'usuario' : 'admin',
       inviteToken: inviteToken || undefined,
+      legal,
     }),
   })
 

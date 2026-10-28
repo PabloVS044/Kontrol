@@ -207,26 +207,26 @@
               <svg viewBox="0 0 600 160" preserveAspectRatio="none" class="perf-svg">
                 <defs>
                   <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#caa860" stop-opacity="0.3"/>
-                    <stop offset="100%" stop-color="#caa860" stop-opacity="0"/>
+                    <stop offset="0%" stop-color="var(--k-color-primary)" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="var(--k-color-primary)" stop-opacity="0"/>
                   </linearGradient>
                   <linearGradient id="lineGrad2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.2"/>
-                    <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+                    <stop offset="0%" stop-color="var(--k-hue-blue)" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="var(--k-hue-blue)" stop-opacity="0"/>
                   </linearGradient>
                 </defs>
-                <line x1="0" y1="0"   x2="600" y2="0"   stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="40"  x2="600" y2="40"  stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="80"  x2="600" y2="80"  stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="120" x2="600" y2="120" stroke="#1f1f1f" stroke-width="1"/>
-                <line x1="0" y1="160" x2="600" y2="160" stroke="#1f1f1f" stroke-width="1"/>
+                <line x1="0" y1="0"   x2="600" y2="0"   stroke="var(--k-shade-6)" stroke-width="1"/>
+                <line x1="0" y1="40"  x2="600" y2="40"  stroke="var(--k-shade-6)" stroke-width="1"/>
+                <line x1="0" y1="80"  x2="600" y2="80"  stroke="var(--k-shade-6)" stroke-width="1"/>
+                <line x1="0" y1="120" x2="600" y2="120" stroke="var(--k-shade-6)" stroke-width="1"/>
+                <line x1="0" y1="160" x2="600" y2="160" stroke="var(--k-shade-6)" stroke-width="1"/>
                 <template v-if="chartPoints.length">
                   <path :d="svgAreaPath(chartPoints, 'budgetY')"   fill="url(#lineGrad)"/>
-                  <path :d="svgLinePath(chartPoints, 'budgetY')"   fill="none" stroke="#caa860" stroke-width="2"/>
+                  <path :d="svgLinePath(chartPoints, 'budgetY')"   fill="none" stroke="var(--k-color-primary)" stroke-width="2"/>
                   <path :d="svgAreaPath(chartPoints, 'progressY')" fill="url(#lineGrad2)"/>
-                  <path :d="svgLinePath(chartPoints, 'progressY')" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4 3"/>
-                  <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="#caa860"/>
-                  <circle v-for="pt in chartPoints" :key="pt.x + '-p'" :cx="pt.x" :cy="pt.progressY" r="3" fill="#60a5fa"/>
+                  <path :d="svgLinePath(chartPoints, 'progressY')" fill="none" stroke="var(--k-hue-blue)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                  <circle v-for="pt in chartPoints" :key="pt.x + '-b'" :cx="pt.x" :cy="pt.budgetY"   r="3" fill="var(--k-color-primary)"/>
+                  <circle v-for="pt in chartPoints" :key="pt.x + '-p'" :cx="pt.x" :cy="pt.progressY" r="3" fill="var(--k-hue-blue)"/>
                 </template>
                 <text v-else x="300" y="88" text-anchor="middle" fill="var(--k-gray-1)" font-size="11" font-family="Manrope, sans-serif">{{ $t('reports.noData') }}</text>
               </svg>
@@ -470,6 +470,14 @@ const activeFilterLabel = computed(
  * the full list — so the download always matches the filter on screen.
  */
 async function runExport(format) {
+  // PAY-1 — Exportar es del plan Pro. El archivo se arma en el navegador con
+  // datos que el usuario ya ve, así que el corte va antes de generarlo; el
+  // backend rechaza además el registro de la exportación.
+  if (!authStore.hasFeature('report_export')) {
+    exportError.value = t('billing.gate.exportLocked')
+    return
+  }
+
   exportingFormat.value = format
   exportError.value = null
 
@@ -567,7 +575,7 @@ async function submitCreate(payload) {
 /* ─── Main Panel ─────────────────────────────────────────────────────────── */
 .main-panel {
   padding: 32px 32px 48px;
-  border-right: 1px solid #1e1e1e;
+  border-right: 1px solid var(--k-shade-5);
   overflow-y: auto;
 }
 
@@ -585,14 +593,14 @@ async function submitCreate(payload) {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
-  color: var(--Text);
+  color: var(--k-color-text);
   margin: 0 0 4px;
 }
 
 .rep-subtitle {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: var(--TextMuted);
+  font-size: 0.75rem;
+  color: var(--k-text-muted);
   margin: 0;
 }
 
@@ -607,19 +615,19 @@ async function submitCreate(payload) {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: #111111;
-  border: 1px solid #2a2a2a;
-  color: var(--TextMuted);
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-7);
+  color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
 
 .btn-outline:hover {
-  border-color: #caa860;
-  color: var(--Primary);
+  border-color: var(--k-color-primary);
+  color: var(--k-color-primary);
 }
 
 .icon14 { width: 14px; height: 14px; }
@@ -628,30 +636,34 @@ async function submitCreate(payload) {
 /* ─── Filters ────────────────────────────────────────────────────────────── */
 .filter-bar {
   display: flex;
-  gap: 24px;
+  gap: var(--k-space-1);
   margin-bottom: 24px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--k-shade-4);
   flex-wrap: wrap;
 }
 
 .filter-btn {
-  padding: 6px 0;
-  background: #111111;
+  min-height: var(--k-target-min-size);
+  padding: 0 var(--k-space-4);
+  margin-bottom: -1px;
+  background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: var(--TextFaint);
+  border-radius: var(--k-radius-sm) var(--k-radius-sm) 0 0;
+  color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: color .2s, border-color .2s;
+  transition: color .2s, border-color .2s, background .2s;
 }
 
-.filter-btn:hover { color: var(--TextSoft); }
+.filter-btn:hover { color: var(--k-text-soft); background: var(--k-surface-hover-subtle); }
 
 .filter-btn.active {
-  border-bottom-color: #caa860;
-  color: var(--Primary);
+  border-bottom-color: var(--k-color-primary);
+  color: var(--k-color-primary);
+  background: var(--k-surface-primary-tint-2);
 }
 
 /* ─── KPI Cards ──────────────────────────────────────────────────────────── */
@@ -667,20 +679,20 @@ async function submitCreate(payload) {
   flex-direction: column;
   gap: 6px;
   padding: 16px;
-  background: #111111;
-  border: 1px solid #1e1e1e;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-5);
   transition: border-color .2s;
 }
 
 .kpi-card:hover {
-  border-color: rgba(202,168,96,0.3);
+  border-color: rgba(var(--k-color-primary-rgb), 0.3);
 }
 
 .kpi-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -689,7 +701,7 @@ async function submitCreate(payload) {
   font-family: 'Playfair Display', serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--Text);
+  color: var(--k-color-text);
   line-height: 1;
 }
 
@@ -697,20 +709,20 @@ async function submitCreate(payload) {
   display: inline-block;
   padding: 3px 10px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   border-radius: 2px;
   width: fit-content;
 }
 
-.kpi-badge--green  { background: rgba(74,222,128,0.1);  color: #4ade80; }
-.kpi-badge--purple { background: rgba(167,139,250,0.1); color: #a78bfa; }
-.kpi-badge--red    { background: rgba(251,113,133,0.1); color: #fb7185; }
+.kpi-badge--green  { background: rgba(var(--k-hue-green-rgb), 0.1);  color: var(--k-hue-green); }
+.kpi-badge--purple { background: rgba(var(--k-hue-violet-rgb), 0.1); color: var(--k-hue-violet); }
+.kpi-badge--red    { background: rgba(var(--k-hue-rose-rgb), 0.1); color: var(--k-hue-rose); }
 
 /* ─── Section blocks ─────────────────────────────────────────────────────── */
 .section-block {
-  background: #111111;
-  border: 1px solid #1e1e1e;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-5);
   padding: 20px;
   margin-bottom: 16px;
 }
@@ -724,9 +736,9 @@ async function submitCreate(payload) {
 
 .section-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: var(--TextMuted);
+  color: var(--k-text-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -734,9 +746,9 @@ async function submitCreate(payload) {
 .view-all-btn {
   background: none;
   border: none;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   opacity: 0.8;
   transition: opacity .2s;
@@ -750,18 +762,18 @@ async function submitCreate(payload) {
   width: 100%;
   border-collapse: collapse;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .rep-table th {
   text-align: left;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 0 12px 10px 0;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--k-shade-4);
 }
 
 .rep-row {
@@ -769,23 +781,23 @@ async function submitCreate(payload) {
   transition: background .15s;
 }
 
-.rep-row:hover td { background: #111111; }
+.rep-row:hover td { background: var(--k-shade-3); }
 
 .rep-table td {
   padding: 12px 12px 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  color: var(--TextSoft);
+  border-bottom: 1px solid rgba(var(--k-ink-rgb), 0.04);
+  color: var(--k-text-soft);
   vertical-align: middle;
 }
 
-.td-name { color: #e8e4de; font-weight: 500; }
+.td-name { color: var(--k-color-text); font-weight: 500; }
 
 .proj-badge {
-  background: #111111;
-  border: 1px solid #222;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-6);
   padding: 3px 8px;
-  font-size: 11px;
-  color: var(--TextDim);
+  font-size: 0.6875rem;
+  color: var(--k-text-dim);
 }
 
 .status-tag {
@@ -794,7 +806,7 @@ async function submitCreate(payload) {
   gap: 5px;
   padding: 3px 8px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
 }
 
@@ -805,45 +817,45 @@ async function submitCreate(payload) {
   flex-shrink: 0;
 }
 
-.td-date { color: var(--TextFaint); font-size: 11px; }
+.td-date { color: var(--k-text-faint); font-size: 0.6875rem; }
 
 .progress-cell { display: flex; align-items: center; gap: 7px; }
-.prog-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; min-width: 60px; }
-.prog-fill  { height: 100%; background: linear-gradient(90deg, #b27f2a, #caa860); border-radius: 2px; }
-.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--TextDim); min-width: 30px; }
+.prog-track { flex: 1; height: 4px; background: var(--k-shade-4); border-radius: 2px; overflow: hidden; min-width: 60px; }
+.prog-fill  { height: 100%; background: linear-gradient(90deg, var(--k-color-primary-2), var(--k-color-primary)); border-radius: 2px; }
+.prog-pct   { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); min-width: 30px; }
 
 .type-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
-  color: #a78bfa;
-  background: rgba(167,139,250,0.08);
+  color: var(--k-hue-violet);
+  background: rgba(var(--k-hue-violet-rgb), 0.08);
   padding: 2px 7px;
   letter-spacing: 0.04em;
 }
 
 .section-count {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  color: var(--TextFaint);
+  font-size: 0.75rem;
+  color: var(--k-text-faint);
 }
 
 .open-btn {
   background: none;
   border: none;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: color .2s;
 }
-.open-btn:hover { color: var(--Primary); }
+.open-btn:hover { color: var(--k-color-primary); }
 
 .empty-row {
   text-align: center;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   padding: 24px 0 !important;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* Skeleton */
@@ -852,11 +864,11 @@ async function submitCreate(payload) {
   display: flex;
   gap: 12px;
   padding: 10px 0;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid var(--k-shade-3);
 }
 .skel-cell {
   height: 12px;
-  background: #1a1a1a;
+  background: var(--k-shade-4);
   border-radius: 2px;
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -873,16 +885,16 @@ async function submitCreate(payload) {
   align-items: center;
   gap: 5px;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
-  color: var(--TextFaint);
+  font-size: 0.6875rem;
+  color: var(--k-text-faint);
 }
 .leg-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
 }
-.leg-dot.gold { background: #caa860; }
-.leg-dot.blue { background: #60a5fa; }
+.leg-dot.gold { background: var(--k-color-primary); }
+.leg-dot.blue { background: var(--k-hue-blue); }
 
 .chart-wrap {
   display: flex;
@@ -899,7 +911,7 @@ async function submitCreate(payload) {
 
 .y-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
 }
 
@@ -919,7 +931,7 @@ async function submitCreate(payload) {
 
 .x-axis span {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
 }
 

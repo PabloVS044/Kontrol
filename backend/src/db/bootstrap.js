@@ -4,6 +4,67 @@ import { logger } from '../utils/logger.js'
 
 export const ensureDatabaseSchema = async () => {
   await pool.query(`
+    ALTER TABLE public.usuario
+      ADD COLUMN IF NOT EXISTS token_version integer NOT NULL DEFAULT 1
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.account_mongo_deletion_outbox (
+      id_usuario integer PRIMARY KEY
+        REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+      attempts integer NOT NULL DEFAULT 0,
+      available_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      locked_until timestamp with time zone,
+      created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS account_mongo_deletion_outbox_available_idx
+      ON public.account_mongo_deletion_outbox (available_at, locked_until)
+  `)
+
+  // Closure record and deletion certificate. It outlives the company, so it has
+  // no FK to empresa, and the column is not named id_empresa on purpose: the
+  // export and the deletion plan treat every id_empresa column as company data.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.company_closure (
+      company_id integer PRIMARY KEY,
+      company_name character varying NOT NULL,
+      reason character varying(32) NOT NULL
+        CHECK (reason IN ('owner_request', 'no_active_owner', 'provider_termination')),
+      requested_by integer,
+      requested_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      export_until timestamp with time zone NOT NULL,
+      delete_by timestamp with time zone NOT NULL,
+      backups_by timestamp with time zone NOT NULL,
+      status character varying(16) NOT NULL DEFAULT 'export_window'
+        CHECK (status IN ('export_window', 'deleting', 'deleted')),
+      file_keys jsonb NOT NULL DEFAULT '[]'::jsonb,
+      rows_deleted jsonb,
+      files_deleted integer,
+      assistant_documents_deleted integer,
+      sql_deleted_at timestamp with time zone,
+      files_deleted_at timestamp with time zone,
+      mongo_deleted_at timestamp with time zone,
+      deleted_at timestamp with time zone,
+      attempts integer NOT NULL DEFAULT 0,
+      available_at timestamp with time zone NOT NULL,
+      locked_until timestamp with time zone
+    )
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS company_closure_available_idx
+      ON public.company_closure (status, available_at, locked_until)
+  `)
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS company_closure_requested_by_idx
+      ON public.company_closure (requested_by)
+  `)
+
+  await pool.query(`
     ALTER TABLE public.empresa
       ADD COLUMN IF NOT EXISTS activo boolean NOT NULL DEFAULT true
   `)
@@ -188,6 +249,12 @@ export const ensureDatabaseSchema = async () => {
     CREATE INDEX IF NOT EXISTS presupuesto_ajuste_proyecto_idx
       ON public.presupuesto_ajuste (id_proyecto, fecha DESC)
   `)
+  // DT-26 (RTF 2, PERF-02): métricas y resumen de presupuesto filtran
+  // presupuesto_actividad por proyecto y hacían un seq scan cada uno.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS presupuesto_actividad_proyecto_idx
+      ON public.presupuesto_actividad (id_proyecto)
+  `)
 
   // Reuse movimiento_inventario as the source of truth for activity expenses:
   // GASTO_ADMIN movements can now optionally link to a presupuesto_actividad
@@ -239,6 +306,13 @@ export const ensureDatabaseSchema = async () => {
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS producto_codigo_barras_unique
       ON public.producto (id_proyecto, codigo_barras)
+      WHERE codigo_barras IS NOT NULL
+  `)
+  // DT-22: el POS busca por código sin proyecto («todos los proyectos»), y el
+  // índice único empieza por id_proyecto, así que no sirve para esa búsqueda.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS producto_codigo_barras_idx
+      ON public.producto (codigo_barras)
       WHERE codigo_barras IS NOT NULL
   `)
 
@@ -299,6 +373,35 @@ export const ensureDatabaseSchema = async () => {
           ADD CONSTRAINT empresa_config_moneda_check CHECK (moneda IN ('USD', 'GTQ'));
       END IF;
     END $$
+  `)
+
+  // PAY-1 — Suscripción por empresa y eventos de la pasarela ya procesados. Sin
+  // fila en empresa_suscripcion la empresa está en el plan gratuito, así que las
+  // empresas existentes no necesitan backfill. Detalle en kontrol.sql.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.empresa_suscripcion (
+      id_empresa integer PRIMARY KEY,
+      proveedor character varying NOT NULL,
+      id_cliente_proveedor character varying UNIQUE,
+      id_suscripcion_proveedor character varying UNIQUE,
+      plan character varying NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'business')),
+      intervalo character varying CHECK (intervalo IN ('month', 'year')),
+      estado character varying NOT NULL DEFAULT 'none',
+      fin_periodo_actual timestamp with time zone,
+      cancelar_al_final boolean NOT NULL DEFAULT false,
+      cancelacion_pendiente boolean NOT NULL DEFAULT false,
+      actualizado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT empresa_suscripcion_id_empresa_fkey
+        FOREIGN KEY (id_empresa) REFERENCES public.empresa(id_empresa) ON DELETE CASCADE
+    )
+  `)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.evento_pago_procesado (
+      id_evento character varying PRIMARY KEY,
+      proveedor character varying NOT NULL,
+      tipo character varying NOT NULL,
+      procesado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
   `)
 
   // Sale header. Discount and VAT belong to the sale, not to a line, and until
@@ -807,6 +910,24 @@ export const ensureDatabaseSchema = async () => {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS evidencia_id_tarea_idx
       ON public.evidencia (id_tarea)
+  `)
+
+  // L-6 — constancia de qué versión de cada documento legal aceptó cada
+  // usuario, cuándo y desde qué IP. Una fila por documento y versión.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.aceptacion_legal (
+      id_aceptacion SERIAL PRIMARY KEY,
+      id_usuario integer NOT NULL
+        REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+      documento character varying(40) NOT NULL,
+      version character varying(20) NOT NULL,
+      aceptado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      ip character varying(45),
+      origen character varying(20) NOT NULL
+        CHECK (origen IN ('registro', 'aviso')),
+      CONSTRAINT aceptacion_legal_usuario_documento_version_unique
+        UNIQUE (id_usuario, documento, version)
+    )
   `)
 
   await ensureAgentRole()

@@ -1,0 +1,32 @@
+{
+  "format": "kontrol-p2-restore-evidence-v1",
+  "run_id": "kontrol-p2-20261026t030856z-29ad0b1156de",
+  "started_at_utc": "2026-10-26T03:08:56.088006+00:00",
+  "started_at_guatemala": "2026-10-25T21:08:56.088122-06:00",
+  "status": "blocked",
+  "scope": "synthetic isolated PostgreSQL and MongoDB; not production",
+  "production_accessed": false,
+  "shared_test_accessed": false,
+  "restoration_started": false,
+  "restoration_verified": false,
+  "rpo_production_verified": false,
+  "rto_production_verified": false,
+  "policy_rpo_hours": 6,
+  "policy_rto_hours": 4,
+  "source_schema_sha256": "a1b9f65a962ddcf0ca36eafd2e3222fa9dbc3b6fb2a72ea2cf6a85c516937593",
+  "not_recovered": [
+    "UploadThing binary objects (only database references)",
+    "PostgreSQL cluster roles, passwords, ownership and grants",
+    "MongoDB users/roles outside the selected database",
+    "VM, TLS private keys, environment secrets, logs and external providers",
+    "Application bootstrap migrations not present in backend/kontrol.sql"
+  ],
+  "steps": [],
+  "host_free_bytes_before": 30931714048,
+  "blocker": "Docker is not installed. No database restoration was executed.",
+  "cleanup_complete": true,
+  "remaining_owned_resources": [],
+  "finished_at_utc": "2026-10-26T03:08:56.103628+00:00",
+  "total_attempt_seconds": 0.015,
+  "host_free_bytes_after": 30931714048
+}

@@ -49,8 +49,13 @@
         "passwordRequired": "Password is required",
         "passwordMin": "Minimum 6 characters",
         "generic": "Something went wrong. Please try again.",
-        "unreachable": "Can't reach the server. Check your connection and try again."
-      }
+        "unreachable": "Can't reach the server. Check your connection and try again.",
+        "legalRequired": "You must accept the Terms and Conditions and the Privacy Policy to create your account.",
+        "legalOutdated": "The legal documents were updated. Reload the page, review the current version and accept it again."
+      },
+      "legal": "I have read and accept the {terms} and the {privacy}.",
+      "legalTerms": "Terms and Conditions",
+      "legalPrivacy": "Privacy Policy"
     }
   },
   "dashboard": {
@@ -762,6 +767,7 @@
       "loadingMsg": "Fetching the latest inventory details.",
       "errorTitle": "Could not load product",
       "back": "Back to inventory",
+      "backToCharge": "Back to Charge",
       "retry": "Retry",
       "uncategorized": "Uncategorized",
       "noProject": "Project not available",
@@ -1436,6 +1442,112 @@
       "undated": "Publications without a date ({count}): not shown on the calendar."
     }
   },
+  "billing": {
+    "title": "Plan and subscription",
+    "subtitle": "Choose what your company unlocks. The plan belongs to the company: every member shares it.",
+    "loading": "Loading plans…",
+    "loadError": "The plans could not be loaded.",
+    "notConfigured": "The payment gateway is not configured on this server. Every company is on the Free plan.",
+    "ownerOnly": "Only the company owner can subscribe, change or cancel the plan.",
+    "changed": "Change requested. The plan updates as soon as the gateway confirms it.",
+    "testMode": {
+      "title": "Test mode — no real charges",
+      "body": "Payments use Stripe in test mode because Stripe does not operate in Guatemala. Nothing is charged. To try it, use card 4242 4242 4242 4242 with any future date and CVC; do not enter a real card or real data."
+    },
+    "checkout": {
+      "success": "Test payment received. The plan is activated as soon as the gateway confirms the payment; it may take a few seconds.",
+      "cancel": "You cancelled the test payment. Nothing was charged."
+    },
+    "current": {
+      "title": "Your current plan",
+      "free": "Free plan, with no end date.",
+      "renews": "Renews on {date} (simulated {interval} charge).",
+      "endsOn": "Cancelled: the plan stays active until {date} and then the company goes back to the Free plan.",
+      "pastDue": "The last renewal (simulated) could not be charged. You keep the plan while the gateway retries; update the payment method from “Manage payment or cancel”."
+    },
+    "interval": {
+      "label": "Billing frequency",
+      "month": "Monthly",
+      "year": "Yearly",
+      "yearlyNote": "The yearly plan costs the same as 10 months.",
+      "per": {
+        "month": "/ month",
+        "year": "/ year"
+      }
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "To start organizing a small business."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "For teams already working across several projects."
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "No limits, plus the AI assistant."
+      }
+    },
+    "resources": {
+      "members": "Members",
+      "projects": "Projects",
+      "products": "Products"
+    },
+    "usage": {
+      "of": "{used} of {limit}",
+      "unlimited": "{used} · no limit"
+    },
+    "limits": {
+      "members": "Up to {count} members",
+      "projects": "Up to {count} projects",
+      "products": "Up to {count} products",
+      "unlimited": {
+        "members": "Unlimited members",
+        "projects": "Unlimited projects",
+        "products": "Unlimited products"
+      }
+    },
+    "features": {
+      "base": "Projects, tasks, inventory, point of sale, suppliers, budget, chat and on-screen reports",
+      "everythingIn": "Everything in {plan}, plus:"
+    },
+    "modules": {
+      "report_export": "Report export",
+      "teams": "Teams",
+      "integrations": "Integrations (Slack, Teams, Telegram and more)",
+      "marketing": "Marketing center",
+      "ai_agent": "Birdie, the AI assistant",
+      "marketing_ai": "AI-generated posts"
+    },
+    "actions": {
+      "subscribe": "Subscribe to {plan}",
+      "change": "Switch to {plan}",
+      "current": "This is your current plan.",
+      "downgradeHint": "To go back to Free, cancel the subscription in “Manage payment or cancel”.",
+      "manage": "Manage payment or cancel",
+      "redirecting": "Redirecting…",
+      "processing": "Processing…"
+    },
+    "gate": {
+      "featureTitle": "This module is not in your plan",
+      "feature": "{module} is included from the {plan} plan.",
+      "limitTitle": "You reached your plan's limit",
+      "limit": {
+        "members": "Your plan allows up to {limit} members. Upgrade the plan to add more.",
+        "projects": "Your plan allows up to {limit} projects. Upgrade the plan to create more.",
+        "products": "Your plan allows up to {limit} products. Upgrade the plan to add more."
+      },
+      "limitGeneric": "Your plan does not allow adding more. Upgrade the plan to continue.",
+      "exportLocked": "Report export is included from the Pro plan.",
+      "locked": "Requires a higher plan",
+      "cta": "See plans",
+      "dismiss": "Close"
+    },
+    "errors": {
+      "generic": "The operation could not be completed."
+    }
+  },
   "birdie": {
     "tooltip": "Double-click me to hide · drag me to move",
     "askQuestion": "Ask a question",
@@ -1487,11 +1599,11 @@
       },
       "inventoryCreate": {
         "q": "How do I add a product?",
-        "a": "Pick a project from the tabs above, then click New Product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
+        "a": "Go to Sales > Charge, pick a project from the tabs above, then click New product to register an item. You'll set name, category, unit, initial stock and the unit cost that feeds into budget calculations."
       },
       "inventorySell": {
         "q": "How do I register a sale?",
-        "a": "Go to Sales > Charge, which takes you to the inventory. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
+        "a": "Go to Sales > Charge. Every product card has a Sell button. Tap it on each item the customer is buying — they'll show up in the Current Sale panel on the right, where you can fine-tune quantities with the + / − buttons or remove items with the X. Once the cart looks right, press Realizar venta: the system discounts stock and records a SALIDA inventory movement per product, impacting the linked project's budget."
       },
       "inventoryMovements": {
         "q": "What inventory movement types exist?",
@@ -1583,7 +1695,7 @@
       },
       "inventoryShortcut": {
         "q": "Where is inventory?",
-        "a": "The Inventory section lists every product across your projects. From here you can create products, register movements (entradas/salidas/ajustes) or kick off a sale using the Sell button on any product card."
+        "a": "The Inventory section is the table of every product across your projects, with its price and stock; you can filter by project, search and see which ones are low or out of stock. To sell, create products or register movements, go to Sales > Charge."
       },
       "dashboardShortcut": {
         "q": "Where is the executive dashboard?",
@@ -1598,11 +1710,20 @@
     "ownerOnly": "Only the company owner or an admin can change how this company sells.",
     "prefs": {
       "title": "Your preferences",
-      "hint": "Saved in this browser. They do not affect anyone else on the team.",
+      "hint": "They are yours and do not affect anyone else on the team. They are saved in this browser only if you accept remembering your preferences.",
       "birdie": "Show the Birdie assistant bubble",
       "birdieNote": "Hides the floating button that follows you across the app. You can bring it back here.",
       "language": "Language",
-      "languageNote": "Applies to the whole app and is remembered in this browser, including after you sign out."
+      "languageNote": "Applies to the whole app. If you accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "theme": "Theme",
+      "themeNote": "\"System\" follows your device preference. If you choose Dark or Light and accept remembering your preferences, it stays in this browser, including after you sign out.",
+      "themes": { "system": "System", "dark": "Dark", "light": "Light" },
+      "fontSize": "Text size",
+      "fontSizeNote": "Makes the app's text larger without changing how the screens are laid out. If you accept remembering your preferences, it stays in this browser.",
+      "fontSizes": { "default": "Normal", "large": "Large", "larger": "Larger", "largest": "Largest" },
+      "storage": "Remember preferences in this browser",
+      "storageNote": "Rejecting it deletes the preferences already saved. Your session is not affected.",
+      "storagePolicy": "See the cookie and storage policy"
     },
     "loading": "Loading settings…",
     "loadError": "Could not load the settings.",
@@ -1632,6 +1753,53 @@
       "title": "Company members",
       "hint": "Invite people, change their role and their project access. The panel is on the Dashboard.",
       "link": "Go to company members"
+    },
+    "billing": {
+      "title": "Plan and subscription",
+      "hint": "Current plan: {plan}. Payments are in test mode: there are no real charges.",
+      "link": "See plans"
+    },
+    "privacy": {
+      "title": "Your data and account",
+      "hint": "Download this company's data or delete your personal access.",
+      "export": "Download company data (JSON)",
+      "exporting": "Preparing download…",
+      "exportSuccess": "The data download has started.",
+      "exportOwnerOnly": "The complete export is available only to company owners and administrators.",
+      "deleteTitle": "Delete my account",
+      "deleteWhat": "Deletion is immediate and has no grace period. Your account is disabled, login credentials and contact details are removed, your personal AI conversations and chat messages are deleted. Anonymized technical references needed by business records remain; operational logs may still contain identifiable data.",
+      "deleteRetained": "Shared sales, expenses, projects, and other company records are not deleted. If you are the owner, ownership passes to an available active administrator or member; if no one remains, the company is closed: its data can be downloaded for 30 days and is deleted within 60. Other accounts are not deleted.",
+      "deleteDuration": "For a company that is still in use, the current policy does not set a retention period for these records, so we cannot promise a deletion date while it stays active. To delete them, the owner can close the company. This does not claim that a law requires their retention.",
+      "deleteExternal": "This operation does not delete data already sent to Google, email/SMS providers, the AI service, UploadThing, or other integrations. There is no account-level deletion workflow for those providers; they may retain their own copies under periods that have not been verified. Business files are deleted only when the company is closed.",
+      "password": "Current password (for password-based accounts)",
+      "googleReauth": "Reauthenticate with Google",
+      "reauthenticating": "Connecting to Google…",
+      "googleReauthSuccess": "Google verified your identity. Confirm deletion to continue.",
+      "googleReauthError": "Google account verification failed. Please try again.",
+      "deleteConfirm": "Delete my account now",
+      "deleting": "Deleting account…",
+      "finalConfirm": "This action is irreversible. Personal access will be deleted and the described business records will be retained. Do you want to continue?",
+      "error": "The operation could not be completed.",
+      "closure": {
+        "title": "Close the company",
+        "what": "Closing the company blocks its use, disables its invitations and integrations and opens a 30-day period to download its data. Afterwards all its records (projects, inventory, suppliers, sales, reports, evidence files and assistant history) are deleted no later than 60 days after the request, and backups no later than 90.",
+        "kept": "Member accounts, person-to-person chats, anything already sent to Slack, Teams, email, SMS or other integrations, and downloads someone already made are not deleted. You can cancel the closure while the download period is open.",
+        "confirmName": "Type the company name to confirm",
+        "skipWindow": "Delete without waiting 30 days (it can no longer be cancelled)",
+        "submit": "Close the company",
+        "submitting": "Closing the company…",
+        "finalConfirm": "You are about to close “{name}” and its data will be deleted. Do you want to continue?",
+        "googleReauthSuccess": "Google verified your identity. Confirm the company closure to continue.",
+        "inProgress": "This company is being closed. You can download its data until {exportUntil}. It will be deleted no later than {deleteBy}, and backups no later than {backupsBy}.",
+        "deleting": "This company is being deleted.",
+        "cancel": "Cancel the closure",
+        "cancelling": "Cancelling the closure…",
+        "cancelled": "The closure was cancelled. Invitations and integrations remain disabled: turn back on the ones you need.",
+        "certificatesTitle": "Closure certificates",
+        "certificatePending": "{name}: being closed, to be deleted no later than {deleteBy}.",
+        "certificateDeleted": "{name}: data deleted on {deletedAt}.",
+        "download": "Download certificate"
+      }
     }
   },
   "navbar": {
@@ -1769,6 +1937,10 @@
     "placeholder": "Ask me anything…",
     "stop": "Stop generating",
     "hint": "Press Enter to send · Shift+Enter for a new line",
+    "notice": {
+      "text": "Kontrol AI can make mistakes. Check the figures before you decide.",
+      "link": "How it uses your data"
+    },
     "message": {
       "edit": "Edit",
       "delete": "Delete",
@@ -1805,6 +1977,7 @@
   },
   "chat": {
     "title": "Messages",
+    "backToList": "Back to conversations",
     "newDM": "New direct message",
     "searchMessages": "Search messages…",
     "directMessages": "Direct Messages",
@@ -2024,7 +2197,6 @@
       "menu": "Menu"
     },
     "hero": {
-      "pill": "For shops and small businesses",
       "title": "Take control of your business",
       "copy": "Every sale you ring up updates your inventory instantly. Your projects, budgets and marketing live in the same platform.",
       "start": "Start managing your business",
@@ -2236,8 +2408,88 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
+    "dataProcessing": "Data Processing Addendum",
+    "aiNotice": "AI assistant notice",
+    "cookieSettings": "Cookie preferences",
     "rights": "© {year} Kontrol. All rights reserved.",
     "builtFor": "Built for the ambitious."
+  },
+  "inventoryTable": {
+    "subtitle": "All your products with their price and stock.",
+    "goToCharge": "Go to Charge",
+    "project": "Project",
+    "allProjects": "All projects",
+    "search": "Search",
+    "searchPlaceholder": "Name, code or category",
+    "stockFilter": "Stock",
+    "stockFilters": {
+      "all": "All",
+      "low": "Low stock",
+      "out": "Out of stock"
+    },
+    "summary": "Products: {count} · Low stock: {low} · Out of stock: {out}",
+    "loading": "Loading products…",
+    "loadError": "The products could not be loaded.",
+    "retry": "Retry",
+    "empty": "There are no products yet. They are added in Sales > Charge.",
+    "noMatches": "No product matches the search or the filter.",
+    "columns": {
+      "product": "Product",
+      "category": "Category",
+      "project": "Project",
+      "price": "Price",
+      "cost": "Cost",
+      "stock": "Stock",
+      "minimum": "Minimum"
+    }
+  },
+  "salesHistory": {
+    "title": "Sales history",
+    "subtitle": "Each sale with its details and what came in on the dates you pick.",
+    "range": "Period",
+    "presets": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Custom"
+    },
+    "from": "From",
+    "to": "To",
+    "invalidRange": "Pick a start date that is not after the end date.",
+    "summaryLabel": "Period summary",
+    "kpis": {
+      "income": "Income",
+      "incomeNote": "Includes VAT {vat} · Discounts {discounts}",
+        "profit": "Profit",
+        "profitNote": "Income without VAT {net} − cost {cost}",
+      "sales": "Sales",
+      "average": "Average ticket",
+      "units": "Units sold"
+    },
+    "loading": "Loading sales…",
+    "loadError": "The sales could not be loaded.",
+    "empty": "There are no sales in this period.",
+    "truncated": "Showing the {count} most recent sales of the period. The totals above include all of them.",
+    "columns": {
+      "date": "Date",
+      "seller": "Seller",
+      "project": "Project",
+      "units": "Units",
+      "total": "Total",
+      "details": "Details"
+    },
+    "showDetails": "View details",
+    "hideDetails": "Hide",
+    "lines": {
+      "product": "Product",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "vat": "VAT",
+      "amount": "Amount",
+      "subtotal": "Subtotal"
+    },
+    "toReports": "More information in Reports"
   },
   "sales": {
     "eyebrow": "Sales",
@@ -2245,11 +2497,12 @@
     "subtitle": "Charge, review what was sold and adjust how your company charges.",
     "checkout": {
       "title": "Charge",
-      "copy": "Record a sale from your inventory products."
+      "subtitle": "Search or scan products, build the cart and record the sale.",
+      "copy": "Record a sale, add products and move stock."
     },
     "history": {
       "title": "Sales history",
-      "copy": "Income, profit and average ticket in Reports."
+      "copy": "Sales by date, with their details and what came in during the period."
     },
     "config": {
       "title": "Sale settings",
@@ -2257,15 +2510,14 @@
     }
   },
   "legal": {
-    "badge": "Legal & Regulatory Framework",
     "title": "Terms, Privacy & Compliance",
     "subtitle": "Transparency on how Kontrol operates in Guatemala, data protection for your company, and service boundaries.",
-    "updated": "Version {version} · Updated October 17, 2026",
     "nav": {
       "ariaLabel": "Legal sections navigation",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "cookies": "Cookies & Storage",
+      "ai": "AI Assistant",
       "contact": "Contact"
     },
     "terms": {
@@ -2289,8 +2541,8 @@
           "body": "The point of sale (POS) and the configured VAT calculation are for your company's internal use: they do not issue certified electronic invoices (FEL) or replace your tax filings. You are responsible for issuing the required tax documents and for filing and paying your business's taxes."
         },
         {
-          "title": "5. Payments",
-          "body": "Kontrol does not charge anything today. The Stripe payment integration is planned only in demonstration mode (TEST): there are no real charges, card charges or subscription plans. Do not enter real cards or data in the demonstration. Your current access will not automatically become a paid service: before any charge we will inform you of the terms and you will have to accept them expressly."
+          "title": "5. Payments and plans (test mode)",
+          "body": "Kontrol does not charge anything for real. The Free, Pro and Business plans and their USD prices exist only as a demonstration: billing uses Stripe in test mode (TEST), which moves no money. Stripe does not operate in Guatemala, so this gateway cannot be used to charge for real; commercial operation will require replacing it with a provider authorized in the country. Payment happens only on Stripe's hosted page: Kontrol never receives or stores card data. Use only Stripe test cards and fictitious data; do not enter real cards or data. The subscription belongs to the company and only its owner can subscribe, change or cancel it; after cancelling, the plan lasts until the end of the period and the company then returns to the Free plan without losing its data. Your current access will not automatically become a paid service: before any real charge we will inform you of the terms and you will have to accept them expressly."
         },
         {
           "title": "6. Account, credentials and invitations",
@@ -2328,7 +2580,12 @@
           "title": "14. Governing law and complaints",
           "body": "These Terms are governed by the laws of the Republic of Guatemala. Disputes will be resolved before the competent courts as provided by law, without prejudice to the rights granted to you by the Consumer and User Protection Law. You can submit complaints to {email}."
         }
-      ]
+      ],
+      "summary": "The conditions for using Kontrol: what the service offers, your responsibilities and ours.",
+      "history": {
+        "v1_1": "Describes the Free, Pro and Business plans and test-mode payments with Stripe, with no real charges.",
+        "v1_0": "First published version."
+      }
     },
     "privacy": {
       "badge": "Data Protection",
@@ -2344,7 +2601,7 @@
         },
         {
           "title": "3. What we use it for",
-          "body": "To give you access, operate the features you use, enable collaboration within your company, send the alerts you configure and protect the security of the service. We do not sell or commercially transfer personal data and we do not use it to train artificial intelligence models."
+          "body": "To give you access, operate the features you use, enable collaboration within your company, send the alerts you configure and protect the security of the service, and to keep a record of which version of the Terms and of this Notice you accepted, when and from which IP address. We do not sell or commercially transfer personal data and we do not use it to train artificial intelligence models."
         },
         {
           "title": "4. Artificial intelligence assistant",
@@ -2356,11 +2613,11 @@
         },
         {
           "title": "6. How long we keep it",
-          "body": "We keep information while your account or company is active. We have not yet defined deletion periods per type of data, and deactivating an account does not erase its records: if you want us to delete your data, request it at {email}."
+          "body": "Retention periods by data type have not yet been defined. You can request account deletion from Settings: your profile is deactivated and anonymized, your credentials and memberships are removed, your personal assistant history and messages you sent in human chats are deleted. A conversation may remain for its other participants. Shared business records, files and logs may remain while the company is in use, and copies held by external providers are not removed. If you own a company, you can close it from Settings: you will have 30 days to download its data, and then its records, evidence files and assistant history are deleted no later than 60 days after the request, and backups no later than 90."
         },
         {
           "title": "7. Your rights",
-          "body": "You can view and correct much of your information from the platform and download PDF or CSV reports. To request access, correction, a copy or the deletion of your personal data, write to {email} from the email address linked to your account. Some data may be retained when there is a legal obligation or a justified reason."
+          "body": "From Settings, a company owner or administrator can download the business data accessible to that account as JSON; the download is authenticated and does not use a public link. It includes minimal metadata for human chats involving the requester and their own messages, not other participants' messages or profiles. You can request account deletion in the same section using your password or by reauthenticating with Google. Deletion does not remove shared business records, logs or copies held by external providers, and their retention periods are not yet defined. This mechanism does not limit rights granted by applicable law."
         },
         {
           "title": "8. Security",
@@ -2370,29 +2627,95 @@
           "title": "9. Changes to this Notice",
           "body": "We will publish any change to this Privacy Notice on this page and, when relevant, ask you to accept it again."
         }
-      ]
+      ],
+      "summary": "Which personal data we process, why, who we share it with and how to exercise your rights.",
+      "history": {
+        "v1_2": "States that we keep a record of the version of the Terms and of this Notice you accepted, with the date and IP address.",
+        "v1_1": "Describes the company data export and account deletion available in Settings.",
+        "v1_0": "First published version."
+      }
     },
     "cookies": {
       "badge": "Local Storage",
       "title": "Cookie and Local Storage Policy",
       "clauses": [
         {
-          "title": "No advertising cookies",
-          "body": "Kontrol does not use advertising cookies or cross-site tracking tools."
+          "title": "1. No own cookies and no tracking",
+          "body": "Kontrol does not set its own cookies, advertising cookies or cross-site tracking. What it needs is kept in your browser's local storage (localStorage), which only the application itself reads."
         },
         {
-          "title": "Local storage",
-          "body": "We use the browser's local storage (localStorage) to keep your session, remember your interface preferences, such as language and visual theme, and remember which users accepted these terms in this browser."
+          "title": "2. What is essential",
+          "body": "Your session, your profile, your companies and permissions and your answer to the storage notice. Without this data you cannot sign in, so it cannot be rejected if you use the platform. Signing out removes the session, the profile and the companies; your answer to the notice is kept so you are not asked again. Your acceptance of the Terms is not stored in the browser but on Kontrol's servers."
         },
         {
-          "title": "External services",
-          "body": "To display the interface, your browser downloads fonts from Google Fonts and icons from Icons8. Those services receive your IP address and technical request data."
+          "title": "3. Session risk",
+          "body": "Your session is kept in localStorage, and any code that manages to run on the Kontrol page can read it. If someone managed to inject code into the application, they could copy your session and use it from another device, as if they were you, until it expires after 8 hours. Signing out removes the copy in your browser, but does not invalidate a copy that was already stolen. Sign out when you finish on shared computers."
         },
         {
-          "title": "When you log out",
-          "body": "When you log out, the authentication tokens and data are removed from your browser. Language and theme preferences and the record of your acceptance of the terms are kept."
+          "title": "4. Your preferences, only if you accept them",
+          "body": "The language, the theme, the text size, whether you hid the assistant, its position on the screen and the projects view. Until you answer the notice, none of them is saved. If you reject them, Kontrol works the same but forgets them when you reload, and any already saved are deleted."
+        },
+        {
+          "title": "5. External services",
+          "body": "To display the interface, your browser downloads fonts from Google Fonts and the Google logo from Icons8. If you sign in with Google or attach files, it also connects to Google or UploadThing. Those services receive your IP address and technical request data; Kontrol does not store anything in your browser on their behalf."
+        },
+        {
+          "title": "6. How to change your choice or delete everything",
+          "body": "You can change your choice below, from Cookie preferences in the footer or in Settings. To delete everything, clear this site's data in your browser settings. This does not remove your account information from Kontrol's servers."
         }
-      ]
+      ],
+      "summary": "What Kontrol stores in your browser, why, and how to change your choice.",
+      "history": {
+        "v1_1": "Your acceptance of the Terms is no longer stored in the browser: it is now recorded on the server.",
+        "v1_0": "First version as a standalone policy, with the storage consent notice."
+      }
+    },
+    "dataProcessing": {
+      "badge": "Data processing",
+      "title": "Data Processing Addendum",
+      "summary": "The terms under which Kontrol processes the personal data your business records on the platform."
+    },
+    "ai": {
+      "badge": "Artificial intelligence",
+      "title": "AI Assistant Usage Notice",
+      "clauses": [
+        {
+          "title": "1. What it is",
+          "body": "Kontrol AI is an automated assistant that answers questions about your business by querying your data. It is read-only: it does not create, change or delete anything, and it does not send messages on your behalf. The help bubble (Birdie) is not this assistant: it shows prewritten answers and does not use artificial intelligence."
+        },
+        {
+          "title": "2. It can be wrong",
+          "body": "The assistant can misread the question, query the wrong data, add up incorrectly or leave information out, and still sound confident. Do not use its answers as the only basis for financial, tax or inventory decisions: check the figures in Budget, Inventory, Sales or Reports before acting. Its recommendations are not accounting, tax or legal advice."
+        },
+        {
+          "title": "3. What it can see",
+          "body": "Only the company you are working in, with your own permissions: owners, administrators and managers see all of its projects; everyone else sees only the projects they are assigned to. From those it sees projects, tasks, budgets, progress, reports, evidence, inventory and suppliers with their contacts, and the name, email and phone of the people working on them. Never passwords. It does not see other companies, chats between people or your integrations."
+        },
+        {
+          "title": "4. What is sent to the model",
+          "body": "Your question and up to ten previous messages; your email, your role and the company name; the list of projects you can see and the table structure; and real data from your business: up to 20 rows per query, with at most five queries per question. Greetings, help and four common questions (budget, project status, low stock and overdue tasks) are answered inside Kontrol without calling the model."
+        },
+        {
+          "title": "5. Who processes it and where",
+          "body": "The model is Qwen, run with vLLM on ClawStitch, a server owned by the Kontrol team and located in Guatemala. Your data does not go to OpenAI, Google, Anthropic or any other external artificial intelligence provider."
+        },
+        {
+          "title": "6. No training and no retention in the model",
+          "body": "What you send is not used to train or improve any model. The model server processes the request, returns the answer and does not keep questions, data or answers. Because the server is our own, there are no external provider terms: this is the position of the team that runs it."
+        },
+        {
+          "title": "7. What Kontrol keeps",
+          "body": "Your conversations (questions, answers and the text of the queries that were run, not their results) so you can see your history; only you can see them, and they are kept until you delete them. If the assistant fails, the server logs the error so it can be fixed. You can delete messages or whole conversations from the assistant, and closing your account deletes all of your assistant history."
+        },
+        {
+          "title": "8. If you do not want to use it",
+          "body": "The assistant cannot be turned off in settings, but it only works when you write to it: if you do not ask it anything, nothing is sent to the model. To delete what is already stored, remove your conversations. For questions or requests about your data, write to {email}."
+        }
+      ],
+      "summary": "How the AI assistant works, its limits and what happens to what you write to it.",
+      "history": {
+        "v1_0": "First published version."
+      }
     },
     "contact": {
       "badge": "Support & Complaints",
@@ -2400,13 +2723,60 @@
       "copy": "For legal questions, requests about your personal data, security reports or complaints, write to us at:",
       "note": "Write from the email address linked to your account so we can verify your identity before handling a request about your data."
     },
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "index": {
+      "ariaLabel": "Legal documents",
+      "read": "Read the document",
+      "pending": "In preparation"
+    },
+    "document": {
+      "version": "Version {version}",
+      "effective": "In force since {date}",
+      "back": "All legal documents",
+      "languageOnly": "This document is only available in {language}.",
+      "languageNames": {
+        "es": "Spanish",
+        "en": "English"
+      },
+      "acceptanceNote": "You accept this document when you create your account. If it changes substantially, we will ask you to accept it again before you keep using Kontrol.",
+      "historyTitle": "Change history",
+      "historyVersion": "Version",
+      "historyDate": "Date",
+      "historyChange": "Change",
+      "substantial": "Substantial",
+      "minor": "Minor",
+      "pendingTitle": "Document in preparation",
+      "pendingBody": "This document is not in force yet: it is under review, and we do not publish text that has not been approved. Its text, version and effective date will appear here once it is approved.",
+      "pendingVersion": "No version in force",
+      "contact": "Questions about this document? Write to us at"
+    }
   },
   "legalConsent": {
-    "ariaLabel": "Acceptance of the Terms and Conditions",
-    "checkbox": "I have read and accept the {terms}.",
-    "termsLink": "Terms and Conditions of Service",
-    "accept": "Accept"
+    "ariaLabel": "Acceptance of the legal documents",
+    "title": "Before you continue",
+    "intro": "To use Kontrol you need to accept the current version of these documents:",
+    "checkbox": "I have read and accept the documents listed.",
+    "accept": "Accept",
+    "errors": {
+      "outdated": "The documents were updated while you were reading. Reload the page to see the current version.",
+      "generic": "Your acceptance could not be saved. Please try again."
+    }
+  },
+  "storageConsent": {
+    "ariaLabel": "Browser storage notice",
+    "title": "What Kontrol saves in your browser",
+    "essential": "To work, Kontrol saves your session, the company you are working in and your acceptance of the Terms. This is essential and cannot be turned off.",
+    "preferences": "If you allow it, it also remembers preferences such as the language, the projects view and where you left the assistant. If you reject them, Kontrol works the same but forgets them when you reload. We do not use advertising or tracking cookies.",
+    "accept": "Accept preferences",
+    "reject": "Reject preferences",
+    "status": {
+      "pending": "You have not decided yet: no preferences are saved.",
+      "accepted": "Now: your preferences are saved in this browser.",
+      "rejected": "Now: your preferences are not saved in this browser."
+    },
+    "policyLink": "Cookie and storage policy",
+    "close": "Close",
+    "manageTitle": "Your choice in this browser"
   },
   "notFound": {
     "title": "This page doesn't exist",

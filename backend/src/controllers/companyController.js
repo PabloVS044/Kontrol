@@ -15,6 +15,7 @@ import {
   getProjectPermissionsCatalog,
 } from '../services/projectAccessService.js'
 import { normalizeSaleConfig } from '../services/saleCalculation.js'
+import { getBillingSummary } from '../services/billingService.js'
 
 const MEMBER_SELECT = `
   SELECT
@@ -115,10 +116,13 @@ export const getMyCompanies = async (req, res) => {
   const id_usuario = req.user.id_usuario
 
   const result = await pool.query(
-    `SELECT e.id_empresa, e.nombre, e.industria, e.email, e.telefono, re.nombre AS rol
+    `SELECT e.id_empresa, e.nombre, e.industria, e.email, e.telefono, re.nombre AS rol,
+            e.activo, cc.status AS closure_status, cc.export_until AS closure_export_until,
+            cc.delete_by AS closure_delete_by
      FROM public.empresa e
      JOIN public.empresa_usuario eu ON eu.id_empresa = e.id_empresa
      JOIN public.rol_empresa re ON re.id_rol_empresa = eu.id_rol_empresa
+     LEFT JOIN public.company_closure cc ON cc.company_id = e.id_empresa
      WHERE eu.id_usuario = $1
      ORDER BY e.nombre`,
     [id_usuario]
@@ -132,12 +136,15 @@ export const getMyCompanies = async (req, res) => {
  * Summary of the current user's effective access inside the selected company.
  */
 export const getCompanyAccessContext = async (req, res) => {
-  const data = await buildCompanyAccessContext({
-    client: pool,
-    id_empresa: req.empresa.id_empresa,
-    id_usuario: req.user.id_usuario,
-    rol_empresa: req.empresa.rol_empresa,
-  })
+  const [data, billing] = await Promise.all([
+    buildCompanyAccessContext({
+      client: pool,
+      id_empresa: req.empresa.id_empresa,
+      id_usuario: req.user.id_usuario,
+      rol_empresa: req.empresa.rol_empresa,
+    }),
+    getBillingSummary(req.empresa.id_empresa),
+  ])
 
   return res.json({
     success: true,
@@ -147,6 +154,15 @@ export const getCompanyAccessContext = async (req, res) => {
         rol_empresa: req.empresa.rol_empresa,
       },
       ...data,
+      // PAY-1 — Plan efectivo para que la interfaz oculte o bloquee módulos.
+      // La autorización real la hacen requirePlanFeature y requirePlanLimit.
+      plan: {
+        code: billing.plan,
+        status: billing.status,
+        features: billing.features,
+        limits: billing.limits,
+        usage: billing.usage,
+      },
     },
   })
 }
@@ -305,7 +321,8 @@ export const acceptCompanyInvitation = async (req, res) => {
   })
 
   if (!result.success) {
-    return res.status(result.code === 'invite_inactive' ? 410 : 404).json(result)
+    const status = { invite_inactive: 410, plan_limit_reached: 403 }[result.code] ?? 404
+    return res.status(status).json(result)
   }
 
   return res.json(result)

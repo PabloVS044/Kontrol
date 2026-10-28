@@ -10,19 +10,26 @@
         tabindex="-1"
         @keydown.tab="trapFocus"
       >
+        <h2 class="consent-title">{{ t('legalConsent.title') }}</h2>
+        <p class="consent-intro">{{ t('legalConsent.intro') }}</p>
+        <ul class="consent-docs">
+          <li v-for="doc in pendingDocs" :key="doc.slug">
+            <a :href="doc.path" target="_blank" rel="noopener">{{ doc.title }}</a>
+            <span class="consent-doc-version">{{ t('legal.document.version', { version: doc.version }) }}</span>
+          </li>
+        </ul>
+
         <label class="consent-check">
           <input v-model="checked" type="checkbox" class="consent-checkbox" />
-          <i18n-t keypath="legalConsent.checkbox" tag="span" scope="global">
-            <template #terms>
-              <a href="/legal#terms" target="_blank" rel="noopener">{{ t('legalConsent.termsLink') }}</a>
-            </template>
-          </i18n-t>
+          <span>{{ t('legalConsent.checkbox') }}</span>
         </label>
+
+        <p v-if="error" class="consent-error" role="alert">{{ error }}</p>
 
         <Button
           class="consent-btn"
           :label="t('legalConsent.accept')"
-          :disabled="!checked"
+          :disabled="!checked || saving"
           back-color="var(--k-color-primary)"
           hover-back="var(--k-color-primary-2)"
           @click="acceptTerms"
@@ -38,36 +45,61 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useLegalConsent } from '../composables/useLegalConsent.js'
+import { LEGAL_DOCUMENTS, legalDocumentPath } from '../utils/legal.js'
 import Button from './UI/Button/Button.vue'
 
 /**
- * Aviso de aceptación de los Términos y Condiciones. Aparece la primera vez
- * que un usuario entra a la plataforma y no se cierra hasta que marca la
- * casilla y acepta: no tiene botón de cerrar, no responde a Escape ni al clic
- * fuera, y deja inerte el resto de la app mientras está abierto.
+ * Aviso de aceptación de los documentos legales (L-6). Aparece cuando el
+ * servidor dice que el usuario tiene documentos pendientes —una cuenta creada
+ * con Google, o un cambio sustancial desde su última aceptación— y no se
+ * cierra hasta que marca la casilla y acepta: no tiene botón de cerrar, no
+ * responde a Escape ni al clic fuera, y deja inerte el resto de la app.
  */
 
-// La portada y los textos legales se ven sin aceptar: el enlace del aviso
-// abre /legal en otra pestaña para leerlos completos.
-const PUBLIC_ROUTES = new Set(['landing', 'legal'])
+// La portada y los textos legales se ven sin aceptar: los enlaces del aviso
+// abren cada documento en otra pestaña para leerlo completo.
+const PUBLIC_ROUTES = new Set(['landing', 'legal', 'legal-document'])
 
 const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
-const { hasAccepted, accept } = useLegalConsent()
+const { load, pendingFor, accept } = useLegalConsent()
 
 const checked = ref(false)
+const saving = ref(false)
+const error = ref('')
 const dialogRef = ref(null)
 
 // Antes de resolver la primera navegación la ruta no tiene nombre: esperar
 // evita que el aviso parpadee al cargar.
-const required = computed(() =>
+const inPlatform = computed(() =>
   authStore.isLoggedIn &&
   authStore.idUsuario != null &&
   route.matched.length > 0 &&
-  !PUBLIC_ROUTES.has(route.name) &&
-  !hasAccepted(authStore.idUsuario),
+  !PUBLIC_ROUTES.has(route.name),
 )
+
+watch(
+  () => (inPlatform.value ? `${authStore.idUsuario}:${route.fullPath}` : null),
+  (key) => {
+    if (key) load(authStore.idUsuario)
+  },
+  { immediate: true },
+)
+
+const pendingDocs = computed(() =>
+  pendingFor(authStore.idUsuario).map(({ document, version }) => {
+    const doc = LEGAL_DOCUMENTS.find((d) => d.slug === document)
+    return {
+      slug: document,
+      version,
+      path: legalDocumentPath(doc?.id),
+      title: doc ? t(`legal.${doc.id}.title`) : document,
+    }
+  }),
+)
+
+const required = computed(() => inPlatform.value && pendingDocs.value.length > 0)
 
 function setAppInert(inert) {
   document.getElementById('app')?.toggleAttribute('inert', inert)
@@ -98,8 +130,19 @@ function trapFocus(event) {
   }
 }
 
-function acceptTerms() {
-  if (checked.value) accept(authStore.idUsuario)
+async function acceptTerms() {
+  if (!checked.value || saving.value) return
+  saving.value = true
+  error.value = ''
+  try {
+    await accept(authStore.idUsuario)
+  } catch (err) {
+    error.value = err.serverCode === 'legal_version_outdated'
+      ? t('legalConsent.errors.outdated')
+      : t('legalConsent.errors.generic')
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
@@ -109,7 +152,7 @@ function acceptTerms() {
 .consent-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: var(--k-z-system);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,6 +181,59 @@ function acceptTerms() {
   outline: none;
 }
 
+.consent-title {
+  margin: 0;
+  font-size: var(--k-font-size-heading-2);
+  font-weight: var(--k-font-weight-bold);
+  color: var(--k-color-text);
+}
+
+.consent-intro,
+.consent-error {
+  margin: 0;
+  font-size: var(--k-font-size-body-main);
+  line-height: 1.5;
+  color: var(--k-text-soft);
+}
+
+.consent-error {
+  color: var(--k-color-error);
+}
+
+.consent-docs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-space-2);
+}
+
+.consent-docs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--k-space-2);
+}
+
+.consent-docs a {
+  color: var(--k-color-primary);
+  font-weight: var(--k-font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.consent-docs a:focus-visible {
+  outline: var(--k-focus-ring);
+  outline-offset: var(--k-focus-ring-offset);
+}
+
+.consent-doc-version {
+  font-size: var(--k-font-size-caption);
+  color: var(--k-text-dim);
+}
+
 .consent-check {
   display: flex;
   align-items: flex-start;
@@ -157,19 +253,11 @@ function acceptTerms() {
   cursor: pointer;
 }
 
-.consent-check a {
-  color: var(--k-color-primary);
-  font-weight: var(--k-font-weight-semibold);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .btn.consent-btn {
   align-self: flex-end;
   padding: 0 var(--k-space-6);
 }
 
-.consent-check a:focus-visible,
 .consent-checkbox:focus-visible {
   outline: var(--k-focus-ring);
   outline-offset: var(--k-focus-ring-offset);
