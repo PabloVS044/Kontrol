@@ -1,6 +1,7 @@
 import { requestAgent } from './domains/agent.js'
 import { requestAdmin } from './domains/admin.js'
 import { requestAuth } from './domains/auth.js'
+import { requestBilling } from './domains/billing.js'
 import { requestBudgets } from './domains/budgets.js'
 import { requestChat } from './domains/chat.js'
 import { requestCompanies } from './domains/companies.js'
@@ -29,6 +30,7 @@ const domainServices = {
   agent: requestAgent,
   admin: requestAdmin,
   auth: requestAuth,
+  billing: requestBilling,
   budgets: requestBudgets,
   chat: requestChat,
   companies: requestCompanies,

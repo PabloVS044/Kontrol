@@ -4,6 +4,7 @@ import requireCompany, { requireCompanyAllowingClosure } from '../middleware/req
 import requireCompanyOwner from '../middleware/requireCompanyOwner.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
 import {
   companyClosureUserLimiter,
   companyExportConcurrencyLimiter,
@@ -95,7 +96,7 @@ router.delete(
 router.post('/', requireAuth, validate(createCompanySchema), createCompany)
 router.get('/access-context', requireAuth, requireCompany, getCompanyAccessContext)
 router.get('/members-panel', requireAuth, requireCompany, requireCompanyOwner, getCompanyUsersPanel)
-router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, createOrGetCompanyInvitation)
+router.post('/invitation', requireAuth, requireCompany, requireCompanyOwner, requirePlanLimit('members'), createOrGetCompanyInvitation)
 router.delete('/invitation', requireAuth, requireCompany, requireCompanyOwner, deactivateCompanyInvitation)
 router.patch(
   '/members/:userId/role',

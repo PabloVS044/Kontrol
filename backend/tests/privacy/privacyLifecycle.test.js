@@ -8,7 +8,7 @@ vi.mock('../../src/services/aiAgentService.js', () => ({
   runAgentTurn: vi.fn(),
 }))
 import { runAgentTurn } from '../../src/services/aiAgentService.js'
-import { api, closeDb, createCompanyWithOwner, createUser, query } from '../db/fixtures.js'
+import { api, closeDb, createCompanyWithOwner, createUser, query, setCompanyPlan } from '../db/fixtures.js'
 import { connectMongo } from '../../src/db/mongo.js'
 import Conversation from '../../src/models/Conversation.js'
 import Message from '../../src/models/Message.js'
@@ -46,6 +46,8 @@ async function snapshot() {
 }
 async function account() {
   const ctx = await createCompanyWithOwner()
+  // PAY-1 — El agente es del plan Business; estas pruebas son de privacidad.
+  await setCompanyPlan(ctx.company.id_empresa, 'business')
   await query('UPDATE public.usuario SET password_hash = $1 WHERE id_usuario = $2', [await bcrypt.hash(password, 4), ctx.owner.id_usuario])
   return ctx
 }

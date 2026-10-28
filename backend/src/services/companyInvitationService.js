@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import { buildInvitationUrl } from '../utils/frontendUrl.js'
+import { checkPlanCapacity } from './billingService.js'
 
 const INVITATION_SELECT = `
   SELECT
@@ -184,6 +185,19 @@ export const acceptCompanyInvitation = async ({ client, inviteToken, id_usuario,
       membership: {
         rol: existingMembership.rows[0].rol_empresa,
       },
+    }
+  }
+
+  // PAY-1 — El tope de miembros del plan se aplica al entrar, que es cuando
+  // la empresa gana un miembro. El enlace pudo crearse con cupo libre.
+  const capacity = await checkPlanCapacity(invitation.id_empresa, 'members', client)
+  if (!capacity.allowed) {
+    return {
+      success: false,
+      code: 'plan_limit_reached',
+      message: 'This company has reached the member limit of its plan.',
+      invitation: serializeInvitation(invitation, req),
+      empresa: serializeInvitationCompany(invitation),
     }
   }
 

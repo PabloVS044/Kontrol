@@ -4,6 +4,7 @@ import { isMongoReady } from '../db/mongo.js'
 import AgentConversation from '../models/AgentConversation.js'
 import AgentMessage from '../models/AgentMessage.js'
 import { MONGO_TRANSACTION_OPTIONS } from './accountMongoWrite.js'
+import { markSubscriptionsForCancellation } from './billingService.js'
 import { logger } from '../utils/logger.js'
 
 // Deadlines promised by the data processing addendum, §10
@@ -40,8 +41,9 @@ const quoteIdentifier = (value) => `"${String(value).replaceAll('"', '""')}"`
 
 /**
  * Starts the closure of a company inside the caller's transaction: blocks the
- * company for ordinary use, disables its invitations and integrations and
- * opens the export window. Returns null when the company is already closing.
+ * company for ordinary use, disables its invitations and integrations, marks
+ * its subscription for cancellation and opens the export window. Returns null
+ * when the company is already closing.
  */
 export async function scheduleCompanyClosure(client, {
   companyId,
@@ -96,6 +98,9 @@ export async function scheduleCompanyClosure(client, {
      WHERE id_empresa = $1 AND status <> 'inactive'`,
     [companyId]
   )
+  // PAY-1 — A closing company must not renew its plan. The caller cancels it
+  // with the provider after COMMIT; the billing worker retries on failure.
+  await markSubscriptionsForCancellation(client, [companyId])
   return rows[0]
 }
 

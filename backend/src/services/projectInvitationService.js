@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import { getCollaboratorRole, serializeInvitationCompany } from './companyInvitationService.js'
 import { buildInvitationUrl } from '../utils/frontendUrl.js'
+import { checkPlanCapacity } from './billingService.js'
 
 const PROJECT_INVITATION_SELECT = `
   SELECT
@@ -244,6 +245,19 @@ export const acceptProjectInvitation = async ({ client, inviteToken, id_usuario,
   let joinedCompany = false
 
   if (!membershipRole) {
+    // PAY-1 — Entrar al proyecto suma un miembro a la empresa.
+    const capacity = await checkPlanCapacity(invitation.id_empresa, 'members', client)
+    if (!capacity.allowed) {
+      return {
+        success: false,
+        code: 'plan_limit_reached',
+        message: 'This company has reached the member limit of its plan.',
+        invitation: serializeProjectInvitation(invitation, req),
+        empresa: serializeInvitationCompany(invitation),
+        proyecto: serializeProjectInvitationProject(invitation),
+      }
+    }
+
     const collaboratorRole = await getCollaboratorRole(client)
 
     await client.query(

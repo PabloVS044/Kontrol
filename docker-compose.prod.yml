@@ -52,6 +52,8 @@ services:
       - AGENT_MAX_TOKENS=${AGENT_MAX_TOKENS:-}
       - AGENT_MAX_STEPS=${AGENT_MAX_STEPS:-}
       - AGENT_DISABLE_THINKING=${AGENT_DISABLE_THINKING:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
     depends_on:
       postgres:
         condition: service_healthy

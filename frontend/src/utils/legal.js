@@ -24,7 +24,10 @@ export const LEGAL_DOCUMENTS = [
     slug: 'terms',
     requiresAcceptance: true,
     languages: ['es', 'en'],
-    history: [{ version: '1.0', date: '2026-10-17', substantial: true }],
+    history: [
+      { version: '1.1', date: '2026-10-24', substantial: true },
+      { version: '1.0', date: '2026-10-17', substantial: true },
+    ],
   },
   {
     id: 'privacy',

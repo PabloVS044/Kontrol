@@ -99,6 +99,18 @@ export async function createSupplier({ id_empresa, nombre = unique('Proveedor') 
   return rows[0]
 }
 
+// PAY-1 — Pone a la empresa en un plan sin pasar por la pasarela, para las
+// suites que prueban otra cosa y necesitan un módulo premium (p. ej. el agente
+// es del plan Business). Proveedor 'fixture' y sin identificadores de pasarela.
+export async function setCompanyPlan(id_empresa, plan = 'business') {
+  await pool.query(
+    `INSERT INTO public.empresa_suscripcion (id_empresa, proveedor, plan, intervalo, estado, fin_periodo_actual)
+     VALUES ($1, 'fixture', $2, 'month', 'active', CURRENT_TIMESTAMP + INTERVAL '1 year')
+     ON CONFLICT (id_empresa) DO UPDATE SET plan = EXCLUDED.plan, estado = EXCLUDED.estado`,
+    [id_empresa, plan]
+  )
+}
+
 export async function createProject({ id_empresa, id_encargado, nombre = unique('Proyecto') }) {
   const { rows } = await pool.query(
     `INSERT INTO public.proyecto (nombre, fecha_inicio, presupuesto_total, id_empresa, id_encargado)

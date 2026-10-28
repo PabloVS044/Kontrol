@@ -97,7 +97,7 @@ const router = createRouter({
       path: '/teams',
       name: 'teams',
       component: () => import('../views/TeamsView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresTeamManagement: true, requiresFeature: 'teams' },
     },
     // Inventario es la tabla de productos; vender, dar de alta y mover stock
     // viven en Ventas > Cobrar (/sales/charge), que es la pantalla que antes
@@ -166,18 +166,25 @@ const router = createRouter({
       path: '/agent',
       name: 'agent',
       component: () => import('../views/AgentView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'ai_agent' },
     },
     {
       path: '/integrations',
       name: 'integrations',
       component: () => import('../views/IntegrationsView.vue'),
-      meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'integrations' },
     },
     {
       path: '/marketing',
       name: 'marketing',
       component: () => import('../views/MarketingPublicationsView.vue'),
+      meta: { surface: true, requiresAuth: true, requiresEmpresa: true, requiresFeature: 'marketing' },
+    },
+    {
+      // PAY-1 — Planes y suscripción de la empresa (pasarela en modo de prueba).
+      path: '/billing',
+      name: 'billing',
+      component: () => import('../views/BillingView.vue'),
       meta: { surface: true, requiresAuth: true, requiresEmpresa: true },
     },
     {
@@ -253,6 +260,13 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresTeamManagement && !authStore.canManageTeams) {
     next({ name: 'dashboard' })
+    return
+  }
+
+  // PAY-1 — Módulo fuera del plan: se muestra la página de planes en vez de
+  // una vista que solo recibiría 403. El backend aplica la misma regla.
+  if (to.meta.requiresFeature && !authStore.isSuperUser && !authStore.hasFeature(to.meta.requiresFeature)) {
+    next({ name: 'billing', query: { feature: to.meta.requiresFeature } })
     return
   }
 

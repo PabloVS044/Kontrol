@@ -30,6 +30,7 @@ const montar = async ({ rol = 'owner', canManageUsers = rol === 'owner', path = 
     routes: [
       { path: '/settings', component: Stub },
       { path: '/integrations', component: Stub },
+      { path: '/billing', component: Stub },
       { path: '/dashboard', component: Stub },
     ],
   })
@@ -79,21 +80,32 @@ describe('SettingsView.vue — configuración unificada', () => {
 
   it('el owner ve integraciones y miembros de la empresa', async () => {
     const wrapper = await montar()
-    expect(enlaces(wrapper)).toEqual(['/integrations', '/dashboard#company-members'])
+    expect(enlaces(wrapper)).toEqual(['/billing', '/integrations', '/dashboard#company-members'])
   })
 
   it('el admin ve integraciones pero no miembros de la empresa', async () => {
     // Igual que hoy: integraciones es owner/admin; el panel de miembros, solo owner.
     const wrapper = await montar({ rol: 'admin' })
-    expect(enlaces(wrapper)).toEqual(['/integrations'])
+    expect(enlaces(wrapper)).toEqual(['/billing', '/integrations'])
   })
 
-  it('manager y colaborador no ven ninguna de las dos tarjetas', async () => {
+  it('manager y colaborador no ven integraciones ni miembros, solo el plan', async () => {
     for (const rol of ['manager', 'collaborator']) {
       const wrapper = await montar({ rol })
-      expect(enlaces(wrapper)).toEqual([])
+      expect(enlaces(wrapper)).toEqual(['/billing'])
       expect(wrapper.find('.privacy-action button').exists()).toBe(false)
     }
+  })
+
+  // PAY-1 — El plan es de la empresa: cualquier miembro ve cuál tiene.
+  it('la tarjeta del plan muestra el plan de la empresa activa', async () => {
+    const store = useAuthStore()
+    const wrapper = await montar({ rol: 'collaborator' })
+    expect(wrapper.find('#plan').text()).toContain('Plan actual: Gratis')
+
+    store.setAccessContext({ capabilities: {}, plan: { code: 'business' } })
+    await flushPromises()
+    expect(wrapper.find('#plan').text()).toContain('Plan actual: Business')
   })
 
   it('owner and admin can request a company export, while other members cannot', async () => {

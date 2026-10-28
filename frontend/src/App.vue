@@ -35,6 +35,7 @@
     <VideoCallOverlay v-if="authStore.isLoggedIn && authStore.hasEmpresa" />
     <LegalConsentModal />
     <StorageConsentBanner />
+    <PlanRequiredNotice v-if="authStore.isLoggedIn" />
   </div>
 </template>
 
@@ -49,6 +50,7 @@ import BirdieAssistant from "./components/birdie/BirdieAssistant.vue";
 import VideoCallOverlay from "./components/chat/VideoCallOverlay.vue";
 import LegalConsentModal from "./components/LegalConsentModal.vue";
 import StorageConsentBanner from "./components/StorageConsentBanner.vue";
+import PlanRequiredNotice from "./components/billing/PlanRequiredNotice.vue";
 import { useAuthStore } from './stores/auth'
 import { useChatStore } from './stores/chat'
 import { useSaleConfigStore } from './stores/saleConfig'

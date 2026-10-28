@@ -1442,6 +1442,112 @@
       "undated": "Publications without a date ({count}): not shown on the calendar."
     }
   },
+  "billing": {
+    "title": "Plan and subscription",
+    "subtitle": "Choose what your company unlocks. The plan belongs to the company: every member shares it.",
+    "loading": "Loading plans…",
+    "loadError": "The plans could not be loaded.",
+    "notConfigured": "The payment gateway is not configured on this server. Every company is on the Free plan.",
+    "ownerOnly": "Only the company owner can subscribe, change or cancel the plan.",
+    "changed": "Change requested. The plan updates as soon as the gateway confirms it.",
+    "testMode": {
+      "title": "Test mode — no real charges",
+      "body": "Payments use Stripe in test mode because Stripe does not operate in Guatemala. Nothing is charged. To try it, use card 4242 4242 4242 4242 with any future date and CVC; do not enter a real card or real data."
+    },
+    "checkout": {
+      "success": "Test payment received. The plan is activated as soon as the gateway confirms the payment; it may take a few seconds.",
+      "cancel": "You cancelled the test payment. Nothing was charged."
+    },
+    "current": {
+      "title": "Your current plan",
+      "free": "Free plan, with no end date.",
+      "renews": "Renews on {date} (simulated {interval} charge).",
+      "endsOn": "Cancelled: the plan stays active until {date} and then the company goes back to the Free plan.",
+      "pastDue": "The last renewal (simulated) could not be charged. You keep the plan while the gateway retries; update the payment method from “Manage payment or cancel”."
+    },
+    "interval": {
+      "label": "Billing frequency",
+      "month": "Monthly",
+      "year": "Yearly",
+      "yearlyNote": "The yearly plan costs the same as 10 months.",
+      "per": {
+        "month": "/ month",
+        "year": "/ year"
+      }
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "To start organizing a small business."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "For teams already working across several projects."
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "No limits, plus the AI assistant."
+      }
+    },
+    "resources": {
+      "members": "Members",
+      "projects": "Projects",
+      "products": "Products"
+    },
+    "usage": {
+      "of": "{used} of {limit}",
+      "unlimited": "{used} · no limit"
+    },
+    "limits": {
+      "members": "Up to {count} members",
+      "projects": "Up to {count} projects",
+      "products": "Up to {count} products",
+      "unlimited": {
+        "members": "Unlimited members",
+        "projects": "Unlimited projects",
+        "products": "Unlimited products"
+      }
+    },
+    "features": {
+      "base": "Projects, tasks, inventory, point of sale, suppliers, budget, chat and on-screen reports",
+      "everythingIn": "Everything in {plan}, plus:"
+    },
+    "modules": {
+      "report_export": "Report export",
+      "teams": "Teams",
+      "integrations": "Integrations (Slack, Teams, Telegram and more)",
+      "marketing": "Marketing center",
+      "ai_agent": "Birdie, the AI assistant",
+      "marketing_ai": "AI-generated posts"
+    },
+    "actions": {
+      "subscribe": "Subscribe to {plan}",
+      "change": "Switch to {plan}",
+      "current": "This is your current plan.",
+      "downgradeHint": "To go back to Free, cancel the subscription in “Manage payment or cancel”.",
+      "manage": "Manage payment or cancel",
+      "redirecting": "Redirecting…",
+      "processing": "Processing…"
+    },
+    "gate": {
+      "featureTitle": "This module is not in your plan",
+      "feature": "{module} is included from the {plan} plan.",
+      "limitTitle": "You reached your plan's limit",
+      "limit": {
+        "members": "Your plan allows up to {limit} members. Upgrade the plan to add more.",
+        "projects": "Your plan allows up to {limit} projects. Upgrade the plan to create more.",
+        "products": "Your plan allows up to {limit} products. Upgrade the plan to add more."
+      },
+      "limitGeneric": "Your plan does not allow adding more. Upgrade the plan to continue.",
+      "exportLocked": "Report export is included from the Pro plan.",
+      "locked": "Requires a higher plan",
+      "cta": "See plans",
+      "dismiss": "Close"
+    },
+    "errors": {
+      "generic": "The operation could not be completed."
+    }
+  },
   "birdie": {
     "tooltip": "Double-click me to hide · drag me to move",
     "askQuestion": "Ask a question",
@@ -1647,6 +1753,11 @@
       "title": "Company members",
       "hint": "Invite people, change their role and their project access. The panel is on the Dashboard.",
       "link": "Go to company members"
+    },
+    "billing": {
+      "title": "Plan and subscription",
+      "hint": "Current plan: {plan}. Payments are in test mode: there are no real charges.",
+      "link": "See plans"
     },
     "privacy": {
       "title": "Your data and account",
@@ -2430,8 +2541,8 @@
           "body": "The point of sale (POS) and the configured VAT calculation are for your company's internal use: they do not issue certified electronic invoices (FEL) or replace your tax filings. You are responsible for issuing the required tax documents and for filing and paying your business's taxes."
         },
         {
-          "title": "5. Payments",
-          "body": "Kontrol does not charge anything today. The Stripe payment integration is planned only in demonstration mode (TEST): there are no real charges, card charges or subscription plans. Do not enter real cards or data in the demonstration. Your current access will not automatically become a paid service: before any charge we will inform you of the terms and you will have to accept them expressly."
+          "title": "5. Payments and plans (test mode)",
+          "body": "Kontrol does not charge anything for real. The Free, Pro and Business plans and their USD prices exist only as a demonstration: billing uses Stripe in test mode (TEST), which moves no money. Stripe does not operate in Guatemala, so this gateway cannot be used to charge for real; commercial operation will require replacing it with a provider authorized in the country. Payment happens only on Stripe's hosted page: Kontrol never receives or stores card data. Use only Stripe test cards and fictitious data; do not enter real cards or data. The subscription belongs to the company and only its owner can subscribe, change or cancel it; after cancelling, the plan lasts until the end of the period and the company then returns to the Free plan without losing its data. Your current access will not automatically become a paid service: before any real charge we will inform you of the terms and you will have to accept them expressly."
         },
         {
           "title": "6. Account, credentials and invitations",
@@ -2472,6 +2583,7 @@
       ],
       "summary": "The conditions for using Kontrol: what the service offers, your responsibilities and ours.",
       "history": {
+        "v1_1": "Describes the Free, Pro and Business plans and test-mode payments with Stripe, with no real charges.",
         "v1_0": "First published version."
       }
     },

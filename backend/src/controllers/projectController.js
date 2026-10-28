@@ -510,7 +510,8 @@ export const acceptProjectInvitation = async (req, res) => {
   })
 
   if (!result.success) {
-    return res.status(result.code === 'invite_inactive' ? 410 : 404).json(result)
+    const status = { invite_inactive: 410, plan_limit_reached: 403 }[result.code] ?? 404
+    return res.status(status).json(result)
   }
 
   return res.json(result)

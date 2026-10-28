@@ -1442,6 +1442,112 @@
       "undated": "Publicaciones sin fecha ({count}): no se muestran en el calendario."
     }
   },
+  "billing": {
+    "title": "Plan y suscripción",
+    "subtitle": "Elige qué desbloquea tu empresa. El plan es de la empresa: todos sus miembros lo comparten.",
+    "loading": "Cargando planes…",
+    "loadError": "No se pudieron cargar los planes.",
+    "notConfigured": "La pasarela de pago no está configurada en este servidor. Todas las empresas están en el plan Gratis.",
+    "ownerOnly": "Solo el dueño de la empresa puede contratar, cambiar o cancelar el plan.",
+    "changed": "Cambio solicitado. El plan se actualiza en cuanto la pasarela confirma el cambio.",
+    "testMode": {
+      "title": "Modo de prueba — sin cobros reales",
+      "body": "Los pagos usan Stripe en modo de prueba porque Stripe no opera en Guatemala. No se cobra nada. Para probar usa la tarjeta 4242 4242 4242 4242 con cualquier fecha futura y CVC; no ingreses una tarjeta ni datos reales."
+    },
+    "checkout": {
+      "success": "Pago de prueba recibido. El plan se activa en cuanto la pasarela confirma el pago; puede tardar unos segundos.",
+      "cancel": "Cancelaste el pago de prueba. No se hizo ningún cargo."
+    },
+    "current": {
+      "title": "Tu plan actual",
+      "free": "Plan gratuito, sin fecha de vencimiento.",
+      "renews": "Se renueva el {date} (cobro {interval} simulado).",
+      "endsOn": "Cancelado: el plan sigue activo hasta el {date} y después la empresa vuelve al plan Gratis.",
+      "pastDue": "No se pudo cobrar la última renovación (simulada). Mientras la pasarela reintenta conservas el plan; actualiza el método de pago desde «Gestionar pago o cancelar»."
+    },
+    "interval": {
+      "label": "Periodicidad del cobro",
+      "month": "Mensual",
+      "year": "Anual",
+      "yearlyNote": "El plan anual cuesta lo mismo que 10 meses.",
+      "per": {
+        "month": "/ mes",
+        "year": "/ año"
+      }
+    },
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "tagline": "Para empezar a ordenar un negocio pequeño."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "Para equipos que ya trabajan con varios proyectos."
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Sin topes y con el asistente de IA."
+      }
+    },
+    "resources": {
+      "members": "Miembros",
+      "projects": "Proyectos",
+      "products": "Productos"
+    },
+    "usage": {
+      "of": "{used} de {limit}",
+      "unlimited": "{used} · sin tope"
+    },
+    "limits": {
+      "members": "Hasta {count} miembros",
+      "projects": "Hasta {count} proyectos",
+      "products": "Hasta {count} productos",
+      "unlimited": {
+        "members": "Miembros ilimitados",
+        "projects": "Proyectos ilimitados",
+        "products": "Productos ilimitados"
+      }
+    },
+    "features": {
+      "base": "Proyectos, tareas, inventario, punto de venta, proveedores, presupuesto, chat y reportes en pantalla",
+      "everythingIn": "Todo lo del plan {plan}, más:"
+    },
+    "modules": {
+      "report_export": "Exportar reportes",
+      "teams": "Equipos",
+      "integrations": "Integraciones (Slack, Teams, Telegram y más)",
+      "marketing": "Centro de marketing",
+      "ai_agent": "Birdie, el asistente de IA",
+      "marketing_ai": "Generación de publicaciones con IA"
+    },
+    "actions": {
+      "subscribe": "Suscribirse a {plan}",
+      "change": "Cambiar a {plan}",
+      "current": "Es tu plan actual.",
+      "downgradeHint": "Para volver a Gratis, cancela la suscripción en «Gestionar pago o cancelar».",
+      "manage": "Gestionar pago o cancelar",
+      "redirecting": "Redirigiendo…",
+      "processing": "Procesando…"
+    },
+    "gate": {
+      "featureTitle": "Este módulo no está en tu plan",
+      "feature": "{module} está incluido desde el plan {plan}.",
+      "limitTitle": "Llegaste al tope de tu plan",
+      "limit": {
+        "members": "Tu plan permite hasta {limit} miembros. Mejora el plan para sumar más.",
+        "projects": "Tu plan permite hasta {limit} proyectos. Mejora el plan para crear más.",
+        "products": "Tu plan permite hasta {limit} productos. Mejora el plan para agregar más."
+      },
+      "limitGeneric": "Tu plan no permite agregar más. Mejora el plan para continuar.",
+      "exportLocked": "Exportar reportes está incluido desde el plan Pro.",
+      "locked": "Requiere un plan superior",
+      "cta": "Ver planes",
+      "dismiss": "Cerrar"
+    },
+    "errors": {
+      "generic": "No se pudo completar la operación."
+    }
+  },
   "birdie": {
     "tooltip": "Doble clic para ocultarme · arrástrame para moverme",
     "askQuestion": "Haz una pregunta",
@@ -1647,6 +1753,11 @@
       "title": "Miembros de la empresa",
       "hint": "Invita personas, cambia su rol y su acceso a proyectos. El panel está en Inicio.",
       "link": "Ir a Miembros de la empresa"
+    },
+    "billing": {
+      "title": "Plan y suscripción",
+      "hint": "Plan actual: {plan}. Los pagos están en modo de prueba: no hay cobros reales.",
+      "link": "Ver planes"
     },
     "privacy": {
       "title": "Tus datos y tu cuenta",
@@ -2430,8 +2541,8 @@
           "body": "El punto de venta (POS) y el cálculo de IVA configurado son de uso interno de tu empresa: no emiten facturas electrónicas (FEL) certificadas ni sustituyen tus declaraciones. Te corresponde emitir los documentos tributarios que procedan y declarar y pagar los impuestos de tu negocio."
         },
         {
-          "title": "5. Pagos",
-          "body": "Hoy Kontrol no realiza cobros. La integración de pagos con Stripe está contemplada solo en modo de demostración (TEST): no hay cobros reales, cargos a tarjetas ni planes de suscripción. No ingreses tarjetas ni datos reales en la demostración. El acceso actual no se convertirá automáticamente en un servicio de pago: antes de cualquier cobro te informaremos las condiciones y tendrás que aceptarlas expresamente."
+          "title": "5. Pagos y planes (modo de prueba)",
+          "body": "Kontrol no realiza cobros reales. Los planes Gratis, Pro y Business y sus precios en USD existen solo como demostración: el cobro usa Stripe en modo de prueba (TEST), que no mueve dinero. Stripe no opera en Guatemala, así que esta pasarela no puede usarse para cobrar de verdad; una operación comercial exigirá sustituirla por un proveedor autorizado en el país. El pago se hace únicamente en la página hospedada de Stripe: Kontrol no recibe ni guarda datos de tarjeta. Usa solo las tarjetas de prueba de Stripe y datos ficticios; no ingreses tarjetas ni datos reales. La suscripción es de la empresa y solo su dueño puede contratarla, cambiarla o cancelarla; al cancelar, el plan sigue hasta el fin del período y después la empresa vuelve al plan Gratis sin perder sus datos. El acceso actual no se convertirá automáticamente en un servicio de pago: antes de cualquier cobro real te informaremos las condiciones y tendrás que aceptarlas expresamente."
         },
         {
           "title": "6. Cuenta, credenciales e invitaciones",
@@ -2472,6 +2583,7 @@
       ],
       "summary": "Las condiciones para usar Kontrol: qué ofrece el servicio, tus responsabilidades y las nuestras.",
       "history": {
+        "v1_1": "Se describen los planes Gratis, Pro y Business y los pagos con Stripe en modo de prueba, sin cobros reales.",
         "v1_0": "Primera versión publicada."
       }
     },

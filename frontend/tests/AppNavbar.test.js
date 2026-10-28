@@ -372,6 +372,32 @@ describe('AppNavbar.vue — sesión e idioma', () => {
   })
 })
 
+// PAY-1 — Módulos fuera del plan: el enlace sigue, con un candado.
+describe('AppNavbar.vue — módulos según el plan', () => {
+  const candados = (wrapper) =>
+    wrapper.findAll('.appnav-link').filter((link) => link.find('.appnav-lock').exists()).map((link) => link.attributes('href'))
+
+  it('en el plan gratuito marca equipos, marketing y la IA', async () => {
+    const { wrapper } = await montar({ capabilities: { can_view_projects: true } })
+    expect(candados(wrapper)).toEqual(['/teams', '/marketing', '/agent'])
+  })
+
+  it('con Pro solo queda bloqueada la IA', async () => {
+    const { wrapper, store } = await montar()
+    store.setAccessContext({
+      capabilities: {},
+      plan: { code: 'pro', features: ['report_export', 'teams', 'integrations', 'marketing'] },
+    })
+    await wrapper.vm.$nextTick()
+    expect(candados(wrapper)).toEqual(['/agent'])
+  })
+
+  it('el candado tiene texto accesible traducido', async () => {
+    const { wrapper } = await montar()
+    expect(wrapper.find('.appnav-lock').attributes('aria-label')).toBe('Requiere un plan superior')
+  })
+})
+
 describe('AppNavbar.vue — cajón según el tamaño de letra', () => {
   // happy-dom no evalúa media queries por ancho: se simula una ventana de 1600px.
   const ventana = (ancho) => vi.fn((query) => ({

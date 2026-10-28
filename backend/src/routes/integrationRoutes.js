@@ -3,6 +3,8 @@ import requireAuth from '../middleware/requireAuth.js'
 import requireCompany from '../middleware/requireCompany.js'
 import requireCompanyRole from '../middleware/requireCompanyRole.js'
 import validate from '../middleware/validate.js'
+import requirePlanFeature from '../middleware/requirePlanFeature.js'
+import { FEATURES } from '../billing/plans.js'
 import { saveIntegrationSchema, toggleIntegrationSchema } from '../schemas/integrationSchemas.js'
 import {
   listIntegrations,
@@ -15,7 +17,7 @@ import {
 
 const router = createRouter()
 
-const base = [requireAuth, requireCompany]
+const base = [requireAuth, requireCompany, requirePlanFeature(FEATURES.INTEGRATIONS)]
 const admin = [...base, requireCompanyRole('owner', 'admin')]
 
 router.get('/', ...base, listIntegrations)

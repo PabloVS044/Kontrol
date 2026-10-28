@@ -5,6 +5,7 @@ import { isMongoReady } from '../db/mongo.js'
 import { isReauthenticated, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import { prepareCompanyDataExport } from '../services/companyDataExport.js'
 import { processMongoAccountDeletion } from '../services/accountDeletionOutbox.js'
+import { cancelPendingSubscriptions } from '../services/billingService.js'
 import { CLOSURE_REASONS, scheduleCompanyClosure } from '../services/companyClosure.js'
 import { disconnectUserSockets } from '../socket/index.js'
 import { logger } from '../utils/logger.js'
@@ -235,6 +236,16 @@ export const deleteOwnAccount = async (req, res) => {
     try { disconnectUserSockets(user.id_usuario) } catch (error) {
       logger.error('Could not disconnect deleted account sockets:', error)
     }
+    let subscriptionCancellation = closedCompanies.length ? 'pending_retry' : 'not_applicable'
+    if (closedCompanies.length) {
+      try {
+        const cancelled = await cancelPendingSubscriptions({ companyIds: closedCompanies })
+        if (cancelled === null) subscriptionCancellation = 'billing_not_configured'
+        else if (cancelled > 0) subscriptionCancellation = 'requested'
+      } catch (error) {
+        logger.error('Subscription cancellation was queued for retry:', error)
+      }
+    }
     let mongoCleanup = 'pending_retry'
     try {
       if (await processMongoAccountDeletion(user.id_usuario)) mongoCleanup = 'completed'
@@ -249,6 +260,7 @@ export const deleteOwnAccount = async (req, res) => {
         retentionPeriod: 'not_defined_in_the_current_policy',
         externalProviders: 'not_deleted_by_this_operation',
         mongoConversationData: mongoCleanup,
+        subscriptionCancellation,
         ownerCompanies: memberships.rows
           .filter(({ rol_empresa }) => rol_empresa === 'owner')
           .map(({ id_empresa }) => id_empresa),

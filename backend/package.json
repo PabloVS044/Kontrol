@@ -20,6 +20,7 @@
     "db:test:down": "docker compose -f ../docker-compose.integration.yml down",
     "seed:test": "node src/db/seed.js",
     "reset:test": "node src/db/reset.js",
+    "stripe:seed": "node scripts/stripe-seed.js",
     "verify:ux-phase2": "node src/db/verifyUxPhase2.js",
     "test:privacy": "vitest run -c vitest.privacy.config.js",
     "validate:privacy": "npm run test:coverage && npm run test:integration && npm run test:regression && npm run test:privacy"
@@ -43,6 +44,7 @@
     "pg": "^8.20.0",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "stripe": "^23.0.0",
     "uploadthing": "^7.7.4",
     "zod": "^4.6.7"
   },

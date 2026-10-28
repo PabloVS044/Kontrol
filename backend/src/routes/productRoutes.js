@@ -5,6 +5,7 @@ import requireCompany from '../middleware/requireCompany.js'
 import requireProject from '../middleware/requireProject.js'
 import requireProjectPermission from '../middleware/requireProjectPermission.js'
 import validate from '../middleware/validate.js'
+import requirePlanLimit from '../middleware/requirePlanLimit.js'
 import {
   getProductsQuerySchema,
   productIdParamSchema,
@@ -88,6 +89,7 @@ router.post(
   '/',
   requireProject,
   requireProjectPermission('gestionar_inventario'),
+  requirePlanLimit('products'),
   validate(createProductSchema),
   createProduct
 )
