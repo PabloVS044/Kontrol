@@ -16,6 +16,7 @@ import { testTeamsConnection } from '../services/teamsService.js'
 import { testTelegramConnection } from '../services/telegramService.js'
 import { testTwilioSmsConnection } from '../services/twilioSmsService.js'
 import { testWebhookConnection } from '../services/webhookService.js'
+import { assertPublicHttpUrl } from '../services/ssrfGuard.js'
 
 export const listIntegrations = async (req, res) => {
   const { id_empresa } = req.empresa
@@ -117,6 +118,18 @@ export const saveIntegrationConfig = async (req, res) => {
       success: false,
       message: `Faltan campos requeridos: ${missingFields.join(', ')}.`,
     })
+  }
+
+  // DT-18 (RTF 2): el destino se valida también al guardar. Cada envío lo
+  // vuelve a comprobar al conectar; esto evita guardar una integración que
+  // nunca va a poder salir.
+  for (const campo of catalogEntry.campos_credenciales.filter((f) => f.type === 'url')) {
+    if (!merged[campo.key]) continue
+    try {
+      await assertPublicHttpUrl(merged[campo.key])
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message })
+    }
   }
 
   const encrypted = encryptCredentials(merged)

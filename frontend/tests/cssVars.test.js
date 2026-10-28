@@ -179,7 +179,9 @@ describe('LoginView — estética restaurada (0547bbb)', () => {
    * sigue fallando si el valor cambia, que es lo que degradó la pantalla.
    */
   const invariantes = [
-    ['título a 32px', '\\.login-title', 'font-size', /^32px$/],
+    // 2rem son 32px: los tamaños de letra pasaron a rem para el ajuste de
+    // Configuración, que en el login no se aplica.
+    ['título a 32px', '\\.login-title', 'font-size', /^(32px|2rem)$/],
     ['CTA con texto blanco', '\\.login-btn-primary', 'color', /^(#ffffff|rgb\(\s*255,\s*255,\s*255\s*\))$/i],
     ['CTA con radio de 8px', '\\.login-btn-primary', 'border-radius', /^8px$/],
     ['input con radio de 6px', '\\.login-input', 'border-radius', /^6px$/],

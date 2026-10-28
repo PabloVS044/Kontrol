@@ -92,7 +92,7 @@ defineEmits(['back'])
   border: none;
   color: var(--TextFaint);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   margin-bottom: 20px;
   padding: 0;
@@ -125,7 +125,7 @@ defineEmits(['back'])
 
 .proj-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--TextMuted);
   margin: 0;
   max-width: 560px;
@@ -142,7 +142,7 @@ defineEmits(['back'])
   border: 1px solid #2a2a2a;
   color: var(--TextMuted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
@@ -157,7 +157,7 @@ defineEmits(['back'])
 .meta-item { display: flex; flex-direction: column; gap: 3px; }
 .meta-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--TextFaint);
   letter-spacing: 0.1em;
@@ -165,7 +165,7 @@ defineEmits(['back'])
 }
 .meta-value {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--TextSoft);
 }
@@ -189,14 +189,14 @@ defineEmits(['back'])
 }
 .op-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--TextFaint);
   white-space: nowrap;
 }
 
 .header-actions :deep(.pill) {
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 .header-skeleton { display: flex; flex-direction: column; gap: 10px; }
@@ -220,6 +220,6 @@ defineEmits(['back'])
   gap: 12px;
   color: #fb7185;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 </style>

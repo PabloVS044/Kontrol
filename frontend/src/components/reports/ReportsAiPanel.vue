@@ -99,7 +99,7 @@ function barPct(n) {
 <style scoped>
 .ctx-panel { padding: 24px 20px; border-left: 1px solid var(--k-shade-5); background: color-mix(in srgb, var(--k-shade-1) 92%, transparent); overflow-y: auto; }
 .ctx-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.ctx-badge { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--k-color-primary); letter-spacing: 0.04em; }
+.ctx-badge { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; color: var(--k-color-primary); letter-spacing: 0.04em; }
 
 .toggle { display: flex; align-items: center; cursor: pointer; }
 .toggle input { display: none; }
@@ -109,24 +109,24 @@ function barPct(n) {
 .toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(14px); background: var(--k-color-primary); }
 
 .ctx-section { margin-bottom: 16px; }
-.ctx-label { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; color: var(--k-text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; }
-.ctx-insight { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); line-height: 1.7; margin: 0; }
+.ctx-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; color: var(--k-text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; }
+.ctx-insight { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); line-height: 1.7; margin: 0; }
 .ctx-divider { height: 1px; background: var(--k-shade-3b); margin: 16px 0; }
 .ctx-input-wrap { margin-top: 4px; }
 .ctx-input {
   width: 100%; padding: 8px 10px; background: var(--k-shade-3); border: 1px solid var(--k-shade-5); color: var(--k-text-faint);
-  font-family: 'Manrope', sans-serif; font-size: 11px; outline: none; cursor: not-allowed; box-sizing: border-box;
+  font-family: 'Manrope', sans-serif; font-size: 0.6875rem; outline: none; cursor: not-allowed; box-sizing: border-box;
 }
 .ctx-actions :deep(.btn) {
   display: block; width: 100%; text-align: left; padding: 8px 10px; background: var(--k-shade-3);
-  border: 1px solid var(--k-shade-4); color: var(--k-text-faint); font-family: 'Manrope', sans-serif; font-size: 11px;
+  border: 1px solid var(--k-shade-4); color: var(--k-text-faint); font-family: 'Manrope', sans-serif; font-size: 0.6875rem;
   border-radius: 0; margin-bottom: 6px; transition: border-color .2s, color .2s;
 }
 .ctx-actions :deep(.btn:hover) { border-color: rgba(var(--k-color-primary-rgb), 0.3); color: var(--k-color-primary); }
 
 .donut-wrap { display: flex; justify-content: center; margin: 8px 0; }
 .donut-legend { display: flex; gap: 12px; justify-content: center; }
-.dl-item { display: flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
+.dl-item { display: flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
 .dl-dot { width: 6px; height: 6px; border-radius: 50%; }
 .dl-dot.gold { background: var(--k-color-primary); }
 .dl-dot.dim { background: var(--k-shade-8); }
@@ -138,9 +138,9 @@ function barPct(n) {
 .bar-fill.gold { background: var(--k-color-primary); }
 .bar-fill.blue { background: var(--k-hue-blue); }
 .bar-fill.dim { background: var(--k-shade-8); }
-.bar-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); min-width: 24px; text-align: right; }
+.bar-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); min-width: 24px; text-align: right; }
 .bar-labels { display: flex; flex-direction: column; gap: 8px; }
-.bar-labels span { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); padding-top: 2px; }
+.bar-labels span { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); padding-top: 2px; }
 
 @media (max-width: 1100px) {
   .ctx-panel { border-left: none; border-top: 1px solid var(--k-shade-4); }

@@ -95,6 +95,21 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Tamaño de letra elegido en Configuración (useFontScale.js). En porcentaje,
+   para respetar también el tamaño base que el usuario tenga en su navegador.
+   Mueve todo lo que esté en rem, que son los tamaños de letra; el layout en
+   px no cambia. tests/fontScale.test.js comprueba que cada nivel del
+   composable tiene su regla aquí. */
+html[data-font-scale='large'] {
+  font-size: 112.5%;
+}
+html[data-font-scale='larger'] {
+  font-size: 125%;
+}
+html[data-font-scale='largest'] {
+  font-size: 137.5%;
+}
+
 *,
 *::before,
 *::after {

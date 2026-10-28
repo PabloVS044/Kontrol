@@ -535,7 +535,7 @@ async function submitFunds(payload) {
 .title { font-family: var(--k-font-display); font-size: var(--k-font-size-display); font-weight: 400; color: var(--k-color-text); }
 .subtitle { font-size: var(--k-font-size-body-small); color: var(--k-gray-5); display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
+  font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
   color: var(--k-color-primary); background: rgba(var(--k-color-primary-rgb), 0.1);
   padding: 2px 8px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
 }
@@ -566,7 +566,10 @@ async function submitFunds(payload) {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   gap: 32px;
 }
-@media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+/* minmax(0, …) y no 1fr: 1fr deja que el ancho mínimo del contenido estire la
+   columna, y la tabla de productos llevaba la página a ~850px en un teléfono,
+   ensanchando también la navbar. */
+@media (max-width: 1100px) { .main-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* Movements strip */
 .movements-strip {
@@ -659,6 +662,9 @@ async function submitFunds(payload) {
   .title { font-size: var(--k-font-size-display-2); }
   .header { flex-direction: column; align-items: stretch; }
   .header-actions { width: 100%; }
-  .project-select { flex: 1; min-width: 0; }
+  /* El selector en su propia fila: compartiendo fila con los tres botones
+     quedaba aplastado a unos pocos píxeles. */
+  .project-select { flex: 1 1 100%; min-width: 0; }
+  .header-actions :deep(.btn) { flex: 1 1 auto; }
 }
 </style>

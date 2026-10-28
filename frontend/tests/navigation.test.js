@@ -48,6 +48,22 @@ describe('router — Ventas', () => {
     expect(ventas.path).toBe('/sales')
     expect(ventas.meta).toEqual(inventario.meta)
   })
+
+  it('Cobrar e Historial cuelgan de /sales con los mismos permisos', () => {
+    const inventario = router.getRoutes().find((r) => r.name === 'inventory')
+    for (const [name, path] of [['sales-charge', '/sales/charge'], ['sales-history', '/sales/history']]) {
+      const ruta = router.getRoutes().find((r) => r.name === name)
+      expect(ruta.path).toBe(path)
+      expect(ruta.meta).toEqual(inventario.meta)
+    }
+  })
+
+  it('Cobrar es la pantalla que antes ocupaba /inventory; Inventario es la tabla', async () => {
+    const cobrar = router.getRoutes().find((r) => r.name === 'sales-charge')
+    const inventario = router.getRoutes().find((r) => r.name === 'inventory')
+    expect((await cobrar.components.default()).default.__file).toMatch(/InventoryPage.vue$/)
+    expect((await inventario.components.default()).default.__file).toMatch(/InventoryView.vue$/)
+  })
 })
 
 describe('router — scrollBehavior', () => {

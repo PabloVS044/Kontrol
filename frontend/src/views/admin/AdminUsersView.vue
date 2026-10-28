@@ -147,7 +147,7 @@ onMounted(async () => {
 
 .adm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;
@@ -157,7 +157,7 @@ onMounted(async () => {
 .adm-subtitle {
   padding-top: 0.5rem;
   padding-bottom: 2rem;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0;
@@ -183,7 +183,7 @@ onMounted(async () => {
   border: 1px solid var(--k-color-border);
   color: var(--k-text-muted);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   padding: 8px 18px;
@@ -198,10 +198,10 @@ onMounted(async () => {
   color: var(--k-color-primary);
 }
 
-.sort-arrow { font-size: 11px; }
+.sort-arrow { font-size: 0.6875rem; }
 
 .sort-count {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-dim);
   margin-left: 4px;
   font-family: var(--font-sans);
@@ -215,7 +215,7 @@ onMounted(async () => {
   grid-template-columns: 2fr 2fr 100px 90px 90px;
   gap: 12px;
   padding: 8px 16px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--k-text-dim);
@@ -265,7 +265,7 @@ onMounted(async () => {
 }
 
 .task-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: var(--font-sans);
   font-weight: 600;
   color: var(--k-color-text);
@@ -275,13 +275,13 @@ onMounted(async () => {
 }
 
 .task-id {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
 
 .cell-email {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   white-space: nowrap;
@@ -297,7 +297,7 @@ onMounted(async () => {
 .role-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -316,7 +316,7 @@ onMounted(async () => {
 }
 
 .list-cell-num {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-muted);
   text-align: center;
   font-family: var(--font-sans);
@@ -331,7 +331,7 @@ onMounted(async () => {
 }
 
 .toggle-btn {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   font-family: var(--font-sans);
   letter-spacing: 0.04em;
@@ -352,7 +352,7 @@ onMounted(async () => {
   color: var(--k-text-dim);
   padding: 40px;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.8125rem;
   background: var(--k-surface-card);
   border: 1px solid var(--k-color-border);
 }

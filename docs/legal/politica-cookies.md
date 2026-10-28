@@ -35,6 +35,7 @@ No tenemos constancia de que haya ocurrido. Es un riesgo de cómo está construi
 | --- | --- | --- |
 | Idioma | `kontrol:locale` (y `locale_<id>`, de versiones anteriores, que solo se lee) | Abrir Kontrol en el idioma que elegiste. |
 | Tema | `kontrol:theme` | Recordar el tema visual. Hoy no hay un control para cambiarlo, así que en la práctica no se guarda. |
+| Tamaño de letra | `kontrol:font-scale` | Recordar el tamaño de letra que elegiste en Configuración. |
 | Asistente visible | `prefs_<id>`, `prefs_anon` | Recordar si ocultaste la burbuja del asistente en Configuración. |
 | Vista de proyectos | `projects-view-mode` | Recordar si ves los proyectos en cuadrícula o en lista. |
 | Posición del asistente | `birdie-fab-position`, `birdie-assistant-home` | Recordar dónde dejaste el asistente en la pantalla. |

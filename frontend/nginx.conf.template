@@ -7,6 +7,9 @@ server {
     listen 80;
     server_name _;
 
+    # DT-19 (RTF 2): no anunciar la versión de nginx en la cabecera Server.
+    server_tokens off;
+
     root /usr/share/nginx/html;
     index index.html;
 
@@ -38,7 +41,25 @@ server {
     }
 
     # SPA fallback: all non-file routes go to index.html
+    #
+    # DT-19 (RTF 2, SEC-01): el documento del SPA es el que ejecuta scripts y
+    # guarda el token, y antes salía sin ninguna cabecera de seguridad: helmet
+    # solo cubre lo que responde Express. Van solo en este bloque porque /api y
+    # /socket.io ya traen las del backend. Los mismos valores están en
+    # vercel.json; frontend/tests/securityHeaders.test.js comprueba que no se
+    # separen.
+    #  - connect-src admite https: y wss: porque la API puede vivir en otro
+    #    origen (VITE_API_URL) y UploadThing sube directo a su servidor; y
+    #    blob: y data: porque three.js carga el logo 3D con fetch sobre ellas.
+    #  - camera y microphone quedan en (self): el escáner del POS y las
+    #    llamadas usan getUserMedia.
     location / {
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' blob: data: https: wss:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "DENY" always;
+        add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "camera=(self), microphone=(self), geolocation=(), payment=()" always;
         try_files $uri $uri/ /index.html;
     }
 }

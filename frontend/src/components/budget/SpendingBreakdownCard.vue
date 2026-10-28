@@ -171,7 +171,7 @@ function money(v) {
 .net-row.positive .net-label { color: var(--k-alert-ok-text); }
 .net-row.negative .net-label { color: var(--k-alert-critical-text); }
 .net-value {
-  font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .net-row.positive .net-value { color: var(--k-alert-ok-text); }
 .net-row.negative .net-value { color: var(--k-alert-critical-text); }

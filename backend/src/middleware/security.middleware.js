@@ -1,5 +1,12 @@
 import helmet from 'helmet';
 
+/**
+ * Única configuración de helmet de la API (DT-19, RTF 2). Antes `index.js`
+ * aplicaba una segunda instancia con sus valores por defecto, que reemplazaba
+ * esta CSP por la genérica (`frame-ancestors 'self'` en lugar de `'none'`).
+ * El HSTS que se conserva es el de aquella segunda instancia, porque era el
+ * que de verdad salía en las respuestas.
+ */
 export function securityMiddleware(app) {
   app.disable('x-powered-by');
 
@@ -28,13 +35,13 @@ export function securityMiddleware(app) {
         policy: 'no-referrer',
       },
 
-      strictTransportSecurity:
-        process.env.NODE_ENV === 'production'
-          ? {
-              maxAge: 31536000,
-              includeSubDomains: true,
-            }
-          : false,
+      // Un navegador ignora HSTS sobre http, así que no hace falta limitarlo
+      // a producción.
+      strictTransportSecurity: {
+        maxAge: 15552000, // 180 días en segundos
+        includeSubDomains: true,
+        preload: true,
+      },
     }),
   );
 
@@ -43,6 +50,10 @@ export function securityMiddleware(app) {
       'Permissions-Policy',
       'camera=(), microphone=(), geolocation=(), payment=()',
     );
+    // Las respuestas de la API llevan datos de la sesión: ni el navegador ni
+    // un proxy intermedio deben guardarlas. Una ruta que necesite caché puede
+    // sobrescribir la cabecera.
+    res.setHeader('Cache-Control', 'no-store');
 
     next();
   });

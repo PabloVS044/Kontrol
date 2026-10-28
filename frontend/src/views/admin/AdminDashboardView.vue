@@ -211,7 +211,7 @@ onMounted(async () => {
 
 .adm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;
@@ -220,7 +220,7 @@ onMounted(async () => {
 
 .adm-subtitle {
   padding-top: 0.5rem;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0;
@@ -250,7 +250,7 @@ onMounted(async () => {
 .kpi-dim { opacity: 0.65; }
 
 .kpi-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -267,7 +267,7 @@ onMounted(async () => {
 }
 
 .kpi-sub {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
@@ -295,7 +295,7 @@ onMounted(async () => {
 }
 
 .chart-title {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -305,7 +305,7 @@ onMounted(async () => {
 }
 
 .chart-empty {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
@@ -323,7 +323,7 @@ onMounted(async () => {
 .status-row { grid-template-columns: 60px 1fr 28px; }
 
 .bar-label, .status-lbl {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   white-space: nowrap;
@@ -350,7 +350,7 @@ onMounted(async () => {
 .bar-fill.gold  { background: var(--k-color-primary); }
 
 .bar-val {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   text-align: right;
@@ -385,7 +385,7 @@ onMounted(async () => {
 }
 
 .donut-sub {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
@@ -398,7 +398,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-muted);
 }
 

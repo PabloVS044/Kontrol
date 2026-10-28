@@ -108,8 +108,12 @@
         <!-- Encabezado -->
         <div class="inv-header">
           <div class="inv-header-left">
-            <h1 class="inv-title">{{ $t('inventory.header.title') }}</h1>
-            <p class="inv-subtitle">{{ $t('inventory.header.subtitle') }}</p>
+            <!-- Esta pantalla es Ventas > Cobrar; la tabla de Inventario es otra. -->
+            <RouterLink class="inv-back" :to="{ name: 'sales' }">
+              <span aria-hidden="true">←</span> {{ $t('sales.title') }}
+            </RouterLink>
+            <h1 class="inv-title">{{ $t('sales.checkout.title') }}</h1>
+            <p class="inv-subtitle">{{ $t('sales.checkout.subtitle') }}</p>
           </div>
           <div class="inv-header-actions">
             <button
@@ -478,7 +482,7 @@
 <script setup>
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import ErrorState from '../components/common/ErrorState.vue'
@@ -544,7 +548,7 @@ function requestProjectId() {
 
 async function apiFetch(path) {
   const res = await requestApi(path, {
-    headers: authHeaders(requestProjectId()),
+    headers: authHeaders({}, { projectId: requestProjectId() }),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -579,15 +583,29 @@ async function loadProjects() {
   }
 }
 
+/** `?projectId=` del filtro, o nada en «todos los proyectos». */
+function inventoryQuery() {
+  const params = new URLSearchParams()
+  if (selectedProject.value) {
+    params.set('projectId', selectedProject.value.id_proyecto)
+  }
+  return params.toString() ? `?${params}` : ''
+}
+
+async function loadStockAlerts() {
+  try {
+    const alertasRes = await apiFetch(`/api/products/alerts/low-stock${inventoryQuery()}`)
+    stockAlerts.value = alertasRes.data
+  } catch {
+    // non-fatal: las alertas se refrescan en la siguiente carga completa
+  }
+}
+
 async function loadData() {
   loading.value    = true
   fetchError.value = null
   try {
-    const params = new URLSearchParams()
-    if (selectedProject.value) {
-      params.set('projectId', selectedProject.value.id_proyecto)
-    }
-    const qs = params.toString() ? `?${params}` : ''
+    const qs = inventoryQuery()
 
     const [productosRes, alertasRes] = await Promise.all([
       apiFetch(`/api/products${qs}`),
@@ -732,7 +750,8 @@ function stockNumClass(p) {
 
 function detailLink(product) {
   const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
-  const query = projectId ? `?project=${projectId}` : ''
+  // `from` hace que el detalle vuelva aquí y no a la tabla de Inventario.
+  const query = projectId ? `?project=${projectId}&from=charge` : '?from=charge'
   return `/inventory/${product.id_producto}${query}`
 }
 
@@ -861,17 +880,45 @@ function buildScanCandidate(product) {
   return { product, max, inCart, sellable: canSellProduct(product) && max > 0 }
 }
 
-function handleScan(code) {
-  const scanned = String(code ?? '').trim()
-  if (!scanned) return
+/**
+ * Pasa a la lista el stock que trajo el servidor. Se usa el objeto de la lista
+ * cuando existe, para conservar los agregados por proyecto de la tarjeta.
+ */
+function syncListedProduct(fresh) {
+  const listed = products.value.find((p) => p.id_producto === fresh.id_producto)
+  if (!listed) return fresh
+  listed.stock_actual = fresh.stock_actual
+  return listed
+}
 
+// Un lector puede emitir el mismo código dos veces seguidas: mientras una
+// búsqueda está en curso, las lecturas nuevas se ignoran.
+let scanLookupPending = false
+
+async function handleScan(code) {
+  const scanned = String(code ?? '').trim()
+  if (!scanned || scanLookupPending) return
+
+  // DT-22 (RTF 2, PERF-04): el código se resuelve en el servidor. Antes se
+  // buscaba en `products`, el inventario completo que la vista descarga al
+  // abrirse —8.1 MB con 20 000 productos—; ahora viajan solo las
+  // coincidencias, con el stock de ese momento.
+  //
   // El stock vive en producto.stock_actual y cada producto pertenece a un solo
   // proyecto, así que el mismo código en dos proyectos son dos inventarios
   // distintos. Resolver con el primer match descontaba del proyecto de id más
   // bajo, no del que tiene el cajero delante. Se recogen todos y se decide.
-  const matches = products.value.filter(
-    (p) => p.codigo_barras && String(p.codigo_barras) === scanned
-  )
+  let matches
+  scanLookupPending = true
+  try {
+    const res = await apiFetch(`/api/products/barcode/${encodeURIComponent(scanned)}${inventoryQuery()}`)
+    matches = (res.data ?? []).map(syncListedProduct)
+  } catch {
+    flashScanFeedback('err', t('inventory.errors.networkError'))
+    return
+  } finally {
+    scanLookupPending = false
+  }
   if (!matches.length) {
     flashScanFeedback('err', t('inventory.scanner.notFound', { code: scanned }))
     return
@@ -1064,12 +1111,38 @@ async function submitSale() {
     // del informe de ventas.
     lastSale.value = data.data?.venta ?? null
 
+    const vendidos = new Map(saleCart.value.map((item) => [item.product.id_producto, item.cantidad]))
     clearSaleCart()
-    await loadData()
+    // DT-22: el servidor devuelve el stock final de lo vendido, así que no
+    // hace falta volver a descargar el inventario después de cada venta. Si
+    // no lo trae, se recarga como antes.
+    if (Array.isArray(data.data?.stock)) {
+      applySoldStock(data.data.stock, vendidos)
+      await loadStockAlerts()
+    } else {
+      await loadData()
+    }
   } catch (err) {
     saleError.value = err.message || t('inventory.errors.networkError')
   } finally {
     saleSubmitting.value = false
+  }
+}
+
+/**
+ * Refleja una venta en la lista sin pedirla otra vez: el stock que devolvió el
+ * servidor y, cuando la tarjeta los muestra, los totales del proyecto.
+ */
+function applySoldStock(stock, vendidos) {
+  for (const { id_producto, stock_actual } of stock) {
+    const product = products.value.find((p) => p.id_producto === id_producto)
+    if (!product) continue
+    product.stock_actual = stock_actual
+    const cantidad = vendidos.get(id_producto) ?? 0
+    if ('salidas_proyecto' in product) {
+      product.salidas_proyecto = Number(product.salidas_proyecto ?? 0) + cantidad
+      product.neto_proyecto = Number(product.neto_proyecto ?? 0) - cantidad
+    }
   }
 }
 
@@ -1113,7 +1186,7 @@ async function submitProduct(formData) {
   try {
     const res = await requestApi('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(formData.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: formData.id_proyecto }),
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
@@ -1162,7 +1235,7 @@ async function submitEdit(payload) {
     // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(product.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.id_proyecto }),
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1200,7 +1273,7 @@ async function confirmDelete() {
   try {
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeaders(product.id_proyecto),
+      headers: authHeaders({}, { projectId: product.id_proyecto }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {

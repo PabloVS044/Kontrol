@@ -22,7 +22,9 @@
     "licenses": "npm run licenses:sbom && node scripts/licenses-report.mjs",
     "licenses:sbom": "npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --ignore-npm-errors --package-lock-only --flatten-components --output-reproducible --output-file docs/legal/licencias/sbom.cdx.json && npx --yes @cyclonedx/cyclonedx-npm@6.0.1 --ignore-npm-errors --package-lock-only --flatten-components --output-reproducible --omit dev --output-file docs/legal/licencias/sbom-produccion.cdx.json",
     "format": "prettier --write",
-    "install:all": "npm install"
+    "install:all": "npm install",
+    "backup:drill": "python3 scripts/backups/drill.py",
+    "backup:test": "python3 -m unittest discover -s tests/backups -v"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

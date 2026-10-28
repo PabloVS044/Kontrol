@@ -19,6 +19,8 @@ export default defineConfig({
       'tests/accountDeletionOutbox.test.js',
       'tests/accountMongoWrite.test.js',
       'tests/companyDataExport.test.js',
+      'tests/companyClosure.test.js',
+      'tests/companyClosureController.test.js',
       'tests/rateLimit.test.js',
       'tests/requireAuth.test.js',
     ],
@@ -32,6 +34,9 @@ export default defineConfig({
       include: [
         'src/controllers/privacyController.js',
         'src/services/companyDataExport.js',
+        'src/services/companyClosure.js',
+        'src/controllers/companyClosureController.js',
+        'src/auth/reauthentication.js',
         'src/services/mongoAccountCleanup.js',
         'src/services/accountDeletionOutbox.js',
         'src/services/accountMongoWrite.js',

@@ -7,6 +7,7 @@ vi.mock('node:dns/promises', () => ({ lookup: vi.fn() }))
 
 import { lookup } from 'node:dns/promises'
 import { FetchTimeoutError } from '../src/utils/fetchWithTimeout.js'
+import { transport, sendHttpRequest } from '../src/utils/httpTransport.js'
 import { testWebhookConnection, sendWebhookEvent } from '../src/services/webhookService.js'
 import { testSlackConnection, sendSlackNotification } from '../src/services/slackService.js'
 import { testTeamsConnection, sendTeamsNotification } from '../src/services/teamsService.js'
@@ -22,9 +23,15 @@ import { testSendGridConnection, sendEmail } from '../src/services/sendgridServi
  * `fetch` global se sustituye por uno que redirige cualquier URL a un
  * servidor real en 127.0.0.1 que acepta la conexión y no responde nunca. La
  * señal que pone el envoltorio llega intacta al `fetch` real.
+ *
+ * Webhook, Slack y Teams salen por `fetchPublicUrl` (DT-18), que no usa
+ * `fetch`: la comprobación previa del guard corre igual, y el socket se
+ * redirige al mismo servidor con el bloqueo de loopback desactivado, porque
+ * lo que se prueba aquí es el timeout del transporte real.
  */
 const TIMEOUT_MS = 100
 const realFetch = globalThis.fetch
+const realSend = transport.send
 let server
 let hangUrl
 const previousTimeout = process.env.INTEGRATION_HTTP_TIMEOUT_MS
@@ -35,10 +42,12 @@ beforeAll(async () => {
   hangUrl = `http://127.0.0.1:${server.address().port}/hang`
   process.env.INTEGRATION_HTTP_TIMEOUT_MS = String(TIMEOUT_MS)
   vi.stubGlobal('fetch', (_url, options) => realFetch(hangUrl, options))
+  transport.send = (_url, options) => sendHttpRequest(hangUrl, options, { isBlocked: () => false })
 })
 
 afterAll(async () => {
   vi.unstubAllGlobals()
+  transport.send = realSend
   if (previousTimeout === undefined) delete process.env.INTEGRATION_HTTP_TIMEOUT_MS
   else process.env.INTEGRATION_HTTP_TIMEOUT_MS = previousTimeout
   server.closeAllConnections()
