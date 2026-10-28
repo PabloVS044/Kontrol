@@ -10,7 +10,7 @@
 
 Kontrol es una herramienta privada de registro y control para negocios. El prestador es un equipo sin entidad jurídica constituida: **nombres e identificación de integrantes, NIT correspondiente, domicilio y correo/canal legal y de privacidad PENDIENTES**. No se atribuye el servicio a una sociedad ficticia ni a una persona designada que no esté confirmada.
 
-Para cuentas, autenticación y decisiones propias de operación/seguridad, el equipo determina fines y medios y se propone identificarlo como responsable de esos tratamientos. Cuando un negocio decide qué datos de clientes, trabajadores o proveedores registrar y Kontrol únicamente los procesa siguiendo sus instrucciones, el negocio determina esos fines y el equipo puede actuar como encargado. Deben documentarse los límites de cada función; un mismo dato no impone un único rol para toda la plataforma. **El acuerdo de tratamiento por instrucciones continúa pendiente.** Esta explicación no equivale a un DPA formalizado.
+Para cuentas, autenticación y decisiones propias de operación/seguridad, el equipo determina fines y medios y se propone identificarlo como responsable de esos tratamientos. Cuando un negocio decide qué datos de clientes, trabajadores o proveedores registrar y Kontrol únicamente los procesa siguiendo sus instrucciones, el negocio determina esos fines y el equipo puede actuar como encargado. Deben documentarse los límites de cada función; un mismo dato no impone un único rol para toda la plataforma. La [Adenda de tratamiento de datos, §3](adenda-tratamiento-datos.md#3-roles-de-las-partes) concreta el rol por tratamiento. **Es un borrador 0.1 no vigente**; esta explicación tampoco equivale a un DPA formalizado.
 
 Este aviso se basa en el [inventario cerrado](inventario-datos.md): 38 tablas/278 columnas PostgreSQL, cuatro modelos/56 rutas de campo Mongo y sus flujos, navegador, logs, almacenamiento y pendientes. Es revisión estática con corte 16-10-2026, referencia HEAD `3a004d9` aportada; no inspección de bases ni de producción. La descripción distingue código disponible, configuración, declaraciones del equipo y datos todavía desconocidos.
 
@@ -40,7 +40,7 @@ Esta tabla expresa el criterio contractual y el estándar de privacidad elegidos
 | Finalidad | Justificación propuesta y límite |
 | --- | --- |
 | Cuenta, permisos y funciones solicitadas | Necesidad para ejecutar la relación de servicio válidamente acordada e instrucciones autorizadas. No es permiso para todo uso comercial posterior. La prueba de aceptación sigue pendiente. |
-| Datos del negocio y de terceros | Instrucciones documentadas del negocio y fundamento que le corresponda respecto de cada titular. L4 debe precisar responsabilidades; aceptar términos no sana una recogida ilícita. |
+| Datos del negocio y de terceros | Instrucciones documentadas del negocio y fundamento que le corresponda respecto de cada titular. La [adenda de tratamiento](adenda-tratamiento-datos.md), §§4–5 y 12, precisa responsabilidades; aceptar términos no sana una recogida ilícita. |
 | OAuth, IA, llamadas y conexiones opcionales | Acción informada para la función elegida; consentimiento específico si es la base exigible para el tratamiento concreto. Activar una función no constituye consentimiento genérico a nuevas finalidades ni de todos los terceros mencionados. |
 | Seguridad y diagnóstico | Operación y diligencia de protección conforme al marco aplicable; minimizar datos/accesos y definir conservación. La existencia de logs no justifica guardar todo sin límite. |
 | Cumplimiento de una obligación o requerimiento | Identificar disposición o requerimiento concreto, autoridad, alcance y datos necesarios. No se invoca una obligación genérica para conservar indefinidamente. |
@@ -166,7 +166,7 @@ Este borrador no autoriza vender información ni concede una licencia general de
 
 Los cambios de finalidades, destinatarios, derechos o condiciones deberán reflejarse en una versión identificada y comunicarse antes de aplicar lo que exija información o nueva aceptación/consentimiento. Ese mecanismo sigue pendiente; el uso continuado no demuestra aceptación incondicional. Si cambia el marco normativo, deberán revisarse bases, inventario, roles, derechos, conservación, contratos/DPA, transferencias, incidentes y consentimientos según [el marco legal](marco-legal.md), sin tratar proyectos como leyes vigentes.
 
-La identificación/contacto, contratos y ubicaciones por confirmar, P1/P2/P3, prueba de aceptación/consentimiento y correcciones de seguridad siguen en el [índice de bloqueos](README.md). Las políticas específicas de cookies, acuerdo de tratamiento y avisos complementarios están pendientes, sin enlaces a documentos inexistentes. El cierre de investigación no aprueba esta política ni autoriza lanzamiento.
+La identificación/contacto, contratos y ubicaciones por confirmar, P1/P2/P3, prueba de aceptación/consentimiento y correcciones de seguridad siguen en el [índice de bloqueos](README.md). La [adenda de tratamiento de datos](adenda-tratamiento-datos.md) está redactada como borrador 0.1 no vigente; las políticas específicas de cookies y los avisos complementarios están pendientes, sin enlaces a documentos inexistentes. El cierre de investigación no aprueba esta política ni autoriza lanzamiento.
 
 | Historial | Cambio |
 | --- | --- |
