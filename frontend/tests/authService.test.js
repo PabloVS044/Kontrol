@@ -109,6 +109,21 @@ describe('registerUser', () => {
     })
   })
 
+  it('L-6: manda la casilla de aceptación con las versiones mostradas', async () => {
+    mockFetch(respond({ body: '{"token":"x"}' }))
+    const legal = { accepted: true, versions: { terms: '1.0', privacy: '1.2' } }
+    await registerUser('Ana', 'Ruiz', 'a@b.c', 'pw', { legal })
+    expect(JSON.parse(global.fetch.mock.calls[0][1].body).legal).toEqual(legal)
+  })
+
+  it('L-6: conserva el código del backend cuando cambió la versión de los documentos', async () => {
+    mockFetch(respond({ status: 409, body: JSON.stringify({ code: 'legal_version_outdated', message: 'changed' }) }))
+    await expect(registerUser('Ana', 'Ruiz', 'a@b.c', 'pw')).rejects.toMatchObject({
+      message: 'changed',
+      serverCode: 'legal_version_outdated',
+    })
+  })
+
   it('marca `unreachable` cuando el backend no contesta', async () => {
     mockFetch(respond({ status: 500, body: '' }))
     await expect(registerUser('Ana', 'Ruiz', 'a@b.c', 'pw')).rejects.toMatchObject({

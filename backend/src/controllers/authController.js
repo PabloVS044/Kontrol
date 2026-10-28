@@ -12,6 +12,11 @@ import {
   acceptProjectInvitation,
   getProjectInvitationByToken,
 } from '../services/projectInvitationService.js'
+import {
+  matchesCurrentVersions,
+  recordAcceptances,
+  requiredDocuments,
+} from '../services/legalDocuments.js'
 import { getFrontendBaseUrl } from '../utils/frontendUrl.js'
 import { logger } from '../utils/logger.js'
 
@@ -110,9 +115,23 @@ const getAuthRedirectForGoogle = async ({ client, user, req, inviteToken, fronte
 }
 
 // POST /api/auth/register (validado por Zod)
+//
+// L-6: la cuenta y la constancia de aceptación de los documentos legales se
+// crean en la misma transacción. Si el formulario mostró una versión que ya no
+// es la vigente, no se crea nada y el cliente recarga los textos.
 export const register = async (req, res) => {
-  const { nombre, apellido, email, password, role, telefono, inviteToken } = req.body
+  const { nombre, apellido, email, password, role, telefono, inviteToken, legal } = req.body
   const platformRole = inviteToken ? 'usuario' : role
+
+  const legalDocuments = requiredDocuments()
+  if (!matchesCurrentVersions(legalDocuments, legal.versions)) {
+    return res.status(409).json({
+      success: false,
+      code: 'legal_version_outdated',
+      message: 'The legal documents changed. Review the current version and accept it again.',
+      required: legalDocuments,
+    })
+  }
 
   const client = await pool.connect()
   try {
@@ -128,25 +147,43 @@ export const register = async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
 
-    const inserted = await client.query(
-      `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_rol)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id_usuario`,
-      [nombre, apellido, email, password_hash, telefono ?? null, rolRow.rows[0].id_rol]
-    )
+    let id_usuario
+    await client.query('BEGIN')
+    try {
+      const inserted = await client.query(
+        `INSERT INTO public.usuario (nombre, apellido, email, password_hash, telefono, id_rol)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id_usuario`,
+        [nombre, apellido, email, password_hash, telefono ?? null, rolRow.rows[0].id_rol]
+      )
+      id_usuario = inserted.rows[0].id_usuario
+
+      await recordAcceptances(client, {
+        id_usuario,
+        documents: legalDocuments,
+        ip: req.ip,
+        origen: 'registro',
+      })
+      await client.query('COMMIT')
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {})
+      throw err
+    }
 
     const user = await client.query(
       `SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre_rol
        FROM public.usuario u
        JOIN public.rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = $1`,
-      [inserted.rows[0].id_usuario]
+      [id_usuario]
     )
 
+    // Fuera de la transacción, como antes: una invitación que falla no deshace
+    // el alta, y el usuario puede volver a usarla después.
     const invite = await maybeResolveInvite({
       client,
       inviteToken,
-      id_usuario: inserted.rows[0].id_usuario,
+      id_usuario,
       req,
     })
 

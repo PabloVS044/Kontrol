@@ -63,7 +63,7 @@
         <StorageConsentControls />
         <p class="sc-note">
           {{ $t('settings.prefs.storageNote') }}
-          <RouterLink to="/legal#cookies">{{ $t('settings.prefs.storagePolicy') }}</RouterLink>
+          <RouterLink to="/legal/cookies">{{ $t('settings.prefs.storagePolicy') }}</RouterLink>
         </p>
       </div>
     </section>

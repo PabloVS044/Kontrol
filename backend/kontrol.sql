@@ -352,6 +352,20 @@ CREATE TABLE public.evidencia (
   CONSTRAINT evidencia_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario)
 );
 
+-- L-6: constancia de la versión de cada documento legal aceptada por cada
+-- usuario, con fecha y dirección IP. Una fila por documento y versión.
+CREATE TABLE public.aceptacion_legal (
+  id_aceptacion SERIAL PRIMARY KEY,
+  id_usuario integer NOT NULL,
+  documento character varying(40) NOT NULL,
+  version character varying(20) NOT NULL,
+  aceptado_en timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ip character varying(45),
+  origen character varying(20) NOT NULL CHECK (origen IN ('registro', 'aviso')),
+  CONSTRAINT aceptacion_legal_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE,
+  CONSTRAINT aceptacion_legal_usuario_documento_version_unique UNIQUE (id_usuario, documento, version)
+);
+
 -- Audit log for top-up additions to a project's allocated budget.
 -- Positive monto = add funds; negative = withdraw (allowed for corrections).
 -- Distinct from movimiento_inventario because adjustments change the capital

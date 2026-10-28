@@ -6,74 +6,40 @@
       <header class="legal-header">
         <h1 class="legal-title">{{ t('legal.title') }}</h1>
         <p class="legal-subtitle">{{ t('legal.subtitle') }}</p>
-
-        <nav class="legal-quick-nav" :aria-label="t('legal.nav.ariaLabel')">
-          <a href="#terms" class="legal-nav-pill">
-            <FileText :size="16" />
-            <span>{{ t('legal.nav.terms') }}</span>
-          </a>
-          <a href="#privacy" class="legal-nav-pill">
-            <ShieldCheck :size="16" />
-            <span>{{ t('legal.nav.privacy') }}</span>
-          </a>
-          <a href="#cookies" class="legal-nav-pill">
-            <Cookie :size="16" />
-            <span>{{ t('legal.nav.cookies') }}</span>
-          </a>
-          <a href="#ai" class="legal-nav-pill">
-            <Bot :size="16" />
-            <span>{{ t('legal.nav.ai') }}</span>
-          </a>
-          <a href="#contact" class="legal-nav-pill">
-            <Mail :size="16" />
-            <span>{{ t('legal.nav.contact') }}</span>
-          </a>
-        </nav>
       </header>
 
-      <div class="legal-content">
-        <!-- Términos del Servicio, Aviso de Privacidad, Cookies y Asistente IA -->
-        <section
-          v-for="section in sections"
-          :id="section.id"
-          :key="section.id"
-          class="legal-section"
-        >
-          <div class="legal-section-header">
-            <div class="legal-section-meta">
-              <span class="legal-section-badge">{{ t(`legal.${section.id}.badge`) }}</span>
-              <span class="legal-section-date">{{ section.updated }}</span>
-            </div>
-            <h2 class="legal-section-title">{{ t(`legal.${section.id}.title`) }}</h2>
-          </div>
-          <div class="legal-section-body">
-            <article v-for="(clause, index) in section.clauses" :key="index" class="legal-clause">
-              <h3 class="legal-clause-title">{{ clause.title }}</h3>
-              <p>{{ clause.body }}</p>
-            </article>
-            <!-- Aquí se cambia la decisión del aviso, también sin sesión. -->
-            <article v-if="section.id === 'cookies'" class="legal-storage-choice">
-              <h3 class="legal-clause-title">{{ t('storageConsent.manageTitle') }}</h3>
-              <StorageConsentControls />
-            </article>
-          </div>
-        </section>
+      <!-- Un documento por página, con URL estable (L-6). -->
+      <ul class="legal-index" :aria-label="t('legal.index.ariaLabel')">
+        <li v-for="doc in documents" :key="doc.id">
+          <RouterLink :to="doc.path" class="legal-card" :data-document="doc.id">
+            <span class="legal-card-icon" aria-hidden="true">
+              <component :is="doc.icon" :size="20" />
+            </span>
+            <span class="legal-card-body">
+              <span class="legal-section-badge">{{ t(`legal.${doc.id}.badge`) }}</span>
+              <span class="legal-card-title">{{ t(`legal.${doc.id}.title`) }}</span>
+              <span class="legal-card-summary">{{ t(`legal.${doc.id}.summary`) }}</span>
+              <span class="legal-section-date">{{ doc.status }}</span>
+            </span>
+            <ChevronRight class="legal-card-arrow" :size="18" aria-hidden="true" />
+          </RouterLink>
+        </li>
+      </ul>
 
-        <!-- Contacto -->
-        <section id="contact" class="legal-section">
-          <div class="legal-section-header">
-            <div class="legal-section-meta">
-              <span class="legal-section-badge">{{ t('legal.contact.badge') }}</span>
-            </div>
-            <h2 class="legal-section-title">{{ t('legal.contact.title') }}</h2>
+      <!-- Contacto -->
+      <section id="contact" class="legal-section">
+        <div class="legal-section-header">
+          <div class="legal-section-meta">
+            <span class="legal-section-badge">{{ t('legal.contact.badge') }}</span>
           </div>
-          <div class="legal-section-body">
-            <p>{{ t('legal.contact.copy') }}</p>
-            <a class="legal-contact-email" :href="`mailto:${SUPPORT_EMAIL}`">{{ SUPPORT_EMAIL }}</a>
-            <p>{{ t('legal.contact.note') }}</p>
-          </div>
-        </section>
-      </div>
+          <h2 class="legal-section-title">{{ t('legal.contact.title') }}</h2>
+        </div>
+        <div class="legal-section-body">
+          <p>{{ t('legal.contact.copy') }}</p>
+          <a class="legal-contact-email" :href="`mailto:${SUPPORT_EMAIL}`">{{ SUPPORT_EMAIL }}</a>
+          <p>{{ t('legal.contact.note') }}</p>
+        </div>
+      </section>
     </main>
 
     <Footer />
@@ -83,29 +49,32 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FileText, ShieldCheck, Cookie, Bot, Mail } from 'lucide-vue-next'
+import { Bot, ChevronRight, Cookie, FileSignature, FileText, ShieldCheck } from 'lucide-vue-next'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
-import StorageConsentControls from '../components/StorageConsentControls.vue'
-import { LEGAL_VERSION, SUPPORT_EMAIL } from '../utils/legal.js'
+import {
+  LEGAL_DOCUMENTS,
+  SUPPORT_EMAIL,
+  formatLegalDate,
+  isPublished,
+  legalDocumentPath,
+} from '../utils/legal.js'
 import './LegalView.css'
 
-const { t, tm, rt } = useI18n()
+const { t, locale } = useI18n()
 
-// Las cláusulas viven en el diccionario como arreglo; el correo se interpola
-// aquí porque la `@` no puede ir dentro de un mensaje de vue-i18n.
-// El aviso del asistente es informativo, no forma parte de lo que se acepta:
-// lleva su propia versión y no depende de LEGAL_VERSION.
-const sections = computed(() =>
-  ['terms', 'privacy', 'cookies', 'ai'].map((id) => ({
-    id,
-    updated: id === 'ai'
-      ? t('legal.ai.updated')
-      : t('legal.updated', { version: LEGAL_VERSION }),
-    clauses: tm(`legal.${id}.clauses`).map((clause) => ({
-      title: rt(clause.title),
-      body: rt(clause.body, { email: SUPPORT_EMAIL }),
-    })),
+const ICONS = { terms: FileText, privacy: ShieldCheck, cookies: Cookie, dataProcessing: FileSignature, ai: Bot }
+
+const documents = computed(() =>
+  LEGAL_DOCUMENTS.map((doc) => ({
+    id: doc.id,
+    path: legalDocumentPath(doc.id),
+    icon: ICONS[doc.id],
+    status: isPublished(doc)
+      ? `${t('legal.document.version', { version: doc.history[0].version })} · ${t('legal.document.effective', {
+        date: formatLegalDate(doc.history[0].date, locale.value),
+      })}`
+      : t('legal.index.pending'),
   })),
 )
 </script>
