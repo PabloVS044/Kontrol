@@ -20,6 +20,10 @@
             <Cookie :size="16" />
             <span>{{ t('legal.nav.cookies') }}</span>
           </a>
+          <a href="#ai" class="legal-nav-pill">
+            <Bot :size="16" />
+            <span>{{ t('legal.nav.ai') }}</span>
+          </a>
           <a href="#contact" class="legal-nav-pill">
             <Mail :size="16" />
             <span>{{ t('legal.nav.contact') }}</span>
@@ -28,7 +32,7 @@
       </header>
 
       <div class="legal-content">
-        <!-- Términos del Servicio, Aviso de Privacidad y Cookies -->
+        <!-- Términos del Servicio, Aviso de Privacidad, Cookies y Asistente IA -->
         <section
           v-for="section in sections"
           :id="section.id"
@@ -38,7 +42,7 @@
           <div class="legal-section-header">
             <div class="legal-section-meta">
               <span class="legal-section-badge">{{ t(`legal.${section.id}.badge`) }}</span>
-              <span class="legal-section-date">{{ t('legal.updated', { version: LEGAL_VERSION }) }}</span>
+              <span class="legal-section-date">{{ section.updated }}</span>
             </div>
             <h2 class="legal-section-title">{{ t(`legal.${section.id}.title`) }}</h2>
           </div>
@@ -79,7 +83,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FileText, ShieldCheck, Cookie, Mail } from 'lucide-vue-next'
+import { FileText, ShieldCheck, Cookie, Bot, Mail } from 'lucide-vue-next'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 import StorageConsentControls from '../components/StorageConsentControls.vue'
@@ -90,9 +94,14 @@ const { t, tm, rt } = useI18n()
 
 // Las cláusulas viven en el diccionario como arreglo; el correo se interpola
 // aquí porque la `@` no puede ir dentro de un mensaje de vue-i18n.
+// El aviso del asistente es informativo, no forma parte de lo que se acepta:
+// lleva su propia versión y no depende de LEGAL_VERSION.
 const sections = computed(() =>
-  ['terms', 'privacy', 'cookies'].map((id) => ({
+  ['terms', 'privacy', 'cookies', 'ai'].map((id) => ({
     id,
+    updated: id === 'ai'
+      ? t('legal.ai.updated')
+      : t('legal.updated', { version: LEGAL_VERSION }),
     clauses: tm(`legal.${id}.clauses`).map((clause) => ({
       title: rt(clause.title),
       body: rt(clause.body, { email: SUPPORT_EMAIL }),

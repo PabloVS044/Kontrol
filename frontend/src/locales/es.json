@@ -1932,6 +1932,10 @@
     "placeholder": "Pregúntame cualquier cosa...",
     "stop": "Detener generación",
     "hint": "Presiona Enter para enviar · Shift+Enter para nueva línea",
+    "notice": {
+      "text": "Kontrol AI puede equivocarse. Comprueba las cifras antes de decidir.",
+      "link": "Cómo usa tus datos"
+    },
     "message": {
       "edit": "Editar",
       "delete": "Eliminar",
@@ -2399,6 +2403,7 @@
     "privacy": "Aviso de privacidad",
     "terms": "Términos del servicio",
     "cookies": "Política de cookies",
+    "aiNotice": "Aviso del asistente IA",
     "cookieSettings": "Preferencias de cookies",
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
@@ -2507,6 +2512,7 @@
       "privacy": "Aviso de Privacidad",
       "terms": "Términos del Servicio",
       "cookies": "Cookies y Almacenamiento",
+      "ai": "Asistente IA",
       "contact": "Contacto"
     },
     "terms": {
@@ -2640,6 +2646,45 @@
         {
           "title": "6. Cómo cambiar tu decisión o borrarlo todo",
           "body": "Puedes cambiar tu decisión aquí abajo, desde Preferencias de cookies en el pie de página o en Configuración. Para borrarlo todo, incluida la aceptación de los Términos, borra los datos de este sitio en la configuración de tu navegador. Eso no elimina la información de tu cuenta en los servidores de Kontrol."
+        }
+      ]
+    },
+    "ai": {
+      "badge": "Inteligencia artificial",
+      "title": "Aviso de uso del Asistente IA",
+      "updated": "Versión 1.0 · Publicado el 26 de octubre de 2026",
+      "clauses": [
+        {
+          "title": "1. Qué es",
+          "body": "Kontrol AI es un asistente automatizado que responde preguntas sobre tu negocio consultando tus datos. Funciona solo en lectura: no crea, modifica ni borra nada, ni envía mensajes en tu nombre. La burbuja de ayuda (Birdie) no es este asistente: muestra respuestas ya escritas y no usa inteligencia artificial."
+        },
+        {
+          "title": "2. Puede equivocarse",
+          "body": "El asistente puede entender mal la pregunta, consultar datos equivocados, sumar mal u omitir información, y aun así sonar seguro. No uses sus respuestas como única base para decisiones financieras, fiscales o de inventario: comprueba las cifras en Presupuesto, Inventario, Ventas o Reportes antes de actuar. Sus recomendaciones no son asesoría contable, tributaria ni legal."
+        },
+        {
+          "title": "3. Qué puede ver",
+          "body": "Solo la empresa en la que estás trabajando y con tus mismos permisos: si eres owner, administrador o manager, todos sus proyectos; si no, solo los proyectos a los que estás asignado. De ellos ve proyectos, tareas, presupuestos, avances, reportes, evidencias, inventario y proveedores con sus contactos, y el nombre, correo y teléfono de las personas que trabajan en ellos. Nunca contraseñas. No ve otras empresas, los chats entre personas ni tus integraciones."
+        },
+        {
+          "title": "4. Qué se envía al modelo",
+          "body": "Tu pregunta y hasta diez mensajes anteriores; tu correo, tu rol y el nombre de la empresa; la lista de proyectos que puedes ver y la estructura de las tablas; y datos reales de tu negocio: hasta 20 filas de cada consulta, con un máximo de cinco consultas por pregunta. Los saludos, la ayuda y cuatro consultas frecuentes (presupuesto, estado de proyectos, stock bajo y tareas atrasadas) se responden dentro de Kontrol sin llamar al modelo."
+        },
+        {
+          "title": "5. Quién lo procesa y dónde",
+          "body": "El modelo es Qwen, ejecutado con vLLM en ClawStitch, un servidor propio del equipo de Kontrol ubicado en Guatemala. Tus datos no pasan a OpenAI, Google, Anthropic ni a otro proveedor externo de inteligencia artificial."
+        },
+        {
+          "title": "6. Sin entrenamiento y sin conservación en el modelo",
+          "body": "Lo que envías no se usa para entrenar ni mejorar ningún modelo. El servidor del modelo procesa la petición, devuelve la respuesta y no guarda preguntas, datos ni respuestas. Al ser un servidor propio, no hay términos de un proveedor externo: esta es la postura del equipo que lo opera."
+        },
+        {
+          "title": "7. Qué guarda Kontrol",
+          "body": "Tus conversaciones (preguntas, respuestas y el texto de las consultas realizadas, no sus resultados) para mostrarte tu historial; solo tú puedes verlas y se guardan hasta que las borres. Si el asistente falla, el servidor registra el error para corregirlo. Puedes borrar mensajes o conversaciones desde el asistente, y al dar de baja tu cuenta se borra todo tu historial del asistente."
+        },
+        {
+          "title": "8. Si no quieres usarlo",
+          "body": "El asistente no se puede desactivar desde la configuración, pero solo funciona cuando le escribes: si no le preguntas nada, no se envía nada al modelo. Para borrar lo que ya quedó, elimina tus conversaciones. Para dudas o solicitudes sobre tus datos, escribe a {email}."
         }
       ]
     },
