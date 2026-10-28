@@ -21,7 +21,10 @@
 
 .page-title {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
+  /* Fluido: a 48px fijos, con la letra agrandada "Integraciones" no cabía en un
+     móvil y abría scroll horizontal en toda la página. */
+  font-size: clamp(2rem, 9vw, 3rem);
+  overflow-wrap: break-word;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;
@@ -29,7 +32,7 @@
 }
 
 .page-subtitle {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--k-text-muted);
   margin: 0;
 }
@@ -44,7 +47,7 @@
 
 .chip {
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: var(--k-font-sans);
   background: var(--k-shade-3);
   border: 1px solid var(--k-shade-7);
@@ -121,20 +124,20 @@
 }
 
 .card-name {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--k-color-text);
 }
 
 .cat-badge {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .card-description {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-soft);
   line-height: 1.55;
   margin: 0;
@@ -147,7 +150,7 @@
   flex-wrap: wrap;
   gap: 6px;
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .status-dot {
@@ -190,13 +193,13 @@
 }
 
 .switch-title {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--k-color-text);
 }
 
 .switch-hint {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-muted);
 }
 
@@ -225,7 +228,7 @@
 .toggle-label {
   min-width: 52px;
   text-align: right;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-text-muted);
 }
@@ -288,7 +291,7 @@
   gap: 6px;
   min-height: 36px;
   padding: 8px 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   font-family: var(--k-font-sans);
   cursor: pointer;
@@ -323,7 +326,7 @@
 
 /* ── Feedback inline ── */
 .inline-feedback {
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 8px 12px;
   margin: 0;
 }
@@ -388,14 +391,14 @@
 }
 
 .state-title {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--k-color-text);
   margin: 0;
 }
 
 .state-msg {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--k-text-dim);
   max-width: 360px;
   margin: 0;
@@ -410,7 +413,7 @@
 }
 
 .modal-section-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--k-text-faint);
@@ -424,7 +427,7 @@
 }
 
 .form-label {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-soft);
 }
 
@@ -438,7 +441,7 @@
   border: 1px solid var(--k-shade-7);
   color: var(--k-color-text);
   padding: 10px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-family: var(--k-font-sans);
   outline: none;
   transition: border-color 0.15s;
@@ -457,7 +460,7 @@
   background: none;
   border: none;
   color: var(--k-text-faint);
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   font-family: var(--k-font-sans);
 }
@@ -467,7 +470,7 @@
 }
 
 .modal-error {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-hue-rose);
   background: rgba(var(--k-hue-rose-rgb), 0.08);
   border-left: 2px solid var(--k-hue-rose);
@@ -476,7 +479,7 @@
 }
 
 .modal-success {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-hue-emerald);
   background: rgba(var(--k-hue-emerald-rgb), 0.08);
   border-left: 2px solid var(--k-hue-emerald);
@@ -507,7 +510,7 @@
   background: none;
   border: 1px solid var(--k-shade-7);
   color: var(--k-text-soft);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   font-family: var(--k-font-sans);
   cursor: pointer;
@@ -527,7 +530,7 @@
   background: none;
   border: none;
   color: var(--k-text-muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-family: var(--k-font-sans);
   cursor: pointer;
   padding: 0;
@@ -549,7 +552,7 @@
 .confirm-text,
 .confirm-hint {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   color: var(--k-text-soft);
 }
@@ -569,7 +572,7 @@
 
 .btn-confirm-disconnect {
   padding: 8px 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: var(--k-font-sans);
   background: rgba(var(--k-hue-rose-rgb), 0.1);
   border: 1px solid rgba(var(--k-hue-rose-rgb), 0.35);
@@ -589,7 +592,7 @@
 
 .btn-cancel-disconnect {
   padding: 8px 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: var(--k-font-sans);
   background: var(--k-shade-3);
   border: 1px solid var(--k-shade-7);
@@ -612,7 +615,7 @@
 }
 
 .tutorial-intro {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-muted);
   margin: 0;
   line-height: 1.55;
@@ -641,7 +644,7 @@
   background: rgba(var(--k-color-primary-rgb), 0.1);
   border: 1px solid rgba(var(--k-color-primary-rgb), 0.25);
   color: var(--k-color-primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -650,7 +653,7 @@
 }
 
 .step-text {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-soft);
   line-height: 1.6;
 }

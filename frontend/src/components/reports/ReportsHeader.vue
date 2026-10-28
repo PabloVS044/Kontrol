@@ -36,7 +36,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
 
 .rep-title {
   font-family: 'Playfair Display', serif;
-  font-size: 42px;
+  font-size: 2.625rem;
   font-weight: 400;
   color: var(--Text);
   margin: 0 0 4px;
@@ -44,7 +44,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
 
 .rep-subtitle {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--TextDim);
   margin: 0;
 }
@@ -66,7 +66,7 @@ import { BadgeCheck, Download, Plus } from 'lucide-vue-next'
   padding: 9px 12px;
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   transition: color .2s, border-color .2s;
 }
 

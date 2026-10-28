@@ -762,6 +762,7 @@
       "loadingMsg": "Buscando los datos de inventario más recientes.",
       "errorTitle": "No se pudo cargar el producto",
       "back": "Volver al inventario",
+      "backToCharge": "Volver a Cobrar",
       "retry": "Reintentar",
       "uncategorized": "Sin categoría",
       "noProject": "Proyecto no disponible",
@@ -1487,11 +1488,11 @@
       },
       "inventoryCreate": {
         "q": "¿Cómo agrego un producto?",
-        "a": "Elige un proyecto en las pestañas de arriba y haz clic en Nuevo Producto para registrar un ítem. Definirás nombre, categoría, unidad, stock inicial y el costo unitario que alimenta los cálculos de presupuesto."
+        "a": "Entra a Ventas > Cobrar, elige un proyecto en las pestañas de arriba y haz clic en Nuevo producto para registrar un ítem. Definirás nombre, categoría, unidad, stock inicial y el costo unitario que alimenta los cálculos de presupuesto."
       },
       "inventorySell": {
         "q": "¿Cómo realizo una venta?",
-        "a": "Entra a Ventas > Cobrar, que te lleva al inventario. Cada tarjeta de producto tiene un botón Vender. Tócalo en los productos que se lleva el cliente — aparecerán en el panel Venta en curso de la derecha, donde puedes ajustar la cantidad con los botones + / − o quitar artículos con la X. Cuando tengas el carrito listo, presiona Realizar venta: el sistema descuenta el stock y registra automáticamente un movimiento SALIDA por cada producto, impactando el presupuesto del proyecto correspondiente."
+        "a": "Entra a Ventas > Cobrar. Cada tarjeta de producto tiene un botón Vender. Tócalo en los productos que se lleva el cliente — aparecerán en el panel Venta en curso de la derecha, donde puedes ajustar la cantidad con los botones + / − o quitar artículos con la X. Cuando tengas el carrito listo, presiona Realizar venta: el sistema descuenta el stock y registra automáticamente un movimiento SALIDA por cada producto, impactando el presupuesto del proyecto correspondiente."
       },
       "inventoryMovements": {
         "q": "¿Qué tipos de movimiento de inventario existen?",
@@ -1583,7 +1584,7 @@
       },
       "inventoryShortcut": {
         "q": "¿Dónde está el inventario?",
-        "a": "La sección Inventario lista todos los productos de tus proyectos. Desde aquí puedes crear productos, registrar movimientos (entradas/salidas/ajustes) o iniciar una venta con el botón Vender de cualquier tarjeta de producto."
+        "a": "La sección Inventario es la tabla de todos los productos de tus proyectos, con su precio y su stock; puedes filtrar por proyecto, buscar y ver los que están bajos o agotados. Para vender, crear productos o registrar movimientos, entra a Ventas > Cobrar."
       },
       "dashboardShortcut": {
         "q": "¿Dónde está el resumen ejecutivo?",
@@ -1606,6 +1607,9 @@
       "theme": "Tema",
       "themeNote": "\"Sistema\" sigue la preferencia de tu dispositivo. Si eliges Oscuro o Claro y aceptas recordar tus preferencias, se mantiene en este navegador, también después de cerrar sesión.",
       "themes": { "system": "Sistema", "dark": "Oscuro", "light": "Claro" },
+      "fontSize": "Tamaño de letra",
+      "fontSizeNote": "Agranda el texto de la aplicación sin cambiar la distribución de las pantallas. Si aceptas recordar tus preferencias, se mantiene en este navegador.",
+      "fontSizes": { "default": "Normal", "large": "Grande", "larger": "Muy grande", "largest": "Máximo" },
       "storage": "Recordar preferencias en este navegador",
       "storageNote": "Rechazarlo borra las preferencias ya guardadas. Tu sesión no se ve afectada.",
       "storagePolicy": "Ver la política de cookies y almacenamiento"
@@ -1853,6 +1857,7 @@
   },
   "chat": {
     "title": "Mensajes",
+    "backToList": "Volver a las conversaciones",
     "newDM": "Nuevo mensaje directo",
     "searchMessages": "Buscar mensajes...",
     "directMessages": "Mensajes Directos",
@@ -2287,17 +2292,95 @@
     "rights": "© {year} Kontrol. Todos los derechos reservados.",
     "builtFor": "Hecho para quien tiene ambición."
   },
+  "inventoryTable": {
+    "subtitle": "Todos tus productos con su precio y su stock.",
+    "goToCharge": "Ir a Cobrar",
+    "project": "Proyecto",
+    "allProjects": "Todos los proyectos",
+    "search": "Buscar",
+    "searchPlaceholder": "Nombre, código o categoría",
+    "stockFilter": "Stock",
+    "stockFilters": {
+      "all": "Todos",
+      "low": "Stock bajo",
+      "out": "Agotados"
+    },
+    "summary": "Productos: {count} · Stock bajo: {low} · Agotados: {out}",
+    "loading": "Cargando productos…",
+    "loadError": "No se pudieron cargar los productos.",
+    "retry": "Reintentar",
+    "empty": "Todavía no hay productos. Se dan de alta en Ventas > Cobrar.",
+    "noMatches": "Ningún producto coincide con la búsqueda o el filtro.",
+    "columns": {
+      "product": "Producto",
+      "category": "Categoría",
+      "project": "Proyecto",
+      "price": "Precio",
+      "cost": "Costo",
+      "stock": "Stock",
+      "minimum": "Mínimo"
+    }
+  },
+  "salesHistory": {
+    "title": "Historial de ventas",
+    "subtitle": "Cada venta con su detalle y lo que ingresó en las fechas que elijas.",
+    "range": "Periodo",
+    "presets": {
+      "today": "Hoy",
+      "week": "Esta semana",
+      "month": "Este mes",
+      "custom": "Personalizado"
+    },
+    "from": "Desde",
+    "to": "Hasta",
+    "invalidRange": "Elige una fecha de inicio que no sea posterior a la de fin.",
+    "summaryLabel": "Resumen del periodo",
+    "kpis": {
+      "income": "Ingresos",
+      "incomeNote": "Incluye IVA {vat} · Descuentos {discounts}",
+        "profit": "Utilidad",
+        "profitNote": "Ingresos sin IVA {net} − costo {cost}",
+      "sales": "Ventas",
+      "average": "Ticket promedio",
+      "units": "Unidades vendidas"
+    },
+    "loading": "Cargando ventas…",
+    "loadError": "No se pudieron cargar las ventas.",
+    "empty": "No hay ventas en este periodo.",
+    "truncated": "Se muestran las {count} ventas más recientes del periodo. Los totales de arriba incluyen todas.",
+    "columns": {
+      "date": "Fecha",
+      "seller": "Vendedor",
+      "project": "Proyecto",
+      "units": "Unidades",
+      "total": "Total",
+      "details": "Detalle"
+    },
+    "showDetails": "Ver detalle",
+    "hideDetails": "Ocultar",
+    "lines": {
+      "product": "Producto",
+      "quantity": "Cant.",
+      "unitPrice": "Precio unit.",
+      "discount": "Descuento",
+      "vat": "IVA",
+      "amount": "Importe",
+      "subtotal": "Subtotal"
+    },
+    "toReports": "Más información en Reportes"
+  },
   "sales": {
     "eyebrow": "Ventas",
     "title": "Ventas",
     "subtitle": "Cobra, revisa lo vendido y ajusta cómo cobra tu empresa.",
     "checkout": {
       "title": "Cobrar",
-      "copy": "Registra una venta desde los productos del inventario."
+      "subtitle": "Busca o escanea productos, arma el carrito y registra la venta.",
+      "copy": "Registra una venta, da de alta productos y mueve el stock."
     },
     "history": {
       "title": "Historial de ventas",
-      "copy": "Ingresos, ganancia y ticket promedio en Reportes."
+      "copy": "Las ventas por fecha, con su detalle y lo que ingresó en el periodo."
     },
     "config": {
       "title": "Configuración de venta",
@@ -2437,7 +2520,7 @@
         },
         {
           "title": "4. Tus preferencias, solo si las aceptas",
-          "body": "El idioma, el tema, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
+          "body": "El idioma, el tema, el tamaño de letra, si ocultaste el asistente, su posición en la pantalla y la vista de proyectos. Hasta que respondes al aviso no se guarda ninguna. Si las rechazas, Kontrol funciona igual pero las olvida al recargar, y se borran las que ya estuvieran guardadas."
         },
         {
           "title": "5. Servicios externos",

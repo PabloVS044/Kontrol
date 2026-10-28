@@ -91,7 +91,7 @@ function closeMenu()   { isMenuOpen.value = false }
 
 .appnav-brand span {
   font-family: 'Bungee', 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   letter-spacing: 1px;
   color: var(--k-color-text);
 }
@@ -105,7 +105,7 @@ function closeMenu()   { isMenuOpen.value = false }
 }
 
 .admin-badge {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -125,7 +125,7 @@ function closeMenu()   { isMenuOpen.value = false }
 .appnav-link {
   position: relative;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--k-text-faint);
   text-decoration: none;
@@ -167,7 +167,7 @@ function closeMenu()   { isMenuOpen.value = false }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-color-primary);
   cursor: pointer;
@@ -208,7 +208,7 @@ function closeMenu()   { isMenuOpen.value = false }
 
 @media (max-width: 900px) {
   .appnav-inner { padding: 0 20px; }
-  .appnav-link  { padding: 0 10px; font-size: 11px; }
+  .appnav-link  { padding: 0 10px; font-size: 0.6875rem; }
 }
 
 @media (max-width: 640px) {
@@ -236,7 +236,7 @@ function closeMenu()   { isMenuOpen.value = false }
   }
 
   .appnav-link {
-    font-size: 16px;
+    font-size: 1rem;
     padding: 10px 20px;
     width: 100%;
     justify-content: center;

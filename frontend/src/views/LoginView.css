@@ -61,7 +61,13 @@
   justify-content: center;
   width: 25%;
   min-width: 280px;
-  margin-right: -180px;
+  /* La K invade el panel del formulario a propósito, pero solo su borde
+     difuminado: si entra demasiado tapa las etiquetas y los campos. Cuánto
+     puede entrar depende del hueco libre a la izquierda de la tarjeta, que
+     crece con el ancho; de ahí el clamp en vw de este bloque y de los
+     breakpoints de abajo. Medido sobre la silueta de la K con el ratón en
+     ambos extremos, que es cuando más gira. */
+  margin-right: calc(-1 * clamp(130px, 40vw - 340px, 180px));
   pointer-events: none;
 }
 
@@ -506,7 +512,7 @@
     max-width: 540px;
   }
   .login-logo-panel {
-    margin-right: -140px;
+    margin-right: calc(-1 * clamp(110px, 40vw - 295px, 140px));
   }
   .login-logo-img,
   .login-logo-3d {
@@ -525,7 +531,9 @@
   .login-logo-panel {
     width: 30%;
     min-width: 220px;
-    margin-right: -110px;
+    /* Con -110px fijos, entre 821px y ~970px —justo antes de apilarse— la K
+       quedaba encima de las etiquetas y los campos. */
+    margin-right: calc(-1 * clamp(40px, 45vw - 350px, 110px));
   }
   .login-logo-img,
   .login-logo-3d {

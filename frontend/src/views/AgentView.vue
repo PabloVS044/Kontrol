@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import { useAuthStore } from '../stores/auth.js'
@@ -29,7 +29,16 @@ const persistenceAvailable = ref(false)
 // Sidebar state
 const conversations = ref([])
 const conversationId = ref(null)
-const sidebarOpen = ref(true)
+// En móvil la lista es un panel encima de la conversación: abierta de inicio
+// tapaba el chat entero y había que cerrarla antes de poder escribir.
+const isNarrow = () => typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches
+const sidebarOpen = ref(!isNarrow())
+
+// Alto real de la barra de entrada, que es fija: crece con el tamaño de letra
+// y al escribir varias líneas, y sin medirlo tapaba el final de la conversación.
+const inputSectionEl = ref(null)
+const inputHeight = ref(0)
+let inputObserver = null
 
 // Inline edit state
 const editingId = ref(null)
@@ -37,6 +46,16 @@ const editingDraft = ref('')
 
 // Active fetch controller, used by the Stop button
 let activeController = null
+
+onMounted(() => {
+  if (typeof ResizeObserver !== 'function' || !inputSectionEl.value) return
+  inputObserver = new ResizeObserver(([entry]) => {
+    inputHeight.value = Math.ceil(entry.target.getBoundingClientRect().height)
+  })
+  inputObserver.observe(inputSectionEl.value)
+})
+
+onUnmounted(() => inputObserver?.disconnect())
 
 onMounted(async () => {
   const status = await fetchAgentStatus()
@@ -62,6 +81,7 @@ async function refreshConversations() {
 
 async function openConversation(id) {
   if (loading.value) return
+  if (isNarrow()) sidebarOpen.value = false
   try {
     const { conversation, messages: msgs } = await loadConversation(id)
     conversationId.value = conversation._id
@@ -82,6 +102,7 @@ async function openConversation(id) {
 
 function newConversation() {
   if (loading.value) return
+  if (isNarrow()) sidebarOpen.value = false
   conversationId.value = null
   messages.value = []
   prompt.value = ''
@@ -299,7 +320,7 @@ function autoResizeEdit(e) {
 </script>
 
 <template>
-  <div class="agent-page">
+  <div class="agent-page" :style="inputHeight ? { '--agent-input-h': `${inputHeight}px` } : null">
     <AppNavbar />
 
     <div class="agent-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
@@ -358,6 +379,9 @@ function autoResizeEdit(e) {
           </button>
         </div>
       </aside>
+
+      <!-- En móvil la lista va encima: un toque fuera la cierra. -->
+      <div v-if="sidebarOpen" class="agent-sidebar-backdrop" @click="toggleSidebar" />
 
       <!-- Floating toggle when the sidebar is hidden -->
       <button
@@ -489,7 +513,7 @@ function autoResizeEdit(e) {
       </div>
 
       <!-- Input with animated golden beam border -->
-      <div class="input-section">
+      <div ref="inputSectionEl" class="input-section">
         <div class="beam-wrap">
           <div class="beam-inner">
             <div class="input-row">
@@ -597,7 +621,7 @@ function autoResizeEdit(e) {
 
 .sidebar-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -635,7 +659,7 @@ function autoResizeEdit(e) {
   border-radius: 2px;
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -664,7 +688,7 @@ function autoResizeEdit(e) {
 
 .conv-empty {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   padding: 8px 4px;
   margin: 0;
@@ -683,7 +707,7 @@ function autoResizeEdit(e) {
   color: var(--k-color-text);
   text-align: left;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -753,7 +777,8 @@ function autoResizeEdit(e) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px 120px;
+  /* Abajo, el alto medido de la barra de entrada fija (--agent-input-h). */
+  padding: 80px 24px max(120px, calc(var(--agent-input-h, 0px) + 16px));
   gap: 40px;
   max-width: 760px;
   margin: 0 auto;
@@ -770,7 +795,7 @@ function autoResizeEdit(e) {
 
 .agent-greeting {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--k-color-primary);
   letter-spacing: 0.08em;
@@ -834,7 +859,7 @@ function autoResizeEdit(e) {
 
 .card-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-color-text);
   letter-spacing: 0.02em;
@@ -842,7 +867,7 @@ function autoResizeEdit(e) {
 
 .card-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-muted);
   line-height: 1.4;
 }
@@ -925,7 +950,7 @@ function autoResizeEdit(e) {
   outline: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   resize: none;
   min-height: 24px;
@@ -978,10 +1003,15 @@ function autoResizeEdit(e) {
 
 .input-hint {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   margin: 0;
   letter-spacing: 0.02em;
+}
+
+/* En un teclado táctil no hay Shift+Enter: la pista solo ocupaba sitio. */
+@media (hover: none) and (pointer: coarse) {
+  .input-hint { display: none; }
 }
 
 /* ── Conversation thread ── */
@@ -1037,7 +1067,7 @@ function autoResizeEdit(e) {
 .msg-bubble {
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   border-radius: 2px;
   white-space: pre-wrap;
@@ -1047,7 +1077,7 @@ function autoResizeEdit(e) {
 .msg-edited-tag {
   display: inline-block;
   margin-left: 6px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-style: italic;
   color: var(--k-text-dim);
   vertical-align: middle;
@@ -1070,10 +1100,10 @@ function autoResizeEdit(e) {
   font-weight: 700;
   line-height: 1.3;
 }
-.msg-md :deep(h1) { font-size: 17px; }
-.msg-md :deep(h2) { font-size: 15px; }
-.msg-md :deep(h3) { font-size: 14px; }
-.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 13px; }
+.msg-md :deep(h1) { font-size: 1.0625rem; }
+.msg-md :deep(h2) { font-size: 0.9375rem; }
+.msg-md :deep(h3) { font-size: 0.875rem; }
+.msg-md :deep(h4), .msg-md :deep(h5), .msg-md :deep(h6) { font-size: 0.8125rem; }
 
 .msg-md :deep(ul), .msg-md :deep(ol) {
   margin: 0 0 8px;
@@ -1092,7 +1122,7 @@ function autoResizeEdit(e) {
 
 .msg-md :deep(code) {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-ink-rgb), 0.08);
   border-radius: 2px;
@@ -1111,7 +1141,7 @@ function autoResizeEdit(e) {
   background: none;
   border: none;
   padding: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
@@ -1128,15 +1158,22 @@ function autoResizeEdit(e) {
   margin: 12px 0;
 }
 
+/* En bloque para que una tabla ancha se desplace dentro de la burbuja en vez
+   de estrujarse: en un móvil partía las palabras ("Unidad-es"). */
 .msg-md :deep(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .msg-md :deep(th), .msg-md :deep(td) {
   border: 1px solid rgba(var(--k-ink-rgb), 0.12);
   padding: 4px 8px;
   text-align: left;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .msg-md :deep(th) { background: var(--k-shade-3); font-weight: 700; }
 
@@ -1193,7 +1230,7 @@ function autoResizeEdit(e) {
   resize: none;
   color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.55;
   min-height: 24px;
   max-height: 200px;
@@ -1208,7 +1245,7 @@ function autoResizeEdit(e) {
 
 .msg-action-btn {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 4px 10px;
   background: var(--k-shade-3);
   border: 1px solid rgba(var(--k-ink-rgb), 0.08);
@@ -1269,7 +1306,7 @@ function autoResizeEdit(e) {
   width: 100%;
   padding: 10px 14px;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   border-radius: 2px;
   border: 1px solid;
 }
@@ -1287,13 +1324,25 @@ function autoResizeEdit(e) {
   background: var(--k-surface-code);
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 0.6875rem;
+}
+
+/* Solo existe en móvil, donde la lista va encima de la conversación. */
+.agent-sidebar-backdrop {
+  display: none;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .agent-shell {
     --sidebar-width: 0px;
+  }
+  .agent-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: calc(var(--k-z-elevated) - 1);
+    background: rgba(var(--k-color-black-rgb), 0.5);
   }
   .agent-sidebar {
     position: fixed;
@@ -1309,9 +1358,29 @@ function autoResizeEdit(e) {
 }
 
 @media (max-width: 640px) {
+  /* Arriba deja sitio al botón que reabre la lista (fijo, de 64 a 92px). */
   .agent-main {
-    padding: 80px 16px 24px;
+    padding: 100px 16px calc(var(--agent-input-h, 120px) + 12px);
     gap: 28px;
+  }
+
+  .sidebar-reopen {
+    top: 64px;
+  }
+
+  /* La conversación ocupa lo que dejan libre la barra superior y la de
+     entrada; con 45vh fijos quedaba una franja estrecha en el centro. */
+  .agent-thread {
+    max-height: calc(100dvh - 100px - var(--agent-input-h, 120px) - 12px);
+  }
+
+  .input-section {
+    padding: 10px 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  /* iOS acerca la página al enfocar un campo con letra de menos de 16px. */
+  .agent-textarea {
+    font-size: max(16px, 0.875rem);
   }
 
   .agent-cards {

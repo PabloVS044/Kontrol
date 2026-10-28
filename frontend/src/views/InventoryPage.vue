@@ -108,8 +108,12 @@
         <!-- Encabezado -->
         <div class="inv-header">
           <div class="inv-header-left">
-            <h1 class="inv-title">{{ $t('inventory.header.title') }}</h1>
-            <p class="inv-subtitle">{{ $t('inventory.header.subtitle') }}</p>
+            <!-- Esta pantalla es Ventas > Cobrar; la tabla de Inventario es otra. -->
+            <RouterLink class="inv-back" :to="{ name: 'sales' }">
+              <span aria-hidden="true">←</span> {{ $t('sales.title') }}
+            </RouterLink>
+            <h1 class="inv-title">{{ $t('sales.checkout.title') }}</h1>
+            <p class="inv-subtitle">{{ $t('sales.checkout.subtitle') }}</p>
           </div>
           <div class="inv-header-actions">
             <button
@@ -478,7 +482,7 @@
 <script setup>
 import { apiFetch as requestApi, authHeaders } from '@/services/api.js'
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppNavbar from '../components/AppNavbar.vue'
 import ErrorState from '../components/common/ErrorState.vue'
@@ -544,7 +548,7 @@ function requestProjectId() {
 
 async function apiFetch(path) {
   const res = await requestApi(path, {
-    headers: authHeaders(requestProjectId()),
+    headers: authHeaders({}, { projectId: requestProjectId() }),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -746,7 +750,8 @@ function stockNumClass(p) {
 
 function detailLink(product) {
   const projectId = product.id_proyecto ?? selectedProject.value?.id_proyecto
-  const query = projectId ? `?project=${projectId}` : ''
+  // `from` hace que el detalle vuelva aquí y no a la tabla de Inventario.
+  const query = projectId ? `?project=${projectId}&from=charge` : '?from=charge'
   return `/inventory/${product.id_producto}${query}`
 }
 
@@ -1181,7 +1186,7 @@ async function submitProduct(formData) {
   try {
     const res = await requestApi('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(formData.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: formData.id_proyecto }),
       body: JSON.stringify({
         nombre:        formData.nombre,
         descripcion:   formData.descripcion || undefined,
@@ -1230,7 +1235,7 @@ async function submitEdit(payload) {
     // "todos los proyectos" no mandaba ninguno y el backend respondía 400.
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(product.id_proyecto) },
+      headers: authHeaders({ 'Content-Type': 'application/json' }, { projectId: product.id_proyecto }),
       body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
@@ -1268,7 +1273,7 @@ async function confirmDelete() {
   try {
     const res = await requestApi(`/api/products/${product.id_producto}`, {
       method: 'DELETE',
-      headers: authHeaders(product.id_proyecto),
+      headers: authHeaders({}, { projectId: product.id_proyecto }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {

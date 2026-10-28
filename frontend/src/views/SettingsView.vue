@@ -38,6 +38,14 @@
       </div>
 
       <div class="sc-row">
+        <div class="sc-field">
+          <label class="sc-label" for="font-scale">{{ $t('settings.prefs.fontSize') }}</label>
+          <FontScaleSlider id="font-scale" />
+        </div>
+        <p class="sc-note">{{ $t('settings.prefs.fontSizeNote') }}</p>
+      </div>
+
+      <div class="sc-row">
         <label class="sc-toggle">
           <input
             type="checkbox"
@@ -327,6 +335,7 @@ import { usePreferencesStore } from '../stores/preferences'
 import { useSaleConfigStore } from '../stores/saleConfig'
 import LanguageSelector from '../components/common/LanguageSelector.vue'
 import ThemeSelector from '../components/common/ThemeSelector.vue'
+import FontScaleSlider from '../components/common/FontScaleSlider.vue'
 import StorageConsentControls from '../components/StorageConsentControls.vue'
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, formatMoney } from '@/utils/currency.js'
 

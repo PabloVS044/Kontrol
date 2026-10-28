@@ -533,7 +533,7 @@ async function registerExport(dataset, format) {
   border: none;
   color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   margin-bottom: 20px;
   padding: 0;
@@ -567,7 +567,7 @@ async function registerExport(dataset, format) {
 
 .proj-desc {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   margin: 0;
   max-width: 560px;
@@ -584,7 +584,7 @@ async function registerExport(dataset, format) {
   border: 1px solid var(--k-shade-7);
   color: var(--k-text-muted);
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: border-color .2s, color .2s;
 }
@@ -600,7 +600,7 @@ async function registerExport(dataset, format) {
 .meta-item { display: flex; flex-direction: column; gap: 3px; }
 .meta-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-text-faint);
   letter-spacing: 0.1em;
@@ -608,7 +608,7 @@ async function registerExport(dataset, format) {
 }
 .meta-value {
   font-family: 'Manrope', sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--k-text-soft);
 }
@@ -633,7 +633,7 @@ async function registerExport(dataset, format) {
 }
 .op-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-faint);
   white-space: nowrap;
 }
@@ -641,11 +641,11 @@ async function registerExport(dataset, format) {
 /* Pill sizing overrides */
 .header-actions :deep(.pill) {
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .info-row :deep(.pill) {
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 /* Skeleton */
@@ -665,7 +665,7 @@ async function registerExport(dataset, format) {
 }
 
 /* Error */
-.error-state { display: flex; flex-direction: column; gap: 12px; color: var(--k-hue-rose); font-family: 'Manrope', sans-serif; font-size: 13px; }
+.error-state { display: flex; flex-direction: column; gap: 12px; color: var(--k-hue-rose); font-family: 'Manrope', sans-serif; font-size: 0.8125rem; }
 
 /* ─── Sections grid ──────────────────────────────────────────────────────── */
 .sections-grid {
@@ -693,7 +693,7 @@ async function registerExport(dataset, format) {
 }
 .card-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-text-muted);
   letter-spacing: 0.08em;
@@ -701,7 +701,7 @@ async function registerExport(dataset, format) {
 }
 .card-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-color-primary);
   border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
   padding: 2px 7px;
@@ -714,7 +714,7 @@ async function registerExport(dataset, format) {
   border: 1px solid var(--k-shade-5);
   color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   transition: all .15s;
 }
@@ -727,22 +727,22 @@ async function registerExport(dataset, format) {
 .bstat { display: flex; flex-direction: column; }
 .bstat-val {
   font-family: 'Manrope', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--k-text-soft);
 }
 .bstat-val.gold { color: var(--k-color-primary); }
-.bstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
+.bstat-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
 
 .budget-bars { display: flex; flex-direction: column; gap: 7px; }
 .bb-item { display: flex; align-items: center; gap: 8px; }
-.bb-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); width: 70px; flex-shrink: 0; }
+.bb-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); width: 70px; flex-shrink: 0; }
 .bb-track { flex: 1; height: 4px; background: var(--k-shade-3); border-radius: 2px; overflow: hidden; }
 .bb-fill { height: 100%; border-radius: 2px; transition: width .5s; }
 .bb-fill.gold   { background: var(--k-color-primary); }
 .bb-fill.blue   { background: var(--k-hue-blue); }
 .bb-fill.purple { background: var(--k-hue-violet); }
-.bb-pct { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); min-width: 28px; text-align: right; }
+.bb-pct { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); min-width: 28px; text-align: right; }
 
 /* ─── Task card ──────────────────────────────────────────────────────────── */
 .task-completion-circle {
@@ -753,7 +753,7 @@ async function registerExport(dataset, format) {
 }
 .task-summary { display: flex; flex-direction: column; gap: 3px; }
 .ts-big { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--k-color-text); }
-.ts-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); }
+.ts-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); }
 
 .task-list { display: flex; flex-direction: column; gap: 7px; }
 .tl-row { display: flex; align-items: center; gap: 7px; }
@@ -762,7 +762,7 @@ async function registerExport(dataset, format) {
 .tl-dot.blue   { background: var(--k-hue-blue); }
 .tl-dot.gold   { background: var(--k-color-primary); }
 .tl-dot.red    { background: var(--k-hue-rose); }
-.tl-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); width: 72px; flex-shrink: 0; }
+.tl-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); width: 72px; flex-shrink: 0; }
 .tl-bar-wrap { flex: 1; }
 .tl-track { height: 4px; background: var(--k-shade-3); border-radius: 2px; overflow: hidden; }
 .tl-fill { height: 100%; border-radius: 2px; transition: width .5s; }
@@ -770,7 +770,7 @@ async function registerExport(dataset, format) {
 .tl-fill.blue   { background: var(--k-hue-blue); }
 .tl-fill.gold   { background: var(--k-color-primary); }
 .tl-fill.red    { background: var(--k-hue-rose); }
-.tl-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); min-width: 20px; text-align: right; }
+.tl-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); min-width: 20px; text-align: right; }
 
 /* ─── Team card ──────────────────────────────────────────────────────────── */
 .team-list { display: flex; flex-direction: column; gap: 4px; }
@@ -788,18 +788,18 @@ async function registerExport(dataset, format) {
   align-items: center;
   justify-content: center;
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-text-soft);
   flex-shrink: 0;
   border: 1px solid rgba(var(--k-ink-rgb), 0.05);
 }
 .member-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.member-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--k-text-soft); font-weight: 500; }
-.member-role { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); }
+.member-name { font-family: 'Manrope', sans-serif; font-size: 0.75rem; color: var(--k-text-soft); font-weight: 500; }
+.member-role { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); }
 .member-status {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   padding: 2px 6px;
   letter-spacing: 0.05em;
@@ -840,7 +840,7 @@ async function registerExport(dataset, format) {
 .phase-name-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
 .phase-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-text-dim);
 }
@@ -848,8 +848,8 @@ async function registerExport(dataset, format) {
 .phase-name.current { color: var(--k-color-text); }
 .phase-name.future  { color: var(--k-text-faint); }
 .phase-name.skip    { color: var(--k-text-faint); text-decoration: line-through; } /* omitida: tachada, no apagada */
-.phase-date { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
-.phase-desc { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); line-height: 1.5; }
+.phase-date { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
+.phase-desc { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); line-height: 1.5; }
 
 /* ─── Metrics card ───────────────────────────────────────────────────────── */
 .metrics-grid {
@@ -882,7 +882,7 @@ async function registerExport(dataset, format) {
 }
 .metric-delta {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   padding: 1px 4px;
 }
@@ -890,7 +890,7 @@ async function registerExport(dataset, format) {
 .metric-delta.neg { color: var(--k-hue-rose); background: rgba(var(--k-hue-rose-rgb), 0.08); }
 .metric-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -905,7 +905,7 @@ async function registerExport(dataset, format) {
   border: none;
   color: var(--k-color-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   cursor: pointer;
   opacity: 0.7;
   transition: opacity .2s;
@@ -931,11 +931,11 @@ async function registerExport(dataset, format) {
   color: var(--k-text-muted);
 }
 .act-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.act-text { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-soft); }
-.act-meta { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
+.act-text { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-soft); }
+.act-meta { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
 .act-tag {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   padding: 2px 7px;
   letter-spacing: 0.05em;
@@ -955,7 +955,7 @@ async function registerExport(dataset, format) {
 .side-section { margin-bottom: 16px; }
 .side-label {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--k-text-faint);
   letter-spacing: 0.1em;
@@ -976,14 +976,14 @@ async function registerExport(dataset, format) {
 .health-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k-shade-8); flex-shrink: 0; }
 .health-text {
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--k-text-dim);
   display: block;
 }
 .health-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-gray-1);
   display: block;
 }
@@ -1005,8 +1005,8 @@ async function registerExport(dataset, format) {
   padding: 7px 0;
   border-bottom: 1px solid var(--k-shade-3);
 }
-.qstat-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-dim); }
-.qstat-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; color: var(--k-text-soft); }
+.qstat-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-dim); }
+.qstat-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 600; color: var(--k-text-soft); }
 .qstat-val.gold { color: var(--k-color-primary); }
 .qstat-val.red  { color: var(--k-hue-rose); }
 
@@ -1020,7 +1020,7 @@ async function registerExport(dataset, format) {
   border: 1px solid var(--k-shade-4);
   color: var(--k-text-faint);
   font-family: 'Manrope', sans-serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   border-radius: 0;
   margin-bottom: 6px;
   transition: border-color .2s, color .2s;
@@ -1039,17 +1039,17 @@ async function registerExport(dataset, format) {
   padding: 7px 0;
   border-bottom: 1px solid var(--k-shade-3);
 }
-.info-key { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); }
-.info-val { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-muted); }
+.info-key { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); }
+.info-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-muted); }
 .info-val.gold { color: var(--k-color-primary); }
 
 /* Risk bars */
 .risk-bars { display: flex; flex-direction: column; gap: 8px; }
 .risk-row { display: flex; align-items: center; gap: 7px; }
-.risk-label { font-family: 'Manrope', sans-serif; font-size: 11px; color: var(--k-text-faint); width: 56px; flex-shrink: 0; }
+.risk-label { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; color: var(--k-text-faint); width: 56px; flex-shrink: 0; }
 .risk-track { flex: 1; height: 4px; background: var(--k-shade-3); border-radius: 2px; overflow: hidden; }
 .risk-fill { height: 100%; border-radius: 2px; transition: width .5s; }
-.risk-val { font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
+.risk-val { font-family: 'Manrope', sans-serif; font-size: 0.6875rem; font-weight: 700; min-width: 40px; text-align: right; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {

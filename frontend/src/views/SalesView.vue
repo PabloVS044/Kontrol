@@ -10,12 +10,12 @@
 
       <!-- Solo navegación: cada tarjeta lleva a donde ya vive esa función. -->
       <nav class="sales-grid" :aria-label="$t('sales.title')">
-        <RouterLink v-if="authStore.canViewInventory" class="sales-card" to="/inventory">
+        <RouterLink v-if="authStore.canViewInventory" class="sales-card" :to="{ name: 'sales-charge' }">
           <span class="sc-title">{{ $t('sales.checkout.title') }}</span>
           <span class="sc-copy">{{ $t('sales.checkout.copy') }}</span>
         </RouterLink>
 
-        <RouterLink class="sales-card" :to="{ path: '/reports', hash: '#sales' }">
+        <RouterLink class="sales-card" :to="{ name: 'sales-history' }">
           <span class="sc-title">{{ $t('sales.history.title') }}</span>
           <span class="sc-copy">{{ $t('sales.history.copy') }}</span>
         </RouterLink>

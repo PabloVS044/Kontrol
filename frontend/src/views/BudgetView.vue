@@ -535,7 +535,7 @@ async function submitFunds(payload) {
 .title { font-family: var(--k-font-display); font-size: var(--k-font-size-display); font-weight: 400; color: var(--k-color-text); }
 .subtitle { font-size: var(--k-font-size-body-small); color: var(--k-gray-5); display: inline-flex; gap: 8px; align-items: center; }
 .estado-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
+  font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; /* sin token exacto */
   color: var(--k-color-primary); background: rgba(var(--k-color-primary-rgb), 0.1);
   padding: 2px 8px; border: 1px solid rgba(var(--k-color-primary-rgb), 0.2);
 }

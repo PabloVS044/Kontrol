@@ -884,14 +884,19 @@ export const useChatStore = defineStore('chat', () => {
       const myId = authStore.user?.id_usuario
       if (myId) {
         const current = messages.value[conversationId] ?? []
-        if (current.length) {
+        let changed = false
+        const next = current.map((m) => {
+          if (Array.isArray(m.readBy) && m.readBy.includes(myId)) return m
+          changed = true
+          return { ...m, readBy: Array.isArray(m.readBy) ? [...m.readBy, myId] : [myId] }
+        })
+        // Solo si algo cambió: el chat flotante llama a markRead cada vez que
+        // cambian los mensajes, y un array nuevo en cada llamada lo metía en un
+        // bucle ("Maximum recursive updates exceeded") al abrir una conversación.
+        if (changed) {
           messages.value = {
             ...messages.value,
-            [conversationId]: current.map((m) => {
-              if (!Array.isArray(m.readBy)) return { ...m, readBy: [myId] }
-              if (m.readBy.includes(myId)) return m
-              return { ...m, readBy: [...m.readBy, myId] }
-            }),
+            [conversationId]: next,
           }
         }
       }

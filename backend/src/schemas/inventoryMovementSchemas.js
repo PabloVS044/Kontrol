@@ -30,6 +30,20 @@ export const getInventorySalesStatsQuerySchema = z.object({
   tz:        tzSchema,
 })
 
+// Fecha y hora local sin zona, como las arma el navegador ("2026-10-27T00:00:00").
+// Aquí sí se acota el formato: va a un cast ::timestamp y una cadena cualquiera
+// rompería la consulta con un 500 en vez de un 400.
+const localDateTime = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$/, {
+  message: 'Dates must look like YYYY-MM-DDTHH:mm:ss.',
+})
+
+export const getSalesHistoryQuerySchema = z.object({
+  projectId: z.coerce.number().int().positive().optional(),
+  desde:     localDateTime,
+  hasta:     localDateTime,
+  tz:        tzSchema,
+})
+
 export const inventoryMovementIdParamSchema = z.object({
   id: z.coerce.number().int().positive({ message: 'The id must be a positive integer.' }),
 })

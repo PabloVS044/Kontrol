@@ -118,11 +118,11 @@ function money(v) {
 .label.danger, .danger  { color: var(--k-state-error-text); }
 .label.income, .income  { color: var(--k-state-success-text); }
 
-.total-value     { font-size: 26px; font-weight: 700; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
-.spent-value     { font-size: 22px; font-weight: 600; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
-.income-value    { font-size: 22px; font-weight: 700; color: var(--k-state-success-text); font-variant-numeric: tabular-nums; }
+.total-value     { font-size: 1.625rem; font-weight: 700; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
+.spent-value     { font-size: 1.375rem; font-weight: 600; color: var(--k-color-text); font-variant-numeric: tabular-nums; }
+.income-value    { font-size: 1.375rem; font-weight: 700; color: var(--k-state-success-text); font-variant-numeric: tabular-nums; }
 .net-value       { font-size: var(--k-font-size-heading-1); font-weight: 700; font-variant-numeric: tabular-nums; }
-.remaining-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.remaining-value { font-size: 1.375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .planned-value   { font-size: var(--k-font-size-heading-2); font-weight: 600; color: var(--k-text-soft); font-variant-numeric: tabular-nums; }
 
 .chart-donut {
@@ -139,7 +139,7 @@ function money(v) {
   transform: translate(-50%, -50%); text-align: center;
 }
 .p-label { font-size: var(--k-font-size-caption); letter-spacing: 0.1em; color: var(--k-gray-5); display: block; }
-.p-value { font-size: 22px; font-weight: 700; color: var(--k-color-text); }
+.p-value { font-size: 1.375rem; font-weight: 700; color: var(--k-color-text); }
 
 @media (max-width: 800px) {
   .amount-grid { grid-template-columns: repeat(2, 1fr); }
@@ -148,7 +148,7 @@ function money(v) {
   .summary-card { padding: 24px; gap: 20px; }
   .amount-grid { gap: 12px; }
   .chart-donut { width: 150px; height: 150px; margin: 0 auto; }
-  .total-value { font-size: 22px; }
-  .net-value, .remaining-value, .income-value { font-size: 18px; }
+  .total-value { font-size: 1.375rem; }
+  .net-value, .remaining-value, .income-value { font-size: 1.125rem; }
 }
 </style>

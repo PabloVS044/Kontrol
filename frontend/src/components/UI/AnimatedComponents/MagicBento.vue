@@ -478,17 +478,17 @@ onUnmounted(() => {
   transform: scale(1.08);
 }
 .magic-bento-card__content  { flex-direction: column; }
-.magic-bento-card__label    { font-size: 16px; color: var(--label-color, #ffffff); }
+.magic-bento-card__label    { font-size: 1rem; color: var(--label-color, #ffffff); }
 
 .magic-bento-card__title {
   font-weight: 400;
-  font-size: 16px;
+  font-size: 1rem;
   margin: 0 0 0.25em;
   color: var(--title-color, #ffffff);
 }
 
 .magic-bento-card__description {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.2;
   opacity: 0.9;
   color: var(--desc-color, #ffffff);

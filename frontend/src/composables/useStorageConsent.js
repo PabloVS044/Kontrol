@@ -25,6 +25,7 @@ export const CONSENT_VERSION = 1
 export const PREFERENCE_KEYS = Object.freeze([
   'kontrol:locale',
   'kontrol:theme',
+  'kontrol:font-scale',
   'projects-view-mode',
   'birdie-fab-position',
   'birdie-assistant-home',

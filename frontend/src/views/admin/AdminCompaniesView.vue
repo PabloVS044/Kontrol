@@ -152,7 +152,7 @@ onMounted(async () => {
 .adm-header {  justify-content: space-between; padding-bottom: 2rem;}
 .adm-title {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 400;
   color: var(--k-color-text);
   line-height: 1.1;
@@ -161,7 +161,7 @@ onMounted(async () => {
 
 .adm-subtitle {
   padding-top: 0.5rem;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   margin: 0;
@@ -180,7 +180,7 @@ onMounted(async () => {
 }
 
 .sort-label {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
 }
@@ -195,7 +195,7 @@ onMounted(async () => {
   box-shadow: 0 1px 0 rgba(var(--k-ink-rgb), 0.04) inset, 0 1px 2px rgba(var(--k-color-black-rgb), 0.5);
   color: var(--k-text-soft);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   padding: 8px 18px;
@@ -213,11 +213,11 @@ onMounted(async () => {
   color: var(--k-color-primary);
 }
 
-.sort-arrow { font-size: 11px; opacity: 0.6; }
+.sort-arrow { font-size: 0.6875rem; opacity: 0.6; }
 .sort-btn.active .sort-arrow { opacity: 1; }
 
 .sort-count {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-dim);
   margin-left: 4px;
   font-family: var(--font-sans);
@@ -231,7 +231,7 @@ onMounted(async () => {
   grid-template-columns: 2fr 1fr 2fr 90px 90px 110px;
   gap: 12px;
   padding: 8px 16px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--k-text-dim);
@@ -281,7 +281,7 @@ onMounted(async () => {
 }
 
 .task-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-family: var(--font-sans);
   font-weight: 600;
   color: var(--k-color-text);
@@ -291,7 +291,7 @@ onMounted(async () => {
 }
 
 .task-id {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--k-text-dim);
   font-family: var(--font-sans);
 }
@@ -309,7 +309,7 @@ onMounted(async () => {
   background: rgba(var(--k-hue-blue-rgb), 0.08);
   border: 1px solid rgba(var(--k-hue-blue-rgb), 0.2);
   color: var(--k-hue-blue);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   font-family: var(--font-sans);
   white-space: nowrap;
@@ -317,7 +317,7 @@ onMounted(async () => {
 }
 
 .cell-email {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--k-text-muted);
   font-family: var(--font-sans);
   white-space: nowrap;
@@ -326,7 +326,7 @@ onMounted(async () => {
 }
 
 .list-cell-num {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--k-text-muted);
   text-align: center;
   font-family: var(--font-sans);
@@ -341,7 +341,7 @@ onMounted(async () => {
 }
 
 .toggle-btn {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   font-family: var(--font-sans);
   letter-spacing: 0.04em;
@@ -362,7 +362,7 @@ onMounted(async () => {
   color: var(--k-text-dim);
   padding: 40px;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.8125rem;
   background: var(--k-surface-card);
   border: 1px solid var(--k-color-border);
 }

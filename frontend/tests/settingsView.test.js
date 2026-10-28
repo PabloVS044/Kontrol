@@ -64,6 +64,13 @@ describe('SettingsView.vue — configuración unificada', () => {
     expect(wrapper.findComponent({ name: 'AppNavbar' }).exists()).toBe(true)
   })
 
+  it('el tamaño de letra está en las preferencias personales, para cualquier rol', async () => {
+    const wrapper = await montar({ rol: 'collaborator' })
+    const prefs = wrapper.find('.set-card--prefs')
+    expect(prefs.find('label[for="font-scale"]').text()).toBe('Tamaño de letra')
+    expect(prefs.find('#font-scale').attributes('type')).toBe('range')
+  })
+
   it('el bloque de venta tiene el ancla a la que lleva Ventas', async () => {
     const wrapper = await montar()
     expect(wrapper.find('#sale-config').exists()).toBe(true)
