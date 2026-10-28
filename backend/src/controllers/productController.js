@@ -138,6 +138,53 @@ export const getProducts = async (req, res) => {
 }
 
 /**
+ * GET /api/products/barcode/:code
+ * Optional: ?projectId
+ *
+ * DT-22 (RTF 2, PERF-04): el POS resolvía cada escaneo descargando el
+ * inventario completo y buscando en el navegador: 8.1 MB y 3.69 s de p95 con
+ * 20 000 productos. Aquí se resuelve con el índice del código y solo viajan
+ * las coincidencias, con el stock de ese momento.
+ *
+ * Devuelve todas las coincidencias, no la primera: el código es único por
+ * proyecto, no por empresa, y en «todos los proyectos» el cajero elige de cuál
+ * vender (PR #126). Mismo control de acceso que el listado.
+ */
+export const getProductsByBarcode = async (req, res) => {
+  const { code } = req.params
+  const { projectId } = req.query
+  const accessibleProjectIds = await getInventoryAccessibleProjectIds(req)
+
+  if (accessibleProjectIds && !accessibleProjectIds.length) {
+    return res.json({ success: true, data: [] })
+  }
+
+  if (accessibleProjectIds && projectId && !accessibleProjectIds.includes(Number(projectId))) {
+    return res.status(403).json({ success: false, message: 'You do not have access to this project inventory.' })
+  }
+
+  const filters = ['p.codigo_barras = $1', 'proj.id_empresa = $2']
+  const values = [code, req.empresa.id_empresa]
+
+  if (projectId) {
+    values.push(projectId)
+    filters.push(`p.id_proyecto = $${values.length}`)
+  }
+  if (accessibleProjectIds) {
+    values.push(accessibleProjectIds)
+    filters.push(`p.id_proyecto = ANY($${values.length}::int[])`)
+  }
+
+  const result = await pool.query(
+    `SELECT ${PRODUCTO_SELECT} ${PRODUCTO_FROM}
+     WHERE ${filters.join(' AND ')}
+     ORDER BY proj.id_proyecto, p.id_producto`,
+    values
+  )
+  return res.json({ success: true, data: result.rows })
+}
+
+/**
  * GET /api/products/alerts/low-stock
  * Optional: ?projectId
  */

@@ -114,6 +114,7 @@ Pasos que ejecuta:
 1. **Código y configuración.** En la VM: `git fetch` y `git reset --hard origin/<rama>` en `/app/Kontrol`, y escribe `.env` a partir de `.env.deploy`.
 2. **Build y arranque.** Construye `backend` y luego `frontend` (en secuencia, para no agotar RAM ni disco), recrea todos los contenedores con `--force-recreate` y borra las imágenes colgantes.
 3. **Verificación.** Espera hasta 60 s a que `http://localhost:3000/api/health` responda. Si no responde, imprime el estado de los contenedores y las últimas 120 líneas del log del backend y termina con error.
+4. **Versión desplegada** (desde el 26/10/2026, DT-21). Comprueba que el checkout de la VM es el commit de `origin/<rama>` y que `backend` y `frontend` corren la imagen recién construida; si no, termina con error. Avisa si el disco pasa del 85 %.
 
 ### Después de desplegar
 
@@ -178,7 +179,7 @@ Pendientes de verificar a mano en el navegador sobre producción, con una cuenta
 | Endpoint de salud (`/api/health`) | ✅ Existe; `deploy.sh` lo comprueba al terminar cada despliegue |
 | Comprobación periódica de salud con alerta | ❌ No configurada |
 | Alerta de espacio en disco | ❌ No configurada. La VM no tiene `cron` instalado ni timers propios de systemd |
-| Rotación de logs de contenedores | ❌ No configurada. No existe `/etc/docker/daemon.json` y los cuatro contenedores usan `json-file` sin `max-size`. Hoy los logs pesan KB porque los contenedores se recrearon, pero crecen sin límite (DT-21) |
+| Rotación de logs de contenedores | ⏳ Configurada en `docker-compose.prod.yml` desde el 26/10/2026 (3 × 10 MB por contenedor); se aplica en el siguiente despliegue. Al 14/10/2026 los cuatro contenedores usaban `json-file` sin `max-size` (DT-21) |
 
 ---
 
@@ -186,10 +187,10 @@ Pendientes de verificar a mano en el navegador sobre producción, con una cuenta
 
 | # | Severidad | Hallazgo | Acción propuesta |
 |---|---|---|---|
-| 1 | Alta | Sin rotación de logs ni alerta de disco: el incidente del 01/10 puede repetirse | `logging` con `max-size` y `max-file` en el compose; timer de systemd o monitor externo para disco y salud |
+| 1 | Alta | Sin rotación de logs ni alerta de disco: el incidente del 01/10 puede repetirse | Rotación en el compose y aviso de disco en `deploy.sh` desde el 26/10/2026. Falta un timer de systemd o un monitor externo para disco y salud (DT-21, a futuro) |
 | 2 | Media | `/app/Kontrol/.env` tiene permisos `664`: cualquier usuario de la VM lee los secretos | `chmod 600 .env` y aplicar el mismo permiso en `deploy.sh` |
 | 3 | Media | `deploy.sh` pasa el `.env` codificado en base64 dentro del comando remoto: se ve en `ps` durante el despliegue (DT-27) | Enviar el `.env` por `scp` o por stdin |
 | 4 | Media | El checkout de la VM está en la rama local `main`, pero contiene `develop` (`c06b6bd`); `origin/main` aún no incluye el PR #149 | Hacer el release `develop → main` y desplegar desde `main`, como indica §5 |
 | 5 | Baja | MongoDB compartido históricamente con pruebas (§3) | Base de Mongo propia para producción, o limpiar los datos de pruebas |
-| 6 | Baja | El HTML del SPA no emite cabeceras de seguridad y nginx expone su versión (DT-19) | Según DT-19 |
+| 6 | Baja | El HTML del SPA no emitía cabeceras de seguridad y nginx exponía su versión (DT-19) | Corregido en `frontend/nginx.conf.template` el 26/10/2026; se aplica en el siguiente despliegue |
 | 7 | Baja | 812 MB de caché de build en un disco con 2.0 GB libres | `docker builder prune` periódico o dentro de `deploy.sh` |

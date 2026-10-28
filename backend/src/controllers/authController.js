@@ -158,48 +158,59 @@ export const register = async (req, res) => {
 }
 
 // POST /api/auth/login (validado por Zod)
+//
+// RTF 2 (PERF-01): el cliente del pool se tomaba al entrar y se retenía
+// durante bcrypt.compare, que es CPU pura. Bajo carga, los logins ocupaban
+// las 10 conexiones esperando al hash y el resto de la API hacía cola detrás.
+// Ahora la consulta no reserva cliente y solo se toma uno si hay invitación.
+//
+// Bajar BCRYPT_SALT_ROUNDS no acelera este camino: compare usa el costo
+// guardado en cada hash, no el configurado.
 export const login = async (req, res) => {
   const { email, password, inviteToken } = req.body
 
-  const client = await pool.connect()
-  try {
-    const result = await client.query(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
-       FROM public.usuario u
-       JOIN public.rol r ON r.id_rol = u.id_rol
-       WHERE u.email = $1`,
-      [email]
-    )
+  const result = await pool.query(
+    `SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.activo, u.token_version, r.nombre_rol
+     FROM public.usuario u
+     JOIN public.rol r ON r.id_rol = u.id_rol
+     WHERE u.email = $1`,
+    [email]
+  )
 
-    if (!result.rows.length) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const user = result.rows[0]
-
-    if (!user.activo) {
-      return res.status(403).json({ success: false, message: 'Account disabled.' })
-    }
-
-    const valid = await bcrypt.compare(password, user.password_hash)
-    if (!valid) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' })
-    }
-
-    const invite = await maybeResolveInvite({
-      client,
-      inviteToken,
-      id_usuario: user.id_usuario,
-      req,
-    })
-
-    const token = signToken(user)
-    const { password_hash, activo, ...userData } = user
-    delete userData.token_version
-    return res.json({ success: true, token, data: userData, invite })
-  } finally {
-    client.release()
+  if (!result.rows.length) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
   }
+
+  const user = result.rows[0]
+
+  if (!user.activo) {
+    return res.status(403).json({ success: false, message: 'Account disabled.' })
+  }
+
+  const valid = await bcrypt.compare(password, user.password_hash)
+  if (!valid) {
+    return res.status(401).json({ success: false, message: 'Invalid credentials.' })
+  }
+
+  let invite = null
+  if (inviteToken) {
+    const client = await pool.connect()
+    try {
+      invite = await maybeResolveInvite({
+        client,
+        inviteToken,
+        id_usuario: user.id_usuario,
+        req,
+      })
+    } finally {
+      client.release()
+    }
+  }
+
+  const token = signToken(user)
+  const { password_hash, activo, ...userData } = user
+  delete userData.token_version
+  return res.json({ success: true, token, data: userData, invite })
 }
 
 // GET /api/auth/me

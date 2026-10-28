@@ -444,6 +444,11 @@ export const createSale = async (req, res) => {
 
     const createdIds = []
     const lowStock = []
+    // Stock final por producto, para que el POS actualice su vista sin volver
+    // a descargar el inventario (DT-22). Se acumula por si un producto viene
+    // en dos líneas; `producto.stock_actual` es la fila bloqueada, previa a
+    // esta venta.
+    const stockFinal = new Map()
 
     for (let i = 0; i < locked.length; i++) {
       const { item, producto, precio_unitario } = locked[i]
@@ -469,6 +474,10 @@ export const createSale = async (req, res) => {
       )
 
       const newStock = producto.stock_actual - item.cantidad
+      stockFinal.set(
+        item.id_producto,
+        (stockFinal.get(item.id_producto) ?? producto.stock_actual) - item.cantidad
+      )
       if (producto.stock_minimo != null && newStock <= producto.stock_minimo) {
         lowStock.push({ ...producto, stock_actual: newStock })
       }
@@ -498,6 +507,7 @@ export const createSale = async (req, res) => {
       data: {
         id_movimientos: createdIds,
         count: createdIds.length,
+        stock: [...stockFinal].map(([id_producto, stock_actual]) => ({ id_producto, stock_actual })),
         venta: {
           id_venta: venta.id_venta,
           fecha: venta.fecha,

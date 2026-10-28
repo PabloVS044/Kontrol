@@ -249,6 +249,12 @@ export const ensureDatabaseSchema = async () => {
     CREATE INDEX IF NOT EXISTS presupuesto_ajuste_proyecto_idx
       ON public.presupuesto_ajuste (id_proyecto, fecha DESC)
   `)
+  // DT-26 (RTF 2, PERF-02): métricas y resumen de presupuesto filtran
+  // presupuesto_actividad por proyecto y hacían un seq scan cada uno.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS presupuesto_actividad_proyecto_idx
+      ON public.presupuesto_actividad (id_proyecto)
+  `)
 
   // Reuse movimiento_inventario as the source of truth for activity expenses:
   // GASTO_ADMIN movements can now optionally link to a presupuesto_actividad
@@ -300,6 +306,13 @@ export const ensureDatabaseSchema = async () => {
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS producto_codigo_barras_unique
       ON public.producto (id_proyecto, codigo_barras)
+      WHERE codigo_barras IS NOT NULL
+  `)
+  // DT-22: el POS busca por código sin proyecto («todos los proyectos»), y el
+  // índice único empieza por id_proyecto, así que no sirve para esa búsqueda.
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS producto_codigo_barras_idx
+      ON public.producto (codigo_barras)
       WHERE codigo_barras IS NOT NULL
   `)
 

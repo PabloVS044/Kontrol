@@ -579,15 +579,29 @@ async function loadProjects() {
   }
 }
 
+/** `?projectId=` del filtro, o nada en «todos los proyectos». */
+function inventoryQuery() {
+  const params = new URLSearchParams()
+  if (selectedProject.value) {
+    params.set('projectId', selectedProject.value.id_proyecto)
+  }
+  return params.toString() ? `?${params}` : ''
+}
+
+async function loadStockAlerts() {
+  try {
+    const alertasRes = await apiFetch(`/api/products/alerts/low-stock${inventoryQuery()}`)
+    stockAlerts.value = alertasRes.data
+  } catch {
+    // non-fatal: las alertas se refrescan en la siguiente carga completa
+  }
+}
+
 async function loadData() {
   loading.value    = true
   fetchError.value = null
   try {
-    const params = new URLSearchParams()
-    if (selectedProject.value) {
-      params.set('projectId', selectedProject.value.id_proyecto)
-    }
-    const qs = params.toString() ? `?${params}` : ''
+    const qs = inventoryQuery()
 
     const [productosRes, alertasRes] = await Promise.all([
       apiFetch(`/api/products${qs}`),
@@ -861,17 +875,45 @@ function buildScanCandidate(product) {
   return { product, max, inCart, sellable: canSellProduct(product) && max > 0 }
 }
 
-function handleScan(code) {
-  const scanned = String(code ?? '').trim()
-  if (!scanned) return
+/**
+ * Pasa a la lista el stock que trajo el servidor. Se usa el objeto de la lista
+ * cuando existe, para conservar los agregados por proyecto de la tarjeta.
+ */
+function syncListedProduct(fresh) {
+  const listed = products.value.find((p) => p.id_producto === fresh.id_producto)
+  if (!listed) return fresh
+  listed.stock_actual = fresh.stock_actual
+  return listed
+}
 
+// Un lector puede emitir el mismo código dos veces seguidas: mientras una
+// búsqueda está en curso, las lecturas nuevas se ignoran.
+let scanLookupPending = false
+
+async function handleScan(code) {
+  const scanned = String(code ?? '').trim()
+  if (!scanned || scanLookupPending) return
+
+  // DT-22 (RTF 2, PERF-04): el código se resuelve en el servidor. Antes se
+  // buscaba en `products`, el inventario completo que la vista descarga al
+  // abrirse —8.1 MB con 20 000 productos—; ahora viajan solo las
+  // coincidencias, con el stock de ese momento.
+  //
   // El stock vive en producto.stock_actual y cada producto pertenece a un solo
   // proyecto, así que el mismo código en dos proyectos son dos inventarios
   // distintos. Resolver con el primer match descontaba del proyecto de id más
   // bajo, no del que tiene el cajero delante. Se recogen todos y se decide.
-  const matches = products.value.filter(
-    (p) => p.codigo_barras && String(p.codigo_barras) === scanned
-  )
+  let matches
+  scanLookupPending = true
+  try {
+    const res = await apiFetch(`/api/products/barcode/${encodeURIComponent(scanned)}${inventoryQuery()}`)
+    matches = (res.data ?? []).map(syncListedProduct)
+  } catch {
+    flashScanFeedback('err', t('inventory.errors.networkError'))
+    return
+  } finally {
+    scanLookupPending = false
+  }
   if (!matches.length) {
     flashScanFeedback('err', t('inventory.scanner.notFound', { code: scanned }))
     return
@@ -1064,12 +1106,38 @@ async function submitSale() {
     // del informe de ventas.
     lastSale.value = data.data?.venta ?? null
 
+    const vendidos = new Map(saleCart.value.map((item) => [item.product.id_producto, item.cantidad]))
     clearSaleCart()
-    await loadData()
+    // DT-22: el servidor devuelve el stock final de lo vendido, así que no
+    // hace falta volver a descargar el inventario después de cada venta. Si
+    // no lo trae, se recarga como antes.
+    if (Array.isArray(data.data?.stock)) {
+      applySoldStock(data.data.stock, vendidos)
+      await loadStockAlerts()
+    } else {
+      await loadData()
+    }
   } catch (err) {
     saleError.value = err.message || t('inventory.errors.networkError')
   } finally {
     saleSubmitting.value = false
+  }
+}
+
+/**
+ * Refleja una venta en la lista sin pedirla otra vez: el stock que devolvió el
+ * servidor y, cuando la tarjeta los muestra, los totales del proyecto.
+ */
+function applySoldStock(stock, vendidos) {
+  for (const { id_producto, stock_actual } of stock) {
+    const product = products.value.find((p) => p.id_producto === id_producto)
+    if (!product) continue
+    product.stock_actual = stock_actual
+    const cantidad = vendidos.get(id_producto) ?? 0
+    if ('salidas_proyecto' in product) {
+      product.salidas_proyecto = Number(product.salidas_proyecto ?? 0) + cantidad
+      product.neto_proyecto = Number(product.neto_proyecto ?? 0) - cantidad
+    }
   }
 }
 
