@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { randomUUID } from 'node:crypto'
 import { OAuth2Client } from 'google-auth-library'
 import pool from '../db/pool.js'
+import { isReauthAction, REAUTH_ACTIONS } from '../auth/reauthentication.js'
 import {
   acceptCompanyInvitation,
   getInvitationByToken as getCompanyInvitationByToken,
@@ -248,8 +249,11 @@ export const googleDeletionReauthentication = (req, res) => {
 
   const frontend = getFrontendBaseUrl(req, req.headers.origin)
   const nonce = randomUUID()
+  // The same Google round trip serves every destructive action; `action`
+  // decides the purpose of the proof it returns.
+  const action = isReauthAction(req.body?.action) ? req.body.action : REAUTH_ACTIONS.ACCOUNT_DELETION
   const state = jwt.sign(
-    { purpose: 'account-deletion-reauth', id_usuario: req.user.id_usuario, frontend, nonce },
+    { purpose: 'account-deletion-reauth', action, id_usuario: req.user.id_usuario, frontend, nonce },
     process.env.JWT_SECRET,
     { expiresIn: '5m' }
   )
@@ -288,7 +292,14 @@ export const googleCallback = async (req, res) => {
 
   if (deletionState) {
     const frontendUrl = getFrontendBaseUrl(req, deletionState.frontend)
-    if (error) return res.redirect(`${frontendUrl}/settings?reauth_error=google_cancelled`)
+    const action = isReauthAction(deletionState.action)
+      ? deletionState.action
+      : REAUTH_ACTIONS.ACCOUNT_DELETION
+    const closure = action === REAUTH_ACTIONS.COMPANY_CLOSURE
+    const failed = (reason) => res.redirect(
+      `${frontendUrl}/settings?reauth_error=${reason}${closure ? '&reauth_for=company-closure' : ''}`
+    )
+    if (error) return failed('google_cancelled')
     try {
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
@@ -304,7 +315,7 @@ export const googleCallback = async (req, res) => {
       const tokens = await tokenResponse.json()
       if (!tokenResponse.ok || !tokens.id_token) {
         logger.error('[Google account deletion reauthentication] token exchange failed.')
-        return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+        return failed('google_error')
       }
 
       const oauthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -324,18 +335,19 @@ export const googleCallback = async (req, res) => {
         googleUser.sub !== userResult.rows[0]?.google_id ||
         googleUser.nonce !== deletionState.nonce
       ) {
-        return res.redirect(`${frontendUrl}/settings?reauth_error=google_account_mismatch`)
+        return failed('google_account_mismatch')
       }
 
       const proof = jwt.sign(
-        { id_usuario: deletionState.id_usuario, purpose: 'account-deletion' },
+        { id_usuario: deletionState.id_usuario, purpose: action },
         process.env.JWT_SECRET,
         { expiresIn: '2m' }
       )
-      return res.redirect(`${frontendUrl}/settings#deletion_proof=${encodeURIComponent(proof)}`)
+      const fragment = closure ? 'closure_proof' : 'deletion_proof'
+      return res.redirect(`${frontendUrl}/settings#${fragment}=${encodeURIComponent(proof)}`)
     } catch (err) {
       logger.error('[Google account deletion reauthentication]', err)
-      return res.redirect(`${frontendUrl}/settings?reauth_error=google_error`)
+      return failed('google_error')
     }
   }
 
