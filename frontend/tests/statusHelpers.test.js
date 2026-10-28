@@ -4,6 +4,7 @@ import {
   statusLabel,
   statusPill,
   priorityColor,
+  withAlpha,
   formatMoney,
   formatBudget,
   isOverdue,
@@ -12,12 +13,12 @@ import {
 describe('statusStyle / statusLabel / statusPill', () => {
   it('devuelve el color correcto para un estado conocido', () => {
     const style = statusStyle('EN_PROGRESO')
-    expect(style.color).toBe('#34d399')
-    expect(style.borderColor).toBe('#34d39944')
+    expect(style.color).toBe('var(--k-hue-emerald)')
+    expect(style.borderColor).toBe('color-mix(in srgb, var(--k-hue-emerald) 26.7%, transparent)')
   })
 
   it('usa color gris por defecto para estados desconocidos', () => {
-    expect(statusStyle('INEXISTENTE').color).toBe('#666')
+    expect(statusStyle('INEXISTENTE').color).toBe('var(--k-gray-4)')
   })
 
   it('traduce estados al inglés y deja pasar valores desconocidos', () => {
@@ -26,20 +27,24 @@ describe('statusStyle / statusLabel / statusPill', () => {
   })
 
   it('statusPill combina etiqueta, color y fondo', () => {
-    // El dorado de COMPLETADO se alineó con --k-color-primary (#caa860); antes
-    // era un literal aparte (#c9a962) que no coincidía con el token de marca.
     expect(statusPill('COMPLETADO')).toEqual({
       label: 'Completed',
-      color: '#caa860',
-      bg: '#caa8601a',
+      color: 'var(--k-color-primary)',
+      bg: 'color-mix(in srgb, var(--k-color-primary) 10.2%, transparent)',
     })
+  })
+})
+
+describe('withAlpha', () => {
+  it('expresa la transparencia con color-mix', () => {
+    expect(withAlpha('var(--k-hue-blue)', 0x44 / 255)).toBe('color-mix(in srgb, var(--k-hue-blue) 26.7%, transparent)')
   })
 })
 
 describe('priorityColor', () => {
   it('mapea prioridades y usa fallback', () => {
-    expect(priorityColor('CRITICA')).toBe('#fb7185')
-    expect(priorityColor('OTRA')).toBe('#555')
+    expect(priorityColor('CRITICA')).toBe('var(--k-hue-rose)')
+    expect(priorityColor('OTRA')).toBe('var(--k-gray-3)')
   })
 })
 

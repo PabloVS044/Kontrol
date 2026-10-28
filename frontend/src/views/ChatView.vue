@@ -5,7 +5,6 @@ import AppNavbar from '../components/AppNavbar.vue'
 import { useChatStore } from '../stores/chat.js'
 import { useAuthStore } from '../stores/auth.js'
 import { formatFileSize } from '../utils/chat.js'
-import './ChatView.css'
 
 const { t, locale } = useI18n()
 const chatStore = useChatStore()
@@ -352,7 +351,7 @@ onMounted(() => {
         <div v-if="!activeChat" class="chat-empty">
           <div class="empty-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#444" stroke-width="1.5" stroke-linejoin="round" />
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="var(--k-shade-8)" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
           </div>
           <h3 class="empty-title">{{ t('chat.emptyTitle') }}</h3>
@@ -561,32 +560,34 @@ onMounted(() => {
   </div>
 </template>
 
+<style scoped src="./ChatView.css"></style>
+
 <style scoped>
 .conv-empty-hint {
   padding: 12px 16px;
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   line-height: 1.5;
 }
 
 .chat-header-email {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
 }
 
 .chat-panel-error {
   margin-top: 12px;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: #fb7185;
+  color: var(--k-hue-rose);
 }
 
 .chat-typing-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   font-style: italic;
 }
 
@@ -601,7 +602,7 @@ onMounted(() => {
 .typing-indicator span {
   width: 6px;
   height: 6px;
-  background: #444;
+  background: var(--k-shade-8);
   border-radius: 50%;
   animation: blink 1.2s infinite;
 }
@@ -617,14 +618,14 @@ onMounted(() => {
 .upload-hint {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: var(--Primary);
+  color: var(--k-color-primary);
   padding-left: 8px;
 }
 
 .upload-error {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: #fb7185;
+  color: var(--k-hue-rose);
   padding-left: 8px;
 }
 
@@ -656,8 +657,8 @@ onMounted(() => {
 .ndm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
-  background: #050505;
+  z-index: var(--k-z-overlay-top);
+  background: var(--k-overlay-backdrop);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -667,8 +668,10 @@ onMounted(() => {
 .ndm-modal {
   width: 400px;
   max-height: 520px;
-  background: #0d0d0d;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-2);
+  border: 1px solid var(--k-shade-6);
+  border-radius: var(--k-radius-lg);
+  box-shadow: var(--k-shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -679,13 +682,13 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--k-shade-4);
 }
 
 .ndm-title {
   font-family: 'Playfair Display', serif;
   font-size: 16px;
-  color: var(--Text);
+  color: var(--k-color-text);
 }
 
 .ndm-close {
@@ -693,7 +696,7 @@ onMounted(() => {
   height: 26px;
   border: none;
   background: none;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -701,7 +704,7 @@ onMounted(() => {
   transition: color 0.12s;
 }
 
-.ndm-close:hover { color: var(--TextSoft); }
+.ndm-close:hover { color: var(--k-text-soft); }
 
 .ndm-search {
   display: flex;
@@ -709,8 +712,8 @@ onMounted(() => {
   gap: 8px;
   padding: 0 12px;
   margin: 10px 12px;
-  background: #111111;
-  border: 1px solid #1f1f1f;
+  background: var(--k-shade-3);
+  border: 1px solid var(--k-shade-6);
 }
 
 .ndm-search input {
@@ -718,13 +721,13 @@ onMounted(() => {
   background: none;
   border: none;
   outline: none;
-  color: var(--Text);
+  color: var(--k-color-text);
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   padding: 9px 0;
 }
 
-.ndm-search input::placeholder { color: var(--TextFaint); }
+.ndm-search input::placeholder { color: var(--k-text-faint); }
 
 .ndm-list {
   flex: 1;
@@ -733,7 +736,7 @@ onMounted(() => {
 }
 
 .ndm-list::-webkit-scrollbar { width: 4px; }
-.ndm-list::-webkit-scrollbar-thumb { background: #252525; }
+.ndm-list::-webkit-scrollbar-thumb { background: var(--k-shade-6b); }
 
 .ndm-user {
   display: flex;
@@ -744,19 +747,19 @@ onMounted(() => {
   transition: background 0.1s;
 }
 
-.ndm-user:hover { background: #151515; }
+.ndm-user:hover { background: var(--k-shade-3b); }
 
 .ndm-name {
   font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: #e0dcd5;
+  color: var(--k-text-soft);
 }
 
 .ndm-email {
   font-family: 'Manrope', sans-serif;
   font-size: 11px;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
 }
 
 .ndm-empty {
@@ -764,6 +767,6 @@ onMounted(() => {
   text-align: center;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
-  color: var(--TextFaint);
+  color: var(--k-text-faint);
 }
 </style>

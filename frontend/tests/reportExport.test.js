@@ -358,11 +358,11 @@ describe('reportExport — degradacion con datos incompletos', () => {
 describe('statusHelpers — estados fuera del catalogo', () => {
   it('devuelve el estado crudo y un color neutro si no esta mapeado', () => {
     expect(statusLabel('ARCHIVADO')).toBe('ARCHIVADO')
-    expect(statusPill('ARCHIVADO')).toMatchObject({ label: 'ARCHIVADO', color: '#888' })
+    expect(statusPill('ARCHIVADO')).toMatchObject({ label: 'ARCHIVADO', color: 'var(--k-gray-5)' })
   })
 
   it('usa el color por defecto para una prioridad desconocida', () => {
-    expect(priorityColor('URGENTISIMA')).toBe('#555')
+    expect(priorityColor('URGENTISIMA')).toBe('var(--k-gray-3)')
   })
 
   it('muestra un guion en vez de "Invalid Date" cuando no hay fecha', () => {

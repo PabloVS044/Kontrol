@@ -238,11 +238,11 @@ input:focus { border-color: var(--k-color-primary); outline: none; }
 dt { color: var(--k-text-muted); font-size: var(--k-font-size-caption); text-transform: uppercase; letter-spacing: var(--k-tracking-caps); }
 dd { margin: 0; overflow-wrap: anywhere; }
 .details-link { background: none; border: 0; border-top: var(--k-border-width) solid var(--k-color-border); color: var(--k-color-primary); padding: var(--k-space-3) 0 0; text-align: left; cursor: pointer; }
-.empty-state, .state-message { padding: var(--k-space-7); text-align: center; color: var(--k-text-muted); border: var(--k-border-width) dashed var(--k-color-border); background: rgba(var(--k-color-black-rgb), .24); }
+.empty-state, .state-message { padding: var(--k-space-7); text-align: center; color: var(--k-text-muted); border: var(--k-border-width) dashed var(--k-color-border); background: rgba(var(--k-canvas-rgb), .24); }
 .empty-state h2 { color: var(--k-color-text); margin-bottom: var(--k-space-2); }
 .state-error { color: var(--k-state-error-text); }
-.modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: var(--k-space-4); background: rgba(var(--k-color-black-rgb), .78); }
-.supplier-modal { width: min(100%, 560px); display: grid; gap: var(--k-space-4); background: var(--k-shade-2); border: var(--k-border-width) solid var(--k-color-border); padding: var(--k-space-5); }
+.modal-backdrop { position: fixed; inset: 0; z-index: var(--k-z-nav); display: grid; place-items: center; padding: var(--k-space-4); background: var(--k-overlay-backdrop); }
+.supplier-modal { width: min(100%, 560px); display: grid; gap: var(--k-space-4); background: var(--k-shade-2); border: var(--k-border-width) solid var(--k-color-border); border-radius: var(--k-radius-lg); box-shadow: var(--k-shadow-modal); padding: var(--k-space-5); }
 .supplier-modal label { display: grid; gap: var(--k-space-2); color: var(--k-text-muted); font-size: var(--k-font-size-caption); }
 .supplier-modal label input { min-width: 0; width: 100%; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--k-space-3); }

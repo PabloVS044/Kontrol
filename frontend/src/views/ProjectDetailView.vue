@@ -65,7 +65,6 @@
                     &rarr; {{ formatDate(project.fecha_fin_planificada) }}
                   </template>
                 </span>
-                <!-- TODO SCRUM-16: #f97316 (aviso) no tiene token en la paleta v2 -->
                 <span
                   v-if="daysRemaining !== null"
                   class="pd-meta-item"
@@ -74,7 +73,7 @@
                       daysRemaining < 0
                         ? 'var(--k-state-error-text)'
                         : daysRemaining <= 7
-                          ? '#f97316'
+                          ? 'var(--k-hue-orange)'
                           : 'var(--k-gray-3)',
                   }"
                 >
@@ -185,8 +184,8 @@
                   class="status-badge small"
                   :style="{
                     color: progressSignalColor,
-                    borderColor: `${progressSignalColor}44`,
-                    background: `${progressSignalColor}14`,
+                    borderColor: withAlpha(progressSignalColor, 0.267),
+                    background: withAlpha(progressSignalColor, 0.078),
                   }"
                 >
                   {{ progressEntriesTotal ? $t('projects.detail.overview.updates', { count: progressEntriesTotal }) : $t('projects.detail.overview.noUpdates') }}
@@ -306,7 +305,7 @@
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
                 <path
                   d="M8 3v10M3 8h10"
-                  stroke="#0a0a0a"
+                  stroke="var(--k-form-btn-text)"
                   stroke-width="1.5"
                   stroke-linecap="square"
                 />
@@ -319,9 +318,9 @@
 
           <div v-else-if="filteredTasks.length === 0" class="tab-empty">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <rect x="5" y="7" width="26" height="22" rx="2" stroke="#2a2a2a" stroke-width="1.4"/>
-              <path d="M5 13h26M12 7V5M24 7V5" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
-              <path d="M11 20h14M11 24.5h8" stroke="#2a2a2a" stroke-width="1.4" stroke-linecap="square"/>
+              <rect x="5" y="7" width="26" height="22" rx="2" stroke="var(--k-shade-7)" stroke-width="1.4"/>
+              <path d="M5 13h26M12 7V5M24 7V5" stroke="var(--k-shade-7)" stroke-width="1.4" stroke-linecap="square"/>
+              <path d="M11 20h14M11 24.5h8" stroke="var(--k-shade-7)" stroke-width="1.4" stroke-linecap="square"/>
             </svg>
             <p class="tab-empty-title">
               {{ taskFilterEstado || taskFilterPrioridad ? $t('projects.tasks.emptyFilter') : $t('projects.tasks.emptyNoTasks') }}
@@ -331,7 +330,7 @@
             </p>
             <button v-if="canManageTasks && !taskFilterEstado && !taskFilterPrioridad" class="btn-primary" @click="openCreateTask">
               <svg class="icon16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+                <path d="M8 3v10M3 8h10" stroke="var(--k-form-btn-text)" stroke-width="1.5" stroke-linecap="square"/>
               </svg>
               {{ $t('projects.tasks.emptyCta') }}
             </button>
@@ -489,7 +488,7 @@ import TaskDetailModal from '../components/projects/TaskDetailModal.vue'
 import TeamModal       from '../components/projects/TeamModal.vue'
 import TeamDetailModal from '../components/projects/TeamDetailModal.vue'
 import {
-  statusStyle, statusLabel,
+  statusStyle, statusLabel, withAlpha,
   formatDate, formatMoney,
 } from '../utils/statusHelpers.js'
 import './ProjectDetailsView.css'
@@ -615,8 +614,8 @@ function movColor(tipo) {
     {
       ENTRADA: "var(--k-state-success-text)",
       SALIDA: "var(--k-state-error-text)",
-      AJUSTE: "#60a5fa", /* cambiar a token color azul */
-      GASTO_ADMIN: "#f97316",
+      AJUSTE: "var(--k-hue-blue)",
+      GASTO_ADMIN: "var(--k-hue-orange)",
     }[tipo] || "var(--k-gray-4)"
   );
 }
@@ -642,10 +641,9 @@ const budgetPct = computed(() => {
   return Math.round((spent / total) * 100);
 });
 
-// TODO SCRUM-16: #f97316 sin token; --k-color-warning es oscuro, para fondos.
 const budgetColor = computed(() => {
   if (budgetPct.value >= 100) return "var(--k-state-error-text)";
-  if (budgetPct.value >= 80) return "#f97316";
+  if (budgetPct.value >= 80) return "var(--k-hue-orange)";
   return "var(--k-state-success-text)";
 });
 
@@ -687,11 +685,11 @@ const progressBlockers = computed(() =>
 );
 
 const progressSignalColor = computed(() => {
-  if (progressBlockers.value > 0) return "#fb7185";
-  if (progressPercentage.value >= 100) return "#caa860";
-  if (progressPercentage.value >= 60) return "#34d399";
-  if (progressPercentage.value > 0) return "#60a5fa";
-  return "#666";
+  if (progressBlockers.value > 0) return "var(--k-hue-rose)";
+  if (progressPercentage.value >= 100) return "var(--k-color-primary)";
+  if (progressPercentage.value >= 60) return "var(--k-hue-emerald)";
+  if (progressPercentage.value > 0) return "var(--k-hue-blue)";
+  return "var(--k-gray-4)";
 });
 
 const progressSourceLabel = computed(() =>
@@ -707,7 +705,7 @@ const progressLastUpdateLabel = computed(() =>
 );
 
 const TASK_STATE_META = computed(() => [
-  { estado: 'PENDIENTE',   label: t('projects.taskStatuses.pending'),    color: '#60a5fa' }, /* cambiar a token color azul */
+  { estado: 'PENDIENTE',   label: t('projects.taskStatuses.pending'),    color: 'var(--k-hue-blue)' },
   { estado: 'EN_PROGRESO', label: t('projects.taskStatuses.inProgress'), color: 'var(--k-state-success-text)' },
   { estado: 'COMPLETADA',  label: t('projects.taskStatuses.completed'),  color: 'var(--k-color-primary)' },
   { estado: 'CANCELADA',   label: t('projects.taskStatuses.cancelled'),  color: 'var(--k-state-error-text)' },
@@ -887,8 +885,7 @@ async function handleProjectMembersUpdated() {
 // ── Team modal ────────────────────────────────────────────────────────────────
 
 function areaColor(area) {
-  /* cambiar a token color azul */
-  return ({ Desarrollo: "#60a5fa", Diseño: "#60a5fa", Calidad: "var(--k-state-success-text)", Infraestructura: "#f97316", Gestión: "var(--k-color-primary)" }[area] || "var(--k-gray-3)")
+  return ({ Desarrollo: "var(--k-hue-blue)", Diseño: "var(--k-hue-blue)", Calidad: "var(--k-state-success-text)", Infraestructura: "var(--k-hue-orange)", Gestión: "var(--k-color-primary)" }[area] || "var(--k-gray-3)")
 }
 
 function openCreateTeam() {

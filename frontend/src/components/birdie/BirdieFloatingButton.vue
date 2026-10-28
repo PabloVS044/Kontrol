@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .birdie-fab {
   position: fixed;
-  z-index: 600;
+  z-index: calc(var(--k-z-floating) + 1);
   width: 60px;
   height: 60px;
   padding: 0;

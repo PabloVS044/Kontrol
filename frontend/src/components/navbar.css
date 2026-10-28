@@ -6,7 +6,7 @@
   align-items: center;
   width: 100%;
   color: var(--k-color-text);
-  z-index: 50;
+  z-index: var(--k-z-nav);
 }
 
 .landing-nav {

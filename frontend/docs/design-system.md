@@ -1,9 +1,9 @@
 # Kontrol Design System v2.0
 
 **Project:** Kontrol - Management for Micro-businesses  
-**Visual Identity:** Luxury Dark Mode (Gold & Black)  
+**Visual Identity:** Luxury Dark Mode (Gold & Black), with a light theme proposal  
 **Status:** Fully synchronized with `src/styles/theme.css` + `globals.css`
-**Sync Date:** 2026-10-08 (secondary text contrast raised to WCAG AA)
+**Sync Date:** 2026-10-25 (light theme, surface tokens and z-index scale — SCRUM-93)
 
 ---
 
@@ -58,8 +58,8 @@ The neutral implementation ramp follows the same rule: `--k-gray-1`/`-2` `#90909
 ### Form Elements
 | Token Name | CSS Variable | Value | Usage |
 | :--- | :--- | :--- | :--- |
-| forms/InputBg | `--k-form-input-bg` | `rgba(255, 255, 255, 0.04)` | Input/textarea default background. |
-| forms/InputFocusBg | `--k-form-input-focus-bg` | `rgba(202, 168, 96, 0.05)` | Input/textarea focused background. |
+| forms/InputBg | `--k-form-input-bg` | `rgba(var(--k-ink-rgb), 0.04)` | Input/textarea default background. |
+| forms/InputFocusBg | `--k-form-input-focus-bg` | `rgba(var(--k-color-primary-rgb), 0.05)` | Input/textarea focused background. |
 | forms/BtnText | `--k-form-btn-text` | `#0e0c08` | Text on primary buttons. |
 
 ### RGB Triplets (for rgba compositions)
@@ -69,6 +69,46 @@ Used for dynamic overlays, glows, and transparency effects:
 - `--k-color-success-rgb`: `72, 199, 116`
 - `--k-color-black-rgb`: `0, 0, 0`
 - `--k-color-white-rgb`: `255, 255, 255`
+
+`black-rgb` and `white-rgb` are literal and never change with the theme. For tints that must follow the theme use:
+- `--k-ink-rgb`: tint of the text color (`255, 255, 255` in dark, `0, 0, 0` in light) — subtle hovers and borders.
+- `--k-canvas-rgb`: tint of the background (`0, 0, 0` in dark, the page tone in light) — veils and translucent panels.
+
+### Categorical Hues
+Status, priority and chart colors. In dark they keep the values the screens already used; in light the same hue is darkened to WCAG AA. Each one has a `-rgb` triplet for transparencies (`rgba(var(--k-hue-blue-rgb), 0.1)`).
+
+| CSS Variable | Dark | Light |
+| :--- | :--- | :--- |
+| `--k-hue-rose` | `#fb7185` | `#a8041d` |
+| `--k-hue-blue` | `#60a5fa` | `#0550ac` |
+| `--k-hue-emerald` | `#34d399` | `#155f44` |
+| `--k-hue-green` | `#4ade80` | `#115f2e` |
+| `--k-hue-violet` | `#a78bfa` | `#4c14f5` |
+| `--k-hue-orange` | `#fb923c` | `#873e03` |
+| `--k-hue-amber` | `#f59e0b` | `#744b05` |
+
+Chart lines use `--k-chart-planned` and `--k-chart-actual` (gold and green): same as `--k-color-primary` / `--k-state-success-text` in dark, brighter in light (≥ 3:1 for graphics).
+
+### Neutral Ramp Additions
+`--k-shade-0` (`#050505`), `--k-shade-3b` (`#151515`) and `--k-shade-6b` (`#252525`) cover grays the screens used as literals; their dark value is exactly that literal.
+
+### Surfaces
+| CSS Variable | Dark | Light | Usage |
+| :--- | :--- | :--- | :--- |
+| `--k-surface-scrim` | `rgba(var(--k-canvas-rgb), 0.6)` | `rgba(var(--k-canvas-rgb), 0.6)` | Veil of `<AppSurface>` over the animated background. |
+| `--k-surface-panel` | `rgba(var(--k-canvas-rgb), 0.6)` | `#d2cec6` | `<AppSurface block>`: text blocks on public screens (onboarding, 404). |
+| `--k-surface-panel-border` | `transparent` | `#b5ae9f` | Border of the block surface (`box-shadow: inset`). |
+| `--k-surface-section` | `rgba(var(--k-color-black-rgb), 0.94)` | `#d2cec6` | Large section panels (Teams). |
+| `--k-surface-card` | `var(--k-color-bg-2)` | `#d2cec6` | Container cards (Dashboard members, Admin panels). |
+| `--k-surface-chart` | `var(--k-color-bg)` | `var(--k-color-tertiary)` | Chart and summary cards (Dashboard). |
+| `--k-surface-warm` | `#161310` | `#efebe3` | Warm floating surfaces (Birdie bubble, agent input). |
+| `--k-surface-warm-2` | `#1f1a13` | `#e7e1d6` | Second warm step. |
+| `--k-surface-floating` | `#0f0f0f` | `#e2ddd3` | Floating chat panel. |
+| `--k-surface-floating-2` | `#111111` | `#d9d3c7` | Floating chat controls. |
+| `--k-surface-floating-3` | `#1a1a1a` | `#d0c9bc` | Floating chat received bubbles. |
+| `--k-surface-code` | `#000000` | `rgba(0, 0, 0, 0.07)` | Inline code chips and code blocks. |
+| `--k-surface-track` | `#111111` | `#c2c2c2` | Empty track of progress bars. |
+| `--k-overlay-backdrop` | `rgba(var(--k-color-black-rgb), 0.78)` | `rgba(var(--k-color-black-rgb), 0.4)` | Translucent backdrop behind every modal. |
 
 ## 3. Typography System (SCRUM-13)
 
@@ -149,6 +189,9 @@ All shadows are designed for dark backgrounds using depth and glow effects.
 | shadow/card | `--k-shadow-card` | `0 4px 20px 0 rgba(0,0,0,0.5)` | Depth for card surfaces. |
 | shadow/glow | `--k-shadow-glow` | `0 0 15px 5px rgba(202,168,96,0.5)` | Gold glow for interactive hover. |
 | shadow/modal | `--k-shadow-modal` | `0 10px 40px 0 rgba(0,0,0,0.8)` | Top-layer focus (modals, overlays). |
+| — (implementation) | `--k-shadow-dropdown` | `0 8px 32px rgba(0,0,0,0.6)` | Dropdown menus (company selector). |
+
+The light theme redeclares shadows with lower opacity (card `0.08`, modal `0.18`, dropdown `0.15`).
 
 ## 7. Interaction States (SCRUM-13)
 
@@ -185,7 +228,30 @@ Selected, unselected and disabled must differ by more than color: in usability t
 - **Focus:** `border-color: var(--k-color-primary)`, `background: var(--k-form-input-focus-bg)`
 - **Error:** `border-color: var(--k-state-error-text)`
 
-## 8. Iconography
+## 8. Layers (z-index)
+
+Every `z-index` in the app uses this scale; there are no loose numbers. Two neighbouring layers in the same stacking context are separated with `calc(var(--k-z-x) ± n)`, `n ≤ 2`. The only exception is `CardsSwap`, whose order is computed by gsap.
+
+| CSS Variable | Value |
+| :--- | :--- |
+| `--k-z-negative` | -1 |
+| `--k-z-background` | 0 |
+| `--k-z-base` | 1 |
+| `--k-z-raised` | 2 |
+| `--k-z-top` | 3 |
+| `--k-z-sticky` | 10 |
+| `--k-z-elevated` | 20 |
+| `--k-z-popover` | 40 |
+| `--k-z-nav` | 100 |
+| `--k-z-dropdown` | 200 |
+| `--k-z-floating` | 500 |
+| `--k-z-modal-overlay` | 1000 |
+| `--k-z-modal` | 1001 |
+| `--k-z-overlay` | 1400 |
+| `--k-z-overlay-top` | 2000 |
+| `--k-z-system` | 10000 |
+
+## 9. Iconography
 
 | Aspect | Value | Usage |
 | :--- | :--- | :--- |
@@ -195,7 +261,7 @@ Selected, unselected and disabled must differ by more than color: in usability t
 | **Sizing Rule** | 24px, 32px, 40px | Maintain 8px grid increments. |
 | **Color** | Inherit from `currentColor` | Follows text color context. |
 
-## 9. Accessibility & Contrast (WCAG 2.1)
+## 10. Accessibility & Contrast (WCAG 2.1)
 
 ### Verified Contrast Ratios
 | Text Color | Background Color | Ratio | Level |
@@ -219,7 +285,7 @@ Computed with the WCAG 2.1 relative-luminance formula and enforced by `tests/the
 | `--k-text-disabled` (#565045) | 2.36:1 | | | Exempt (disabled controls only, WCAG 1.4.3) |
 
 ### Animated Background
-The app background (`Waves`, mounted in `App.vue`) reads its own token, `--k-bg-wave-line` (`#faf8f5`), not the text token, and is capped with `maxIntensity="0.11"` so its glare never sits behind text: measured peak `#272727` instead of `#ffffff`. Native controls (`input`, `select`, `textarea`, `option`) declare `color-scheme: dark` in `globals.css` so their popups open dark.
+The app background (`Waves`, mounted in `App.vue`) reads its own token, `--k-bg-wave-line` (`#faf8f5`), not the text token, and is capped with `maxIntensity="0.11"` so its glare never sits behind text: measured peak `#272727` instead of `#ffffff`. In the light theme the whole layer is inverted with `--k-bg-wave-filter: invert(1)`. Native controls (`input`, `select`, `textarea`, `option`) use `color-scheme: var(--k-color-scheme)` so their popups follow the theme.
 
 ### Accessibility Requirements
 - **Target Size:** All interactive elements ≥ 40px height for mobile touch targets
@@ -228,7 +294,47 @@ The app background (`Waves`, mounted in `App.vue`) reads its own token, `--k-bg-
 - **Motion:** Respect `prefers-reduced-motion`; transitions use `all 0.2s ease-in-out`
 
 
-## 10. Publishing to Figma (SCRUM-13)
+## 11. Light Theme
+
+**Status:** proposal derived from Luxury Dark, pending Design validation.
+
+### How it is selected
+- `useTheme` resolves the theme on startup: the choice made in **Settings → Your preferences → Theme**, otherwise the system preference (`prefers-color-scheme`), otherwise dark.
+- The selector offers **System | Dark | Light**. Dark and Light are remembered in the browser (`localStorage['kontrol:theme']`); System clears that choice.
+- The theme is written as `data-theme` on `<html>`. `theme.css` declares the light values in `[data-theme='light']` and, identically, in `@media (prefers-color-scheme: light) :root:not([data-theme])` for the first paint without JS.
+- Landing, login and register are always dark (`data-theme="dark"` on their root).
+
+### Derivation
+- Surfaces and neutral ramp: HSL lightness inverted, same hue and saturation, then toned down to a stone gray so the interface is not white (page `#dbd8d3`, cards `#e4e4e4`–`#eaeaea`, panels `#d2cec6`).
+- Text, gold, states and hues: same hue, darkened until they pass 4.5:1 on every light surface.
+- Tokens built on `--k-ink-rgb`, `--k-canvas-rgb` or `--k-color-primary-rgb` (veil, hovers, inputs, alerts) are not redeclared: they follow the theme on their own.
+
+### Verified Contrast — Light Theme
+Enforced by `tests/theme.test.js` and checked on screen with the browser's contrast inspector. Columns: card `--k-shade-3` (`#e4e4e4`), `--k-color-bg-3` (`#cfcdc8`), block panel (`#d2cec6`) and the animated background peak (`#c9c9c9`).
+
+| Text Color | Value | on shade-3 | on bg-3 | on panel | on bg peak |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `--k-color-text` | `#1a1712` | 14.05:1 | 11.25:1 | 11.39:1 | 10.79:1 |
+| `--k-color-primary` | `#5e4a1f` | 6.67:1 | 5.34:1 | 5.41:1 | 5.12:1 |
+| `--k-text-soft` | `#403a30` | 8.85:1 | 7.08:1 | 7.17:1 | 6.8:1 |
+| `--k-text-muted` | `#575249` | 6.1:1 | 4.88:1 | 4.94:1 | 4.68:1 |
+| `--k-text-dim` | `#5a5247` | 6.04:1 | 4.84:1 | 4.9:1 | 4.64:1 |
+| `--k-text-faint` | `#595347` | 6.0:1 | 4.8:1 | 4.86:1 | 4.61:1 |
+| `--k-text-placeholder` | `#5e503c` | 6.14:1 | 4.92:1 | 4.98:1 | 4.72:1 |
+| `--k-gray-3` | `#535353` | 6.05:1 | 4.84:1 | 4.9:1 | 4.65:1 |
+| `--k-state-error-text` | `#961a1a` | 6.72:1 | 5.37:1 | 5.44:1 | 5.16:1 |
+| `--k-state-success-text` | `#1c5e34` | 6.12:1 | 4.9:1 | 4.96:1 | 4.7:1 |
+| `--k-hue-blue` | `#0550ac` | 6.01:1 | 4.81:1 | 4.87:1 | 4.61:1 |
+| `--k-hue-emerald` | `#155f44` | 6.0:1 | 4.8:1 | 4.86:1 | 4.61:1 |
+| `--k-hue-green` | `#115f2e` | 6.12:1 | 4.9:1 | 4.96:1 | 4.7:1 |
+| `--k-hue-violet` | `#4c14f5` | 6.06:1 | 4.85:1 | 4.91:1 | 4.65:1 |
+| `--k-hue-orange` | `#873e03` | 6.07:1 | 4.86:1 | 4.92:1 | 4.66:1 |
+| `--k-hue-amber` | `#744b05` | 6.0:1 | 4.81:1 | 4.86:1 | 4.61:1 |
+| `--k-hue-rose` | `#a8041d` | 6.12:1 | 4.9:1 | 4.96:1 | 4.7:1 |
+
+`--k-form-btn-text` (`#faf8f5`) on `--k-color-primary`: **8.0:1**.
+
+## 12. Publishing to Figma (SCRUM-13)
 
 All tokens below should be published in **Figma Tokens** (using the tokens-studio plugin) under the structure `category/token-name`:
 
@@ -316,7 +422,7 @@ shadow/
 
 ---
 
-## 11. Implementation Guide
+## 13. Implementation Guide
 
 ### For Developers (SCRUM-13..17)
 - **Always consume `--k-*` tokens** from `src/styles/theme.css`
@@ -325,7 +431,7 @@ shadow/
 - **State interaction:** Use CSS custom properties: `filter: brightness(var(--k-state-hover-brightness))`
 
 ### For Future Designers
-- This system supports **light mode** (placeholder in `theme.css`), but no palette has been approved yet
+- The **light theme** is a proposal (section 11); once Design validates it, its values replace the ones in `[data-theme='light']`
 - To add a new semantic color: define in `theme.css`, then add alias in `globals.css`
 - Test all new colors for WCAG AA contrast before committing
 
@@ -348,11 +454,12 @@ shadow/
 
 ## Maintenance & Versioning
 
-**Current Version:** 2.0.0
+**Current Version:** 2.1.0
 **Repository:** `/frontend/docs/design-system.md`  
 **Figma File:** [Kontrol Design System v2.0](https://www.figma.com/design/qDDZC8ZvzDhXHRzDl6bbHi/Kontrol---Identidad-visual-v2?node-id=35-26&t=AQIBKGoAGr8AsFS7-1)
 
 **Changelog:**
+- **v2.1.0** (2026-10-25): SCRUM-93 / DT-09. Light theme proposal, theme selector in Settings, surface and hue tokens, z-index scale, legacy aliases retired from every screen in use.
 - **v2.0.0** (2026-08-16): SCRUM-13 / HU-32 migration complete. Tokens defined, CSS variables frozen, legacy layer operational.
 - **v1.0.0** (pre-2026): Initial branding.
 

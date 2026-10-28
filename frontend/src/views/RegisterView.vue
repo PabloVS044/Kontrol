@@ -1,5 +1,5 @@
 <template>
-  <div class="register-page">
+  <div class="register-page" data-theme="dark">
 
     <SoftParticle />
 

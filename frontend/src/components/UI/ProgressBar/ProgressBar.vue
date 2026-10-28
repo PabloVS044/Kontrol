@@ -7,14 +7,14 @@
 <script setup>
 defineProps({
   pct:    { type: Number, default: 0 },
-  color:  { type: String, default: '#caa860' },
+  color:  { type: String, default: 'var(--k-color-primary)' },
   height: { type: String, default: '4px' },
 })
 </script>
 
 <style scoped>
 .pb-bg {
-  background: #1a1a1a;
+  background: var(--k-shade-4);
   width: 100%;
 }
 .pb-fill {

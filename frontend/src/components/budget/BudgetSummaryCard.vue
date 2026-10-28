@@ -80,12 +80,9 @@ const displayPct = computed(() => {
 const remainingClass = computed(() => props.remaining < 0 ? 'danger' : 'gold')
 const netClass       = computed(() => props.netResult < 0 ? 'danger' : 'income')
 
-// Mismo colapso de niveles que budgetColor() en ProjectsView.vue: la paleta v2
-// no define un ámbar/naranja intermedio (theme.css, sección "superficies de
-// alerta"), así que precaución+advertencia comparten color.
 const progressColor = computed(() => {
   if (props.usageRatio > 1)     return 'var(--k-state-error-text)'
-  if (props.usageRatio >= 0.6)  return '#f97316' // TODO SCRUM-16: sin token de aviso claro
+  if (props.usageRatio >= 0.6)  return 'var(--k-hue-orange)'
   return 'var(--k-color-primary)'
 })
 
@@ -96,7 +93,7 @@ function money(v) {
 
 <style scoped>
 .summary-card {
-  background: #0c0c0c; /* sin token exacto en la rampa de shades */
+  background: var(--k-shade-1);
   border: 1px solid var(--k-shade-7);
   padding: 32px;
   display: flex; justify-content: space-between; align-items: center;
@@ -126,13 +123,13 @@ function money(v) {
 .income-value    { font-size: 22px; font-weight: 700; color: var(--k-state-success-text); font-variant-numeric: tabular-nums; }
 .net-value       { font-size: var(--k-font-size-heading-1); font-weight: 700; font-variant-numeric: tabular-nums; }
 .remaining-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.planned-value   { font-size: var(--k-font-size-heading-2); font-weight: 600; color: #d4d4d4; font-variant-numeric: tabular-nums; } /* sin token exacto */
+.planned-value   { font-size: var(--k-font-size-heading-2); font-weight: 600; color: var(--k-text-soft); font-variant-numeric: tabular-nums; }
 
 .chart-donut {
   width: 180px; height: 180px; position: relative; flex-shrink: 0;
 }
 .chart-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.circle-bg       { fill: none; stroke: #242424; stroke-width: 8; } /* sin token exacto */
+.circle-bg       { fill: none; stroke: var(--k-shade-6b); stroke-width: 8; }
 .circle-progress {
   fill: none; stroke-width: 8; stroke-linecap: round;
   transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;

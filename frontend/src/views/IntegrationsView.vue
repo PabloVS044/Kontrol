@@ -14,7 +14,7 @@
       <div v-else-if="fetchError" class="state-screen">
         <p class="state-title">{{ t('integrations.loadError') }}</p>
         <p class="state-msg">{{ fetchError }}</p>
-        <Button :label="t('integrations.retry')" style="margin-top:16px" backColor="var(--Primary)" @click="loadIntegrations" />
+        <Button :label="t('integrations.retry')" style="margin-top:16px" backColor="var(--k-color-primary)" @click="loadIntegrations" />
       </div>
 
       <template v-else>
@@ -276,7 +276,7 @@
               :label="modalLoading ? t('integrations.modal.saving') : t('integrations.modal.save')"
               type="submit"
               :disabled="modalLoading"
-              backColor="var(--Primary)"
+              backColor="var(--k-color-primary)"
             />
           </div>
         </form>
@@ -302,7 +302,6 @@ import {
   testIntegration,
   deleteIntegrationConfig,
 } from '../services/integrations.js'
-import './IntegrationView.css'
 
 const { t, tm, rt, locale } = useI18n()
 const authStore = useAuthStore()
@@ -531,8 +530,8 @@ async function handleDisconnect(integration) {
 
 const DefaultIcon = {
   template: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <rect x="4" y="4" width="20" height="20" rx="3" stroke="#555" stroke-width="1.6"/>
-    <path d="M9 14h10M14 9v10" stroke="#555" stroke-width="1.6" stroke-linecap="round"/>
+    <rect x="4" y="4" width="20" height="20" rx="3" stroke="var(--k-gray-1)" stroke-width="1.6"/>
+    <path d="M9 14h10M14 9v10" stroke="var(--k-gray-1)" stroke-width="1.6" stroke-linecap="round"/>
   </svg>`,
 }
 
@@ -553,3 +552,5 @@ onMounted(() => {
   if (canManage.value) loadIntegrations()
 })
 </script>
+
+<style scoped src="./IntegrationView.css"></style>

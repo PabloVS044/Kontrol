@@ -87,17 +87,16 @@ const show = computed({
 
 function areaColor(area) {
   return {
-    /* cambiar a token color azul */
-    Development: '#60a5fa',
-    Engineering: '#60a5fa',
-    Design: '#60a5fa',
+    Development: 'var(--k-hue-blue)',
+    Engineering: 'var(--k-hue-blue)',
+    Design: 'var(--k-hue-blue)',
     Quality: 'var(--k-state-success-text)',
-    Infrastructure: '#f97316',
+    Infrastructure: 'var(--k-hue-orange)',
     Management: 'var(--k-color-primary)',
-    Desarrollo: '#60a5fa',
-    Diseño: '#60a5fa',
+    Desarrollo: 'var(--k-hue-blue)',
+    Diseño: 'var(--k-hue-blue)',
     Calidad: 'var(--k-state-success-text)',
-    Infraestructura: '#f97316',
+    Infraestructura: 'var(--k-hue-orange)',
     Gestión: 'var(--k-color-primary)',
   }[area] || 'var(--k-gray-3)'
 }

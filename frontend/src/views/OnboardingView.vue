@@ -3,7 +3,7 @@
     <div class="onboarding-layout">
 
       <!-- Left: branding / explanation -->
-      <div class="onboarding-left">
+      <AppSurface block class="onboarding-left">
         <img src="@/assets/img/kontrol.png" alt="Kontrol" class="ob-logo" />
         <h1 class="ob-headline">{{ t('onboarding.welcome') }}<br />Kontrol</h1>
         <p class="ob-tagline">{{ t('onboarding.tagline') }}</p>
@@ -21,7 +21,7 @@
             {{ t('onboarding.features.inventory') }}
           </li>
         </ul>
-      </div>
+      </AppSurface>
 
       <!-- Right: create empresa form -->
       <div class="onboarding-right">
@@ -106,6 +106,7 @@ import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import AppSurface from '@/components/UI/AppSurface/AppSurface.vue'
 import Button from '@/components/UI/Button/Button.vue'
 import FormField from '@/components/common/FormField.vue'
 

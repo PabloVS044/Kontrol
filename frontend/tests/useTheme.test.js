@@ -43,6 +43,14 @@ describe('useTheme', () => {
     expect(theme.value).toBe('dark')
   })
 
+  it('lo elegido en Configuración gana a la preferencia del sistema', async () => {
+    localStorage.setItem('kontrol:theme', 'dark')
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
+    const { initTheme, theme } = await freshUseTheme()
+    initTheme()
+    expect(theme.value).toBe('dark')
+  })
+
   it('cae al oscuro si el entorno no tiene matchMedia', async () => {
     vi.stubGlobal('matchMedia', undefined)
     const { initTheme, theme } = await freshUseTheme()
@@ -72,6 +80,27 @@ describe('useTheme', () => {
     expect(theme.value).toBe('dark')
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
     expect(localStorage.getItem('kontrol:theme')).toBe('dark')
+  })
+
+  it('expone el modo: system sin elección, el tema elegido si lo hay', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
+    const { initTheme, mode, setTheme } = await freshUseTheme()
+    initTheme()
+    expect(mode.value).toBe('system')
+    setTheme('light')
+    expect(mode.value).toBe('light')
+  })
+
+  it("setMode('system') borra la elección y vuelve a seguir al sistema", async () => {
+    localStorage.setItem('kontrol:theme', 'dark')
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
+    const { initTheme, setMode, theme, mode } = await freshUseTheme()
+    initTheme()
+    expect(theme.value).toBe('dark')
+    setMode('system')
+    expect(localStorage.getItem('kontrol:theme')).toBeNull()
+    expect(mode.value).toBe('system')
+    expect(theme.value).toBe('light')
   })
 
   it('setTheme rechaza un tema desconocido', async () => {

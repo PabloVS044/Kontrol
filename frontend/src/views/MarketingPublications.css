@@ -93,7 +93,7 @@
   font-size: var(--k-font-size-body-main);
   /* Sin esto el navegador pinta el listado desplegable con sus colores
      claros por defecto: texto blanco heredado sobre fondo blanco nativo. */
-  color-scheme: dark;
+  color-scheme: var(--k-color-scheme);
 }
 
 .mkt-select:focus-visible {
@@ -305,7 +305,7 @@
 }
 
 .mkt-field select {
-  color-scheme: dark;
+  color-scheme: var(--k-color-scheme);
 }
 
 .mkt-field input:focus-visible,
