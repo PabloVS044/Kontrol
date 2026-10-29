@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: 'Manrope'; font-weight: 500; src: url('assets/fonts/manrope-latin-500-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 700; src: url('assets/fonts/manrope-latin-700-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 800; src: url('assets/fonts/manrope-latin-800-normal.woff2') format('woff2'); }
+      :root { --ground: #f5f1e9; --ink: #1a1712; --soft: #403a30; --muted: #6b6356; --gold: #936923; --gold-soft: #b27f2a; --line: rgba(147, 105, 35, 0.3); --green: #1f7a43; --red: #b3261e; --blue: #2f5f9e; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 100%; height: 100%; font-family: 'Manrope', sans-serif; color: var(--ink); overflow: hidden; }
+      #bg { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 55% at 70% 55%, rgba(202, 168, 96, 0.1), transparent 70%), var(--ground); }
+      .eyebrow { position: absolute; left: 120px; top: 96px; font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: 0.24em; text-transform: uppercase; color: #6e5219; }
+      .title { position: absolute; left: 120px; top: 136px; font-family: 'Playfair Display', serif; font-weight: 600; font-size: 68px; }
+      .title em, .final em { color: var(--gold); }
+      .title span, .final span { display: inline-block; }
+
+      #ask { position: absolute; left: 120px; top: 300px; padding: 20px 30px; border-radius: 24px 24px 24px 6px; background: rgba(202, 168, 96, 0.12); border: 1.5px solid var(--gold); font-size: 34px; font-weight: 700; white-space: nowrap; }
+      #model { position: absolute; left: 120px; top: 405px; font-family: 'JetBrains Mono', monospace; font-size: 28px; color: var(--muted); }
+      .sql { position: absolute; left: 120px; top: 460px; width: 700px; padding: 26px 30px; border-radius: 20px; background: rgba(94, 74, 31, 0.07); border: 1.5px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 30px; line-height: 1.5; }
+      .sql .kw { color: var(--blue); }
+      #sql-bad { border-color: var(--red); }
+      #sql-bad .bad { color: var(--red); }
+      .ln { white-space: nowrap; }
+      #sql-bad { top: 300px; }
+      #result { top: 560px !important; }
+      #rows { position: absolute; left: 120px; top: 720px; width: 700px; padding: 22px 30px; border-radius: 20px; border: 1.5px solid var(--green); background: rgba(31, 122, 67, 0.08); font-size: 30px; }
+      #rows div { display: flex; justify-content: space-between; padding: 6px 0; }
+      #rows b { font-family: 'JetBrains Mono', monospace; color: var(--green); font-weight: 500; }
+      #rows .k, #result .k { font-family: 'JetBrains Mono', monospace; font-size: 24px; letter-spacing: 0.18em; color: var(--green); text-transform: uppercase; }
+
+      .wall { position: absolute; top: 300px; width: 26px; height: 560px; border-radius: 13px; background: linear-gradient(180deg, rgba(202, 168, 96, 0.08), rgba(202, 168, 96, 0.35), rgba(202, 168, 96, 0.08)); border: 1.5px solid rgba(202, 168, 96, 0.55); }
+      .wall .g { position: absolute; inset: -3px; border-radius: 14px; opacity: 0; }
+      .wall .g.ok { background: rgba(31, 122, 67, 0.6); box-shadow: 0 0 30px rgba(31, 122, 67, 0.8); }
+      .wall .g.no { background: rgba(179, 38, 30, 0.7); box-shadow: 0 0 40px rgba(179, 38, 30, 0.9); }
+      .wlabel { position: absolute; top: 884px; width: 200px; text-align: center; }
+      .wlabel span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 22px; color: #6e5219; }
+      .wlabel b { display: block; font-size: 28px; font-weight: 800; line-height: 1.15; margin-top: 4px; }
+
+      #db { position: absolute; left: 1640px; top: 470px; width: 180px; height: 220px; color: var(--gold); text-align: center; }
+      #db svg { width: 150px; height: 170px; }
+      #db b { display: block; font-size: 28px; font-weight: 800; }
+
+      .pkt { position: absolute; top: 580px; left: 0; height: 52px; padding: 0 20px; border-radius: 26px; display: flex; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 26px; white-space: nowrap; opacity: 0; }
+      .pkt.gold { background: rgba(202, 168, 96, 0.2); border: 2px solid var(--gold); color: var(--gold-soft); box-shadow: 0 0 24px rgba(202, 168, 96, 0.5); }
+      .pkt.red { background: rgba(179, 38, 30, 0.2); border: 2px solid var(--red); color: #8f1d17; box-shadow: 0 0 24px rgba(179, 38, 30, 0.5); }
+      .note { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; white-space: nowrap; opacity: 0; }
+      .note.red { color: var(--red); }
+      .note.green { color: var(--green); }
+
+      #result { position: absolute; left: 120px; top: 720px; width: 700px; padding: 26px 30px; border-radius: 20px; border: 2px solid var(--green); background: rgba(31, 122, 67, 0.1); opacity: 0; }
+      #result b { display: block; font-family: 'Playfair Display', serif; font-size: 56px; margin-top: 6px; }
+      .final { position: absolute; left: 120px; top: 136px; font-family: 'Playfair Display', serif; font-weight: 600; font-size: 64px; opacity: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+      <div id="bg"></div>
+      <div id="eyebrow" class="eyebrow">Defensa en capas</div>
+      <h1 id="title" class="title"><span>¿Y</span> <span>si</span> <span>el</span> <span>modelo</span> <span>escribe</span> <span><em>SQL</em></span> <span><em>malicioso?</em></span></h1>
+      <h1 id="final" class="final"><span>Aunque</span> <span>el</span> <span>SQL</span> <span>sea</span> <span>malicioso,</span> <span><em>no</em></span> <span><em>ve</em></span> <span><em>otra</em></span> <span><em>empresa.</em></span></h1>
+
+      <div id="ask">¿Qué productos están por agotarse?</div>
+      <div id="model">modelo Qwen → genera SQL</div>
+      <div id="sql-ok" class="sql"><div class="ln ok"><span class="kw">SELECT</span> nombre, stock</div><div class="ln ok"><span class="kw">FROM</span> producto</div><div class="ln ok"><span class="kw">WHERE</span> stock &lt; minimo;</div></div>
+      <div id="sql-bad" class="sql"><div class="ln bad-l"><span class="kw">SELECT</span> * <span class="kw">FROM</span> venta</div><div class="ln bad-l"><span class="kw">WHERE</span> <span class="bad">empresa_id &lt;&gt; 7;</span></div><div class="ln bad-l"><span class="bad">DROP TABLE</span> producto;</div></div>
+
+      <div id="rows">
+        <div class="k">Resultado · tu empresa</div>
+        <div>Taladro <b>2</b></div>
+        <div>Brocas 8 mm <b>3</b></div>
+      </div>
+      <div id="result">
+        <div class="k">Resultado</div>
+        <b>0 filas de otra empresa</b>
+      </div>
+
+      <div id="w1" class="wall" style="left: 960px"><i class="g ok"></i><i class="g no"></i></div>
+      <div id="w2" class="wall" style="left: 1130px"><i class="g ok"></i><i class="g no"></i></div>
+      <div id="w3" class="wall" style="left: 1300px"><i class="g ok"></i><i class="g no"></i></div>
+      <div id="w4" class="wall" style="left: 1470px"><i class="g ok"></i><i class="g no"></i></div>
+      <div id="l1" class="wlabel" style="left: 873px"><span>01</span><b>Solo<br />lectura</b></div>
+      <div id="l2" class="wlabel" style="left: 1043px"><span>02</span><b>Vistas por<br />empresa</b></div>
+      <div id="l3" class="wlabel" style="left: 1213px"><span>03</span><b>Rol sin<br />privilegios</b></div>
+      <div id="l4" class="wlabel" style="left: 1383px"><span>04</span><b>Límite<br />de 8 s</b></div>
+
+      <div id="db">
+        <svg viewBox="0 0 24 26" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3.2" /><path d="M3 5v15c0 1.8 4 3.2 9 3.2s9-1.4 9-3.2V5M3 12.5c0 1.8 4 3.2 9 3.2s9-1.4 9-3.2" /></svg>
+        <b>PostgreSQL</b>
+      </div>
+
+      <div id="pk-ok" class="pkt gold">SELECT</div>
+      <div id="pk-bad" class="pkt red">SELECT * venta</div>
+      <div id="pk-f" class="pkt gold">SELECT * venta · emp. 7</div>
+      <div id="pk-drop" class="pkt red" style="top: 690px">DROP TABLE</div>
+      <div id="pk-esc" class="pkt red" style="top: 470px">public.usuario</div>
+
+      <div id="n1" class="note red" style="left: 620px; top: 770px">✕ DROP bloqueado</div>
+      <div id="n2" class="note green" style="left: 990px; top: 650px">solo empresa 7</div>
+      <div id="n3" class="note red" style="left: 1120px; top: 410px">✕ permiso denegado</div>
+      <div id="n4" class="note" style="left: 1370px; top: 650px; color: var(--gold)">⏱ 8 s máx.</div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const X0 = 830;
+      const wallX = [960, 1130, 1300, 1470];
+
+      tl.fromTo('#eyebrow', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.2);
+      tl.fromTo('#title span', { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.3, stagger: 0.07, ease: 'power3.out' }, 0.35);
+      tl.set('#final span', { opacity: 0 }, 0);
+
+      // Capas y base
+      tl.fromTo('.wall', { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.8, stagger: 0.1, ease: 'expo.out' }, 0.8);
+      tl.fromTo('.wlabel', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power3.out' }, 1.1);
+      tl.fromTo('#db', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' }, 1.3);
+
+      // Consulta legítima
+      tl.fromTo('#ask', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.2);
+      tl.fromTo('#model', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 1.8);
+      tl.fromTo('#sql-ok', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.1);
+      tl.fromTo('.ln.ok', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'steps(14)', stagger: 0.42 }, 2.2);
+
+      tl.fromTo('#pk-ok', { x: X0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 3.6);
+      tl.to('#pk-ok', { x: 1600, duration: 1.4, ease: 'none' }, 3.6);
+      wallX.forEach((wx, i) => {
+        const at = 3.6 + ((wx - X0) / (1600 - X0)) * 1.4;
+        tl.fromTo(`#w${i + 1} .g.ok`, { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, at);
+      });
+      tl.to('#pk-ok', { opacity: 0, duration: 0.15 }, 5.0);
+      tl.fromTo('#rows', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 5.2);
+
+      // Consulta maliciosa
+      tl.to(['#rows', '#sql-ok', '#ask', '#model'], { opacity: 0, duration: 0.3 }, 7.0);
+      tl.fromTo('#sql-bad', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 7.3);
+      tl.fromTo('.ln.bad-l', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.45, ease: 'steps(16)', stagger: 0.48 }, 7.4);
+
+      tl.set(['#pk-bad', '#pk-drop', '#pk-esc'], { x: X0 }, 0);
+      tl.to(['#pk-bad', '#pk-drop', '#pk-esc'], { opacity: 1, duration: 0.2 }, 9.0);
+      // DROP choca con la capa 1
+      tl.to('#pk-drop', { x: wallX[0] - 190, duration: 0.5, ease: 'power2.in' }, 9.0);
+      tl.fromTo('#w1 .g.no', { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, 9.5);
+      tl.to('#pk-drop', { x: wallX[0] - 280, opacity: 0, scale: 0.6, duration: 0.4, ease: 'power2.out' }, 9.5);
+      tl.fromTo('#n1', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 9.55);
+
+      // El SELECT avanza: capa 1 lo deja pasar (es lectura), capa 2 lo filtra
+      tl.to(['#pk-bad', '#pk-esc'], { x: wallX[1] - 260, duration: 1.0, ease: 'none' }, 9.0);
+      tl.fromTo('#w2 .g.ok', { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, 10.0);
+      tl.set('#pk-f', { x: wallX[1] - 260, opacity: 0 }, 0);
+      tl.set('#pk-bad', { opacity: 0 }, 10.0);
+      tl.set('#pk-f', { opacity: 1 }, 10.0);
+      tl.to('#pk-f', { x: wallX[2] - 300, duration: 0.9, ease: 'none' }, 10.0);
+      tl.fromTo('#n2', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 10.1);
+
+      // El intento de escapar de las vistas choca con la capa 3
+      tl.to('#pk-esc', { x: wallX[2] - 240, duration: 0.9, ease: 'none' }, 10.0);
+      tl.fromTo('#w3 .g.no', { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, 10.9);
+      tl.to('#pk-esc', { x: wallX[2] - 360, opacity: 0, scale: 0.6, duration: 0.4, ease: 'power2.out' }, 10.9);
+      tl.fromTo('#n3', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 10.95);
+      tl.fromTo('#w3 .g.ok', { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, 11.2);
+
+      // Capa 4: el tiempo límite
+      tl.to('#pk-f', { x: 1560, duration: 1.0, ease: 'none' }, 10.9);
+      tl.fromTo('#w4 .g.ok', { opacity: 0 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 1 }, 11.5);
+      tl.fromTo('#n4', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 11.5);
+      tl.to('#pk-f', { opacity: 0, duration: 0.2 }, 11.9);
+
+      tl.fromTo('#result', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, 12.4);
+
+      // Frase final
+      tl.to('#title span', { opacity: 0, filter: 'blur(8px)', duration: 0.2, stagger: 0.03 }, 13.8);
+      tl.fromTo('#final span', { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.3, stagger: 0.08, ease: 'power3.out' }, 14.2);
+
+      tl.to({}, { duration: 0.1 }, 19.9);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

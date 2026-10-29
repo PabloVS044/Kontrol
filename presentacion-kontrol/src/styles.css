@@ -1,0 +1,512 @@
+/* Kontrol — presentación final. Lienzo fijo de 1920×1080 escalado a la pantalla. */
+
+:root {
+  /* Tema claro de Kontrol (frontend/src/styles/theme.css, data-theme="light"):
+     fondo cálido casi blanco, tinta oscura y dorados profundos. --gold y --dim
+     pasan 4.5:1 sobre el fondo, el mínimo para texto pequeño en el proyector. */
+  --bg: #f5f1e9;
+  --bg-2: #ebe6dc;
+  --bg-3: #e2dcd0;
+  --gold: #85601f;
+  --gold-2: #b27f2a;
+  --gold-deep: #5e4a1f;
+  --gold-soft: #caa860;
+  --ink: #1a1712;
+  --soft: #403a30;
+  --muted: #575249;
+  --dim: #6b6357;
+  --line: rgba(147, 105, 35, 0.22);
+  --line-strong: rgba(147, 105, 35, 0.45);
+  --red: #b3261e;
+  --red-soft: rgba(179, 38, 30, 0.1);
+  --green: #1f7a43;
+  --green-soft: rgba(31, 122, 67, 0.12);
+  --blue: #2f5f9e;
+  --card-bg: linear-gradient(160deg, #fffdf8, #f0eadf);
+  --card-shadow: 0 24px 60px rgba(70, 52, 20, 0.12);
+  --panel: rgba(255, 255, 255, 0.6);
+  --code-bg: rgba(94, 74, 31, 0.07);
+  --amber: #b06a12;
+
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-sans: 'Manrope', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --pad-x: 128px;
+  --pad-top: 120px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+body.show-cursor {
+  cursor: default;
+}
+
+#viewport {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+}
+
+#stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  flex: none;
+  overflow: hidden;
+  background: var(--bg);
+  transform-origin: center center;
+}
+
+#blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#blackout.on {
+  opacity: 1;
+}
+
+/* ---------- Slides ---------- */
+
+/* El contenido de cada slide se centra en vertical para no dejar la mitad de
+   abajo vacía; las slides de una sola pieza (height: 100%) ocupan todo el alto. */
+.slide {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 100px var(--pad-x) 100px;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.slide:not(.center) > .eyebrow {
+  align-self: flex-start;
+}
+
+.slide.active {
+  visibility: visible;
+  opacity: 1;
+  z-index: 6;
+}
+
+.slide.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 80px;
+  padding-bottom: 120px;
+}
+
+.full-bleed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Tipografía ---------- */
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 48px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.center .eyebrow::after {
+  content: '';
+  width: 48px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 92px;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin-top: 28px;
+  max-width: 1500px;
+}
+
+.title.xl {
+  font-size: 132px;
+}
+
+.title.md {
+  font-size: 72px;
+}
+
+.title em,
+.gold {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.lead {
+  font-size: 38px;
+  line-height: 1.4;
+  color: var(--soft);
+  margin-top: 32px;
+  max-width: 1300px;
+  font-weight: 500;
+}
+
+.mono {
+  font-family: var(--f-mono);
+}
+
+.src {
+  position: absolute;
+  left: var(--pad-x);
+  bottom: 92px;
+  font-family: var(--f-mono);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+
+/* Palabras de títulos animadas */
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.wi {
+  display: inline-block;
+}
+
+/* ---------- Componentes ---------- */
+
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 44px 44px 48px;
+  box-shadow: var(--card-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.card h3 {
+  font-family: var(--f-display);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.card p {
+  font-size: 30px;
+  line-height: 1.4;
+  color: var(--soft);
+  margin-top: 16px;
+}
+
+.card .k {
+  font-family: var(--f-mono);
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: rgba(202, 168, 96, 0.1);
+  border: 1px solid var(--line);
+  color: var(--gold);
+  margin-bottom: 28px;
+}
+
+.icon svg {
+  width: 38px;
+  height: 38px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(202, 168, 96, 0.08);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.chip .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 14px var(--gold);
+}
+
+.row {
+  display: flex;
+  gap: 36px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+}
+
+.big-num {
+  font-family: var(--f-display);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.big-num .u {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.ok {
+  color: var(--green);
+}
+
+.bad {
+  color: var(--red);
+}
+
+.hr {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+
+svg text {
+  font-family: var(--f-sans);
+}
+
+/* ---------- Video de demo ---------- */
+
+.demo-layout {
+  display: grid;
+  grid-template-columns: 470px 1fr;
+  gap: 56px;
+  align-items: center;
+  height: calc(100% - 60px);
+}
+
+.demo-side .title {
+  font-size: 68px;
+}
+
+.demo-side .lead {
+  font-size: 30px;
+  margin-top: 24px;
+}
+
+.demo-side .points {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.demo-side .points span {
+  font-size: 28px;
+  color: var(--soft);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.demo-side .points span::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex: none;
+}
+
+.device {
+  position: relative;
+  width: 1180px;
+  aspect-ratio: 16 / 10;
+  border-radius: 24px;
+  border: 1px solid var(--line-strong);
+  background: #fffdf8;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(70, 52, 20, 0.18), 0 0 0 10px rgba(202, 168, 96, 0.08);
+}
+
+.device video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fffdf8;
+}
+
+.device .placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background:
+    linear-gradient(110deg, transparent 30%, rgba(202, 168, 96, 0.07) 50%, transparent 70%) 0 0 / 300% 100%,
+    repeating-linear-gradient(0deg, rgba(202, 168, 96, 0.03) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, rgba(202, 168, 96, 0.03) 0 1px, transparent 1px 48px),
+    #faf7f0;
+  animation: shimmer 3.2s linear infinite;
+}
+
+.device.loaded .placeholder {
+  display: none;
+}
+
+@keyframes shimmer {
+  to { background-position: -300% 0, 0 0, 0 0, 0 0; }
+}
+
+.placeholder .ph-k {
+  font-family: var(--f-mono);
+  letter-spacing: 0.3em;
+  font-size: 20px;
+  color: var(--gold);
+}
+
+.placeholder .ph-t {
+  font-family: var(--f-display);
+  font-size: 56px;
+}
+
+.placeholder .ph-f {
+  font-family: var(--f-mono);
+  font-size: 18px;
+  color: var(--dim);
+}
+
+/* Recorrido de 4 etapas (sección 3) */
+.journey {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--f-mono);
+  font-size: 18px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 36px;
+}
+
+.journey b {
+  font-weight: 500;
+}
+
+.journey b.on {
+  color: var(--gold);
+}
+
+.journey i {
+  width: 28px;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+/* ---------- HUD ---------- */
+
+#sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 0%, rgba(202, 168, 96, 0) 40%, rgba(202, 168, 96, 0.22) 50%, rgba(202, 168, 96, 0) 60%, transparent 100%);
+  opacity: 0;
+}
+
+/* Modo preview (vista de presentador): sin grano ni cursor oculto */
+#goto {
+  position: absolute;
+  right: 48px;
+  top: 40px;
+  z-index: 60;
+  font-family: var(--f-mono);
+  font-size: 28px;
+  color: var(--gold);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line-strong);
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: none;
+}
+
+#goto.on {
+  display: block;
+}

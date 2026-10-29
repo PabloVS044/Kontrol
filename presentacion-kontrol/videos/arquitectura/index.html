@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/MotionPathPlugin.min.js"></script>
+    <style>
+      @font-face { font-family: 'Manrope'; font-weight: 500; src: url('assets/fonts/manrope-latin-500-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 700; src: url('assets/fonts/manrope-latin-700-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 800; src: url('assets/fonts/manrope-latin-800-normal.woff2') format('woff2'); }
+      :root {
+        --ground: #f5f1e9;
+        --ink: #1a1712;
+        --soft: #403a30;
+        --muted: #6b6356;
+        --gold: #936923;
+        --gold-soft: #b27f2a;
+        --line: rgba(147, 105, 35, 0.3);
+        --green: #1f7a43;
+        --blue: #2f5f9e;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 100%; height: 100%; font-family: 'Manrope', sans-serif; color: var(--ink); overflow: hidden; }
+      #bg {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse 60% 55% at 55% 58%, rgba(202, 168, 96, 0.11), transparent 70%),
+          repeating-linear-gradient(0deg, rgba(147, 105, 35, 0.06) 0 1px, transparent 1px 60px),
+          repeating-linear-gradient(90deg, rgba(147, 105, 35, 0.06) 0 1px, transparent 1px 60px),
+          var(--ground);
+      }
+      .eyebrow { position: absolute; left: 120px; top: 96px; font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: 0.24em; text-transform: uppercase; color: #6e5219; }
+      .title { position: absolute; left: 120px; top: 136px; font-family: 'Playfair Display', serif; font-weight: 600; font-size: 72px; letter-spacing: -0.01em; }
+      .title em { color: var(--gold); }
+      .title span { display: inline-block; }
+
+      svg#wires { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+      #wires path { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+      #wires #w-sock { stroke: rgba(47, 95, 158, 0.55); stroke-dasharray: 10 12; }
+
+      .node {
+        position: absolute;
+        border-radius: 28px; border: 1.5px solid var(--line);
+        background: linear-gradient(160deg, #fffdf8, #f0eadf);
+        box-shadow: 0 24px 60px rgba(70, 52, 20, 0.14);
+        display: flex; flex-direction: column; justify-content: center; padding: 0 34px;
+      }
+      .node .ic { width: 52px; height: 52px; color: var(--gold); margin-bottom: 14px; }
+      .node .ic svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+      .node b { font-size: 40px; font-weight: 800; }
+      .node small { margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 27px; color: var(--gold); }
+      .node .glow { position: absolute; inset: -2px; border-radius: 28px; border: 3px solid var(--gold); box-shadow: 0 0 40px rgba(202, 168, 96, 0.6); opacity: 0; }
+      .node .glow.blue { border-color: var(--blue); box-shadow: 0 0 40px rgba(47, 95, 158, 0.35); }
+      .node .glow.green { border-color: var(--green); box-shadow: 0 0 40px rgba(31, 122, 67, 0.5); }
+
+      .tag { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 28px; padding: 8px 16px; border-radius: 999px; background: var(--ground); border: 1.5px solid var(--gold); color: var(--gold-soft); white-space: nowrap; opacity: 0; }
+      .tag.green { border-color: var(--green); color: var(--green); }
+      .tag.blue { border-color: var(--blue); color: var(--blue); }
+      .sock-label { position: absolute; left: 750px; top: 318px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--blue); letter-spacing: 0.06em; opacity: 0; font-size: 28px; }
+
+      .pkt { position: absolute; left: 0; top: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--gold-soft); box-shadow: 0 0 18px 6px rgba(178, 127, 42, 0.45); opacity: 0; }
+      .pkt.blue { background: #6f9bd4; box-shadow: 0 0 18px 6px rgba(47, 95, 158, 0.5); }
+
+      .bubble { position: absolute; left: 300px; top: 790px; padding: 14px 22px; border-radius: 18px 18px 18px 4px; background: rgba(47, 95, 158, 0.1); border: 1.5px solid var(--blue); font-size: 26px; font-weight: 700; opacity: 0; white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1920" data-height="1080">
+      <div id="bg"></div>
+      <div id="eyebrow" class="eyebrow">Arquitectura</div>
+      <h1 id="title" class="title"><span>Así</span> <span>está</span> <span><em>construido.</em></span></h1>
+
+      <svg id="wires" viewBox="0 0 1920 1080">
+        <path id="w1" d="M510 600 H580" />
+        <path id="w2" d="M940 600 H1010" />
+        <path id="w3" d="M1390 570 C1440 570 1420 420 1470 420" />
+        <path id="w4" d="M1390 630 C1440 630 1420 780 1470 780" />
+        <path id="w5" d="M1200 705 V860" />
+        <path id="w-sock" d="M300 495 C300 300 1200 300 1200 495" />
+        <path id="w-sock-rev" d="M1200 495 C1200 300 300 300 300 495" style="stroke: none" />
+        <path id="w-back" d="M1470 420 C1420 420 1440 570 1390 570 H510" style="stroke: none" />
+      </svg>
+      <div id="sock-label" class="sock-label">Socket.IO · tiempo real</div>
+
+      <div id="n-nav" class="node" style="left: 300px; top: 600px; width: 420px; height: 210px">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2" /><path d="M3 8h18M8 21h8" /></svg></div>
+        <b>Navegador</b><small>Vue 3 · Vite · Pinia</small><i class="glow"></i><i class="glow blue"></i>
+      </div>
+      <div id="n-caddy" class="node" style="left: 760px; top: 600px; width: 360px; height: 210px">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg></div>
+        <b>Caddy</b><small>HTTPS automático</small><i class="glow"></i>
+      </div>
+      <div id="n-api" class="node" style="left: 1200px; top: 600px; width: 380px; height: 210px">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 4l-4 16" /></svg></div>
+        <b>API Express</b><small>Node · Zod · JWT</small><i class="glow"></i><i class="glow blue"></i>
+      </div>
+      <div id="n-pg" class="node" style="left: 1650px; top: 420px; width: 360px; height: 170px">
+        <b>PostgreSQL</b><small>36 tablas</small><i class="glow"></i>
+      </div>
+      <div id="n-mongo" class="node" style="left: 1650px; top: 780px; width: 360px; height: 170px">
+        <b>MongoDB</b><small>5 modelos · chat</small><i class="glow green"></i>
+      </div>
+      <div id="n-ai" class="node" style="left: 1200px; top: 925px; width: 580px; height: 130px">
+        <b>Asistente · Qwen</b><small>autoalojado · compatible OpenAI</small><i class="glow"></i>
+      </div>
+
+      <div id="t-tls" class="tag" style="left: 760px; top: 462px">TLS ✓</div>
+      <div id="t-zod" class="tag green" style="left: 1200px; top: 462px">validado con Zod ✓</div>
+      <div id="t-sql" class="tag" style="left: 1650px; top: 300px">BEGIN … COMMIT</div>
+      <div id="t-ok" class="tag green" style="left: 300px; top: 462px">200 OK</div>
+      <div id="t-ai" class="tag" style="left: 1650px; top: 1010px">solo lectura</div>
+      <div id="bubble" class="bubble">Nuevo mensaje en el chat</div>
+
+      <div id="p1" class="pkt"></div>
+      <div id="p2" class="pkt blue"></div>
+      <div id="p3" class="pkt"></div>
+    </div>
+    <script>
+      gsap.registerPlugin(MotionPathPlugin);
+      const tl = gsap.timeline({ paused: true });
+      gsap.set('.node, .tag, .sock-label, .bubble', { xPercent: -50, yPercent: -50 });
+      const len = (id) => document.querySelector(id).getTotalLength();
+
+      // Titulo
+      tl.fromTo('#eyebrow', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.2);
+      tl.fromTo('#title span', { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.35, stagger: 0.09, ease: 'power3.out' }, 0.4);
+
+      // Cables ocultos al inicio
+      ['#w1', '#w2', '#w3', '#w4', '#w5', '#w-sock'].forEach((id) => {
+        const l = len(id);
+        tl.set(id, { strokeDasharray: id === '#w-sock' ? '10 12' : l, strokeDashoffset: l, opacity: id === '#w-sock' ? 0 : 1 }, 0);
+      });
+      const nodeIn = (id, at) =>
+        tl.fromTo(id, { opacity: 0, scale: 0.88, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out' }, at);
+      const wire = (id, at, d = 0.6) => tl.to(id, { strokeDashoffset: 0, duration: d, ease: 'power2.inOut' }, at);
+
+      // Construcción de izquierda a derecha
+      nodeIn('#n-nav', 1.4);
+      wire('#w1', 2.8);
+      nodeIn('#n-caddy', 3.2);
+      wire('#w2', 4.4);
+      nodeIn('#n-api', 4.8);
+      wire('#w3', 6.0);
+      wire('#w4', 6.1);
+      nodeIn('#n-pg', 6.4);
+      nodeIn('#n-mongo', 6.6);
+      wire('#w5', 7.8, 0.4);
+      nodeIn('#n-ai', 8.1);
+      tl.to('#w-sock', { opacity: 1, duration: 0.6 }, 9.3);
+      tl.fromTo('#w-sock', { strokeDashoffset: 0 }, { strokeDashoffset: -220, duration: 13.7, ease: 'none' }, 9.3);
+      tl.fromTo('#sock-label', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 9.6);
+
+      // Petición: navegador → caddy → api → postgres → de regreso
+      const travel = (pkt, path, at, d, start = 0, end = 1, ease = 'power1.inOut') =>
+        tl.to(pkt, { motionPath: { path, align: path, alignOrigin: [0.5, 0.5], start, end }, duration: d, ease }, at);
+      const flash = (sel, at) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.18, yoyo: true, repeat: 1, ease: 'power1.inOut' }, at);
+      const pop = (sel, at, hold = 1.4) => {
+        tl.fromTo(sel, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, at);
+        tl.to(sel, { opacity: 0, duration: 0.25 }, at + hold);
+      };
+
+      tl.set('#p1', { opacity: 1 }, 11.0);
+      travel('#p1', '#w1', 11.0, 0.55);
+      flash('#n-caddy .glow', 11.5);
+      pop('#t-tls', 11.5);
+      travel('#p1', '#w2', 11.75, 0.55);
+      flash('#n-api .glow:not(.blue)', 12.25);
+      pop('#t-zod', 12.25);
+      travel('#p1', '#w3', 12.5, 0.55);
+      flash('#n-pg .glow', 13.0);
+      pop('#t-sql', 13.0);
+      travel('#p1', '#w-back', 13.6, 1.1, 0, 1, 'power2.inOut');
+      tl.set('#p1', { opacity: 0 }, 14.7);
+      flash('#n-nav .glow:not(.blue)', 14.7);
+      pop('#t-ok', 14.75, 1.6);
+
+      // Tiempo real: mensaje guardado en Mongo y empujado por Socket.IO
+      tl.set('#p2', { opacity: 1 }, 16.0);
+      travel('#p2', '#w4', 16.0, 0.5);
+      flash('#n-mongo .glow', 16.5);
+      tl.set('#p2', { opacity: 0 }, 16.5);
+      tl.set('#p3', { opacity: 1 }, 16.7);
+      travel('#p3', '#w-sock-rev', 16.7, 1.1, 0, 1, 'power2.inOut');
+      tl.set('#p3', { opacity: 0 }, 17.8);
+      flash('#n-nav .glow.blue', 17.8);
+      tl.fromTo('#bubble', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 17.8);
+      tl.to('#bubble', { opacity: 0, duration: 0.3 }, 19.6);
+
+      // Asistente: consulta de solo lectura
+      tl.set('#p1', { opacity: 1 }, 18.4);
+      travel('#p1', '#w5', 18.4, 0.45);
+      flash('#n-ai .glow', 18.85);
+      pop('#t-ai', 18.85, 1.6);
+      tl.set('#p1', { opacity: 0 }, 18.85);
+
+      tl.to({}, { duration: 0.1 }, 22.9);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

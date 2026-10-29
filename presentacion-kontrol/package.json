@@ -1,0 +1,23 @@
+{
+  "name": "kontrol-presentacion-final",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host --port 4173",
+    "qr": "node scripts/qr.mjs"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.1.1",
+    "@fontsource/manrope": "^5.1.1",
+    "@fontsource/playfair-display": "^5.1.1",
+    "gsap": "^3.12.5",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4",
+    "vite": "^5.4.10"
+  }
+}

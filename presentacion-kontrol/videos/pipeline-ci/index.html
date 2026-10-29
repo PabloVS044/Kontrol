@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: 'Manrope'; font-weight: 500; src: url('assets/fonts/manrope-latin-500-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 700; src: url('assets/fonts/manrope-latin-700-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Manrope'; font-weight: 800; src: url('assets/fonts/manrope-latin-800-normal.woff2') format('woff2'); }
+      :root { --ground: #f5f1e9; --ink: #1a1712; --soft: #403a30; --muted: #6b6356; --gold: #936923; --gold-soft: #b27f2a; --line: rgba(147, 105, 35, 0.3); --green: #1f7a43; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 100%; height: 100%; font-family: 'Manrope', sans-serif; color: var(--ink); overflow: hidden; }
+      #bg { position: absolute; inset: 0; background: radial-gradient(ellipse 55% 50% at 60% 55%, rgba(202, 168, 96, 0.09), transparent 70%), var(--ground); }
+      .eyebrow { position: absolute; left: 120px; top: 96px; font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: 0.24em; text-transform: uppercase; color: #6e5219; }
+      .title { position: absolute; left: 120px; top: 136px; font-family: 'Playfair Display', serif; font-weight: 600; font-size: 72px; }
+      .title em { color: var(--gold); }
+      .title span { display: inline-block; }
+
+      #commit { position: absolute; left: 120px; top: 470px; width: 380px; padding: 28px; border-radius: 24px; border: 1.5px solid var(--line); background: linear-gradient(160deg, #fffdf8, #f0eadf); }
+      #commit .k { font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--gold); letter-spacing: 0.1em; }
+      #commit p { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 28px; line-height: 1.35; }
+      #commit p b { color: var(--green); font-weight: 500; }
+
+      svg#trunk { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+      #trunk path { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+
+      .lane { position: absolute; left: 600px; height: 92px; width: 1200px; display: flex; align-items: center; gap: 16px; }
+      .lane .name { width: 230px; flex: none; display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 800; }
+      .lane .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--gold); position: relative; flex: none; }
+      .lane .dot i { position: absolute; inset: -2px; border-radius: 50%; background: var(--green); box-shadow: 0 0 14px var(--green); opacity: 0; }
+      .job { position: relative; height: 64px; padding: 0 22px 0 60px; border-radius: 16px; border: 1.5px solid var(--line); background: rgba(255, 255, 255, 0.7); display: flex; align-items: center; font-size: 26px; font-weight: 700; color: var(--soft); white-space: nowrap; }
+      .job .sp { position: absolute; left: 20px; top: 50%; width: 28px; height: 28px; margin-top: -14px; }
+      .job .sp svg { width: 100%; height: 100%; }
+      .job .ok { position: absolute; left: 18px; top: 50%; width: 32px; height: 32px; margin-top: -16px; border-radius: 50%; background: var(--green); color: var(--ground); display: grid; place-items: center; font-size: 22px; font-weight: 800; opacity: 0; }
+      .job .done { position: absolute; inset: -1.5px; border-radius: 16px; border: 1.5px solid var(--green); opacity: 0; }
+
+      .sum { position: absolute; top: 900px; display: flex; align-items: center; gap: 22px; }
+      .sum b { font-family: 'Playfair Display', serif; font-size: 76px; font-weight: 600; line-height: 1; }
+      .sum span { font-size: 30px; color: var(--soft); font-weight: 600; line-height: 1.2; }
+      #stairs { width: 170px; height: 76px; }
+      #stairs rect { fill: var(--gold); }
+      #stairs path { fill: none; stroke: var(--green); stroke-width: 3; stroke-dasharray: 8 6; }
+      #green { position: absolute; left: 120px; top: 900px; padding: 18px 28px; border-radius: 18px; border: 2px solid var(--green); color: var(--green); font-size: 34px; font-weight: 800; background: rgba(31, 122, 67, 0.1); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080">
+      <div id="bg"></div>
+      <div id="eyebrow" class="eyebrow">Calidad automatizada</div>
+      <h1 id="title" class="title"><span>Todo</span> <span>corre</span> <span>solo,</span> <span>en</span> <span><em>GitHub</em></span> <span><em>Actions.</em></span></h1>
+
+      <div id="commit">
+        <div class="k">git push</div>
+        <p><b>feat</b>(pos): recalcular el total en el servidor</p>
+      </div>
+
+      <svg id="trunk" viewBox="0 0 1920 1080">
+        <path id="tr0" d="M500 560 H560" />
+        <path id="tr1" d="M560 560 V346 Q560 336 570 336 H596" />
+        <path id="tr2" d="M560 560 V454 Q560 444 570 444 H596" />
+        <path id="tr3" d="M560 560 H596" />
+        <path id="tr4" d="M560 560 V666 Q560 676 570 676 H596" />
+        <path id="tr5" d="M560 560 V774 Q560 784 570 784 H596" />
+      </svg>
+
+      <div id="lane1" class="lane" style="top: 290px">
+        <div class="name"><span class="dot"><i></i></span>CI</div>
+        <div class="job" data-done="4.2">Lint</div>
+        <div class="job" data-done="4.8">npm audit</div>
+        <div class="job" data-done="6.6">Tests backend</div>
+        <div class="job" data-done="7.4">Tests frontend</div>
+      </div>
+      <div id="lane2" class="lane" style="top: 398px">
+        <div class="name"><span class="dot"><i></i></span>Integración</div>
+        <div class="job" data-done="6.0">PostgreSQL real</div>
+        <div class="job" data-done="7.8">Regresión</div>
+      </div>
+      <div id="lane3" class="lane" style="top: 514px">
+        <div class="name"><span class="dot"><i></i></span>Privacidad</div>
+        <div class="job" data-done="5.4">PostgreSQL y Mongo reales</div>
+      </div>
+      <div id="lane4" class="lane" style="top: 630px">
+        <div class="name"><span class="dot"><i></i></span>Carga</div>
+        <div class="job" data-done="8.4">k6 · carga y estrés</div>
+      </div>
+      <div id="lane5" class="lane" style="top: 738px">
+        <div class="name"><span class="dot"><i></i></span>Respaldos</div>
+        <div class="job" data-done="8.9">Simulacro de restauración</div>
+      </div>
+
+      <div id="green">✓ Todo en verde</div>
+      <div id="sum1" class="sum" style="left: 620px"><b>≈ <span id="cnt" style="font: inherit; color: inherit">139</span></b><span>archivos<br />de pruebas</span></div>
+      <div id="sum2" class="sum" style="left: 1130px">
+        <svg id="stairs" viewBox="0 0 170 76"><rect x="0" y="56" width="34" height="20" rx="3" /><rect x="44" y="42" width="34" height="34" rx="3" /><rect x="88" y="26" width="34" height="50" rx="3" /><rect x="132" y="8" width="34" height="68" rx="3" /><path d="M0 50 L44 36 L88 20 L150 2" /></svg>
+        <span>Cobertura: un umbral<br />que solo puede subir</span>
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Spinners y checks de cada job, generados antes de construir el timeline
+      document.querySelectorAll('.job').forEach((j) => {
+        j.insertAdjacentHTML(
+          'afterbegin',
+          '<span class="sp"><svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="11" fill="none" stroke="rgba(147,105,35,.25)" stroke-width="3"/><path d="M14 3a11 11 0 0 1 11 11" fill="none" stroke="#936923" stroke-width="3" stroke-linecap="round"/></svg></span><span class="ok">✓</span><i class="done"></i>',
+        );
+      });
+
+      tl.fromTo('#eyebrow', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.2);
+      tl.fromTo('#title span', { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.3, stagger: 0.08, ease: 'power3.out' }, 0.35);
+      tl.fromTo('#commit', { opacity: 0, x: -40, filter: 'blur(10px)' }, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out' }, 1.0);
+
+      ['#tr0', '#tr1', '#tr2', '#tr3', '#tr4', '#tr5'].forEach((id) => {
+        const l = document.querySelector(id).getTotalLength();
+        tl.set(id, { strokeDasharray: l, strokeDashoffset: l }, 0);
+      });
+      tl.to('#tr0', { strokeDashoffset: 0, duration: 0.3, ease: 'power2.in' }, 1.9);
+      tl.to(['#tr1', '#tr2', '#tr3', '#tr4', '#tr5'], { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', stagger: 0.06 }, 2.2);
+      tl.fromTo('.lane', { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.6, stagger: 0.09, ease: 'expo.out' }, 2.4);
+
+      document.querySelectorAll('.job').forEach((j) => {
+        const t = parseFloat(j.dataset.done);
+        tl.fromTo(j.querySelector('.sp svg'), { rotation: 0 }, { rotation: 360 * Math.round((t - 2.6) * 1.3), duration: t - 2.6, ease: 'none', transformOrigin: '50% 50%' }, 2.6);
+        tl.to(j.querySelector('.sp'), { opacity: 0, duration: 0.1 }, t);
+        tl.fromTo(j.querySelector('.ok'), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2.2)' }, t);
+        tl.fromTo(j.querySelector('.done'), { opacity: 0 }, { opacity: 1, duration: 0.3 }, t);
+        tl.to(j, { color: '#1a1712', duration: 0.3 }, t);
+      });
+      const laneDone = { lane1: 7.4, lane2: 7.8, lane3: 5.4, lane4: 8.4, lane5: 8.9 };
+      Object.entries(laneDone).forEach(([id, t]) => tl.fromTo(`#${id} .dot i`, { opacity: 0 }, { opacity: 1, duration: 0.3 }, t + 0.1));
+
+      // Resumen
+      tl.fromTo('#green', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(2)' }, 9.4);
+      tl.fromTo('#sum1', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, 9.8);
+      const c = { v: 0 };
+      tl.fromTo(c, { v: 0 }, { v: 139, duration: 1.4, ease: 'power3.out', onUpdate: () => (document.getElementById('cnt').textContent = Math.round(c.v)) }, 9.8);
+      tl.fromTo('#sum2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, 10.4);
+      tl.fromTo('#stairs rect', { scaleY: 0, transformOrigin: '50% 100%' }, { scaleY: 1, duration: 0.5, stagger: 0.15, ease: 'expo.out' }, 10.6);
+
+      tl.to({}, { duration: 0.1 }, 14.9);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
