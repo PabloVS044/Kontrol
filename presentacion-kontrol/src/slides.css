@@ -2034,6 +2034,7 @@
 .cmp-img {
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: #fffdf8;
 }
 
@@ -2054,6 +2055,12 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+}
+
+/* El clip-path de la v1 crea su propio contexto de apilamiento: sin un z-index
+   mayor, la imagen de la v2 se pinta encima. */
+.cmp-img.v1 {
+  z-index: 2;
 }
 
 .cmp-img.v1 .cmp-ph {
