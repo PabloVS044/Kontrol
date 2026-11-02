@@ -324,6 +324,20 @@ body.show-cursor {
   font-variant-numeric: lining-nums tabular-nums;
 }
 
+/* Dígitos de ancho fijo para los contadores animados (ver countUp en fx.js).
+   En Playfair van de 0.38em (el 1) a 0.63em (el 0); 0.58em evita el temblor
+   sin dejar los unos demasiado separados. */
+[data-count] {
+  white-space: nowrap;
+}
+
+.dg {
+  display: inline-block;
+  width: 0.58em;
+  text-align: center;
+  font-style: inherit;
+}
+
 .big-num .u {
   color: var(--gold);
   font-style: italic;

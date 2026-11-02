@@ -66,36 +66,36 @@ export function words(el, vars = {}) {
   )
 }
 
-// Cuenta un número de 0 a su valor (data-count, data-decimals, data-sep).
-export function countUp(el, vars = {}) {
-  const target = parseFloat(el.dataset.count)
+// Cuenta un número de 0 a su valor (data-count, data-decimals, data-sep, data-from).
+// Cada dígito va en una caja de ancho fijo: en Playfair los dígitos miden
+// distinto y, sin esto, el número tiembla de lado a lado mientras cuenta.
+function formatCount(el, v) {
   const dec = parseInt(el.dataset.decimals || '0', 10)
   const sep = el.dataset.sep ?? ' '
-  const from = parseFloat(el.dataset.from || '0')
-  const fmt = (v) => {
-    const fixed = v.toFixed(dec)
-    const [i, d] = fixed.split('.')
-    const int = sep ? i.replace(/\B(?=(\d{3})+(?!\d))/g, sep) : i
-    return d ? `${int}.${d}` : int
-  }
-  const o = { v: from }
-  el.textContent = fmt(from)
+  const [i, d] = v.toFixed(dec).split('.')
+  return (sep ? i.replace(/\B(?=(\d{3})+(?!\d))/g, sep) : i) + (d ? `.${d}` : '')
+}
+
+function renderCount(el, v) {
+  el.innerHTML = formatCount(el, v).replace(/\d/g, '<i class="dg">$&</i>')
+}
+
+export function countUp(el, vars = {}) {
+  const target = parseFloat(el.dataset.count)
+  const o = { v: parseFloat(el.dataset.from || '0') }
+  renderCount(el, o.v)
   return gsap.to(o, {
     v: target,
     duration: 1.8,
     ease: 'power3.out',
     ...vars,
-    onUpdate: () => (el.textContent = fmt(o.v)),
-    onComplete: () => (el.textContent = fmt(target)),
+    onUpdate: () => renderCount(el, o.v),
+    onComplete: () => renderCount(el, target),
   })
 }
 
 export function setCount(el) {
-  const o = { v: parseFloat(el.dataset.count) }
-  const dec = parseInt(el.dataset.decimals || '0', 10)
-  const sep = el.dataset.sep ?? ' '
-  const [i, d] = o.v.toFixed(dec).split('.')
-  el.textContent = (sep ? i.replace(/\B(?=(\d{3})+(?!\d))/g, sep) : i) + (d ? `.${d}` : '')
+  renderCount(el, parseFloat(el.dataset.count))
 }
 
 // Dibuja trazos SVG (paths/lines con clase .draw).
