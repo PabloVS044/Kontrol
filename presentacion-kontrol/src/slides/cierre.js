@@ -134,7 +134,7 @@ export default [
     notes: `Deja la imagen dos segundos en silencio.
 «Este es el mismo producto: a la izquierda, la v1; a la derecha, la v2.»
 TRANSICIÓN (mirando a Ivana): «¿Está listo para el mercado?»
-Imágenes: landing de la v1 (commit a1d70ee, cierre de IS1, 31 de mayo) y de la v2 actual (main).`,
+Imágenes: landing de la v1 (commit a1d70ee, cierre de IS1, 31 de mayo; se corrigió el «bussiness» del título antes de capturar) y de la v2 actual (main).`,
     html: `
       <div class="compare" data-in="zoom">
         <div class="cmp-img v2"><img src="media/capturas/v2.jpg" alt="" onerror="this.remove()"><div class="cmp-ph"><b>v2</b><span>media/capturas/v2.jpg</span></div></div>
