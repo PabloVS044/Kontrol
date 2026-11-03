@@ -26,7 +26,7 @@ function demo({ id, section, stage, title, lead, points, file, dur, notes, extra
           ${extra}
         </div>
         <div class="device" data-in="zoom">
-          <video src="media/demos/${file}" data-autoplay data-preview-time="3"></video>
+          <video src="media/demos/${file}" data-autoplay loop data-preview-time="3"></video>
           <div class="placeholder">
             <div class="ph-k">VIDEO DE DEMO · ${dur}</div>
             <div class="ph-t">${title}</div>
@@ -63,7 +63,7 @@ export default [
     title: 'Acceso y onboarding',
     points: ['Correo o Google', 'Empresa + invitación por enlace', 'Una cuenta, varias empresas', 'Términos legales aceptados'],
     file: 'acceso.mp4',
-    dur: '0:25',
+    dur: '0:30',
     notes: '«Todo empieza con el registro, con correo o con Google. Se crea la empresa y se invita al equipo con un enlace. Una misma cuenta puede pertenecer a varias empresas, y al entrar cada persona acepta los términos legales.»',
   }),
   demo({
@@ -73,9 +73,8 @@ export default [
     title: 'Dashboard',
     points: ['Proyectos activos', 'Presupuesto consumido', 'Alertas'],
     file: 'dashboard.mp4',
-    dur: '0:30',
-    extra: `<div class="mini-stat" data-in="up"><span class="mono">1</span> petición al servidor<small>antes: una por proyecto</small></div>`,
-    notes: '«Esto es lo primero que ve el gerente del lunes: proyectos activos, presupuesto consumido y alertas, en una sola pantalla. Y es rápido: el resumen se carga en una sola petición al servidor; antes eran varias, una por proyecto.»',
+    dur: '0:16',
+    notes: '«Esto es lo primero que ve el gerente del lunes: proyectos activos, presupuesto consumido y alertas, en una sola pantalla.»',
   }),
   stageCard('3a', 2, 'Ejecución', 'Organizar el trabajo, el equipo y la conversación.', 'Pasar rápido: es solo el cambio de etapa.', ['Proyectos', 'Equipos y roles', 'Chat']),
   demo({
@@ -85,7 +84,7 @@ export default [
     title: 'Proyectos',
     points: ['Tareas asignadas', 'Bitácora con evidencias', 'Quién lo hizo y cuándo', 'Miembros, permisos y métricas'],
     file: 'proyectos.mp4',
-    dur: '0:50',
+    dur: '0:41',
     notes: `«Los proyectos son el corazón de la ejecución. Se crea el proyecto, se dividen las tareas y se asignan a una persona.»
 Mientras corre la bitácora: «Cada avance se registra en la bitácora, con evidencias adjuntas. Cada cambio queda registrado: quién lo hizo y cuándo. Eso resuelve el síntoma de la trazabilidad.»
 Mientras corren miembros y métricas: «Cada proyecto tiene sus propios miembros y permisos, y sus métricas de avance.»`,
@@ -107,7 +106,7 @@ Mientras corren miembros y métricas: «Cada proyecto tiene sus propios miembros
     title: 'Chat',
     points: ['Tiempo real', 'Archivos adjuntos', 'Junto al proyecto, no en WhatsApp'],
     file: 'chat.mp4',
-    dur: '0:20',
+    dur: '0:19',
     notes: `«Y la comunicación se queda dentro de la plataforma: chat en tiempo real, con archivos adjuntos. Lo que antes estaba en WhatsApp ahora queda junto al proyecto.»
 Transición interna: «Ya está organizado el trabajo; ahora vamos a los recursos.»`,
   }),
@@ -121,7 +120,7 @@ Transición interna: «Ya está organizado el trabajo; ahora vamos a los recurso
     title: 'Inventario y proveedores',
     points: ['Productos y stock', 'Cada entrada y salida registrada', 'Varios proveedores por producto'],
     file: 'inventario.mp4',
-    dur: '0:35',
+    dur: '0:15',
     notes: '«En inventario se registran productos, stock y movimientos. Cada entrada y salida queda registrada, y un mismo producto puede tener varios proveedores vinculados.»',
   }),
   demo({
@@ -131,7 +130,7 @@ Transición interna: «Ya está organizado el trabajo; ahora vamos a los recurso
     title: 'Punto de venta y Ventas',
     points: ['Escáner con la cámara', 'IVA y descuento configurables', 'Total calculado en el servidor', 'Stock descontado solo', 'Ventas: menú propio'],
     file: 'pos-ventas.mp4',
-    dur: '0:40',
+    dur: '0:39',
     notes: `«Si la empresa vende directo, tiene un punto de venta integrado. Se escanea el código con la cámara o se escribe a mano, se confirma y se cobra. El IVA y el descuento son configurables, y el total lo calcula el servidor. El stock se descuenta solo.»
 Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial y utilidad del período. Ese menú existe porque en las pruebas de usabilidad nadie encontraba las ventas.»`,
   }),
@@ -142,7 +141,7 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
     title: 'Presupuesto',
     points: ['Cada gasto se descuenta del proyecto'],
     file: 'presupuesto.mp4',
-    dur: '0:30',
+    dur: '0:35',
     extra: `
       <div class="budget" data-in="up">
         <div class="budget-bar"><i></i><b style="left:60%"><span>60 %</span></b><b style="left:80%"><span>80 %</span></b></div>
@@ -157,7 +156,7 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
     title: 'Reportes',
     points: ['Toda la operación consolidada', 'Exportación a PDF', 'Exportación a CSV'],
     file: 'reportes.mp4',
-    dur: '0:25',
+    dur: '0:19',
     notes: '«Los reportes consolidan los datos de toda la operación y se exportan a PDF o CSV.»',
   }),
   demo({
@@ -195,10 +194,10 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
     section: '3b',
     stage: 'Recursos',
     title: 'Configuración',
-    points: ['Tema claro, oscuro o del sistema', 'Español o inglés', 'Privacidad', 'Plan contratado'],
+    points: ['Tema claro, oscuro o del sistema', 'Español o inglés', 'Moneda, IVA y descuentos', 'Plan, integraciones y tus datos'],
     file: 'configuracion.mp4',
-    dur: '0:15',
-    notes: '«Tema claro, oscuro o el del sistema; español o inglés; y control de privacidad y del plan contratado.»',
+    dur: '0:19',
+    notes: '«Cada persona elige tema claro, oscuro o el del sistema, idioma y tamaño de letra. La empresa configura su moneda, el IVA y los descuentos de venta. Y desde aquí se gestionan el plan, las integraciones y la descarga de los propios datos.»',
   }),
   stageCard('3b', 4, 'Decisiones', 'Preguntarle a tus datos, en tu idioma.', 'Baja el ritmo desde aquí. «Y la última etapa: decisiones.»', ['Asistente de IA']),
   {
@@ -218,7 +217,7 @@ TRANSICIÓN (mirando a Jonathan): «Todo esto, ¿cómo está construido?»`,
           <div class="ask" data-in="blur"><span class="mono">›</span> ¿Qué productos están por agotarse?</div>
         </div>
         <div class="device wide" data-in="zoom">
-          <video src="media/demos/agente-ia.mp4" data-autoplay data-preview-time="3"></video>
+          <video src="media/demos/agente-ia.mp4" data-autoplay loop data-preview-time="3"></video>
           <div class="placeholder">
             <div class="ph-k">VIDEO DE DEMO · 0:30</div>
             <div class="ph-t">Agente de IA</div>

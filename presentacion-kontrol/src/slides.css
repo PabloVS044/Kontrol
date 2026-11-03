@@ -2635,3 +2635,66 @@
 .team i {
   font-style: normal;
 }
+
+/* ---------- Demos: el video manda ---------- */
+
+.slide:has(.demo-layout) {
+  padding: 48px 56px 48px 80px;
+}
+
+.slide:has(.demo-layout) .journey {
+  margin-bottom: 20px;
+}
+
+.slide .demo-layout {
+  grid-template-columns: 340px 1fr;
+  gap: 40px;
+  height: auto;
+  flex: 1;
+}
+
+.demo-layout .demo-side .title {
+  font-size: 54px;
+}
+
+.demo-layout .demo-side .lead {
+  font-size: 24px;
+}
+
+.demo-layout .demo-side .points {
+  margin-top: 28px;
+  gap: 12px;
+}
+
+.demo-layout .demo-side .points span {
+  font-size: 22px;
+  align-items: baseline;
+}
+
+.demo-layout .demo-side .points span::before {
+  transform: translateY(-3px);
+}
+
+.demo-layout .device {
+  width: 100%;
+  max-height: 100%;
+  border-radius: 18px;
+}
+
+.demo-layout .logo-grid {
+  gap: 10px;
+}
+
+.demo-layout .logo-grid span {
+  font-size: 20px;
+  gap: 10px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+
+.demo-layout .logo-grid img,
+.demo-layout .logo-grid .wa,
+.demo-layout .logo-grid .wa .ic svg {
+  width: 28px;
+  height: 28px;
+}
