@@ -1,4 +1,3 @@
-import { icon } from '../fx.js'
 
 // 3a · Panorama y ejecución · 3b · Recursos, decisiones y agente IA
 // Los videos de demo se sueltan en public/media/demos/<archivo>.mp4; mientras no
@@ -94,10 +93,12 @@ Mientras corren miembros y métricas: «Cada proyecto tiene sus propios miembros
     section: '3a',
     stage: 'Ejecución',
     title: 'Equipos y roles',
-    points: ['Equipos con líder', 'Roles de empresa', 'Roles de proyecto', 'Permisos detallados'],
+    points: ['Equipos con líder', 'Miembros asignados', 'Proyectos vinculados', 'Roles de empresa y de proyecto'],
     file: 'equipos.mp4',
-    dur: '0:25',
-    notes: '«Los equipos tienen un líder. Hay dos niveles de roles: los de la empresa y los de cada proyecto, con permisos detallados. Así cada persona ve y edita solo lo que le corresponde.»',
+    dur: '0:24',
+    notes: `«Los equipos tienen un líder y sus miembros, y se vinculan a los proyectos en los que trabajan.»
+Mientras corre: en el video se cambia el líder, se agrega a Ana López y se vincula un proyecto.
+«Además hay dos niveles de roles: los de la empresa y los de cada proyecto, con permisos detallados. Así cada persona ve y edita solo lo que le corresponde.»`,
   }),
   demo({
     id: 'demo-chat',
@@ -164,10 +165,10 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
     section: '3b',
     stage: 'Recursos',
     title: 'Marketing',
-    points: ['Campañas', 'Publicaciones programadas', 'Métricas', 'Contenido con IA (Business)'],
+    points: ['Publicaciones por canal', 'Programar y publicar', 'Vista de calendario', 'Contenido con IA (Business)'],
     file: 'marketing.mp4',
-    dur: '0:25',
-    notes: '«Hay un centro de marketing: campañas, publicaciones programadas y sus métricas. En el plan Business, el contenido se puede generar con IA.»\nRECORTABLE a 0:15.',
+    dur: '0:24',
+    notes: '«Hay un centro de marketing para las publicaciones de cada canal: se programan, se publican y se ven en lista o en calendario. En el plan Business, el contenido se puede generar con IA.»\nRECORTABLE a 0:15.',
   }),
   demo({
     id: 'demo-integraciones',
@@ -176,18 +177,18 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
     title: 'Integraciones',
     points: [],
     file: 'integraciones.mp4',
-    dur: '0:20',
+    dur: '0:21',
     extra: `
       <div class="logo-grid">
         <span data-in="pop"><img src="media/logos/slack.png" alt="">Slack</span>
         <span data-in="pop"><img src="media/logos/teams.png" alt="">Teams</span>
-        <span data-in="pop"><i class="wa">${icon('chat', 'ic')}</i>WhatsApp</span>
         <span data-in="pop"><img src="media/logos/telegram.png" alt="">Telegram</span>
         <span data-in="pop"><img src="media/logos/send.png" alt="">SendGrid</span>
         <span data-in="pop"><img src="media/logos/twilio.png" alt="">SMS</span>
         <span data-in="pop"><img src="media/logos/webhook.png" alt="">Webhook</span>
       </div>`,
-    notes: '«Las notificaciones llegan a donde ya está el equipo: Slack, Teams, WhatsApp, Telegram, correo con SendGrid, SMS o un webhook propio.»',
+    notes: `«Las notificaciones llegan a donde ya está el equipo: Slack, Teams, Telegram, correo con SendGrid, SMS o un webhook propio.»
+Mientras corre: cada integración trae su guía de «¿Cómo conectar?» paso a paso (en el video, Slack y Telegram).`,
   }),
   demo({
     id: 'demo-configuracion',
@@ -203,9 +204,9 @@ Mientras corre el historial: «Ventas tiene ahora su propio menú, con historial
   {
     id: 'demo-agente',
     section: '3b',
-    title: 'Demo · Agente IA (0:30)',
-    notes: `VIDEO 0:30. Baja el ritmo. Deja correr dos segundos del video antes de hablar.
-«Le preguntamos al asistente: ¿qué productos están por agotarse?»
+    title: 'Demo · Agente IA (0:20)',
+    notes: `VIDEO 0:20 (la respuesta se queda en pantalla 8 s). Baja el ritmo. Deja correr dos segundos del video antes de hablar.
+«Le pedimos al asistente que analice el presupuesto de la empresa y nos dé recomendaciones.»
 Pausa mientras aparece la respuesta.
 «Responde con los datos reales de esta empresa, en lenguaje natural. Ya no hace falta ser analista para tomar una decisión informada. Solo hay que saber qué preguntar.»
 Sin explicación técnica aquí (la da Juan). Si preguntan: «Juan explica cómo lo protegemos».
@@ -214,12 +215,12 @@ TRANSICIÓN (mirando a Jonathan): «Todo esto, ¿cómo está construido?»`,
       <div class="agent">
         <div class="agent-head">
           ${journey('Decisiones')}
-          <div class="ask" data-in="blur"><span class="mono">›</span> ¿Qué productos están por agotarse?</div>
+          <div class="ask" data-in="blur"><span class="mono">›</span> Analiza el presupuesto de mi empresa</div>
         </div>
         <div class="device wide" data-in="zoom">
           <video src="media/demos/agente-ia.mp4" data-autoplay loop data-preview-time="3"></video>
           <div class="placeholder">
-            <div class="ph-k">VIDEO DE DEMO · 0:30</div>
+            <div class="ph-k">VIDEO DE DEMO · 0:20</div>
             <div class="ph-t">Agente de IA</div>
             <div class="ph-f">public/media/demos/agente-ia.mp4</div>
           </div>
