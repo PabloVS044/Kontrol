@@ -122,7 +122,9 @@ function buildEntrance(slide, el) {
 
 function revealStep(slide, el, k, animate) {
   el.querySelectorAll(`[data-step="${k}"]`).forEach((node) => {
-    gsap.set(node, { visibility: 'visible' })
+    // 'inherit' y no 'visible': un hijo con visibility: visible se sigue viendo
+    // aunque su slide pase a hidden, y quedaría encimado sobre las siguientes.
+    gsap.set(node, { visibility: 'inherit' })
     const inner = insideStep(node, '[data-in]')
     const counts = insideStep(node, '[data-count]')
     const paths = insideStep(node, '.draw')
@@ -181,7 +183,22 @@ function go(i, s = 0, { animate = true, broadcast = true } = {}) {
     enterTl?.progress(1).kill()
     stopVideos(prev.el)
     prev.leave?.(prev.el)
+    if (animate && prev.section !== slide.section && i > index) sectionSweep()
+  }
+
+  // Al pasar rápido puede haber varias slides desvaneciéndose a la vez: se
+  // terminan de golpe todas menos la que sale ahora, para que nunca queden
+  // dos o más encimadas.
+  for (const other of SLIDES) {
+    if (other === slide || other === prev || !other.el.classList.contains('active')) continue
+    gsap.killTweensOf(other.el)
+    other.el.classList.remove('active')
+    gsap.set(other.el, { clearProps: 'all' })
+  }
+
+  if (prev) {
     const out = prev.el
+    gsap.killTweensOf(out)
     if (animate) {
       gsap.to(out, {
         opacity: 0,
@@ -189,6 +206,8 @@ function go(i, s = 0, { animate = true, broadcast = true } = {}) {
         duration: 0.4,
         ease: 'power2.in',
         onComplete: () => {
+          // Si mientras tanto se volvió a esta slide, no hay que esconderla
+          if (SLIDES[index].el === out) return
           out.classList.remove('active')
           gsap.set(out, { clearProps: 'all' })
         },
@@ -197,7 +216,6 @@ function go(i, s = 0, { animate = true, broadcast = true } = {}) {
       out.classList.remove('active')
       gsap.set(out, { clearProps: 'all' })
     }
-    if (animate && prev.section !== slide.section && i > index) sectionSweep()
   }
 
   const el = slide.el
