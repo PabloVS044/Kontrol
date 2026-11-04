@@ -19,7 +19,7 @@ const SPRINTS2 = [
   ['S7', 'sep', 'Usabilidad, carga y seguridad'],
   ['S8', '14 sep', 'Deuda técnica, volumen, 42 RNF'],
   ['S9', '29 sep', 'Refactor, producción, sección Ventas'],
-  ['S10', '14 oct', 'Legal, privacidad, suscripciones, respaldos'],
+  ['S10', '14 oct', 'Legal, privacidad, respaldos'],
 ]
 
 export default [
@@ -52,7 +52,7 @@ export default [
         </svg>
       </div>
       <div class="commits-log" data-in="up">
-        <span><b>feat</b>(billing): cancel the subscription when a company is closed</span>
+        <span><b>feat</b>(inventory): permitir vincular proveedores a productos</span>
         <span><b>fix</b>(pos): recalcular el total en el servidor</span>
       </div>`,
   },
@@ -61,7 +61,7 @@ export default [
     section: 7,
     title: 'Línea de tiempo: 10 sprints',
     notes: `«La historia tiene dos partes. En Ingeniería de Software 1, de marzo a mayo, hicimos los sprints 1 a 4 y construimos la base funcional completa: autenticación, proyectos, inventario, presupuesto, chat, integraciones, la primera versión del asistente y los dos idiomas.»
-[clic] «En Ingeniería de Software 2 cambió el foco: de construir a asegurar la calidad. S5 CI y plan maestro de pruebas. S6 escáner del POS, exportación de reportes, inicio del rediseño. S7 usabilidad, carga y seguridad. S8 deuda técnica, volumen y RNF. S9 refactor, producción y sección Ventas. S10 marco legal, privacidad, suscripciones y respaldos.»`,
+[clic] «En Ingeniería de Software 2 cambió el foco: de construir a asegurar la calidad. S5 CI y plan maestro de pruebas. S6 escáner del POS, exportación de reportes, inicio del rediseño. S7 usabilidad, carga y seguridad. S8 deuda técnica, volumen y RNF. S9 refactor, producción y sección Ventas. S10 marco legal, privacidad y respaldos.»`,
     html: `
       <div class="eyebrow" data-in="fade">Evolución</div>
       <h2 class="title md" data-in="words">De construir <em>a asegurar la calidad.</em></h2>
@@ -154,43 +154,20 @@ Imágenes: landing de la v1 (commit a1d70ee, cierre de IS1, 31 de mayo; se corri
   {
     id: 'planes',
     section: 8,
-    title: 'Tres planes',
-    notes: `«Kontrol se cobra por suscripción por empresa, no por usuario. Eso le conviene a una pyme que crece: sumar a una persona no le sube la factura.»
+    title: 'Planes a futuro',
+    notes: `«Hoy Kontrol no procesa pagos. Estos son los planes que contemplamos para cuando pase a ser un SaaS y se implementen los pagos. La idea es cobrar por empresa, no por usuario: a una pyme que crece, sumar a una persona no le subiría la factura.»
 [clic] Gratis: 3 miembros y 2 proyectos.
 [clic] Pro, 19 dólares al mes: 15 miembros, exportación de reportes, equipos, integraciones y marketing.
 [clic] Business, 49 dólares: sin límites y con el asistente de IA.`,
     html: `
-      <div class="eyebrow" data-in="fade">Modelo de negocio</div>
-      <h2 class="title md" data-in="words">Por empresa, <em>no por usuario.</em></h2>
+      <div class="eyebrow" data-in="fade">Modelo de negocio · a futuro</div>
+      <h2 class="title md" data-in="words">Pensados para <em>cuando sea SaaS.</em></h2>
+      <p class="plans-note" data-in="fade">Planes contemplados para cuando se implementen los pagos. Por empresa, no por usuario.</p>
       <div class="plans">
         <div class="plan" data-step="1"><span class="k">Gratis</span><div class="price"><b>$0</b></div><ul><li>3 miembros</li><li>2 proyectos</li><li>Para empezar</li></ul></div>
         <div class="plan pro" data-step="2"><span class="k">Pro</span><div class="price"><b>$19</b><small>/ mes</small></div><ul><li>15 miembros</li><li>Exportación de reportes</li><li>Equipos e integraciones</li><li>Marketing</li></ul></div>
         <div class="plan biz" data-step="3"><span class="k">Business</span><div class="price"><b>$49</b><small>/ mes</small></div><ul><li>Sin límites</li><li>Asistente de IA</li><li>Contenido con IA</li></ul></div>
       </div>`,
-  },
-  {
-    id: 'garantias',
-    section: 8,
-    title: 'Dos garantías y pagos independientes del proveedor',
-    notes: `«Dos garantías: si una empresa baja de plan, no se borra ningún dato; solo se bloquea lo que excede el plan. Y el pago es hospedado: Kontrol nunca toca una tarjeta.»
-[clic] «Hoy funciona en modo de prueba, porque Stripe no opera en Guatemala; como el diseño es independiente del proveedor, cambiarlo es sustituir un adaptador.»`,
-    html: `
-      <div class="eyebrow" data-in="fade">Garantías</div>
-      <div class="grid-2" style="margin-top:56px">
-        <div class="card" data-in="up">${icon('archive')}<h3>Bajar de plan no borra datos</h3><p>Solo se bloquea lo que excede el plan</p></div>
-        <div class="card" data-in="up">${icon('card')}<h3>Pago hospedado</h3><p>Kontrol nunca toca una tarjeta</p></div>
-      </div>
-      <div class="adapter" data-step="1">
-        <div class="ad-box">Kontrol<small>suscripciones</small></div>
-        <div class="ad-port"><span>puerto de pagos</span></div>
-        <div class="ad-slot">
-          <div class="ad-a cur">Stripe <small>modo de prueba</small></div>
-          <div class="ad-a next">Proveedor local <small>se sustituye el adaptador</small></div>
-        </div>
-      </div>`,
-    onStep(n, el) {
-      el.querySelector('.ad-slot').classList.toggle('swap', n >= 1)
-    },
   },
   {
     id: 'marco-legal',
@@ -231,7 +208,7 @@ Imágenes: landing de la v1 (commit a1d70ee, cierre de IS1, 31 de mayo; se corri
     section: 8,
     title: 'Implementado en la app + pendientes',
     notes: `«Todo esto ya está en la aplicación: términos y condiciones, privacidad, cookies, aviso de IA, aceptación versionada, banner de consentimiento, y exportación y borrado de datos.»
-[clic] «Lo pendiente antes de facturar es claro: constituir formalmente la entidad y que un profesional revise los documentos.»
+[clic] «Lo pendiente antes de pasar a SaaS es claro: implementar los pagos, constituir formalmente la entidad y que un profesional revise los documentos.»
 TRANSICIÓN (mirando a Jonathan): «Y con eso, volvamos al lunes del principio.»`,
     html: `
       <div class="impl">
@@ -244,7 +221,8 @@ TRANSICIÓN (mirando a Jonathan): «Y con eso, volvamos al lunes del principio.�
           </div>
         </div>
         <div class="pending card" data-step="1" data-anim="right">
-          <span class="k">Antes de facturar</span>
+          <span class="k">Antes de pasar a SaaS</span>
+          <div><i></i>Implementar los pagos</div>
           <div><i></i>Constituir formalmente la entidad</div>
           <div><i></i>Revisión profesional de los documentos</div>
         </div>

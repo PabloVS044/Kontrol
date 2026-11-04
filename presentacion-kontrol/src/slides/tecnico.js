@@ -17,24 +17,22 @@ Tecla V: pausa / reanuda el video.`,
   {
     id: 'decisiones',
     section: 4,
-    title: 'Seis decisiones técnicas',
-    notes: `«Les cuento seis decisiones y por qué las tomamos.» Cada tecnología va con su razón.
+    title: 'Cinco decisiones técnicas',
+    notes: `«Les cuento cinco decisiones y por qué las tomamos.» Cada tecnología va con su razón.
 [1] Monorepo con workspaces: un pipeline de CI, código compartido, versiones juntas.
 [2] JavaScript en todo el stack: un lenguaje para cinco; el cálculo de una venta vive en una carpeta común (frontend y backend).
 [3] Express + Zod: cada endpoint valida; errores por un middleware central.
 [4] Docker Compose: mismo entorno en Windows, Linux y producción.
-[5] Pagos con puerto y adaptador. No fue teórico: Stripe no opera en Guatemala; cambiar de proveedor no toca BD, endpoints ni frontend.
-[6] IA autoalojada y configurable: el endpoint se cambia por configuración.`,
+[5] IA autoalojada y configurable: el endpoint se cambia por configuración.`,
     html: `
       <div class="eyebrow" data-in="fade">Arquitectura</div>
-      <h2 class="title md" data-in="words">Seis decisiones <em>y su porqué.</em></h2>
+      <h2 class="title md" data-in="words">Cinco decisiones <em>y su porqué.</em></h2>
       <div class="decisions">
         <div class="dec" data-step="1">${icon('layers')}<span>01</span><h4>Monorepo con workspaces</h4><p>Un CI, código compartido, versiones juntas</p></div>
         <div class="dec" data-step="2">${icon('code')}<span>02</span><h4>JavaScript en todo el stack</h4><p>Un lenguaje; la lógica de una venta se comparte</p></div>
         <div class="dec" data-step="3">${icon('shield')}<span>03</span><h4>Express + Zod</h4><p>Cada endpoint valida; un middleware de errores</p></div>
         <div class="dec" data-step="4">${icon('docker')}<span>04</span><h4>Docker Compose</h4><p>Mismo entorno en Windows, Linux y producción</p></div>
-        <div class="dec hl" data-step="5">${icon('plug')}<span>05</span><h4>Pagos: puerto y adaptador</h4><p>Stripe no opera en Guatemala: cambiar de proveedor no toca BD, API ni frontend</p></div>
-        <div class="dec" data-step="6">${icon('cloud')}<span>06</span><h4>IA autoalojada</h4><p>Endpoint por configuración, sin depender de un proveedor</p></div>
+        <div class="dec" data-step="5">${icon('cloud')}<span>05</span><h4>IA autoalojada</h4><p>Endpoint por configuración, sin depender de un proveedor</p></div>
       </div>`,
   },
   {
@@ -78,7 +76,6 @@ Tecla V: pausa / reanuda el video.`,
     title: 'Seguridad por diseño',
     notes: `RECORTABLE a una frase.
 «La seguridad está desde el diseño: JWT e inicio con Google, autorización por empresa y por proyecto, cabeceras de seguridad, límite de intentos de inicio de sesión, protección contra SSRF en las integraciones y credenciales de integraciones cifradas.»
-[clic] «Y el pago es hospedado: Kontrol nunca toca una tarjeta, lo que nos deja en el alcance PCI SAQ A.»
 TRANSICIÓN (mirando a Juan): «Y los datos que mueve esta arquitectura…»`,
     html: `
       <div class="secdesign">
@@ -93,7 +90,6 @@ TRANSICIÓN (mirando a Juan): «Y los datos que mueve esta arquitectura…»`,
             <span data-in="left">${svgIcon('globe', 30)} Protección SSRF en integraciones</span>
             <span data-in="left">${svgIcon('key', 30)} Credenciales de integraciones cifradas</span>
           </div>
-          <div class="pci" data-step="1" data-anim="pop">${svgIcon('card', 40)}<div><b>Pago hospedado</b><small>Kontrol nunca toca una tarjeta</small></div><em>PCI SAQ A</em></div>
         </div>
       </div>`,
   },
@@ -104,7 +100,7 @@ TRANSICIÓN (mirando a Juan): «Y los datos que mueve esta arquitectura…»`,
     section: 5,
     title: 'Persistencia políglota',
     notes: `«Usamos dos bases de datos, cada una para lo que hace mejor.»
-PostgreSQL, 36 tablas: lo relacional y transaccional (empresa, proyecto, producto, venta, movimiento, presupuesto, suscripción). «Una venta y su descuento de stock pasan juntos o no pasan.»
+PostgreSQL, 36 tablas: lo relacional y transaccional (empresa, proyecto, producto, venta, movimiento, presupuesto). «Una venta y su descuento de stock pasan juntos o no pasan.»
 [clic] MongoDB, 5 modelos: el chat y las conversaciones con el asistente. Se escriben mucho y su esquema cambia.`,
     html: `
       <div class="eyebrow" data-in="fade">Datos</div>
@@ -112,7 +108,7 @@ PostgreSQL, 36 tablas: lo relacional y transaccional (empresa, proyecto, product
       <div class="grid-2 dbs">
         <div class="card db" data-in="up">
           <div class="db-head">${icon('db')}<div><h3>PostgreSQL</h3><span class="k">Relacional · transaccional</span></div><div class="big-num"><span data-count="36">36</span><small>tablas</small></div></div>
-          <div class="tags"><i>empresa</i><i>proyecto</i><i>producto</i><i>venta</i><i>movimiento</i><i>presupuesto</i><i>suscripción</i></div>
+          <div class="tags"><i>empresa</i><i>proyecto</i><i>producto</i><i>venta</i><i>movimiento</i><i>presupuesto</i></div>
           <p class="atomic">Venta + descuento de stock: <b>juntos o nada</b></p>
         </div>
         <div class="card db" data-step="1">
@@ -147,12 +143,12 @@ PostgreSQL, 36 tablas: lo relacional y transaccional (empresa, proyecto, product
           <g class="node" transform="translate(330 520)"><rect x="-110" y="-34" width="220" height="68" rx="18"/><text y="10">Usuario</text></g>
           <g class="node" transform="translate(800 140)"><rect x="-110" y="-34" width="220" height="68" rx="18"/><text y="10">Producto</text></g>
           <g class="node" transform="translate(820 330)"><rect x="-110" y="-34" width="220" height="68" rx="18"/><text y="10">Venta</text></g>
-          <g class="node" transform="translate(800 520)"><rect x="-120" y="-34" width="240" height="68" rx="18"/><text y="10">Suscripción</text></g>
+          <g class="node" transform="translate(800 520)"><rect x="-120" y="-34" width="240" height="68" rx="18"/><text y="10">Equipo</text></g>
           <g class="node sm" transform="translate(120 70)"><rect x="-90" y="-28" width="180" height="56" rx="14"/><text y="9">Tarea</text></g>
           <g class="node sm" transform="translate(110 220)"><rect x="-100" y="-28" width="200" height="56" rx="14"/><text y="9">Presupuesto</text></g>
           <g class="node sm" transform="translate(1000 70)"><rect x="-110" y="-28" width="220" height="56" rx="14"/><text y="9">Movimiento</text></g>
           <g class="node sm" transform="translate(1010 330)"><rect x="-90" y="-28" width="180" height="56" rx="14"/><text y="9">Detalle</text></g>
-          <g class="node sm" transform="translate(1010 590)"><rect x="-90" y="-28" width="180" height="56" rx="14"/><text y="9">Pago</text></g>
+          <g class="node sm" transform="translate(1010 590)"><rect x="-90" y="-28" width="180" height="56" rx="14"/><text y="9">Integrantes</text></g>
         </g>
         <g class="er-other" data-step="1" data-anim="right">
           <line x1="1200" y1="40" x2="1200" y2="610" class="wall" />
@@ -236,7 +232,7 @@ PostgreSQL, 36 tablas: lo relacional y transaccional (empresa, proyecto, product
     section: 5,
     title: 'Ciclo de vida del dato',
     notes: `RECORTABLE a 0:10.
-«También cuidamos el ciclo de vida del dato: el usuario puede exportar sus datos o borrar su cuenta, y el borrado se coordina entre Postgres y Mongo. Una empresa se puede cerrar, y los eventos de pago son idempotentes: si llegan dos veces, se procesan una. Y tenemos una política de respaldos escrita, con un simulacro de restauración automatizado de las dos bases.»
+«También cuidamos el ciclo de vida del dato: el usuario puede exportar sus datos o borrar su cuenta, y el borrado se coordina entre Postgres y Mongo. Una empresa se puede cerrar. Y tenemos una política de respaldos escrita, con un simulacro de restauración automatizado de las dos bases.»
 Transición interna: «Este modelo, ¿aguanta?»`,
     html: `
       <div class="eyebrow" data-in="fade">Ciclo de vida del dato</div>
@@ -245,8 +241,7 @@ Transición interna: «Este modelo, ¿aguanta?»`,
         <svg viewBox="0 0 1660 40" class="lc-line"><path class="draw" d="M80 20 H1580"/></svg>
         <div data-in="up">${icon('download')}<b>Exportar datos</b><small>el usuario descarga lo suyo</small></div>
         <div data-in="up">${icon('trash')}<b>Borrar cuenta</b><small>coordinado Postgres + Mongo</small></div>
-        <div data-in="up">${icon('archive')}<b>Cerrar empresa</b><small>y cancelar la suscripción</small></div>
-        <div data-in="up">${icon('repeat')}<b>Pagos idempotentes</b><small>llega dos veces, se procesa una</small></div>
+        <div data-in="up">${icon('archive')}<b>Cerrar empresa</b><small>cierre ordenado de sus datos</small></div>
         <div data-in="up">${icon('shield')}<b>Respaldos</b><small>simulacro de restauración automatizado</small></div>
       </div>`,
   },

@@ -709,9 +709,17 @@
 
 .decisions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 28px;
   margin-top: 56px;
+}
+
+.decisions .dec {
+  grid-column: span 2;
+}
+
+.decisions .dec:nth-child(4) {
+  grid-column: 2 / span 2;
 }
 
 .dec {
@@ -756,11 +764,6 @@
   color: var(--soft);
   margin-top: 12px;
   line-height: 1.35;
-}
-
-.dec.hl {
-  border-color: var(--gold);
-  box-shadow: 0 0 60px rgba(202, 168, 96, 0.18);
 }
 
 /* ---------- 4 · Despliegue ---------- */
@@ -980,43 +983,6 @@
 .sec-list svg {
   color: var(--gold);
   flex: none;
-}
-
-.pci {
-  margin-top: 48px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 28px 34px;
-  border-radius: 22px;
-  border: 1px solid var(--gold);
-  background: rgba(202, 168, 96, 0.08);
-  color: var(--gold);
-}
-
-.pci div {
-  flex: 1;
-  color: var(--ink);
-}
-
-.pci b {
-  display: block;
-  font-size: 34px;
-}
-
-.pci small {
-  font-size: 24px;
-  color: var(--soft);
-}
-
-.pci em {
-  font-style: normal;
-  font-family: var(--f-mono);
-  font-size: 30px;
-  background: var(--gold);
-  color: var(--bg);
-  padding: 12px 20px;
-  border-radius: 12px;
 }
 
 /* ---------- 5 · Datos ---------- */
@@ -1339,7 +1305,7 @@
 .lifecycle {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-top: 100px;
 }
@@ -2130,11 +2096,17 @@
 
 /* ---------- 8 · Lanzamiento ---------- */
 
+.plans-note {
+  margin-top: 20px;
+  font-size: 30px;
+  color: var(--muted);
+}
+
 .plans {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 36px;
-  margin-top: 64px;
+  margin-top: 40px;
   align-items: end;
 }
 
@@ -2205,88 +2177,6 @@
   height: 10px;
   border-radius: 50%;
   background: var(--gold);
-}
-
-.adapter {
-  margin-top: 64px;
-  display: flex;
-  align-items: center;
-}
-
-.ad-box {
-  padding: 28px 40px;
-  border-radius: 20px;
-  background: var(--gold);
-  color: var(--bg);
-  font-family: var(--f-display);
-  font-size: 44px;
-  font-weight: 700;
-}
-
-.ad-box small {
-  display: block;
-  font-family: var(--f-mono);
-  font-size: 18px;
-  font-weight: 400;
-}
-
-.ad-port {
-  width: 340px;
-  height: 4px;
-  background: var(--gold);
-  position: relative;
-}
-
-.ad-port span {
-  position: absolute;
-  top: -44px;
-  left: 50%;
-  translate: -50% 0;
-  font-family: var(--f-mono);
-  font-size: 20px;
-  color: var(--gold);
-  white-space: nowrap;
-}
-
-.ad-slot {
-  position: relative;
-  width: 560px;
-  height: 120px;
-  border: 2px dashed var(--line-strong);
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.ad-a {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 36px;
-  font-size: 40px;
-  font-weight: 700;
-  transition: transform 0.9s cubic-bezier(0.7, 0, 0.2, 1) 0.6s;
-}
-
-.ad-a small {
-  font-family: var(--f-mono);
-  font-size: 20px;
-  color: var(--muted);
-  font-weight: 400;
-}
-
-.ad-a.next {
-  transform: translateY(110%);
-  color: var(--gold);
-}
-
-.ad-slot.swap .ad-a.cur {
-  transform: translateY(-110%);
-}
-
-.ad-slot.swap .ad-a.next {
-  transform: translateY(0);
 }
 
 .laws {
